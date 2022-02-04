@@ -48,18 +48,19 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: yarn release
 
-      - name: Login to Docker Hub
-        uses: azure/docker-login@v1
-        if: ${{ github.event_name == 'push' }}
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+### ToDo: Push front-end to GHCR
+#      - name: Login to Docker Hub
+#        uses: azure/docker-login@v1
+#        if: ${{ github.event_name == 'push' }}
+#        with:
+#          username: ${{ secrets.DOCKER_USERNAME }}
+#          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
 
-      - name: Release dev-frontend on Docker Hub
-        if: ${{ github.event_name == 'push' }}
-        run: |
-          docker-compose build
-          docker-compose push
-        working-directory: ./packages/dev-frontend
-        env:
-          TAG: ${{ fromJSON('{ "refs/heads/master":"latest", "refs/heads/main":"next" }')[github.ref] }}
+#      - name: Release dev-frontend on Docker Hub
+#        if: ${{ github.event_name == 'push' }}
+#        run: |
+#          docker-compose build
+#          docker-compose push
+#        working-directory: ./packages/dev-frontend
+#        env:
+#          TAG: ${{ fromJSON('{ "refs/heads/master":"latest", "refs/heads/main":"next" }')[github.ref] }}
