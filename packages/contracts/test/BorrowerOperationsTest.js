@@ -2400,7 +2400,7 @@ contract('BorrowerOperations', async accounts => {
       assert.isTrue(totalStakesAfter.eq(totalStakesBefore.add(toBN(dec(1, 18)))))
     })
 
-    it("adjustTrove():  updates borrower's stake and totalStakes with a coll decrease", async () => {
+    it("adjustTrove(): updates borrower's stake and totalStakes with a coll decrease", async () => {
       await openTrove({ extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       await openTrove({ extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
@@ -4330,11 +4330,9 @@ contract('BorrowerOperations', async accounts => {
 contract('Reset chain state', async accounts => { })
 
 /* TODO:
-
  1) Test SortedList re-ordering by ICR. ICR ratio
  changes with addColl, withdrawColl, withdrawLUSD, repayLUSD, etc. Can split them up and put them with
  individual functions, or give ordering it's own 'describe' block.
-
  2)In security phase:
  -'Negative' tests for all the above functions.
  */
