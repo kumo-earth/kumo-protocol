@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
 import "./Interfaces/ILUSDToken.sol";
 import "./Dependencies/SafeMath.sol";
@@ -60,9 +60,9 @@ contract LUSDToken is CheckContract, ILUSDToken {
     address public immutable borrowerOperationsAddress;
     
     // --- Events ---
-    event TroveManagerAddressChanged(address _troveManagerAddress);
-    event StabilityPoolAddressChanged(address _newStabilityPoolAddress);
-    event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
+    // event TroveManagerAddressChanged(address _troveManagerAddress);
+    // event StabilityPoolAddressChanged(address _newStabilityPoolAddress);
+    // event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
 
     constructor
     ( 
@@ -181,7 +181,7 @@ contract LUSDToken is CheckContract, ILUSDToken {
         external 
         override 
     {            
-        require(deadline >= now, 'LUSD: expired deadline');
+        require(deadline >= block.timestamp, 'LUSD: expired deadline');
         bytes32 digest = keccak256(abi.encodePacked('\x19\x01', 
                          domainSeparator(), keccak256(abi.encode(
                          _PERMIT_TYPEHASH, owner, spender, amount, 
@@ -197,7 +197,7 @@ contract LUSDToken is CheckContract, ILUSDToken {
 
     // --- Internal operations ---
 
-    function _chainID() private pure returns (uint256 chainID) {
+    function _chainID() private view returns (uint256 chainID) {
         assembly {
             chainID := chainid()
         }
