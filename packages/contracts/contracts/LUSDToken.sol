@@ -70,6 +70,7 @@ contract LUSDToken is CheckContract, ILUSDToken {
         address _stabilityPoolAddress,
         address _borrowerOperationsAddress
     ) 
+        public 
     {  
         checkContract(_troveManagerAddress);
         checkContract(_stabilityPoolAddress);
@@ -202,8 +203,8 @@ contract LUSDToken is CheckContract, ILUSDToken {
         }
     }
     
-    function _buildDomainSeparator(bytes32 typeHash, bytes32 _name, bytes32 _version) private view returns (bytes32) {
-        return keccak256(abi.encode(typeHash, _name, _version, _chainID(), address(this)));
+    function _buildDomainSeparator(bytes32 typeHash, bytes32 name, bytes32 version) private view returns (bytes32) {
+        return keccak256(abi.encode(typeHash, name, version, _chainID(), address(this)));
     }
 
     // --- Internal operations ---
@@ -283,23 +284,23 @@ contract LUSDToken is CheckContract, ILUSDToken {
 
     // --- Optional functions ---
 
-    function name() external pure override returns (string memory) {
+    function name() external view override returns (string memory) {
         return _NAME;
     }
 
-    function symbol() external pure override returns (string memory) {
+    function symbol() external view override returns (string memory) {
         return _SYMBOL;
     }
 
-    function decimals() external pure override returns (uint8) {
+    function decimals() external view override returns (uint8) {
         return _DECIMALS;
     }
 
-    function version() external pure override returns (string memory) {
+    function version() external view override returns (string memory) {
         return _VERSION;
     }
 
-    function permitTypeHash() external pure override returns (bytes32) {
+    function permitTypeHash() external view override returns (bytes32) {
         return _PERMIT_TYPEHASH;
     }
 }

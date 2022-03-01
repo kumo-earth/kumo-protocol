@@ -38,12 +38,13 @@ contract LockupContract {
 
     // --- Functions ---
 
-    constructor
+    constructor 
     (
         address _lqtyTokenAddress, 
         address _beneficiary, 
         uint _unlockTime
-    ) 
+    )
+        public 
     {
         lqtyToken = ILQTYToken(_lqtyTokenAddress);
 

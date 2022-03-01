@@ -43,7 +43,7 @@ contract EchidnaTester {
 
     uint private numberOfTroves;
 
-    constructor() payable {
+    constructor() public payable {
         troveManager = new TroveManager();
         borrowerOperations = new BorrowerOperations();
         activePool = new ActivePool();

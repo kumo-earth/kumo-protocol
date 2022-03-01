@@ -9,7 +9,7 @@ import "../Interfaces/ILQTYStaking.sol";
 contract LQTYStakingScript is CheckContract {
     ILQTYStaking immutable LQTYStaking;
 
-    constructor (address _lqtyStakingAddress) {
+    constructor(address _lqtyStakingAddress) public {
         checkContract(_lqtyStakingAddress);
         LQTYStaking = ILQTYStaking(_lqtyStakingAddress);
     }

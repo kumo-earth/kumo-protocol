@@ -59,7 +59,7 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
 
     // --- Functions ---
 
-    constructor() {
+    constructor() public {
         deploymentTime = block.timestamp;
     }
 

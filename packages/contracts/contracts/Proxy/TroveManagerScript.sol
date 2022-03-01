@@ -11,7 +11,7 @@ contract TroveManagerScript is CheckContract {
 
     ITroveManager immutable troveManager;
 
-    constructor (ITroveManager _troveManager) {
+    constructor(ITroveManager _troveManager) public {
         checkContract(address(_troveManager));
         troveManager = _troveManager;
     }

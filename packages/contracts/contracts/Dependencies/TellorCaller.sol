@@ -20,7 +20,7 @@ contract TellorCaller is ITellorCaller {
 
     ITellor public tellor;
 
-    constructor (address _tellorMasterAddress)  {
+    constructor (address _tellorMasterAddress) public {
         tellor = ITellor(_tellorMasterAddress);
     }
 

@@ -28,13 +28,14 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
     IERC20 immutable lqtyToken;
     ILQTYStaking immutable lqtyStaking;
 
-    constructor (
+    constructor(
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
         address _lqtyStakingAddress
     )
         BorrowerOperationsScript(IBorrowerOperations(_borrowerOperationsAddress))
         LQTYStakingScript(_lqtyStakingAddress)
+        public
     {
         checkContract(_troveManagerAddress);
         ITroveManager troveManagerCached = ITroveManager(_troveManagerAddress);

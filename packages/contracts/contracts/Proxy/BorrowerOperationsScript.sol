@@ -9,7 +9,7 @@ import "../Interfaces/IBorrowerOperations.sol";
 contract BorrowerOperationsScript is CheckContract {
     IBorrowerOperations immutable borrowerOperations;
 
-    constructor (IBorrowerOperations _borrowerOperations) {
+    constructor(IBorrowerOperations _borrowerOperations) public {
         checkContract(address(_borrowerOperations));
         borrowerOperations = _borrowerOperations;
     }
