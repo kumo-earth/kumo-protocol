@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
 import "./Interfaces/IPriceFeed.sol";
 import "./Interfaces/ITellorCaller.sol";
@@ -79,7 +79,7 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     // The current status of the PricFeed, which determines the conditions for the next price fetch attempt
     Status public status;
 
-    event LastGoodPriceUpdated(uint _lastGoodPrice);
+    // event LastGoodPriceUpdated(uint _lastGoodPrice);
     event PriceFeedStatusChanged(Status newStatus);
 
     // --- Dependency setters ---

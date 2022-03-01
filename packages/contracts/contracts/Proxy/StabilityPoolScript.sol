@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
 import "../Dependencies/CheckContract.sol";
 import "../Interfaces/IStabilityPool.sol";
 
 
-contract StabilityPoolScript is CheckContract {
+abstract contract StabilityPoolScript is CheckContract {
     string constant public NAME = "StabilityPoolScript";
 
     IStabilityPool immutable stabilityPool;
 
-    constructor(IStabilityPool _stabilityPool) public {
+    constructor (IStabilityPool _stabilityPool) {
         checkContract(address(_stabilityPool));
         stabilityPool = _stabilityPool;
     }

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
 import "../Dependencies/CheckContract.sol";
 import "../Dependencies/SafeMath.sol";
@@ -37,8 +37,8 @@ contract LockupContractFactory is ILockupContractFactory, Ownable, CheckContract
 
     // --- Events ---
 
-    event LQTYTokenAddressSet(address _lqtyTokenAddress);
-    event LockupContractDeployedThroughFactory(address _lockupContractAddress, address _beneficiary, uint _unlockTime, address _deployer);
+    // event LQTYTokenAddressSet(address _lqtyTokenAddress);
+    // event LockupContractDeployedThroughFactory(address _lockupContractAddress, address _beneficiary, uint _unlockTime, address _deployer);
 
     // --- Functions ---
 

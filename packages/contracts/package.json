@@ -19,11 +19,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "decimal.js": "^10.2.0",
+    "decimal.js": "^10.3.1",
     "eth-mutants": "^0.1.1",
     "ethereumjs-util": "^7.0.9",
-    "ethers": "^5.4.3",
-    "solc": "^0.6.11",
+    "ethers": "^5.5.4",
+    "solc": "^0.8.11",
     "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
@@ -34,7 +34,7 @@
     "@openzeppelin/contracts": "^4.5.0",
     "@openzeppelin/test-helpers": "^0.5.13",
     "eth-gas-reporter": "^0.2.22",
-    "hardhat": "^2.6.1",
+    "hardhat": "^2.8.4",
     "hardhat-gas-reporter": "^1.0.8",
     "npm-run-all": "^4.1.5",
     "solidity-coverage": "^0.7.20",

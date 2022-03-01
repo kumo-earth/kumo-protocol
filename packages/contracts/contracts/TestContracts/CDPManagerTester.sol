@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
 import "../TroveManager.sol";
 
@@ -46,7 +46,7 @@ contract TroveManagerTester is TroveManager {
     }
 
     function callGetRedemptionFee(uint _ETHDrawn) external view returns (uint) {
-        _getRedemptionFee(_ETHDrawn);
+        return _getRedemptionFee(_ETHDrawn);
     }  
 
     function getActualDebtFromComposite(uint _debtVal) external pure returns (uint) {
