@@ -14,7 +14,6 @@ contract LQTYTokenTester is LQTYToken {
         address _lpRewardsAddress,
         address _multisigAddress
     ) 
-        public 
         LQTYToken 
     (
         _communityIssuanceAddress,

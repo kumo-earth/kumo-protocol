@@ -13,12 +13,12 @@ contract EchidnaProxy {
     StabilityPool stabilityPool;
     LUSDToken lusdToken;
 
-    constructor(
+    constructor (
         TroveManager _troveManager,
         BorrowerOperations _borrowerOperations,
         StabilityPool _stabilityPool,
         LUSDToken _lusdToken
-    ) public {
+    ) {
         troveManager = _troveManager;
         borrowerOperations = _borrowerOperations;
         stabilityPool = _stabilityPool;
