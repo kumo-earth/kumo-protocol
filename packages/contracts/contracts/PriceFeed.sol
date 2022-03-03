@@ -126,7 +126,7 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     * it uses the last good price seen by Liquity.
     *
     */
-    function fetchPrice() external override returns (uint) {
+    function fetchPrice() external override returns (uint latestprice_) {
         // Get current and previous price data from Chainlink, and current price data from Tellor
         ChainlinkResponse memory chainlinkResponse = _getCurrentChainlinkResponse();
         ChainlinkResponse memory prevChainlinkResponse = _getPrevChainlinkResponse(chainlinkResponse.roundId, chainlinkResponse.decimals);
@@ -139,7 +139,8 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
                 // If Tellor is broken then both oracles are untrusted, so return the last good price
                 if (_tellorIsBroken(tellorResponse)) {
                     _changeStatus(Status.bothOraclesUntrusted);
-                    return lastGoodPrice; 
+                    latestprice_ = lastGoodPrice;
+                    return latestprice_; 
                 }
                 /*
                 * If Tellor is only frozen but otherwise returning valid data, return the last good price.

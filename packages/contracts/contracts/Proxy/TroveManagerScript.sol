@@ -24,7 +24,7 @@ contract TroveManagerScript is CheckContract {
         uint _partialRedemptionHintNICR,
         uint _maxIterations,
         uint _maxFee
-    ) external returns (uint) {
+    ) external returns (uint collateral) {
          troveManager.redeemCollateral(
             _LUSDAmount,
             _firstRedemptionHint,
@@ -34,5 +34,6 @@ contract TroveManagerScript is CheckContract {
             _maxIterations,
             _maxFee
         );
+        return collateral;
     }
 }

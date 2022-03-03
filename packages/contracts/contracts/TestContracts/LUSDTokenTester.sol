@@ -40,8 +40,9 @@ contract LUSDTokenTester is LUSDToken {
         _transfer(_poolAddress, _receiver, _amount);
     }
 
-    function callInternalApprove(address owner, address spender, uint256 amount) external returns (bool) {
+    function callInternalApprove(address owner, address spender, uint256 amount) external returns (bool approve) {
         _approve(owner, spender, amount);
+        return approve;
     }
 
     function getChainId() external view returns (uint256 chainID) {
