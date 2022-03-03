@@ -15,6 +15,7 @@ import "./Dependencies/console.sol";
  * Stability Pool, the Default Pool, or both, depending on the liquidation conditions.
  *
  */
+ 
 contract ActivePool is Ownable, CheckContract, IActivePool {
     using SafeMath for uint256;
 
