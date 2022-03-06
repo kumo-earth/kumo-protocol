@@ -1313,19 +1313,27 @@ contract('BorrowerOperations', async accounts => {
 
     it("withdrawLUSD(): increases LUSD debt in ActivePool by correct amount", async () => {
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: alice, value: toBN(dec(100, 'ether')) } })
+      await openTrove({ asset: erc20.address, assetSent: toBN(dec(100, 'ether')), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const aliceDebtBefore = await getTroveEntireDebt(alice)
+      const aliceDebtBefore_Asset = await getTroveEntireDebt(alice, erc20.address)
       assert.isTrue(aliceDebtBefore.gt(toBN(0)))
+      assert.isTrue(aliceDebtBefore_Asset.gt(toBN(0)))
 
       // check before
-      const activePool_LUSD_Before = await activePool.getLUSDDebt()
+      const activePool_LUSD_Before = await activePool.getLUSDDebt(ZERO_ADDRESS)
+      const activePool_LUSD_Before_Asset = await activePool.getLUSDDebt(erc20.address)
       assert.isTrue(activePool_LUSD_Before.eq(aliceDebtBefore))
+      assert.isTrue(activePool_LUSD_Before_Asset.eq(aliceDebtBefore_Asset))
 
-      await borrowerOperations.withdrawLUSD(th._100pct, await getNetBorrowingAmount(dec(10000, 18)), alice, alice, { from: alice })
+      await borrowerOperations.withdrawLUSD(ZERO_ADDRESS, th._100pct, await getNetBorrowingAmount(dec(10000, 18), ZERO_ADDRESS), alice, alice, { from: alice })
+      await borrowerOperations.withdrawLUSD(erc20.address, th._100pct, await getNetBorrowingAmount(dec(10000, 18), erc20.address), alice, alice, { from: alice })
 
       // check after
-      const activePool_LUSD_After = await activePool.getLUSDDebt()
+      const activePool_LUSD_After = await activePool.getLUSDDebt(ZERO_ADDRESS)
+      const activePool_LUSD_After_Asset = await activePool.getLUSDDebt(erc20.address)
       th.assertIsApproximatelyEqual(activePool_LUSD_After, activePool_LUSD_Before.add(toBN(dec(10000, 18))))
+      th.assertIsApproximatelyEqual(activePool_LUSD_After_Asset, activePool_LUSD_Before_Asset.add(toBN(dec(10000, 18))))
     })
 
     it("withdrawLUSD(): increases user LUSDToken balance by correct amount", async () => {
