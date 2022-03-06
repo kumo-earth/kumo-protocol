@@ -47,6 +47,7 @@ contract('BorrowerOperations', async accounts => {
   let borrowerOperations
   let lqtyStaking
   let lqtyToken
+  let erc20
 
   let contracts
 
