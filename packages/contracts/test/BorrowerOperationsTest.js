@@ -2342,22 +2342,36 @@ contract('BorrowerOperations', async accounts => {
 
     it("adjustTrove(): updates borrower's debt and coll with an increase in both", async () => {
       await openTrove({ extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-
       await openTrove({ extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+
+      await openTrove({ asset: erc20.address, extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const debtBefore = await getTroveEntireDebt(alice)
       const collBefore = await getTroveEntireColl(alice)
       assert.isTrue(debtBefore.gt(toBN('0')))
       assert.isTrue(collBefore.gt(toBN('0')))
 
+      const debtBefore_Asset = await getTroveEntireDebt(alice, erc20.address)
+      const collBefore_Asset = await getTroveEntireColl(alice, erc20.address)
+      assert.isTrue(debtBefore_Asset.gt(toBN('0')))
+      assert.isTrue(collBefore_Asset.gt(toBN('0')))
+
       // Alice adjusts trove. Coll and debt increase(+1 ETH, +50LUSD)
-      await borrowerOperations.adjustTrove(th._100pct, 0, await getNetBorrowingAmount(dec(50, 18)), true, alice, alice, { from: alice, value: dec(1, 'ether') })
+      await borrowerOperations.adjustTrove(ZERO_ADDRESS, 0, th._100pct, 0, await getNetBorrowingAmount(dec(50, 18), ZERO_ADDRESS), true, alice, alice, { from: alice, value: dec(1, 'ether') })
+      await borrowerOperations.adjustTrove(erc20.address, dec(1, 'ether'), th._100pct, 0, await getNetBorrowingAmount(dec(50, 18), ZERO_ADDRESS), true, alice, alice, { from: alice })
 
       const debtAfter = await getTroveEntireDebt(alice)
       const collAfter = await getTroveEntireColl(alice)
 
+      const debtAfter_Asset = await getTroveEntireDebt(alice, erc20.address)
+      const collAfter_Asset = await getTroveEntireColl(alice, erc20.address)
+
       th.assertIsApproximatelyEqual(debtAfter, debtBefore.add(toBN(dec(50, 18))), 10000)
       th.assertIsApproximatelyEqual(collAfter, collBefore.add(toBN(dec(1, 18))), 10000)
+
+      th.assertIsApproximatelyEqual(debtAfter_Asset, debtBefore_Asset.add(toBN(dec(50, 18))), 10000)
+      th.assertIsApproximatelyEqual(collAfter_Asset, collBefore_Asset.add(toBN(dec(1, 18))), 10000)
     })
 
     it("adjustTrove(): updates borrower's debt and coll with a decrease in both", async () => {
@@ -2401,23 +2415,36 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): updates borrower's debt and coll with coll decrease, debt increase", async () => {
-      await openTrove({ extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-
+      aawait openTrove({ extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await openTrove({ extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+
+      await openTrove({ asset: erc20.address, extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const debtBefore = await getTroveEntireDebt(alice)
       const collBefore = await getTroveEntireColl(alice)
       assert.isTrue(debtBefore.gt(toBN('0')))
       assert.isTrue(collBefore.gt(toBN('0')))
 
+      const debtBefore_Asset = await getTroveEntireDebt(alice, erc20.address)
+      const collBefore_Asset = await getTroveEntireColl(alice, erc20.address)
+      assert.isTrue(debtBefore_Asset.gt(toBN('0')))
+      assert.isTrue(collBefore_Asset.gt(toBN('0')))
+
       // Alice adjusts trove - coll decrease and debt increase (0.1 ETH, 10LUSD)
-      await borrowerOperations.adjustTrove(th._100pct, dec(1, 17), await getNetBorrowingAmount(dec(1, 18)), true, alice, alice, { from: alice })
+      await borrowerOperations.adjustTrove(ZERO_ADDRESS, 0, th._100pct, dec(1, 17), await getNetBorrowingAmount(dec(1, 18), ZERO_ADDRESS), true, alice, alice, { from: alice })
+      await borrowerOperations.adjustTrove(erc20.address, 0, th._100pct, dec(1, 17), await getNetBorrowingAmount(dec(1, 18), ZERO_ADDRESS), true, alice, alice, { from: alice })
 
       const debtAfter = await getTroveEntireDebt(alice)
       const collAfter = await getTroveEntireColl(alice)
 
+      const debtAfter_Asset = await getTroveEntireDebt(alice)
+      const collAfter_Asset = await getTroveEntireColl(alice)
+
       th.assertIsApproximatelyEqual(debtAfter, debtBefore.add(toBN(dec(1, 18))), 10000)
       th.assertIsApproximatelyEqual(collAfter, collBefore.sub(toBN(dec(1, 17))), 10000)
+      th.assertIsApproximatelyEqual(debtAfter_Asset, debtBefore_Asset.add(toBN(dec(1, 18))), 10000)
+      th.assertIsApproximatelyEqual(collAfter_Asset, collBefore_Asset.sub(toBN(dec(1, 17))), 10000)
     })
 
     it("adjustTrove(): updates borrower's stake and totalStakes with a coll increase", async () => {
@@ -2545,19 +2572,27 @@ contract('BorrowerOperations', async accounts => {
       assert.isTrue(activePool_LUSDDebt_After.eq(activePool_LUSDDebt_Before.sub(toBN(dec(30, 18)))))
     })
 
-    it("adjustTrove(): Changes the LUSD debt in ActivePool by requested increase", async () => {
-      await openTrove({ extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+    it("adjustTrove(): Changes the LUSD debt in ActivePool by requested increase", async () => {      await openTrove({ extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      const activePool_LUSDDebt_Before = await activePool.getLUSDDebt()
-      assert.isTrue(activePool_LUSDDebt_Before.gt(toBN('0')))
+    await openTrove({ asset: erc20.address, extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: erc20.address, extraLUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      // Alice adjusts trove - coll increase and debt increase
-      await borrowerOperations.adjustTrove(th._100pct, 0, await getNetBorrowingAmount(dec(100, 18)), true, alice, alice, { from: alice, value: dec(1, 'ether') })
+    const activePooL_LUSDDebt_Before = await activePool.getLUSDDebt(ZERO_ADDRESS)
+    assert.isTrue(activePooL_LUSDDebt_Before.gt(toBN('0')))
 
-      const activePool_LUSDDebt_After = await activePool.getLUSDDebt()
-    
-      th.assertIsApproximatelyEqual(activePool_LUSDDebt_After, activePool_LUSDDebt_Before.add(toBN(dec(100, 18))))
+    const activePooL_LUSDDebt_Before_Asset = await activePool.getLUSDDebt(erc20.address)
+    assert.isTrue(activePooL_LUSDDebt_Before_Asset.gt(toBN('0')))
+
+    // Alice adjusts trove - coll increase and debt increase
+    await borrowerOperations.adjustTrove(ZERO_ADDRESS, 0, th._100pct, 0, await getNetBorrowingAmount(dec(100, 18), ZERO_ADDRESS), true, alice, alice, { from: alice, value: dec(1, 'ether') })
+    await borrowerOperations.adjustTrove(erc20.address, dec(1, 'ether'), th._100pct, 0, await getNetBorrowingAmount(dec(100, 18), ZERO_ADDRESS), true, alice, alice, { from: alice })
+
+    const activePooL_LUSDDebt_After = await activePool.getLUSDDebt(ZERO_ADDRESS)
+    th.assertIsApproximatelyEqual(activePooL_LUSDDebt_After, activePooL_LUSDDebt_Before.add(toBN(dec(100, 18))))
+
+    const activePooL_LUSDDebt_After_Asset = await activePool.getLUSDDebt(erc20.address)
+    th.assertIsApproximatelyEqual(activePooL_LUSDDebt_After_Asset, activePooL_LUSDDebt_Before_Asset.add(toBN(dec(100, 18))))
     })
 
     it("adjustTrove(): new coll = 0 and new debt = 0 is not allowed, as gas compensation still counts toward ICR", async () => {
