@@ -1770,42 +1770,57 @@ contract('BorrowerOperations', async accounts => {
     })
 
     if (!withProxy) { // TODO: use rawLogs instead of logs
-      it("adjustTrove(): borrowing at non-zero base records the (drawn debt + fee) on the Trove struct", async () => {
-        // time fast-forwards 1 year, and multisig stakes 1 LQTY
+        // time fast-forwards 1 year, and multisig stakes 1 LUSDA
         await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-        await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-        await lqtyStaking.stake(dec(1, 18), { from: multisig })
+        await vstaToken.approve(vstaStaking.address, dec(1, 18), { from: multisig })
+        await vstaStaking.stake(dec(1, 18), { from: multisig })
 
         await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
         await openTrove({ extraLUSDAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
         await openTrove({ extraLUSDAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
         await openTrove({ extraLUSDAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
         await openTrove({ extraLUSDAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-        const D_debtBefore = await getTroveEntireDebt(D)
+
+        await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+        await openTrove({ asset: erc20.address, extraLUSDAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+        await openTrove({ asset: erc20.address, extraLUSDAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+        await openTrove({ asset: erc20.address, extraLUSDAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+        await openTrove({ asset: erc20.address, extraLUSDAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+
+        const D_debtBefore = await getTroveEntireDebt(D, ZERO_ADDRESS)
+        const D_debtBefore_Asset = await getTroveEntireDebt(D, erc20.address)
 
         // Artificially make baseRate 5%
-        await troveManager.setBaseRate(dec(5, 16))
-        await troveManager.setLastFeeOpTimeToNow()
+        await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
+        await troveManager.setLastFeeOpTimeToNow(ZERO_ADDRESS)
+        await troveManager.setBaseRate(erc20.address, dec(5, 16))
+        await troveManager.setLastFeeOpTimeToNow(erc20.address)
 
         // Check baseRate is now non-zero
-        const baseRate_1 = await troveManager.baseRate()
+        const baseRate_1 = await troveManager.baseRate(ZERO_ADDRESS)
+        const baseRate_1_Asset = await troveManager.baseRate(erc20.address)
         assert.isTrue(baseRate_1.gt(toBN('0')))
+        assert.isTrue(baseRate_1_Asset.gt(toBN('0')))
 
         // 2 hours pass
         th.fastForwardTime(7200, web3.currentProvider)
 
-        const withdrawal_D = toBN(dec(37, 18))
-
         // D withdraws LUSD
-        const adjustmentTx = await borrowerOperations.adjustTrove(th._100pct, 0, withdrawal_D, true, D, D, { from: D })
+        const withdrawal_D = toBN(dec(37, 18))
+        const withdrawalTx = await borrowerOperations.withdrawLUSD(ZERO_ADDRESS, th._100pct, toBN(dec(37, 18)), D, D, { from: D })
+        const withdrawalTx_Asset = await borrowerOperations.withdrawLUSD(erc20.address, th._100pct, toBN(dec(37, 18)), D, D, { from: D })
 
-        const emittedFee = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(adjustmentTx))
+        const emittedFee = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(withdrawalTx))
+        const emittedFee_Asset = toBN(th.getLUSDFeeFromLUSDBorrowingEvent(withdrawalTx_Asset))
         assert.isTrue(emittedFee.gt(toBN('0')))
+        assert.isTrue(emittedFee_Asset.gt(toBN('0')))
 
-        const D_newDebt = (await troveManager.Troves(D))[0]
-    
-        // Check debt on Trove struct equals initila debt plus drawn debt plus emitted fee
-        assert.isTrue(D_newDebt.eq(D_debtBefore.add(withdrawal_D).add(emittedFee)))
+        const newDebt = (await troveManager.Troves(D, ZERO_ADDRESS))[th.TROVE_DEBT_INDEX]
+        const newDebt_Asset = (await troveManager.Troves(D, erc20.address))[th.TROVE_DEBT_INDEX]
+
+        // Check debt on Trove struct equals initial debt + withdrawal + emitted fee
+        th.assertIsApproximatelyEqual(newDebt, D_debtBefore.add(withdrawal_D).add(emittedFee), 10000)
+        th.assertIsApproximatelyEqual(newDebt_Asset, D_debtBefore_Asset.add(withdrawal_D).add(emittedFee_Asset), 10000)
       })
     }
 
