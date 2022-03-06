@@ -1770,6 +1770,7 @@ contract('BorrowerOperations', async accounts => {
     })
 
     if (!withProxy) { // TODO: use rawLogs instead of logs
+      it("adjustTrove(): borrowing at non-zero base records the (drawn debt + fee) on the Trove struct", async () => {
         // time fast-forwards 1 year, and multisig stakes 1 LUSDA
         await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
         await vstaToken.approve(vstaStaking.address, dec(1, 18), { from: multisig })
