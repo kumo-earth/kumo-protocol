@@ -104,9 +104,29 @@ contract('BorrowerOperations', async accounts => {
       communityIssuance = LQTYContracts.communityIssuance
       lockupContractFactory = LQTYContracts.lockupContractFactory
 
-      LUSD_GAS_COMPENSATION = await borrowerOperations.LUSD_GAS_COMPENSATION()
-      MIN_NET_DEBT = await borrowerOperations.MIN_NET_DEBT()
-      BORROWING_FEE_FLOOR = await borrowerOperations.BORROWING_FEE_FLOOR()
+      //LUSD_GAS_COMPENSATION = await borrowerOperations.LUSD_GAS_COMPENSATION()
+      //MIN_NET_DEBT = await borrowerOperations.MIN_NET_DEBT()
+      //BORROWING_FEE_FLOOR = await borrowerOperations.BORROWING_FEE_FLOOR()
+
+      LUSD_GAS_COMPENSATION = await kumoParams.VST_GAS_COMPENSATION(ZERO_ADDRESS)
+      MIN_NET_DEBT = await kumoParams.MIN_NET_DEBT(ZERO_ADDRESS)
+      BORROWING_FEE_FLOOR = await kumoParams.BORROWING_FEE_FLOOR(ZERO_ADDRESS)
+
+      VST_GAS_COMPENSATION_ERC20 = await kumoParams.VST_GAS_COMPENSATION(erc20.address)
+      MIN_NET_DEBT_ERC20 = await kumoParams.MIN_NET_DEBT(erc20.address)
+      BORROWING_FEE_FLOOR_ERC20 = await kumoParams.BORROWING_FEE_FLOOR(erc20.address)
+
+      // await lqtyToken.unprotectedMint(multisig, dec(5, 24))
+
+      // let index = 0;
+      // for (const acc of accounts) {
+      //   await vstaToken.approve(vstaStaking.address, await web3.eth.getBalance(acc), { from: acc })
+      //   await erc20.mint(acc, await web3.eth.getBalance(acc))
+      //   index++;
+
+      //   if (index >= 20)
+      //     break;
+      // }
     })
 
     it("addColl(): reverts when top-up would leave trove with ICR < MCR", async () => {
