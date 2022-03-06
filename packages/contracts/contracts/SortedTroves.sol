@@ -48,6 +48,8 @@ import "./Dependencies/console.sol";
 contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
     using SafeMath for uint256;
 
+	bool public isInitialized;
+
     string constant public NAME = "SortedTroves";
 
     event TroveManagerAddressChanged(address _troveManagerAddress);
@@ -80,10 +82,14 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 
     // --- Dependency setters ---
 
-    function setParams(uint256 _size, address _troveManagerAddress, address _borrowerOperationsAddress) external override onlyOwner {
+    function setParams(uint256 _size, address _troveManagerAddress, address _borrowerOperationsAddress) external override initializer {
         require(_size > 0, "SortedTroves: Size can't be zero");
-        checkContract(_troveManagerAddress);
-        checkContract(_borrowerOperationsAddress);
+		require(!isInitialized, "Already initialized");
+		checkContract(_troveManagerAddress);
+		checkContract(_borrowerOperationsAddress);
+		isInitialized = true;
+
+		__Ownable_init();
 
         data.maxSize = _size;
 

@@ -14,6 +14,7 @@ import "./Dependencies/console.sol";
 contract CollSurplusPool is OwnableUpgradeable, CheckContract, ICollSurplusPool {
     using SafeMath for uint256;
 
+    bool public isInitialized;
     string constant public NAME = "CollSurplusPool";
 
     address public borrowerOperationsAddress;
@@ -43,11 +44,15 @@ contract CollSurplusPool is OwnableUpgradeable, CheckContract, ICollSurplusPool 
     )
         external
         override
-        onlyOwner
+        initializer
     {
-        checkContract(_borrowerOperationsAddress);
-        checkContract(_troveManagerAddress);
-        checkContract(_activePoolAddress);
+		require(!isInitialized, "Already initialized");
+		checkContract(_borrowerOperationsAddress);
+		checkContract(_troveManagerAddress);
+		checkContract(_activePoolAddress);
+		isInitialized = true;
+
+		__Ownable_init();
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;

@@ -46,7 +46,7 @@ contract ActivePool is OwnableUpgradeable, CheckContract, IActivePool {
         address _defaultPoolAddress
     )
         external
-        onlyOwner
+        initializer
     {
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);

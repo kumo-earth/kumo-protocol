@@ -19,7 +19,8 @@ import "./Dependencies/console.sol";
  */
 contract DefaultPool is OwnableUpgradeable, CheckContract, IDefaultPool {
     using SafeMath for uint256;
-
+	bool public isInitialized;
+    
     string constant public NAME = "DefaultPool";
 
     address public troveManagerAddress;
@@ -38,10 +39,14 @@ contract DefaultPool is OwnableUpgradeable, CheckContract, IDefaultPool {
         address _activePoolAddress
     )
         external
-        onlyOwner
-    {
-        checkContract(_troveManagerAddress);
-        checkContract(_activePoolAddress);
+		initializer
+	{
+		require(!isInitialized, "Already initialized");
+		checkContract(_troveManagerAddress);
+		checkContract(_activePoolAddress);
+		isInitialized = true;
+
+		__Ownable_init();
 
         troveManagerAddress = _troveManagerAddress;
         activePoolAddress = _activePoolAddress;

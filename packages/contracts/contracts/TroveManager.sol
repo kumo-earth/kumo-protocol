@@ -18,6 +18,8 @@ import "./Dependencies/SafeMath.sol";
 contract TroveManager is LiquityBase, CheckContract, ITroveManager {
     using SafeMath for uint256;
     
+	bool public isInitialized;
+
     string constant public NAME = "TroveManager";
 
     // --- Connected contract declarations ---
@@ -249,8 +251,9 @@ contract TroveManager is LiquityBase, CheckContract, ITroveManager {
     )
         external
         override
-        onlyOwner
+        initializer
     {
+        require(!isInitialized, "Already initialized");
         checkContract(_borrowerOperationsAddress);
         checkContract(_activePoolAddress);
         checkContract(_defaultPoolAddress);
@@ -262,6 +265,8 @@ contract TroveManager is LiquityBase, CheckContract, ITroveManager {
         checkContract(_sortedTrovesAddress);
         checkContract(_lqtyTokenAddress);
         checkContract(_lqtyStakingAddress);
+        isInitialized = true;
+		__Ownable_init();
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         activePool = IActivePool(_activePoolAddress);

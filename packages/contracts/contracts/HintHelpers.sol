@@ -13,6 +13,7 @@ contract HintHelpers is LiquityBase, CheckContract {
     using SafeMath for uint256;
     string constant public NAME = "HintHelpers";
 
+	bool public isInitialized;
     ISortedTroves public sortedTroves;
     ITroveManager public troveManager;
 
@@ -28,10 +29,15 @@ contract HintHelpers is LiquityBase, CheckContract {
         address _troveManagerAddress
     )
         external
-        onlyOwner
-    {
-        checkContract(_sortedTrovesAddress);
-        checkContract(_troveManagerAddress);
+        initializer 
+        {
+		require(!isInitialized, "Already initialized");
+		checkContract(_sortedTrovesAddress);
+		checkContract(_troveManagerAddress);
+		// checkContract(_vaultParametersAddress);
+		isInitialized = true;
+
+		__Ownable_init();
 
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         troveManager = ITroveManager(_troveManagerAddress);

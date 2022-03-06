@@ -17,6 +17,7 @@ import "../Interfaces/ILUSDToken.sol";
 contract LQTYStaking is ILQTYStaking, OwnableUpgradeable, CheckContract, BaseMath {
     using SafeMath for uint;
 
+    bool public isInitialized;
     // --- Data ---
     string constant public NAME = "LQTYStaking";
 
@@ -68,14 +69,18 @@ contract LQTYStaking is ILQTYStaking, OwnableUpgradeable, CheckContract, BaseMat
         address _activePoolAddress
     ) 
         external 
-        onlyOwner 
+        initializer
         override 
     {
+        require(!isInitialized, "Already Initialized");
         checkContract(_lqtyTokenAddress);
         checkContract(_lusdTokenAddress);
         checkContract(_troveManagerAddress);
         checkContract(_borrowerOperationsAddress);
         checkContract(_activePoolAddress);
+        isInitialized = true;
+
+        __Ownable_init();
 
         lqtyToken = ILQTYToken(_lqtyTokenAddress);
         lusdToken = ILUSDToken(_lusdTokenAddress);

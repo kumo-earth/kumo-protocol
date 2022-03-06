@@ -25,6 +25,8 @@ import "./Dependencies/console.sol";
 contract PriceFeed is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
     using SafeMath for uint256;
 
+	bool public isInitialized;
+
     string constant public NAME = "PriceFeed";
 
     AggregatorV3Interface public priceAggregator;  // Mainnet Chainlink aggregator
@@ -91,10 +93,13 @@ contract PriceFeed is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
         address _tellorCallerAddress
     )
         external
-        onlyOwner
-    {
+        initializer {
+		require(!isInitialized);
         checkContract(_priceAggregatorAddress);
         checkContract(_tellorCallerAddress);
+		isInitialized = true;
+
+		__Ownable_init();
        
         priceAggregator = AggregatorV3Interface(_priceAggregatorAddress);
         tellorCaller = ITellorCaller(_tellorCallerAddress);

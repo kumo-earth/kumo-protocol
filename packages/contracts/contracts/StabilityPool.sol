@@ -149,6 +149,8 @@ contract StabilityPool is LiquityBase, CheckContract, IStabilityPool {
     using LiquitySafeMath128 for uint128;
     using SafeMath for uint256;
 
+    bool public isInitialized;
+
     string constant public NAME = "StabilityPool";
 
     IBorrowerOperations public borrowerOperations;
@@ -281,8 +283,9 @@ contract StabilityPool is LiquityBase, CheckContract, IStabilityPool {
     )
         external
         override
-        onlyOwner
+        initializer
     {
+        require(!isInitialized, "Already initialized");
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
         checkContract(_activePoolAddress);
@@ -290,6 +293,9 @@ contract StabilityPool is LiquityBase, CheckContract, IStabilityPool {
         checkContract(_sortedTrovesAddress);
         checkContract(_priceFeedAddress);
         checkContract(_communityIssuanceAddress);
+
+		isInitialized = true;
+		__Ownable_init();
 
         borrowerOperations = IBorrowerOperations(_borrowerOperationsAddress);
         troveManager = ITroveManager(_troveManagerAddress);

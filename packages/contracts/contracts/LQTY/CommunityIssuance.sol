@@ -16,6 +16,7 @@ import "../Dependencies/SafeMath.sol";
 contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContract, BaseMath {
     using SafeMath for uint;
 
+    bool public isInitialized;
     // --- Data ---
 
     string constant public NAME = "CommunityIssuance";
@@ -71,11 +72,15 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
         address _stabilityPoolAddress
     ) 
         external 
-        onlyOwner 
+        initializer
         override 
     {
+        require(!isInitialized, "Already initialized");
         checkContract(_lqtyTokenAddress);
         checkContract(_stabilityPoolAddress);
+        
+		isInitialized = true;
+		__Ownable_init();
 
         lqtyToken = ILQTYToken(_lqtyTokenAddress);
         stabilityPoolAddress = _stabilityPoolAddress;

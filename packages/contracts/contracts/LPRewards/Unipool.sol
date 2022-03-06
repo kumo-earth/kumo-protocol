@@ -76,6 +76,7 @@ contract LPTokenWrapper is ILPTokenWrapper {
 contract Unipool is LPTokenWrapper, OwnableUpgradeable, CheckContract, IUnipool {
     using SafeMath for uint256;
     string constant public NAME = "Unipool";
+    bool public isInitialized;
 
     uint256 public duration;
     ILQTYToken public lqtyToken;
@@ -102,11 +103,15 @@ contract Unipool is LPTokenWrapper, OwnableUpgradeable, CheckContract, IUnipool 
     )
         external
         override
-        onlyOwner
+        initializer
     {
+        require(!isInitialized, "Already initialized");
         checkContract(_lqtyTokenAddress);
         checkContract(_uniTokenAddress);
+		isInitialized = true;
 
+		__Ownable_init();
+        
         uniToken = IERC20(_uniTokenAddress);
         lqtyToken = ILQTYToken(_lqtyTokenAddress);
         duration = _duration;

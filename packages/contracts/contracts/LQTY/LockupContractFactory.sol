@@ -28,6 +28,7 @@ import "../Dependencies/console.sol";
 contract LockupContractFactory is ILockupContractFactory, OwnableUpgradeable, CheckContract {
     using SafeMath for uint;
 
+	bool public isInitialized;
     // --- Data ---
     string constant public NAME = "LockupContractFactory";
 
@@ -44,8 +45,12 @@ contract LockupContractFactory is ILockupContractFactory, OwnableUpgradeable, Ch
 
     // --- Functions ---
 
-    function setLQTYTokenAddress(address _lqtyTokenAddress) external override onlyOwner {
+    function setLQTYTokenAddress(address _lqtyTokenAddress) external override initializer {
+        require(!isInitialized, "Already initialized");
         checkContract(_lqtyTokenAddress);
+		isInitialized = true;
+
+		__Ownable_init();
 
         lqtyTokenAddress = _lqtyTokenAddress;
         emit LQTYTokenAddressSet(_lqtyTokenAddress);
