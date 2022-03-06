@@ -9,7 +9,7 @@ import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafeMath.sol";
 
-contract HintHelpers is LiquityBase, Ownable, CheckContract {
+contract HintHelpers is LiquityBase, CheckContract {
     using SafeMath for uint256;
     string constant public NAME = "HintHelpers";
 
@@ -39,7 +39,7 @@ contract HintHelpers is LiquityBase, Ownable, CheckContract {
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
 
-        _renounceOwnership();
+        renounceOwnership();
     }
 
     // --- Functions ---

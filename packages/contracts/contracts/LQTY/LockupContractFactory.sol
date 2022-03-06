@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.11;
 
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+
 import "../Dependencies/CheckContract.sol";
 import "../Dependencies/SafeMath.sol";
 import "../Dependencies/Ownable.sol";
@@ -23,7 +25,7 @@ import "../Dependencies/console.sol";
 * LockupContract.
 */
 
-contract LockupContractFactory is ILockupContractFactory, Ownable, CheckContract {
+contract LockupContractFactory is ILockupContractFactory, OwnableUpgradeable, CheckContract {
     using SafeMath for uint;
 
     // --- Data ---
@@ -48,7 +50,7 @@ contract LockupContractFactory is ILockupContractFactory, Ownable, CheckContract
         lqtyTokenAddress = _lqtyTokenAddress;
         emit LQTYTokenAddressSet(_lqtyTokenAddress);
 
-        _renounceOwnership();
+        renounceOwnership();
     }
 
     function deployLockupContract(address _beneficiary, uint _unlockTime) external override {

@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.11;
 
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+
 import "./BaseMath.sol";
 import "./LiquityMath.sol";
 import "../Interfaces/IActivePool.sol";
@@ -13,8 +15,15 @@ import "../Interfaces/ILiquityBase.sol";
 * Base contract for TroveManager, BorrowerOperations and StabilityPool. Contains global system constants and
 * common functions. 
 */
-contract LiquityBase is BaseMath, ILiquityBase {
+contract LiquityBase is BaseMath, ILiquityBase, OwnableUpgradeable {
     using SafeMath for uint;
+
+    IKumoParameters public override kumoParams;
+
+	function setKumoParameters(address _vaultParams) public onlyOwner {
+		kumoParams = IKumoParameters(_vaultParams);
+		emit VaultParametersBaseChanged(_vaultParams);
+	}
 
     uint constant public _100pct = 1000000000000000000; // 1e18 == 100%
 

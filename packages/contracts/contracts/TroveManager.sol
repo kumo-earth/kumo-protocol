@@ -15,7 +15,7 @@ import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 import "./Dependencies/SafeMath.sol";
 
-contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
+contract TroveManager is LiquityBase, CheckContract, ITroveManager {
     using SafeMath for uint256;
     
     string constant public NAME = "TroveManager";
@@ -287,7 +287,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         emit LQTYTokenAddressChanged(_lqtyTokenAddress);
         emit LQTYStakingAddressChanged(_lqtyStakingAddress);
 
-        _renounceOwnership();
+        renounceOwnership();
     }
 
     // --- Getters ---

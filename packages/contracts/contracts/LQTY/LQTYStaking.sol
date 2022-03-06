@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.11;
 
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+
 import "../Dependencies/BaseMath.sol";
 import "../Dependencies/SafeMath.sol";
 import "../Dependencies/Ownable.sol";
@@ -12,7 +14,7 @@ import "../Interfaces/ILQTYStaking.sol";
 import "../Dependencies/LiquityMath.sol";
 import "../Interfaces/ILUSDToken.sol";
 
-contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
+contract LQTYStaking is ILQTYStaking, OwnableUpgradeable, CheckContract, BaseMath {
     using SafeMath for uint;
 
     // --- Data ---
@@ -87,7 +89,7 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
         emit BorrowerOperationsAddressSet(_borrowerOperationsAddress);
         emit ActivePoolAddressSet(_activePoolAddress);
 
-        _renounceOwnership();
+        renounceOwnership();
     }
 
     // If caller has a pre-existing stake, send any accumulated ETH and LUSD gains to them. 

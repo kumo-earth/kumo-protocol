@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.11;
 
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+
 import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/IBorrowerOperations.sol";
@@ -43,7 +45,7 @@ import "./Dependencies/console.sol";
 *
 * - Public functions with parameters have been made internal to save gas, and given an external wrapper function for external access
 */
-contract SortedTroves is Ownable, CheckContract, ISortedTroves {
+contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
     using SafeMath for uint256;
 
     string constant public NAME = "SortedTroves";
@@ -91,7 +93,7 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
 
-        _renounceOwnership();
+        renounceOwnership();
     }
 
     /*

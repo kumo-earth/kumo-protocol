@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.11;
 
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+
 import "../Dependencies/LiquityMath.sol";
 import "../Dependencies/SafeMath.sol";
 import "../Dependencies/Ownable.sol";
@@ -71,7 +73,7 @@ contract LPTokenWrapper is ILPTokenWrapper {
  * either LQTY token contract is deployed, and therefore LQTY tokens are minted to Unipool contract,
  * or first liquidity provider stakes UNIv2 LP tokens into it.
  */
-contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
+contract Unipool is LPTokenWrapper, OwnableUpgradeable, CheckContract, IUnipool {
     using SafeMath for uint256;
     string constant public NAME = "Unipool";
 
@@ -114,7 +116,7 @@ contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
         emit LQTYTokenAddressChanged(_lqtyTokenAddress);
         emit UniTokenAddressChanged(_uniTokenAddress);
 
-        _renounceOwnership();
+        renounceOwnership();
     }
 
     // Returns current timestamp if the rewards program has not finished yet, end time otherwise
