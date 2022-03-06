@@ -96,8 +96,8 @@ contract('BorrowerOperations', async accounts => {
       kumoParams = contracts.kumoParameters
 
       erc20 = contracts.erc20;
-      await kumoParams.sanitizeParameters(ZERO_ADDRESS);
-      await kumoParams.sanitizeParameters(erc20.address);
+      // await kumoParams.sanitizeParameters(ZERO_ADDRESS);
+      // await kumoParams.sanitizeParameters(erc20.address);
 
       lqtyStaking = LQTYContracts.lqtyStaking
       lqtyToken = LQTYContracts.lqtyToken
