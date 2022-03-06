@@ -753,7 +753,6 @@ contract('BorrowerOperations', async accounts => {
         th.assertIsApproximatelyEqual(newDebt, D_debtBefore.add(withdrawal_D).add(emittedFee), 10000)
         th.assertIsApproximatelyEqual(newDebt_Asset, D_debtBefore_Asset.add(withdrawal_D).add(emittedFee_Asset), 10000)
       })
-    }
 
     it("withdrawLUSD(): Borrowing at non-zero base rate increases the LQTY staking contract LUSD fees-per-unit-staked", async () => {
     const alice_rewardSnapshot_After = await troveManager.rewardSnapshots(alice)
