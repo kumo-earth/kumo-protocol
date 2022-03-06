@@ -1150,14 +1150,13 @@ class TestHelper {
   // --- Assert functions ---
 
   static async assertRevert(txPromise, message = undefined) {
-    await expectRevert.unspecified(txPromise);
-    // try {
-    //   const tx = await txPromise
-    //   // console.log("tx succeeded")
-    //   assert.isFalse(tx.receipt.status) // when this assert fails, the expected revert didn't occur, i.e. the tx succeeded
-    // } catch (err) {
-    //   // console.log("tx failed")
-    //   assert.include(err.message, "revert")
+    try {
+      const tx = await txPromise
+      // console.log("tx succeeded")
+      assert.isFalse(tx.receipt.status) // when this assert fails, the expected revert didn't occur, i.e. the tx succeeded
+    } catch (err) {
+      // console.log("tx failed")
+      assert.include(err.message, "revert")
       // TODO !!!
       
       // if (message) {
