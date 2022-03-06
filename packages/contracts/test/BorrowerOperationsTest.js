@@ -671,11 +671,11 @@ contract('BorrowerOperations', async accounts => {
 
       /* After top up, both Alice and Bob's snapshots of the rewards-per-unit-staked metrics should be updated
        to the latest values of L_ETH and L_LUSDDebt */
-      const alice_rewardSnapshot_After = await troveManager.rewardSnapshots(alice)
-      const alice_ETHrewardSnapshot_After = alice_rewardSnapshot_After[0]
-      const alice_LUSDDebtRewardSnapshot_After = alice_rewardSnapshot_After[1]
+       alice_rewardSnapshot_After = await troveManager.rewardSnapshots(alice)
+      alice_ETHrewardSnapshot_After = alice_rewardSnapshot_After[0]
+      alice_LUSDDebtRewardSnapshot_After = alice_rewardSnapshot_After[1]
 
-      const bob_rewardSnapshot_After = await troveManager.rewardSnapshots(bob)
+       bob_rewardSnapshot_After = await troveManager.rewardSnapshots(bob)
       const alice_rewardSnapshot_After = await troveManager.rewardSnapshots(alice)
       const alice_ETHrewardSnapshot_After = alice_rewardSnapshot_After[0]
       const alice_LUSDDebtRewardSnapshot_After = alice_rewardSnapshot_After[1]
@@ -716,7 +716,7 @@ contract('BorrowerOperations', async accounts => {
       await openTrove({ extraLUSDAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
       await openTrove({ extraLUSDAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-      await assertRevert(borrowerOperations.withdrawLUSD(dec(2, 18), dec(1, 18), A, A, { from: A }), "Max fee percent
+      await assertRevert(borrowerOperations.withdrawLUSD(dec(2, 18), dec(1, 18), A, A, { from: A }), "Max fee percentage must be between 0.5% and 100%")
       const alice_rewardSnapshot_After = await troveManager.rewardSnapshots(alice)
       const alice_ETHrewardSnapshot_After = alice_rewardSnapshot_After[0]
       const alice_LUSDDebtRewardSnapshot_After = alice_rewardSnapshot_After[1]
@@ -755,7 +755,7 @@ contract('BorrowerOperations', async accounts => {
       })
     }
 
-    it("withdrawLUSD(): Borrowing at non-zero base rate increases the LQTY staking contract LUSD fees-per-un
+    it("withdrawLUSD(): Borrowing at non-zero base rate increases the LQTY staking contract LUSD fees-per-unit-staked", async () => {
     const alice_rewardSnapshot_After = await troveManager.rewardSnapshots(alice)
     const alice_ETHrewardSnapshot_After = alice_rewardSnapshot_After[0]
     const alice_LUSDDebtRewardSnapshot_After = alice_rewardSnapshot_After[1]
