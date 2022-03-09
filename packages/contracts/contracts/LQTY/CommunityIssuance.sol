@@ -72,8 +72,8 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
         address _stabilityPoolAddress
     ) 
         external 
-        initializer
         override 
+        initializer
     {
         require(!isInitialized, "Already initialized");
         checkContract(_lqtyTokenAddress);
