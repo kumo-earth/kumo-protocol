@@ -22,7 +22,7 @@ contract KumoParameters is IKumoParameters, OwnableUpgradeable, CheckContract {
 	uint256 public constant BORROWING_FEE_FLOOR_DEFAULT = (DECIMAL_PRECISION / 1000) * 5; // 0.5%
 	uint256 public constant MAX_BORROWING_FEE_DEFAULT = (DECIMAL_PRECISION / 100) * 5; // 5%
 
-	uint256 public constant VST_GAS_COMPENSATION_DEFAULT = 30 ether;
+	uint256 public constant KUMO_GAS_COMPENSATION_DEFAULT = 30 ether;
 	uint256 public constant MIN_NET_DEBT_DEFAULT = 300 ether;
 	uint256 public constant REDEMPTION_FEE_FLOOR_DEFAULT = (DECIMAL_PRECISION / 1000) * 5; // 0.5%
 
@@ -31,7 +31,7 @@ contract KumoParameters is IKumoParameters, OwnableUpgradeable, CheckContract {
 	// Critical system collateral ratio. If the system's total collateral ratio (TCR) falls below the CCR, Recovery Mode is triggered.
 	mapping(address => uint256) public override CCR;
 
-	mapping(address => uint256) public override VST_GAS_COMPENSATION; // Amount of VST to be locked in gas pool on opening troves
+	mapping(address => uint256) public override KUMO_GAS_COMPENSATION; // Amount of VST to be locked in gas pool on opening troves
 	mapping(address => uint256) public override MIN_NET_DEBT; // Minimum amount of net VST debt a trove must have
 	mapping(address => uint256) public override PERCENT_DIVISOR; // dividing by 200 yields 0.5%
 	mapping(address => uint256) public override BORROWING_FEE_FLOOR;
@@ -116,7 +116,7 @@ contract KumoParameters is IKumoParameters, OwnableUpgradeable, CheckContract {
 
 		MCR[_asset] = MCR_DEFAULT;
 		CCR[_asset] = CCR_DEFAULT;
-		VST_GAS_COMPENSATION[_asset] = VST_GAS_COMPENSATION_DEFAULT;
+		KUMO_GAS_COMPENSATION[_asset] = KUMO_GAS_COMPENSATION_DEFAULT;
 		MIN_NET_DEBT[_asset] = MIN_NET_DEBT_DEFAULT;
 		PERCENT_DIVISOR[_asset] = PERCENT_DIVISOR_DEFAULT;
 		BORROWING_FEE_FLOOR[_asset] = BORROWING_FEE_FLOOR_DEFAULT;
@@ -139,7 +139,7 @@ contract KumoParameters is IKumoParameters, OwnableUpgradeable, CheckContract {
 
 		setMCR(_asset, newMCR);
 		setCCR(_asset, newCCR);
-		setVSTGasCompensation(_asset, gasCompensation);
+		setKUMOGasCompensation(_asset, gasCompensation);
 		setMinNetDebt(_asset, minNetDebt);
 		setPercentDivisor(_asset, precentDivisor);
 		setMaxBorrowingFee(_asset, maxBorrowingFee);
@@ -210,14 +210,14 @@ contract KumoParameters is IKumoParameters, OwnableUpgradeable, CheckContract {
 		emit MaxBorrowingFeeChanged(oldMaxBorrowingFee, newMaxBorrowingFee);
 	}
 
-	function setVSTGasCompensation(address _asset, uint256 gasCompensation)
+	function setKUMOGasCompensation(address _asset, uint256 gasCompensation)
 		public
 		override
 		onlyOwner
 		safeCheck("Gas Compensation", _asset, gasCompensation, 1 ether, 400 ether)
 	{
-		uint256 oldGasComp = VST_GAS_COMPENSATION[_asset];
-		VST_GAS_COMPENSATION[_asset] = gasCompensation;
+		uint256 oldGasComp = KUMO_GAS_COMPENSATION[_asset];
+		KUMO_GAS_COMPENSATION[_asset] = gasCompensation;
 
 		emit GasCompensationChanged(oldGasComp, gasCompensation);
 	}
