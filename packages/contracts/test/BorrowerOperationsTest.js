@@ -108,7 +108,7 @@ contract('BorrowerOperations', async accounts => {
       //MIN_NET_DEBT = await borrowerOperations.MIN_NET_DEBT()
       //BORROWING_FEE_FLOOR = await borrowerOperations.BORROWING_FEE_FLOOR()
 
-      LUSD_GAS_COMPENSATION = await kumoParams.VST_GAS_COMPENSATION(ZERO_ADDRESS)
+      LUSD_GAS_COMPENSATION = await kumoParams.KUMO_GAS_COMPENSATION(ZERO_ADDRESS)
       MIN_NET_DEBT = await kumoParams.MIN_NET_DEBT(ZERO_ADDRESS)
       BORROWING_FEE_FLOOR = await kumoParams.BORROWING_FEE_FLOOR(ZERO_ADDRESS)
 
