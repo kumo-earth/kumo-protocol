@@ -14,7 +14,7 @@ import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 import "./Dependencies/SafeMath.sol";
 
-contract BorrowerOperations is LiquityBase, CheckContract, IBorrowerOperations {
+contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOperations {
     using SafeMath for uint256;
     string constant public NAME = "BorrowerOperations";
     bool public isInitialized;
@@ -111,11 +111,11 @@ contract BorrowerOperations is LiquityBase, CheckContract, IBorrowerOperations {
     )
         external
         override
-        initializer
+        onlyOwner
     {
         // This makes impossible to open a trove with zero withdrawn LUSD
         assert(MIN_NET_DEBT > 0);
-        require(!isInitialized, "Already initialized");
+        // require(!isInitialized, "Already initialized");
         checkContract(_troveManagerAddress);
         checkContract(_activePoolAddress);
         checkContract(_defaultPoolAddress);
@@ -128,7 +128,7 @@ contract BorrowerOperations is LiquityBase, CheckContract, IBorrowerOperations {
         checkContract(_lqtyStakingAddress);
         isInitialized = true;
         
-        __Ownable_init();
+        // __Ownable_init();
 
         troveManager = ITroveManager(_troveManagerAddress);
         activePool = IActivePool(_activePoolAddress);
@@ -153,7 +153,7 @@ contract BorrowerOperations is LiquityBase, CheckContract, IBorrowerOperations {
         emit LUSDTokenAddressChanged(_lusdTokenAddress);
         emit LQTYStakingAddressChanged(_lqtyStakingAddress);
 
-        renounceOwnership();
+        _renounceOwnership();
     }
 
     // --- Borrower Trove Operations ---

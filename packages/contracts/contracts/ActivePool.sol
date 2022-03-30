@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import './Interfaces/IActivePool.sol';
 import "./Dependencies/SafeMath.sol";
@@ -18,7 +18,7 @@ import "./Dependencies/console.sol";
  *
  */
  
-contract ActivePool is OwnableUpgradeable, CheckContract, IActivePool {
+contract ActivePool is Ownable, CheckContract, IActivePool {
     using SafeMath for uint256;
 
     string constant public NAME = "ActivePool";
@@ -46,14 +46,14 @@ contract ActivePool is OwnableUpgradeable, CheckContract, IActivePool {
         address _defaultPoolAddress
     )
         external
-        initializer
+        onlyOwner
     {
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
         checkContract(_stabilityPoolAddress);
         checkContract(_defaultPoolAddress);
 
-        __Ownable_init();
+        // __Ownable_init();
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;
@@ -65,7 +65,7 @@ contract ActivePool is OwnableUpgradeable, CheckContract, IActivePool {
         emit StabilityPoolAddressChanged(_stabilityPoolAddress);
         emit DefaultPoolAddressChanged(_defaultPoolAddress);
 
-        renounceOwnership();
+        _renounceOwnership();
     }
 
     // --- Getters for public variables. Required by IPool interface ---

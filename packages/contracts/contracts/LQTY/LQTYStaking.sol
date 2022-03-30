@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "../Dependencies/BaseMath.sol";
 import "../Dependencies/SafeMath.sol";
@@ -14,7 +14,7 @@ import "../Interfaces/ILQTYStaking.sol";
 import "../Dependencies/LiquityMath.sol";
 import "../Interfaces/ILUSDToken.sol";
 
-contract LQTYStaking is ILQTYStaking, OwnableUpgradeable, CheckContract, BaseMath {
+contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
     using SafeMath for uint;
 
     bool public isInitialized;
@@ -69,18 +69,18 @@ contract LQTYStaking is ILQTYStaking, OwnableUpgradeable, CheckContract, BaseMat
         address _activePoolAddress
     ) 
         external 
-        initializer
+        onlyOwner
         override 
     {
-        require(!isInitialized, "Already Initialized");
+        // require(!isInitialized, "Already Initialized");
         checkContract(_lqtyTokenAddress);
         checkContract(_lusdTokenAddress);
         checkContract(_troveManagerAddress);
         checkContract(_borrowerOperationsAddress);
         checkContract(_activePoolAddress);
-        isInitialized = true;
+        // isInitialized = true;
 
-        __Ownable_init();
+        // __Ownable_init();
 
         lqtyToken = ILQTYToken(_lqtyTokenAddress);
         lusdToken = ILUSDToken(_lusdTokenAddress);
@@ -94,7 +94,7 @@ contract LQTYStaking is ILQTYStaking, OwnableUpgradeable, CheckContract, BaseMat
         emit BorrowerOperationsAddressSet(_borrowerOperationsAddress);
         emit ActivePoolAddressSet(_activePoolAddress);
 
-        renounceOwnership();
+        _renounceOwnership();
     }
 
     // If caller has a pre-existing stake, send any accumulated ETH and LUSD gains to them. 

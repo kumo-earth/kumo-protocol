@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import './Interfaces/IDefaultPool.sol';
 import "./Dependencies/SafeMath.sol";
@@ -17,7 +17,7 @@ import "./Dependencies/console.sol";
  * When a trove makes an operation that applies its pending ETH and LUSD debt, its pending ETH and LUSD debt is moved
  * from the Default Pool to the Active Pool.
  */
-contract DefaultPool is OwnableUpgradeable, CheckContract, IDefaultPool {
+contract DefaultPool is Ownable, CheckContract, IDefaultPool {
     using SafeMath for uint256;
 	bool public isInitialized;
     
@@ -39,14 +39,14 @@ contract DefaultPool is OwnableUpgradeable, CheckContract, IDefaultPool {
         address _activePoolAddress
     )
         external
-		initializer
+		onlyOwner
 	{
-		require(!isInitialized, "Already initialized");
+		// require(!isInitialized, "Already initialized");
 		checkContract(_troveManagerAddress);
 		checkContract(_activePoolAddress);
-		isInitialized = true;
+		// isInitialized = true;
 
-		__Ownable_init();
+		// __Ownable_init();
 
         troveManagerAddress = _troveManagerAddress;
         activePoolAddress = _activePoolAddress;
@@ -54,7 +54,7 @@ contract DefaultPool is OwnableUpgradeable, CheckContract, IDefaultPool {
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit ActivePoolAddressChanged(_activePoolAddress);
 
-        renounceOwnership();
+        _renounceOwnership();
     }
 
     // --- Getters for public variables. Required by IPool interface ---

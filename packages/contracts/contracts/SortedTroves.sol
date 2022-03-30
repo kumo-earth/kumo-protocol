@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/ITroveManager.sol";
@@ -45,7 +45,7 @@ import "./Dependencies/console.sol";
 *
 * - Public functions with parameters have been made internal to save gas, and given an external wrapper function for external access
 */
-contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
+contract SortedTroves is Ownable, CheckContract, ISortedTroves {
     using SafeMath for uint256;
 
 	bool public isInitialized;
@@ -82,14 +82,14 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 
     // --- Dependency setters ---
 
-    function setParams(uint256 _size, address _troveManagerAddress, address _borrowerOperationsAddress) external override initializer {
+    function setParams(uint256 _size, address _troveManagerAddress, address _borrowerOperationsAddress) external override onlyOwner {
         require(_size > 0, "SortedTroves: Size can't be zero");
-		require(!isInitialized, "Already initialized");
+		// require(!isInitialized, "Already initialized");
 		checkContract(_troveManagerAddress);
 		checkContract(_borrowerOperationsAddress);
-		isInitialized = true;
+		// isInitialized = true;
 
-		__Ownable_init();
+		// __Ownable_init();
 
         data.maxSize = _size;
 
@@ -99,7 +99,7 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
 
-        renounceOwnership();
+        _renounceOwnership();
     }
 
     /*

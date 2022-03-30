@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "../Dependencies/LiquityMath.sol";
 import "../Dependencies/SafeMath.sol";
@@ -73,7 +73,7 @@ contract LPTokenWrapper is ILPTokenWrapper {
  * either LQTY token contract is deployed, and therefore LQTY tokens are minted to Unipool contract,
  * or first liquidity provider stakes UNIv2 LP tokens into it.
  */
-contract Unipool is LPTokenWrapper, OwnableUpgradeable, CheckContract, IUnipool {
+contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
     using SafeMath for uint256;
     string constant public NAME = "Unipool";
     bool public isInitialized;
@@ -103,14 +103,14 @@ contract Unipool is LPTokenWrapper, OwnableUpgradeable, CheckContract, IUnipool 
     )
         external
         override
-        initializer
+        onlyOwner
     {
-        require(!isInitialized, "Already initialized");
+        // require(!isInitialized, "Already initialized");
         checkContract(_lqtyTokenAddress);
         checkContract(_uniTokenAddress);
-		isInitialized = true;
+		// isInitialized = true;
 
-		__Ownable_init();
+		// __Ownable_init();
         
         uniToken = IERC20(_uniTokenAddress);
         lqtyToken = ILQTYToken(_lqtyTokenAddress);
@@ -121,7 +121,7 @@ contract Unipool is LPTokenWrapper, OwnableUpgradeable, CheckContract, IUnipool 
         emit LQTYTokenAddressChanged(_lqtyTokenAddress);
         emit UniTokenAddressChanged(_uniTokenAddress);
 
-        renounceOwnership();
+        _renounceOwnership();
     }
 
     // Returns current timestamp if the rewards program has not finished yet, end time otherwise

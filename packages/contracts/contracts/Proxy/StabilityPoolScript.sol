@@ -6,7 +6,7 @@ import "../Dependencies/CheckContract.sol";
 import "../Interfaces/IStabilityPool.sol";
 
 
-abstract contract StabilityPoolScript is CheckContract {
+contract StabilityPoolScript is CheckContract {
     string constant public NAME = "StabilityPoolScript";
 
     IStabilityPool immutable stabilityPool;

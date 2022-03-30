@@ -145,7 +145,7 @@ import "./Dependencies/console.sol";
  * The product P (and snapshot P_t) is re-used, as the ratio P/P_t tracks a deposit's depletion due to liquidations.
  *
  */
-contract StabilityPool is LiquityBase, CheckContract, IStabilityPool {
+contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
     using LiquitySafeMath128 for uint128;
     using SafeMath for uint256;
 
@@ -283,9 +283,9 @@ contract StabilityPool is LiquityBase, CheckContract, IStabilityPool {
     )
         external
         override
-        initializer
+        onlyOwner
     {
-        require(!isInitialized, "Already initialized");
+        // require(!isInitialized, "Already initialized");
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
         checkContract(_activePoolAddress);
@@ -294,8 +294,8 @@ contract StabilityPool is LiquityBase, CheckContract, IStabilityPool {
         checkContract(_priceFeedAddress);
         checkContract(_communityIssuanceAddress);
 
-		isInitialized = true;
-		__Ownable_init();
+		// isInitialized = true;
+		// __Ownable_init();
 
         borrowerOperations = IBorrowerOperations(_borrowerOperationsAddress);
         troveManager = ITroveManager(_troveManagerAddress);
@@ -313,7 +313,7 @@ contract StabilityPool is LiquityBase, CheckContract, IStabilityPool {
         emit PriceFeedAddressChanged(_priceFeedAddress);
         emit CommunityIssuanceAddressChanged(_communityIssuanceAddress);
 
-        renounceOwnership();
+        _renounceOwnership();
     }
 
     // --- Getters for public variables. Required by IPool interface ---

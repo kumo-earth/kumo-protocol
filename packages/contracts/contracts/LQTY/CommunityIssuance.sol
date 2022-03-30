@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "../Interfaces/ILQTYToken.sol";
 import "../Interfaces/ICommunityIssuance.sol";
@@ -13,7 +13,7 @@ import "../Dependencies/CheckContract.sol";
 import "../Dependencies/SafeMath.sol";
 
 
-contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContract, BaseMath {
+contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMath {
     using SafeMath for uint;
 
     bool public isInitialized;
@@ -73,14 +73,14 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
     ) 
         external 
         override 
-        initializer
+        onlyOwner
     {
-        require(!isInitialized, "Already initialized");
+        // require(!isInitialized, "Already initialized");
         checkContract(_lqtyTokenAddress);
         checkContract(_stabilityPoolAddress);
         
-		isInitialized = true;
-		__Ownable_init();
+		// isInitialized = true;
+		// __Ownable_init();
 
         lqtyToken = ILQTYToken(_lqtyTokenAddress);
         stabilityPoolAddress = _stabilityPoolAddress;
@@ -92,7 +92,7 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
         emit LQTYTokenAddressSet(_lqtyTokenAddress);
         emit StabilityPoolAddressSet(_stabilityPoolAddress);
 
-        renounceOwnership();
+        _renounceOwnership();
     }
 
     function issueLQTY() external override returns (uint) {

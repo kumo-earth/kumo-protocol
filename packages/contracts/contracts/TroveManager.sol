@@ -15,10 +15,10 @@ import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 import "./Dependencies/SafeMath.sol";
 
-contract TroveManager is LiquityBase, CheckContract, ITroveManager {
+contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
     using SafeMath for uint256;
     
-	bool public isInitialized;
+	// bool public isInitialized;
 
     string constant public NAME = "TroveManager";
 
@@ -251,9 +251,9 @@ contract TroveManager is LiquityBase, CheckContract, ITroveManager {
     )
         external
         override
-        initializer
+        onlyOwner
     {
-        require(!isInitialized, "Already initialized");
+        // require(!isInitialized, "Already initialized");
         checkContract(_borrowerOperationsAddress);
         checkContract(_activePoolAddress);
         checkContract(_defaultPoolAddress);
@@ -265,8 +265,8 @@ contract TroveManager is LiquityBase, CheckContract, ITroveManager {
         checkContract(_sortedTrovesAddress);
         checkContract(_lqtyTokenAddress);
         checkContract(_lqtyStakingAddress);
-        isInitialized = true;
-		__Ownable_init();
+        // isInitialized = true;
+		// __Ownable_init();
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         activePool = IActivePool(_activePoolAddress);
@@ -292,7 +292,7 @@ contract TroveManager is LiquityBase, CheckContract, ITroveManager {
         emit LQTYTokenAddressChanged(_lqtyTokenAddress);
         emit LQTYStakingAddressChanged(_lqtyStakingAddress);
 
-        renounceOwnership();
+        _renounceOwnership();
     }
 
     // --- Getters ---

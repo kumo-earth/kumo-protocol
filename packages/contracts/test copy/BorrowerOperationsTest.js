@@ -93,7 +93,7 @@ contract('BorrowerOperations', async accounts => {
       defaultPool = contracts.defaultPool
       borrowerOperations = contracts.borrowerOperations
       hintHelpers = contracts.hintHelpers
-      kumoParams = contracts.kumoParameters
+      // kumoParams = contracts.kumoParameters
 
       erc20 = contracts.erc20;
       // await kumoParams.sanitizeParameters(ZERO_ADDRESS);
@@ -104,17 +104,17 @@ contract('BorrowerOperations', async accounts => {
       communityIssuance = LQTYContracts.communityIssuance
       lockupContractFactory = LQTYContracts.lockupContractFactory
 
-      //LUSD_GAS_COMPENSATION = await borrowerOperations.LUSD_GAS_COMPENSATION()
-      //MIN_NET_DEBT = await borrowerOperations.MIN_NET_DEBT()
-      //BORROWING_FEE_FLOOR = await borrowerOperations.BORROWING_FEE_FLOOR()
+      LUSD_GAS_COMPENSATION = await borrowerOperations.LUSD_GAS_COMPENSATION()
+      MIN_NET_DEBT = await borrowerOperations.MIN_NET_DEBT()
+      BORROWING_FEE_FLOOR = await borrowerOperations.BORROWING_FEE_FLOOR()
 
-      LUSD_GAS_COMPENSATION = await kumoParams.VST_GAS_COMPENSATION(ZERO_ADDRESS)
-      MIN_NET_DEBT = await kumoParams.MIN_NET_DEBT(ZERO_ADDRESS)
-      BORROWING_FEE_FLOOR = await kumoParams.BORROWING_FEE_FLOOR(ZERO_ADDRESS)
+      // LUSD_GAS_COMPENSATION = await kumoParams.VST_GAS_COMPENSATION(ZERO_ADDRESS)
+      // MIN_NET_DEBT = await kumoParams.MIN_NET_DEBT(ZERO_ADDRESS)
+      // BORROWING_FEE_FLOOR = await kumoParams.BORROWING_FEE_FLOOR(ZERO_ADDRESS)
 
-      VST_GAS_COMPENSATION_ERC20 = await kumoParams.VST_GAS_COMPENSATION(erc20.address)
-      MIN_NET_DEBT_ERC20 = await kumoParams.MIN_NET_DEBT(erc20.address)
-      BORROWING_FEE_FLOOR_ERC20 = await kumoParams.BORROWING_FEE_FLOOR(erc20.address)
+      // VST_GAS_COMPENSATION_ERC20 = await kumoParams.VST_GAS_COMPENSATION(erc20.address)
+      // MIN_NET_DEBT_ERC20 = await kumoParams.MIN_NET_DEBT(erc20.address)
+      // BORROWING_FEE_FLOOR_ERC20 = await kumoParams.BORROWING_FEE_FLOOR(erc20.address)
 
       // await lqtyToken.unprotectedMint(multisig, dec(5, 24))
 

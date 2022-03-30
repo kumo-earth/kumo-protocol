@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./Interfaces/IPriceFeed.sol";
 import "./Interfaces/ITellorCaller.sol";
@@ -22,7 +22,7 @@ import "./Dependencies/console.sol";
 * switching oracles based on oracle failures, timeouts, and conditions for returning to the primary
 * Chainlink oracle.
 */
-contract PriceFeed is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
+contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     using SafeMath for uint256;
 
 	bool public isInitialized;
@@ -93,13 +93,13 @@ contract PriceFeed is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
         address _tellorCallerAddress
     )
         external
-        initializer {
-		require(!isInitialized);
+        onlyOwner {
+		// require(!isInitialized);
         checkContract(_priceAggregatorAddress);
         checkContract(_tellorCallerAddress);
-		isInitialized = true;
+		// isInitialized = true;
 
-		__Ownable_init();
+		// __Ownable_init();
        
         priceAggregator = AggregatorV3Interface(_priceAggregatorAddress);
         tellorCaller = ITellorCaller(_tellorCallerAddress);
@@ -116,7 +116,7 @@ contract PriceFeed is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
 
         _storeChainlinkPrice(chainlinkResponse);
 
-        renounceOwnership();
+        _renounceOwnership();
     }
 
     // --- Functions ---

@@ -9,7 +9,7 @@ import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafeMath.sol";
 
-contract HintHelpers is LiquityBase, CheckContract {
+contract HintHelpers is LiquityBase, CheckContract, Ownable {
     using SafeMath for uint256;
     string constant public NAME = "HintHelpers";
 
@@ -29,15 +29,15 @@ contract HintHelpers is LiquityBase, CheckContract {
         address _troveManagerAddress
     )
         external
-        initializer 
+        onlyOwner 
         {
-		require(!isInitialized, "Already initialized");
+		// require(!isInitialized, "Already initialized");
 		checkContract(_sortedTrovesAddress);
 		checkContract(_troveManagerAddress);
 		// checkContract(_vaultParametersAddress);
-		isInitialized = true;
+		// isInitialized = true;
 
-		__Ownable_init();
+		// __Ownable_init();
 
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         troveManager = ITroveManager(_troveManagerAddress);
@@ -45,7 +45,7 @@ contract HintHelpers is LiquityBase, CheckContract {
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
 
-        renounceOwnership();
+        _renounceOwnership();
     }
 
     // --- Functions ---
