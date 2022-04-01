@@ -142,7 +142,7 @@ contract('Deploying the LQTY contracts: LCF, CI, LQTYStaking, and LQTYToken ', a
       const coreContracts = await deploymentHelper.deployLiquityCore()
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-      await lqtyToken.transfer(newCI.address, '31999999999999999999999999', {from: multisig}) // 1e-18 less than CI expects (32 million)
+      await lqtyToken.transfer(newCI.address, '31999999999999999999999998', {from: multisig}) // 1e-18 less than CI expects (32 million)
 
       try {
         const tx = await newCI.setAddresses(
@@ -150,10 +150,9 @@ contract('Deploying the LQTY contracts: LCF, CI, LQTYStaking, and LQTYToken ', a
           coreContracts.stabilityPool.address,
           { from: liquityAG }
         );
-      
         // Check it gives the expected error message for a failed Solidity 'assert'
       } catch (err) {
-        assert.include(err.message, "invalid opcode")
+        assert.include(err.message, 'VM Exception')
       }
     })
   })
