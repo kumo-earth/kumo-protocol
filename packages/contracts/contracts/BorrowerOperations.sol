@@ -279,7 +279,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         // If the adjustment incorporates a debt increase and system is in Normal Mode, then trigger a borrowing fee
         if (_isDebtIncrease && !isRecoveryMode) { 
             vars.LUSDFee = _triggerBorrowingFee(contractsCache.troveManager, contractsCache.lusdToken, _LUSDChange, _maxFeePercentage);
-            vars.netDebtChange = vars.netDebtChange.sub(vars.LUSDFee); // The raw debt change includes the fee
+            vars.netDebtChange = vars.netDebtChange.add(vars.LUSDFee); // The raw debt change includes the fee
         }
 
         vars.debt = contractsCache.troveManager.getTroveDebt(_borrower);
