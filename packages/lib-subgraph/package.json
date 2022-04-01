@@ -21,6 +21,7 @@
     "typescript": "~4.1.0"
   },
   "dependencies": {
+    "@openzeppelin/contracts-upgradeable": "^4.4.1",
     "@apollo/client": "^3.3.12",
     "@ethersproject/address": "^5.4.0",
     "cross-fetch": "~3.0.6",

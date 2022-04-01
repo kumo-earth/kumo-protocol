@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
+
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/ITroveManager.sol";
@@ -46,12 +48,15 @@ import "./Dependencies/console.sol";
 contract SortedTroves is Ownable, CheckContract, ISortedTroves {
     using SafeMath for uint256;
 
+	bool public isInitialized;
+
     string constant public NAME = "SortedTroves";
 
     event TroveManagerAddressChanged(address _troveManagerAddress);
-    event BorrowerOperationsAddressChanged(address _borrowerOperationsAddress);
-    event NodeAdded(address _id, uint _NICR);
-    event NodeRemoved(address _id);
+    // event BorrowerOperationsAddressChanged(address _borrowerOperationsAddress);
+    // event NodeAdded(address _id, uint _NICR);
+    // event NodeRemoved(address _id);
+
 
     address public borrowerOperationsAddress;
 
@@ -78,9 +83,13 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
     // --- Dependency setters ---
 
     function setParams(uint256 _size, address _troveManagerAddress, address _borrowerOperationsAddress) external override onlyOwner {
-        require(_size > 0, "SortedTroves: Size can’t be zero");
-        checkContract(_troveManagerAddress);
-        checkContract(_borrowerOperationsAddress);
+        require(_size > 0, "SortedTroves: Size can't be zero");
+		// require(!isInitialized, "Already initialized");
+		checkContract(_troveManagerAddress);
+		checkContract(_borrowerOperationsAddress);
+		// isInitialized = true;
+
+		// __Ownable_init();
 
         data.maxSize = _size;
 
@@ -198,7 +207,7 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
 
         delete data.nodes[_id];
         data.size = data.size.sub(1);
-        NodeRemoved(_id);
+        emit NodeRemoved(_id);
     }
 
     /*

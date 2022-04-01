@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
+
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "../Interfaces/ILQTYToken.sol";
 import "../Interfaces/ICommunityIssuance.sol";
@@ -14,6 +16,7 @@ import "../Dependencies/SafeMath.sol";
 contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMath {
     using SafeMath for uint;
 
+    bool public isInitialized;
     // --- Data ---
 
     string constant public NAME = "CommunityIssuance";
@@ -53,13 +56,13 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
 
     // --- Events ---
 
-    event LQTYTokenAddressSet(address _lqtyTokenAddress);
-    event StabilityPoolAddressSet(address _stabilityPoolAddress);
-    event TotalLQTYIssuedUpdated(uint _totalLQTYIssued);
+    // event LQTYTokenAddressSet(address _lqtyTokenAddress);
+    // event StabilityPoolAddressSet(address _stabilityPoolAddress);
+    // event TotalLQTYIssuedUpdated(uint _totalLQTYIssued);
 
     // --- Functions ---
 
-    constructor() public {
+    constructor() {
         deploymentTime = block.timestamp;
     }
 
@@ -69,11 +72,15 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
         address _stabilityPoolAddress
     ) 
         external 
-        onlyOwner 
         override 
+        onlyOwner
     {
+        // require(!isInitialized, "Already initialized");
         checkContract(_lqtyTokenAddress);
         checkContract(_stabilityPoolAddress);
+        
+		// isInitialized = true;
+		// __Ownable_init();
 
         lqtyToken = ILQTYToken(_lqtyTokenAddress);
         stabilityPoolAddress = _stabilityPoolAddress;

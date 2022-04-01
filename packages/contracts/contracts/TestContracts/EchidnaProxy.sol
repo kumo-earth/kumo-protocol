@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
 import "../TroveManager.sol";
 import "../BorrowerOperations.sol";
@@ -13,12 +13,12 @@ contract EchidnaProxy {
     StabilityPool stabilityPool;
     LUSDToken lusdToken;
 
-    constructor(
+    constructor (
         TroveManager _troveManager,
         BorrowerOperations _borrowerOperations,
         StabilityPool _stabilityPool,
         LUSDToken _lusdToken
-    ) public {
+    ) {
         troveManager = _troveManager;
         borrowerOperations = _borrowerOperations;
         stabilityPool = _stabilityPool;

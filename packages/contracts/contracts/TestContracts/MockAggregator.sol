@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
 import "../Dependencies/AggregatorV3Interface.sol";
 import "../Dependencies/console.sol";
@@ -105,10 +105,10 @@ contract MockAggregator is AggregatorV3Interface {
         return (prevRoundId, prevPrice, 0, updateTime, 0);
     }
 
-    function description() external override view returns (string memory) {
+    function description() external override pure returns (string memory) {
         return "";
     }
-    function version() external override view returns (uint256) {
+    function version() external override pure returns (uint256) {
         return 1;
     }
 }

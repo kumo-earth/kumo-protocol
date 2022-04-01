@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
 import "../Dependencies/CheckContract.sol";
 import "../Dependencies/SafeMath.sol";
@@ -97,13 +97,13 @@ contract LQTYToken is CheckContract, ILQTYToken {
 
     // --- Events ---
 
-    event CommunityIssuanceAddressSet(address _communityIssuanceAddress);
-    event LQTYStakingAddressSet(address _lqtyStakingAddress);
-    event LockupContractFactoryAddressSet(address _lockupContractFactoryAddress);
+    // event CommunityIssuanceAddressSet(address _communityIssuanceAddress);
+    // event LQTYStakingAddressSet(address _lqtyStakingAddress);
+    // event LockupContractFactoryAddressSet(address _lockupContractFactoryAddress);
 
     // --- Functions ---
 
-    constructor
+    constructor 
     (
         address _communityIssuanceAddress, 
         address _lqtyStakingAddress,
@@ -112,7 +112,7 @@ contract LQTYToken is CheckContract, ILQTYToken {
         address _lpRewardsAddress,
         address _multisigAddress
     ) 
-        public 
+        
     {
         checkContract(_communityIssuanceAddress);
         checkContract(_lqtyStakingAddress);
@@ -249,7 +249,7 @@ contract LQTYToken is CheckContract, ILQTYToken {
         external 
         override 
     {            
-        require(deadline >= now, 'LQTY: expired deadline');
+        require(deadline >= block.timestamp, 'LQTY: expired deadline');
         bytes32 digest = keccak256(abi.encodePacked('\x19\x01', 
                          domainSeparator(), keccak256(abi.encode(
                          _PERMIT_TYPEHASH, owner, spender, amount, 
@@ -265,14 +265,14 @@ contract LQTYToken is CheckContract, ILQTYToken {
 
     // --- Internal operations ---
 
-    function _chainID() private pure returns (uint256 chainID) {
+    function _chainID() private view returns (uint256 chainID) {
         assembly {
             chainID := chainid()
         }
     }
 
-    function _buildDomainSeparator(bytes32 typeHash, bytes32 name, bytes32 version) private view returns (bytes32) {
-        return keccak256(abi.encode(typeHash, name, version, _chainID(), address(this)));
+    function _buildDomainSeparator(bytes32 typeHash, bytes32 _name, bytes32 _version) private view returns (bytes32) {
+        return keccak256(abi.encode(typeHash, _name, _version, _chainID(), address(this)));
     }
 
     function _transfer(address sender, address recipient, uint256 amount) internal {
@@ -344,23 +344,23 @@ contract LQTYToken is CheckContract, ILQTYToken {
 
     // --- Optional functions ---
 
-    function name() external view override returns (string memory) {
+    function name() external pure override returns (string memory) {
         return _NAME;
     }
 
-    function symbol() external view override returns (string memory) {
+    function symbol() external pure override returns (string memory) {
         return _SYMBOL;
     }
 
-    function decimals() external view override returns (uint8) {
+    function decimals() external pure override returns (uint8) {
         return _DECIMALS;
     }
 
-    function version() external view override returns (string memory) {
+    function version() external pure override returns (string memory) {
         return _VERSION;
     }
 
-    function permitTypeHash() external view override returns (bytes32) {
+    function permitTypeHash() external pure override returns (bytes32) {
         return _PERMIT_TYPEHASH;
     }
 }
