@@ -1175,7 +1175,7 @@ describe("EthersLiquity", () => {
       // Required gas has just went up.
       const newGasEstimate = await provider.estimateGas(tx.rawPopulatedTransaction);
       const gasIncrease = newGasEstimate.sub(originalGasEstimate).toNumber();
-      expect(gasIncrease).to.be.within(5000, 10000);
+      expect(gasIncrease).to.be.within(4000, 9000);
 
       // This will now have to update lastFeeOperationTime
       await waitForSuccess(tx.send());
@@ -1374,9 +1374,9 @@ describe("EthersLiquity", () => {
       const borrowingRate = await liquity.getFees().then(fees => fees.borrowingRate());
 
       for (const [borrowingFeeDecayToleranceMinutes, roughGasHeadroom] of [
-        [10, 128000],
-        [20, 242000],
-        [30, 322000]
+        [10, 126000],
+        [20, 240000],
+        [30, 319000]
       ]) {
         const tx = await liquity.populate.openTrove(Trove.recreate(bottomTrove, borrowingRate), {
           borrowingFeeDecayToleranceMinutes
