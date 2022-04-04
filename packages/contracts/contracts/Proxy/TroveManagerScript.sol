@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
 import "../Dependencies/CheckContract.sol";
 import "../Interfaces/ITroveManager.sol";
@@ -11,7 +11,7 @@ contract TroveManagerScript is CheckContract {
 
     ITroveManager immutable troveManager;
 
-    constructor(ITroveManager _troveManager) public {
+    constructor (ITroveManager _troveManager) {
         checkContract(address(_troveManager));
         troveManager = _troveManager;
     }
@@ -24,8 +24,8 @@ contract TroveManagerScript is CheckContract {
         uint _partialRedemptionHintNICR,
         uint _maxIterations,
         uint _maxFee
-    ) external returns (uint) {
-        troveManager.redeemCollateral(
+    ) external returns (uint collateral) {
+         troveManager.redeemCollateral(
             _LUSDAmount,
             _firstRedemptionHint,
             _upperPartialRedemptionHint,
@@ -34,5 +34,6 @@ contract TroveManagerScript is CheckContract {
             _maxIterations,
             _maxFee
         );
+        return collateral;
     }
 }
