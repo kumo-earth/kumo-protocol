@@ -28,7 +28,7 @@ import "../Dependencies/console.sol";
 contract LockupContractFactory is ILockupContractFactory, Ownable, CheckContract {
     using SafeMath for uint;
 
-	bool public isInitialized;
+	// bool public isInitialized;
     // --- Data ---
     string constant public NAME = "LockupContractFactory";
 

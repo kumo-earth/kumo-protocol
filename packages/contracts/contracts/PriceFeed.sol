@@ -25,7 +25,7 @@ import "./Dependencies/console.sol";
 contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     using SafeMath for uint256;
 
-	bool public isInitialized;
+	// bool public isInitialized;
 
     string constant public NAME = "PriceFeed";
 

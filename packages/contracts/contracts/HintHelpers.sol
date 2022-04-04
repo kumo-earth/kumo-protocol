@@ -97,7 +97,7 @@ contract HintHelpers is LiquityBase, CheckContract, Ownable {
 
         while (currentTroveuser != address(0) && remainingLUSD > 0 && _maxIterations-- > 0) {
             uint netLUSDDebt = _getNetDebt(troveManager.getTroveDebt(currentTroveuser))
-                + (troveManager.getPendingLUSDDebtReward(currentTroveuser));
+                .add(troveManager.getPendingLUSDDebtReward(currentTroveuser));
 
             if (netLUSDDebt > remainingLUSD) {
                 if (netLUSDDebt > MIN_NET_DEBT) {

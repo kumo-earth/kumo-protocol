@@ -17,7 +17,7 @@ import "./Dependencies/SafeMath.sol";
 contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOperations {
     using SafeMath for uint256;
     string constant public NAME = "BorrowerOperations";
-    bool public isInitialized;
+    // bool public isInitialized;
     // --- Connected contract declarations ---
 
     ITroveManager public troveManager;
@@ -126,7 +126,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         checkContract(_sortedTrovesAddress);
         checkContract(_lusdTokenAddress);
         checkContract(_lqtyStakingAddress);
-        isInitialized = true;
+        // isInitialized = true;
         
         // __Ownable_init();
 

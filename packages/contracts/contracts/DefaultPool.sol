@@ -19,7 +19,7 @@ import "./Dependencies/console.sol";
  */
 contract DefaultPool is Ownable, CheckContract, IDefaultPool {
     using SafeMath for uint256;
-	bool public isInitialized;
+	// bool public isInitialized;
     
     string constant public NAME = "DefaultPool";
 

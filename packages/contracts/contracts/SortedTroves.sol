@@ -48,7 +48,7 @@ import "./Dependencies/console.sol";
 contract SortedTroves is Ownable, CheckContract, ISortedTroves {
     using SafeMath for uint256;
 
-	bool public isInitialized;
+	// bool public isInitialized;
 
     string constant public NAME = "SortedTroves";
 

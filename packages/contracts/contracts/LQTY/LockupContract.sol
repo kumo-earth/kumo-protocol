@@ -18,7 +18,7 @@ import "../Interfaces/ILQTYToken.sol";
 */
 contract LockupContract {
     using SafeMath for uint;
-	bool public isInitialized;
+	// bool public isInitialized;
     // --- Data ---
     string constant public NAME = "LockupContract";
 

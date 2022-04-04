@@ -147,9 +147,9 @@ import "./Dependencies/console.sol";
  */
 contract StabilityPool is LiquityBase, Ownable, CheckContract, IStabilityPool {
     using LiquitySafeMath128 for uint128;
-    using SafeMath for uint256;
+    // using SafeMath for uint256;
 
-    bool public isInitialized;
+    // bool public isInitialized;
 
     string constant public NAME = "StabilityPool";
 

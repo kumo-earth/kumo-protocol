@@ -76,7 +76,7 @@ contract LPTokenWrapper is ILPTokenWrapper {
 contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
     using SafeMath for uint256;
     string constant public NAME = "Unipool";
-    bool public isInitialized;
+    // bool public isInitialized;
 
     uint256 public duration;
     ILQTYToken public lqtyToken;
