@@ -1,5 +1,5 @@
 import React from "react";
-import { Decimal, UserTroveStatus, UserTrove, StabilityDeposit, Percent } from "@liquity/lib-base";
+import { Decimal, UserTroveStatus, UserTrove, StabilityDeposit, Percent } from "@kumodao/lib-base";
 import { Flex, Box, Card, Heading, Divider } from "theme-ui";
 
 type StakingTypeCardProps = {
