@@ -48,12 +48,18 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: yarn release
         
+      - name: Convert the GitHub repository name to lowercase
+        id: repository-name
+        uses: ASzc/change-string-case-action@v1
+        with:
+          string: ${{ github.repository }}
+          
       - name: Prepare image labels and tags
         if: ${{ github.event_name != 'pull_request' }}
         id: prep
         shell: bash
         run: |
-          DOCKER_IMAGE=ghcr.io/${{ env.GITHUB_REPOSITORY_NAME }}/dev-frontend
+          DOCKER_IMAGE=ghcr.io/${{ steps.repository-name.outputs.lowercase }}/dev-frontend
           TAGS="${DOCKER_IMAGE}:latest,${DOCKER_IMAGE}:latest"
           echo ::set-output name=tags::${TAGS}
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
