@@ -23,6 +23,8 @@ import { StakingViewProvider } from "./components/Staking/context/StakingViewPro
 import { FarmViewProvider } from "./components/Farm/context/FarmViewProvider";
 import { Sidebar } from "./components/Sidebar/Siderbar";
 import { Collateral } from "./pages/Collateral";
+import { StabilityPoolStaking } from "./pages/StabilityPoolStaking";
+import { StakingType } from "./pages/StakingType";
 
 type KumoFrontendProps = {
   loader?: React.ReactNode;
@@ -100,8 +102,14 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                         <Route path="/" exact>
                           <PageSwitcher />
                         </Route>
-                        <Route path="/:collateralType" exact>
+                        <Route path="/dashboard/:collateralType" exact>
                           <Collateral />
+                        </Route>
+                        <Route path="/staking" exact>
+                          <StabilityPoolStaking />
+                        </Route>
+                        <Route path="/staking/:stakingType" exact>
+                          <StakingType />
                         </Route>
                         <Route path="/farm">
                           <Farm />
