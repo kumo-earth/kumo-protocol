@@ -6,14 +6,10 @@ import { Icon } from "../Icon";
 
 type CollateralCardProps = {
   collateralType?: string;
-  totalCollateralRatioPct?: string;
-  total?: { collateral: any; debt: any };
 };
 
-export const CollateralCard: React.FC<CollateralCardProps> = ({
+export const StakingTypeCard: React.FC<CollateralCardProps> = ({
   collateralType,
-  totalCollateralRatioPct,
-  total
 }) => {
   const history = useHistory();
   return (
@@ -27,11 +23,11 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
         maxWidth: 450,
         maxHeight: "425px"
       }}
-      onClick={() => history.push(`/dashboard/${collateralType}`)}
+    //   onClick={() => history.push(`/dashboard/${collateralType}`)}
     >
       <Heading
         sx={{
-          height: "120px",
+          height: "100px !important",
           padding: "2rem 2rem 2rem 2rem",
           borderBottom: "1px solid rgba(0, 0, 0, 0.281)",
           marginBottom: "-1px",
@@ -41,10 +37,11 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
           borderRadius: "20px 20px 0 0"
         }}
       >
-        {(collateralType === "eth" && "ETH") || (collateralType === "mco" && "MCO2")} Vault
+        {(collateralType === "eth" && "ETH") || (collateralType === "mco" && "MCO2")}
       </Heading>
 
       <Box sx={{ p: [2, 3] }}>
+      <Flex sx={{ justifyContent: "space-between", alignItems: 'center' }}>
         <Heading
           as="h6"
           sx={{
@@ -53,54 +50,64 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             padding: "1.5rem 1.5rem 10px 1.5rem"
           }}
         >
-          SYSTEM COLLATERALL RATIO
+          APR
         </Heading>
         <Heading
-          as="h4"
+          as="h6"
           sx={{
             fontFamily: "Roboto, Helvetica, Arial, sans-serif",
             fontWeight: "bold",
             letterSpacing: "0.5px",
-            fontSize: "32px",
+            fontSize: 14,
             color: "#f9f8f9",
-            padding: "0 1.5rem 30px 1.5rem"
+            padding: "1.5rem 1.5rem 10px 1.5rem"
           }}
         >
-          {totalCollateralRatioPct}
+          Total KUMO In Pool
         </Heading>
+        </Flex>
         <Flex sx={{ justifyContent: "space-between" }}>
           <Heading
             sx={{
               fontFamily: "Roboto, Helvetica, Arial, sans-serif",
               fontWeight: "bold",
               letterSpacing: "0.5px",
-              fontSize: "14px",
+              fontSize: "32px",
               color: "#f9f8f9",
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            COLLATERAL
+            8.13%
           </Heading>
           <Heading
             sx={{
               fontFamily: "Roboto, Helvetica, Arial, sans-serif",
               fontWeight: "bold",
               letterSpacing: "0.5px",
-              fontSize: "14px",
+              fontSize: "32px",
               color: "#f9f8f9",
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            {total?.collateral.shorten()}
+            968,328.15
           </Heading>
+          
         </Flex>
-        <Box sx={{ padding: "0 1.5rem 10px 1.5rem" }}>
-          <Progress
-            max={10000}
-            value={total?.collateral}
-            sx={{ height: "12px", color: "green" }}
-          ></Progress>
-        </Box>
+        <Heading
+            as={'h6'}
+            sx={{
+              fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+              fontWeight: "bold",
+              letterSpacing: "0.5px",
+              fontSize: "14px",
+              color: "#f9f8f9",
+              padding: "0 1.5rem 10px 1.5rem",
+              marginLeft: 'auto',
+              width: 'fit-content'
+            }}
+          >
+           ~ $995,810
+          </Heading>
         <Flex sx={{ justifyContent: "space-between" }}>
           <Heading
             sx={{
@@ -124,7 +131,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            {total?.debt.shorten()}
+            Heading
           </Heading>
         </Flex>
         <Flex sx={{ padding: "1.5rem" }}>

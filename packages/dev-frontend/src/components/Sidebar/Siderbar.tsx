@@ -7,7 +7,6 @@ export const Sidebar: React.FC = props => {
   return (
     <Flex
       sx={{
-        // justifyContent: "center",
         flexDirection: "column",
         backgroundColor: "#091325 !important",
         borderRight: "1px solid #4f4f4f",
@@ -23,20 +22,24 @@ export const Sidebar: React.FC = props => {
           sx={{
             fontSize: 4,
             fontWeight: "bold",
-            marginLeft: '1rem'
+            marginLeft: "8px"
           }}
         >
           Kumo{" "}
         </Text>
       </Box>
       <Box as="nav" sx={{ display: ["none", "flex"], flexDirection: "column", p: "2rem" }}>
-        <Link to="/"  >Dashboard</Link>
-        <Link to="/farm" sx={{ mt: '1rem !important'}}>Farm</Link>
-
-        <Link sx={{ fontSize: 1, mt: '1rem !important' }} to="/risky-troves">
+        <Link to="/">Dashboard</Link>
+        <Link to="/staking" sx={{ mt: "1rem !important" }}>
+          Staking
+        </Link>
+        <Link to="/farm" sx={{ mt: "1rem !important" }}>
+          Farm
+        </Link>
+        <Link sx={{ fontSize: 1, mt: "1rem !important" }} to="/risky-troves">
           Risky Troves
         </Link>
-        <Link sx={{ fontSize: 1, mt: '1rem !important' }} to="/redemption">
+        <Link sx={{ fontSize: 1, mt: "1rem !important" }} to="/redemption">
           Redemption
         </Link>
       </Box>
