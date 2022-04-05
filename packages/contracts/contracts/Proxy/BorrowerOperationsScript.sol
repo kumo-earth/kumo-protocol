@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
 import "../Dependencies/CheckContract.sol";
 import "../Interfaces/IBorrowerOperations.sol";
@@ -9,7 +9,7 @@ import "../Interfaces/IBorrowerOperations.sol";
 contract BorrowerOperationsScript is CheckContract {
     IBorrowerOperations immutable borrowerOperations;
 
-    constructor(IBorrowerOperations _borrowerOperations) public {
+    constructor (IBorrowerOperations _borrowerOperations) {
         checkContract(address(_borrowerOperations));
         borrowerOperations = _borrowerOperations;
     }

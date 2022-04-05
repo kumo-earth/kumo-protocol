@@ -1,16 +1,19 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
 import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/ISortedTroves.sol";
 import "./Dependencies/LiquityBase.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
+import "./Dependencies/SafeMath.sol";
 
-contract HintHelpers is LiquityBase, Ownable, CheckContract {
+contract HintHelpers is LiquityBase, CheckContract, Ownable {
+    using SafeMath for uint256;
     string constant public NAME = "HintHelpers";
 
+	bool public isInitialized;
     ISortedTroves public sortedTroves;
     ITroveManager public troveManager;
 
@@ -26,10 +29,15 @@ contract HintHelpers is LiquityBase, Ownable, CheckContract {
         address _troveManagerAddress
     )
         external
-        onlyOwner
-    {
-        checkContract(_sortedTrovesAddress);
-        checkContract(_troveManagerAddress);
+        onlyOwner 
+        {
+		// require(!isInitialized, "Already initialized");
+		checkContract(_sortedTrovesAddress);
+		checkContract(_troveManagerAddress);
+		// checkContract(_vaultParametersAddress);
+		// isInitialized = true;
+
+		// __Ownable_init();
 
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         troveManager = ITroveManager(_troveManagerAddress);
@@ -84,7 +92,7 @@ contract HintHelpers is LiquityBase, Ownable, CheckContract {
         firstRedemptionHint = currentTroveuser;
 
         if (_maxIterations == 0) {
-            _maxIterations = uint(-1);
+            _maxIterations = type(uint256).max;
         }
 
         while (currentTroveuser != address(0) && remainingLUSD > 0 && _maxIterations-- > 0) {

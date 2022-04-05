@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
+
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./Interfaces/ICollSurplusPool.sol";
 import "./Dependencies/SafeMath.sol";
@@ -12,6 +14,7 @@ import "./Dependencies/console.sol";
 contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
     using SafeMath for uint256;
 
+    // bool public isInitialized;
     string constant public NAME = "CollSurplusPool";
 
     address public borrowerOperationsAddress;
@@ -25,12 +28,12 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
 
     // --- Events ---
 
-    event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
-    event TroveManagerAddressChanged(address _newTroveManagerAddress);
-    event ActivePoolAddressChanged(address _newActivePoolAddress);
+    // event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
+    // event TroveManagerAddressChanged(address _newTroveManagerAddress);
+    // event ActivePoolAddressChanged(address _newActivePoolAddress);
 
-    event CollBalanceUpdated(address indexed _account, uint _newBalance);
-    event EtherSent(address _to, uint _amount);
+    // event CollBalanceUpdated(address indexed _account, uint _newBalance);
+    // event EtherSent(address _to, uint _amount);
     
     // --- Contract setters ---
 
@@ -43,9 +46,13 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
         override
         onlyOwner
     {
-        checkContract(_borrowerOperationsAddress);
-        checkContract(_troveManagerAddress);
-        checkContract(_activePoolAddress);
+		// require(!isInitialized, "Already initialized");
+		checkContract(_borrowerOperationsAddress);
+		checkContract(_troveManagerAddress);
+		checkContract(_activePoolAddress);
+		// isInitialized = true;
+
+		// __Ownable_init();
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;

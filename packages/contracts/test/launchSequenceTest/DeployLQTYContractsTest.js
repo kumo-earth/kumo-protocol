@@ -150,10 +150,9 @@ contract('Deploying the LQTY contracts: LCF, CI, LQTYStaking, and LQTYToken ', a
           coreContracts.stabilityPool.address,
           { from: liquityAG }
         );
-      
         // Check it gives the expected error message for a failed Solidity 'assert'
       } catch (err) {
-        assert.include(err.message, "invalid opcode")
+        assert.include(err.message, 'Assertion error')
       }
     })
   })
