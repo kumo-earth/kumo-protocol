@@ -24,7 +24,7 @@ The constructor for this class is marked as internal. Third-party code should no
 |  --- | --- | --- | --- |
 |  [collateralGain](./lib-base.lqtystake.collateralgain.md) |  | [Decimal](./lib-base.decimal.md) | Collateral gain available to withdraw. |
 |  [isEmpty](./lib-base.lqtystake.isempty.md) |  | boolean |  |
-|  [lusdGain](./lib-base.lqtystake.lusdgain.md) |  | [Decimal](./lib-base.decimal.md) | LUSD gain available to withdraw. |
+|  [kusdGain](./lib-base.lqtystake.kusdgain.md) |  | [Decimal](./lib-base.decimal.md) | KUSD gain available to withdraw. |
 |  [stakedLQTY](./lib-base.lqtystake.stakedlqty.md) |  | [Decimal](./lib-base.decimal.md) | The amount of LQTY that's staked. |
 
 ## Methods

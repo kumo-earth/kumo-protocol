@@ -24,18 +24,18 @@ export class LQTYStake {
   /** Collateral gain available to withdraw. */
   readonly collateralGain: Decimal;
 
-  /** LUSD gain available to withdraw. */
-  readonly lusdGain: Decimal;
+  /** KUSD gain available to withdraw. */
+  readonly kusdGain: Decimal;
 
   /** @internal */
-  constructor(stakedLQTY = Decimal.ZERO, collateralGain = Decimal.ZERO, lusdGain = Decimal.ZERO) {
+  constructor(stakedLQTY = Decimal.ZERO, collateralGain = Decimal.ZERO, kusdGain = Decimal.ZERO) {
     this.stakedLQTY = stakedLQTY;
     this.collateralGain = collateralGain;
-    this.lusdGain = lusdGain;
+    this.kusdGain = kusdGain;
   }
 
   get isEmpty(): boolean {
-    return this.stakedLQTY.isZero && this.collateralGain.isZero && this.lusdGain.isZero;
+    return this.stakedLQTY.isZero && this.collateralGain.isZero && this.kusdGain.isZero;
   }
 
   /** @internal */
@@ -43,7 +43,7 @@ export class LQTYStake {
     return (
       `{ stakedLQTY: ${this.stakedLQTY}` +
       `, collateralGain: ${this.collateralGain}` +
-      `, lusdGain: ${this.lusdGain} }`
+      `, kusdGain: ${this.kusdGain} }`
     );
   }
 
@@ -54,7 +54,7 @@ export class LQTYStake {
     return (
       this.stakedLQTY.eq(that.stakedLQTY) &&
       this.collateralGain.eq(that.collateralGain) &&
-      this.lusdGain.eq(that.lusdGain)
+      this.kusdGain.eq(that.kusdGain)
     );
   }
 

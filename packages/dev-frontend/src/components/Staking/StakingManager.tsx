@@ -74,7 +74,7 @@ const StakingManagerActionDescription: React.FC<StakingManagerActionDescriptionP
   const stakeLQTY = change.stakeLQTY?.prettify().concat(" ", GT);
   const unstakeLQTY = change.unstakeLQTY?.prettify().concat(" ", GT);
   const collateralGain = originalStake.collateralGain.nonZero?.prettify(4).concat(" ETH");
-  const lusdGain = originalStake.lusdGain.nonZero?.prettify().concat(" ", COIN);
+  const kusdGain = originalStake.kusdGain.nonZero?.prettify().concat(" ", COIN);
 
   if (originalStake.isEmpty && stakeLQTY) {
     return (
@@ -96,17 +96,17 @@ const StakingManagerActionDescription: React.FC<StakingManagerActionDescriptionP
           You are withdrawing <Amount>{unstakeLQTY}</Amount> to your wallet
         </>
       )}
-      {(collateralGain || lusdGain) && (
+      {(collateralGain || kusdGain) && (
         <>
           {" "}
           and claiming{" "}
-          {collateralGain && lusdGain ? (
+          {collateralGain && kusdGain ? (
             <>
-              <Amount>{collateralGain}</Amount> and <Amount>{lusdGain}</Amount>
+              <Amount>{collateralGain}</Amount> and <Amount>{kusdGain}</Amount>
             </>
           ) : (
             <>
-              <Amount>{collateralGain ?? lusdGain}</Amount>
+              <Amount>{collateralGain ?? kusdGain}</Amount>
             </>
           )}
         </>

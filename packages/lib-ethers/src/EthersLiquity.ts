@@ -210,14 +210,14 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableLiquity
     return this._readable.getRemainingStabilityPoolLQTYReward(overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableLiquity.getLUSDInStabilityPool} */
-  getLUSDInStabilityPool(overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._readable.getLUSDInStabilityPool(overrides);
+  /** {@inheritDoc @liquity/lib-base#ReadableLiquity.getKUSDInStabilityPool} */
+  getKUSDInStabilityPool(overrides?: EthersCallOverrides): Promise<Decimal> {
+    return this._readable.getKUSDInStabilityPool(overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableLiquity.getLUSDBalance} */
-  getLUSDBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._readable.getLUSDBalance(address, overrides);
+  /** {@inheritDoc @liquity/lib-base#ReadableLiquity.getKUSDBalance} */
+  getKUSDBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+    return this._readable.getKUSDBalance(address, overrides);
   }
 
   /** {@inheritDoc @liquity/lib-base#ReadableLiquity.getLQTYBalance} */
@@ -386,32 +386,32 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableLiquity
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableLiquity.borrowLUSD}
+   * {@inheritDoc @liquity/lib-base#TransactableLiquity.borrowKUSD}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
-  borrowLUSD(
+  borrowKUSD(
     amount: Decimalish,
     maxBorrowingRate?: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<TroveAdjustmentDetails> {
-    return this.send.borrowLUSD(amount, maxBorrowingRate, overrides).then(waitForSuccess);
+    return this.send.borrowKUSD(amount, maxBorrowingRate, overrides).then(waitForSuccess);
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableLiquity.repayLUSD}
+   * {@inheritDoc @liquity/lib-base#TransactableLiquity.repayKUSD}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
-  repayLUSD(
+  repayKUSD(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<TroveAdjustmentDetails> {
-    return this.send.repayLUSD(amount, overrides).then(waitForSuccess);
+    return this.send.repayKUSD(amount, overrides).then(waitForSuccess);
   }
 
   /** @internal */
@@ -448,32 +448,32 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableLiquity
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableLiquity.depositLUSDInStabilityPool}
+   * {@inheritDoc @liquity/lib-base#TransactableLiquity.depositKUSDInStabilityPool}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
-  depositLUSDInStabilityPool(
+  depositKUSDInStabilityPool(
     amount: Decimalish,
     frontendTag?: string,
     overrides?: EthersTransactionOverrides
   ): Promise<StabilityDepositChangeDetails> {
-    return this.send.depositLUSDInStabilityPool(amount, frontendTag, overrides).then(waitForSuccess);
+    return this.send.depositKUSDInStabilityPool(amount, frontendTag, overrides).then(waitForSuccess);
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableLiquity.withdrawLUSDFromStabilityPool}
+   * {@inheritDoc @liquity/lib-base#TransactableLiquity.withdrawKUSDFromStabilityPool}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
-  withdrawLUSDFromStabilityPool(
+  withdrawKUSDFromStabilityPool(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<StabilityDepositChangeDetails> {
-    return this.send.withdrawLUSDFromStabilityPool(amount, overrides).then(waitForSuccess);
+    return this.send.withdrawKUSDFromStabilityPool(amount, overrides).then(waitForSuccess);
   }
 
   /**
@@ -503,18 +503,18 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableLiquity
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableLiquity.sendLUSD}
+   * {@inheritDoc @liquity/lib-base#TransactableLiquity.sendKUSD}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
-  sendLUSD(
+  sendKUSD(
     toAddress: string,
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<void> {
-    return this.send.sendLUSD(toAddress, amount, overrides).then(waitForSuccess);
+    return this.send.sendKUSD(toAddress, amount, overrides).then(waitForSuccess);
   }
 
   /**
@@ -533,18 +533,18 @@ export class EthersLiquity implements ReadableEthersLiquity, TransactableLiquity
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableLiquity.redeemLUSD}
+   * {@inheritDoc @liquity/lib-base#TransactableLiquity.redeemKUSD}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
-  redeemLUSD(
+  redeemKUSD(
     amount: Decimalish,
     maxRedemptionRate?: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<RedemptionDetails> {
-    return this.send.redeemLUSD(amount, maxRedemptionRate, overrides).then(waitForSuccess);
+    return this.send.redeemKUSD(amount, maxRedemptionRate, overrides).then(waitForSuccess);
   }
 
   /**

@@ -78,8 +78,8 @@ dataSources:
       eventHandlers:
         - event: TroveUpdated(indexed address,uint256,uint256,uint256,uint8)
           handler: handleTroveUpdated
-        - event: LUSDBorrowingFeePaid(indexed address,uint256)
-          handler: handleLUSDBorrowingFeePaid
+        - event: KUSDBorrowingFeePaid(indexed address,uint256)
+          handler: handleKUSDBorrowingFeePaid
   - name: PriceFeed
     kind: ethereum/contract
     network: mainnet
@@ -187,7 +187,7 @@ dataSources:
         - event: StakingGainsWithdrawn(indexed address,uint256,uint256)
           handler: handleStakeGainsWithdrawn
 ${[
-  ["LUSDToken", addresses.lusdToken],
+  ["KUSDToken", addresses.kusdToken],
   ["LQTYToken", addresses.lqtyToken]
 ].map(
   ([name, address]) => yaml`

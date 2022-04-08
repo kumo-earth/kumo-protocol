@@ -67,11 +67,11 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_F_LUSD",
+          "name": "_F_KUSD",
           "type": "uint256"
         }
       ],
-      "name": "F_LUSDUpdated",
+      "name": "F_KUSDUpdated",
       "type": "event"
     },
     {
@@ -93,11 +93,11 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_lusdTokenAddress",
+          "name": "_kusdTokenAddress",
           "type": "address"
         }
       ],
-      "name": "LUSDTokenAddressSet",
+      "name": "KUSDTokenAddressSet",
       "type": "event"
     },
     {
@@ -156,7 +156,7 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_F_LUSD",
+          "name": "_F_KUSD",
           "type": "uint256"
         }
       ],
@@ -175,7 +175,7 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "LUSDGain",
+          "name": "KUSDGain",
           "type": "uint256"
         },
         {
@@ -242,7 +242,7 @@
     },
     {
       "inputs": [],
-      "name": "F_LUSD",
+      "name": "F_KUSD",
       "outputs": [
         {
           "internalType": "uint256",
@@ -319,7 +319,7 @@
           "type": "address"
         }
       ],
-      "name": "getPendingLUSDGain",
+      "name": "getPendingKUSDGain",
       "outputs": [
         {
           "internalType": "uint256",
@@ -347,11 +347,11 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_LUSDFee",
+          "name": "_KUSDFee",
           "type": "uint256"
         }
       ],
-      "name": "increaseF_LUSD",
+      "name": "increaseF_KUSD",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -384,10 +384,10 @@
     },
     {
       "inputs": [],
-      "name": "lusdToken",
+      "name": "kusdToken",
       "outputs": [
         {
-          "internalType": "contract ILUSDToken",
+          "internalType": "contract IKUSDToken",
           "name": "",
           "type": "address"
         }
@@ -424,7 +424,7 @@
         },
         {
           "internalType": "address",
-          "name": "_lusdTokenAddress",
+          "name": "_kusdTokenAddress",
           "type": "address"
         },
         {
@@ -465,7 +465,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "F_LUSD_Snapshot",
+          "name": "F_KUSD_Snapshot",
           "type": "uint256"
         }
       ],

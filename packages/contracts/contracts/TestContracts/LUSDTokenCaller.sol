@@ -2,28 +2,28 @@
 
 pragma solidity 0.8.11;
 
-import "../Interfaces/ILUSDToken.sol";
+import "../Interfaces/IKUSDToken.sol";
 
-contract LUSDTokenCaller {
-    ILUSDToken LUSD;
+contract KUSDTokenCaller {
+    IKUSDToken KUSD;
 
-    function setLUSD(ILUSDToken _LUSD) external {
-        LUSD = _LUSD;
+    function setKUSD(IKUSDToken _KUSD) external {
+        KUSD = _KUSD;
     }
 
-    function lusdMint(address _account, uint _amount) external {
-        LUSD.mint(_account, _amount);
+    function kusdMint(address _account, uint _amount) external {
+        KUSD.mint(_account, _amount);
     }
 
-    function lusdBurn(address _account, uint _amount) external {
-        LUSD.burn(_account, _amount);
+    function kusdBurn(address _account, uint _amount) external {
+        KUSD.burn(_account, _amount);
     }
 
-    function lusdSendToPool(address _sender,  address _poolAddress, uint256 _amount) external {
-        LUSD.sendToPool(_sender, _poolAddress, _amount);
+    function kusdSendToPool(address _sender,  address _poolAddress, uint256 _amount) external {
+        KUSD.sendToPool(_sender, _poolAddress, _amount);
     }
 
-    function lusdReturnFromPool(address _poolAddress, address _receiver, uint256 _amount ) external {
-        LUSD.returnFromPool(_poolAddress, _receiver, _amount);
+    function kusdReturnFromPool(address _poolAddress, address _receiver, uint256 _amount ) external {
+        KUSD.returnFromPool(_poolAddress, _receiver, _amount);
     }
 }

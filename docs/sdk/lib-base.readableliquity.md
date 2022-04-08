@@ -23,12 +23,12 @@ Implemented by [EthersLiquity](./lib-ethers.ethersliquity.md)<!-- -->.
 |  [getCollateralSurplusBalance(address)](./lib-base.readableliquity.getcollateralsurplusbalance.md) | Get the amount of leftover collateral available for withdrawal by an address. |
 |  [getFees()](./lib-base.readableliquity.getfees.md) | Get a calculator for current fees. |
 |  [getFrontendStatus(address)](./lib-base.readableliquity.getfrontendstatus.md) | Check whether an address is registered as a Liquity frontend, and what its kickback rate is. |
+|  [getKUSDBalance(address)](./lib-base.readableliquity.getkusdbalance.md) | Get the amount of KUSD held by an address. |
+|  [getKUSDInStabilityPool()](./lib-base.readableliquity.getkusdinstabilitypool.md) | Get the total amount of KUSD currently deposited in the Stability Pool. |
 |  [getLiquidityMiningLQTYReward(address)](./lib-base.readableliquity.getliquiditymininglqtyreward.md) | Get the amount of LQTY earned by an address through mining liquidity. |
-|  [getLiquidityMiningStake(address)](./lib-base.readableliquity.getliquidityminingstake.md) | Get the amount of Uniswap ETH/LUSD LP tokens currently staked by an address in liquidity mining. |
+|  [getLiquidityMiningStake(address)](./lib-base.readableliquity.getliquidityminingstake.md) | Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in liquidity mining. |
 |  [getLQTYBalance(address)](./lib-base.readableliquity.getlqtybalance.md) | Get the amount of LQTY held by an address. |
 |  [getLQTYStake(address)](./lib-base.readableliquity.getlqtystake.md) | Get the current state of an LQTY Stake. |
-|  [getLUSDBalance(address)](./lib-base.readableliquity.getlusdbalance.md) | Get the amount of LUSD held by an address. |
-|  [getLUSDInStabilityPool()](./lib-base.readableliquity.getlusdinstabilitypool.md) | Get the total amount of LUSD currently deposited in the Stability Pool. |
 |  [getNumberOfTroves()](./lib-base.readableliquity.getnumberoftroves.md) | Get number of Troves that are currently open. |
 |  [getPrice()](./lib-base.readableliquity.getprice.md) | Get the current price of the native currency (e.g. Ether) in USD. |
 |  [getRemainingLiquidityMiningLQTYReward()](./lib-base.readableliquity.getremainingliquiditymininglqtyreward.md) | Get the remaining LQTY that will be collectively rewarded to liquidity miners. |
@@ -37,10 +37,10 @@ Implemented by [EthersLiquity](./lib-ethers.ethersliquity.md)<!-- -->.
 |  [getTotal()](./lib-base.readableliquity.gettotal.md) | Get the total amount of collateral and debt in the Liquity system. |
 |  [getTotalRedistributed()](./lib-base.readableliquity.gettotalredistributed.md) | Get the total collateral and debt per stake that has been liquidated through redistribution. |
 |  [getTotalStakedLQTY()](./lib-base.readableliquity.gettotalstakedlqty.md) | Get the total amount of LQTY currently staked. |
-|  [getTotalStakedUniTokens()](./lib-base.readableliquity.gettotalstakedunitokens.md) | Get the total amount of Uniswap ETH/LUSD LP tokens currently staked in liquidity mining. |
+|  [getTotalStakedUniTokens()](./lib-base.readableliquity.gettotalstakedunitokens.md) | Get the total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining. |
 |  [getTrove(address)](./lib-base.readableliquity.gettrove.md) | Get the current state of a Trove. |
 |  [getTroveBeforeRedistribution(address)](./lib-base.readableliquity.gettrovebeforeredistribution.md) | Get a Trove in its state after the last direct modification. |
 |  [getTroves(params)](./lib-base.readableliquity.gettroves_1.md) | Get a slice from the list of Troves. |
-|  [getUniTokenAllowance(address)](./lib-base.readableliquity.getunitokenallowance.md) | Get the liquidity mining contract's allowance of a holder's Uniswap ETH/LUSD LP tokens. |
-|  [getUniTokenBalance(address)](./lib-base.readableliquity.getunitokenbalance.md) | Get the amount of Uniswap ETH/LUSD LP tokens held by an address. |
+|  [getUniTokenAllowance(address)](./lib-base.readableliquity.getunitokenallowance.md) | Get the liquidity mining contract's allowance of a holder's Uniswap ETH/KUSD LP tokens. |
+|  [getUniTokenBalance(address)](./lib-base.readableliquity.getunitokenbalance.md) | Get the amount of Uniswap ETH/KUSD LP tokens held by an address. |
 

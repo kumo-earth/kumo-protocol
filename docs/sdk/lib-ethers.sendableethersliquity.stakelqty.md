@@ -25,5 +25,5 @@ Promise&lt;[SentEthersLiquityTransaction](./lib-ethers.sentethersliquitytransact
 
 ## Remarks
 
-As a side-effect, the transaction will also pay out an existing LQTY stake's [collateral gain](./lib-base.lqtystake.collateralgain.md) and [LUSD gain](./lib-base.lqtystake.lusdgain.md)<!-- -->.
+As a side-effect, the transaction will also pay out an existing LQTY stake's [collateral gain](./lib-base.lqtystake.collateralgain.md) and [KUSD gain](./lib-base.lqtystake.kusdgain.md)<!-- -->.
 

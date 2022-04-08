@@ -4,7 +4,7 @@
 
 ## SendableEthersLiquity.unstakeUniTokens() method
 
-Withdraw Uniswap ETH/LUSD LP tokens from liquidity mining.
+Withdraw Uniswap ETH/KUSD LP tokens from liquidity mining.
 
 <b>Signature:</b>
 

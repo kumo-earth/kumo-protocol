@@ -100,7 +100,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_LUSDLoss",
+        "name": "_KUSDLoss",
         "type": "uint256"
       }
     ],
@@ -256,6 +256,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_newKUSDTokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "KUSDTokenAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "_depositor",
@@ -288,19 +301,6 @@
       }
     ],
     "name": "LQTYPaidToFrontEnd",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_newLUSDTokenAddress",
-        "type": "address"
-      }
-    ],
-    "name": "LUSDTokenAddressChanged",
     "type": "event"
   },
   {
@@ -422,7 +422,7 @@
         "type": "uint256"
       }
     ],
-    "name": "StabilityPoolLUSDBalanceUpdated",
+    "name": "StabilityPoolKUSDBalanceUpdated",
     "type": "event"
   },
   {
@@ -511,7 +511,7 @@
   },
   {
     "inputs": [],
-    "name": "LUSD_GAS_COMPENSATION",
+    "name": "KUSD_GAS_COMPENSATION",
     "outputs": [
       {
         "internalType": "uint256",
@@ -911,7 +911,7 @@
         "type": "address"
       }
     ],
-    "name": "getCompoundedLUSDDeposit",
+    "name": "getCompoundedKUSDDeposit",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1020,7 +1020,7 @@
   },
   {
     "inputs": [],
-    "name": "getTotalLUSDDeposits",
+    "name": "getTotalKUSDDeposits",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1046,7 +1046,33 @@
   },
   {
     "inputs": [],
+    "name": "kusdToken",
+    "outputs": [
+      {
+        "internalType": "contract IKUSDToken",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "lastETHError_Offset",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "lastKUSDLossError_Offset",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1065,32 +1091,6 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "lastLUSDLossError_Offset",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "lusdToken",
-    "outputs": [
-      {
-        "internalType": "contract ILUSDToken",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -1190,7 +1190,7 @@
       },
       {
         "internalType": "address",
-        "name": "_lusdTokenAddress",
+        "name": "_kusdTokenAddress",
         "type": "address"
       },
       {

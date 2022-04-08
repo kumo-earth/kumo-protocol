@@ -164,46 +164,46 @@ export class ObservableEthersLiquity implements ObservableLiquity {
     };
   }
 
-  watchLUSDInStabilityPool(
-    onLUSDInStabilityPoolChanged: (lusdInStabilityPool: Decimal) => void
+  watchKUSDInStabilityPool(
+    onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void
   ): () => void {
-    const { lusdToken, stabilityPool } = _getContracts(this._readable.connection);
-    const { Transfer } = lusdToken.filters;
+    const { kusdToken, stabilityPool } = _getContracts(this._readable.connection);
+    const { Transfer } = kusdToken.filters;
 
-    const transferLUSDFromStabilityPool = Transfer(stabilityPool.address);
-    const transferLUSDToStabilityPool = Transfer(null, stabilityPool.address);
+    const transferKUSDFromStabilityPool = Transfer(stabilityPool.address);
+    const transferKUSDToStabilityPool = Transfer(null, stabilityPool.address);
 
-    const stabilityPoolLUSDFilters = [transferLUSDFromStabilityPool, transferLUSDToStabilityPool];
+    const stabilityPoolKUSDFilters = [transferKUSDFromStabilityPool, transferKUSDToStabilityPool];
 
-    const stabilityPoolLUSDListener = debounce((blockTag: number) => {
-      this._readable.getLUSDInStabilityPool({ blockTag }).then(onLUSDInStabilityPoolChanged);
+    const stabilityPoolKUSDListener = debounce((blockTag: number) => {
+      this._readable.getKUSDInStabilityPool({ blockTag }).then(onKUSDInStabilityPoolChanged);
     });
 
-    stabilityPoolLUSDFilters.forEach(filter => lusdToken.on(filter, stabilityPoolLUSDListener));
+    stabilityPoolKUSDFilters.forEach(filter => kusdToken.on(filter, stabilityPoolKUSDListener));
 
     return () =>
-      stabilityPoolLUSDFilters.forEach(filter =>
-        lusdToken.removeListener(filter, stabilityPoolLUSDListener)
+      stabilityPoolKUSDFilters.forEach(filter =>
+        kusdToken.removeListener(filter, stabilityPoolKUSDListener)
       );
   }
 
-  watchLUSDBalance(onLUSDBalanceChanged: (balance: Decimal) => void, address?: string): () => void {
+  watchKUSDBalance(onKUSDBalanceChanged: (balance: Decimal) => void, address?: string): () => void {
     address ??= _requireAddress(this._readable.connection);
 
-    const { lusdToken } = _getContracts(this._readable.connection);
-    const { Transfer } = lusdToken.filters;
-    const transferLUSDFromUser = Transfer(address);
-    const transferLUSDToUser = Transfer(null, address);
+    const { kusdToken } = _getContracts(this._readable.connection);
+    const { Transfer } = kusdToken.filters;
+    const transferKUSDFromUser = Transfer(address);
+    const transferKUSDToUser = Transfer(null, address);
 
-    const lusdTransferFilters = [transferLUSDFromUser, transferLUSDToUser];
+    const kusdTransferFilters = [transferKUSDFromUser, transferKUSDToUser];
 
-    const lusdTransferListener = debounce((blockTag: number) => {
-      this._readable.getLUSDBalance(address, { blockTag }).then(onLUSDBalanceChanged);
+    const kusdTransferListener = debounce((blockTag: number) => {
+      this._readable.getKUSDBalance(address, { blockTag }).then(onKUSDBalanceChanged);
     });
 
-    lusdTransferFilters.forEach(filter => lusdToken.on(filter, lusdTransferListener));
+    kusdTransferFilters.forEach(filter => kusdToken.on(filter, kusdTransferListener));
 
     return () =>
-      lusdTransferFilters.forEach(filter => lusdToken.removeListener(filter, lusdTransferListener));
+      kusdTransferFilters.forEach(filter => kusdToken.removeListener(filter, kusdTransferListener));
   }
 }

@@ -16,17 +16,17 @@ import { RemainingLQTY } from "./RemainingLQTY";
 import { Yield } from "./Yield";
 import { InfoIcon } from "../InfoIcon";
 
-const selector = ({ stabilityDeposit, trove, lusdInStabilityPool }: LiquityStoreState) => ({
+const selector = ({ stabilityDeposit, trove, kusdInStabilityPool }: LiquityStoreState) => ({
   stabilityDeposit,
   trove,
-  lusdInStabilityPool
+  kusdInStabilityPool
 });
 
 export const ActiveDeposit: React.FC = () => {
   const { dispatchEvent } = useStabilityView();
-  const { stabilityDeposit, trove, lusdInStabilityPool } = useLiquitySelector(selector);
+  const { stabilityDeposit, trove, kusdInStabilityPool } = useLiquitySelector(selector);
 
-  const poolShare = stabilityDeposit.currentLUSD.mulDiv(100, lusdInStabilityPool);
+  const poolShare = stabilityDeposit.currentKUSD.mulDiv(100, kusdInStabilityPool);
 
   const handleAdjustDeposit = useCallback(() => {
     dispatchEvent("ADJUST_DEPOSIT_PRESSED");
@@ -62,8 +62,8 @@ export const ActiveDeposit: React.FC = () => {
         <Box>
           <DisabledEditableRow
             label="Deposit"
-            inputId="deposit-lusd"
-            amount={stabilityDeposit.currentLUSD.prettify()}
+            inputId="deposit-kusd"
+            amount={stabilityDeposit.currentKUSD.prettify()}
             unit={COIN}
           />
 

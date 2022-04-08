@@ -7,25 +7,25 @@ interface ILQTYStaking {
     // --- Events --
     
     event LQTYTokenAddressSet(address _lqtyTokenAddress);
-    event LUSDTokenAddressSet(address _lusdTokenAddress);
+    event KUSDTokenAddressSet(address _kusdTokenAddress);
     event TroveManagerAddressSet(address _troveManager);
     event BorrowerOperationsAddressSet(address _borrowerOperationsAddress);
     event ActivePoolAddressSet(address _activePoolAddress);
 
     event StakeChanged(address indexed staker, uint newStake);
-    event StakingGainsWithdrawn(address indexed staker, uint LUSDGain, uint ETHGain);
+    event StakingGainsWithdrawn(address indexed staker, uint KUSDGain, uint ETHGain);
     event F_ETHUpdated(uint _F_ETH);
-    event F_LUSDUpdated(uint _F_LUSD);
+    event F_KUSDUpdated(uint _F_KUSD);
     event TotalLQTYStakedUpdated(uint _totalLQTYStaked);
     event EtherSent(address _account, uint _amount);
-    event StakerSnapshotsUpdated(address _staker, uint _F_ETH, uint _F_LUSD);
+    event StakerSnapshotsUpdated(address _staker, uint _F_ETH, uint _F_KUSD);
 
     // --- Functions ---
 
     function setAddresses
     (
         address _lqtyTokenAddress,
-        address _lusdTokenAddress,
+        address _kusdTokenAddress,
         address _troveManagerAddress, 
         address _borrowerOperationsAddress,
         address _activePoolAddress
@@ -37,9 +37,9 @@ interface ILQTYStaking {
 
     function increaseF_ETH(uint _ETHFee) external; 
 
-    function increaseF_LUSD(uint _LQTYFee) external;  
+    function increaseF_KUSD(uint _LQTYFee) external;  
 
     function getPendingETHGain(address _user) external view returns (uint);
 
-    function getPendingLUSDGain(address _user) external view returns (uint);
+    function getPendingKUSDGain(address _user) external view returns (uint);
 }

@@ -11,7 +11,7 @@ contract('All Liquity functions with onlyOwner modifier', async accounts => {
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
   
   let contracts
-  let lusdToken
+  let kusdToken
   let sortedTroves
   let troveManager
   let activePool
@@ -27,10 +27,10 @@ contract('All Liquity functions with onlyOwner modifier', async accounts => {
   before(async () => {
     contracts = await deploymentHelper.deployLiquityCore()
     contracts.borrowerOperations = await BorrowerOperationsTester.new()
-    contracts = await deploymentHelper.deployLUSDToken(contracts)
+    contracts = await deploymentHelper.deployKUSDToken(contracts)
     const LQTYContracts = await deploymentHelper.deployLQTYContracts(bountyAddress, lpRewardsAddress, multisig)
 
-    lusdToken = contracts.lusdToken
+    kusdToken = contracts.kusdToken
     sortedTroves = contracts.sortedTroves
     troveManager = contracts.troveManager
     activePool = contracts.activePool

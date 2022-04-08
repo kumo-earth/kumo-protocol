@@ -13,7 +13,7 @@ import GasPool from "../../contracts/artifacts/contracts/GasPool.sol/GasPool.jso
 import HintHelpers from "../../contracts/artifacts/contracts/HintHelpers.sol/HintHelpers.json";
 import IERC20 from "../../contracts/artifacts/@openzeppelin/contracts/token/ERC20/IERC20.sol/IERC20.json";
 import LockupContractFactory from "../../contracts/artifacts/contracts/LQTY/LockupContractFactory.sol/LockupContractFactory.json";
-import LUSDToken from "../../contracts/artifacts/contracts/LUSDToken.sol/LUSDToken.json";
+import KUSDToken from "../../contracts/artifacts/contracts/KUSDToken.sol/KUSDToken.json";
 import LQTYStaking from "../../contracts/artifacts/contracts/LQTY/LQTYStaking.sol/LQTYStaking.json";
 import LQTYToken from "../../contracts/artifacts/contracts/LQTY/LQTYToken.sol/LQTYToken.json";
 import MultiTroveGetter from "../../contracts/artifacts/contracts/MultiTroveGetter.sol/MultiTroveGetter.json";
@@ -153,7 +153,7 @@ const contractArtifacts = [
   HintHelpers,
   IERC20,
   LockupContractFactory,
-  LUSDToken,
+  KUSDToken,
   LQTYStaking,
   LQTYToken,
   MultiTroveGetter,

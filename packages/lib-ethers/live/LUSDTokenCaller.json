@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "LUSDTokenCaller",
-  "sourceName": "contracts/TestContracts/LUSDTokenCaller.sol",
+  "contractName": "KUSDTokenCaller",
+  "sourceName": "contracts/TestContracts/KUSDTokenCaller.sol",
   "abi": [
     {
       "inputs": [
@@ -16,7 +16,7 @@
           "type": "uint256"
         }
       ],
-      "name": "lusdBurn",
+      "name": "kusdBurn",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -34,7 +34,7 @@
           "type": "uint256"
         }
       ],
-      "name": "lusdMint",
+      "name": "kusdMint",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -57,7 +57,7 @@
           "type": "uint256"
         }
       ],
-      "name": "lusdReturnFromPool",
+      "name": "kusdReturnFromPool",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -80,7 +80,7 @@
           "type": "uint256"
         }
       ],
-      "name": "lusdSendToPool",
+      "name": "kusdSendToPool",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -88,12 +88,12 @@
     {
       "inputs": [
         {
-          "internalType": "contract ILUSDToken",
-          "name": "_LUSD",
+          "internalType": "contract IKUSDToken",
+          "name": "_KUSD",
           "type": "address"
         }
       ],
-      "name": "setLUSD",
+      "name": "setKUSD",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

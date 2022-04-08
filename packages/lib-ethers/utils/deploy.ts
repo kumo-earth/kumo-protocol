@@ -109,10 +109,10 @@ const deployContracts = async (
   return [
     {
       ...addresses,
-      lusdToken: await deployContract(
+      kusdToken: await deployContract(
         deployer,
         getContractFactory,
-        "LUSDToken",
+        "KUSDToken",
         addresses.troveManager,
         addresses.stabilityPool,
         addresses.borrowerOperations,
@@ -159,7 +159,7 @@ const connectContracts = async (
     activePool,
     borrowerOperations,
     troveManager,
-    lusdToken,
+    kusdToken,
     collSurplusPool,
     communityIssuance,
     defaultPool,
@@ -199,7 +199,7 @@ const connectContracts = async (
         gasPool.address,
         collSurplusPool.address,
         priceFeed.address,
-        lusdToken.address,
+        kusdToken.address,
         sortedTroves.address,
         lqtyToken.address,
         lqtyStaking.address,
@@ -216,7 +216,7 @@ const connectContracts = async (
         collSurplusPool.address,
         priceFeed.address,
         sortedTroves.address,
-        lusdToken.address,
+        kusdToken.address,
         lqtyStaking.address,
         { ...overrides, nonce }
       ),
@@ -226,7 +226,7 @@ const connectContracts = async (
         borrowerOperations.address,
         troveManager.address,
         activePool.address,
-        lusdToken.address,
+        kusdToken.address,
         sortedTroves.address,
         priceFeed.address,
         communityIssuance.address,
@@ -265,7 +265,7 @@ const connectContracts = async (
     nonce =>
       lqtyStaking.setAddresses(
         lqtyToken.address,
-        lusdToken.address,
+        kusdToken.address,
         troveManager.address,
         borrowerOperations.address,
         activePool.address,
@@ -347,7 +347,7 @@ export const deployAndSetupContracts = async (
           ...addresses,
 
           uniToken: await (wethAddress
-            ? createUniswapV2Pair(deployer, wethAddress, addresses.lusdToken, overrides)
+            ? createUniswapV2Pair(deployer, wethAddress, addresses.kusdToken, overrides)
             : deployMockUniToken(deployer, getContractFactory, overrides))
         }
       })

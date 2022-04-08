@@ -93,7 +93,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "_LUSDAmount",
+          "name": "_KUSDAmount",
           "type": "uint256"
         },
         {
@@ -130,7 +130,7 @@
           "type": "address"
         }
       ],
-      "name": "repayLUSD",
+      "name": "repayKUSD",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -181,7 +181,7 @@
           "type": "address"
         }
       ],
-      "name": "withdrawLUSD",
+      "name": "withdrawKUSD",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
