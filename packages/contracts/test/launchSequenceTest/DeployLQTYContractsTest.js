@@ -152,7 +152,7 @@ contract('Deploying the LQTY contracts: LCF, CI, LQTYStaking, and LQTYToken ', a
         );
         // Check it gives the expected error message for a failed Solidity 'assert'
       } catch (err) {
-        assert.include(err.message, 'Assertion error')
+        assert.include(err.message, 'VM Exception')
       }
     })
   })
