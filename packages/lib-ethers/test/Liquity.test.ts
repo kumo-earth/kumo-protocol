@@ -483,7 +483,7 @@ describe("EthersLiquity", () => {
       const details = await liquity.depositKUSDInStabilityPool(smallStabilityDeposit);
 
       expect(details).to.deep.equal({
-        kusdLoss: Decimal.from(0),
+        KUSDLoss: Decimal.from(0),
         newKUSDDeposit: smallStabilityDeposit,
         collateralGain: Decimal.from(0),
         lqtyReward: Decimal.from(0),
@@ -522,7 +522,7 @@ describe("EthersLiquity", () => {
         liquidatedAddresses: [await otherUsers[0].getAddress()],
 
         collateralGasCompensation: troveWithVeryLowICR.collateral.mul(0.005), // 0.5%
-        kusdGasCompensation: KUSD_LIQUIDATION_RESERVE,
+        KUSDGasCompensation: KUSD_LIQUIDATION_RESERVE,
 
         totalLiquidated: new Trove(
           troveWithVeryLowICR.collateral
@@ -587,7 +587,7 @@ describe("EthersLiquity", () => {
       const details = await liquity.transferCollateralGainToTrove();
 
       expect(details).to.deep.equal({
-        kusdLoss: smallStabilityDeposit,
+        KUSDLoss: smallStabilityDeposit,
         newKUSDDeposit: Decimal.ZERO,
         lqtyReward: Decimal.ZERO,
 
@@ -1374,7 +1374,7 @@ describe("EthersLiquity", () => {
       const borrowingRate = await liquity.getFees().then(fees => fees.borrowingRate());
 
       for (const [borrowingFeeDecayToleranceMinutes, roughGasHeadroom] of [
-        [10, 126000],
+        [10, 127000],
         [20, 240000],
         [30, 319000]
       ]) {
