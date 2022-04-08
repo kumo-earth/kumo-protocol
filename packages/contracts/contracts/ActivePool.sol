@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
+
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import './Interfaces/IActivePool.sol';
 import "./Dependencies/SafeMath.sol";
@@ -15,6 +17,7 @@ import "./Dependencies/console.sol";
  * Stability Pool, the Default Pool, or both, depending on the liquidation conditions.
  *
  */
+ 
 contract ActivePool is Ownable, CheckContract, IActivePool {
     using SafeMath for uint256;
 
@@ -29,10 +32,10 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
 
     // --- Events ---
 
-    event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
-    event TroveManagerAddressChanged(address _newTroveManagerAddress);
-    event ActivePoolLUSDDebtUpdated(uint _LUSDDebt);
-    event ActivePoolETHBalanceUpdated(uint _ETH);
+    // event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
+    // event TroveManagerAddressChanged(address _newTroveManagerAddress);
+    // event ActivePoolLUSDDebtUpdated(uint _LUSDDebt);
+    // event ActivePoolETHBalanceUpdated(uint _ETH);
 
     // --- Contract setters ---
 
@@ -49,6 +52,8 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         checkContract(_troveManagerAddress);
         checkContract(_stabilityPoolAddress);
         checkContract(_defaultPoolAddress);
+
+        // __Ownable_init();
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;
@@ -93,13 +98,13 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     function increaseLUSDDebt(uint _amount) external override {
         _requireCallerIsBOorTroveM();
         LUSDDebt  = LUSDDebt.add(_amount);
-        ActivePoolLUSDDebtUpdated(LUSDDebt);
+        emit ActivePoolLUSDDebtUpdated(LUSDDebt);
     }
 
     function decreaseLUSDDebt(uint _amount) external override {
         _requireCallerIsBOorTroveMorSP();
         LUSDDebt = LUSDDebt.sub(_amount);
-        ActivePoolLUSDDebtUpdated(LUSDDebt);
+        emit ActivePoolLUSDDebtUpdated(LUSDDebt);
     }
 
     // --- 'require' functions ---

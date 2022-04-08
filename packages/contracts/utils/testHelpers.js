@@ -1,4 +1,5 @@
 
+const { expectRevert } = require('@openzeppelin/test-helpers');
 const BN = require('bn.js')
 const LockupContract = artifacts.require(("./LockupContract.sol"))
 const Destructible = artifacts.require("./TestContracts/Destructible.sol")
@@ -1150,19 +1151,23 @@ class TestHelper {
   // --- Assert functions ---
 
   static async assertRevert(txPromise, message = undefined) {
-    try {
-      const tx = await txPromise
-      // console.log("tx succeeded")
-      assert.isFalse(tx.receipt.status) // when this assert fails, the expected revert didn't occur, i.e. the tx succeeded
-    } catch (err) {
-      // console.log("tx failed")
-      assert.include(err.message, "revert")
-      // TODO !!!
+    // const tx = await txPromise
+    // console.log("***************************************+")
+    // console.log("tx: " + tx.receipt.status)
+    await expectRevert.unspecified(txPromise)
+    // try {
+    //   const tx = await txPromise
+    //   // console.log("tx succeeded")
+    //   assert.isFalse(tx.receipt.status) // when this assert fails, the expected revert didn't occur, i.e. the tx succeeded
+    // } catch (err) {
+    //   // console.log("tx failed")
+    //   assert.include(err.message, "revert")
+    //   // TODO !!!
       
-      // if (message) {
-      //   assert.include(err.message, message)
-      // }
-    }
+    //   // if (message) {
+    //   //   assert.include(err.message, message)
+    //   // }
+    // }
   }
 
   static async assertAssert(txPromise) {
@@ -1170,7 +1175,7 @@ class TestHelper {
       const tx = await txPromise
       assert.isFalse(tx.receipt.status) // when this assert fails, the expected revert didn't occur, i.e. the tx succeeded
     } catch (err) {
-      assert.include(err.message, "invalid opcode")
+      assert.include(err.message, "revert")
     }
   }
 

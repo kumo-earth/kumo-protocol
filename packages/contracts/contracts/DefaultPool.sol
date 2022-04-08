@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
+
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import './Interfaces/IDefaultPool.sol';
 import "./Dependencies/SafeMath.sol";
@@ -17,7 +19,8 @@ import "./Dependencies/console.sol";
  */
 contract DefaultPool is Ownable, CheckContract, IDefaultPool {
     using SafeMath for uint256;
-
+	// bool public isInitialized;
+    
     string constant public NAME = "DefaultPool";
 
     address public troveManagerAddress;
@@ -25,9 +28,9 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
     uint256 internal ETH;  // deposited ETH tracker
     uint256 internal LUSDDebt;  // debt
 
-    event TroveManagerAddressChanged(address _newTroveManagerAddress);
-    event DefaultPoolLUSDDebtUpdated(uint _LUSDDebt);
-    event DefaultPoolETHBalanceUpdated(uint _ETH);
+    // event TroveManagerAddressChanged(address _newTroveManagerAddress);
+    // event DefaultPoolLUSDDebtUpdated(uint _LUSDDebt);
+    // event DefaultPoolETHBalanceUpdated(uint _ETH);
 
     // --- Dependency setters ---
 
@@ -36,10 +39,14 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
         address _activePoolAddress
     )
         external
-        onlyOwner
-    {
-        checkContract(_troveManagerAddress);
-        checkContract(_activePoolAddress);
+		onlyOwner
+	{
+		// require(!isInitialized, "Already initialized");
+		checkContract(_troveManagerAddress);
+		checkContract(_activePoolAddress);
+		// isInitialized = true;
+
+		// __Ownable_init();
 
         troveManagerAddress = _troveManagerAddress;
         activePoolAddress = _activePoolAddress;

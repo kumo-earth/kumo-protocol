@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
+
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "../Dependencies/LiquityMath.sol";
 import "../Dependencies/SafeMath.sol";
@@ -72,7 +74,9 @@ contract LPTokenWrapper is ILPTokenWrapper {
  * or first liquidity provider stakes UNIv2 LP tokens into it.
  */
 contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
+    using SafeMath for uint256;
     string constant public NAME = "Unipool";
+    // bool public isInitialized;
 
     uint256 public duration;
     ILQTYToken public lqtyToken;
@@ -101,9 +105,13 @@ contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
         override
         onlyOwner
     {
+        // require(!isInitialized, "Already initialized");
         checkContract(_lqtyTokenAddress);
         checkContract(_uniTokenAddress);
+		// isInitialized = true;
 
+		// __Ownable_init();
+        
         uniToken = IERC20(_uniTokenAddress);
         lqtyToken = ILQTYToken(_lqtyTokenAddress);
         duration = _duration;
