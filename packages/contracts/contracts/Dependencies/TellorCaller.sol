@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
 import "../Interfaces/ITellorCaller.sol";
 import "./ITellor.sol";
@@ -20,7 +20,7 @@ contract TellorCaller is ITellorCaller {
 
     ITellor public tellor;
 
-    constructor (address _tellorMasterAddress) public {
+    constructor (address _tellorMasterAddress)  {
         tellor = ITellor(_tellorMasterAddress);
     }
 

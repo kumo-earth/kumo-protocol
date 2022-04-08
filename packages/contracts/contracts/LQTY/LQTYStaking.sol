@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
+
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "../Dependencies/BaseMath.sol";
 import "../Dependencies/SafeMath.sol";
@@ -15,6 +17,7 @@ import "../Interfaces/ILUSDToken.sol";
 contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
     using SafeMath for uint;
 
+    // bool public isInitialized;
     // --- Data ---
     string constant public NAME = "LQTYStaking";
 
@@ -41,19 +44,19 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
 
     // --- Events ---
 
-    event LQTYTokenAddressSet(address _lqtyTokenAddress);
-    event LUSDTokenAddressSet(address _lusdTokenAddress);
-    event TroveManagerAddressSet(address _troveManager);
-    event BorrowerOperationsAddressSet(address _borrowerOperationsAddress);
-    event ActivePoolAddressSet(address _activePoolAddress);
+    // event LQTYTokenAddressSet(address _lqtyTokenAddress);
+    // event LUSDTokenAddressSet(address _lusdTokenAddress);
+    // event TroveManagerAddressSet(address _troveManager);
+    // event BorrowerOperationsAddressSet(address _borrowerOperationsAddress);
+    // event ActivePoolAddressSet(address _activePoolAddress);
 
-    event StakeChanged(address indexed staker, uint newStake);
-    event StakingGainsWithdrawn(address indexed staker, uint LUSDGain, uint ETHGain);
-    event F_ETHUpdated(uint _F_ETH);
-    event F_LUSDUpdated(uint _F_LUSD);
-    event TotalLQTYStakedUpdated(uint _totalLQTYStaked);
-    event EtherSent(address _account, uint _amount);
-    event StakerSnapshotsUpdated(address _staker, uint _F_ETH, uint _F_LUSD);
+    // event StakeChanged(address indexed staker, uint newStake);
+    // event StakingGainsWithdrawn(address indexed staker, uint LUSDGain, uint ETHGain);
+    // event F_ETHUpdated(uint _F_ETH);
+    // event F_LUSDUpdated(uint _F_LUSD);
+    // event TotalLQTYStakedUpdated(uint _totalLQTYStaked);
+    // event EtherSent(address _account, uint _amount);
+    // event StakerSnapshotsUpdated(address _staker, uint _F_ETH, uint _F_LUSD);
 
     // --- Functions ---
 
@@ -66,14 +69,18 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
         address _activePoolAddress
     ) 
         external 
-        onlyOwner 
+        onlyOwner
         override 
     {
+        // require(!isInitialized, "Already Initialized");
         checkContract(_lqtyTokenAddress);
         checkContract(_lusdTokenAddress);
         checkContract(_troveManagerAddress);
         checkContract(_borrowerOperationsAddress);
         checkContract(_activePoolAddress);
+        // isInitialized = true;
+
+        // __Ownable_init();
 
         lqtyToken = ILQTYToken(_lqtyTokenAddress);
         lusdToken = ILUSDToken(_lusdTokenAddress);

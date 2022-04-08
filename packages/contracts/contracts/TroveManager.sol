@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
 import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/IStabilityPool.sol";
@@ -13,8 +13,13 @@ import "./Dependencies/LiquityBase.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
+import "./Dependencies/SafeMath.sol";
 
 contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
+    using SafeMath for uint256;
+    
+	// bool public isInitialized;
+
     string constant public NAME = "TroveManager";
 
     // --- Connected contract declarations ---
@@ -197,29 +202,29 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
 
     // --- Events ---
 
-    event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
-    event PriceFeedAddressChanged(address _newPriceFeedAddress);
-    event LUSDTokenAddressChanged(address _newLUSDTokenAddress);
-    event ActivePoolAddressChanged(address _activePoolAddress);
-    event DefaultPoolAddressChanged(address _defaultPoolAddress);
-    event StabilityPoolAddressChanged(address _stabilityPoolAddress);
-    event GasPoolAddressChanged(address _gasPoolAddress);
-    event CollSurplusPoolAddressChanged(address _collSurplusPoolAddress);
-    event SortedTrovesAddressChanged(address _sortedTrovesAddress);
-    event LQTYTokenAddressChanged(address _lqtyTokenAddress);
-    event LQTYStakingAddressChanged(address _lqtyStakingAddress);
+    // event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
+    // event PriceFeedAddressChanged(address _newPriceFeedAddress);
+    // event LUSDTokenAddressChanged(address _newLUSDTokenAddress);
+    // event ActivePoolAddressChanged(address _activePoolAddress);
+    // event DefaultPoolAddressChanged(address _defaultPoolAddress);
+    // event StabilityPoolAddressChanged(address _stabilityPoolAddress);
+    // event GasPoolAddressChanged(address _gasPoolAddress);
+    // event CollSurplusPoolAddressChanged(address _collSurplusPoolAddress);
+    // event SortedTrovesAddressChanged(address _sortedTrovesAddress);
+    // event LQTYTokenAddressChanged(address _lqtyTokenAddress);
+    // event LQTYStakingAddressChanged(address _lqtyStakingAddress);
 
-    event Liquidation(uint _liquidatedDebt, uint _liquidatedColl, uint _collGasCompensation, uint _LUSDGasCompensation);
-    event Redemption(uint _attemptedLUSDAmount, uint _actualLUSDAmount, uint _ETHSent, uint _ETHFee);
+    // event Liquidation(uint _liquidatedDebt, uint _liquidatedColl, uint _collGasCompensation, uint _LUSDGasCompensation);
+    // event Redemption(uint _attemptedLUSDAmount, uint _actualLUSDAmount, uint _ETHSent, uint _ETHFee);
     event TroveUpdated(address indexed _borrower, uint _debt, uint _coll, uint _stake, TroveManagerOperation _operation);
     event TroveLiquidated(address indexed _borrower, uint _debt, uint _coll, TroveManagerOperation _operation);
-    event BaseRateUpdated(uint _baseRate);
-    event LastFeeOpTimeUpdated(uint _lastFeeOpTime);
-    event TotalStakesUpdated(uint _newTotalStakes);
-    event SystemSnapshotsUpdated(uint _totalStakesSnapshot, uint _totalCollateralSnapshot);
-    event LTermsUpdated(uint _L_ETH, uint _L_LUSDDebt);
-    event TroveSnapshotsUpdated(uint _L_ETH, uint _L_LUSDDebt);
-    event TroveIndexUpdated(address _borrower, uint _newIndex);
+    // event BaseRateUpdated(uint _baseRate);
+    // event LastFeeOpTimeUpdated(uint _lastFeeOpTime);
+    // event TotalStakesUpdated(uint _newTotalStakes);
+    // event SystemSnapshotsUpdated(uint _totalStakesSnapshot, uint _totalCollateralSnapshot);
+    // event LTermsUpdated(uint _L_ETH, uint _L_LUSDDebt);
+    // event TroveSnapshotsUpdated(uint _L_ETH, uint _L_LUSDDebt);
+    // event TroveIndexUpdated(address _borrower, uint _newIndex);
 
      enum TroveManagerOperation {
         applyPendingRewards,
@@ -248,6 +253,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         override
         onlyOwner
     {
+        // require(!isInitialized, "Already initialized");
         checkContract(_borrowerOperationsAddress);
         checkContract(_activePoolAddress);
         checkContract(_defaultPoolAddress);
@@ -259,6 +265,8 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         checkContract(_sortedTrovesAddress);
         checkContract(_lqtyTokenAddress);
         checkContract(_lqtyStakingAddress);
+        // isInitialized = true;
+		// __Ownable_init();
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         activePool = IActivePool(_activePoolAddress);
@@ -976,7 +984,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         }
 
         // Loop through the Troves starting from the one with lowest collateral ratio until _amount of LUSD is exchanged for collateral
-        if (_maxIterations == 0) { _maxIterations = uint(-1); }
+        if (_maxIterations == 0) { _maxIterations = type(uint256).max; }
         while (currentBorrower != address(0) && totals.remainingLUSD > 0 && _maxIterations > 0) {
             _maxIterations--;
             // Save the address of the Trove preceding the current one, before potentially modifying the list

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
+
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./Interfaces/IPriceFeed.sol";
 import "./Interfaces/ITellorCaller.sol";
@@ -22,6 +24,8 @@ import "./Dependencies/console.sol";
 */
 contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     using SafeMath for uint256;
+
+	// bool public isInitialized;
 
     string constant public NAME = "PriceFeed";
 
@@ -79,7 +83,7 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     // The current status of the PricFeed, which determines the conditions for the next price fetch attempt
     Status public status;
 
-    event LastGoodPriceUpdated(uint _lastGoodPrice);
+    // event LastGoodPriceUpdated(uint _lastGoodPrice);
     event PriceFeedStatusChanged(Status newStatus);
 
     // --- Dependency setters ---
@@ -89,10 +93,13 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
         address _tellorCallerAddress
     )
         external
-        onlyOwner
-    {
+        onlyOwner {
+		// require(!isInitialized);
         checkContract(_priceAggregatorAddress);
         checkContract(_tellorCallerAddress);
+		// isInitialized = true;
+
+		// __Ownable_init();
        
         priceAggregator = AggregatorV3Interface(_priceAggregatorAddress);
         tellorCaller = ITellorCaller(_tellorCallerAddress);
@@ -126,7 +133,7 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     * it uses the last good price seen by Liquity.
     *
     */
-    function fetchPrice() external override returns (uint) {
+    function fetchPrice() external override returns (uint latestprice_) {
         // Get current and previous price data from Chainlink, and current price data from Tellor
         ChainlinkResponse memory chainlinkResponse = _getCurrentChainlinkResponse();
         ChainlinkResponse memory prevChainlinkResponse = _getPrevChainlinkResponse(chainlinkResponse.roundId, chainlinkResponse.decimals);
@@ -139,7 +146,8 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
                 // If Tellor is broken then both oracles are untrusted, so return the last good price
                 if (_tellorIsBroken(tellorResponse)) {
                     _changeStatus(Status.bothOraclesUntrusted);
-                    return lastGoodPrice; 
+                    latestprice_ = lastGoodPrice;
+                    return latestprice_; 
                 }
                 /*
                 * If Tellor is only frozen but otherwise returning valid data, return the last good price.

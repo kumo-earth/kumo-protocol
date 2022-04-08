@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
 import "../Dependencies/CheckContract.sol";
 import "../Interfaces/ILQTYStaking.sol";
@@ -9,7 +9,7 @@ import "../Interfaces/ILQTYStaking.sol";
 contract LQTYStakingScript is CheckContract {
     ILQTYStaking immutable LQTYStaking;
 
-    constructor(address _lqtyStakingAddress) public {
+    constructor (address _lqtyStakingAddress) {
         checkContract(_lqtyStakingAddress);
         LQTYStaking = ILQTYStaking(_lqtyStakingAddress);
     }
