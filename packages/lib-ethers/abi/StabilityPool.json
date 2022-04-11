@@ -256,19 +256,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_newKUSDTokenAddress",
-        "type": "address"
-      }
-    ],
-    "name": "KUSDTokenAddressChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": true,
         "internalType": "address",
         "name": "_depositor",
@@ -301,6 +288,19 @@
       }
     ],
     "name": "KUMOPaidToFrontEnd",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_newKUSDTokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "KUSDTokenAddressChanged",
     "type": "event"
   },
   {
@@ -1072,7 +1072,7 @@
   },
   {
     "inputs": [],
-    "name": "lastKUSDLossError_Offset",
+    "name": "lastKUMOError",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1085,7 +1085,7 @@
   },
   {
     "inputs": [],
-    "name": "lastKUMOError",
+    "name": "lastKUSDLossError_Offset",
     "outputs": [
       {
         "internalType": "uint256",

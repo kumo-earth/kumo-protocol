@@ -10,8 +10,8 @@
 |  --- | --- |
 |  [Decimal](./lib-base.decimal.md) | Fixed-point decimal bignumber with 18 digits of precision. |
 |  [Fees](./lib-base.fees.md) | Calculator for fees. |
-|  [LiquityStore](./lib-base.liquitystore.md) | Abstract base class of Liquity data store implementations. |
 |  [KUMOStake](./lib-base.kumostake.md) | Represents a user's KUMO stake and accrued gains. |
+|  [LiquityStore](./lib-base.liquitystore.md) | Abstract base class of Liquity data store implementations. |
 |  [StabilityDeposit](./lib-base.stabilitydeposit.md) | A Stability Deposit and its accrued gains. |
 |  [TransactionFailedError](./lib-base.transactionfailederror.md) | Thrown by [TransactableLiquity](./lib-base.transactableliquity.md) functions in case of transaction failure. |
 |  [Trove](./lib-base.trove.md) | A combination of collateral and debt. |
@@ -62,9 +62,9 @@
 |  [Decimalish](./lib-base.decimalish.md) | Types that can be converted into a Decimal. |
 |  [FailedReceipt](./lib-base.failedreceipt.md) | Indicates that the transaction has been mined, but it failed. |
 |  [FrontendStatus](./lib-base.frontendstatus.md) | Represents whether an address has been registered as a Liquity frontend. |
+|  [KUMOStakeChange](./lib-base.kumostakechange.md) | Represents the change between two states of an KUMO Stake. |
 |  [LiquityReceipt](./lib-base.liquityreceipt.md) | One of either a [PendingReceipt](./lib-base.pendingreceipt.md)<!-- -->, a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](./lib-base.successfulreceipt.md)<!-- -->. |
 |  [LiquityStoreState](./lib-base.liquitystorestate.md) | Type of [LiquityStore](./lib-base.liquitystore.md)<!-- -->'s [state](./lib-base.liquitystore.state.md)<!-- -->. |
-|  [KUMOStakeChange](./lib-base.kumostakechange.md) | Represents the change between two states of an KUMO Stake. |
 |  [MinedReceipt](./lib-base.minedreceipt.md) | Either a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](./lib-base.successfulreceipt.md)<!-- -->. |
 |  [PendingReceipt](./lib-base.pendingreceipt.md) | Indicates that the transaction hasn't been mined yet. |
 |  [StabilityDepositChange](./lib-base.stabilitydepositchange.md) | Represents the change between two Stability Deposit states. |

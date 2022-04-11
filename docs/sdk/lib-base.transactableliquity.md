@@ -36,8 +36,8 @@ Implemented by [EthersLiquity](./lib-ethers.ethersliquity.md)<!-- -->.
 |  [redeemKUSD(amount, maxRedemptionRate)](./lib-base.transactableliquity.redeemkusd.md) | Redeem KUSD to native currency (e.g. Ether) at face value. |
 |  [registerFrontend(kickbackRate)](./lib-base.transactableliquity.registerfrontend.md) | Register current wallet address as a Liquity frontend. |
 |  [repayKUSD(amount)](./lib-base.transactableliquity.repaykusd.md) | Adjust existing Trove by repaying some of its debt. |
-|  [sendKUSD(toAddress, amount)](./lib-base.transactableliquity.sendkusd.md) | Send KUSD tokens to an address. |
 |  [sendKUMO(toAddress, amount)](./lib-base.transactableliquity.sendkumo.md) | Send KUMO tokens to an address. |
+|  [sendKUSD(toAddress, amount)](./lib-base.transactableliquity.sendkusd.md) | Send KUSD tokens to an address. |
 |  [stakeKUMO(amount)](./lib-base.transactableliquity.stakekumo.md) | Stake KUMO to start earning fee revenue or increase existing stake. |
 |  [stakeUniTokens(amount)](./lib-base.transactableliquity.stakeunitokens.md) | Stake Uniswap ETH/KUSD LP tokens to participate in liquidity mining and earn KUMO. |
 |  [transferCollateralGainToTrove()](./lib-base.transactableliquity.transfercollateralgaintotrove.md) | Transfer [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) from Stability Deposit to Trove. |
@@ -46,6 +46,6 @@ Implemented by [EthersLiquity](./lib-ethers.ethersliquity.md)<!-- -->.
 |  [withdrawCollateral(amount)](./lib-base.transactableliquity.withdrawcollateral.md) | Adjust existing Trove by withdrawing some of its collateral. |
 |  [withdrawGainsFromStabilityPool()](./lib-base.transactableliquity.withdrawgainsfromstabilitypool.md) | Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [KUMO reward](./lib-base.stabilitydeposit.kumoreward.md) from Stability Deposit. |
 |  [withdrawGainsFromStaking()](./lib-base.transactableliquity.withdrawgainsfromstaking.md) | Withdraw [collateral gain](./lib-base.kumostake.collateralgain.md) and [KUSD gain](./lib-base.kumostake.kusdgain.md) from KUMO stake. |
-|  [withdrawKUSDFromStabilityPool(amount)](./lib-base.transactableliquity.withdrawkusdfromstabilitypool.md) | Withdraw KUSD from Stability Deposit. |
 |  [withdrawKUMORewardFromLiquidityMining()](./lib-base.transactableliquity.withdrawkumorewardfromliquiditymining.md) | Withdraw KUMO that has been earned by mining liquidity. |
+|  [withdrawKUSDFromStabilityPool(amount)](./lib-base.transactableliquity.withdrawkusdfromstabilitypool.md) | Withdraw KUSD from Stability Deposit. |
 

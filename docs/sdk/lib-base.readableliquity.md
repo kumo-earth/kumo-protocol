@@ -23,12 +23,12 @@ Implemented by [EthersLiquity](./lib-ethers.ethersliquity.md)<!-- -->.
 |  [getCollateralSurplusBalance(address)](./lib-base.readableliquity.getcollateralsurplusbalance.md) | Get the amount of leftover collateral available for withdrawal by an address. |
 |  [getFees()](./lib-base.readableliquity.getfees.md) | Get a calculator for current fees. |
 |  [getFrontendStatus(address)](./lib-base.readableliquity.getfrontendstatus.md) | Check whether an address is registered as a Liquity frontend, and what its kickback rate is. |
+|  [getKUMOBalance(address)](./lib-base.readableliquity.getkumobalance.md) | Get the amount of KUMO held by an address. |
+|  [getKUMOStake(address)](./lib-base.readableliquity.getkumostake.md) | Get the current state of an KUMO Stake. |
 |  [getKUSDBalance(address)](./lib-base.readableliquity.getkusdbalance.md) | Get the amount of KUSD held by an address. |
 |  [getKUSDInStabilityPool()](./lib-base.readableliquity.getkusdinstabilitypool.md) | Get the total amount of KUSD currently deposited in the Stability Pool. |
 |  [getLiquidityMiningKUMOReward(address)](./lib-base.readableliquity.getliquidityminingkumoreward.md) | Get the amount of KUMO earned by an address through mining liquidity. |
 |  [getLiquidityMiningStake(address)](./lib-base.readableliquity.getliquidityminingstake.md) | Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in liquidity mining. |
-|  [getKUMOBalance(address)](./lib-base.readableliquity.getkumobalance.md) | Get the amount of KUMO held by an address. |
-|  [getKUMOStake(address)](./lib-base.readableliquity.getkumostake.md) | Get the current state of an KUMO Stake. |
 |  [getNumberOfTroves()](./lib-base.readableliquity.getnumberoftroves.md) | Get number of Troves that are currently open. |
 |  [getPrice()](./lib-base.readableliquity.getprice.md) | Get the current price of the native currency (e.g. Ether) in USD. |
 |  [getRemainingLiquidityMiningKUMOReward()](./lib-base.readableliquity.getremainingliquidityminingkumoreward.md) | Get the remaining KUMO that will be collectively rewarded to liquidity miners. |

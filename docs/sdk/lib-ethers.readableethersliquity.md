@@ -31,12 +31,12 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [getCollateralSurplusBalance(address, overrides)](./lib-ethers.readableethersliquity.getcollateralsurplusbalance.md) |  | Get the amount of leftover collateral available for withdrawal by an address. |
 |  [getFees(overrides)](./lib-ethers.readableethersliquity.getfees.md) |  | Get a calculator for current fees. |
 |  [getFrontendStatus(address, overrides)](./lib-ethers.readableethersliquity.getfrontendstatus.md) |  | Check whether an address is registered as a Liquity frontend, and what its kickback rate is. |
+|  [getKUMOBalance(address, overrides)](./lib-ethers.readableethersliquity.getkumobalance.md) |  | Get the amount of KUMO held by an address. |
+|  [getKUMOStake(address, overrides)](./lib-ethers.readableethersliquity.getkumostake.md) |  | Get the current state of an KUMO Stake. |
 |  [getKUSDBalance(address, overrides)](./lib-ethers.readableethersliquity.getkusdbalance.md) |  | Get the amount of KUSD held by an address. |
 |  [getKUSDInStabilityPool(overrides)](./lib-ethers.readableethersliquity.getkusdinstabilitypool.md) |  | Get the total amount of KUSD currently deposited in the Stability Pool. |
 |  [getLiquidityMiningKUMOReward(address, overrides)](./lib-ethers.readableethersliquity.getliquidityminingkumoreward.md) |  | Get the amount of KUMO earned by an address through mining liquidity. |
 |  [getLiquidityMiningStake(address, overrides)](./lib-ethers.readableethersliquity.getliquidityminingstake.md) |  | Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in liquidity mining. |
-|  [getKUMOBalance(address, overrides)](./lib-ethers.readableethersliquity.getkumobalance.md) |  | Get the amount of KUMO held by an address. |
-|  [getKUMOStake(address, overrides)](./lib-ethers.readableethersliquity.getkumostake.md) |  | Get the current state of an KUMO Stake. |
 |  [getNumberOfTroves(overrides)](./lib-ethers.readableethersliquity.getnumberoftroves.md) |  | Get number of Troves that are currently open. |
 |  [getPrice(overrides)](./lib-ethers.readableethersliquity.getprice.md) |  | Get the current price of the native currency (e.g. Ether) in USD. |
 |  [getRemainingLiquidityMiningKUMOReward(overrides)](./lib-ethers.readableethersliquity.getremainingliquidityminingkumoreward.md) |  | Get the remaining KUMO that will be collectively rewarded to liquidity miners. |

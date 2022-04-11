@@ -55,6 +55,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_kumoStakingAddress",
+        "type": "address"
+      }
+    ],
+    "name": "KUMOStakingAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "_borrower",
@@ -81,19 +94,6 @@
       }
     ],
     "name": "KUSDTokenAddressChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_kumoStakingAddress",
-        "type": "address"
-      }
-    ],
-    "name": "KUMOStakingAddressChanged",
     "type": "event"
   },
   {
@@ -509,19 +509,6 @@
   },
   {
     "inputs": [],
-    "name": "kusdToken",
-    "outputs": [
-      {
-        "internalType": "contract IKUSDToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "kumoStaking",
     "outputs": [
       {
@@ -539,6 +526,19 @@
     "outputs": [
       {
         "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "kusdToken",
+    "outputs": [
+      {
+        "internalType": "contract IKUSDToken",
         "name": "",
         "type": "address"
       }

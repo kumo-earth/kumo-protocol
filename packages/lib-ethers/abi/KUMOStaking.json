@@ -76,11 +76,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_kusdTokenAddress",
+        "name": "_kumoTokenAddress",
         "type": "address"
       }
     ],
-    "name": "KUSDTokenAddressSet",
+    "name": "KUMOTokenAddressSet",
     "type": "event"
   },
   {
@@ -89,11 +89,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_kumoTokenAddress",
+        "name": "_kusdTokenAddress",
         "type": "address"
       }
     ],
-    "name": "KUMOTokenAddressSet",
+    "name": "KUSDTokenAddressSet",
     "type": "event"
   },
   {
@@ -367,10 +367,10 @@
   },
   {
     "inputs": [],
-    "name": "kusdToken",
+    "name": "kumoToken",
     "outputs": [
       {
-        "internalType": "contract IKUSDToken",
+        "internalType": "contract IKUMOToken",
         "name": "",
         "type": "address"
       }
@@ -380,10 +380,10 @@
   },
   {
     "inputs": [],
-    "name": "kumoToken",
+    "name": "kusdToken",
     "outputs": [
       {
-        "internalType": "contract IKUMOToken",
+        "internalType": "contract IKUSDToken",
         "name": "",
         "type": "address"
       }

@@ -14,6 +14,10 @@ export class _CachedReadableLiquity<T extends unknown[]> implements _ReadableLiq
     // (undocumented)
     getFrontendStatus(address?: string, ...extraParams: T): Promise<FrontendStatus>;
     // (undocumented)
+    getKUMOBalance(address?: string, ...extraParams: T): Promise<Decimal>;
+    // (undocumented)
+    getKUMOStake(address?: string, ...extraParams: T): Promise<KUMOStake>;
+    // (undocumented)
     getKUSDBalance(address?: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
     getKUSDInStabilityPool(...extraParams: T): Promise<Decimal>;
@@ -21,10 +25,6 @@ export class _CachedReadableLiquity<T extends unknown[]> implements _ReadableLiq
     getLiquidityMiningKUMOReward(address?: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
     getLiquidityMiningStake(address?: string, ...extraParams: T): Promise<Decimal>;
-    // (undocumented)
-    getKUMOBalance(address?: string, ...extraParams: T): Promise<Decimal>;
-    // (undocumented)
-    getKUMOStake(address?: string, ...extraParams: T): Promise<KUMOStake>;
     // (undocumented)
     getNumberOfTroves(...extraParams: T): Promise<number>;
     // (undocumented)
@@ -212,6 +212,32 @@ export type FrontendStatus = {
 };
 
 // @public
+export class KUMOStake {
+    // @internal
+    constructor(stakedKUMO?: Decimal, collateralGain?: Decimal, kusdGain?: Decimal);
+    apply(change: KUMOStakeChange<Decimalish> | undefined): Decimal;
+    readonly collateralGain: Decimal;
+    equals(that: KUMOStake): boolean;
+    // (undocumented)
+    get isEmpty(): boolean;
+    readonly kusdGain: Decimal;
+    readonly stakedKUMO: Decimal;
+    // @internal (undocumented)
+    toString(): string;
+    whatChanged(thatStakedKUMO: Decimalish): KUMOStakeChange<Decimal> | undefined;
+}
+
+// @public
+export type KUMOStakeChange<T> = {
+    stakeKUMO: T;
+    unstakeKUMO?: undefined;
+} | {
+    stakeKUMO?: undefined;
+    unstakeKUMO: T;
+    unstakeAllKUMO: boolean;
+};
+
+// @public
 export const KUSD_LIQUIDATION_RESERVE: Decimal;
 
 // @public
@@ -282,12 +308,12 @@ export interface LiquityStoreBaseState {
     // @internal (undocumented)
     _feesInNormalMode: Fees;
     frontend: FrontendStatus;
+    kumoBalance: Decimal;
+    kumoStake: KUMOStake;
     kusdBalance: Decimal;
     kusdInStabilityPool: Decimal;
     liquidityMiningKUMOReward: Decimal;
     liquidityMiningStake: Decimal;
-    kumoBalance: Decimal;
-    kumoStake: KUMOStake;
     numberOfTroves: number;
     ownFrontend: FrontendStatus;
     price: Decimal;
@@ -323,32 +349,6 @@ export interface LiquityStoreListenerParams<T = unknown> {
 
 // @public
 export type LiquityStoreState<T = unknown> = LiquityStoreBaseState & LiquityStoreDerivedState & T;
-
-// @public
-export class KUMOStake {
-    // @internal
-    constructor(stakedKUMO?: Decimal, collateralGain?: Decimal, kusdGain?: Decimal);
-    apply(change: KUMOStakeChange<Decimalish> | undefined): Decimal;
-    readonly collateralGain: Decimal;
-    equals(that: KUMOStake): boolean;
-    // (undocumented)
-    get isEmpty(): boolean;
-    readonly kusdGain: Decimal;
-    readonly stakedKUMO: Decimal;
-    // @internal (undocumented)
-    toString(): string;
-    whatChanged(thatStakedKUMO: Decimalish): KUMOStakeChange<Decimal> | undefined;
-}
-
-// @public
-export type KUMOStakeChange<T> = {
-    stakeKUMO: T;
-    unstakeKUMO?: undefined;
-} | {
-    stakeKUMO?: undefined;
-    unstakeKUMO: T;
-    unstakeAllKUMO: boolean;
-};
 
 // @public
 export const MAXIMUM_BORROWING_RATE: Decimal;
@@ -458,8 +458,8 @@ export interface PopulatableLiquity<R = unknown, S = unknown, P = unknown> exten
     redeemKUSD(amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<PopulatedRedemption<P, S, R>>;
     registerFrontend(kickbackRate: Decimalish): Promise<PopulatedLiquityTransaction<P, SentLiquityTransaction<S, LiquityReceipt<R, void>>>>;
     repayKUSD(amount: Decimalish): Promise<PopulatedLiquityTransaction<P, SentLiquityTransaction<S, LiquityReceipt<R, TroveAdjustmentDetails>>>>;
-    sendKUSD(toAddress: string, amount: Decimalish): Promise<PopulatedLiquityTransaction<P, SentLiquityTransaction<S, LiquityReceipt<R, void>>>>;
     sendKUMO(toAddress: string, amount: Decimalish): Promise<PopulatedLiquityTransaction<P, SentLiquityTransaction<S, LiquityReceipt<R, void>>>>;
+    sendKUSD(toAddress: string, amount: Decimalish): Promise<PopulatedLiquityTransaction<P, SentLiquityTransaction<S, LiquityReceipt<R, void>>>>;
     // @internal (undocumented)
     setPrice(price: Decimalish): Promise<PopulatedLiquityTransaction<P, SentLiquityTransaction<S, LiquityReceipt<R, void>>>>;
     stakeKUMO(amount: Decimalish): Promise<PopulatedLiquityTransaction<P, SentLiquityTransaction<S, LiquityReceipt<R, void>>>>;
@@ -470,8 +470,8 @@ export interface PopulatableLiquity<R = unknown, S = unknown, P = unknown> exten
     withdrawCollateral(amount: Decimalish): Promise<PopulatedLiquityTransaction<P, SentLiquityTransaction<S, LiquityReceipt<R, TroveAdjustmentDetails>>>>;
     withdrawGainsFromStabilityPool(): Promise<PopulatedLiquityTransaction<P, SentLiquityTransaction<S, LiquityReceipt<R, StabilityPoolGainsWithdrawalDetails>>>>;
     withdrawGainsFromStaking(): Promise<PopulatedLiquityTransaction<P, SentLiquityTransaction<S, LiquityReceipt<R, void>>>>;
-    withdrawKUSDFromStabilityPool(amount: Decimalish): Promise<PopulatedLiquityTransaction<P, SentLiquityTransaction<S, LiquityReceipt<R, StabilityDepositChangeDetails>>>>;
     withdrawKUMORewardFromLiquidityMining(): Promise<PopulatedLiquityTransaction<P, SentLiquityTransaction<S, LiquityReceipt<R, void>>>>;
+    withdrawKUSDFromStabilityPool(amount: Decimalish): Promise<PopulatedLiquityTransaction<P, SentLiquityTransaction<S, LiquityReceipt<R, StabilityDepositChangeDetails>>>>;
 }
 
 // @public
@@ -493,12 +493,12 @@ export interface ReadableLiquity {
     getCollateralSurplusBalance(address?: string): Promise<Decimal>;
     getFees(): Promise<Fees>;
     getFrontendStatus(address?: string): Promise<FrontendStatus>;
+    getKUMOBalance(address?: string): Promise<Decimal>;
+    getKUMOStake(address?: string): Promise<KUMOStake>;
     getKUSDBalance(address?: string): Promise<Decimal>;
     getKUSDInStabilityPool(): Promise<Decimal>;
     getLiquidityMiningKUMOReward(address?: string): Promise<Decimal>;
     getLiquidityMiningStake(address?: string): Promise<Decimal>;
-    getKUMOBalance(address?: string): Promise<Decimal>;
-    getKUMOStake(address?: string): Promise<KUMOStake>;
     getNumberOfTroves(): Promise<number>;
     getPrice(): Promise<Decimal>;
     getRemainingLiquidityMiningKUMOReward(): Promise<Decimal>;
@@ -565,8 +565,8 @@ export interface SendableLiquity<R = unknown, S = unknown> extends _SendableFrom
     redeemKUSD(amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<SentLiquityTransaction<S, LiquityReceipt<R, RedemptionDetails>>>;
     registerFrontend(kickbackRate: Decimalish): Promise<SentLiquityTransaction<S, LiquityReceipt<R, void>>>;
     repayKUSD(amount: Decimalish): Promise<SentLiquityTransaction<S, LiquityReceipt<R, TroveAdjustmentDetails>>>;
-    sendKUSD(toAddress: string, amount: Decimalish): Promise<SentLiquityTransaction<S, LiquityReceipt<R, void>>>;
     sendKUMO(toAddress: string, amount: Decimalish): Promise<SentLiquityTransaction<S, LiquityReceipt<R, void>>>;
+    sendKUSD(toAddress: string, amount: Decimalish): Promise<SentLiquityTransaction<S, LiquityReceipt<R, void>>>;
     // @internal (undocumented)
     setPrice(price: Decimalish): Promise<SentLiquityTransaction<S, LiquityReceipt<R, void>>>;
     stakeKUMO(amount: Decimalish): Promise<SentLiquityTransaction<S, LiquityReceipt<R, void>>>;
@@ -577,8 +577,8 @@ export interface SendableLiquity<R = unknown, S = unknown> extends _SendableFrom
     withdrawCollateral(amount: Decimalish): Promise<SentLiquityTransaction<S, LiquityReceipt<R, TroveAdjustmentDetails>>>;
     withdrawGainsFromStabilityPool(): Promise<SentLiquityTransaction<S, LiquityReceipt<R, StabilityPoolGainsWithdrawalDetails>>>;
     withdrawGainsFromStaking(): Promise<SentLiquityTransaction<S, LiquityReceipt<R, void>>>;
-    withdrawKUSDFromStabilityPool(amount: Decimalish): Promise<SentLiquityTransaction<S, LiquityReceipt<R, StabilityDepositChangeDetails>>>;
     withdrawKUMORewardFromLiquidityMining(): Promise<SentLiquityTransaction<S, LiquityReceipt<R, void>>>;
+    withdrawKUSDFromStabilityPool(amount: Decimalish): Promise<SentLiquityTransaction<S, LiquityReceipt<R, StabilityDepositChangeDetails>>>;
 }
 
 // @public
@@ -624,8 +624,8 @@ export interface StabilityDepositChangeDetails extends StabilityPoolGainsWithdra
 // @public
 export interface StabilityPoolGainsWithdrawalDetails {
     collateralGain: Decimal;
-    KUSDLoss: Decimal;
     kumoReward: Decimal;
+    KUSDLoss: Decimal;
     newKUSDDeposit: Decimal;
 }
 
@@ -655,8 +655,8 @@ export interface TransactableLiquity {
     redeemKUSD(amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<RedemptionDetails>;
     registerFrontend(kickbackRate: Decimalish): Promise<void>;
     repayKUSD(amount: Decimalish): Promise<TroveAdjustmentDetails>;
-    sendKUSD(toAddress: string, amount: Decimalish): Promise<void>;
     sendKUMO(toAddress: string, amount: Decimalish): Promise<void>;
+    sendKUSD(toAddress: string, amount: Decimalish): Promise<void>;
     // @internal (undocumented)
     setPrice(price: Decimalish): Promise<void>;
     stakeKUMO(amount: Decimalish): Promise<void>;
@@ -667,8 +667,8 @@ export interface TransactableLiquity {
     withdrawCollateral(amount: Decimalish): Promise<TroveAdjustmentDetails>;
     withdrawGainsFromStabilityPool(): Promise<StabilityPoolGainsWithdrawalDetails>;
     withdrawGainsFromStaking(): Promise<void>;
-    withdrawKUSDFromStabilityPool(amount: Decimalish): Promise<StabilityDepositChangeDetails>;
     withdrawKUMORewardFromLiquidityMining(): Promise<void>;
+    withdrawKUSDFromStabilityPool(amount: Decimalish): Promise<StabilityDepositChangeDetails>;
 }
 
 // @public

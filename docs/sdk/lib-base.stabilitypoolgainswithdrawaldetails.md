@@ -17,7 +17,7 @@ export interface StabilityPoolGainsWithdrawalDetails
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [collateralGain](./lib-base.stabilitypoolgainswithdrawaldetails.collateralgain.md) | [Decimal](./lib-base.decimal.md) | Amount of native currency (e.g. Ether) paid out to the depositor in this transaction. |
-|  [KUSDLoss](./lib-base.stabilitypoolgainswithdrawaldetails.kusdloss.md) | [Decimal](./lib-base.decimal.md) | Amount of KUSD burned from the deposit by liquidations since the last modification. |
 |  [kumoReward](./lib-base.stabilitypoolgainswithdrawaldetails.kumoreward.md) | [Decimal](./lib-base.decimal.md) | Amount of KUMO rewarded to the depositor in this transaction. |
+|  [KUSDLoss](./lib-base.stabilitypoolgainswithdrawaldetails.kusdloss.md) | [Decimal](./lib-base.decimal.md) | Amount of KUSD burned from the deposit by liquidations since the last modification. |
 |  [newKUSDDeposit](./lib-base.stabilitypoolgainswithdrawaldetails.newkusddeposit.md) | [Decimal](./lib-base.decimal.md) | Amount of KUSD in the deposit directly after this transaction. |
 

@@ -19,12 +19,12 @@ export interface LiquityStoreBaseState
 |  [accountBalance](./lib-base.liquitystorebasestate.accountbalance.md) | [Decimal](./lib-base.decimal.md) | User's native currency balance (e.g. Ether). |
 |  [collateralSurplusBalance](./lib-base.liquitystorebasestate.collateralsurplusbalance.md) | [Decimal](./lib-base.decimal.md) | Amount of leftover collateral available for withdrawal to the user. |
 |  [frontend](./lib-base.liquitystorebasestate.frontend.md) | [FrontendStatus](./lib-base.frontendstatus.md) | Status of currently used frontend. |
+|  [kumoBalance](./lib-base.liquitystorebasestate.kumobalance.md) | [Decimal](./lib-base.decimal.md) | User's KUMO token balance. |
+|  [kumoStake](./lib-base.liquitystorebasestate.kumostake.md) | [KUMOStake](./lib-base.kumostake.md) | User's KUMO stake. |
 |  [kusdBalance](./lib-base.liquitystorebasestate.kusdbalance.md) | [Decimal](./lib-base.decimal.md) | User's KUSD token balance. |
 |  [kusdInStabilityPool](./lib-base.liquitystorebasestate.kusdinstabilitypool.md) | [Decimal](./lib-base.decimal.md) | Total amount of KUSD currently deposited in the Stability Pool. |
 |  [liquidityMiningKUMOReward](./lib-base.liquitystorebasestate.liquidityminingkumoreward.md) | [Decimal](./lib-base.decimal.md) | Amount of KUMO the user has earned through mining liquidity. |
 |  [liquidityMiningStake](./lib-base.liquitystorebasestate.liquidityminingstake.md) | [Decimal](./lib-base.decimal.md) | Amount of Uniswap ETH/KUSD LP tokens the user has staked in liquidity mining. |
-|  [kumoBalance](./lib-base.liquitystorebasestate.kumobalance.md) | [Decimal](./lib-base.decimal.md) | User's KUMO token balance. |
-|  [kumoStake](./lib-base.liquitystorebasestate.kumostake.md) | [KUMOStake](./lib-base.kumostake.md) | User's KUMO stake. |
 |  [numberOfTroves](./lib-base.liquitystorebasestate.numberoftroves.md) | number | Number of Troves that are currently open. |
 |  [ownFrontend](./lib-base.liquitystorebasestate.ownfrontend.md) | [FrontendStatus](./lib-base.frontendstatus.md) | Status of user's own frontend. |
 |  [price](./lib-base.liquitystorebasestate.price.md) | [Decimal](./lib-base.decimal.md) | Current price of the native currency (e.g. Ether) in USD. |

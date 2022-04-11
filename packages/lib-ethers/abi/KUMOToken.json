@@ -319,10 +319,10 @@
   },
   {
     "inputs": [],
-    "name": "lockupContractFactory",
+    "name": "kumoStakingAddress",
     "outputs": [
       {
-        "internalType": "contract ILockupContractFactory",
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -332,10 +332,10 @@
   },
   {
     "inputs": [],
-    "name": "kumoStakingAddress",
+    "name": "lockupContractFactory",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract ILockupContractFactory",
         "name": "",
         "type": "address"
       }
