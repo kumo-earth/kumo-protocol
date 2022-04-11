@@ -8,18 +8,18 @@ import { LoadingOverlay } from "../../../LoadingOverlay";
 import { useMyTransactionState } from "../../../Transaction";
 import { DisabledEditableRow, StaticRow } from "../../../Trove/Editor";
 import { useFarmView } from "../../context/FarmViewContext";
-import { RemainingLQTY } from "../RemainingLQTY";
+import { RemainingKUMO } from "../RemainingKUMO";
 import { ClaimReward } from "./ClaimReward";
 import { UnstakeAndClaim } from "../UnstakeAndClaim";
 import { Yield } from "../Yield";
 
 const selector = ({
   liquidityMiningStake,
-  liquidityMiningLQTYReward,
+  liquidityMiningKUMOReward,
   totalStakedUniTokens
 }: LiquityStoreState) => ({
   liquidityMiningStake,
-  liquidityMiningLQTYReward,
+  liquidityMiningKUMOReward,
   totalStakedUniTokens
 });
 const transactionId = /farm-/i;
@@ -28,7 +28,7 @@ export const Active: React.FC = () => {
   const { dispatchEvent } = useFarmView();
   const {
     liquidityMiningStake,
-    liquidityMiningLQTYReward,
+    liquidityMiningKUMOReward,
     totalStakedUniTokens
   } = useLiquitySelector(selector);
 
@@ -42,7 +42,7 @@ export const Active: React.FC = () => {
     transactionState.type === "waitingForConfirmation";
 
   const poolShare = liquidityMiningStake.mulDiv(100, totalStakedUniTokens);
-  const hasStakeAndRewards = !liquidityMiningStake.isZero && !liquidityMiningLQTYReward.isZero;
+  const hasStakeAndRewards = !liquidityMiningStake.isZero && !liquidityMiningKUMOReward.isZero;
 
   return (
     <Card>
@@ -50,7 +50,7 @@ export const Active: React.FC = () => {
         Uniswap Liquidity Farm
         {!isTransactionPending && (
           <Flex sx={{ justifyContent: "flex-end" }}>
-            <RemainingLQTY />
+            <RemainingKUMO />
           </Flex>
         )}
       </Heading>
@@ -76,8 +76,8 @@ export const Active: React.FC = () => {
             <StaticRow
               label="Reward"
               inputId="farm-reward"
-              amount={liquidityMiningLQTYReward.prettify(4)}
-              color={liquidityMiningLQTYReward.nonZero && "success"}
+              amount={liquidityMiningKUMOReward.prettify(4)}
+              color={liquidityMiningKUMOReward.nonZero && "success"}
               unit={GT}
             />
             <Flex sx={{ justifyContent: "flex-end", flex: 1 }}>
@@ -88,13 +88,13 @@ export const Active: React.FC = () => {
 
         <Flex variant="layout.actions">
           <Button
-            variant={!liquidityMiningLQTYReward.isZero ? "outline" : "primary"}
+            variant={!liquidityMiningKUMOReward.isZero ? "outline" : "primary"}
             onClick={handleAdjustPressed}
           >
             <Icon name="pen" size="sm" />
             &nbsp;Adjust
           </Button>
-          {!liquidityMiningLQTYReward.isZero && <ClaimReward />}
+          {!liquidityMiningKUMOReward.isZero && <ClaimReward />}
         </Flex>
         <Flex>{hasStakeAndRewards && <UnstakeAndClaim />}</Flex>
       </Box>

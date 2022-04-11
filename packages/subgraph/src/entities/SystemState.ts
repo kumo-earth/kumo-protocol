@@ -6,7 +6,7 @@ import {
   TroveChange,
   StabilityDepositChange,
   CollSurplusChange,
-  LqtyStakeChange
+  KumoStakeChange
 } from "../../generated/schema";
 
 import {
@@ -42,7 +42,7 @@ export function getCurrentSystemState(): SystemState {
     newSystemState.totalDebt = DECIMAL_ZERO;
     newSystemState.tokensInStabilityPool = DECIMAL_ZERO;
     newSystemState.collSurplusPoolBalance = DECIMAL_ZERO;
-    newSystemState.totalLQTYTokensStaked = DECIMAL_ZERO;
+    newSystemState.totalKUMOTokensStaked = DECIMAL_ZERO;
     newSystemState.save();
 
     let global = getGlobal();
@@ -202,10 +202,10 @@ export function updateSystemStateByCollSurplusChange(collSurplusChange: CollSurp
   bumpSystemState(systemState);
 }
 
-export function updateSystemStateByLqtyStakeChange(stakeChange: LqtyStakeChange): void {
+export function updateSystemStateByKumoStakeChange(stakeChange: KumoStakeChange): void {
   let systemState = getCurrentSystemState();
 
-  systemState.totalLQTYTokensStaked = systemState.totalLQTYTokensStaked.plus(
+  systemState.totalKUMOTokensStaked = systemState.totalKUMOTokensStaked.plus(
     stakeChange.stakedAmountChange
   );
 

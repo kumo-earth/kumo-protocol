@@ -56,7 +56,7 @@ contract('TroveManager', async accounts => {
       contracts.stabilityPool.address,
       contracts.borrowerOperations.address
     )
-    const LQTYContracts = await deploymentHelper.deployLQTYContracts(bountyAddress, lpRewardsAddress, multisig)
+    const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
     priceFeed = contracts.priceFeedTestnet
     kusdToken = contracts.kusdToken
@@ -69,14 +69,14 @@ contract('TroveManager', async accounts => {
     borrowerOperations = contracts.borrowerOperations
     hintHelpers = contracts.hintHelpers
 
-    lqtyStaking = LQTYContracts.lqtyStaking
-    lqtyToken = LQTYContracts.lqtyToken
-    communityIssuance = LQTYContracts.communityIssuance
-    lockupContractFactory = LQTYContracts.lockupContractFactory
+    kumoStaking = KUMOContracts.kumoStaking
+    kumoToken = KUMOContracts.kumoToken
+    communityIssuance = KUMOContracts.communityIssuance
+    lockupContractFactory = KUMOContracts.lockupContractFactory
 
-    await deploymentHelper.connectCoreContracts(contracts, LQTYContracts)
-    await deploymentHelper.connectLQTYContracts(LQTYContracts)
-    await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, contracts)
+    await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+    await deploymentHelper.connectKUMOContracts(KUMOContracts)
+    await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
   })
 
   it("A given trove's stake decline is negligible with adjustments and tiny liquidations", async () => {

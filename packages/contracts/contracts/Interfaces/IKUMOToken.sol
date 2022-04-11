@@ -5,17 +5,17 @@ pragma solidity 0.8.11;
 import "../Dependencies/IERC20.sol";
 import "../Dependencies/IERC2612.sol";
 
-interface ILQTYToken is IERC20, IERC2612 { 
+interface IKUMOToken is IERC20, IERC2612 { 
    
     // --- Events ---
     
     event CommunityIssuanceAddressSet(address _communityIssuanceAddress);
-    event LQTYStakingAddressSet(address _lqtyStakingAddress);
+    event KUMOStakingAddressSet(address _kumoStakingAddress);
     event LockupContractFactoryAddressSet(address _lockupContractFactoryAddress);
 
     // --- Functions ---
     
-    function sendToLQTYStaking(address _sender, uint256 _amount) external;
+    function sendToKUMOStaking(address _sender, uint256 _amount) external;
 
     function getDeploymentStartTime() external view returns (uint256);
 

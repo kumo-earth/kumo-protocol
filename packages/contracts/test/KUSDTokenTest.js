@@ -69,16 +69,16 @@ contract('KUSDToken', async accounts => {
       const contracts = await deploymentHelper.deployTesterContractsHardhat()
 
 
-      const LQTYContracts = await deploymentHelper.deployLQTYContracts(bountyAddress, lpRewardsAddress, multisig)
+      const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
-      await deploymentHelper.connectCoreContracts(contracts, LQTYContracts)
-      await deploymentHelper.connectLQTYContracts(LQTYContracts)
-      await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, contracts)
+      await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+      await deploymentHelper.connectKUMOContracts(KUMOContracts)
+      await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
 
       kusdTokenOriginal = contracts.kusdToken
       if (withProxy) {
         const users = [ alice, bob, carol, dennis ]
-        await deploymentHelper.deployProxyScripts(contracts, LQTYContracts, owner, users)
+        await deploymentHelper.deployProxyScripts(contracts, KUMOContracts, owner, users)
       }
 
       kusdTokenTester = contracts.kusdToken

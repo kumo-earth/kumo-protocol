@@ -8,21 +8,21 @@ import { useLiquity } from "../hooks/LiquityContext";
 import { COIN, GT } from "../strings";
 import { Statistic } from "./Statistic";
 
-const selectBalances = ({ accountBalance, kusdBalance, lqtyBalance }: LiquityStoreState) => ({
+const selectBalances = ({ accountBalance, kusdBalance, kumoBalance }: LiquityStoreState) => ({
   accountBalance,
   kusdBalance,
-  lqtyBalance
+  kumoBalance
 });
 
 const Balances: React.FC = () => {
-  const { accountBalance, kusdBalance, lqtyBalance } = useLiquitySelector(selectBalances);
+  const { accountBalance, kusdBalance, kumoBalance } = useLiquitySelector(selectBalances);
 
   return (
     <Box sx={{ mb: 3 }}>
       <Heading>My Account Balances</Heading>
       <Statistic name="ETH"> {accountBalance.prettify(4)}</Statistic>
       <Statistic name={COIN}> {kusdBalance.prettify()}</Statistic>
-      <Statistic name={GT}>{lqtyBalance.prettify()}</Statistic>
+      <Statistic name={GT}>{kumoBalance.prettify()}</Statistic>
     </Box>
   );
 };
@@ -46,7 +46,7 @@ const select = ({
   kusdInStabilityPool,
   borrowingRate,
   redemptionRate,
-  totalStakedLQTY,
+  totalStakedKUMO,
   frontend
 }: LiquityStoreState) => ({
   numberOfTroves,
@@ -55,7 +55,7 @@ const select = ({
   kusdInStabilityPool,
   borrowingRate,
   redemptionRate,
-  totalStakedLQTY,
+  totalStakedKUMO,
   kickbackRate: frontend.status === "registered" ? frontend.kickbackRate : null
 });
 
@@ -72,7 +72,7 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
     kusdInStabilityPool,
     total,
     borrowingRate,
-    totalStakedLQTY,
+    totalStakedKUMO,
     kickbackRate
   } = useLiquitySelector(select);
 
@@ -125,10 +125,10 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
         </Statistic>
       )}
       <Statistic
-        name="Staked LQTY"
-        tooltip="The total amount of LQTY that is staked for earning fee revenue."
+        name="Staked KUMO"
+        tooltip="The total amount of KUMO that is staked for earning fee revenue."
       >
-        {totalStakedLQTY.shorten()}
+        {totalStakedKUMO.shorten()}
       </Statistic>
       <Statistic
         name="Total Collateral Ratio"
@@ -150,7 +150,7 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
       {kickbackRatePct && (
         <Statistic
           name="Kickback Rate"
-          tooltip="A rate between 0 and 100% set by the Frontend Operator that determines the fraction of LQTY that will be paid out as a kickback to the Stability Providers using the frontend."
+          tooltip="A rate between 0 and 100% set by the Frontend Operator that determines the fraction of KUMO that will be paid out as a kickback to the Stability Providers using the frontend."
         >
           {kickbackRatePct}%
         </Statistic>

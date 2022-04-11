@@ -380,7 +380,7 @@ describe("EthersLiquity", () => {
     it("should close the Trove with some KUSD from another user", async () => {
       const price = await liquity.getPrice();
       const initialTrove = await liquity.getTrove();
-      const kusdBalance = await liquity.getLQTYBalance();
+      const kusdBalance = await liquity.getKUMOBalance();
       const kusdShortage = initialTrove.netDebt.sub(kusdBalance);
 
       let funderTrove = Trove.create({ depositCollateral: 1, borrowKUSD: kusdShortage });
@@ -486,7 +486,7 @@ describe("EthersLiquity", () => {
         KUSDLoss: Decimal.from(0),
         newKUSDDeposit: smallStabilityDeposit,
         collateralGain: Decimal.from(0),
-        lqtyReward: Decimal.from(0),
+        kumoReward: Decimal.from(0),
 
         change: {
           depositKUSD: smallStabilityDeposit
@@ -589,7 +589,7 @@ describe("EthersLiquity", () => {
       expect(details).to.deep.equal({
         KUSDLoss: smallStabilityDeposit,
         newKUSDDeposit: Decimal.ZERO,
-        lqtyReward: Decimal.ZERO,
+        kumoReward: Decimal.ZERO,
 
         collateralGain: troveWithVeryLowICR.collateral
           .mul(0.995) // -0.5% gas compensation
@@ -979,7 +979,7 @@ describe("EthersLiquity", () => {
       expect(`${stake}`).to.equal(`${someUniTokens}`);
     });
 
-    it("should have an LQTY reward after some time has passed", async function () {
+    it("should have an KUMO reward after some time has passed", async function () {
       this.timeout("20s");
 
       // Liquidity mining rewards are seconds-based, so we don't need to wait long.
@@ -990,12 +990,12 @@ describe("EthersLiquity", () => {
       // Trigger a new block with a dummy TX.
       await liquity._mintUniToken(0);
 
-      const lqtyReward = Number(await liquity.getLiquidityMiningLQTYReward());
-      expect(lqtyReward).to.be.at.least(1); // ~0.2572 per second [(4e6/3) / (60*24*60*60)]
+      const kumoReward = Number(await liquity.getLiquidityMiningKUMOReward());
+      expect(kumoReward).to.be.at.least(1); // ~0.2572 per second [(4e6/3) / (60*24*60*60)]
 
-      await liquity.withdrawLQTYRewardFromLiquidityMining();
-      const lqtyBalance = Number(await liquity.getLQTYBalance());
-      expect(lqtyBalance).to.be.at.least(lqtyReward); // may have increased since checking
+      await liquity.withdrawKUMORewardFromLiquidityMining();
+      const kumoBalance = Number(await liquity.getKUMOBalance());
+      expect(kumoBalance).to.be.at.least(kumoReward); // may have increased since checking
     });
 
     it("should partially unstake", async () => {
@@ -1008,7 +1008,7 @@ describe("EthersLiquity", () => {
       expect(`${uniTokenBalance}`).to.equal(`${someUniTokens / 2}`);
     });
 
-    it("should unstake remaining tokens and withdraw remaining LQTY reward", async () => {
+    it("should unstake remaining tokens and withdraw remaining KUMO reward", async () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       await liquity._mintUniToken(0); // dummy block
       await liquity.exitLiquidityMining();
@@ -1016,8 +1016,8 @@ describe("EthersLiquity", () => {
       const uniTokenStake = await liquity.getLiquidityMiningStake();
       expect(`${uniTokenStake}`).to.equal("0");
 
-      const lqtyReward = await liquity.getLiquidityMiningLQTYReward();
-      expect(`${lqtyReward}`).to.equal("0");
+      const kumoReward = await liquity.getLiquidityMiningKUMOReward();
+      expect(`${kumoReward}`).to.equal("0");
 
       const uniTokenBalance = await liquity.getUniTokenBalance();
       expect(`${uniTokenBalance}`).to.equal(`${someUniTokens}`);
@@ -1033,11 +1033,11 @@ describe("EthersLiquity", () => {
       await increaseTime(2 * 30 * 24 * 60 * 60);
       await liquity.exitLiquidityMining();
 
-      const remainingLQTYReward = await liquity.getRemainingLiquidityMiningLQTYReward();
-      expect(`${remainingLQTYReward}`).to.equal("0");
+      const remainingKUMOReward = await liquity.getRemainingLiquidityMiningKUMOReward();
+      expect(`${remainingKUMOReward}`).to.equal("0");
 
-      const lqtyBalance = Number(await liquity.getLQTYBalance());
-      expect(lqtyBalance).to.be.within(1333333, 1333334);
+      const kumoBalance = Number(await liquity.getKUMOBalance());
+      expect(kumoBalance).to.be.within(1333333, 1333334);
     });
   });
 
@@ -1243,7 +1243,7 @@ describe("EthersLiquity", () => {
     });
   });
 
-  describe("Gas estimation (LQTY issuance)", () => {
+  describe("Gas estimation (KUMO issuance)", () => {
     const estimate = (tx: PopulatedEthersLiquityTransaction) =>
       provider.estimateGas(tx.rawPopulatedTransaction);
 
@@ -1256,7 +1256,7 @@ describe("EthersLiquity", () => {
       [deployerLiquity, liquity] = await connectUsers([deployer, user]);
     });
 
-    it("should include enough gas for issuing LQTY", async function () {
+    it("should include enough gas for issuing KUMO", async function () {
       this.timeout("1m");
 
       await liquity.openTrove({ depositCollateral: 40, borrowKUSD: 4000 });
@@ -1264,7 +1264,7 @@ describe("EthersLiquity", () => {
 
       await increaseTime(60);
 
-      // This will issue LQTY for the first time ever. That uses a whole lotta gas, and we don't
+      // This will issue KUMO for the first time ever. That uses a whole lotta gas, and we don't
       // want to pack any extra gas to prepare for this case specifically, because it only happens
       // once.
       await liquity.withdrawGainsFromStabilityPool();

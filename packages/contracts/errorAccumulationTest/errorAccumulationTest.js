@@ -23,7 +23,7 @@ contract('TroveManager', async accounts => {
   
   beforeEach(async () => {
     contracts = await deploymentHelper.deployLiquityCore()
-    const LQTYContracts = await deploymentHelper.deployLQTYContracts(bountyAddress, lpRewardsAddress)
+    const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress)
     
     kusdToken = contracts.kusdToken
     priceFeed = contracts.priceFeedTestnet
@@ -34,14 +34,14 @@ contract('TroveManager', async accounts => {
     defaultPool = contracts.defaultPool
     borrowerOperations = contracts.borrowerOperations
   
-    lqtyStaking = LQTYContracts.lqtyStaking
-    lqtyToken = LQTYContracts.lqtyToken
-    communityIssuance = LQTYContracts.communityIssuance
-    lockupContractFactory = LQTYContracts.lockupContractFactory
+    kumoStaking = KUMOContracts.kumoStaking
+    kumoToken = KUMOContracts.kumoToken
+    communityIssuance = KUMOContracts.communityIssuance
+    lockupContractFactory = KUMOContracts.lockupContractFactory
 
-    await deploymentHelper.connectLQTYContracts(LQTYContracts)
-    await deploymentHelper.connectCoreContracts(contracts, LQTYContracts)
-    await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, contracts)
+    await deploymentHelper.connectKUMOContracts(KUMOContracts)
+    await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+    await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
   })
 
   // --- Check accumulation from repeatedly applying rewards ---

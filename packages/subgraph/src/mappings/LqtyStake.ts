@@ -1,6 +1,6 @@
-import { StakeChanged, StakingGainsWithdrawn } from "../../generated/LQTYStaking/LQTYStaking";
+import { StakeChanged, StakingGainsWithdrawn } from "../../generated/KUMOStaking/KUMOStaking";
 
-import { updateStake, withdrawStakeGains } from "../entities/LqtyStake";
+import { updateStake, withdrawStakeGains } from "../entities/KumoStake";
 
 export function handleStakeChanged(event: StakeChanged): void {
   updateStake(event, event.params.staker, event.params.newStake);

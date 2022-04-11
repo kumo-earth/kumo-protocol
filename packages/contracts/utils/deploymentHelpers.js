@@ -11,14 +11,14 @@ const FunctionCaller = artifacts.require("./TestContracts/FunctionCaller.sol")
 const BorrowerOperations = artifacts.require("./BorrowerOperations.sol")
 const HintHelpers = artifacts.require("./HintHelpers.sol")
 
-const LQTYStaking = artifacts.require("./LQTYStaking.sol")
-const LQTYToken = artifacts.require("./LQTYToken.sol")
+const KUMOStaking = artifacts.require("./KUMOStaking.sol")
+const KUMOToken = artifacts.require("./KUMOToken.sol")
 const LockupContractFactory = artifacts.require("./LockupContractFactory.sol")
 const CommunityIssuance = artifacts.require("./CommunityIssuance.sol")
 
 const Unipool =  artifacts.require("./Unipool.sol")
 
-const LQTYTokenTester = artifacts.require("./LQTYTokenTester.sol")
+const KUMOTokenTester = artifacts.require("./KUMOTokenTester.sol")
 const CommunityIssuanceTester = artifacts.require("./CommunityIssuanceTester.sol")
 const StabilityPoolTester = artifacts.require("./StabilityPoolTester.sol")
 const ActivePoolTester = artifacts.require("./ActivePoolTester.sol")
@@ -34,7 +34,7 @@ const BorrowerWrappersScript = artifacts.require('BorrowerWrappersScript')
 const TroveManagerScript = artifacts.require('TroveManagerScript')
 const StabilityPoolScript = artifacts.require('StabilityPoolScript')
 const TokenScript = artifacts.require('TokenScript')
-const LQTYStakingScript = artifacts.require('LQTYStakingScript')
+const KUMOStakingScript = artifacts.require('KUMOStakingScript')
 const {
   buildUserProxies,
   BorrowerOperationsProxy,
@@ -43,16 +43,16 @@ const {
   StabilityPoolProxy,
   SortedTrovesProxy,
   TokenProxy,
-  LQTYStakingProxy
+  KUMOStakingProxy
 } = require('../utils/proxyHelpers.js')
 
 /* "Liquity core" consists of all contracts in the core Liquity system.
 
-LQTY contracts consist of only those contracts related to the LQTY Token:
+KUMO contracts consist of only those contracts related to the KUMO Token:
 
--the LQTY token
+-the KUMO token
 -the Lockup factory and lockup contracts
--the LQTYStaking contract
+-the KUMOStaking contract
 -the CommunityIssuance contract 
 */
 
@@ -73,15 +73,15 @@ class DeploymentHelper {
     }
   }
 
-  static async deployLQTYContracts(bountyAddress, lpRewardsAddress, multisigAddress) {
+  static async deployKUMOContracts(bountyAddress, lpRewardsAddress, multisigAddress) {
     const cmdLineArgs = process.argv
     const frameworkPath = cmdLineArgs[1]
     // console.log(`Framework used:  ${frameworkPath}`)
 
     if (frameworkPath.includes("hardhat")) {
-      return this.deployLQTYContractsHardhat(bountyAddress, lpRewardsAddress, multisigAddress)
+      return this.deployKUMOContractsHardhat(bountyAddress, lpRewardsAddress, multisigAddress)
     } else if (frameworkPath.includes("truffle")) {
-      return this.deployLQTYContractsTruffle(bountyAddress, lpRewardsAddress, multisigAddress)
+      return this.deployKUMOContractsTruffle(bountyAddress, lpRewardsAddress, multisigAddress)
     }
   }
 
@@ -158,62 +158,62 @@ class DeploymentHelper {
     return testerContracts
   }
 
-  static async deployLQTYContractsHardhat(bountyAddress, lpRewardsAddress, multisigAddress) {
-    const lqtyStaking = await LQTYStaking.new()
+  static async deployKUMOContractsHardhat(bountyAddress, lpRewardsAddress, multisigAddress) {
+    const kumoStaking = await KUMOStaking.new()
     const lockupContractFactory = await LockupContractFactory.new()
     const communityIssuance = await CommunityIssuance.new()
 
-    LQTYStaking.setAsDeployed(lqtyStaking)
+    KUMOStaking.setAsDeployed(kumoStaking)
     LockupContractFactory.setAsDeployed(lockupContractFactory)
     CommunityIssuance.setAsDeployed(communityIssuance)
 
-    // Deploy LQTY Token, passing Community Issuance and Factory addresses to the constructor 
-    const lqtyToken = await LQTYToken.new(
+    // Deploy KUMO Token, passing Community Issuance and Factory addresses to the constructor 
+    const kumoToken = await KUMOToken.new(
       communityIssuance.address, 
-      lqtyStaking.address,
+      kumoStaking.address,
       lockupContractFactory.address,
       bountyAddress,
       lpRewardsAddress,
       multisigAddress
     )
-    LQTYToken.setAsDeployed(lqtyToken)
+    KUMOToken.setAsDeployed(kumoToken)
 
-    const LQTYContracts = {
-      lqtyStaking,
+    const KUMOContracts = {
+      kumoStaking,
       lockupContractFactory,
       communityIssuance,
-      lqtyToken
+      kumoToken
     }
-    return LQTYContracts
+    return KUMOContracts
   }
 
-  static async deployLQTYTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisigAddress) {
-    const lqtyStaking = await LQTYStaking.new()
+  static async deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisigAddress) {
+    const kumoStaking = await KUMOStaking.new()
     const lockupContractFactory = await LockupContractFactory.new()
     const communityIssuance = await CommunityIssuanceTester.new()
 
-    LQTYStaking.setAsDeployed(lqtyStaking)
+    KUMOStaking.setAsDeployed(kumoStaking)
     LockupContractFactory.setAsDeployed(lockupContractFactory)
     CommunityIssuanceTester.setAsDeployed(communityIssuance)
 
-    // Deploy LQTY Token, passing Community Issuance and Factory addresses to the constructor 
-    const lqtyToken = await LQTYTokenTester.new(
+    // Deploy KUMO Token, passing Community Issuance and Factory addresses to the constructor 
+    const kumoToken = await KUMOTokenTester.new(
       communityIssuance.address, 
-      lqtyStaking.address,
+      kumoStaking.address,
       lockupContractFactory.address,
       bountyAddress,
       lpRewardsAddress,
       multisigAddress
     )
-    LQTYTokenTester.setAsDeployed(lqtyToken)
+    KUMOTokenTester.setAsDeployed(kumoToken)
 
-    const LQTYContracts = {
-      lqtyStaking,
+    const KUMOContracts = {
+      kumoStaking,
       lockupContractFactory,
       communityIssuance,
-      lqtyToken
+      kumoToken
     }
-    return LQTYContracts
+    return KUMOContracts
   }
 
   static async deployLiquityCoreTruffle() {
@@ -250,29 +250,29 @@ class DeploymentHelper {
     return coreContracts
   }
 
-  static async deployLQTYContractsTruffle(bountyAddress, lpRewardsAddress, multisigAddress) {
-    const lqtyStaking = await lqtyStaking.new()
+  static async deployKUMOContractsTruffle(bountyAddress, lpRewardsAddress, multisigAddress) {
+    const kumoStaking = await kumoStaking.new()
     const lockupContractFactory = await LockupContractFactory.new()
     const communityIssuance = await CommunityIssuance.new()
 
-    /* Deploy LQTY Token, passing Community Issuance,  LQTYStaking, and Factory addresses 
+    /* Deploy KUMO Token, passing Community Issuance,  KUMOStaking, and Factory addresses 
     to the constructor  */
-    const lqtyToken = await LQTYToken.new(
+    const kumoToken = await KUMOToken.new(
       communityIssuance.address, 
-      lqtyStaking.address,
+      kumoStaking.address,
       lockupContractFactory.address,
       bountyAddress,
       lpRewardsAddress, 
       multisigAddress
     )
 
-    const LQTYContracts = {
-      lqtyStaking,
+    const KUMOContracts = {
+      kumoStaking,
       lockupContractFactory,
       communityIssuance,
-      lqtyToken
+      kumoToken
     }
-    return LQTYContracts
+    return KUMOContracts
   }
 
   static async deployKUSDToken(contracts) {
@@ -293,13 +293,13 @@ class DeploymentHelper {
     return contracts
   }
 
-  static async deployProxyScripts(contracts, LQTYContracts, owner, users) {
+  static async deployProxyScripts(contracts, KUMOContracts, owner, users) {
     const proxies = await buildUserProxies(users)
 
     const borrowerWrappersScript = await BorrowerWrappersScript.new(
       contracts.borrowerOperations.address,
       contracts.troveManager.address,
-      LQTYContracts.lqtyStaking.address
+      KUMOContracts.kumoStaking.address
     )
     contracts.borrowerWrappers = new BorrowerWrappersProxy(owner, proxies, borrowerWrappersScript.address)
 
@@ -317,15 +317,15 @@ class DeploymentHelper {
     const kusdTokenScript = await TokenScript.new(contracts.kusdToken.address)
     contracts.kusdToken = new TokenProxy(owner, proxies, kusdTokenScript.address, contracts.kusdToken)
 
-    const lqtyTokenScript = await TokenScript.new(LQTYContracts.lqtyToken.address)
-    LQTYContracts.lqtyToken = new TokenProxy(owner, proxies, lqtyTokenScript.address, LQTYContracts.lqtyToken)
+    const kumoTokenScript = await TokenScript.new(KUMOContracts.kumoToken.address)
+    KUMOContracts.kumoToken = new TokenProxy(owner, proxies, kumoTokenScript.address, KUMOContracts.kumoToken)
 
-    const lqtyStakingScript = await LQTYStakingScript.new(LQTYContracts.lqtyStaking.address)
-    LQTYContracts.lqtyStaking = new LQTYStakingProxy(owner, proxies, lqtyStakingScript.address, LQTYContracts.lqtyStaking)
+    const kumoStakingScript = await KUMOStakingScript.new(KUMOContracts.kumoStaking.address)
+    KUMOContracts.kumoStaking = new KUMOStakingProxy(owner, proxies, kumoStakingScript.address, KUMOContracts.kumoStaking)
   }
 
   // Connect contracts to their dependencies
-  static async connectCoreContracts(contracts, LQTYContracts) {
+  static async connectCoreContracts(contracts, KUMOContracts) {
 
     // set TroveManager addr in SortedTroves
     await contracts.sortedTroves.setParams(
@@ -349,8 +349,8 @@ class DeploymentHelper {
       contracts.priceFeedTestnet.address,
       contracts.kusdToken.address,
       contracts.sortedTroves.address,
-      LQTYContracts.lqtyToken.address,
-      LQTYContracts.lqtyStaking.address
+      KUMOContracts.kumoToken.address,
+      KUMOContracts.kumoStaking.address
     )
 
     // set contracts in BorrowerOperations 
@@ -364,7 +364,7 @@ class DeploymentHelper {
       contracts.priceFeedTestnet.address,
       contracts.sortedTroves.address,
       contracts.kusdToken.address,
-      LQTYContracts.lqtyStaking.address
+      KUMOContracts.kumoStaking.address
     )
 
     // set contracts in the Pools
@@ -375,7 +375,7 @@ class DeploymentHelper {
       contracts.kusdToken.address,
       contracts.sortedTroves.address,
       contracts.priceFeedTestnet.address,
-      LQTYContracts.communityIssuance.address
+      KUMOContracts.communityIssuance.address
     )
 
     await contracts.activePool.setAddresses(
@@ -403,28 +403,28 @@ class DeploymentHelper {
     )
   }
 
-  static async connectLQTYContracts(LQTYContracts) {
-    // Set LQTYToken address in LCF
-    await LQTYContracts.lockupContractFactory.setLQTYTokenAddress(LQTYContracts.lqtyToken.address)
+  static async connectKUMOContracts(KUMOContracts) {
+    // Set KUMOToken address in LCF
+    await KUMOContracts.lockupContractFactory.setKUMOTokenAddress(KUMOContracts.kumoToken.address)
   }
 
-  static async connectLQTYContractsToCore(LQTYContracts, coreContracts) {
-    await LQTYContracts.lqtyStaking.setAddresses(
-      LQTYContracts.lqtyToken.address,
+  static async connectKUMOContractsToCore(KUMOContracts, coreContracts) {
+    await KUMOContracts.kumoStaking.setAddresses(
+      KUMOContracts.kumoToken.address,
       coreContracts.kusdToken.address,
       coreContracts.troveManager.address, 
       coreContracts.borrowerOperations.address,
       coreContracts.activePool.address
     )
   
-    await LQTYContracts.communityIssuance.setAddresses(
-      LQTYContracts.lqtyToken.address,
+    await KUMOContracts.communityIssuance.setAddresses(
+      KUMOContracts.kumoToken.address,
       coreContracts.stabilityPool.address
     )
   }
 
-  static async connectUnipool(uniPool, LQTYContracts, uniswapPairAddr, duration) {
-    await uniPool.setParams(LQTYContracts.lqtyToken.address, uniswapPairAddr, duration)
+  static async connectUnipool(uniPool, KUMOContracts, uniswapPairAddr, duration) {
+    await uniPool.setParams(KUMOContracts.kumoToken.address, uniswapPairAddr, duration)
   }
 }
 module.exports = DeploymentHelper

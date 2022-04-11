@@ -9,14 +9,14 @@ import "../Interfaces/IBorrowerOperations.sol";
 import "../Interfaces/ITroveManager.sol";
 import "../Interfaces/IStabilityPool.sol";
 import "../Interfaces/IPriceFeed.sol";
-import "../Interfaces/ILQTYStaking.sol";
+import "../Interfaces/IKUMOStaking.sol";
 import "./BorrowerOperationsScript.sol";
 import "./ETHTransferScript.sol";
-import "./LQTYStakingScript.sol";
+import "./KUMOStakingScript.sol";
 import "../Dependencies/console.sol";
 
 
-contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, LQTYStakingScript {
+contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, KUMOStakingScript {
     using SafeMath for uint;
 
     string constant public NAME = "BorrowerWrappersScript";
@@ -25,16 +25,16 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
     IStabilityPool immutable stabilityPool;
     IPriceFeed immutable priceFeed;
     IERC20 immutable kusdToken;
-    IERC20 immutable lqtyToken;
-    ILQTYStaking immutable lqtyStaking;
+    IERC20 immutable kumoToken;
+    IKUMOStaking immutable kumoStaking;
 
     constructor (
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
-        address _lqtyStakingAddress
+        address _kumoStakingAddress
     )
         BorrowerOperationsScript(IBorrowerOperations(_borrowerOperationsAddress))
-        LQTYStakingScript(_lqtyStakingAddress)
+        KUMOStakingScript(_kumoStakingAddress)
     {
         checkContract(_troveManagerAddress);
         ITroveManager troveManagerCached = ITroveManager(_troveManagerAddress);
@@ -52,13 +52,13 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
         checkContract(kusdTokenCached);
         kusdToken = IERC20(kusdTokenCached);
 
-        address lqtyTokenCached = address(troveManagerCached.lqtyToken());
-        checkContract(lqtyTokenCached);
-        lqtyToken = IERC20(lqtyTokenCached);
+        address kumoTokenCached = address(troveManagerCached.kumoToken());
+        checkContract(kumoTokenCached);
+        kumoToken = IERC20(kumoTokenCached);
 
-        ILQTYStaking lqtyStakingCached = troveManagerCached.lqtyStaking();
-        require(_lqtyStakingAddress == address(lqtyStakingCached), "BorrowerWrappersScript: Wrong LQTYStaking address");
-        lqtyStaking = lqtyStakingCached;
+        IKUMOStaking kumoStakingCached = troveManagerCached.kumoStaking();
+        require(_kumoStakingAddress == address(kumoStakingCached), "BorrowerWrappersScript: Wrong KUMOStaking address");
+        kumoStaking = kumoStakingCached;
     }
 
     function claimCollateralAndOpenTrove(uint _maxFee, uint _KUSDAmount, address _upperHint, address _lowerHint) external payable {
@@ -80,13 +80,13 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
 
     function claimSPRewardsAndRecycle(uint _maxFee, address _upperHint, address _lowerHint) external {
         uint collBalanceBefore = address(this).balance;
-        uint lqtyBalanceBefore = lqtyToken.balanceOf(address(this));
+        uint kumoBalanceBefore = kumoToken.balanceOf(address(this));
 
         // Claim rewards
         stabilityPool.withdrawFromSP(0);
 
         uint collBalanceAfter = address(this).balance;
-        uint lqtyBalanceAfter = lqtyToken.balanceOf(address(this));
+        uint kumoBalanceAfter = kumoToken.balanceOf(address(this));
         uint claimedCollateral = collBalanceAfter.sub(collBalanceBefore);
 
         // Add claimed ETH to trove, get more KUSD and stake it into the Stability Pool
@@ -100,20 +100,20 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
             }
         }
 
-        // Stake claimed LQTY
-        uint claimedLQTY = lqtyBalanceAfter.sub(lqtyBalanceBefore);
-        if (claimedLQTY > 0) {
-            lqtyStaking.stake(claimedLQTY);
+        // Stake claimed KUMO
+        uint claimedKUMO = kumoBalanceAfter.sub(kumoBalanceBefore);
+        if (claimedKUMO > 0) {
+            kumoStaking.stake(claimedKUMO);
         }
     }
 
     function claimStakingGainsAndRecycle(uint _maxFee, address _upperHint, address _lowerHint) external {
         uint collBalanceBefore = address(this).balance;
         uint kusdBalanceBefore = kusdToken.balanceOf(address(this));
-        uint lqtyBalanceBefore = lqtyToken.balanceOf(address(this));
+        uint kumoBalanceBefore = kumoToken.balanceOf(address(this));
 
         // Claim gains
-        lqtyStaking.unstake(0);
+        kumoStaking.unstake(0);
 
         uint gainedCollateral = address(this).balance.sub(collBalanceBefore); // stack too deep issues :'(
         uint gainedKUSD = kusdToken.balanceOf(address(this)).sub(kusdBalanceBefore);
@@ -130,11 +130,11 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
         if (totalKUSD > 0) {
             stabilityPool.provideToSP(totalKUSD, address(0));
 
-            // Providing to Stability Pool also triggers LQTY claim, so stake it if any
-            uint lqtyBalanceAfter = lqtyToken.balanceOf(address(this));
-            uint claimedLQTY = lqtyBalanceAfter.sub(lqtyBalanceBefore);
-            if (claimedLQTY > 0) {
-                lqtyStaking.stake(claimedLQTY);
+            // Providing to Stability Pool also triggers KUMO claim, so stake it if any
+            uint kumoBalanceAfter = kumoToken.balanceOf(address(this));
+            uint claimedKUMO = kumoBalanceAfter.sub(kumoBalanceBefore);
+            if (claimedKUMO > 0) {
+                kumoStaking.stake(claimedKUMO);
             }
         }
 

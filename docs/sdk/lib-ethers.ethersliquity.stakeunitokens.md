@@ -4,7 +4,7 @@
 
 ## EthersLiquity.stakeUniTokens() method
 
-Stake Uniswap ETH/KUSD LP tokens to participate in liquidity mining and earn LQTY.
+Stake Uniswap ETH/KUSD LP tokens to participate in liquidity mining and earn KUMO.
 
 <b>Signature:</b>
 

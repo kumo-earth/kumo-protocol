@@ -6,7 +6,7 @@ import {
   Decimal,
   Fees,
   FrontendStatus,
-  LQTYStake,
+  KUMOStake,
   ObservableLiquity,
   ReadableLiquity,
   StabilityDeposit,
@@ -278,7 +278,7 @@ export class SubgraphLiquity implements ReadableLiquity, ObservableLiquity {
     throw new Error("Method not implemented.");
   }
 
-  getLQTYBalance(address?: string): Promise<Decimal> {
+  getKUMOBalance(address?: string): Promise<Decimal> {
     throw new Error("Method not implemented.");
   }
 
@@ -328,11 +328,11 @@ export class SubgraphLiquity implements ReadableLiquity, ObservableLiquity {
     throw new Error("Method not implemented.");
   }
 
-  getLQTYStake(address?: string): Promise<LQTYStake> {
+  getKUMOStake(address?: string): Promise<KUMOStake> {
     throw new Error("Method not implemented.");
   }
 
-  getTotalStakedLQTY(): Promise<Decimal> {
+  getTotalStakedKUMO(): Promise<Decimal> {
     throw new Error("Method not implemented.");
   }
 
@@ -348,7 +348,7 @@ export class SubgraphLiquity implements ReadableLiquity, ObservableLiquity {
     throw new Error("Method not implemented.");
   }
 
-  getRemainingLiquidityMiningLQTYReward(): Promise<Decimal> {
+  getRemainingLiquidityMiningKUMOReward(): Promise<Decimal> {
     throw new Error("Method not implemented.");
   }
 
@@ -356,7 +356,7 @@ export class SubgraphLiquity implements ReadableLiquity, ObservableLiquity {
     throw new Error("Method not implemented.");
   }
 
-  getLiquidityMiningLQTYReward(address?: string): Promise<Decimal> {
+  getLiquidityMiningKUMOReward(address?: string): Promise<Decimal> {
     throw new Error("Method not implemented.");
   }
 
@@ -364,7 +364,7 @@ export class SubgraphLiquity implements ReadableLiquity, ObservableLiquity {
     throw new Error("Method not implemented.");
   }
 
-  getRemainingStabilityPoolLQTYReward(): Promise<Decimal> {
+  getRemainingStabilityPoolKUMOReward(): Promise<Decimal> {
     throw new Error("Method not implemented.");
   }
 }

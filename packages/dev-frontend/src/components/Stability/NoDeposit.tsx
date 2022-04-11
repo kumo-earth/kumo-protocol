@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 import { InfoMessage } from "../InfoMessage";
 import { useStabilityView } from "./context/StabilityViewContext";
-import { RemainingLQTY } from "./RemainingLQTY";
+import { RemainingKUMO } from "./RemainingKUMO";
 import { Yield } from "./Yield";
 
 export const NoDeposit: React.FC = props => {
@@ -17,12 +17,12 @@ export const NoDeposit: React.FC = props => {
       <Heading>
         Stability Pool
         <Flex sx={{ justifyContent: "flex-end" }}>
-          <RemainingLQTY />
+          <RemainingKUMO />
         </Flex>
       </Heading>
       <Box sx={{ p: [2, 3] }}>
         <InfoMessage title="You have no KUSD in the Stability Pool.">
-          You can earn ETH and LQTY rewards by depositing KUSD.
+          You can earn ETH and KUMO rewards by depositing KUSD.
         </InfoMessage>
 
         <Flex variant="layout.actions">

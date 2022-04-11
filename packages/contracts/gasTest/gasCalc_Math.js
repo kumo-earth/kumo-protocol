@@ -28,7 +28,7 @@ contract('Gas costs for math functions', async accounts => {
 
   beforeEach(async () => {
     contracts = await deploymentHelper.deployLiquityCore()
-    const LQTYContracts = await deploymentHelper.deployLQTYContracts(bountyAddress, lpRewardsAddress)
+    const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress)
 
     priceFeed = contracts.priceFeedTestnet
     kusdToken = contracts.kusdToken
@@ -40,14 +40,14 @@ contract('Gas costs for math functions', async accounts => {
     borrowerOperations = contracts.borrowerOperations
     hintHelpers = contracts.hintHelpers
 
-    gtStaking = LQTYContracts.gtStaking
-    lqtyToken = LQTYContracts.lqtyToken
-    communityIssuance = LQTYContracts.communityIssuance
-    lockupContractFactory = LQTYContracts.lockupContractFactory
+    gtStaking = KUMOContracts.gtStaking
+    kumoToken = KUMOContracts.kumoToken
+    communityIssuance = KUMOContracts.communityIssuance
+    lockupContractFactory = KUMOContracts.lockupContractFactory
 
-    await deploymentHelper.connectCoreContracts(contracts, LQTYContracts)
-    await deploymentHelper.connectLQTYContracts(LQTYContracts)
-    await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, contracts)
+    await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+    await deploymentHelper.connectKUMOContracts(KUMOContracts)
+    await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
   })
 
   // performs n runs of exponentiation on a random base

@@ -89,11 +89,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_lqtyStakingAddress",
+        "name": "_kumoStakingAddress",
         "type": "address"
       }
     ],
-    "name": "LQTYStakingAddressChanged",
+    "name": "KUMOStakingAddressChanged",
     "type": "event"
   },
   {
@@ -522,10 +522,10 @@
   },
   {
     "inputs": [],
-    "name": "lqtyStaking",
+    "name": "kumoStaking",
     "outputs": [
       {
-        "internalType": "contract ILQTYStaking",
+        "internalType": "contract IKUMOStaking",
         "name": "",
         "type": "address"
       }
@@ -535,7 +535,7 @@
   },
   {
     "inputs": [],
-    "name": "lqtyStakingAddress",
+    "name": "kumoStakingAddress",
     "outputs": [
       {
         "internalType": "address",
@@ -695,7 +695,7 @@
       },
       {
         "internalType": "address",
-        "name": "_lqtyStakingAddress",
+        "name": "_kumoStakingAddress",
         "type": "address"
       }
     ],

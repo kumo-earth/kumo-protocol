@@ -28,8 +28,8 @@ def setAddresses(contracts):
         contracts.priceFeedTestnet.address,
         contracts.kusdToken.address,
         contracts.sortedTroves.address,
-        contracts.lqtyToken.address,
-        contracts.lqtyStaking.address,
+        contracts.kumoToken.address,
+        contracts.kumoStaking.address,
         { 'from': accounts[0] }
     )
 
@@ -43,7 +43,7 @@ def setAddresses(contracts):
         contracts.priceFeedTestnet.address,
         contracts.sortedTroves.address,
         contracts.kusdToken.address,
-        contracts.lqtyStaking.address,
+        contracts.kumoStaking.address,
         { 'from': accounts[0] }
     )
 
@@ -85,9 +85,9 @@ def setAddresses(contracts):
         { 'from': accounts[0] }
     )
 
-    # LQTY
-    contracts.lqtyStaking.setAddresses(
-        contracts.lqtyToken.address,
+    # KUMO
+    contracts.kumoStaking.setAddresses(
+        contracts.kumoToken.address,
         contracts.kusdToken.address,
         contracts.troveManager.address,
         contracts.borrowerOperations.address,
@@ -96,7 +96,7 @@ def setAddresses(contracts):
     )
 
     contracts.communityIssuance.setAddresses(
-        contracts.lqtyToken.address,
+        contracts.kumoToken.address,
         contracts.stabilityPool.address,
         { 'from': accounts[0] }
     )
@@ -127,13 +127,13 @@ def contracts():
         contracts.borrowerOperations.address,
         { 'from': accounts[0] }
     )
-    # LQTY
-    contracts.lqtyStaking = LQTYStaking.deploy({ 'from': accounts[0] })
+    # KUMO
+    contracts.kumoStaking = KUMOStaking.deploy({ 'from': accounts[0] })
     contracts.communityIssuance = CommunityIssuance.deploy({ 'from': accounts[0] })
     contracts.lockupContractFactory = LockupContractFactory.deploy({ 'from': accounts[0] })
-    contracts.lqtyToken = LQTYToken.deploy(
+    contracts.kumoToken = KUMOToken.deploy(
         contracts.communityIssuance.address,
-        contracts.lqtyStaking.address,
+        contracts.kumoStaking.address,
         contracts.lockupContractFactory.address,
         accounts[0], # bountyAddress
         accounts[0],  # lpRewardsAddress
@@ -149,7 +149,7 @@ def contracts():
 def print_expectations():
     # ether_price_one_year = price_ether_initial * (1 + drift_ether)**8760
     # print("Expected ether price at the end of the year: $", ether_price_one_year)
-    print("Expected LQTY price at the end of first month: $", price_LQTY_initial * (1 + drift_LQTY)**720)
+    print("Expected KUMO price at the end of first month: $", price_KUMO_initial * (1 + drift_KUMO)**720)
 
     print("\n Open troves")
     print("E(Q_t^e)    = ", collateral_gamma_k * collateral_gamma_theta)
@@ -175,7 +175,7 @@ def _test_test(contracts):
 
 * exogenous ether price input
 * trove liquidation
-* return of the previous period's stability pool determined (liquidation gain & airdropped LQTY gain)
+* return of the previous period's stability pool determined (liquidation gain & airdropped KUMO gain)
 * trove closure
 * trove adjustment
 * open troves
@@ -186,7 +186,7 @@ def _test_test(contracts):
 * KUSD liquidity pool demand determined
 * KUSD price determined
 * redemption & redemption fee
-* LQTY pool return determined
+* KUMO pool return determined
 """
 def test_run_simulation(add_accounts, contracts, print_expectations):
     KUSD_GAS_COMPENSATION = contracts.troveManager.KUSD_GAS_COMPENSATION() / 1e18
@@ -203,7 +203,7 @@ def test_run_simulation(add_accounts, contracts, print_expectations):
     inactive_accounts = [*range(1, len(accounts))]
 
     price_KUSD = 1
-    price_LQTY_current = price_LQTY_initial
+    price_KUMO_current = price_KUMO_initial
 
     data = {"airdrop_gain": [0] * n_sim, "liquidation_gain": [0] * n_sim, "issuance_fee": [0] * n_sim, "redemption_fee": [0] * n_sim}
     total_kusd_redempted = 0
@@ -217,7 +217,7 @@ def test_run_simulation(add_accounts, contracts, print_expectations):
 
     with open('tests/simulation.csv', 'w', newline='') as csvfile:
         datawriter = csv.writer(csvfile, delimiter=',')
-        datawriter.writerow(['iteration', 'ETH_price', 'price_KUSD', 'price_LQTY', 'num_troves', 'total_coll', 'total_debt', 'TCR', 'recovery_mode', 'last_ICR', 'SP_KUSD', 'SP_ETH', 'total_coll_added', 'total_coll_liquidated', 'total_kusd_redempted'])
+        datawriter.writerow(['iteration', 'ETH_price', 'price_KUSD', 'price_KUMO', 'num_troves', 'total_coll', 'total_debt', 'TCR', 'recovery_mode', 'last_ICR', 'SP_KUSD', 'SP_ETH', 'total_coll_added', 'total_coll_liquidated', 'total_kusd_redempted'])
 
         #Simulation Process
         for index in range(1, n_sim):
@@ -228,7 +228,7 @@ def test_run_simulation(add_accounts, contracts, print_expectations):
             contracts.priceFeedTestnet.setPrice(floatToWei(price_ether_current), { 'from': accounts[0] })
 
             #trove liquidation & return of stability pool
-            result_liquidation = liquidate_troves(accounts, contracts, active_accounts, inactive_accounts, price_ether_current, price_KUSD, price_LQTY_current, data, index)
+            result_liquidation = liquidate_troves(accounts, contracts, active_accounts, inactive_accounts, price_ether_current, price_KUSD, price_KUMO_current, data, index)
             total_coll_liquidated = total_coll_liquidated + result_liquidation[0]
             return_stability = result_liquidation[1]
 
@@ -250,17 +250,17 @@ def test_run_simulation(add_accounts, contracts, print_expectations):
             [price_KUSD, redemption_pool, redemption_fee, issuance_KUSD_stabilizer] = price_stabilizer(accounts, contracts, active_accounts, inactive_accounts, price_ether_current, price_KUSD, index)
             total_kusd_redempted = total_kusd_redempted + redemption_pool
             print('KUSD price', price_KUSD)
-            print('LQTY price', price_LQTY_current)
+            print('KUMO price', price_KUMO_current)
 
             issuance_fee = price_KUSD * (issuance_KUSD_adjust + issuance_KUSD_open + issuance_KUSD_stabilizer)
             data['issuance_fee'][index] = issuance_fee
             data['redemption_fee'][index] = redemption_fee
 
-            #LQTY Market
-            result_LQTY = LQTY_market(index, data)
-            price_LQTY_current = result_LQTY[0]
-            #annualized_earning = result_LQTY[1]
-            #MC_LQTY_current = result_LQTY[2]
+            #KUMO Market
+            result_KUMO = KUMO_market(index, data)
+            price_KUMO_current = result_KUMO[0]
+            #annualized_earning = result_KUMO[1]
+            #MC_KUMO_current = result_KUMO[2]
 
             [ETH_price, num_troves, total_coll, total_debt, TCR, recovery_mode, last_ICR, SP_KUSD, SP_ETH] = logGlobalState(contracts)
             print('Total redempted ', total_kusd_redempted)
@@ -269,6 +269,6 @@ def test_run_simulation(add_accounts, contracts, print_expectations):
             print(f'Ratio ETH liquid {100 * total_coll_liquidated / total_coll_added}%')
             print(' ----------------------\n')
 
-            datawriter.writerow([index, ETH_price, price_KUSD, price_LQTY_current, num_troves, total_coll, total_debt, TCR, recovery_mode, last_ICR, SP_KUSD, SP_ETH, total_coll_added, total_coll_liquidated, total_kusd_redempted])
+            datawriter.writerow([index, ETH_price, price_KUSD, price_KUMO_current, num_troves, total_coll, total_debt, TCR, recovery_mode, last_ICR, SP_KUSD, SP_ETH, total_coll_added, total_coll_liquidated, total_kusd_redempted])
 
             assert price_KUSD > 0

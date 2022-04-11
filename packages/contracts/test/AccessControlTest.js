@@ -32,8 +32,8 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
   let functionCaller
   let borrowerOperations
 
-  let lqtyStaking
-  let lqtyToken
+  let kumoStaking
+  let kumoToken
   let communityIssuance
   let lockupContractFactory
 
@@ -41,7 +41,7 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
     coreContracts = await deploymentHelper.deployLiquityCore()
     coreContracts.troveManager = await TroveManagerTester.new()
     coreContracts = await deploymentHelper.deployKUSDTokenTester(coreContracts)
-    const LQTYContracts = await deploymentHelper.deployLQTYTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
+    const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
     
     priceFeed = coreContracts.priceFeed
     kusdToken = coreContracts.kusdToken
@@ -54,14 +54,14 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
     functionCaller = coreContracts.functionCaller
     borrowerOperations = coreContracts.borrowerOperations
 
-    lqtyStaking = LQTYContracts.lqtyStaking
-    lqtyToken = LQTYContracts.lqtyToken
-    communityIssuance = LQTYContracts.communityIssuance
-    lockupContractFactory = LQTYContracts.lockupContractFactory
+    kumoStaking = KUMOContracts.kumoStaking
+    kumoToken = KUMOContracts.kumoToken
+    communityIssuance = KUMOContracts.communityIssuance
+    lockupContractFactory = KUMOContracts.lockupContractFactory
 
-    await deploymentHelper.connectLQTYContracts(LQTYContracts)
-    await deploymentHelper.connectCoreContracts(coreContracts, LQTYContracts)
-    await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, coreContracts)
+    await deploymentHelper.connectKUMOContracts(KUMOContracts)
+    await deploymentHelper.connectCoreContracts(coreContracts, KUMOContracts)
+    await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, coreContracts)
 
     for (account of accounts.slice(0, 10)) {
       await th.openTrove(coreContracts, { extraKUSDAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
@@ -70,7 +70,7 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
     const expectedCISupplyCap = '32000000000000000000000000' // 32mil
 
     // Check CI has been properly funded
-    const bal = await lqtyToken.balanceOf(communityIssuance.address)
+    const bal = await kumoToken.balanceOf(communityIssuance.address)
     assert.equal(bal, expectedCISupplyCap)
   })
 
@@ -438,9 +438,9 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
   })
 
   describe('LockupContract', async accounts => {
-    it("withdrawLQTY(): reverts when caller is not beneficiary", async () => {
+    it("withdrawKUMO(): reverts when caller is not beneficiary", async () => {
       // deploy new LC with Carol as beneficiary
-      const unlockTime = (await lqtyToken.getDeploymentStartTime()).add(toBN(timeValues.SECONDS_IN_ONE_YEAR))
+      const unlockTime = (await kumoToken.getDeploymentStartTime()).add(toBN(timeValues.SECONDS_IN_ONE_YEAR))
       const deployedLCtx = await lockupContractFactory.deployLockupContract(
         carol, 
         unlockTime,
@@ -448,30 +448,30 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
 
       const LC = await th.getLCFromDeploymentTx(deployedLCtx)
 
-      // LQTY Multisig funds the LC
-      await lqtyToken.transfer(LC.address, dec(100, 18), { from: multisig })
+      // KUMO Multisig funds the LC
+      await kumoToken.transfer(LC.address, dec(100, 18), { from: multisig })
 
       // Fast-forward one year, so that beneficiary can withdraw
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
 
-      // Bob attempts to withdraw LQTY
+      // Bob attempts to withdraw KUMO
       try {
-        const txBob = await LC.withdrawLQTY({ from: bob })
+        const txBob = await LC.withdrawKUMO({ from: bob })
         
       } catch (err) {
         assert.include(err.message, "revert")
       }
 
       // Confirm beneficiary, Carol, can withdraw
-      const txCarol = await LC.withdrawLQTY({ from: carol })
+      const txCarol = await LC.withdrawKUMO({ from: carol })
       assert.isTrue(txCarol.receipt.status)
     })
   })
 
-  describe('LQTYStaking', async accounts => {
+  describe('KUMOStaking', async accounts => {
     it("increaseF_KUSD(): reverts when caller is not TroveManager", async () => {
       try {
-        const txAlice = await lqtyStaking.increaseF_KUSD(dec(1, 18), { from: alice })
+        const txAlice = await kumoStaking.increaseF_KUSD(dec(1, 18), { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert")
@@ -479,14 +479,14 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
     })
   })
 
-  describe('LQTYToken', async accounts => {
-    it("sendToLQTYStaking(): reverts when caller is not the LQTYSstaking", async () => {
-      // Check multisig has some LQTY
-      assert.isTrue((await lqtyToken.balanceOf(multisig)).gt(toBN('0')))
+  describe('KUMOToken', async accounts => {
+    it("sendToKUMOStaking(): reverts when caller is not the KUMOSstaking", async () => {
+      // Check multisig has some KUMO
+      assert.isTrue((await kumoToken.balanceOf(multisig)).gt(toBN('0')))
 
       // multisig tries to call it
       try {
-        const tx = await lqtyToken.sendToLQTYStaking(multisig, 1, { from: multisig })
+        const tx = await kumoToken.sendToKUMOStaking(multisig, 1, { from: multisig })
       } catch (err) {
         assert.include(err.message, "revert")
       }
@@ -494,13 +494,13 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
       // FF >> time one year
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
 
-      // Owner transfers 1 LQTY to bob
-      await lqtyToken.transfer(bob, dec(1, 18), { from: multisig })
-      assert.equal((await lqtyToken.balanceOf(bob)), dec(1, 18))
+      // Owner transfers 1 KUMO to bob
+      await kumoToken.transfer(bob, dec(1, 18), { from: multisig })
+      assert.equal((await kumoToken.balanceOf(bob)), dec(1, 18))
 
       // Bob tries to call it
       try {
-        const tx = await lqtyToken.sendToLQTYStaking(bob, dec(1, 18), { from: bob })
+        const tx = await kumoToken.sendToKUMOStaking(bob, dec(1, 18), { from: bob })
       } catch (err) {
         assert.include(err.message, "revert")
       }
@@ -508,18 +508,18 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
   })
 
   describe('CommunityIssuance', async accounts => {
-    it("sendLQTY(): reverts when caller is not the StabilityPool", async () => {
-      const tx1 = communityIssuance.sendLQTY(alice, dec(100, 18), {from: alice})
-      const tx2 = communityIssuance.sendLQTY(bob, dec(100, 18), {from: alice})
-      const tx3 = communityIssuance.sendLQTY(stabilityPool.address, dec(100, 18), {from: alice})
+    it("sendKUMO(): reverts when caller is not the StabilityPool", async () => {
+      const tx1 = communityIssuance.sendKUMO(alice, dec(100, 18), {from: alice})
+      const tx2 = communityIssuance.sendKUMO(bob, dec(100, 18), {from: alice})
+      const tx3 = communityIssuance.sendKUMO(stabilityPool.address, dec(100, 18), {from: alice})
      
       assertRevert(tx1)
       assertRevert(tx2)
       assertRevert(tx3)
     })
 
-    it("issueLQTY(): reverts when caller is not the StabilityPool", async () => {
-      const tx1 = communityIssuance.issueLQTY({from: alice})
+    it("issueKUMO(): reverts when caller is not the StabilityPool", async () => {
+      const tx1 = communityIssuance.issueKUMO({from: alice})
 
       assertRevert(tx1)
     })

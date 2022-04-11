@@ -51,28 +51,28 @@ drift_ether3 = 0.0013
 period4 = period
 drift_ether4 = -0.0002
 
-"""# LQTY price
-In the first month, the price of LQTY follows
+"""# KUMO price
+In the first month, the price of KUMO follows
 
 > $P_t^q = P_{t-1}^q (1+\zeta_t^q)(1+\sigma_t^q)$. 
 
-Note that $\zeta_t^q \sim N(0,$ sd_LQTY) represents LQTY price shock and $\sigma_t^q$ the drift. Here, $\sigma_t^q =$ drift_LQTY, so that the expected LQTY price increases from price_LQTY_initial to the following at the end of the first month:
-> $E(P_{720}^q) = $price_LQTY_initial$ \cdot (1+$ drift_LQTY$)^{720}$
+Note that $\zeta_t^q \sim N(0,$ sd_KUMO) represents KUMO price shock and $\sigma_t^q$ the drift. Here, $\sigma_t^q =$ drift_KUMO, so that the expected KUMO price increases from price_KUMO_initial to the following at the end of the first month:
+> $E(P_{720}^q) = $price_KUMO_initial$ \cdot (1+$ drift_KUMO$)^{720}$
 
-The LQTY price from the second month on is endogenously determined.
+The KUMO price from the second month on is endogenously determined.
 """
 
-#LQTY price & airdrop
-price_LQTY_initial = 0.4
-price_LQTY = [price_LQTY_initial]
-sd_LQTY=0.005
-drift_LQTY = 0.0035
-supply_LQTY=[0]
-LQTY_total_supply=100000000
+#KUMO price & airdrop
+price_KUMO_initial = 0.4
+price_KUMO = [price_KUMO_initial]
+sd_KUMO=0.005
+drift_KUMO = 0.0035
+supply_KUMO=[0]
+KUMO_total_supply=100000000
 
-"""**LQTY Endogenous Price**
+"""**KUMO Endogenous Price**
 
-The staked LQTY pool earning consists of the issuance fee revenue and redemption fee revenue
+The staked KUMO pool earning consists of the issuance fee revenue and redemption fee revenue
 > $R_t^q = R_t^i + R_t^r.$
 
 From period 721 onwards, using the data in the last 720 periods (i.e. the last 30 days), we can calculate the annualized earning
@@ -96,14 +96,14 @@ The P/E ratio is defined as follows
 
 where $r^{PE} =$ PE_ratio ~and \zeta_t^{PE}\sim N(0, 0.1)~ $\zeta_t^{PE} = 0$.
 
-> $$r_t=\frac{LQTY Market Cap}{Annualized Earning}=\frac{MC_t}{E_t}$$
+> $$r_t=\frac{KUMO Market Cap}{Annualized Earning}=\frac{MC_t}{E_t}$$
 
-> $MC_t=P_t^q \cdot$ LQTY_total_supply
+> $MC_t=P_t^q \cdot$ KUMO_total_supply
 
-Therefore, the LQTY price dynamics is determined
-> $$P_t^q=discount \cdot \frac{r^{PE}}{LQTY\_total\_supply}E_t$$
+Therefore, the KUMO price dynamics is determined
+> $$P_t^q=discount \cdot \frac{r^{PE}}{KUMO\_total\_supply}E_t$$
 
-Interpretation: The denominator implies that with more LQTY tokens issued, LQTY price decreases. However, the depreciation effect can be counteracted by the growth of the earning.
+Interpretation: The denominator implies that with more KUMO tokens issued, KUMO price decreases. However, the depreciation effect can be counteracted by the growth of the earning.
 
 """
 
@@ -136,7 +136,7 @@ where $\zeta_t^s \sim N(0, sd\_stability)$ is the shock in the liquidity pool.
 
 During the first month the formula above is also multiplied by a drift factor, $drift\_stability$.
 
-$R_{t-1}^s$ is the return in the stability pool, which consists of liquidation gain and airdrop LQTY gain.
+$R_{t-1}^s$ is the return in the stability pool, which consists of liquidation gain and airdrop KUMO gain.
 
 
 The natural rate of the stability pool follows
@@ -290,7 +290,7 @@ The debt $Q_t^d$ is paid by the stability pool in exchange for the collateral $Q
 
 where:
 - $R_t^l=P_t^eQ_t^e-P_{t-1}^lQ_t^d$ is the liquidation gain 
-- $R_t^a=P_{t}^q\hat{Q}_t^q$ is the airdrop gain, $\hat{Q}_t^q=1000$ denotes the amount of LQTY token airdropped to the stability pool providers
+- $R_t^a=P_{t}^q\hat{Q}_t^q$ is the airdrop gain, $\hat{Q}_t^q=1000$ denotes the amount of KUMO token airdropped to the stability pool providers
 - $D_{t}^{s}$ is the total amount of KUSD deposited in the Stability Pool (see below)
 
 # Exogenous Factors
@@ -336,13 +336,13 @@ for i in range(1, period):
     shock_natural = random.normalvariate(0,sd_natural_rate)
     natural_rate.append(natural_rate[i-1]*(1+shock_natural))
 
-"""LQTY Price - First Month"""
+"""KUMO Price - First Month"""
 
-#LQTY price
+#KUMO price
 for i in range(1, month):
     random.seed(2+13*i)
-    shock_LQTY = random.normalvariate(0,sd_LQTY)  
-    price_LQTY.append(price_LQTY[i-1]*(1+shock_LQTY)*(1+drift_LQTY))
+    shock_KUMO = random.normalvariate(0,sd_KUMO)  
+    price_KUMO.append(price_KUMO[i-1]*(1+shock_KUMO)*(1+drift_KUMO))
 
 """# Troves
 
@@ -398,13 +398,13 @@ def remove_accounts_from_events(accounts, active_accounts, inactive_accounts, ev
 # Re-arranging:
 # F = 0.5 ** (1/8760)
 # F = 0.99992087674
-def quantity_LQTY_airdrop(index):
+def quantity_KUMO_airdrop(index):
     F = 0.99992087674
     if index <= 0:
         return 0
     return 32e6 * (F ** (index-1) - F ** index)
 
-def liquidate_troves(accounts, contracts, active_accounts, inactive_accounts, price_ether_current, price_KUSD, price_LQTY_current, data, index):
+def liquidate_troves(accounts, contracts, active_accounts, inactive_accounts, price_ether_current, price_KUSD, price_KUMO_current, data, index):
     if len(active_accounts) == 0:
         return [0, 0]
 
@@ -436,7 +436,7 @@ def liquidate_troves(accounts, contracts, active_accounts, inactive_accounts, pr
     debt_liquidated = stability_pool_current - stability_pool_previous
     ether_liquidated = stability_pool_eth_current - stability_pool_eth_previous
     liquidation_gain = ether_liquidated * price_ether_current - debt_liquidated * price_KUSD
-    airdrop_gain = price_LQTY_current * quantity_LQTY_airdrop(index)
+    airdrop_gain = price_KUMO_current * quantity_KUMO_airdrop(index)
 
     data['liquidation_gain'][index] = liquidation_gain
     data['airdrop_gain'][index] = airdrop_gain
@@ -960,13 +960,13 @@ def price_stabilizer(accounts, contracts, active_accounts, inactive_accounts, pr
 
     return [price_KUSD_current, redemption_pool, redemption_fee, issuance_KUSD_stabilizer]
 
-"""# LQTY Market"""
+"""# KUMO Market"""
 
-def LQTY_market(index, data):
-    #quantity_LQTY = (LQTY_total_supply/3)*(1-0.5**(index/period))
+def KUMO_market(index, data):
+    #quantity_KUMO = (KUMO_total_supply/3)*(1-0.5**(index/period))
     np.random.seed(2+3*index)
     if index <= month:
-        price_LQTY_current = price_LQTY[index-1]
+        price_KUMO_current = price_KUMO[index-1]
         annualized_earning = (index/month)**0.5 * np.random.normal(200000000,500000)
     else:
         revenue_issuance = sum(data['issuance_fee'][index - month:index])
@@ -974,8 +974,8 @@ def LQTY_market(index, data):
         annualized_earning = 365 * (revenue_issuance+revenue_redemption) / 30
         #discounting factor to factor in the risk in early days
         discount=index/period
-        price_LQTY_current = discount * PE_ratio * annualized_earning / LQTY_total_supply
+        price_KUMO_current = discount * PE_ratio * annualized_earning / KUMO_total_supply
 
-    #MC_LQTY_current = price_LQTY_current * quantity_LQTY
+    #MC_KUMO_current = price_KUMO_current * quantity_KUMO
 
-    return [price_LQTY_current, annualized_earning]
+    return [price_KUMO_current, annualized_earning]

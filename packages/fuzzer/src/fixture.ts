@@ -3,7 +3,7 @@ import { Signer } from "@ethersproject/abstract-signer";
 import {
   Decimal,
   Decimalish,
-  LQTYStake,
+  KUMOStake,
   KUSD_MINIMUM_DEBT,
   StabilityDeposit,
   TransactableLiquity,
@@ -39,8 +39,8 @@ type GasHistograms = Pick<
   | "redeemKUSD"
   | "depositKUSDInStabilityPool"
   | "withdrawKUSDFromStabilityPool"
-  | "stakeLQTY"
-  | "unstakeLQTY"
+  | "stakeKUMO"
+  | "unstakeKUMO"
 >;
 
 export class Fixture {
@@ -77,8 +77,8 @@ export class Fixture {
       redeemKUSD: new GasHistogram(),
       depositKUSDInStabilityPool: new GasHistogram(),
       withdrawKUSDFromStabilityPool: new GasHistogram(),
-      stakeLQTY: new GasHistogram(),
-      unstakeLQTY: new GasHistogram()
+      stakeKUMO: new GasHistogram(),
+      unstakeKUMO: new GasHistogram()
     };
   }
 
@@ -390,33 +390,33 @@ export class Fixture {
   }
 
   async stakeRandomAmount(userAddress: string, liquity: Liquity) {
-    const lqtyBalance = await this.funderLiquity.getLQTYBalance();
-    const amount = lqtyBalance.mul(Math.random() / 2);
+    const kumoBalance = await this.funderLiquity.getKUMOBalance();
+    const amount = kumoBalance.mul(Math.random() / 2);
 
-    await this.funderLiquity.sendLQTY(userAddress, amount);
+    await this.funderLiquity.sendKUMO(userAddress, amount);
 
     if (amount.eq(0)) {
-      console.log(`// [${shortenAddress(userAddress)}] stakeLQTY(${amount}) expected to fail`);
+      console.log(`// [${shortenAddress(userAddress)}] stakeKUMO(${amount}) expected to fail`);
 
-      await this.gasHistograms.stakeLQTY.expectFailure(() =>
-        liquity.stakeLQTY(amount, { gasPrice: 0 })
+      await this.gasHistograms.stakeKUMO.expectFailure(() =>
+        liquity.stakeKUMO(amount, { gasPrice: 0 })
       );
     } else {
-      console.log(`[${shortenAddress(userAddress)}] stakeLQTY(${amount})`);
+      console.log(`[${shortenAddress(userAddress)}] stakeKUMO(${amount})`);
 
-      await this.gasHistograms.stakeLQTY.expectSuccess(() =>
-        liquity.send.stakeLQTY(amount, { gasPrice: 0 })
+      await this.gasHistograms.stakeKUMO.expectSuccess(() =>
+        liquity.send.stakeKUMO(amount, { gasPrice: 0 })
       );
     }
   }
 
-  async unstakeRandomAmount(userAddress: string, liquity: Liquity, stake: LQTYStake) {
-    const amount = stake.stakedLQTY.mul(1.1 * Math.random()).add(10 * Math.random());
+  async unstakeRandomAmount(userAddress: string, liquity: Liquity, stake: KUMOStake) {
+    const amount = stake.stakedKUMO.mul(1.1 * Math.random()).add(10 * Math.random());
 
-    console.log(`[${shortenAddress(userAddress)}] unstakeLQTY(${amount})`);
+    console.log(`[${shortenAddress(userAddress)}] unstakeKUMO(${amount})`);
 
-    await this.gasHistograms.unstakeLQTY.expectSuccess(() =>
-      liquity.send.unstakeLQTY(amount, { gasPrice: 0 })
+    await this.gasHistograms.unstakeKUMO.expectSuccess(() =>
+      liquity.send.unstakeKUMO(amount, { gasPrice: 0 })
     );
   }
 
@@ -428,11 +428,11 @@ export class Fixture {
     }
   }
 
-  async sweepLQTY(liquity: Liquity) {
-    const lqtyBalance = await liquity.getLQTYBalance();
+  async sweepKUMO(liquity: Liquity) {
+    const kumoBalance = await liquity.getKUMOBalance();
 
-    if (lqtyBalance.nonZero) {
-      await liquity.sendLQTY(this.funderAddress, lqtyBalance, { gasPrice: 0 });
+    if (kumoBalance.nonZero) {
+      await liquity.sendKUMO(this.funderAddress, kumoBalance, { gasPrice: 0 });
     }
   }
 

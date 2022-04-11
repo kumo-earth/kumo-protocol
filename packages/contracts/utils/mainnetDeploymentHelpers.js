@@ -136,48 +136,48 @@ class MainnetDeploymentHelper {
     return coreContracts
   }
 
-  async deployLQTYContractsMainnet(bountyAddress, lpRewardsAddress, multisigAddress, deploymentState) {
-    const lqtyStakingFactory = await this.getFactory("LQTYStaking")
+  async deployKUMOContractsMainnet(bountyAddress, lpRewardsAddress, multisigAddress, deploymentState) {
+    const kumoStakingFactory = await this.getFactory("KUMOStaking")
     const lockupContractFactory_Factory = await this.getFactory("LockupContractFactory")
     const communityIssuanceFactory = await this.getFactory("CommunityIssuance")
-    const lqtyTokenFactory = await this.getFactory("LQTYToken")
+    const kumoTokenFactory = await this.getFactory("KUMOToken")
 
-    const lqtyStaking = await this.loadOrDeploy(lqtyStakingFactory, 'lqtyStaking', deploymentState)
+    const kumoStaking = await this.loadOrDeploy(kumoStakingFactory, 'kumoStaking', deploymentState)
     const lockupContractFactory = await this.loadOrDeploy(lockupContractFactory_Factory, 'lockupContractFactory', deploymentState)
     const communityIssuance = await this.loadOrDeploy(communityIssuanceFactory, 'communityIssuance', deploymentState)
 
-    // Deploy LQTY Token, passing Community Issuance and Factory addresses to the constructor
-    const lqtyTokenParams = [
+    // Deploy KUMO Token, passing Community Issuance and Factory addresses to the constructor
+    const kumoTokenParams = [
       communityIssuance.address,
-      lqtyStaking.address,
+      kumoStaking.address,
       lockupContractFactory.address,
       bountyAddress,
       lpRewardsAddress,
       multisigAddress
     ]
-    const lqtyToken = await this.loadOrDeploy(
-      lqtyTokenFactory,
-      'lqtyToken',
+    const kumoToken = await this.loadOrDeploy(
+      kumoTokenFactory,
+      'kumoToken',
       deploymentState,
-      lqtyTokenParams
+      kumoTokenParams
     )
 
     if (!this.configParams.ETHERSCAN_BASE_URL) {
       console.log('No Etherscan Url defined, skipping verification')
     } else {
-      await this.verifyContract('lqtyStaking', deploymentState)
+      await this.verifyContract('kumoStaking', deploymentState)
       await this.verifyContract('lockupContractFactory', deploymentState)
       await this.verifyContract('communityIssuance', deploymentState)
-      await this.verifyContract('lqtyToken', deploymentState, lqtyTokenParams)
+      await this.verifyContract('kumoToken', deploymentState, kumoTokenParams)
     }
 
-    const LQTYContracts = {
-      lqtyStaking,
+    const KUMOContracts = {
+      kumoStaking,
       lockupContractFactory,
       communityIssuance,
-      lqtyToken
+      kumoToken
     }
-    return LQTYContracts
+    return KUMOContracts
   }
 
   async deployUnipoolMainnet(deploymentState) {
@@ -221,7 +221,7 @@ class MainnetDeploymentHelper {
     return owner == ZERO_ADDRESS
   }
   // Connect contracts to their dependencies
-  async connectCoreContractsMainnet(contracts, LQTYContracts, chainlinkProxyAddress) {
+  async connectCoreContractsMainnet(contracts, KUMOContracts, chainlinkProxyAddress) {
     const gasPrice = this.configParams.GAS_PRICE
     // Set ChainlinkAggregatorProxy and TellorCaller in the PriceFeed
     await this.isOwnershipRenounced(contracts.priceFeed) ||
@@ -248,8 +248,8 @@ class MainnetDeploymentHelper {
         contracts.priceFeed.address,
         contracts.kusdToken.address,
         contracts.sortedTroves.address,
-        LQTYContracts.lqtyToken.address,
-        LQTYContracts.lqtyStaking.address,
+        KUMOContracts.kumoToken.address,
+        KUMOContracts.kumoStaking.address,
 	{gasPrice}
       ))
 
@@ -265,7 +265,7 @@ class MainnetDeploymentHelper {
         contracts.priceFeed.address,
         contracts.sortedTroves.address,
         contracts.kusdToken.address,
-        LQTYContracts.lqtyStaking.address,
+        KUMOContracts.kumoStaking.address,
 	{gasPrice}
       ))
 
@@ -278,7 +278,7 @@ class MainnetDeploymentHelper {
         contracts.kusdToken.address,
         contracts.sortedTroves.address,
         contracts.priceFeed.address,
-        LQTYContracts.communityIssuance.address,
+        KUMOContracts.communityIssuance.address,
 	{gasPrice}
       ))
 
@@ -315,18 +315,18 @@ class MainnetDeploymentHelper {
       ))
   }
 
-  async connectLQTYContractsMainnet(LQTYContracts) {
+  async connectKUMOContractsMainnet(KUMOContracts) {
     const gasPrice = this.configParams.GAS_PRICE
-    // Set LQTYToken address in LCF
-    await this.isOwnershipRenounced(LQTYContracts.lqtyStaking) ||
-      await this.sendAndWaitForTransaction(LQTYContracts.lockupContractFactory.setLQTYTokenAddress(LQTYContracts.lqtyToken.address, {gasPrice}))
+    // Set KUMOToken address in LCF
+    await this.isOwnershipRenounced(KUMOContracts.kumoStaking) ||
+      await this.sendAndWaitForTransaction(KUMOContracts.lockupContractFactory.setKUMOTokenAddress(KUMOContracts.kumoToken.address, {gasPrice}))
   }
 
-  async connectLQTYContractsToCoreMainnet(LQTYContracts, coreContracts) {
+  async connectKUMOContractsToCoreMainnet(KUMOContracts, coreContracts) {
     const gasPrice = this.configParams.GAS_PRICE
-    await this.isOwnershipRenounced(LQTYContracts.lqtyStaking) ||
-      await this.sendAndWaitForTransaction(LQTYContracts.lqtyStaking.setAddresses(
-        LQTYContracts.lqtyToken.address,
+    await this.isOwnershipRenounced(KUMOContracts.kumoStaking) ||
+      await this.sendAndWaitForTransaction(KUMOContracts.kumoStaking.setAddresses(
+        KUMOContracts.kumoToken.address,
         coreContracts.kusdToken.address,
         coreContracts.troveManager.address, 
         coreContracts.borrowerOperations.address,
@@ -334,18 +334,18 @@ class MainnetDeploymentHelper {
 	{gasPrice}
       ))
 
-    await this.isOwnershipRenounced(LQTYContracts.communityIssuance) ||
-      await this.sendAndWaitForTransaction(LQTYContracts.communityIssuance.setAddresses(
-        LQTYContracts.lqtyToken.address,
+    await this.isOwnershipRenounced(KUMOContracts.communityIssuance) ||
+      await this.sendAndWaitForTransaction(KUMOContracts.communityIssuance.setAddresses(
+        KUMOContracts.kumoToken.address,
         coreContracts.stabilityPool.address,
 	{gasPrice}
       ))
   }
 
-  async connectUnipoolMainnet(uniPool, LQTYContracts, KUSDWETHPairAddr, duration) {
+  async connectUnipoolMainnet(uniPool, KUMOContracts, KUSDWETHPairAddr, duration) {
     const gasPrice = this.configParams.GAS_PRICE
     await this.isOwnershipRenounced(uniPool) ||
-      await this.sendAndWaitForTransaction(uniPool.setParams(LQTYContracts.lqtyToken.address, KUSDWETHPairAddr, duration, {gasPrice}))
+      await this.sendAndWaitForTransaction(uniPool.setParams(KUMOContracts.kumoToken.address, KUSDWETHPairAddr, duration, {gasPrice}))
   }
 
   // --- Verify on Ethrescan ---

@@ -268,11 +268,11 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_LQTY",
+          "name": "_KUMO",
           "type": "uint256"
         }
       ],
-      "name": "LQTYPaidToDepositor",
+      "name": "KUMOPaidToDepositor",
       "type": "event"
     },
     {
@@ -287,11 +287,11 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_LQTY",
+          "name": "_KUMO",
           "type": "uint256"
         }
       ],
-      "name": "LQTYPaidToFrontEnd",
+      "name": "KUMOPaidToFrontEnd",
       "type": "event"
     },
     {
@@ -507,7 +507,7 @@
           "type": "address"
         }
       ],
-      "name": "getDepositorLQTYGain",
+      "name": "getDepositorKUMOGain",
       "outputs": [
         {
           "internalType": "uint256",
@@ -539,7 +539,7 @@
           "type": "address"
         }
       ],
-      "name": "getFrontEndLQTYGain",
+      "name": "getFrontEndKUMOGain",
       "outputs": [
         {
           "internalType": "uint256",

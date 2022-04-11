@@ -7,7 +7,7 @@ import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/IKUSDToken.sol";
 import "./Interfaces/ICollSurplusPool.sol";
 import "./Interfaces/ISortedTroves.sol";
-import "./Interfaces/ILQTYStaking.sol";
+import "./Interfaces/IKUMOStaking.sol";
 import "./Dependencies/LiquityBase.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
@@ -28,8 +28,8 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
 
     ICollSurplusPool collSurplusPool;
 
-    ILQTYStaking public lqtyStaking;
-    address public lqtyStakingAddress;
+    IKUMOStaking public kumoStaking;
+    address public kumoStakingAddress;
 
     IKUSDToken public kusdToken;
 
@@ -89,7 +89,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
     // event PriceFeedAddressChanged(address  _newPriceFeedAddress);
     // event SortedTrovesAddressChanged(address _sortedTrovesAddress);
     // event KUSDTokenAddressChanged(address _kusdTokenAddress);
-    // event LQTYStakingAddressChanged(address _lqtyStakingAddress);
+    // event KUMOStakingAddressChanged(address _kumoStakingAddress);
 
     // event TroveCreated(address indexed _borrower, uint arrayIndex);
     event TroveUpdated(address indexed _borrower, uint _debt, uint _coll, uint stake, BorrowerOperation operation);
@@ -107,7 +107,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         address _priceFeedAddress,
         address _sortedTrovesAddress,
         address _kusdTokenAddress,
-        address _lqtyStakingAddress
+        address _kumoStakingAddress
     )
         external
         override
@@ -125,7 +125,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         checkContract(_priceFeedAddress);
         checkContract(_sortedTrovesAddress);
         checkContract(_kusdTokenAddress);
-        checkContract(_lqtyStakingAddress);
+        checkContract(_kumoStakingAddress);
         // isInitialized = true;
         
         // __Ownable_init();
@@ -139,8 +139,8 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         priceFeed = IPriceFeed(_priceFeedAddress);
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         kusdToken = IKUSDToken(_kusdTokenAddress);
-        lqtyStakingAddress = _lqtyStakingAddress;
-        lqtyStaking = ILQTYStaking(_lqtyStakingAddress);
+        kumoStakingAddress = _kumoStakingAddress;
+        kumoStaking = IKUMOStaking(_kumoStakingAddress);
 
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit ActivePoolAddressChanged(_activePoolAddress);
@@ -151,7 +151,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         emit PriceFeedAddressChanged(_priceFeedAddress);
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit KUSDTokenAddressChanged(_kusdTokenAddress);
-        emit LQTYStakingAddressChanged(_lqtyStakingAddress);
+        emit KUMOStakingAddressChanged(_kumoStakingAddress);
 
         _renounceOwnership();
     }
@@ -371,9 +371,9 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
 
         _requireUserAcceptsFee(KUSDFee, _KUSDAmount, _maxFeePercentage);
         
-        // Send fee to LQTY staking contract
-        lqtyStaking.increaseF_KUSD(KUSDFee);
-        _kusdToken.mint(lqtyStakingAddress, KUSDFee);
+        // Send fee to KUMO staking contract
+        kumoStaking.increaseF_KUSD(KUSDFee);
+        _kusdToken.mint(kumoStakingAddress, KUSDFee);
 
         return KUSDFee;
     }

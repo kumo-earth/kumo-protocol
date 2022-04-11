@@ -5,8 +5,8 @@ pragma solidity 0.8.11;
 import "./ILiquityBase.sol";
 import "./IStabilityPool.sol";
 import "./IKUSDToken.sol";
-import "./ILQTYToken.sol";
-import "./ILQTYStaking.sol";
+import "./IKUMOToken.sol";
+import "./IKUMOStaking.sol";
 
 
 // Common interface for the Trove Manager.
@@ -23,8 +23,8 @@ interface ITroveManager is ILiquityBase {
     event GasPoolAddressChanged(address _gasPoolAddress);
     event CollSurplusPoolAddressChanged(address _collSurplusPoolAddress);
     event SortedTrovesAddressChanged(address _sortedTrovesAddress);
-    event LQTYTokenAddressChanged(address _lqtyTokenAddress);
-    event LQTYStakingAddressChanged(address _lqtyStakingAddress);
+    event KUMOTokenAddressChanged(address _kumoTokenAddress);
+    event KUMOStakingAddressChanged(address _kumoStakingAddress);
 
     event Liquidation(uint _liquidatedDebt, uint _liquidatedColl, uint _collGasCompensation, uint _KUSDGasCompensation);
     event Redemption(uint _attemptedKUSDAmount, uint _actualKUSDAmount, uint _ETHSent, uint _ETHFee);
@@ -50,14 +50,14 @@ interface ITroveManager is ILiquityBase {
         address _priceFeedAddress,
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
-        address _lqtyTokenAddress,
-        address _lqtyStakingAddress
+        address _kumoTokenAddress,
+        address _kumoStakingAddress
     ) external;
 
     function stabilityPool() external view returns (IStabilityPool);
     function kusdToken() external view returns (IKUSDToken);
-    function lqtyToken() external view returns (ILQTYToken);
-    function lqtyStaking() external view returns (ILQTYStaking);
+    function kumoToken() external view returns (IKUMOToken);
+    function kumoStaking() external view returns (IKUMOStaking);
 
     function getTroveOwnersCount() external view returns (uint);
 

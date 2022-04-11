@@ -75,7 +75,7 @@ const reduce = (
         !updatedDeposit.initialKUSD.eq(originalDeposit.initialKUSD) ||
         updatedDeposit.currentKUSD.gt(originalDeposit.currentKUSD) ||
         updatedDeposit.collateralGain.lt(originalDeposit.collateralGain) ||
-        updatedDeposit.lqtyReward.lt(originalDeposit.lqtyReward);
+        updatedDeposit.kumoReward.lt(originalDeposit.kumoReward);
 
       if (changePending && changeCommitted) {
         return finishChange(revert(newState));

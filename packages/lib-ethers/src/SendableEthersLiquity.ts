@@ -171,13 +171,13 @@ export class SendableEthersLiquity
     return this._populate.sendKUSD(toAddress, amount, overrides).then(sendTransaction);
   }
 
-  /** {@inheritDoc @liquity/lib-base#SendableLiquity.sendLQTY} */
-  sendLQTY(
+  /** {@inheritDoc @liquity/lib-base#SendableLiquity.sendKUMO} */
+  sendKUMO(
     toAddress: string,
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersLiquityTransaction<void>> {
-    return this._populate.sendLQTY(toAddress, amount, overrides).then(sendTransaction);
+    return this._populate.sendKUMO(toAddress, amount, overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @liquity/lib-base#SendableLiquity.redeemKUSD} */
@@ -196,20 +196,20 @@ export class SendableEthersLiquity
     return this._populate.claimCollateralSurplus(overrides).then(sendTransaction);
   }
 
-  /** {@inheritDoc @liquity/lib-base#SendableLiquity.stakeLQTY} */
-  stakeLQTY(
+  /** {@inheritDoc @liquity/lib-base#SendableLiquity.stakeKUMO} */
+  stakeKUMO(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersLiquityTransaction<void>> {
-    return this._populate.stakeLQTY(amount, overrides).then(sendTransaction);
+    return this._populate.stakeKUMO(amount, overrides).then(sendTransaction);
   }
 
-  /** {@inheritDoc @liquity/lib-base#SendableLiquity.unstakeLQTY} */
-  unstakeLQTY(
+  /** {@inheritDoc @liquity/lib-base#SendableLiquity.unstakeKUMO} */
+  unstakeKUMO(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersLiquityTransaction<void>> {
-    return this._populate.unstakeLQTY(amount, overrides).then(sendTransaction);
+    return this._populate.unstakeKUMO(amount, overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @liquity/lib-base#SendableLiquity.withdrawGainsFromStaking} */
@@ -260,11 +260,11 @@ export class SendableEthersLiquity
     return this._populate.unstakeUniTokens(amount, overrides).then(sendTransaction);
   }
 
-  /** {@inheritDoc @liquity/lib-base#SendableLiquity.withdrawLQTYRewardFromLiquidityMining} */
-  withdrawLQTYRewardFromLiquidityMining(
+  /** {@inheritDoc @liquity/lib-base#SendableLiquity.withdrawKUMORewardFromLiquidityMining} */
+  withdrawKUMORewardFromLiquidityMining(
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersLiquityTransaction<void>> {
-    return this._populate.withdrawLQTYRewardFromLiquidityMining(overrides).then(sendTransaction);
+    return this._populate.withdrawKUMORewardFromLiquidityMining(overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @liquity/lib-base#SendableLiquity.exitLiquidityMining} */

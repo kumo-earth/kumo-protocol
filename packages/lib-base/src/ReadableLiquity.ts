@@ -2,7 +2,7 @@ import { Decimal } from "./Decimal";
 import { Trove, TroveWithPendingRedistribution, UserTrove } from "./Trove";
 import { StabilityDeposit } from "./StabilityDeposit";
 import { Fees } from "./Fees";
-import { LQTYStake } from "./LQTYStake";
+import { KUMOStake } from "./KUMOStake";
 
 /**
  * Represents whether an address has been registered as a Liquity frontend.
@@ -102,9 +102,9 @@ export interface ReadableLiquity {
   getStabilityDeposit(address?: string): Promise<StabilityDeposit>;
 
   /**
-   * Get the remaining LQTY that will be collectively rewarded to stability depositors.
+   * Get the remaining KUMO that will be collectively rewarded to stability depositors.
    */
-  getRemainingStabilityPoolLQTYReward(): Promise<Decimal>;
+  getRemainingStabilityPoolKUMOReward(): Promise<Decimal>;
 
   /**
    * Get the total amount of KUSD currently deposited in the Stability Pool.
@@ -119,11 +119,11 @@ export interface ReadableLiquity {
   getKUSDBalance(address?: string): Promise<Decimal>;
 
   /**
-   * Get the amount of LQTY held by an address.
+   * Get the amount of KUMO held by an address.
    *
    * @param address - Address whose balance should be retrieved.
    */
-  getLQTYBalance(address?: string): Promise<Decimal>;
+  getKUMOBalance(address?: string): Promise<Decimal>;
 
   /**
    * Get the amount of Uniswap ETH/KUSD LP tokens held by an address.
@@ -140,9 +140,9 @@ export interface ReadableLiquity {
   getUniTokenAllowance(address?: string): Promise<Decimal>;
 
   /**
-   * Get the remaining LQTY that will be collectively rewarded to liquidity miners.
+   * Get the remaining KUMO that will be collectively rewarded to liquidity miners.
    */
-  getRemainingLiquidityMiningLQTYReward(): Promise<Decimal>;
+  getRemainingLiquidityMiningKUMOReward(): Promise<Decimal>;
 
   /**
    * Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in liquidity mining.
@@ -157,11 +157,11 @@ export interface ReadableLiquity {
   getTotalStakedUniTokens(): Promise<Decimal>;
 
   /**
-   * Get the amount of LQTY earned by an address through mining liquidity.
+   * Get the amount of KUMO earned by an address through mining liquidity.
    *
-   * @param address - Address whose LQTY reward should be retrieved.
+   * @param address - Address whose KUMO reward should be retrieved.
    */
-  getLiquidityMiningLQTYReward(address?: string): Promise<Decimal>;
+  getLiquidityMiningKUMOReward(address?: string): Promise<Decimal>;
 
   /**
    * Get the amount of leftover collateral available for withdrawal by an address.
@@ -193,16 +193,16 @@ export interface ReadableLiquity {
   getFees(): Promise<Fees>;
 
   /**
-   * Get the current state of an LQTY Stake.
+   * Get the current state of an KUMO Stake.
    *
-   * @param address - Address that owns the LQTY Stake.
+   * @param address - Address that owns the KUMO Stake.
    */
-  getLQTYStake(address?: string): Promise<LQTYStake>;
+  getKUMOStake(address?: string): Promise<KUMOStake>;
 
   /**
-   * Get the total amount of LQTY currently staked.
+   * Get the total amount of KUMO currently staked.
    */
-  getTotalStakedLQTY(): Promise<Decimal>;
+  getTotalStakedKUMO(): Promise<Decimal>;
 
   /**
    * Check whether an address is registered as a Liquity frontend, and what its kickback rate is.

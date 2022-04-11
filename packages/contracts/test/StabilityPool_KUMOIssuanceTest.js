@@ -12,7 +12,7 @@ const KUSDToken = artifacts.require("KUSDToken")
 
 const GAS_PRICE = 10000000
 
-contract('StabilityPool - LQTY Rewards', async accounts => {
+contract('StabilityPool - KUMO Rewards', async accounts => {
 
   const [
     owner,
@@ -32,10 +32,10 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
   let sortedTroves
   let troveManager
   let borrowerOperations
-  let lqtyToken
+  let kumoToken
   let communityIssuanceTester
 
-  let communityLQTYSupply
+  let communityKUMOSupply
   let issuance_M1
   let issuance_M2
   let issuance_M3
@@ -48,7 +48,7 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
   const getOpenTroveKUSDAmount = async (totalDebt) => th.getOpenTroveKUSDAmount(contracts, totalDebt)
 
   const openTrove = async (params) => th.openTrove(contracts, params)
-  describe("LQTY Rewards", async () => {
+  describe("KUMO Rewards", async () => {
 
     beforeEach(async () => {
       contracts = await deploymentHelper.deployLiquityCore()
@@ -58,7 +58,7 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
         contracts.stabilityPool.address,
         contracts.borrowerOperations.address
       )
-      const LQTYContracts = await deploymentHelper.deployLQTYTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
+      const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
 
       priceFeed = contracts.priceFeedTestnet
       kusdToken = contracts.kusdToken
@@ -68,18 +68,18 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       stabilityPool = contracts.stabilityPool
       borrowerOperations = contracts.borrowerOperations
 
-      lqtyToken = LQTYContracts.lqtyToken
-      communityIssuanceTester = LQTYContracts.communityIssuance
+      kumoToken = KUMOContracts.kumoToken
+      communityIssuanceTester = KUMOContracts.communityIssuance
 
-      await deploymentHelper.connectLQTYContracts(LQTYContracts)
-      await deploymentHelper.connectCoreContracts(contracts, LQTYContracts)
-      await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, contracts)
+      await deploymentHelper.connectKUMOContracts(KUMOContracts)
+      await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+      await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
 
-      // Check community issuance starts with 32 million LQTY
-      communityLQTYSupply = toBN(await lqtyToken.balanceOf(communityIssuanceTester.address))
-      assert.isAtMost(getDifference(communityLQTYSupply, '32000000000000000000000000'), 1000)
+      // Check community issuance starts with 32 million KUMO
+      communityKUMOSupply = toBN(await kumoToken.balanceOf(communityIssuanceTester.address))
+      assert.isAtMost(getDifference(communityKUMOSupply, '32000000000000000000000000'), 1000)
 
-      /* Monthly LQTY issuance
+      /* Monthly KUMO issuance
   
         Expected fraction of total supply issued per month, for a yearly halving schedule
         (issuance in each month, not cumulative):
@@ -92,15 +92,15 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
         Month 6: 0.041651488815552900
       */
 
-      issuance_M1 = toBN('55378538087966600').mul(communityLQTYSupply).div(toBN(dec(1, 18)))
-      issuance_M2 = toBN('52311755607206100').mul(communityLQTYSupply).div(toBN(dec(1, 18)))
-      issuance_M3 = toBN('49414807056864200').mul(communityLQTYSupply).div(toBN(dec(1, 18)))
-      issuance_M4 = toBN('46678287282156100').mul(communityLQTYSupply).div(toBN(dec(1, 18)))
-      issuance_M5 = toBN('44093311972020200').mul(communityLQTYSupply).div(toBN(dec(1, 18)))
-      issuance_M6 = toBN('41651488815552900').mul(communityLQTYSupply).div(toBN(dec(1, 18)))
+      issuance_M1 = toBN('55378538087966600').mul(communityKUMOSupply).div(toBN(dec(1, 18)))
+      issuance_M2 = toBN('52311755607206100').mul(communityKUMOSupply).div(toBN(dec(1, 18)))
+      issuance_M3 = toBN('49414807056864200').mul(communityKUMOSupply).div(toBN(dec(1, 18)))
+      issuance_M4 = toBN('46678287282156100').mul(communityKUMOSupply).div(toBN(dec(1, 18)))
+      issuance_M5 = toBN('44093311972020200').mul(communityKUMOSupply).div(toBN(dec(1, 18)))
+      issuance_M6 = toBN('41651488815552900').mul(communityKUMOSupply).div(toBN(dec(1, 18)))
     })
 
-    it("liquidation < 1 minute after a deposit does not change totalLQTYIssued", async () => {
+    it("liquidation < 1 minute after a deposit does not change totalKUMOIssued", async () => {
       
       
       await openTrove({ extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: {from: A } })
@@ -114,34 +114,34 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
 
       await priceFeed.setPrice(dec(105, 18))
 
-      // B adjusts, triggering LQTY issuance for all
+      // B adjusts, triggering KUMO issuance for all
       await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: B })
       const blockTimestamp_1 = th.toBN(await th.getLatestBlockTimestamp(web3))
 
-      // Check LQTY has been issued
-      const totalLQTYIssued_1 = await communityIssuanceTester.totalLQTYIssued()
-      assert.isTrue(totalLQTYIssued_1.gt(toBN('0')))
+      // Check KUMO has been issued
+      const totalKUMOIssued_1 = await communityIssuanceTester.totalKUMOIssued()
+      assert.isTrue(totalKUMOIssued_1.gt(toBN('0')))
       
       await troveManager.liquidate(B)
       const blockTimestamp_2 = th.toBN(await th.getLatestBlockTimestamp(web3))
 
       assert.isFalse(await sortedTroves.contains(B))
 
-      const totalLQTYIssued_2 = await communityIssuanceTester.totalLQTYIssued()
+      const totalKUMOIssued_2 = await communityIssuanceTester.totalKUMOIssued()
 
-      //console.log(`totalLQTYIssued_1: ${totalLQTYIssued_1}`)
-      //console.log(`totalLQTYIssued_2: ${totalLQTYIssued_2}`)
+      //console.log(`totalKUMOIssued_1: ${totalKUMOIssued_1}`)
+      //console.log(`totalKUMOIssued_2: ${totalKUMOIssued_2}`)
 
       // check blockTimestamp diff < 60s
       const timestampDiff = blockTimestamp_2.sub(blockTimestamp_1)
       assert.isTrue(timestampDiff.lt(toBN(60)))
 
-      // Check that the liquidation did not alter total LQTY issued
-      assert.isTrue(totalLQTYIssued_2.eq(totalLQTYIssued_1))
+      // Check that the liquidation did not alter total KUMO issued
+      assert.isTrue(totalKUMOIssued_2.eq(totalKUMOIssued_1))
 
-      // Check that depositor B has no LQTY gain
-      const B_pendingLQTYGain = await stabilityPool.getDepositorLQTYGain(B)
-      assert.equal(B_pendingLQTYGain, '0')
+      // Check that depositor B has no KUMO gain
+      const B_pendingKUMOGain = await stabilityPool.getDepositorKUMOGain(B)
+      assert.equal(B_pendingKUMOGain, '0')
 
       // Check depositor B has a pending ETH gain
       const B_pendingETHGain = await stabilityPool.getDepositorETHGain(B)
@@ -149,7 +149,7 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
     })
 
 
-    it("withdrawFromSP(): reward term G does not update when no LQTY is issued", async () => {
+    it("withdrawFromSP(): reward term G does not update when no KUMO is issued", async () => {
       await borrowerOperations.openTrove(th._100pct, dec(10000, 18), A, A, { from: A, value: dec(1000, 'ether') })
       await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: A })
 
@@ -170,18 +170,18 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
 
       // Get G and communityIssuance before
       const G_Before = await stabilityPool.epochToScaleToG(0, 0)
-      const LQTYIssuedBefore = await communityIssuanceTester.totalLQTYIssued()
+      const KUMOIssuedBefore = await communityIssuanceTester.totalKUMOIssued()
 
       //  A withdraws some deposit. Triggers issuance.
       const tx = await stabilityPool.withdrawFromSP(1000, { from: A, gasPrice: GAS_PRICE })
       assert.isTrue(tx.receipt.status)
 
-      // Check G and LQTYIssued do not increase, since <1 minute has passed between issuance triggers
+      // Check G and KUMOIssued do not increase, since <1 minute has passed between issuance triggers
       const G_After = await stabilityPool.epochToScaleToG(0, 0)
-      const LQTYIssuedAfter = await communityIssuanceTester.totalLQTYIssued()
+      const KUMOIssuedAfter = await communityIssuanceTester.totalKUMOIssued()
 
       assert.isTrue(G_After.eq(G_Before))
-      assert.isTrue(LQTYIssuedAfter.eq(LQTYIssuedBefore))
+      assert.isTrue(KUMOIssuedAfter.eq(KUMOIssuedBefore))
     })
 
     // using the result of this to advance time by the desired amount from the deployment time, whether or not some extra time has passed in the meanwhile
@@ -194,8 +194,8 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
     }
 
     // Simple case: 3 depositors, equal stake. No liquidations. No front-end.
-    it("withdrawFromSP(): Depositors with equal initial deposit withdraw correct LQTY gain. No liquidations. No front end.", async () => {
-      const initialIssuance = await communityIssuanceTester.totalLQTYIssued()
+    it("withdrawFromSP(): Depositors with equal initial deposit withdraw correct KUMO gain. No liquidations. No front end.", async () => {
+      const initialIssuance = await communityIssuanceTester.totalKUMOIssued()
       assert.equal(initialIssuance, 0)
 
       // Whale opens Trove with 10k ETH
@@ -206,10 +206,10 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       await borrowerOperations.openTrove(th._100pct, dec(1, 22), C, C, { from: C, value: dec(100, 'ether') })
       await borrowerOperations.openTrove(th._100pct, dec(1, 22), D, D, { from: D, value: dec(100, 'ether') })
 
-      // Check all LQTY balances are initially 0
-      assert.equal(await lqtyToken.balanceOf(A), 0)
-      assert.equal(await lqtyToken.balanceOf(B), 0)
-      assert.equal(await lqtyToken.balanceOf(C), 0)
+      // Check all KUMO balances are initially 0
+      assert.equal(await kumoToken.balanceOf(A), 0)
+      assert.equal(await kumoToken.balanceOf(B), 0)
+      assert.equal(await kumoToken.balanceOf(C), 0)
 
       // A, B, C deposit
       await stabilityPool.provideToSP(dec(1, 22), ZERO_ADDRESS, { from: A })
@@ -219,58 +219,58 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       // One year passes
       await th.fastForwardTime(await getDuration(timeValues.SECONDS_IN_ONE_YEAR), web3.currentProvider)
 
-      // D deposits, triggering LQTY gains for A,B,C. Withdraws immediately after
+      // D deposits, triggering KUMO gains for A,B,C. Withdraws immediately after
       await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: D })
       await stabilityPool.withdrawFromSP(dec(1, 18), { from: D })
 
       // Expected gains for each depositor after 1 year (50% total issued).  Each deposit gets 1/3 of issuance.
-      const expectedLQTYGain_1yr = communityLQTYSupply.div(toBN('2')).div(toBN('3'))
+      const expectedKUMOGain_1yr = communityKUMOSupply.div(toBN('2')).div(toBN('3'))
 
-      // Check LQTY gain
-      const A_LQTYGain_1yr = await stabilityPool.getDepositorLQTYGain(A)
-      const B_LQTYGain_1yr = await stabilityPool.getDepositorLQTYGain(B)
-      const C_LQTYGain_1yr = await stabilityPool.getDepositorLQTYGain(C)
+      // Check KUMO gain
+      const A_KUMOGain_1yr = await stabilityPool.getDepositorKUMOGain(A)
+      const B_KUMOGain_1yr = await stabilityPool.getDepositorKUMOGain(B)
+      const C_KUMOGain_1yr = await stabilityPool.getDepositorKUMOGain(C)
 
       // Check gains are correct, error tolerance = 1e-6 of a token
 
-      assert.isAtMost(getDifference(A_LQTYGain_1yr, expectedLQTYGain_1yr), 1e12)
-      assert.isAtMost(getDifference(B_LQTYGain_1yr, expectedLQTYGain_1yr), 1e12)
-      assert.isAtMost(getDifference(C_LQTYGain_1yr, expectedLQTYGain_1yr), 1e12)
+      assert.isAtMost(getDifference(A_KUMOGain_1yr, expectedKUMOGain_1yr), 1e12)
+      assert.isAtMost(getDifference(B_KUMOGain_1yr, expectedKUMOGain_1yr), 1e12)
+      assert.isAtMost(getDifference(C_KUMOGain_1yr, expectedKUMOGain_1yr), 1e12)
 
       // Another year passes
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
 
-      // D deposits, triggering LQTY gains for A,B,C. Withdraws immediately after
+      // D deposits, triggering KUMO gains for A,B,C. Withdraws immediately after
       await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: D })
       await stabilityPool.withdrawFromSP(dec(1, 18), { from: D })
 
       // Expected gains for each depositor after 2 years (75% total issued).  Each deposit gets 1/3 of issuance.
-      const expectedLQTYGain_2yr = communityLQTYSupply.mul(toBN('3')).div(toBN('4')).div(toBN('3'))
+      const expectedKUMOGain_2yr = communityKUMOSupply.mul(toBN('3')).div(toBN('4')).div(toBN('3'))
 
-      // Check LQTY gain
-      const A_LQTYGain_2yr = await stabilityPool.getDepositorLQTYGain(A)
-      const B_LQTYGain_2yr = await stabilityPool.getDepositorLQTYGain(B)
-      const C_LQTYGain_2yr = await stabilityPool.getDepositorLQTYGain(C)
+      // Check KUMO gain
+      const A_KUMOGain_2yr = await stabilityPool.getDepositorKUMOGain(A)
+      const B_KUMOGain_2yr = await stabilityPool.getDepositorKUMOGain(B)
+      const C_KUMOGain_2yr = await stabilityPool.getDepositorKUMOGain(C)
 
       // Check gains are correct, error tolerance = 1e-6 of a token
-      assert.isAtMost(getDifference(A_LQTYGain_2yr, expectedLQTYGain_2yr), 1e12)
-      assert.isAtMost(getDifference(B_LQTYGain_2yr, expectedLQTYGain_2yr), 1e12)
-      assert.isAtMost(getDifference(C_LQTYGain_2yr, expectedLQTYGain_2yr), 1e12)
+      assert.isAtMost(getDifference(A_KUMOGain_2yr, expectedKUMOGain_2yr), 1e12)
+      assert.isAtMost(getDifference(B_KUMOGain_2yr, expectedKUMOGain_2yr), 1e12)
+      assert.isAtMost(getDifference(C_KUMOGain_2yr, expectedKUMOGain_2yr), 1e12)
 
       // Each depositor fully withdraws
       await stabilityPool.withdrawFromSP(dec(100, 18), { from: A })
       await stabilityPool.withdrawFromSP(dec(100, 18), { from: B })
       await stabilityPool.withdrawFromSP(dec(100, 18), { from: C })
 
-      // Check LQTY balances increase by correct amount
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(A)), expectedLQTYGain_2yr), 1e12)
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(B)), expectedLQTYGain_2yr), 1e12)
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(C)), expectedLQTYGain_2yr), 1e12)
+      // Check KUMO balances increase by correct amount
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(A)), expectedKUMOGain_2yr), 1e12)
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(B)), expectedKUMOGain_2yr), 1e12)
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(C)), expectedKUMOGain_2yr), 1e12)
     })
 
     // 3 depositors, varied stake. No liquidations. No front-end.
-    it("withdrawFromSP(): Depositors with varying initial deposit withdraw correct LQTY gain. No liquidations. No front end.", async () => {
-      const initialIssuance = await communityIssuanceTester.totalLQTYIssued()
+    it("withdrawFromSP(): Depositors with varying initial deposit withdraw correct KUMO gain. No liquidations. No front end.", async () => {
+      const initialIssuance = await communityIssuanceTester.totalKUMOIssued()
       assert.equal(initialIssuance, 0)
 
       // Whale opens Trove with 10k ETH
@@ -281,10 +281,10 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       await borrowerOperations.openTrove(th._100pct, dec(30000, 18), C, C, { from: C, value: dec(400, 'ether') })
       await borrowerOperations.openTrove(th._100pct, dec(10000, 18), D, D, { from: D, value: dec(100, 'ether') })
 
-      // Check all LQTY balances are initially 0
-      assert.equal(await lqtyToken.balanceOf(A), 0)
-      assert.equal(await lqtyToken.balanceOf(B), 0)
-      assert.equal(await lqtyToken.balanceOf(C), 0)
+      // Check all KUMO balances are initially 0
+      assert.equal(await kumoToken.balanceOf(A), 0)
+      assert.equal(await kumoToken.balanceOf(B), 0)
+      assert.equal(await kumoToken.balanceOf(C), 0)
 
       // A, B, C deposit
       await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: A })
@@ -294,77 +294,77 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       // One year passes
       await th.fastForwardTime(await getDuration(timeValues.SECONDS_IN_ONE_YEAR), web3.currentProvider)
 
-      // D deposits, triggering LQTY gains for A,B,C. Withdraws immediately after
+      // D deposits, triggering KUMO gains for A,B,C. Withdraws immediately after
       await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: D })
       await stabilityPool.withdrawFromSP(dec(1, 18), { from: D })
 
       // Expected gains for each depositor after 1 year (50% total issued)
-      const A_expectedLQTYGain_1yr = communityLQTYSupply
+      const A_expectedKUMOGain_1yr = communityKUMOSupply
         .div(toBN('2')) // 50% of total issued after 1 year
         .div(toBN('6'))  // A gets 1/6 of the issuance
 
-      const B_expectedLQTYGain_1yr = communityLQTYSupply
+      const B_expectedKUMOGain_1yr = communityKUMOSupply
         .div(toBN('2')) // 50% of total issued after 1 year
         .div(toBN('3'))  // B gets 2/6 = 1/3 of the issuance
 
-      const C_expectedLQTYGain_1yr = communityLQTYSupply
+      const C_expectedKUMOGain_1yr = communityKUMOSupply
         .div(toBN('2')) // 50% of total issued after 1 year
         .div(toBN('2'))  // C gets 3/6 = 1/2 of the issuance
 
-      // Check LQTY gain
-      const A_LQTYGain_1yr = await stabilityPool.getDepositorLQTYGain(A)
-      const B_LQTYGain_1yr = await stabilityPool.getDepositorLQTYGain(B)
-      const C_LQTYGain_1yr = await stabilityPool.getDepositorLQTYGain(C)
+      // Check KUMO gain
+      const A_KUMOGain_1yr = await stabilityPool.getDepositorKUMOGain(A)
+      const B_KUMOGain_1yr = await stabilityPool.getDepositorKUMOGain(B)
+      const C_KUMOGain_1yr = await stabilityPool.getDepositorKUMOGain(C)
 
       // Check gains are correct, error tolerance = 1e-6 of a toke
-      assert.isAtMost(getDifference(A_LQTYGain_1yr, A_expectedLQTYGain_1yr), 1e12)
-      assert.isAtMost(getDifference(B_LQTYGain_1yr, B_expectedLQTYGain_1yr), 1e12)
-      assert.isAtMost(getDifference(C_LQTYGain_1yr, C_expectedLQTYGain_1yr), 1e12)
+      assert.isAtMost(getDifference(A_KUMOGain_1yr, A_expectedKUMOGain_1yr), 1e12)
+      assert.isAtMost(getDifference(B_KUMOGain_1yr, B_expectedKUMOGain_1yr), 1e12)
+      assert.isAtMost(getDifference(C_KUMOGain_1yr, C_expectedKUMOGain_1yr), 1e12)
 
       // Another year passes
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
 
-      // D deposits, triggering LQTY gains for A,B,C. Withdraws immediately after
+      // D deposits, triggering KUMO gains for A,B,C. Withdraws immediately after
       await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: D })
       await stabilityPool.withdrawFromSP(dec(1, 18), { from: D })
 
       // Expected gains for each depositor after 2 years (75% total issued).
-      const A_expectedLQTYGain_2yr = communityLQTYSupply
+      const A_expectedKUMOGain_2yr = communityKUMOSupply
         .mul(toBN('3')).div(toBN('4')) // 75% of total issued after 1 year
         .div(toBN('6'))  // A gets 1/6 of the issuance
 
-      const B_expectedLQTYGain_2yr = communityLQTYSupply
+      const B_expectedKUMOGain_2yr = communityKUMOSupply
         .mul(toBN('3')).div(toBN('4')) // 75% of total issued after 1 year
         .div(toBN('3'))  // B gets 2/6 = 1/3 of the issuance
 
-      const C_expectedLQTYGain_2yr = communityLQTYSupply
+      const C_expectedKUMOGain_2yr = communityKUMOSupply
         .mul(toBN('3')).div(toBN('4')) // 75% of total issued after 1 year
         .div(toBN('2'))  // C gets 3/6 = 1/2 of the issuance
 
-      // Check LQTY gain
-      const A_LQTYGain_2yr = await stabilityPool.getDepositorLQTYGain(A)
-      const B_LQTYGain_2yr = await stabilityPool.getDepositorLQTYGain(B)
-      const C_LQTYGain_2yr = await stabilityPool.getDepositorLQTYGain(C)
+      // Check KUMO gain
+      const A_KUMOGain_2yr = await stabilityPool.getDepositorKUMOGain(A)
+      const B_KUMOGain_2yr = await stabilityPool.getDepositorKUMOGain(B)
+      const C_KUMOGain_2yr = await stabilityPool.getDepositorKUMOGain(C)
 
       // Check gains are correct, error tolerance = 1e-6 of a token
-      assert.isAtMost(getDifference(A_LQTYGain_2yr, A_expectedLQTYGain_2yr), 1e12)
-      assert.isAtMost(getDifference(B_LQTYGain_2yr, B_expectedLQTYGain_2yr), 1e12)
-      assert.isAtMost(getDifference(C_LQTYGain_2yr, C_expectedLQTYGain_2yr), 1e12)
+      assert.isAtMost(getDifference(A_KUMOGain_2yr, A_expectedKUMOGain_2yr), 1e12)
+      assert.isAtMost(getDifference(B_KUMOGain_2yr, B_expectedKUMOGain_2yr), 1e12)
+      assert.isAtMost(getDifference(C_KUMOGain_2yr, C_expectedKUMOGain_2yr), 1e12)
 
       // Each depositor fully withdraws
       await stabilityPool.withdrawFromSP(dec(10000, 18), { from: A })
       await stabilityPool.withdrawFromSP(dec(10000, 18), { from: B })
       await stabilityPool.withdrawFromSP(dec(10000, 18), { from: C })
 
-      // Check LQTY balances increase by correct amount
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(A)), A_expectedLQTYGain_2yr), 1e12)
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(B)), B_expectedLQTYGain_2yr), 1e12)
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(C)), C_expectedLQTYGain_2yr), 1e12)
+      // Check KUMO balances increase by correct amount
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(A)), A_expectedKUMOGain_2yr), 1e12)
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(B)), B_expectedKUMOGain_2yr), 1e12)
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(C)), C_expectedKUMOGain_2yr), 1e12)
     })
 
     // A, B, C deposit. Varied stake. 1 Liquidation. D joins.
-    it("withdrawFromSP(): Depositors with varying initial deposit withdraw correct LQTY gain. No liquidations. No front end.", async () => {
-      const initialIssuance = await communityIssuanceTester.totalLQTYIssued()
+    it("withdrawFromSP(): Depositors with varying initial deposit withdraw correct KUMO gain. No liquidations. No front end.", async () => {
+      const initialIssuance = await communityIssuanceTester.totalKUMOIssued()
       assert.equal(initialIssuance, 0)
 
       // Whale opens Trove with 10k ETH
@@ -378,11 +378,11 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
 
       await borrowerOperations.openTrove(th._100pct, await getOpenTroveKUSDAmount(dec(30000, 18)), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(300, 'ether') })
 
-      // Check all LQTY balances are initially 0
-      assert.equal(await lqtyToken.balanceOf(A), 0)
-      assert.equal(await lqtyToken.balanceOf(B), 0)
-      assert.equal(await lqtyToken.balanceOf(C), 0)
-      assert.equal(await lqtyToken.balanceOf(D), 0)
+      // Check all KUMO balances are initially 0
+      assert.equal(await kumoToken.balanceOf(A), 0)
+      assert.equal(await kumoToken.balanceOf(B), 0)
+      assert.equal(await kumoToken.balanceOf(C), 0)
+      assert.equal(await kumoToken.balanceOf(D), 0)
 
       // A, B, C deposit
       await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: A })
@@ -404,27 +404,27 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       assert.isAtMost(getDifference(await stabilityPool.getTotalKUSDDeposits(), dec(30000, 18)), 1000)
 
       // Expected gains for each depositor after 1 year (50% total issued)
-      const A_expectedLQTYGain_Y1 = communityLQTYSupply
+      const A_expectedKUMOGain_Y1 = communityKUMOSupply
         .div(toBN('2')) // 50% of total issued in Y1
         .div(toBN('6'))  // A got 1/6 of the issuance
 
-      const B_expectedLQTYGain_Y1 = communityLQTYSupply
+      const B_expectedKUMOGain_Y1 = communityKUMOSupply
         .div(toBN('2')) // 50% of total issued in Y1
         .div(toBN('3'))  // B gets 2/6 = 1/3 of the issuance
 
-      const C_expectedLQTYGain_Y1 = communityLQTYSupply
+      const C_expectedKUMOGain_Y1 = communityKUMOSupply
         .div(toBN('2')) // 50% of total issued in Y1
         .div(toBN('2'))  // C gets 3/6 = 1/2 of the issuance
 
-      // Check LQTY gain
-      const A_LQTYGain_Y1 = await stabilityPool.getDepositorLQTYGain(A)
-      const B_LQTYGain_Y1 = await stabilityPool.getDepositorLQTYGain(B)
-      const C_LQTYGain_Y1 = await stabilityPool.getDepositorLQTYGain(C)
+      // Check KUMO gain
+      const A_KUMOGain_Y1 = await stabilityPool.getDepositorKUMOGain(A)
+      const B_KUMOGain_Y1 = await stabilityPool.getDepositorKUMOGain(B)
+      const C_KUMOGain_Y1 = await stabilityPool.getDepositorKUMOGain(C)
 
       // Check gains are correct, error tolerance = 1e-6 of a toke
-      assert.isAtMost(getDifference(A_LQTYGain_Y1, A_expectedLQTYGain_Y1), 1e12)
-      assert.isAtMost(getDifference(B_LQTYGain_Y1, B_expectedLQTYGain_Y1), 1e12)
-      assert.isAtMost(getDifference(C_LQTYGain_Y1, C_expectedLQTYGain_Y1), 1e12)
+      assert.isAtMost(getDifference(A_KUMOGain_Y1, A_expectedKUMOGain_Y1), 1e12)
+      assert.isAtMost(getDifference(B_KUMOGain_Y1, B_expectedKUMOGain_Y1), 1e12)
+      assert.isAtMost(getDifference(C_KUMOGain_Y1, C_expectedKUMOGain_Y1), 1e12)
 
       // D deposits 40k
       await stabilityPool.provideToSP(dec(40000, 18), ZERO_ADDRESS, { from: D })
@@ -432,43 +432,43 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       // Year 2 passes
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
 
-      // E deposits and withdraws, creating LQTY issuance
+      // E deposits and withdraws, creating KUMO issuance
       await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: E })
       await stabilityPool.withdrawFromSP(dec(1, 18), { from: E })
 
       // Expected gains for each depositor during Y2:
-      const A_expectedLQTYGain_Y2 = communityLQTYSupply
+      const A_expectedKUMOGain_Y2 = communityKUMOSupply
         .div(toBN('4')) // 25% of total issued in Y2
         .div(toBN('14'))  // A got 50/700 = 1/14 of the issuance
 
-      const B_expectedLQTYGain_Y2 = communityLQTYSupply
+      const B_expectedKUMOGain_Y2 = communityKUMOSupply
         .div(toBN('4')) // 25% of total issued in Y2
         .div(toBN('7'))  // B got 100/700 = 1/7 of the issuance
 
-      const C_expectedLQTYGain_Y2 = communityLQTYSupply
+      const C_expectedKUMOGain_Y2 = communityKUMOSupply
         .div(toBN('4')) // 25% of total issued in Y2
         .mul(toBN('3')).div(toBN('14'))  // C gets 150/700 = 3/14 of the issuance
 
-      const D_expectedLQTYGain_Y2 = communityLQTYSupply
+      const D_expectedKUMOGain_Y2 = communityKUMOSupply
         .div(toBN('4')) // 25% of total issued in Y2
         .mul(toBN('4')).div(toBN('7'))  // D gets 400/700 = 4/7 of the issuance
 
-      // Check LQTY gain
-      const A_LQTYGain_AfterY2 = await stabilityPool.getDepositorLQTYGain(A)
-      const B_LQTYGain_AfterY2 = await stabilityPool.getDepositorLQTYGain(B)
-      const C_LQTYGain_AfterY2 = await stabilityPool.getDepositorLQTYGain(C)
-      const D_LQTYGain_AfterY2 = await stabilityPool.getDepositorLQTYGain(D)
+      // Check KUMO gain
+      const A_KUMOGain_AfterY2 = await stabilityPool.getDepositorKUMOGain(A)
+      const B_KUMOGain_AfterY2 = await stabilityPool.getDepositorKUMOGain(B)
+      const C_KUMOGain_AfterY2 = await stabilityPool.getDepositorKUMOGain(C)
+      const D_KUMOGain_AfterY2 = await stabilityPool.getDepositorKUMOGain(D)
 
-      const A_expectedTotalGain = A_expectedLQTYGain_Y1.add(A_expectedLQTYGain_Y2)
-      const B_expectedTotalGain = B_expectedLQTYGain_Y1.add(B_expectedLQTYGain_Y2)
-      const C_expectedTotalGain = C_expectedLQTYGain_Y1.add(C_expectedLQTYGain_Y2)
-      const D_expectedTotalGain = D_expectedLQTYGain_Y2
+      const A_expectedTotalGain = A_expectedKUMOGain_Y1.add(A_expectedKUMOGain_Y2)
+      const B_expectedTotalGain = B_expectedKUMOGain_Y1.add(B_expectedKUMOGain_Y2)
+      const C_expectedTotalGain = C_expectedKUMOGain_Y1.add(C_expectedKUMOGain_Y2)
+      const D_expectedTotalGain = D_expectedKUMOGain_Y2
 
       // Check gains are correct, error tolerance = 1e-6 of a token
-      assert.isAtMost(getDifference(A_LQTYGain_AfterY2, A_expectedTotalGain), 1e12)
-      assert.isAtMost(getDifference(B_LQTYGain_AfterY2, B_expectedTotalGain), 1e12)
-      assert.isAtMost(getDifference(C_LQTYGain_AfterY2, C_expectedTotalGain), 1e12)
-      assert.isAtMost(getDifference(D_LQTYGain_AfterY2, D_expectedTotalGain), 1e12)
+      assert.isAtMost(getDifference(A_KUMOGain_AfterY2, A_expectedTotalGain), 1e12)
+      assert.isAtMost(getDifference(B_KUMOGain_AfterY2, B_expectedTotalGain), 1e12)
+      assert.isAtMost(getDifference(C_KUMOGain_AfterY2, C_expectedTotalGain), 1e12)
+      assert.isAtMost(getDifference(D_KUMOGain_AfterY2, D_expectedTotalGain), 1e12)
 
       // Each depositor fully withdraws
       await stabilityPool.withdrawFromSP(dec(10000, 18), { from: A })
@@ -476,11 +476,11 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       await stabilityPool.withdrawFromSP(dec(30000, 18), { from: C })
       await stabilityPool.withdrawFromSP(dec(40000, 18), { from: D })
 
-      // Check LQTY balances increase by correct amount
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(A)), A_expectedTotalGain), 1e12)
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(B)), B_expectedTotalGain), 1e12)
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(C)), C_expectedTotalGain), 1e12)
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(D)), D_expectedTotalGain), 1e12)
+      // Check KUMO balances increase by correct amount
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(A)), A_expectedTotalGain), 1e12)
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(B)), B_expectedTotalGain), 1e12)
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(C)), C_expectedTotalGain), 1e12)
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(D)), D_expectedTotalGain), 1e12)
     })
 
     //--- Serial pool-emptying liquidations ---
@@ -494,9 +494,9 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
     G,H deposits 100C
     L4 cancels 200C
 
-    Expect all depositors withdraw  1/2 of 1 month's LQTY issuance */
-    it('withdrawFromSP(): Depositor withdraws correct LQTY gain after serial pool-emptying liquidations. No front-ends.', async () => {
-      const initialIssuance = await communityIssuanceTester.totalLQTYIssued()
+    Expect all depositors withdraw  1/2 of 1 month's KUMO issuance */
+    it('withdrawFromSP(): Depositor withdraws correct KUMO gain after serial pool-emptying liquidations. No front-ends.', async () => {
+      const initialIssuance = await communityIssuanceTester.totalKUMOIssued()
       assert.equal(initialIssuance, 0)
 
       // Whale opens Trove with 10k ETH
@@ -512,9 +512,9 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       // price drops by 50%: defaulter ICR falls to 100%
       await priceFeed.setPrice(dec(100, 18));
 
-      // Check all would-be depositors have 0 LQTY balance
+      // Check all would-be depositors have 0 KUMO balance
       for (depositor of allDepositors) {
-        assert.equal(await lqtyToken.balanceOf(depositor), '0')
+        assert.equal(await kumoToken.balanceOf(depositor), '0')
       }
 
       // A, B each deposit 10k KUSD
@@ -575,93 +575,93 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       }
 
       /* Each depositor constitutes 50% of the pool from the time they deposit, up until the liquidation.
-      Therefore, divide monthly issuance by 2 to get the expected per-depositor LQTY gain.*/
-      const expectedLQTYGain_M1 = issuance_M1.div(th.toBN('2'))
-      const expectedLQTYGain_M2 = issuance_M2.div(th.toBN('2'))
-      const expectedLQTYGain_M3 = issuance_M3.div(th.toBN('2'))
-      const expectedLQTYGain_M4 = issuance_M4.div(th.toBN('2'))
+      Therefore, divide monthly issuance by 2 to get the expected per-depositor KUMO gain.*/
+      const expectedKUMOGain_M1 = issuance_M1.div(th.toBN('2'))
+      const expectedKUMOGain_M2 = issuance_M2.div(th.toBN('2'))
+      const expectedKUMOGain_M3 = issuance_M3.div(th.toBN('2'))
+      const expectedKUMOGain_M4 = issuance_M4.div(th.toBN('2'))
 
       // Check A, B only earn issuance from month 1. Error tolerance = 1e-3 tokens
       for (depositor of [A, B]) {
-        const LQTYBalance = await lqtyToken.balanceOf(depositor)
-        assert.isAtMost(getDifference(LQTYBalance, expectedLQTYGain_M1), 1e15)
+        const KUMOBalance = await kumoToken.balanceOf(depositor)
+        assert.isAtMost(getDifference(KUMOBalance, expectedKUMOGain_M1), 1e15)
       }
 
       // Check C, D only earn issuance from month 2.  Error tolerance = 1e-3 tokens
       for (depositor of [C, D]) {
-        const LQTYBalance = await lqtyToken.balanceOf(depositor)
-        assert.isAtMost(getDifference(LQTYBalance, expectedLQTYGain_M2), 1e15)
+        const KUMOBalance = await kumoToken.balanceOf(depositor)
+        assert.isAtMost(getDifference(KUMOBalance, expectedKUMOGain_M2), 1e15)
       }
 
       // Check E, F only earn issuance from month 3.  Error tolerance = 1e-3 tokens
       for (depositor of [E, F]) {
-        const LQTYBalance = await lqtyToken.balanceOf(depositor)
-        assert.isAtMost(getDifference(LQTYBalance, expectedLQTYGain_M3), 1e15)
+        const KUMOBalance = await kumoToken.balanceOf(depositor)
+        assert.isAtMost(getDifference(KUMOBalance, expectedKUMOGain_M3), 1e15)
       }
 
       // Check G, H only earn issuance from month 4.  Error tolerance = 1e-3 tokens
       for (depositor of [G, H]) {
-        const LQTYBalance = await lqtyToken.balanceOf(depositor)
-        assert.isAtMost(getDifference(LQTYBalance, expectedLQTYGain_M4), 1e15)
+        const KUMOBalance = await kumoToken.balanceOf(depositor)
+        assert.isAtMost(getDifference(KUMOBalance, expectedKUMOGain_M4), 1e15)
       }
 
       const finalEpoch = (await stabilityPool.currentEpoch()).toString()
       assert.equal(finalEpoch, 4)
     })
 
-    it('LQTY issuance for a given period is not obtainable if the SP was empty during the period', async () => {
-      const CIBalanceBefore = await lqtyToken.balanceOf(communityIssuanceTester.address)
+    it('KUMO issuance for a given period is not obtainable if the SP was empty during the period', async () => {
+      const CIBalanceBefore = await kumoToken.balanceOf(communityIssuanceTester.address)
 
       await borrowerOperations.openTrove(th._100pct, dec(16000, 18), A, A, { from: A, value: dec(200, 'ether') })
       await borrowerOperations.openTrove(th._100pct, dec(10000, 18), B, B, { from: B, value: dec(100, 'ether') })
       await borrowerOperations.openTrove(th._100pct, dec(16000, 18), C, C, { from: C, value: dec(200, 'ether') })
 
-      const totalLQTYissuance_0 = await communityIssuanceTester.totalLQTYIssued()
+      const totalKUMOissuance_0 = await communityIssuanceTester.totalKUMOIssued()
       const G_0 = await stabilityPool.epochToScaleToG(0, 0)  // epochs and scales will not change in this test: no liquidations
-      assert.equal(totalLQTYissuance_0, '0')
+      assert.equal(totalKUMOissuance_0, '0')
       assert.equal(G_0, '0')
 
       // 1 month passes (M1)
       await th.fastForwardTime(await getDuration(timeValues.SECONDS_IN_ONE_MONTH), web3.currentProvider)
 
-      // LQTY issuance event triggered: A deposits
+      // KUMO issuance event triggered: A deposits
       await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: A })
 
       // Check G is not updated, since SP was empty prior to A's deposit
       const G_1 = await stabilityPool.epochToScaleToG(0, 0)
       assert.isTrue(G_1.eq(G_0))
 
-      // Check total LQTY issued is updated
-      const totalLQTYissuance_1 = await communityIssuanceTester.totalLQTYIssued()
-      assert.isTrue(totalLQTYissuance_1.gt(totalLQTYissuance_0))
+      // Check total KUMO issued is updated
+      const totalKUMOissuance_1 = await communityIssuanceTester.totalKUMOIssued()
+      assert.isTrue(totalKUMOissuance_1.gt(totalKUMOissuance_0))
 
       // 1 month passes (M2)
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_MONTH, web3.currentProvider)
 
-      //LQTY issuance event triggered: A withdraws. 
+      //KUMO issuance event triggered: A withdraws. 
       await stabilityPool.withdrawFromSP(dec(10000, 18), { from: A })
 
       // Check G is updated, since SP was not empty prior to A's withdrawal
       const G_2 = await stabilityPool.epochToScaleToG(0, 0)
       assert.isTrue(G_2.gt(G_1))
 
-      // Check total LQTY issued is updated
-      const totalLQTYissuance_2 = await communityIssuanceTester.totalLQTYIssued()
-      assert.isTrue(totalLQTYissuance_2.gt(totalLQTYissuance_1))
+      // Check total KUMO issued is updated
+      const totalKUMOissuance_2 = await communityIssuanceTester.totalKUMOIssued()
+      assert.isTrue(totalKUMOissuance_2.gt(totalKUMOissuance_1))
 
       // 1 month passes (M3)
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_MONTH, web3.currentProvider)
 
-      // LQTY issuance event triggered: C deposits
+      // KUMO issuance event triggered: C deposits
       await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: C })
 
       // Check G is not updated, since SP was empty prior to C's deposit
       const G_3 = await stabilityPool.epochToScaleToG(0, 0)
       assert.isTrue(G_3.eq(G_2))
 
-      // Check total LQTY issued is updated
-      const totalLQTYissuance_3 = await communityIssuanceTester.totalLQTYIssued()
-      assert.isTrue(totalLQTYissuance_3.gt(totalLQTYissuance_2))
+      // Check total KUMO issued is updated
+      const totalKUMOissuance_3 = await communityIssuanceTester.totalKUMOIssued()
+      assert.isTrue(totalKUMOissuance_3.gt(totalKUMOissuance_2))
 
       // 1 month passes (M4)
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_MONTH, web3.currentProvider)
@@ -673,29 +673,29 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       const G_4 = await stabilityPool.epochToScaleToG(0, 0)
       assert.isTrue(G_4.gt(G_3))
 
-      // Check total LQTY issued is increased
-      const totalLQTYissuance_4 = await communityIssuanceTester.totalLQTYIssued()
-      assert.isTrue(totalLQTYissuance_4.gt(totalLQTYissuance_3))
+      // Check total KUMO issued is increased
+      const totalKUMOissuance_4 = await communityIssuanceTester.totalKUMOIssued()
+      assert.isTrue(totalKUMOissuance_4.gt(totalKUMOissuance_3))
 
-      // Get LQTY Gains
-      const A_LQTYGain = await lqtyToken.balanceOf(A)
-      const C_LQTYGain = await lqtyToken.balanceOf(C)
+      // Get KUMO Gains
+      const A_KUMOGain = await kumoToken.balanceOf(A)
+      const C_KUMOGain = await kumoToken.balanceOf(C)
 
       // Check A earns gains from M2 only
-      assert.isAtMost(getDifference(A_LQTYGain, issuance_M2), 1e15)
+      assert.isAtMost(getDifference(A_KUMOGain, issuance_M2), 1e15)
 
       // Check C earns gains from M4 only
-      assert.isAtMost(getDifference(C_LQTYGain, issuance_M4), 1e15)
+      assert.isAtMost(getDifference(C_KUMOGain, issuance_M4), 1e15)
 
-      // Check totalLQTYIssued = M1 + M2 + M3 + M4.  1e-3 error tolerance.
+      // Check totalKUMOIssued = M1 + M2 + M3 + M4.  1e-3 error tolerance.
       const expectedIssuance4Months = issuance_M1.add(issuance_M2).add(issuance_M3).add(issuance_M4)
-      assert.isAtMost(getDifference(expectedIssuance4Months, totalLQTYissuance_4), 1e15)
+      assert.isAtMost(getDifference(expectedIssuance4Months, totalKUMOissuance_4), 1e15)
 
       // Check CI has only transferred out tokens for M2 + M4.  1e-3 error tolerance.
-      const expectedLQTYSentOutFromCI = issuance_M2.add(issuance_M4)
-      const CIBalanceAfter = await lqtyToken.balanceOf(communityIssuanceTester.address)
+      const expectedKUMOSentOutFromCI = issuance_M2.add(issuance_M4)
+      const CIBalanceAfter = await kumoToken.balanceOf(communityIssuanceTester.address)
       const CIBalanceDifference = CIBalanceBefore.sub(CIBalanceAfter)
-      assert.isAtMost(getDifference(CIBalanceDifference, expectedLQTYSentOutFromCI), 1e15)
+      assert.isAtMost(getDifference(CIBalanceDifference, expectedKUMOSentOutFromCI), 1e15)
     })
 
 
@@ -717,8 +717,8 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
     F makes deposit 100
     1 month passes. L6 empties the Pool. L6:  10000 KUSD, 100 ETH
 
-    expect A, B, C, D each withdraw ~1 month's worth of LQTY */
-    it("withdrawFromSP(): Several deposits of 100 KUSD span one scale factor change. Depositors withdraw correct LQTY gains", async () => {
+    expect A, B, C, D each withdraw ~1 month's worth of KUMO */
+    it("withdrawFromSP(): Several deposits of 100 KUSD span one scale factor change. Depositors withdraw correct KUMO gains", async () => {
       // Whale opens Trove with 100 ETH
       await borrowerOperations.openTrove(th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), whale, whale, { from: whale, value: dec(100, 'ether') })
 
@@ -739,9 +739,9 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       // Defaulter 6 withdraws to 10k debt (inc. gas comp)
       await borrowerOperations.openTrove(th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), defaulter_6, defaulter_6, { from: defaulter_6, value: dec(100, 'ether') })
 
-      // Confirm all depositors have 0 LQTY
+      // Confirm all depositors have 0 KUMO
       for (const depositor of [A, B, C, D, E, F]) {
-        assert.equal(await lqtyToken.balanceOf(depositor), '0')
+        assert.equal(await kumoToken.balanceOf(depositor), '0')
       }
       // price drops by 50%
       await priceFeed.setPrice(dec(100, 18));
@@ -846,19 +846,19 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       await priceFeed.setPrice(dec(200, 18));
 
       /* All depositors withdraw fully from SP.  Withdraw in reverse order, so that the largest remaining
-      deposit (F) withdraws first, and does not get extra LQTY gains from the periods between withdrawals */
+      deposit (F) withdraws first, and does not get extra KUMO gains from the periods between withdrawals */
       for (depositor of [F, E, D, C, B, A]) {
         await stabilityPool.withdrawFromSP(dec(10000, 18), { from: depositor })
       }
 
-      const LQTYGain_A = await lqtyToken.balanceOf(A)
-      const LQTYGain_B = await lqtyToken.balanceOf(B)
-      const LQTYGain_C = await lqtyToken.balanceOf(C)
-      const LQTYGain_D = await lqtyToken.balanceOf(D)
-      const LQTYGain_E = await lqtyToken.balanceOf(E)
-      const LQTYGain_F = await lqtyToken.balanceOf(F)
+      const KUMOGain_A = await kumoToken.balanceOf(A)
+      const KUMOGain_B = await kumoToken.balanceOf(B)
+      const KUMOGain_C = await kumoToken.balanceOf(C)
+      const KUMOGain_D = await kumoToken.balanceOf(D)
+      const KUMOGain_E = await kumoToken.balanceOf(E)
+      const KUMOGain_F = await kumoToken.balanceOf(F)
 
-      /* Expect each deposit to have earned 100% of the LQTY issuance for the month in which it was active, prior
+      /* Expect each deposit to have earned 100% of the KUMO issuance for the month in which it was active, prior
      to the liquidation that mostly depleted it.  Error tolerance = 1e-3 tokens. */
 
       const expectedGainA = issuance_M1.add(issuance_M2.div(toBN('100000')))
@@ -868,19 +868,19 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       const expectedGainE = issuance_M5.add(issuance_M6.div(toBN('100000'))).mul(toBN('99999')).div(toBN('100000'))
       const expectedGainF = issuance_M6.mul(toBN('99999')).div(toBN('100000'))
 
-      assert.isAtMost(getDifference(expectedGainA, LQTYGain_A), 1e15)
-      assert.isAtMost(getDifference(expectedGainB, LQTYGain_B), 1e15)
-      assert.isAtMost(getDifference(expectedGainC, LQTYGain_C), 1e15)
-      assert.isAtMost(getDifference(expectedGainD, LQTYGain_D), 1e15)
+      assert.isAtMost(getDifference(expectedGainA, KUMOGain_A), 1e15)
+      assert.isAtMost(getDifference(expectedGainB, KUMOGain_B), 1e15)
+      assert.isAtMost(getDifference(expectedGainC, KUMOGain_C), 1e15)
+      assert.isAtMost(getDifference(expectedGainD, KUMOGain_D), 1e15)
 
-      assert.isAtMost(getDifference(expectedGainE, LQTYGain_E), 1e15)
-      assert.isAtMost(getDifference(expectedGainF, LQTYGain_F), 1e15)
+      assert.isAtMost(getDifference(expectedGainE, KUMOGain_E), 1e15)
+      assert.isAtMost(getDifference(expectedGainF, KUMOGain_F), 1e15)
     })
 
     // --- FrontEnds and kickback rates
 
     // Simple case: 4 depositors, equal stake. No liquidations.
-    it("withdrawFromSP(): Depositors with equal initial deposit withdraw correct LQTY gain. No liquidations. Front ends and kickback rates.", async () => {
+    it("withdrawFromSP(): Depositors with equal initial deposit withdraw correct KUMO gain. No liquidations. Front ends and kickback rates.", async () => {
       // Register 2 front ends
       const kickbackRate_F1 = toBN(dec(5, 17)) // F1 kicks 50% back to depositor
       const kickbackRate_F2 = toBN(dec(80, 16)) // F2 kicks 80% back to depositor
@@ -888,7 +888,7 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       await stabilityPool.registerFrontEnd(kickbackRate_F1, { from: frontEnd_1 })
       await stabilityPool.registerFrontEnd(kickbackRate_F2, { from: frontEnd_2 })
 
-      const initialIssuance = await communityIssuanceTester.totalLQTYIssued()
+      const initialIssuance = await communityIssuanceTester.totalKUMOIssued()
       assert.equal(initialIssuance, 0)
 
       // Whale opens Trove with 10k ETH
@@ -900,13 +900,13 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       await borrowerOperations.openTrove(th._100pct, dec(10000, 18), D, D, { from: D, value: dec(100, 'ether') })
       await borrowerOperations.openTrove(th._100pct, dec(10000, 18), E, E, { from: E, value: dec(100, 'ether') })
 
-      // Check all LQTY balances are initially 0
-      assert.equal(await lqtyToken.balanceOf(A), 0)
-      assert.equal(await lqtyToken.balanceOf(B), 0)
-      assert.equal(await lqtyToken.balanceOf(C), 0)
-      assert.equal(await lqtyToken.balanceOf(D), 0)
-      assert.equal(await lqtyToken.balanceOf(frontEnd_1), 0)
-      assert.equal(await lqtyToken.balanceOf(frontEnd_2), 0)
+      // Check all KUMO balances are initially 0
+      assert.equal(await kumoToken.balanceOf(A), 0)
+      assert.equal(await kumoToken.balanceOf(B), 0)
+      assert.equal(await kumoToken.balanceOf(C), 0)
+      assert.equal(await kumoToken.balanceOf(D), 0)
+      assert.equal(await kumoToken.balanceOf(frontEnd_1), 0)
+      assert.equal(await kumoToken.balanceOf(frontEnd_2), 0)
 
       // A, B, C, D deposit
       await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
@@ -924,20 +924,20 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       // One year passes
       await th.fastForwardTime(await getDuration(timeValues.SECONDS_IN_ONE_YEAR), web3.currentProvider)
 
-      // E deposits, triggering LQTY gains for A,B,C,D,F1,F2. Withdraws immediately after
+      // E deposits, triggering KUMO gains for A,B,C,D,F1,F2. Withdraws immediately after
       await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: E })
       await stabilityPool.withdrawFromSP(dec(1, 18), { from: E })
 
       // Expected issuance for year 1 is 50% of total supply.
-      const expectedIssuance_Y1 = communityLQTYSupply.div(toBN('2'))
+      const expectedIssuance_Y1 = communityKUMOSupply.div(toBN('2'))
       
-      // Get actual LQTY gains
-      const A_LQTYGain_Y1 = await stabilityPool.getDepositorLQTYGain(A)
-      const B_LQTYGain_Y1 = await stabilityPool.getDepositorLQTYGain(B)
-      const C_LQTYGain_Y1 = await stabilityPool.getDepositorLQTYGain(C)
-      const D_LQTYGain_Y1 = await stabilityPool.getDepositorLQTYGain(D)
-      const F1_LQTYGain_Y1 = await stabilityPool.getFrontEndLQTYGain(frontEnd_1)
-      const F2_LQTYGain_Y1 = await stabilityPool.getFrontEndLQTYGain(frontEnd_2)
+      // Get actual KUMO gains
+      const A_KUMOGain_Y1 = await stabilityPool.getDepositorKUMOGain(A)
+      const B_KUMOGain_Y1 = await stabilityPool.getDepositorKUMOGain(B)
+      const C_KUMOGain_Y1 = await stabilityPool.getDepositorKUMOGain(C)
+      const D_KUMOGain_Y1 = await stabilityPool.getDepositorKUMOGain(D)
+      const F1_KUMOGain_Y1 = await stabilityPool.getFrontEndKUMOGain(frontEnd_1)
+      const F2_KUMOGain_Y1 = await stabilityPool.getFrontEndKUMOGain(frontEnd_2)
 
       // Expected depositor and front-end gains
       const A_expectedGain_Y1 = kickbackRate_F1.mul(expectedIssuance_Y1).div(toBN('4')).div(toBN(dec(1, 18)))
@@ -954,23 +954,23 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
         .div(toBN(dec(1, 18)))
 
       // Check gains are correct, error tolerance = 1e-6 of a token
-      assert.isAtMost(getDifference(A_LQTYGain_Y1, A_expectedGain_Y1), 1e12)
-      assert.isAtMost(getDifference(B_LQTYGain_Y1, B_expectedGain_Y1), 1e12)
-      assert.isAtMost(getDifference(C_LQTYGain_Y1, C_expectedGain_Y1), 1e12)
-      assert.isAtMost(getDifference(D_LQTYGain_Y1, D_expectedGain_Y1), 1e12)
+      assert.isAtMost(getDifference(A_KUMOGain_Y1, A_expectedGain_Y1), 1e12)
+      assert.isAtMost(getDifference(B_KUMOGain_Y1, B_expectedGain_Y1), 1e12)
+      assert.isAtMost(getDifference(C_KUMOGain_Y1, C_expectedGain_Y1), 1e12)
+      assert.isAtMost(getDifference(D_KUMOGain_Y1, D_expectedGain_Y1), 1e12)
 
-      assert.isAtMost(getDifference(F1_LQTYGain_Y1, F1_expectedGain_Y1), 1e12)
-      assert.isAtMost(getDifference(F2_LQTYGain_Y1, F2_expectedGain_Y1), 1e12)
+      assert.isAtMost(getDifference(F1_KUMOGain_Y1, F1_expectedGain_Y1), 1e12)
+      assert.isAtMost(getDifference(F2_KUMOGain_Y1, F2_expectedGain_Y1), 1e12)
 
       // Another year passes
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
 
-      // E deposits, triggering LQTY gains for A,B,CD,F1, F2. Withdraws immediately after
+      // E deposits, triggering KUMO gains for A,B,CD,F1, F2. Withdraws immediately after
       await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: E })
       await stabilityPool.withdrawFromSP(dec(1, 18), { from: E })
 
       // Expected gains for each depositor in Y2(25% total issued).  .
-      const expectedIssuance_Y2 = communityLQTYSupply.div(toBN('4'))
+      const expectedIssuance_Y2 = communityKUMOSupply.div(toBN('4'))
 
       const expectedFinalIssuance = expectedIssuance_Y1.add(expectedIssuance_Y2)
 
@@ -994,13 +994,13 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       await stabilityPool.withdrawFromSP(dec(10000, 18), { from: C })
       await stabilityPool.withdrawFromSP(dec(10000, 18), { from: D })
 
-      // Check LQTY balances increase by correct amount
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(A)), A_expectedFinalGain), 1e12)
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(B)), B_expectedFinalGain), 1e12)
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(C)), C_expectedFinalGain), 1e12)
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(D)), D_expectedFinalGain), 1e12)
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(frontEnd_1)), F1_expectedFinalGain), 1e12)
-      assert.isAtMost(getDifference((await lqtyToken.balanceOf(frontEnd_2)), F2_expectedFinalGain), 1e12)
+      // Check KUMO balances increase by correct amount
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(A)), A_expectedFinalGain), 1e12)
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(B)), B_expectedFinalGain), 1e12)
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(C)), C_expectedFinalGain), 1e12)
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(D)), D_expectedFinalGain), 1e12)
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(frontEnd_1)), F1_expectedFinalGain), 1e12)
+      assert.isAtMost(getDifference((await kumoToken.balanceOf(frontEnd_2)), F2_expectedFinalGain), 1e12)
     })
 
     // A, B, C, D deposit 10k,20k,30k,40k.
@@ -1022,7 +1022,7 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
     // Pool size 80k
     // 1 month passes.
     // All withdraw
-    it("withdrawFromSP(): Depositors with varying initial deposit withdraw correct LQTY gain. Front ends and kickback rates", async () => {
+    it("withdrawFromSP(): Depositors with varying initial deposit withdraw correct KUMO gain. Front ends and kickback rates", async () => {
       // Register 2 front ends
       const F1_kickbackRate = toBN(dec(5, 17)) // F1 kicks 50% back to depositor
       const F2_kickbackRate = toBN(dec(80, 16)) // F2 kicks 80% back to depositor
@@ -1030,7 +1030,7 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       await stabilityPool.registerFrontEnd(F1_kickbackRate, { from: frontEnd_1 })
       await stabilityPool.registerFrontEnd(F2_kickbackRate, { from: frontEnd_2 })
 
-      const initialIssuance = await communityIssuanceTester.totalLQTYIssued()
+      const initialIssuance = await communityIssuanceTester.totalKUMOIssued()
       assert.equal(initialIssuance, 0)
 
       // Whale opens Trove with 10k ETH
@@ -1048,13 +1048,13 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       await borrowerOperations.openTrove(th._100pct, await getOpenTroveKUSDAmount(dec(20000, 18)), defaulter_2, defaulter_2, { from: defaulter_2, value: dec(200, 'ether') })
       await borrowerOperations.openTrove(th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), defaulter_3, defaulter_3, { from: defaulter_3, value: dec(100, 'ether') })
 
-      // Check all LQTY balances are initially 0
-      assert.equal(await lqtyToken.balanceOf(A), 0)
-      assert.equal(await lqtyToken.balanceOf(B), 0)
-      assert.equal(await lqtyToken.balanceOf(C), 0)
-      assert.equal(await lqtyToken.balanceOf(D), 0)
-      assert.equal(await lqtyToken.balanceOf(frontEnd_1), 0)
-      assert.equal(await lqtyToken.balanceOf(frontEnd_2), 0)
+      // Check all KUMO balances are initially 0
+      assert.equal(await kumoToken.balanceOf(A), 0)
+      assert.equal(await kumoToken.balanceOf(B), 0)
+      assert.equal(await kumoToken.balanceOf(C), 0)
+      assert.equal(await kumoToken.balanceOf(D), 0)
+      assert.equal(await kumoToken.balanceOf(frontEnd_1), 0)
+      assert.equal(await kumoToken.balanceOf(frontEnd_2), 0)
 
       // A, B, C, D deposit
       await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
@@ -1089,44 +1089,44 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       // During month 1, deposit sizes are: A:10000, B:20000, C:30000, D:40000.  Total: 100000
       // Expected gains for each depositor after month 1 
       const A_share_M1 = issuance_M1.mul(toBN('10000')).div(toBN('100000'))
-      const A_expectedLQTYGain_M1 = F1_kickbackRate.mul(A_share_M1).div(toBN(dec(1, 18)))
+      const A_expectedKUMOGain_M1 = F1_kickbackRate.mul(A_share_M1).div(toBN(dec(1, 18)))
 
       const B_share_M1 = issuance_M1.mul(toBN('20000')).div(toBN('100000'))
-      const B_expectedLQTYGain_M1 = F2_kickbackRate.mul(B_share_M1).div(toBN(dec(1, 18)))
+      const B_expectedKUMOGain_M1 = F2_kickbackRate.mul(B_share_M1).div(toBN(dec(1, 18)))
 
       const C_share_M1 = issuance_M1.mul(toBN('30000')).div(toBN('100000'))
-      const C_expectedLQTYGain_M1 = F2_kickbackRate.mul(C_share_M1).div(toBN(dec(1, 18)))
+      const C_expectedKUMOGain_M1 = F2_kickbackRate.mul(C_share_M1).div(toBN(dec(1, 18)))
 
       const D_share_M1 = issuance_M1.mul(toBN('40000')).div(toBN('100000'))
-      const D_expectedLQTYGain_M1 = D_share_M1
+      const D_expectedKUMOGain_M1 = D_share_M1
 
       // F1's stake = A 
-      const F1_expectedLQTYGain_M1 = toBN(dec(1, 18))
+      const F1_expectedKUMOGain_M1 = toBN(dec(1, 18))
         .sub(F1_kickbackRate)
         .mul(A_share_M1)
         .div(toBN(dec(1, 18)))
 
       // F2's stake = B + C
-      const F2_expectedLQTYGain_M1 = toBN(dec(1, 18))
+      const F2_expectedKUMOGain_M1 = toBN(dec(1, 18))
         .sub(F2_kickbackRate)
         .mul(B_share_M1.add(C_share_M1))
         .div(toBN(dec(1, 18)))
 
-      // Check LQTY gain
-      const A_LQTYGain_M1 = await stabilityPool.getDepositorLQTYGain(A)
-      const B_LQTYGain_M1 = await stabilityPool.getDepositorLQTYGain(B)
-      const C_LQTYGain_M1 = await stabilityPool.getDepositorLQTYGain(C)
-      const D_LQTYGain_M1 = await stabilityPool.getDepositorLQTYGain(D)
-      const F1_LQTYGain_M1 = await stabilityPool.getFrontEndLQTYGain(frontEnd_1)
-      const F2_LQTYGain_M1 = await stabilityPool.getFrontEndLQTYGain(frontEnd_2)
+      // Check KUMO gain
+      const A_KUMOGain_M1 = await stabilityPool.getDepositorKUMOGain(A)
+      const B_KUMOGain_M1 = await stabilityPool.getDepositorKUMOGain(B)
+      const C_KUMOGain_M1 = await stabilityPool.getDepositorKUMOGain(C)
+      const D_KUMOGain_M1 = await stabilityPool.getDepositorKUMOGain(D)
+      const F1_KUMOGain_M1 = await stabilityPool.getFrontEndKUMOGain(frontEnd_1)
+      const F2_KUMOGain_M1 = await stabilityPool.getFrontEndKUMOGain(frontEnd_2)
 
       // Check gains are correct, error tolerance = 1e-3 of a token
-      assert.isAtMost(getDifference(A_LQTYGain_M1, A_expectedLQTYGain_M1), 1e15)
-      assert.isAtMost(getDifference(B_LQTYGain_M1, B_expectedLQTYGain_M1), 1e15)
-      assert.isAtMost(getDifference(C_LQTYGain_M1, C_expectedLQTYGain_M1), 1e15)
-      assert.isAtMost(getDifference(D_LQTYGain_M1, D_expectedLQTYGain_M1), 1e15)
-      assert.isAtMost(getDifference(F1_LQTYGain_M1, F1_expectedLQTYGain_M1), 1e15)
-      assert.isAtMost(getDifference(F2_LQTYGain_M1, F2_expectedLQTYGain_M1), 1e15)
+      assert.isAtMost(getDifference(A_KUMOGain_M1, A_expectedKUMOGain_M1), 1e15)
+      assert.isAtMost(getDifference(B_KUMOGain_M1, B_expectedKUMOGain_M1), 1e15)
+      assert.isAtMost(getDifference(C_KUMOGain_M1, C_expectedKUMOGain_M1), 1e15)
+      assert.isAtMost(getDifference(D_KUMOGain_M1, D_expectedKUMOGain_M1), 1e15)
+      assert.isAtMost(getDifference(F1_KUMOGain_M1, F1_expectedKUMOGain_M1), 1e15)
+      assert.isAtMost(getDifference(F2_KUMOGain_M1, F2_expectedKUMOGain_M1), 1e15)
 
       // E deposits 30k via F1
       await stabilityPool.provideToSP(dec(30000, 18), frontEnd_1, { from: E })
@@ -1152,56 +1152,56 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
 
       // Expected gains for each depositor after month 2 
       const A_share_M2 = issuance_M2.mul(toBN('5000')).div(toBN('80000'))
-      const A_expectedLQTYGain_M2 = F1_kickbackRate.mul(A_share_M2).div(toBN(dec(1, 18)))
+      const A_expectedKUMOGain_M2 = F1_kickbackRate.mul(A_share_M2).div(toBN(dec(1, 18)))
 
       const B_share_M2 = issuance_M2.mul(toBN('10000')).div(toBN('80000'))
-      const B_expectedLQTYGain_M2 = F2_kickbackRate.mul(B_share_M2).div(toBN(dec(1, 18)))
+      const B_expectedKUMOGain_M2 = F2_kickbackRate.mul(B_share_M2).div(toBN(dec(1, 18)))
 
       const C_share_M2 = issuance_M2.mul(toBN('15000')).div(toBN('80000'))
-      const C_expectedLQTYGain_M2 = F2_kickbackRate.mul(C_share_M2).div(toBN(dec(1, 18)))
+      const C_expectedKUMOGain_M2 = F2_kickbackRate.mul(C_share_M2).div(toBN(dec(1, 18)))
 
       const D_share_M2 = issuance_M2.mul(toBN('20000')).div(toBN('80000'))
-      const D_expectedLQTYGain_M2 = D_share_M2
+      const D_expectedKUMOGain_M2 = D_share_M2
 
       const E_share_M2 = issuance_M2.mul(toBN('30000')).div(toBN('80000'))
-      const E_expectedLQTYGain_M2 = F1_kickbackRate.mul(E_share_M2).div(toBN(dec(1, 18)))
+      const E_expectedKUMOGain_M2 = F1_kickbackRate.mul(E_share_M2).div(toBN(dec(1, 18)))
 
       // F1's stake = A + E
-      const F1_expectedLQTYGain_M2 = toBN(dec(1, 18))
+      const F1_expectedKUMOGain_M2 = toBN(dec(1, 18))
         .sub(F1_kickbackRate)
         .mul(A_share_M2.add(E_share_M2))
         .div(toBN(dec(1, 18)))
 
       // F2's stake = B + C
-      const F2_expectedLQTYGain_M2 = toBN(dec(1, 18))
+      const F2_expectedKUMOGain_M2 = toBN(dec(1, 18))
         .sub(F2_kickbackRate)
         .mul(B_share_M2.add(C_share_M2))
         .div(toBN(dec(1, 18)))
 
-      // Check LQTY gains after month 2
-      const A_LQTYGain_After_M2 = await stabilityPool.getDepositorLQTYGain(A)
-      const B_LQTYGain_After_M2 = await stabilityPool.getDepositorLQTYGain(B)
-      const C_LQTYGain_After_M2 = await stabilityPool.getDepositorLQTYGain(C)
-      const D_LQTYGain_After_M2 = await stabilityPool.getDepositorLQTYGain(D)
-      const E_LQTYGain_After_M2 = await stabilityPool.getDepositorLQTYGain(E)
-      const F1_LQTYGain_After_M2 = await stabilityPool.getFrontEndLQTYGain(frontEnd_1)
-      const F2_LQTYGain_After_M2 = await stabilityPool.getFrontEndLQTYGain(frontEnd_2)
+      // Check KUMO gains after month 2
+      const A_KUMOGain_After_M2 = await stabilityPool.getDepositorKUMOGain(A)
+      const B_KUMOGain_After_M2 = await stabilityPool.getDepositorKUMOGain(B)
+      const C_KUMOGain_After_M2 = await stabilityPool.getDepositorKUMOGain(C)
+      const D_KUMOGain_After_M2 = await stabilityPool.getDepositorKUMOGain(D)
+      const E_KUMOGain_After_M2 = await stabilityPool.getDepositorKUMOGain(E)
+      const F1_KUMOGain_After_M2 = await stabilityPool.getFrontEndKUMOGain(frontEnd_1)
+      const F2_KUMOGain_After_M2 = await stabilityPool.getFrontEndKUMOGain(frontEnd_2)
 
-      assert.isAtMost(getDifference(A_LQTYGain_After_M2, A_expectedLQTYGain_M2.add(A_expectedLQTYGain_M1)), 1e15)
-      assert.isAtMost(getDifference(B_LQTYGain_After_M2, B_expectedLQTYGain_M2.add(B_expectedLQTYGain_M1)), 1e15)
-      assert.isAtMost(getDifference(C_LQTYGain_After_M2, C_expectedLQTYGain_M2.add(C_expectedLQTYGain_M1)), 1e15)
-      assert.isAtMost(getDifference(D_LQTYGain_After_M2, D_expectedLQTYGain_M2.add(D_expectedLQTYGain_M1)), 1e15)
-      assert.isAtMost(getDifference(E_LQTYGain_After_M2, E_expectedLQTYGain_M2), 1e15)
+      assert.isAtMost(getDifference(A_KUMOGain_After_M2, A_expectedKUMOGain_M2.add(A_expectedKUMOGain_M1)), 1e15)
+      assert.isAtMost(getDifference(B_KUMOGain_After_M2, B_expectedKUMOGain_M2.add(B_expectedKUMOGain_M1)), 1e15)
+      assert.isAtMost(getDifference(C_KUMOGain_After_M2, C_expectedKUMOGain_M2.add(C_expectedKUMOGain_M1)), 1e15)
+      assert.isAtMost(getDifference(D_KUMOGain_After_M2, D_expectedKUMOGain_M2.add(D_expectedKUMOGain_M1)), 1e15)
+      assert.isAtMost(getDifference(E_KUMOGain_After_M2, E_expectedKUMOGain_M2), 1e15)
 
       // Check F1 balance is his M1 gain (it was paid out when E joined through F1)
-      const F1_LQTYBalance_After_M2 = await lqtyToken.balanceOf(frontEnd_1)
-      assert.isAtMost(getDifference(F1_LQTYBalance_After_M2, F1_expectedLQTYGain_M1), 1e15)
+      const F1_KUMOBalance_After_M2 = await kumoToken.balanceOf(frontEnd_1)
+      assert.isAtMost(getDifference(F1_KUMOBalance_After_M2, F1_expectedKUMOGain_M1), 1e15)
 
-      // Check F1's LQTY gain in system after M2: Just their gain due to M2
-      assert.isAtMost(getDifference(F1_LQTYGain_After_M2, F1_expectedLQTYGain_M2), 1e15)
+      // Check F1's KUMO gain in system after M2: Just their gain due to M2
+      assert.isAtMost(getDifference(F1_KUMOGain_After_M2, F1_expectedKUMOGain_M2), 1e15)
 
-      // Check F2 LQTY gain in system after M2: the sum of their gains from M1 + M2
-      assert.isAtMost(getDifference(F2_LQTYGain_After_M2, F2_expectedLQTYGain_M2.add(F2_expectedLQTYGain_M1)), 1e15)
+      // Check F2 KUMO gain in system after M2: the sum of their gains from M1 + M2
+      assert.isAtMost(getDifference(F2_KUMOGain_After_M2, F2_expectedKUMOGain_M2.add(F2_expectedKUMOGain_M1)), 1e15)
 
 
       // B tops up 40k via F2
@@ -1224,69 +1224,69 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
 
       // Expected gains for each depositor after month 3 
       const A_share_M3 = issuance_M3.mul(toBN('3750')).div(toBN('100000'))
-      const A_expectedLQTYGain_M3 = F1_kickbackRate.mul(A_share_M3).div(toBN(dec(1, 18)))
+      const A_expectedKUMOGain_M3 = F1_kickbackRate.mul(A_share_M3).div(toBN(dec(1, 18)))
 
       const B_share_M3 = issuance_M3.mul(toBN('47500')).div(toBN('100000'))
-      const B_expectedLQTYGain_M3 = F2_kickbackRate.mul(B_share_M3).div(toBN(dec(1, 18)))
+      const B_expectedKUMOGain_M3 = F2_kickbackRate.mul(B_share_M3).div(toBN(dec(1, 18)))
 
       const C_share_M3 = issuance_M3.mul(toBN('11250')).div(toBN('100000'))
-      const C_expectedLQTYGain_M3 = F2_kickbackRate.mul(C_share_M3).div(toBN(dec(1, 18)))
+      const C_expectedKUMOGain_M3 = F2_kickbackRate.mul(C_share_M3).div(toBN(dec(1, 18)))
 
       const D_share_M3 = issuance_M3.mul(toBN('15000')).div(toBN('100000'))
-      const D_expectedLQTYGain_M3 = D_share_M3
+      const D_expectedKUMOGain_M3 = D_share_M3
 
       const E_share_M3 = issuance_M3.mul(toBN('22500')).div(toBN('100000'))
-      const E_expectedLQTYGain_M3 = F1_kickbackRate.mul(E_share_M3).div(toBN(dec(1, 18)))
+      const E_expectedKUMOGain_M3 = F1_kickbackRate.mul(E_share_M3).div(toBN(dec(1, 18)))
 
       // F1's stake = A + E
-      const F1_expectedLQTYGain_M3 = toBN(dec(1, 18))
+      const F1_expectedKUMOGain_M3 = toBN(dec(1, 18))
         .sub(F1_kickbackRate)
         .mul(A_share_M3.add(E_share_M3))
         .div(toBN(dec(1, 18)))
 
       // F2's stake = B + C
-      const F2_expectedLQTYGain_M3 = toBN(dec(1, 18))
+      const F2_expectedKUMOGain_M3 = toBN(dec(1, 18))
         .sub(F2_kickbackRate)
         .mul(B_share_M3.add(C_share_M3))
         .div(toBN(dec(1, 18)))
 
-      // Check LQTY gains after month 3
-      const A_LQTYGain_After_M3 = await stabilityPool.getDepositorLQTYGain(A)
-      const B_LQTYGain_After_M3 = await stabilityPool.getDepositorLQTYGain(B)
-      const C_LQTYGain_After_M3 = await stabilityPool.getDepositorLQTYGain(C)
-      const D_LQTYGain_After_M3 = await stabilityPool.getDepositorLQTYGain(D)
-      const E_LQTYGain_After_M3 = await stabilityPool.getDepositorLQTYGain(E)
-      const F1_LQTYGain_After_M3 = await stabilityPool.getFrontEndLQTYGain(frontEnd_1)
-      const F2_LQTYGain_After_M3 = await stabilityPool.getFrontEndLQTYGain(frontEnd_2)
+      // Check KUMO gains after month 3
+      const A_KUMOGain_After_M3 = await stabilityPool.getDepositorKUMOGain(A)
+      const B_KUMOGain_After_M3 = await stabilityPool.getDepositorKUMOGain(B)
+      const C_KUMOGain_After_M3 = await stabilityPool.getDepositorKUMOGain(C)
+      const D_KUMOGain_After_M3 = await stabilityPool.getDepositorKUMOGain(D)
+      const E_KUMOGain_After_M3 = await stabilityPool.getDepositorKUMOGain(E)
+      const F1_KUMOGain_After_M3 = await stabilityPool.getFrontEndKUMOGain(frontEnd_1)
+      const F2_KUMOGain_After_M3 = await stabilityPool.getFrontEndKUMOGain(frontEnd_2)
 
-      // Expect A, C, D LQTY system gains to equal their gains from (M1 + M2 + M3)
-      assert.isAtMost(getDifference(A_LQTYGain_After_M3, A_expectedLQTYGain_M3.add(A_expectedLQTYGain_M2).add(A_expectedLQTYGain_M1)), 1e15)
-      assert.isAtMost(getDifference(C_LQTYGain_After_M3, C_expectedLQTYGain_M3.add(C_expectedLQTYGain_M2).add(C_expectedLQTYGain_M1)), 1e15)
-      assert.isAtMost(getDifference(D_LQTYGain_After_M3, D_expectedLQTYGain_M3.add(D_expectedLQTYGain_M2).add(D_expectedLQTYGain_M1)), 1e15)
+      // Expect A, C, D KUMO system gains to equal their gains from (M1 + M2 + M3)
+      assert.isAtMost(getDifference(A_KUMOGain_After_M3, A_expectedKUMOGain_M3.add(A_expectedKUMOGain_M2).add(A_expectedKUMOGain_M1)), 1e15)
+      assert.isAtMost(getDifference(C_KUMOGain_After_M3, C_expectedKUMOGain_M3.add(C_expectedKUMOGain_M2).add(C_expectedKUMOGain_M1)), 1e15)
+      assert.isAtMost(getDifference(D_KUMOGain_After_M3, D_expectedKUMOGain_M3.add(D_expectedKUMOGain_M2).add(D_expectedKUMOGain_M1)), 1e15)
 
-      // Expect E's LQTY system gain to equal their gains from (M2 + M3)
-      assert.isAtMost(getDifference(E_LQTYGain_After_M3, E_expectedLQTYGain_M3.add(E_expectedLQTYGain_M2)), 1e15)
+      // Expect E's KUMO system gain to equal their gains from (M2 + M3)
+      assert.isAtMost(getDifference(E_KUMOGain_After_M3, E_expectedKUMOGain_M3.add(E_expectedKUMOGain_M2)), 1e15)
 
-      // Expect B LQTY system gains to equal gains just from M3 (his topup paid out his gains from M1 + M2)
-      assert.isAtMost(getDifference(B_LQTYGain_After_M3, B_expectedLQTYGain_M3), 1e15)
+      // Expect B KUMO system gains to equal gains just from M3 (his topup paid out his gains from M1 + M2)
+      assert.isAtMost(getDifference(B_KUMOGain_After_M3, B_expectedKUMOGain_M3), 1e15)
 
-      // Expect B LQTY balance to equal gains from (M1 + M2)
-      const B_LQTYBalance_After_M3 = await await lqtyToken.balanceOf(B)
-      assert.isAtMost(getDifference(B_LQTYBalance_After_M3, B_expectedLQTYGain_M2.add(B_expectedLQTYGain_M1)), 1e15)
+      // Expect B KUMO balance to equal gains from (M1 + M2)
+      const B_KUMOBalance_After_M3 = await await kumoToken.balanceOf(B)
+      assert.isAtMost(getDifference(B_KUMOBalance_After_M3, B_expectedKUMOGain_M2.add(B_expectedKUMOGain_M1)), 1e15)
 
-      // Expect F1 LQTY system gains to equal their gain from (M2 + M3)
-      assert.isAtMost(getDifference(F1_LQTYGain_After_M3, F1_expectedLQTYGain_M3.add(F1_expectedLQTYGain_M2)), 1e15)
+      // Expect F1 KUMO system gains to equal their gain from (M2 + M3)
+      assert.isAtMost(getDifference(F1_KUMOGain_After_M3, F1_expectedKUMOGain_M3.add(F1_expectedKUMOGain_M2)), 1e15)
 
-      // Expect F1 LQTY balance to equal their M1 gain
-      const F1_LQTYBalance_After_M3 = await lqtyToken.balanceOf(frontEnd_1)
-      assert.isAtMost(getDifference(F1_LQTYBalance_After_M3, F1_expectedLQTYGain_M1), 1e15)
+      // Expect F1 KUMO balance to equal their M1 gain
+      const F1_KUMOBalance_After_M3 = await kumoToken.balanceOf(frontEnd_1)
+      assert.isAtMost(getDifference(F1_KUMOBalance_After_M3, F1_expectedKUMOGain_M1), 1e15)
 
-      // Expect F2 LQTY system gains to equal their gain from M3
-      assert.isAtMost(getDifference(F2_LQTYGain_After_M3, F2_expectedLQTYGain_M3), 1e15)
+      // Expect F2 KUMO system gains to equal their gain from M3
+      assert.isAtMost(getDifference(F2_KUMOGain_After_M3, F2_expectedKUMOGain_M3), 1e15)
 
-      // Expect F2 LQTY balance to equal their gain from M1 + M2
-      const F2_LQTYBalance_After_M3 = await lqtyToken.balanceOf(frontEnd_2)
-      assert.isAtMost(getDifference(F2_LQTYBalance_After_M3, F2_expectedLQTYGain_M2.add(F2_expectedLQTYGain_M1)), 1e15)
+      // Expect F2 KUMO balance to equal their gain from M1 + M2
+      const F2_KUMOBalance_After_M3 = await kumoToken.balanceOf(frontEnd_2)
+      assert.isAtMost(getDifference(F2_KUMOBalance_After_M3, F2_expectedKUMOGain_M2.add(F2_expectedKUMOGain_M1)), 1e15)
 
       // Expect deposit C now to be 10125 KUSD
       const C_compoundedKUSDDeposit = await stabilityPool.getCompoundedKUSDDeposit(C)
@@ -1314,82 +1314,82 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
 
       // Expected gains for each depositor after month 4
       const A_share_M4 = issuance_M4.mul(toBN('3375')).div(toBN('80000'))  // 3375/800
-      const A_expectedLQTYGain_M4 = F1_kickbackRate.mul(A_share_M4).div(toBN(dec(1, 18)))
+      const A_expectedKUMOGain_M4 = F1_kickbackRate.mul(A_share_M4).div(toBN(dec(1, 18)))
 
       const B_share_M4 = issuance_M4.mul(toBN('42750')).div(toBN('80000')) // 42750/80000
-      const B_expectedLQTYGain_M4 = F2_kickbackRate.mul(B_share_M4).div(toBN(dec(1, 18)))
+      const B_expectedKUMOGain_M4 = F2_kickbackRate.mul(B_share_M4).div(toBN(dec(1, 18)))
 
       const C_share_M4 = issuance_M4.mul(toBN('125')).div(toBN('80000')) // 125/80000
-      const C_expectedLQTYGain_M4 = F2_kickbackRate.mul(C_share_M4).div(toBN(dec(1, 18)))
+      const C_expectedKUMOGain_M4 = F2_kickbackRate.mul(C_share_M4).div(toBN(dec(1, 18)))
 
       const D_share_M4 = issuance_M4.mul(toBN('13500')).div(toBN('80000'))
-      const D_expectedLQTYGain_M4 = D_share_M4
+      const D_expectedKUMOGain_M4 = D_share_M4
 
       const E_share_M4 = issuance_M4.mul(toBN('20250')).div(toBN('80000')) // 2025/80000
-      const E_expectedLQTYGain_M4 = F1_kickbackRate.mul(E_share_M4).div(toBN(dec(1, 18)))
+      const E_expectedKUMOGain_M4 = F1_kickbackRate.mul(E_share_M4).div(toBN(dec(1, 18)))
 
       // F1's stake = A + E
-      const F1_expectedLQTYGain_M4 = toBN(dec(1, 18))
+      const F1_expectedKUMOGain_M4 = toBN(dec(1, 18))
         .sub(F1_kickbackRate)
         .mul(A_share_M4.add(E_share_M4))
         .div(toBN(dec(1, 18)))
 
       // F2's stake = B + C
-      const F2_expectedLQTYGain_M4 = toBN(dec(1, 18))
+      const F2_expectedKUMOGain_M4 = toBN(dec(1, 18))
         .sub(F2_kickbackRate)
         .mul(B_share_M4.add(C_share_M4))
         .div(toBN(dec(1, 18)))
 
-      // Get final LQTY balances
-      const A_FinalLQTYBalance = await lqtyToken.balanceOf(A)
-      const B_FinalLQTYBalance = await lqtyToken.balanceOf(B)
-      const C_FinalLQTYBalance = await lqtyToken.balanceOf(C)
-      const D_FinalLQTYBalance = await lqtyToken.balanceOf(D)
-      const E_FinalLQTYBalance = await lqtyToken.balanceOf(E)
-      const F1_FinalLQTYBalance = await lqtyToken.balanceOf(frontEnd_1)
-      const F2_FinalLQTYBalance = await lqtyToken.balanceOf(frontEnd_2)
+      // Get final KUMO balances
+      const A_FinalKUMOBalance = await kumoToken.balanceOf(A)
+      const B_FinalKUMOBalance = await kumoToken.balanceOf(B)
+      const C_FinalKUMOBalance = await kumoToken.balanceOf(C)
+      const D_FinalKUMOBalance = await kumoToken.balanceOf(D)
+      const E_FinalKUMOBalance = await kumoToken.balanceOf(E)
+      const F1_FinalKUMOBalance = await kumoToken.balanceOf(frontEnd_1)
+      const F2_FinalKUMOBalance = await kumoToken.balanceOf(frontEnd_2)
 
-      const A_expectedFinalLQTYBalance = A_expectedLQTYGain_M1
-        .add(A_expectedLQTYGain_M2)
-        .add(A_expectedLQTYGain_M3)
-        .add(A_expectedLQTYGain_M4)
+      const A_expectedFinalKUMOBalance = A_expectedKUMOGain_M1
+        .add(A_expectedKUMOGain_M2)
+        .add(A_expectedKUMOGain_M3)
+        .add(A_expectedKUMOGain_M4)
 
-      const B_expectedFinalLQTYBalance = B_expectedLQTYGain_M1
-        .add(B_expectedLQTYGain_M2)
-        .add(B_expectedLQTYGain_M3)
-        .add(B_expectedLQTYGain_M4)
+      const B_expectedFinalKUMOBalance = B_expectedKUMOGain_M1
+        .add(B_expectedKUMOGain_M2)
+        .add(B_expectedKUMOGain_M3)
+        .add(B_expectedKUMOGain_M4)
 
-      const C_expectedFinalLQTYBalance = C_expectedLQTYGain_M1
-        .add(C_expectedLQTYGain_M2)
-        .add(C_expectedLQTYGain_M3)
-        .add(C_expectedLQTYGain_M4)
+      const C_expectedFinalKUMOBalance = C_expectedKUMOGain_M1
+        .add(C_expectedKUMOGain_M2)
+        .add(C_expectedKUMOGain_M3)
+        .add(C_expectedKUMOGain_M4)
 
-      const D_expectedFinalLQTYBalance = D_expectedLQTYGain_M1
-        .add(D_expectedLQTYGain_M2)
-        .add(D_expectedLQTYGain_M3)
-        .add(D_expectedLQTYGain_M4)
+      const D_expectedFinalKUMOBalance = D_expectedKUMOGain_M1
+        .add(D_expectedKUMOGain_M2)
+        .add(D_expectedKUMOGain_M3)
+        .add(D_expectedKUMOGain_M4)
 
-      const E_expectedFinalLQTYBalance = E_expectedLQTYGain_M2
-        .add(E_expectedLQTYGain_M3)
-        .add(E_expectedLQTYGain_M4)
+      const E_expectedFinalKUMOBalance = E_expectedKUMOGain_M2
+        .add(E_expectedKUMOGain_M3)
+        .add(E_expectedKUMOGain_M4)
 
-      const F1_expectedFinalLQTYBalance = F1_expectedLQTYGain_M1
-        .add(F1_expectedLQTYGain_M2)
-        .add(F1_expectedLQTYGain_M3)
-        .add(F1_expectedLQTYGain_M4)
+      const F1_expectedFinalKUMOBalance = F1_expectedKUMOGain_M1
+        .add(F1_expectedKUMOGain_M2)
+        .add(F1_expectedKUMOGain_M3)
+        .add(F1_expectedKUMOGain_M4)
 
-      const F2_expectedFinalLQTYBalance = F2_expectedLQTYGain_M1
-        .add(F2_expectedLQTYGain_M2)
-        .add(F2_expectedLQTYGain_M3)
-        .add(F2_expectedLQTYGain_M4)
+      const F2_expectedFinalKUMOBalance = F2_expectedKUMOGain_M1
+        .add(F2_expectedKUMOGain_M2)
+        .add(F2_expectedKUMOGain_M3)
+        .add(F2_expectedKUMOGain_M4)
 
-      assert.isAtMost(getDifference(A_FinalLQTYBalance, A_expectedFinalLQTYBalance), 1e15)
-      assert.isAtMost(getDifference(B_FinalLQTYBalance, B_expectedFinalLQTYBalance), 1e15)
-      assert.isAtMost(getDifference(C_FinalLQTYBalance, C_expectedFinalLQTYBalance), 1e15)
-      assert.isAtMost(getDifference(D_FinalLQTYBalance, D_expectedFinalLQTYBalance), 1e15)
-      assert.isAtMost(getDifference(E_FinalLQTYBalance, E_expectedFinalLQTYBalance), 1e15)
-      assert.isAtMost(getDifference(F1_FinalLQTYBalance, F1_expectedFinalLQTYBalance), 1e15)
-      assert.isAtMost(getDifference(F2_FinalLQTYBalance, F2_expectedFinalLQTYBalance), 1e15)
+      assert.isAtMost(getDifference(A_FinalKUMOBalance, A_expectedFinalKUMOBalance), 1e15)
+      assert.isAtMost(getDifference(B_FinalKUMOBalance, B_expectedFinalKUMOBalance), 1e15)
+      assert.isAtMost(getDifference(C_FinalKUMOBalance, C_expectedFinalKUMOBalance), 1e15)
+      assert.isAtMost(getDifference(D_FinalKUMOBalance, D_expectedFinalKUMOBalance), 1e15)
+      assert.isAtMost(getDifference(E_FinalKUMOBalance, E_expectedFinalKUMOBalance), 1e15)
+      assert.isAtMost(getDifference(F1_FinalKUMOBalance, F1_expectedFinalKUMOBalance), 1e15)
+      assert.isAtMost(getDifference(F2_FinalKUMOBalance, F2_expectedFinalKUMOBalance), 1e15)
     })
 
     /* Serial scale changes, with one front end
@@ -1407,9 +1407,9 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
     A, B, C, D, E withdraw
 
     =========
-    Expect front end withdraws ~3 month's worth of LQTY */
+    Expect front end withdraws ~3 month's worth of KUMO */
 
-    it("withdrawFromSP(): Several deposits of 10k KUSD span one scale factor change. Depositors withdraw correct LQTY gains", async () => {
+    it("withdrawFromSP(): Several deposits of 10k KUSD span one scale factor change. Depositors withdraw correct KUMO gains", async () => {
       const kickbackRate = toBN(dec(80, 16)) // F1 kicks 80% back to depositor
       await stabilityPool.registerFrontEnd(kickbackRate, { from: frontEnd_1 })
 
@@ -1423,11 +1423,11 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
         await borrowerOperations.openTrove(th._100pct, await getOpenTroveKUSDAmount(dec(99999, 17)), defaulter, defaulter, { from: defaulter, value: dec(100, 'ether') })
       }
 
-      // Confirm all would-be depositors have 0 LQTY
+      // Confirm all would-be depositors have 0 KUMO
       for (const depositor of [A, B, C, D, E]) {
-        assert.equal(await lqtyToken.balanceOf(depositor), '0')
+        assert.equal(await kumoToken.balanceOf(depositor), '0')
       }
-      assert.equal(await lqtyToken.balanceOf(frontEnd_1), '0')
+      assert.equal(await kumoToken.balanceOf(frontEnd_1), '0')
 
       // price drops by 50%
       await priceFeed.setPrice(dec(100, 18));
@@ -1498,33 +1498,33 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
       assert.equal(await stabilityPool.currentScale(), '2')
 
       /* All depositors withdraw fully from SP.  Withdraw in reverse order, so that the largest remaining
-      deposit (F) withdraws first, and does not get extra LQTY gains from the periods between withdrawals */
+      deposit (F) withdraws first, and does not get extra KUMO gains from the periods between withdrawals */
       for (depositor of [E, D, C, B, A]) {
         await stabilityPool.withdrawFromSP(dec(10000, 18), { from: depositor })
       }
 
-      const LQTYGain_A = await lqtyToken.balanceOf(A)
-      const LQTYGain_B = await lqtyToken.balanceOf(B)
-      const LQTYGain_C = await lqtyToken.balanceOf(C)
-      const LQTYGain_D = await lqtyToken.balanceOf(D)
-      const LQTYGain_E = await lqtyToken.balanceOf(E)
+      const KUMOGain_A = await kumoToken.balanceOf(A)
+      const KUMOGain_B = await kumoToken.balanceOf(B)
+      const KUMOGain_C = await kumoToken.balanceOf(C)
+      const KUMOGain_D = await kumoToken.balanceOf(D)
+      const KUMOGain_E = await kumoToken.balanceOf(E)
 
-      const LQTYGain_F1 = await lqtyToken.balanceOf(frontEnd_1)
+      const KUMOGain_F1 = await kumoToken.balanceOf(frontEnd_1)
 
-      /* Expect each deposit to have earned LQTY issuance for the month in which it was active, prior
+      /* Expect each deposit to have earned KUMO issuance for the month in which it was active, prior
      to the liquidation that mostly depleted it:
      
-     expectedLQTYGain_A:  (k * M1 / 2) + (k * M2 / 2) / 100000   
-     expectedLQTYGain_B:  (k * M1 / 2) + (k * M2 / 2) / 100000                           
+     expectedKUMOGain_A:  (k * M1 / 2) + (k * M2 / 2) / 100000   
+     expectedKUMOGain_B:  (k * M1 / 2) + (k * M2 / 2) / 100000                           
 
-     expectedLQTYGain_C:  ((k * M2)  + (k * M3) / 100000) * 9999.9/10000   
-     expectedLQTYGain_D:  ((k * M3)  + (k * M4) / 100000) * 9999.9/10000 
-     expectedLQTYGain_E:  (k * M4) * 9999.9/10000 
+     expectedKUMOGain_C:  ((k * M2)  + (k * M3) / 100000) * 9999.9/10000   
+     expectedKUMOGain_D:  ((k * M3)  + (k * M4) / 100000) * 9999.9/10000 
+     expectedKUMOGain_E:  (k * M4) * 9999.9/10000 
 
-     expectedLQTYGain_F1:  (1 - k) * (M1 + M2 + M3 + M4)
+     expectedKUMOGain_F1:  (1 - k) * (M1 + M2 + M3 + M4)
      */
 
-      const expectedLQTYGain_A_and_B =
+      const expectedKUMOGain_A_and_B =
         kickbackRate
           .mul(issuance_M1)
           .div(toBN('2'))
@@ -1536,7 +1536,7 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
               .div(toBN('100000'))
           )// gain from L2 after deposit depleted
 
-      const expectedLQTYGain_C =
+      const expectedKUMOGain_C =
         kickbackRate
           .mul(issuance_M2)
           .div(toBN(dec(1, 18))) // gain from L2
@@ -1548,7 +1548,7 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
           )
           .mul(toBN('99999')).div(toBN('100000')) // Scale by 9999.9/10000
 
-      const expectedLQTYGain_D =
+      const expectedKUMOGain_D =
         kickbackRate
           .mul(issuance_M3)
           .div(toBN(dec(1, 18))) // gain from L3
@@ -1560,21 +1560,21 @@ contract('StabilityPool - LQTY Rewards', async accounts => {
           )
           .mul(toBN('99999')).div(toBN('100000')) // Scale by 9999.9/10000
 
-      const expectedLQTYGain_E =
+      const expectedKUMOGain_E =
         kickbackRate
         .mul(issuance_M4)
         .div(toBN(dec(1, 18))) // gain from L4
         .mul(toBN('99999')).div(toBN('100000')) // Scale by 9999.9/10000
 
       const issuance1st4Months = issuance_M1.add(issuance_M2).add(issuance_M3).add(issuance_M4)
-      const expectedLQTYGain_F1 = (toBN(dec(1, 18)).sub(kickbackRate)).mul(issuance1st4Months).div(toBN(dec(1, 18)))
+      const expectedKUMOGain_F1 = (toBN(dec(1, 18)).sub(kickbackRate)).mul(issuance1st4Months).div(toBN(dec(1, 18)))
 
-      assert.isAtMost(getDifference(expectedLQTYGain_A_and_B, LQTYGain_A), 1e15)
-      assert.isAtMost(getDifference(expectedLQTYGain_A_and_B, LQTYGain_B), 1e15)
-      assert.isAtMost(getDifference(expectedLQTYGain_C, LQTYGain_C), 1e15)
-      assert.isAtMost(getDifference(expectedLQTYGain_D, LQTYGain_D), 1e15)
-      assert.isAtMost(getDifference(expectedLQTYGain_E, LQTYGain_E), 1e15)
-      assert.isAtMost(getDifference(expectedLQTYGain_F1, LQTYGain_F1), 1e15)
+      assert.isAtMost(getDifference(expectedKUMOGain_A_and_B, KUMOGain_A), 1e15)
+      assert.isAtMost(getDifference(expectedKUMOGain_A_and_B, KUMOGain_B), 1e15)
+      assert.isAtMost(getDifference(expectedKUMOGain_C, KUMOGain_C), 1e15)
+      assert.isAtMost(getDifference(expectedKUMOGain_D, KUMOGain_D), 1e15)
+      assert.isAtMost(getDifference(expectedKUMOGain_E, KUMOGain_E), 1e15)
+      assert.isAtMost(getDifference(expectedKUMOGain_F1, KUMOGain_F1), 1e15)
     })
 
   })

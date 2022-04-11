@@ -45,8 +45,8 @@ contract('BorrowerOperations', async accounts => {
   let stabilityPool
   let defaultPool
   let borrowerOperations
-  let lqtyStaking
-  let lqtyToken
+  let kumoStaking
+  let kumoToken
 
   let contracts
 
@@ -72,15 +72,15 @@ contract('BorrowerOperations', async accounts => {
       contracts.borrowerOperations = await BorrowerOperationsTester.new()
       contracts.troveManager = await TroveManagerTester.new()
       contracts = await deploymentHelper.deployKUSDTokenTester(contracts)
-      const LQTYContracts = await deploymentHelper.deployLQTYTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
+      const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
 
-      await deploymentHelper.connectLQTYContracts(LQTYContracts)
-      await deploymentHelper.connectCoreContracts(contracts, LQTYContracts)
-      await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, contracts)
+      await deploymentHelper.connectKUMOContracts(KUMOContracts)
+      await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+      await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
 
       if (withProxy) {
         const users = [alice, bob, carol, dennis, whale, A, B, C, D, E]
-        await deploymentHelper.deployProxyScripts(contracts, LQTYContracts, owner, users)
+        await deploymentHelper.deployProxyScripts(contracts, KUMOContracts, owner, users)
       }
 
       priceFeed = contracts.priceFeedTestnet
@@ -93,10 +93,10 @@ contract('BorrowerOperations', async accounts => {
       borrowerOperations = contracts.borrowerOperations
       hintHelpers = contracts.hintHelpers
 
-      lqtyStaking = LQTYContracts.lqtyStaking
-      lqtyToken = LQTYContracts.lqtyToken
-      communityIssuance = LQTYContracts.communityIssuance
-      lockupContractFactory = LQTYContracts.lockupContractFactory
+      kumoStaking = KUMOContracts.kumoStaking
+      kumoToken = KUMOContracts.kumoToken
+      communityIssuance = KUMOContracts.communityIssuance
+      lockupContractFactory = KUMOContracts.lockupContractFactory
 
       KUSD_GAS_COMPENSATION = await borrowerOperations.KUSD_GAS_COMPENSATION()
       MIN_NET_DEBT = await borrowerOperations.MIN_NET_DEBT()
@@ -961,15 +961,15 @@ contract('BorrowerOperations', async accounts => {
       assert.isTrue(baseRate_2.lt(baseRate_1))
     })
 
-    it("withdrawKUSD(): borrowing at non-zero base rate sends KUSD fee to LQTY staking contract", async () => {
-      // time fast-forwards 1 year, and multisig stakes 1 LQTY
+    it("withdrawKUSD(): borrowing at non-zero base rate sends KUSD fee to KUMO staking contract", async () => {
+      // time fast-forwards 1 year, and multisig stakes 1 KUMO
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-      await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-      await lqtyStaking.stake(dec(1, 18), { from: multisig })
+      await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+      await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-      // Check LQTY KUSD balance before == 0
-      const lqtyStaking_KUSDBalance_Before = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.equal(lqtyStaking_KUSDBalance_Before, '0')
+      // Check KUMO KUSD balance before == 0
+      const kumoStaking_KUSDBalance_Before = await kusdToken.balanceOf(kumoStaking.address)
+      assert.equal(kumoStaking_KUSDBalance_Before, '0')
 
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await openTrove({ extraKUSDAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
@@ -991,17 +991,17 @@ contract('BorrowerOperations', async accounts => {
       // D withdraws KUSD
       await borrowerOperations.withdrawKUSD(th._100pct, dec(37, 18), C, C, { from: D })
 
-      // Check LQTY KUSD balance after has increased
-      const lqtyStaking_KUSDBalance_After = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.isTrue(lqtyStaking_KUSDBalance_After.gt(lqtyStaking_KUSDBalance_Before))
+      // Check KUMO KUSD balance after has increased
+      const kumoStaking_KUSDBalance_After = await kusdToken.balanceOf(kumoStaking.address)
+      assert.isTrue(kumoStaking_KUSDBalance_After.gt(kumoStaking_KUSDBalance_Before))
     })
 
     if (!withProxy) { // TODO: use rawLogs instead of logs
       it("withdrawKUSD(): borrowing at non-zero base records the (drawn debt + fee) on the Trove struct", async () => {
-        // time fast-forwards 1 year, and multisig stakes 1 LQTY
+        // time fast-forwards 1 year, and multisig stakes 1 KUMO
         await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-        await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-        await lqtyStaking.stake(dec(1, 18), { from: multisig })
+        await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+        await kumoStaking.stake(dec(1, 18), { from: multisig })
 
         await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
         await openTrove({ extraKUSDAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
@@ -1035,14 +1035,14 @@ contract('BorrowerOperations', async accounts => {
       })
     }
 
-    it("withdrawKUSD(): Borrowing at non-zero base rate increases the LQTY staking contract KUSD fees-per-unit-staked", async () => {
-      // time fast-forwards 1 year, and multisig stakes 1 LQTY
+    it("withdrawKUSD(): Borrowing at non-zero base rate increases the KUMO staking contract KUSD fees-per-unit-staked", async () => {
+      // time fast-forwards 1 year, and multisig stakes 1 KUMO
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-      await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-      await lqtyStaking.stake(dec(1, 18), { from: multisig })
+      await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+      await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-      // Check LQTY contract KUSD fees-per-unit-staked is zero
-      const F_KUSD_Before = await lqtyStaking.F_KUSD()
+      // Check KUMO contract KUSD fees-per-unit-staked is zero
+      const F_KUSD_Before = await kumoStaking.F_KUSD()
       assert.equal(F_KUSD_Before, '0')
 
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
@@ -1065,20 +1065,20 @@ contract('BorrowerOperations', async accounts => {
       // D withdraws KUSD
       await borrowerOperations.withdrawKUSD(th._100pct, toBN(dec(37, 18)), D, D, { from: D })
 
-      // Check LQTY contract KUSD fees-per-unit-staked has increased
-      const F_KUSD_After = await lqtyStaking.F_KUSD()
+      // Check KUMO contract KUSD fees-per-unit-staked has increased
+      const F_KUSD_After = await kumoStaking.F_KUSD()
       assert.isTrue(F_KUSD_After.gt(F_KUSD_Before))
     })
 
     it("withdrawKUSD(): Borrowing at non-zero base rate sends requested amount to the user", async () => {
-      // time fast-forwards 1 year, and multisig stakes 1 LQTY
+      // time fast-forwards 1 year, and multisig stakes 1 KUMO
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-      await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-      await lqtyStaking.stake(dec(1, 18), { from: multisig })
+      await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+      await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-      // Check LQTY Staking contract balance before == 0
-      const lqtyStaking_KUSDBalance_Before = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.equal(lqtyStaking_KUSDBalance_Before, '0')
+      // Check KUMO Staking contract balance before == 0
+      const kumoStaking_KUSDBalance_Before = await kusdToken.balanceOf(kumoStaking.address)
+      assert.equal(kumoStaking_KUSDBalance_Before, '0')
 
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await openTrove({ extraKUSDAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
@@ -1103,9 +1103,9 @@ contract('BorrowerOperations', async accounts => {
       const D_KUSDRequest = toBN(dec(37, 18))
       await borrowerOperations.withdrawKUSD(th._100pct, D_KUSDRequest, D, D, { from: D })
 
-      // Check LQTY staking KUSD balance has increased
-      const lqtyStaking_KUSDBalance_After = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.isTrue(lqtyStaking_KUSDBalance_After.gt(lqtyStaking_KUSDBalance_Before))
+      // Check KUMO staking KUSD balance has increased
+      const kumoStaking_KUSDBalance_After = await kusdToken.balanceOf(kumoStaking.address)
+      assert.isTrue(kumoStaking_KUSDBalance_After.gt(kumoStaking_KUSDBalance_Before))
 
       // Check D's KUSD balance now equals their initial balance plus request KUSD
       const D_KUSDBalanceAfter = await kusdToken.balanceOf(D)
@@ -1123,22 +1123,22 @@ contract('BorrowerOperations', async accounts => {
       const baseRate_1 = await troveManager.baseRate()
       assert.equal(baseRate_1, '0')
 
-      // A artificially receives LQTY, then stakes it
-      await lqtyToken.unprotectedMint(A, dec(100, 18))
-      await lqtyStaking.stake(dec(100, 18), { from: A })
+      // A artificially receives KUMO, then stakes it
+      await kumoToken.unprotectedMint(A, dec(100, 18))
+      await kumoStaking.stake(dec(100, 18), { from: A })
 
       // 2 hours pass
       th.fastForwardTime(7200, web3.currentProvider)
 
-      // Check LQTY KUSD balance before == 0
-      const F_KUSD_Before = await lqtyStaking.F_KUSD()
+      // Check KUMO KUSD balance before == 0
+      const F_KUSD_Before = await kumoStaking.F_KUSD()
       assert.equal(F_KUSD_Before, '0')
 
       // D withdraws KUSD
       await borrowerOperations.withdrawKUSD(th._100pct, dec(37, 18), D, D, { from: D })
 
-      // Check LQTY KUSD balance after > 0
-      const F_KUSD_After = await lqtyStaking.F_KUSD()
+      // Check KUMO KUSD balance after > 0
+      const F_KUSD_After = await kumoStaking.F_KUSD()
       assert.isTrue(F_KUSD_After.gt('0'))
     })
 
@@ -1710,15 +1710,15 @@ contract('BorrowerOperations', async accounts => {
       assert.isTrue(baseRate_2.lt(baseRate_1))
     })
 
-    it("adjustTrove(): borrowing at non-zero base rate sends KUSD fee to LQTY staking contract", async () => {
-      // time fast-forwards 1 year, and multisig stakes 1 LQTY
+    it("adjustTrove(): borrowing at non-zero base rate sends KUSD fee to KUMO staking contract", async () => {
+      // time fast-forwards 1 year, and multisig stakes 1 KUMO
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-      await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-      await lqtyStaking.stake(dec(1, 18), { from: multisig })
+      await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+      await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-      // Check LQTY KUSD balance before == 0
-      const lqtyStaking_KUSDBalance_Before = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.equal(lqtyStaking_KUSDBalance_Before, '0')
+      // Check KUMO KUSD balance before == 0
+      const kumoStaking_KUSDBalance_Before = await kusdToken.balanceOf(kumoStaking.address)
+      assert.equal(kumoStaking_KUSDBalance_Before, '0')
 
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await openTrove({ extraKUSDAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
@@ -1739,17 +1739,17 @@ contract('BorrowerOperations', async accounts => {
       // D adjusts trove
       await openTrove({ extraKUSDAmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-      // Check LQTY KUSD balance after has increased
-      const lqtyStaking_KUSDBalance_After = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.isTrue(lqtyStaking_KUSDBalance_After.gt(lqtyStaking_KUSDBalance_Before))
+      // Check KUMO KUSD balance after has increased
+      const kumoStaking_KUSDBalance_After = await kusdToken.balanceOf(kumoStaking.address)
+      assert.isTrue(kumoStaking_KUSDBalance_After.gt(kumoStaking_KUSDBalance_Before))
     })
 
     if (!withProxy) { // TODO: use rawLogs instead of logs
       it("adjustTrove(): borrowing at non-zero base records the (drawn debt + fee) on the Trove struct", async () => {
-        // time fast-forwards 1 year, and multisig stakes 1 LQTY
+        // time fast-forwards 1 year, and multisig stakes 1 KUMO
         await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-        await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-        await lqtyStaking.stake(dec(1, 18), { from: multisig })
+        await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+        await kumoStaking.stake(dec(1, 18), { from: multisig })
 
         await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
         await openTrove({ extraKUSDAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
@@ -1784,14 +1784,14 @@ contract('BorrowerOperations', async accounts => {
       })
     }
 
-    it("adjustTrove(): Borrowing at non-zero base rate increases the LQTY staking contract KUSD fees-per-unit-staked", async () => {
-      // time fast-forwards 1 year, and multisig stakes 1 LQTY
+    it("adjustTrove(): Borrowing at non-zero base rate increases the KUMO staking contract KUSD fees-per-unit-staked", async () => {
+      // time fast-forwards 1 year, and multisig stakes 1 KUMO
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-      await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-      await lqtyStaking.stake(dec(1, 18), { from: multisig })
+      await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+      await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-      // Check LQTY contract KUSD fees-per-unit-staked is zero
-      const F_KUSD_Before = await lqtyStaking.F_KUSD()
+      // Check KUMO contract KUSD fees-per-unit-staked is zero
+      const F_KUSD_Before = await kumoStaking.F_KUSD()
       assert.equal(F_KUSD_Before, '0')
 
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
@@ -1814,20 +1814,20 @@ contract('BorrowerOperations', async accounts => {
       // D adjusts trove
       await borrowerOperations.adjustTrove(th._100pct, 0, dec(37, 18), true, D, D, { from: D })
 
-      // Check LQTY contract KUSD fees-per-unit-staked has increased
-      const F_KUSD_After = await lqtyStaking.F_KUSD()
+      // Check KUMO contract KUSD fees-per-unit-staked has increased
+      const F_KUSD_After = await kumoStaking.F_KUSD()
       assert.isTrue(F_KUSD_After.gt(F_KUSD_Before))
     })
 
     it("adjustTrove(): Borrowing at non-zero base rate sends requested amount to the user", async () => {
-      // time fast-forwards 1 year, and multisig stakes 1 LQTY
+      // time fast-forwards 1 year, and multisig stakes 1 KUMO
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-      await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-      await lqtyStaking.stake(dec(1, 18), { from: multisig })
+      await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+      await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-      // Check LQTY Staking contract balance before == 0
-      const lqtyStaking_KUSDBalance_Before = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.equal(lqtyStaking_KUSDBalance_Before, '0')
+      // Check KUMO Staking contract balance before == 0
+      const kumoStaking_KUSDBalance_Before = await kusdToken.balanceOf(kumoStaking.address)
+      assert.equal(kumoStaking_KUSDBalance_Before, '0')
 
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await openTrove({ extraKUSDAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
@@ -1852,16 +1852,16 @@ contract('BorrowerOperations', async accounts => {
       const KUSDRequest_D = toBN(dec(40, 18))
       await borrowerOperations.adjustTrove(th._100pct, 0, KUSDRequest_D, true, D, D, { from: D })
 
-      // Check LQTY staking KUSD balance has increased
-      const lqtyStaking_KUSDBalance_After = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.isTrue(lqtyStaking_KUSDBalance_After.gt(lqtyStaking_KUSDBalance_Before))
+      // Check KUMO staking KUSD balance has increased
+      const kumoStaking_KUSDBalance_After = await kusdToken.balanceOf(kumoStaking.address)
+      assert.isTrue(kumoStaking_KUSDBalance_After.gt(kumoStaking_KUSDBalance_Before))
 
       // Check D's KUSD balance has increased by their requested KUSD
       const D_KUSDBalanceAfter = await kusdToken.balanceOf(D)
       assert.isTrue(D_KUSDBalanceAfter.eq(D_KUSDBalanceBefore.add(KUSDRequest_D)))
     })
 
-    it("adjustTrove(): Borrowing at zero base rate changes KUSD balance of LQTY staking contract", async () => {
+    it("adjustTrove(): Borrowing at zero base rate changes KUSD balance of KUMO staking contract", async () => {
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await openTrove({ extraKUSDAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
       await openTrove({ extraKUSDAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
@@ -1876,18 +1876,18 @@ contract('BorrowerOperations', async accounts => {
       th.fastForwardTime(7200, web3.currentProvider)
 
       // Check staking KUSD balance before > 0
-      const lqtyStaking_KUSDBalance_Before = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.isTrue(lqtyStaking_KUSDBalance_Before.gt(toBN('0')))
+      const kumoStaking_KUSDBalance_Before = await kusdToken.balanceOf(kumoStaking.address)
+      assert.isTrue(kumoStaking_KUSDBalance_Before.gt(toBN('0')))
 
       // D adjusts trove
       await borrowerOperations.adjustTrove(th._100pct, 0, dec(37, 18), true, D, D, { from: D })
 
       // Check staking KUSD balance after > staking balance before
-      const lqtyStaking_KUSDBalance_After = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.isTrue(lqtyStaking_KUSDBalance_After.gt(lqtyStaking_KUSDBalance_Before))
+      const kumoStaking_KUSDBalance_After = await kusdToken.balanceOf(kumoStaking.address)
+      assert.isTrue(kumoStaking_KUSDBalance_After.gt(kumoStaking_KUSDBalance_Before))
     })
 
-    it("adjustTrove(): Borrowing at zero base rate changes LQTY staking contract KUSD fees-per-unit-staked", async () => {
+    it("adjustTrove(): Borrowing at zero base rate changes KUMO staking contract KUSD fees-per-unit-staked", async () => {
       await openTrove({ extraKUSDAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: toBN(dec(100, 'ether')) } })
       await openTrove({ extraKUSDAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
       await openTrove({ extraKUSDAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
@@ -1901,19 +1901,19 @@ contract('BorrowerOperations', async accounts => {
       // 2 hours pass
       th.fastForwardTime(7200, web3.currentProvider)
 
-      // A artificially receives LQTY, then stakes it
-      await lqtyToken.unprotectedMint(A, dec(100, 18))
-      await lqtyStaking.stake(dec(100, 18), { from: A })
+      // A artificially receives KUMO, then stakes it
+      await kumoToken.unprotectedMint(A, dec(100, 18))
+      await kumoStaking.stake(dec(100, 18), { from: A })
 
       // Check staking KUSD balance before == 0
-      const F_KUSD_Before = await lqtyStaking.F_KUSD()
+      const F_KUSD_Before = await kumoStaking.F_KUSD()
       assert.isTrue(F_KUSD_Before.eq(toBN('0')))
 
       // D adjusts trove
       await borrowerOperations.adjustTrove(th._100pct, 0, dec(37, 18), true, D, D, { from: D })
 
       // Check staking KUSD balance increases
-      const F_KUSD_After = await lqtyStaking.F_KUSD()
+      const F_KUSD_After = await kumoStaking.F_KUSD()
       assert.isTrue(F_KUSD_After.gt(F_KUSD_Before))
     })
 
@@ -2165,12 +2165,12 @@ contract('BorrowerOperations', async accounts => {
 
       assert.isTrue(await th.checkRecoveryMode(contracts))
 
-      // B stakes LQTY
-      await lqtyToken.unprotectedMint(bob, dec(100, 18))
-      await lqtyStaking.stake(dec(100, 18), { from: bob })
+      // B stakes KUMO
+      await kumoToken.unprotectedMint(bob, dec(100, 18))
+      await kumoStaking.stake(dec(100, 18), { from: bob })
 
-      const lqtyStakingKUSDBalanceBefore = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.isTrue(lqtyStakingKUSDBalanceBefore.gt(toBN('0')))
+      const kumoStakingKUSDBalanceBefore = await kusdToken.balanceOf(kumoStaking.address)
+      assert.isTrue(kumoStakingKUSDBalanceBefore.gt(toBN('0')))
 
       const txAlice = await borrowerOperations.adjustTrove(th._100pct, 0, dec(50, 18), true, alice, alice, { from: alice, value: dec(100, 'ether') })
       assert.isTrue(txAlice.receipt.status)
@@ -2182,8 +2182,8 @@ contract('BorrowerOperations', async accounts => {
       assert.isTrue(await th.checkRecoveryMode(contracts))
 
       // Check no fee was sent to staking contract
-      const lqtyStakingKUSDBalanceAfter = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.equal(lqtyStakingKUSDBalanceAfter.toString(), lqtyStakingKUSDBalanceBefore.toString())
+      const kumoStakingKUSDBalanceAfter = await kusdToken.balanceOf(kumoStaking.address)
+      assert.equal(kumoStakingKUSDBalanceAfter.toString(), kumoStakingKUSDBalanceBefore.toString())
     })
 
     it("adjustTrove(): reverts when change would cause the TCR of the system to fall below the CCR", async () => {
@@ -3375,15 +3375,15 @@ contract('BorrowerOperations', async accounts => {
       assert.isTrue(baseRate_2.lt(baseRate_1))
     })
 
-    it("openTrove(): borrowing at non-zero base rate sends KUSD fee to LQTY staking contract", async () => {
-      // time fast-forwards 1 year, and multisig stakes 1 LQTY
+    it("openTrove(): borrowing at non-zero base rate sends KUSD fee to KUMO staking contract", async () => {
+      // time fast-forwards 1 year, and multisig stakes 1 KUMO
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-      await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-      await lqtyStaking.stake(dec(1, 18), { from: multisig })
+      await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+      await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-      // Check LQTY KUSD balance before == 0
-      const lqtyStaking_KUSDBalance_Before = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.equal(lqtyStaking_KUSDBalance_Before, '0')
+      // Check KUMO KUSD balance before == 0
+      const kumoStaking_KUSDBalance_Before = await kusdToken.balanceOf(kumoStaking.address)
+      assert.equal(kumoStaking_KUSDBalance_Before, '0')
 
       await openTrove({ extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await openTrove({ extraKUSDAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
@@ -3404,17 +3404,17 @@ contract('BorrowerOperations', async accounts => {
       // D opens trove 
       await openTrove({ extraKUSDAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-      // Check LQTY KUSD balance after has increased
-      const lqtyStaking_KUSDBalance_After = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.isTrue(lqtyStaking_KUSDBalance_After.gt(lqtyStaking_KUSDBalance_Before))
+      // Check KUMO KUSD balance after has increased
+      const kumoStaking_KUSDBalance_After = await kusdToken.balanceOf(kumoStaking.address)
+      assert.isTrue(kumoStaking_KUSDBalance_After.gt(kumoStaking_KUSDBalance_Before))
     })
 
     if (!withProxy) { // TODO: use rawLogs instead of logs
       it("openTrove(): borrowing at non-zero base records the (drawn debt + fee  + liq. reserve) on the Trove struct", async () => {
-        // time fast-forwards 1 year, and multisig stakes 1 LQTY
+        // time fast-forwards 1 year, and multisig stakes 1 KUMO
         await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-        await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-        await lqtyStaking.stake(dec(1, 18), { from: multisig })
+        await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+        await kumoStaking.stake(dec(1, 18), { from: multisig })
 
         await openTrove({ extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
         await openTrove({ extraKUSDAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
@@ -3447,14 +3447,14 @@ contract('BorrowerOperations', async accounts => {
       })
     }
 
-    it("openTrove(): Borrowing at non-zero base rate increases the LQTY staking contract KUSD fees-per-unit-staked", async () => {
-      // time fast-forwards 1 year, and multisig stakes 1 LQTY
+    it("openTrove(): Borrowing at non-zero base rate increases the KUMO staking contract KUSD fees-per-unit-staked", async () => {
+      // time fast-forwards 1 year, and multisig stakes 1 KUMO
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-      await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-      await lqtyStaking.stake(dec(1, 18), { from: multisig })
+      await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+      await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-      // Check LQTY contract KUSD fees-per-unit-staked is zero
-      const F_KUSD_Before = await lqtyStaking.F_KUSD()
+      // Check KUMO contract KUSD fees-per-unit-staked is zero
+      const F_KUSD_Before = await kumoStaking.F_KUSD()
       assert.equal(F_KUSD_Before, '0')
 
       await openTrove({ extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
@@ -3476,20 +3476,20 @@ contract('BorrowerOperations', async accounts => {
       // D opens trove 
       await openTrove({ extraKUSDAmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-      // Check LQTY contract KUSD fees-per-unit-staked has increased
-      const F_KUSD_After = await lqtyStaking.F_KUSD()
+      // Check KUMO contract KUSD fees-per-unit-staked has increased
+      const F_KUSD_After = await kumoStaking.F_KUSD()
       assert.isTrue(F_KUSD_After.gt(F_KUSD_Before))
     })
 
     it("openTrove(): Borrowing at non-zero base rate sends requested amount to the user", async () => {
-      // time fast-forwards 1 year, and multisig stakes 1 LQTY
+      // time fast-forwards 1 year, and multisig stakes 1 KUMO
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-      await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-      await lqtyStaking.stake(dec(1, 18), { from: multisig })
+      await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+      await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-      // Check LQTY Staking contract balance before == 0
-      const lqtyStaking_KUSDBalance_Before = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.equal(lqtyStaking_KUSDBalance_Before, '0')
+      // Check KUMO Staking contract balance before == 0
+      const kumoStaking_KUSDBalance_Before = await kusdToken.balanceOf(kumoStaking.address)
+      assert.equal(kumoStaking_KUSDBalance_Before, '0')
 
       await openTrove({ extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await openTrove({ extraKUSDAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
@@ -3511,16 +3511,16 @@ contract('BorrowerOperations', async accounts => {
       const KUSDRequest_D = toBN(dec(40000, 18))
       await borrowerOperations.openTrove(th._100pct, KUSDRequest_D, D, D, { from: D, value: dec(500, 'ether') })
 
-      // Check LQTY staking KUSD balance has increased
-      const lqtyStaking_KUSDBalance_After = await kusdToken.balanceOf(lqtyStaking.address)
-      assert.isTrue(lqtyStaking_KUSDBalance_After.gt(lqtyStaking_KUSDBalance_Before))
+      // Check KUMO staking KUSD balance has increased
+      const kumoStaking_KUSDBalance_After = await kusdToken.balanceOf(kumoStaking.address)
+      assert.isTrue(kumoStaking_KUSDBalance_After.gt(kumoStaking_KUSDBalance_Before))
 
       // Check D's KUSD balance now equals their requested KUSD
       const KUSDBalance_D = await kusdToken.balanceOf(D)
       assert.isTrue(KUSDRequest_D.eq(KUSDBalance_D))
     })
 
-    it("openTrove(): Borrowing at zero base rate changes the LQTY staking contract KUSD fees-per-unit-staked", async () => {
+    it("openTrove(): Borrowing at zero base rate changes the KUMO staking contract KUSD fees-per-unit-staked", async () => {
       await openTrove({ extraKUSDAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
       await openTrove({ extraKUSDAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
       await openTrove({ extraKUSDAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
@@ -3532,19 +3532,19 @@ contract('BorrowerOperations', async accounts => {
       // 2 hours pass
       th.fastForwardTime(7200, web3.currentProvider)
 
-      // Check KUSD reward per LQTY staked == 0
-      const F_KUSD_Before = await lqtyStaking.F_KUSD()
+      // Check KUSD reward per KUMO staked == 0
+      const F_KUSD_Before = await kumoStaking.F_KUSD()
       assert.equal(F_KUSD_Before, '0')
 
-      // A stakes LQTY
-      await lqtyToken.unprotectedMint(A, dec(100, 18))
-      await lqtyStaking.stake(dec(100, 18), { from: A })
+      // A stakes KUMO
+      await kumoToken.unprotectedMint(A, dec(100, 18))
+      await kumoStaking.stake(dec(100, 18), { from: A })
 
       // D opens trove 
       await openTrove({ extraKUSDAmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-      // Check KUSD reward per LQTY staked > 0
-      const F_KUSD_After = await lqtyStaking.F_KUSD()
+      // Check KUSD reward per KUMO staked > 0
+      const F_KUSD_After = await kumoStaking.F_KUSD()
       assert.isTrue(F_KUSD_After.gt(toBN('0')))
     })
 

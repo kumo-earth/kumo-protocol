@@ -62,7 +62,7 @@ contract('TroveManager', async accounts => {
       contracts.stabilityPool.address,
       contracts.borrowerOperations.address
     )
-    const LQTYContracts = await deploymentHelper.deployLQTYContracts(bountyAddress, lpRewardsAddress, multisig)
+    const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
     priceFeed = contracts.priceFeedTestnet
     kusdToken = contracts.kusdToken
@@ -75,14 +75,14 @@ contract('TroveManager', async accounts => {
     borrowerOperations = contracts.borrowerOperations
     hintHelpers = contracts.hintHelpers
 
-    lqtyStaking = LQTYContracts.lqtyStaking
-    lqtyToken = LQTYContracts.lqtyToken
-    communityIssuance = LQTYContracts.communityIssuance
-    lockupContractFactory = LQTYContracts.lockupContractFactory
+    kumoStaking = KUMOContracts.kumoStaking
+    kumoToken = KUMOContracts.kumoToken
+    communityIssuance = KUMOContracts.communityIssuance
+    lockupContractFactory = KUMOContracts.lockupContractFactory
 
-    await deploymentHelper.connectCoreContracts(contracts, LQTYContracts)
-    await deploymentHelper.connectLQTYContracts(LQTYContracts)
-    await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, contracts)
+    await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+    await deploymentHelper.connectKUMOContracts(KUMOContracts)
+    await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
   })
 
   it('liquidate(): closes a Trove that has ICR < MCR', async () => {
@@ -961,7 +961,7 @@ contract('TroveManager', async accounts => {
     assert.equal((await troveManager.Troves(carol))[3].toString(), '3')
   })
 
-  it("liquidate(): when SP > 0, triggers LQTY reward event - increases the sum G", async () => {
+  it("liquidate(): when SP > 0, triggers KUMO reward event - increases the sum G", async () => {
     await openTrove({ ICR: toBN(dec(100, 18)), extraParams: { from: whale } })
 
     // A, B, C open troves 
@@ -990,7 +990,7 @@ contract('TroveManager', async accounts => {
 
     const G_After = await stabilityPool.epochToScaleToG(0, 0)
 
-    // Expect G has increased from the LQTY reward event triggered
+    // Expect G has increased from the KUMO reward event triggered
     assert.isTrue(G_After.gt(G_Before))
   })
 
@@ -1695,7 +1695,7 @@ contract('TroveManager', async accounts => {
     assert.isAtMost(th.getDifference(total_ETHinSP, th.applyLiquidationFee(liquidatedColl)), 1000)
   })
 
-  it("liquidateTroves(): when SP > 0, triggers LQTY reward event - increases the sum G", async () => {
+  it("liquidateTroves(): when SP > 0, triggers KUMO reward event - increases the sum G", async () => {
     await openTrove({ ICR: toBN(dec(100, 18)), extraParams: { from: whale } })
 
     // A, B, C open troves
@@ -1726,7 +1726,7 @@ contract('TroveManager', async accounts => {
 
     const G_After = await stabilityPool.epochToScaleToG(0, 0)
 
-    // Expect G has increased from the LQTY reward event triggered
+    // Expect G has increased from the KUMO reward event triggered
     assert.isTrue(G_After.gt(G_Before))
   })
 
@@ -2196,7 +2196,7 @@ contract('TroveManager', async accounts => {
     assert.isFalse(await th.checkRecoveryMode(contracts));
   })
 
-  it("batchLiquidateTroves: when SP > 0, triggers LQTY reward event - increases the sum G", async () => {
+  it("batchLiquidateTroves: when SP > 0, triggers KUMO reward event - increases the sum G", async () => {
     await openTrove({ ICR: toBN(dec(100, 18)), extraParams: { from: whale } })
 
     // A, B, C open troves
@@ -2227,7 +2227,7 @@ contract('TroveManager', async accounts => {
 
     const G_After = await stabilityPool.epochToScaleToG(0, 0)
 
-    // Expect G has increased from the LQTY reward event triggered
+    // Expect G has increased from the KUMO reward event triggered
     assert.isTrue(G_After.gt(G_Before))
   })
 
@@ -3738,10 +3738,10 @@ contract('TroveManager', async accounts => {
   })
 
   it("redeemCollateral(): a redemption made when base rate is non-zero increases the base rate, for negligible time passed", async () => {
-    // time fast-forwards 1 year, and multisig stakes 1 LQTY
+    // time fast-forwards 1 year, and multisig stakes 1 KUMO
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-    await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-    await lqtyStaking.stake(dec(1, 18), { from: multisig })
+    await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+    await kumoStaking.stake(dec(1, 18), { from: multisig })
 
     await openTrove({ ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
 
@@ -3835,11 +3835,11 @@ contract('TroveManager', async accounts => {
     assert.isTrue(lastFeeOpTime_3.gt(lastFeeOpTime_1))
   })
 
-  it("redeemCollateral(): a redemption made at zero base rate send a non-zero ETHFee to LQTY staking contract", async () => {
-    // time fast-forwards 1 year, and multisig stakes 1 LQTY
+  it("redeemCollateral(): a redemption made at zero base rate send a non-zero ETHFee to KUMO staking contract", async () => {
+    // time fast-forwards 1 year, and multisig stakes 1 KUMO
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-    await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-    await lqtyStaking.stake(dec(1, 18), { from: multisig })
+    await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+    await kumoStaking.stake(dec(1, 18), { from: multisig })
 
     await openTrove({ ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
 
@@ -3850,9 +3850,9 @@ contract('TroveManager', async accounts => {
     // Check baseRate == 0
     assert.equal(await troveManager.baseRate(), '0')
 
-    // Check LQTY Staking contract balance before is zero
-    const lqtyStakingBalance_Before = await web3.eth.getBalance(lqtyStaking.address)
-    assert.equal(lqtyStakingBalance_Before, '0')
+    // Check KUMO Staking contract balance before is zero
+    const kumoStakingBalance_Before = await web3.eth.getBalance(kumoStaking.address)
+    assert.equal(kumoStakingBalance_Before, '0')
 
     const A_balanceBefore = await kusdToken.balanceOf(A)
 
@@ -3866,16 +3866,16 @@ contract('TroveManager', async accounts => {
     const baseRate_1 = await troveManager.baseRate()
     assert.isTrue(baseRate_1.gt(toBN('0')))
 
-    // Check LQTY Staking contract balance after is non-zero
-    const lqtyStakingBalance_After = toBN(await web3.eth.getBalance(lqtyStaking.address))
-    assert.isTrue(lqtyStakingBalance_After.gt(toBN('0')))
+    // Check KUMO Staking contract balance after is non-zero
+    const kumoStakingBalance_After = toBN(await web3.eth.getBalance(kumoStaking.address))
+    assert.isTrue(kumoStakingBalance_After.gt(toBN('0')))
   })
 
-  it("redeemCollateral(): a redemption made at zero base increases the ETH-fees-per-LQTY-staked in LQTY Staking contract", async () => {
-    // time fast-forwards 1 year, and multisig stakes 1 LQTY
+  it("redeemCollateral(): a redemption made at zero base increases the ETH-fees-per-KUMO-staked in KUMO Staking contract", async () => {
+    // time fast-forwards 1 year, and multisig stakes 1 KUMO
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-    await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-    await lqtyStaking.stake(dec(1, 18), { from: multisig })
+    await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+    await kumoStaking.stake(dec(1, 18), { from: multisig })
 
     await openTrove({ ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
 
@@ -3886,8 +3886,8 @@ contract('TroveManager', async accounts => {
     // Check baseRate == 0
     assert.equal(await troveManager.baseRate(), '0')
 
-    // Check LQTY Staking ETH-fees-per-LQTY-staked before is zero
-    const F_ETH_Before = await lqtyStaking.F_ETH()
+    // Check KUMO Staking ETH-fees-per-KUMO-staked before is zero
+    const F_ETH_Before = await kumoStaking.F_ETH()
     assert.equal(F_ETH_Before, '0')
 
     const A_balanceBefore = await kusdToken.balanceOf(A)
@@ -3902,16 +3902,16 @@ contract('TroveManager', async accounts => {
     const baseRate_1 = await troveManager.baseRate()
     assert.isTrue(baseRate_1.gt(toBN('0')))
 
-    // Check LQTY Staking ETH-fees-per-LQTY-staked after is non-zero
-    const F_ETH_After = await lqtyStaking.F_ETH()
+    // Check KUMO Staking ETH-fees-per-KUMO-staked after is non-zero
+    const F_ETH_After = await kumoStaking.F_ETH()
     assert.isTrue(F_ETH_After.gt('0'))
   })
 
-  it("redeemCollateral(): a redemption made at a non-zero base rate send a non-zero ETHFee to LQTY staking contract", async () => {
-    // time fast-forwards 1 year, and multisig stakes 1 LQTY
+  it("redeemCollateral(): a redemption made at a non-zero base rate send a non-zero ETHFee to KUMO staking contract", async () => {
+    // time fast-forwards 1 year, and multisig stakes 1 KUMO
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-    await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-    await lqtyStaking.stake(dec(1, 18), { from: multisig })
+    await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+    await kumoStaking.stake(dec(1, 18), { from: multisig })
 
     await openTrove({ ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
 
@@ -3935,7 +3935,7 @@ contract('TroveManager', async accounts => {
     const baseRate_1 = await troveManager.baseRate()
     assert.isTrue(baseRate_1.gt(toBN('0')))
 
-    const lqtyStakingBalance_Before = toBN(await web3.eth.getBalance(lqtyStaking.address))
+    const kumoStakingBalance_Before = toBN(await web3.eth.getBalance(kumoStaking.address))
 
     // B redeems 10 KUSD
     await th.redeemCollateral(B, contracts, dec(10, 18), GAS_PRICE)
@@ -3943,17 +3943,17 @@ contract('TroveManager', async accounts => {
     // Check B's balance has decreased by 10 KUSD
     assert.equal(await kusdToken.balanceOf(B), B_balanceBefore.sub(toBN(dec(10, 18))).toString())
 
-    const lqtyStakingBalance_After = toBN(await web3.eth.getBalance(lqtyStaking.address))
+    const kumoStakingBalance_After = toBN(await web3.eth.getBalance(kumoStaking.address))
 
-    // check LQTY Staking balance has increased
-    assert.isTrue(lqtyStakingBalance_After.gt(lqtyStakingBalance_Before))
+    // check KUMO Staking balance has increased
+    assert.isTrue(kumoStakingBalance_After.gt(kumoStakingBalance_Before))
   })
 
-  it("redeemCollateral(): a redemption made at a non-zero base rate increases ETH-per-LQTY-staked in the staking contract", async () => {
-    // time fast-forwards 1 year, and multisig stakes 1 LQTY
+  it("redeemCollateral(): a redemption made at a non-zero base rate increases ETH-per-KUMO-staked in the staking contract", async () => {
+    // time fast-forwards 1 year, and multisig stakes 1 KUMO
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-    await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-    await lqtyStaking.stake(dec(1, 18), { from: multisig })
+    await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+    await kumoStaking.stake(dec(1, 18), { from: multisig })
 
     await openTrove({ ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
 
@@ -3977,8 +3977,8 @@ contract('TroveManager', async accounts => {
     const baseRate_1 = await troveManager.baseRate()
     assert.isTrue(baseRate_1.gt(toBN('0')))
 
-    // Check LQTY Staking ETH-fees-per-LQTY-staked before is zero
-    const F_ETH_Before = await lqtyStaking.F_ETH()
+    // Check KUMO Staking ETH-fees-per-KUMO-staked before is zero
+    const F_ETH_Before = await kumoStaking.F_ETH()
 
     // B redeems 10 KUSD
     await th.redeemCollateral(B, contracts, dec(10, 18), GAS_PRICE)
@@ -3986,17 +3986,17 @@ contract('TroveManager', async accounts => {
     // Check B's balance has decreased by 10 KUSD
     assert.equal(await kusdToken.balanceOf(B), B_balanceBefore.sub(toBN(dec(10, 18))).toString())
 
-    const F_ETH_After = await lqtyStaking.F_ETH()
+    const F_ETH_After = await kumoStaking.F_ETH()
 
-    // check LQTY Staking balance has increased
+    // check KUMO Staking balance has increased
     assert.isTrue(F_ETH_After.gt(F_ETH_Before))
   })
 
   it("redeemCollateral(): a full redemption (leaving trove with 0 debt), closes the trove", async () => {
-    // time fast-forwards 1 year, and multisig stakes 1 LQTY
+    // time fast-forwards 1 year, and multisig stakes 1 KUMO
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-    await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-    await lqtyStaking.stake(dec(1, 18), { from: multisig })
+    await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+    await kumoStaking.stake(dec(1, 18), { from: multisig })
 
     const { netDebt: W_netDebt } = await openTrove({ ICR: toBN(dec(20, 18)), extraKUSDAmount: dec(10000, 18), extraParams: { from: whale } })
 
@@ -4023,10 +4023,10 @@ contract('TroveManager', async accounts => {
   })
 
   const redeemCollateral3Full1Partial = async () => {
-    // time fast-forwards 1 year, and multisig stakes 1 LQTY
+    // time fast-forwards 1 year, and multisig stakes 1 KUMO
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-    await lqtyToken.approve(lqtyStaking.address, dec(1, 18), { from: multisig })
-    await lqtyStaking.stake(dec(1, 18), { from: multisig })
+    await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+    await kumoStaking.stake(dec(1, 18), { from: multisig })
 
     const { netDebt: W_netDebt } = await openTrove({ ICR: toBN(dec(20, 18)), extraKUSDAmount: dec(10000, 18), extraParams: { from: whale } })
 

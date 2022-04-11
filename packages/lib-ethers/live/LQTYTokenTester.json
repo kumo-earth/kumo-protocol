@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "LQTYTokenTester",
-  "sourceName": "contracts/TestContracts/LQTYTokenTester.sol",
+  "contractName": "KUMOTokenTester",
+  "sourceName": "contracts/TestContracts/KUMOTokenTester.sol",
   "abi": [
     {
       "inputs": [
@@ -12,7 +12,7 @@
         },
         {
           "internalType": "address",
-          "name": "_lqtyStakingAddress",
+          "name": "_kumoStakingAddress",
           "type": "address"
         },
         {
@@ -83,11 +83,11 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_lqtyStakingAddress",
+          "name": "_kumoStakingAddress",
           "type": "address"
         }
       ],
-      "name": "LQTYStakingAddressSet",
+      "name": "KUMOStakingAddressSet",
       "type": "event"
     },
     {
@@ -407,7 +407,7 @@
     },
     {
       "inputs": [],
-      "name": "lqtyStakingAddress",
+      "name": "kumoStakingAddress",
       "outputs": [
         {
           "internalType": "address",
@@ -532,7 +532,7 @@
           "type": "uint256"
         }
       ],
-      "name": "sendToLQTYStaking",
+      "name": "sendToKUMOStaking",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -647,7 +647,7 @@
           "type": "uint256"
         }
       ],
-      "name": "unprotectedSendToLQTYStaking",
+      "name": "unprotectedSendToKUMOStaking",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

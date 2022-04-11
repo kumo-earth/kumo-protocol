@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "ILQTYStaking",
-  "sourceName": "contracts/Interfaces/ILQTYStaking.sol",
+  "contractName": "IKUMOStaking",
+  "sourceName": "contracts/Interfaces/IKUMOStaking.sol",
   "abi": [
     {
       "anonymous": false,
@@ -80,11 +80,11 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_lqtyTokenAddress",
+          "name": "_kumoTokenAddress",
           "type": "address"
         }
       ],
-      "name": "LQTYTokenAddressSet",
+      "name": "KUMOTokenAddressSet",
       "type": "event"
     },
     {
@@ -175,11 +175,11 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_totalLQTYStaked",
+          "name": "_totalKUMOStaked",
           "type": "uint256"
         }
       ],
-      "name": "TotalLQTYStakedUpdated",
+      "name": "TotalKUMOStakedUpdated",
       "type": "event"
     },
     {
@@ -250,7 +250,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_LQTYFee",
+          "name": "_KUMOFee",
           "type": "uint256"
         }
       ],
@@ -263,7 +263,7 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_lqtyTokenAddress",
+          "name": "_kumoTokenAddress",
           "type": "address"
         },
         {
@@ -296,7 +296,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_LQTYamount",
+          "name": "_KUMOamount",
           "type": "uint256"
         }
       ],
@@ -309,7 +309,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_LQTYamount",
+          "name": "_KUMOamount",
           "type": "uint256"
         }
       ],

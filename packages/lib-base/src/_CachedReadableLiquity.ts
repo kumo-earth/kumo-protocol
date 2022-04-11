@@ -1,6 +1,6 @@
 import { Decimal } from "./Decimal";
 import { Fees } from "./Fees";
-import { LQTYStake } from "./LQTYStake";
+import { KUMOStake } from "./KUMOStake";
 import { StabilityDeposit } from "./StabilityDeposit";
 import { Trove, TroveWithPendingRedistribution, UserTrove } from "./Trove";
 import { FrontendStatus, ReadableLiquity, TroveListingParams } from "./ReadableLiquity";
@@ -101,10 +101,10 @@ export class _CachedReadableLiquity<T extends unknown[]>
     );
   }
 
-  async getRemainingStabilityPoolLQTYReward(...extraParams: T): Promise<Decimal> {
+  async getRemainingStabilityPoolKUMOReward(...extraParams: T): Promise<Decimal> {
     return (
-      this._cache.getRemainingStabilityPoolLQTYReward(...extraParams) ??
-      this._readable.getRemainingStabilityPoolLQTYReward(...extraParams)
+      this._cache.getRemainingStabilityPoolKUMOReward(...extraParams) ??
+      this._readable.getRemainingStabilityPoolKUMOReward(...extraParams)
     );
   }
 
@@ -122,10 +122,10 @@ export class _CachedReadableLiquity<T extends unknown[]>
     );
   }
 
-  async getLQTYBalance(address?: string, ...extraParams: T): Promise<Decimal> {
+  async getKUMOBalance(address?: string, ...extraParams: T): Promise<Decimal> {
     return (
-      this._cache.getLQTYBalance(address, ...extraParams) ??
-      this._readable.getLQTYBalance(address, ...extraParams)
+      this._cache.getKUMOBalance(address, ...extraParams) ??
+      this._readable.getKUMOBalance(address, ...extraParams)
     );
   }
 
@@ -143,10 +143,10 @@ export class _CachedReadableLiquity<T extends unknown[]>
     );
   }
 
-  async getRemainingLiquidityMiningLQTYReward(...extraParams: T): Promise<Decimal> {
+  async getRemainingLiquidityMiningKUMOReward(...extraParams: T): Promise<Decimal> {
     return (
-      this._cache.getRemainingLiquidityMiningLQTYReward(...extraParams) ??
-      this._readable.getRemainingLiquidityMiningLQTYReward(...extraParams)
+      this._cache.getRemainingLiquidityMiningKUMOReward(...extraParams) ??
+      this._readable.getRemainingLiquidityMiningKUMOReward(...extraParams)
     );
   }
 
@@ -164,10 +164,10 @@ export class _CachedReadableLiquity<T extends unknown[]>
     );
   }
 
-  async getLiquidityMiningLQTYReward(address?: string, ...extraParams: T): Promise<Decimal> {
+  async getLiquidityMiningKUMOReward(address?: string, ...extraParams: T): Promise<Decimal> {
     return (
-      this._cache.getLiquidityMiningLQTYReward(address, ...extraParams) ??
-      this._readable.getLiquidityMiningLQTYReward(address, ...extraParams)
+      this._cache.getLiquidityMiningKUMOReward(address, ...extraParams) ??
+      this._readable.getLiquidityMiningKUMOReward(address, ...extraParams)
     );
   }
 
@@ -205,17 +205,17 @@ export class _CachedReadableLiquity<T extends unknown[]>
     return this._cache.getFees(...extraParams) ?? this._readable.getFees(...extraParams);
   }
 
-  async getLQTYStake(address?: string, ...extraParams: T): Promise<LQTYStake> {
+  async getKUMOStake(address?: string, ...extraParams: T): Promise<KUMOStake> {
     return (
-      this._cache.getLQTYStake(address, ...extraParams) ??
-      this._readable.getLQTYStake(address, ...extraParams)
+      this._cache.getKUMOStake(address, ...extraParams) ??
+      this._readable.getKUMOStake(address, ...extraParams)
     );
   }
 
-  async getTotalStakedLQTY(...extraParams: T): Promise<Decimal> {
+  async getTotalStakedKUMO(...extraParams: T): Promise<Decimal> {
     return (
-      this._cache.getTotalStakedLQTY(...extraParams) ??
-      this._readable.getTotalStakedLQTY(...extraParams)
+      this._cache.getTotalStakedKUMO(...extraParams) ??
+      this._readable.getTotalStakedKUMO(...extraParams)
     );
   }
 

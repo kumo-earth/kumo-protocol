@@ -25,18 +25,18 @@ Implemented by [EthersLiquity](./lib-ethers.ethersliquity.md)<!-- -->.
 |  [getFrontendStatus(address)](./lib-base.readableliquity.getfrontendstatus.md) | Check whether an address is registered as a Liquity frontend, and what its kickback rate is. |
 |  [getKUSDBalance(address)](./lib-base.readableliquity.getkusdbalance.md) | Get the amount of KUSD held by an address. |
 |  [getKUSDInStabilityPool()](./lib-base.readableliquity.getkusdinstabilitypool.md) | Get the total amount of KUSD currently deposited in the Stability Pool. |
-|  [getLiquidityMiningLQTYReward(address)](./lib-base.readableliquity.getliquiditymininglqtyreward.md) | Get the amount of LQTY earned by an address through mining liquidity. |
+|  [getLiquidityMiningKUMOReward(address)](./lib-base.readableliquity.getliquidityminingkumoreward.md) | Get the amount of KUMO earned by an address through mining liquidity. |
 |  [getLiquidityMiningStake(address)](./lib-base.readableliquity.getliquidityminingstake.md) | Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in liquidity mining. |
-|  [getLQTYBalance(address)](./lib-base.readableliquity.getlqtybalance.md) | Get the amount of LQTY held by an address. |
-|  [getLQTYStake(address)](./lib-base.readableliquity.getlqtystake.md) | Get the current state of an LQTY Stake. |
+|  [getKUMOBalance(address)](./lib-base.readableliquity.getkumobalance.md) | Get the amount of KUMO held by an address. |
+|  [getKUMOStake(address)](./lib-base.readableliquity.getkumostake.md) | Get the current state of an KUMO Stake. |
 |  [getNumberOfTroves()](./lib-base.readableliquity.getnumberoftroves.md) | Get number of Troves that are currently open. |
 |  [getPrice()](./lib-base.readableliquity.getprice.md) | Get the current price of the native currency (e.g. Ether) in USD. |
-|  [getRemainingLiquidityMiningLQTYReward()](./lib-base.readableliquity.getremainingliquiditymininglqtyreward.md) | Get the remaining LQTY that will be collectively rewarded to liquidity miners. |
-|  [getRemainingStabilityPoolLQTYReward()](./lib-base.readableliquity.getremainingstabilitypoollqtyreward.md) | Get the remaining LQTY that will be collectively rewarded to stability depositors. |
+|  [getRemainingLiquidityMiningKUMOReward()](./lib-base.readableliquity.getremainingliquidityminingkumoreward.md) | Get the remaining KUMO that will be collectively rewarded to liquidity miners. |
+|  [getRemainingStabilityPoolKUMOReward()](./lib-base.readableliquity.getremainingstabilitypoolkumoreward.md) | Get the remaining KUMO that will be collectively rewarded to stability depositors. |
 |  [getStabilityDeposit(address)](./lib-base.readableliquity.getstabilitydeposit.md) | Get the current state of a Stability Deposit. |
 |  [getTotal()](./lib-base.readableliquity.gettotal.md) | Get the total amount of collateral and debt in the Liquity system. |
 |  [getTotalRedistributed()](./lib-base.readableliquity.gettotalredistributed.md) | Get the total collateral and debt per stake that has been liquidated through redistribution. |
-|  [getTotalStakedLQTY()](./lib-base.readableliquity.gettotalstakedlqty.md) | Get the total amount of LQTY currently staked. |
+|  [getTotalStakedKUMO()](./lib-base.readableliquity.gettotalstakedkumo.md) | Get the total amount of KUMO currently staked. |
 |  [getTotalStakedUniTokens()](./lib-base.readableliquity.gettotalstakedunitokens.md) | Get the total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining. |
 |  [getTrove(address)](./lib-base.readableliquity.gettrove.md) | Get the current state of a Trove. |
 |  [getTroveBeforeRedistribution(address)](./lib-base.readableliquity.gettrovebeforeredistribution.md) | Get a Trove in its state after the last direct modification. |

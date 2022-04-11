@@ -15,13 +15,13 @@ import "../Dependencies/console.sol";
 * The LockupContractFactory deploys LockupContracts - its main purpose is to keep a registry of valid deployed 
 * LockupContracts. 
 * 
-* This registry is checked by LQTYToken when the Liquity deployer attempts to transfer LQTY tokens. During the first year 
-* since system deployment, the Liquity deployer is only allowed to transfer LQTY to valid LockupContracts that have been 
-* deployed by and recorded in the LockupContractFactory. This ensures the deployer's LQTY can't be traded or staked in the
+* This registry is checked by KUMOToken when the Liquity deployer attempts to transfer KUMO tokens. During the first year 
+* since system deployment, the Liquity deployer is only allowed to transfer KUMO to valid LockupContracts that have been 
+* deployed by and recorded in the LockupContractFactory. This ensures the deployer's KUMO can't be traded or staked in the
 * first year, and can only be sent to a verified LockupContract which unlocks at least one year after system deployment.
 *
 * LockupContracts can of course be deployed directly, but only those deployed through and recorded in the LockupContractFactory 
-* will be considered "valid" by LQTYToken. This is a convenient way to verify that the target address is a genuine 
+* will be considered "valid" by KUMOToken. This is a convenient way to verify that the target address is a genuine 
 * LockupContract.
 */
 
@@ -34,35 +34,35 @@ contract LockupContractFactory is ILockupContractFactory, Ownable, CheckContract
 
     uint constant public SECONDS_IN_ONE_YEAR = 31536000;
 
-    address public lqtyTokenAddress;
+    address public kumoTokenAddress;
     
     mapping (address => address) public lockupContractToDeployer;
 
     // --- Events ---
 
-    // event LQTYTokenAddressSet(address _lqtyTokenAddress);
+    // event KUMOTokenAddressSet(address _kumoTokenAddress);
     // event LockupContractDeployedThroughFactory(address _lockupContractAddress, address _beneficiary, uint _unlockTime, address _deployer);
 
     // --- Functions ---
 
-    function setLQTYTokenAddress(address _lqtyTokenAddress) external override onlyOwner {
+    function setKUMOTokenAddress(address _kumoTokenAddress) external override onlyOwner {
         // require(!isInitialized, "Already initialized");
-        checkContract(_lqtyTokenAddress);
+        checkContract(_kumoTokenAddress);
 		// isInitialized = true;
 
 		// __Ownable_init();
 
-        lqtyTokenAddress = _lqtyTokenAddress;
-        emit LQTYTokenAddressSet(_lqtyTokenAddress);
+        kumoTokenAddress = _kumoTokenAddress;
+        emit KUMOTokenAddressSet(_kumoTokenAddress);
 
         _renounceOwnership();
     }
 
     function deployLockupContract(address _beneficiary, uint _unlockTime) external override {
-        address lqtyTokenAddressCached = lqtyTokenAddress;
-        _requireLQTYAddressIsSet(lqtyTokenAddressCached);
+        address kumoTokenAddressCached = kumoTokenAddress;
+        _requireKUMOAddressIsSet(kumoTokenAddressCached);
         LockupContract lockupContract = new LockupContract(
-                                                        lqtyTokenAddressCached,
+                                                        kumoTokenAddressCached,
                                                         _beneficiary, 
                                                         _unlockTime);
 
@@ -75,7 +75,7 @@ contract LockupContractFactory is ILockupContractFactory, Ownable, CheckContract
     }
 
     // --- 'require'  functions ---
-    function _requireLQTYAddressIsSet(address _lqtyTokenAddress) internal pure {
-        require(_lqtyTokenAddress != address(0), "LCF: LQTY Address is not set");
+    function _requireKUMOAddressIsSet(address _kumoTokenAddress) internal pure {
+        require(_kumoTokenAddress != address(0), "LCF: KUMO Address is not set");
     }
 }

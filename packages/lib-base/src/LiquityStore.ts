@@ -4,7 +4,7 @@ import { Decimal } from "./Decimal";
 import { StabilityDeposit } from "./StabilityDeposit";
 import { Trove, TroveWithPendingRedistribution, UserTrove } from "./Trove";
 import { Fees } from "./Fees";
-import { LQTYStake } from "./LQTYStake";
+import { KUMOStake } from "./KUMOStake";
 import { FrontendStatus } from "./ReadableLiquity";
 
 /**
@@ -28,8 +28,8 @@ export interface LiquityStoreBaseState {
   /** User's KUSD token balance. */
   kusdBalance: Decimal;
 
-  /** User's LQTY token balance. */
-  lqtyBalance: Decimal;
+  /** User's KUMO token balance. */
+  kumoBalance: Decimal;
 
   /** User's Uniswap ETH/KUSD LP token balance. */
   uniTokenBalance: Decimal;
@@ -37,8 +37,8 @@ export interface LiquityStoreBaseState {
   /** The liquidity mining contract's allowance of user's Uniswap ETH/KUSD LP tokens. */
   uniTokenAllowance: Decimal;
 
-  /** Remaining LQTY that will be collectively rewarded to liquidity miners. */
-  remainingLiquidityMiningLQTYReward: Decimal;
+  /** Remaining KUMO that will be collectively rewarded to liquidity miners. */
+  remainingLiquidityMiningKUMOReward: Decimal;
 
   /** Amount of Uniswap ETH/KUSD LP tokens the user has staked in liquidity mining. */
   liquidityMiningStake: Decimal;
@@ -46,8 +46,8 @@ export interface LiquityStoreBaseState {
   /** Total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining. */
   totalStakedUniTokens: Decimal;
 
-  /** Amount of LQTY the user has earned through mining liquidity. */
-  liquidityMiningLQTYReward: Decimal;
+  /** Amount of KUMO the user has earned through mining liquidity. */
+  liquidityMiningKUMOReward: Decimal;
 
   /**
    * Amount of leftover collateral available for withdrawal to the user.
@@ -87,17 +87,17 @@ export interface LiquityStoreBaseState {
   /** User's stability deposit. */
   stabilityDeposit: StabilityDeposit;
 
-  /** Remaining LQTY that will be collectively rewarded to stability depositors. */
-  remainingStabilityPoolLQTYReward: Decimal;
+  /** Remaining KUMO that will be collectively rewarded to stability depositors. */
+  remainingStabilityPoolKUMOReward: Decimal;
 
   /** @internal */
   _feesInNormalMode: Fees;
 
-  /** User's LQTY stake. */
-  lqtyStake: LQTYStake;
+  /** User's KUMO stake. */
+  kumoStake: KUMOStake;
 
-  /** Total amount of LQTY currently staked. */
-  totalStakedLQTY: Decimal;
+  /** Total amount of KUMO currently staked. */
+  totalStakedKUMO: Decimal;
 
   /** @internal */
   _riskiestTroveBeforeRedistribution: TroveWithPendingRedistribution;
@@ -359,11 +359,11 @@ export abstract class LiquityStore<T = unknown> {
         baseStateUpdate.kusdBalance
       ),
 
-      lqtyBalance: this._updateIfChanged(
+      kumoBalance: this._updateIfChanged(
         eq,
-        "lqtyBalance",
-        baseState.lqtyBalance,
-        baseStateUpdate.lqtyBalance
+        "kumoBalance",
+        baseState.kumoBalance,
+        baseStateUpdate.kumoBalance
       ),
 
       uniTokenBalance: this._updateIfChanged(
@@ -380,10 +380,10 @@ export abstract class LiquityStore<T = unknown> {
         baseStateUpdate.uniTokenAllowance
       ),
 
-      remainingLiquidityMiningLQTYReward: this._silentlyUpdateIfChanged(
+      remainingLiquidityMiningKUMOReward: this._silentlyUpdateIfChanged(
         eq,
-        baseState.remainingLiquidityMiningLQTYReward,
-        baseStateUpdate.remainingLiquidityMiningLQTYReward
+        baseState.remainingLiquidityMiningKUMOReward,
+        baseStateUpdate.remainingLiquidityMiningKUMOReward
       ),
 
       liquidityMiningStake: this._updateIfChanged(
@@ -400,10 +400,10 @@ export abstract class LiquityStore<T = unknown> {
         baseStateUpdate.totalStakedUniTokens
       ),
 
-      liquidityMiningLQTYReward: this._silentlyUpdateIfChanged(
+      liquidityMiningKUMOReward: this._silentlyUpdateIfChanged(
         eq,
-        baseState.liquidityMiningLQTYReward,
-        baseStateUpdate.liquidityMiningLQTYReward
+        baseState.liquidityMiningKUMOReward,
+        baseStateUpdate.liquidityMiningKUMOReward
       ),
 
       collateralSurplusBalance: this._updateIfChanged(
@@ -445,10 +445,10 @@ export abstract class LiquityStore<T = unknown> {
         baseStateUpdate.stabilityDeposit
       ),
 
-      remainingStabilityPoolLQTYReward: this._silentlyUpdateIfChanged(
+      remainingStabilityPoolKUMOReward: this._silentlyUpdateIfChanged(
         eq,
-        baseState.remainingStabilityPoolLQTYReward,
-        baseStateUpdate.remainingStabilityPoolLQTYReward
+        baseState.remainingStabilityPoolKUMOReward,
+        baseStateUpdate.remainingStabilityPoolKUMOReward
       ),
 
       _feesInNormalMode: this._silentlyUpdateIfChanged(
@@ -457,18 +457,18 @@ export abstract class LiquityStore<T = unknown> {
         baseStateUpdate._feesInNormalMode
       ),
 
-      lqtyStake: this._updateIfChanged(
+      kumoStake: this._updateIfChanged(
         equals,
-        "lqtyStake",
-        baseState.lqtyStake,
-        baseStateUpdate.lqtyStake
+        "kumoStake",
+        baseState.kumoStake,
+        baseStateUpdate.kumoStake
       ),
 
-      totalStakedLQTY: this._updateIfChanged(
+      totalStakedKUMO: this._updateIfChanged(
         eq,
-        "totalStakedLQTY",
-        baseState.totalStakedLQTY,
-        baseStateUpdate.totalStakedLQTY
+        "totalStakedKUMO",
+        baseState.totalStakedKUMO,
+        baseStateUpdate.totalStakedKUMO
       ),
 
       _riskiestTroveBeforeRedistribution: this._silentlyUpdateIfChanged(

@@ -33,18 +33,18 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [getFrontendStatus(address, overrides)](./lib-ethers.readableethersliquity.getfrontendstatus.md) |  | Check whether an address is registered as a Liquity frontend, and what its kickback rate is. |
 |  [getKUSDBalance(address, overrides)](./lib-ethers.readableethersliquity.getkusdbalance.md) |  | Get the amount of KUSD held by an address. |
 |  [getKUSDInStabilityPool(overrides)](./lib-ethers.readableethersliquity.getkusdinstabilitypool.md) |  | Get the total amount of KUSD currently deposited in the Stability Pool. |
-|  [getLiquidityMiningLQTYReward(address, overrides)](./lib-ethers.readableethersliquity.getliquiditymininglqtyreward.md) |  | Get the amount of LQTY earned by an address through mining liquidity. |
+|  [getLiquidityMiningKUMOReward(address, overrides)](./lib-ethers.readableethersliquity.getliquidityminingkumoreward.md) |  | Get the amount of KUMO earned by an address through mining liquidity. |
 |  [getLiquidityMiningStake(address, overrides)](./lib-ethers.readableethersliquity.getliquidityminingstake.md) |  | Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in liquidity mining. |
-|  [getLQTYBalance(address, overrides)](./lib-ethers.readableethersliquity.getlqtybalance.md) |  | Get the amount of LQTY held by an address. |
-|  [getLQTYStake(address, overrides)](./lib-ethers.readableethersliquity.getlqtystake.md) |  | Get the current state of an LQTY Stake. |
+|  [getKUMOBalance(address, overrides)](./lib-ethers.readableethersliquity.getkumobalance.md) |  | Get the amount of KUMO held by an address. |
+|  [getKUMOStake(address, overrides)](./lib-ethers.readableethersliquity.getkumostake.md) |  | Get the current state of an KUMO Stake. |
 |  [getNumberOfTroves(overrides)](./lib-ethers.readableethersliquity.getnumberoftroves.md) |  | Get number of Troves that are currently open. |
 |  [getPrice(overrides)](./lib-ethers.readableethersliquity.getprice.md) |  | Get the current price of the native currency (e.g. Ether) in USD. |
-|  [getRemainingLiquidityMiningLQTYReward(overrides)](./lib-ethers.readableethersliquity.getremainingliquiditymininglqtyreward.md) |  | Get the remaining LQTY that will be collectively rewarded to liquidity miners. |
-|  [getRemainingStabilityPoolLQTYReward(overrides)](./lib-ethers.readableethersliquity.getremainingstabilitypoollqtyreward.md) |  | Get the remaining LQTY that will be collectively rewarded to stability depositors. |
+|  [getRemainingLiquidityMiningKUMOReward(overrides)](./lib-ethers.readableethersliquity.getremainingliquidityminingkumoreward.md) |  | Get the remaining KUMO that will be collectively rewarded to liquidity miners. |
+|  [getRemainingStabilityPoolKUMOReward(overrides)](./lib-ethers.readableethersliquity.getremainingstabilitypoolkumoreward.md) |  | Get the remaining KUMO that will be collectively rewarded to stability depositors. |
 |  [getStabilityDeposit(address, overrides)](./lib-ethers.readableethersliquity.getstabilitydeposit.md) |  | Get the current state of a Stability Deposit. |
 |  [getTotal(overrides)](./lib-ethers.readableethersliquity.gettotal.md) |  | Get the total amount of collateral and debt in the Liquity system. |
 |  [getTotalRedistributed(overrides)](./lib-ethers.readableethersliquity.gettotalredistributed.md) |  | Get the total collateral and debt per stake that has been liquidated through redistribution. |
-|  [getTotalStakedLQTY(overrides)](./lib-ethers.readableethersliquity.gettotalstakedlqty.md) |  | Get the total amount of LQTY currently staked. |
+|  [getTotalStakedKUMO(overrides)](./lib-ethers.readableethersliquity.gettotalstakedkumo.md) |  | Get the total amount of KUMO currently staked. |
 |  [getTotalStakedUniTokens(overrides)](./lib-ethers.readableethersliquity.gettotalstakedunitokens.md) |  | Get the total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining. |
 |  [getTrove(address, overrides)](./lib-ethers.readableethersliquity.gettrove.md) |  | Get the current state of a Trove. |
 |  [getTroveBeforeRedistribution(address, overrides)](./lib-ethers.readableethersliquity.gettrovebeforeredistribution.md) |  | Get a Trove in its state after the last direct modification. |

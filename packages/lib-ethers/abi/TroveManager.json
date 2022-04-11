@@ -96,11 +96,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_lqtyStakingAddress",
+        "name": "_kumoStakingAddress",
         "type": "address"
       }
     ],
-    "name": "LQTYStakingAddressChanged",
+    "name": "KUMOStakingAddressChanged",
     "type": "event"
   },
   {
@@ -109,11 +109,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_lqtyTokenAddress",
+        "name": "_kumoTokenAddress",
         "type": "address"
       }
     ],
-    "name": "LQTYTokenAddressChanged",
+    "name": "KUMOTokenAddressChanged",
     "type": "event"
   },
   {
@@ -1419,10 +1419,10 @@
   },
   {
     "inputs": [],
-    "name": "lqtyStaking",
+    "name": "kumoStaking",
     "outputs": [
       {
-        "internalType": "contract ILQTYStaking",
+        "internalType": "contract IKUMOStaking",
         "name": "",
         "type": "address"
       }
@@ -1432,10 +1432,10 @@
   },
   {
     "inputs": [],
-    "name": "lqtyToken",
+    "name": "kumoToken",
     "outputs": [
       {
-        "internalType": "contract ILQTYToken",
+        "internalType": "contract IKUMOToken",
         "name": "",
         "type": "address"
       }
@@ -1598,12 +1598,12 @@
       },
       {
         "internalType": "address",
-        "name": "_lqtyTokenAddress",
+        "name": "_kumoTokenAddress",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_lqtyStakingAddress",
+        "name": "_kumoStakingAddress",
         "type": "address"
       }
     ],

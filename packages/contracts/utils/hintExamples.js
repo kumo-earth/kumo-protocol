@@ -10,7 +10,7 @@ async function main() {
 
   const coreContracts = await dh.deployLiquityCoreHardhat()
   const ARBITRARY_ADDRESS = "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419" 
-  const LQTYContracts = await dh.deployLQTYContractsHardhat(
+  const KUMOContracts = await dh.deployKUMOContractsHardhat(
       ARBITRARY_ADDRESS, 
       ARBITRARY_ADDRESS,
       ARBITRARY_ADDRESS
@@ -18,9 +18,9 @@ async function main() {
 
  const { troveManager, borrowerOperations, hintHelpers, sortedTroves, priceFeedTestnet } = coreContracts
 
-  await dh.connectCoreContracts(coreContracts, LQTYContracts)
-  await dh.connectLQTYContracts(LQTYContracts)
-  await dh.connectLQTYContractsToCore(LQTYContracts, coreContracts)
+  await dh.connectCoreContracts(coreContracts, KUMOContracts)
+  await dh.connectKUMOContracts(KUMOContracts)
+  await dh.connectKUMOContractsToCore(KUMOContracts, coreContracts)
 
   // Examples of off-chain hint calculation for Open Trove
 

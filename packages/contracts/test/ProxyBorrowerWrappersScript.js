@@ -2,7 +2,7 @@ const deploymentHelper = require("../utils/deploymentHelpers.js")
 const testHelpers = require("../utils/testHelpers.js")
 
 const TroveManagerTester = artifacts.require("TroveManagerTester")
-const LQTYTokenTester = artifacts.require("LQTYTokenTester")
+const KUMOTokenTester = artifacts.require("KUMOTokenTester")
 
 const th = testHelpers.TestHelper
 
@@ -25,7 +25,7 @@ const {
   StabilityPoolProxy,
   SortedTrovesProxy,
   TokenProxy,
-  LQTYStakingProxy
+  KUMOStakingProxy
 } = require('../utils/proxyHelpers.js')
 
 contract('BorrowerWrappers', async accounts => {
@@ -50,9 +50,9 @@ contract('BorrowerWrappers', async accounts => {
   let collSurplusPool
   let borrowerOperations
   let borrowerWrappers
-  let lqtyTokenOriginal
-  let lqtyToken
-  let lqtyStaking
+  let kumoTokenOriginal
+  let kumoToken
+  let kumoStaking
 
   let contracts
 
@@ -67,17 +67,17 @@ contract('BorrowerWrappers', async accounts => {
     contracts = await deploymentHelper.deployLiquityCore()
     contracts.troveManager = await TroveManagerTester.new()
     contracts = await deploymentHelper.deployKUSDToken(contracts)
-    const LQTYContracts = await deploymentHelper.deployLQTYTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
+    const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
 
-    await deploymentHelper.connectLQTYContracts(LQTYContracts)
-    await deploymentHelper.connectCoreContracts(contracts, LQTYContracts)
-    await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, contracts)
+    await deploymentHelper.connectKUMOContracts(KUMOContracts)
+    await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+    await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
 
     troveManagerOriginal = contracts.troveManager
-    lqtyTokenOriginal = LQTYContracts.lqtyToken
+    kumoTokenOriginal = KUMOContracts.kumoToken
 
     const users = [ alice, bob, carol, dennis, whale, A, B, C, D, E, defaulter_1, defaulter_2 ]
-    await deploymentHelper.deployProxyScripts(contracts, LQTYContracts, owner, users)
+    await deploymentHelper.deployProxyScripts(contracts, KUMOContracts, owner, users)
 
     priceFeed = contracts.priceFeedTestnet
     kusdToken = contracts.kusdToken
@@ -89,8 +89,8 @@ contract('BorrowerWrappers', async accounts => {
     collSurplusPool = contracts.collSurplusPool
     borrowerOperations = contracts.borrowerOperations
     borrowerWrappers = contracts.borrowerWrappers
-    lqtyStaking = LQTYContracts.lqtyStaking
-    lqtyToken = LQTYContracts.lqtyToken
+    kumoStaking = KUMOContracts.kumoStaking
+    kumoToken = KUMOContracts.kumoToken
 
     KUSD_GAS_COMPENSATION = await borrowerOperations.KUSD_GAS_COMPENSATION()
   })
@@ -296,19 +296,19 @@ contract('BorrowerWrappers', async accounts => {
     const troveCollBefore = await troveManager.getTroveColl(alice)
     const kusdBalanceBefore = await kusdToken.balanceOf(alice)
     const troveDebtBefore = await troveManager.getTroveDebt(alice)
-    const lqtyBalanceBefore = await lqtyToken.balanceOf(alice)
+    const kumoBalanceBefore = await kumoToken.balanceOf(alice)
     const ICRBefore = await troveManager.getCurrentICR(alice, price)
     const depositBefore = (await stabilityPool.deposits(alice))[0]
-    const stakeBefore = await lqtyStaking.stakes(alice)
+    const stakeBefore = await kumoStaking.stakes(alice)
 
     const proportionalKUSD = expectedETHGain_A.mul(price).div(ICRBefore)
     const borrowingRate = await troveManagerOriginal.getBorrowingRateWithDecay()
     const netDebtChange = proportionalKUSD.mul(mv._1e18BN).div(mv._1e18BN.add(borrowingRate))
 
-    // to force LQTY issuance
+    // to force KUMO issuance
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-    const expectedLQTYGain_A = toBN('50373424199406504708132')
+    const expectedKUMOGain_A = toBN('50373424199406504708132')
 
     await priceFeed.setPrice(price.mul(toBN(2)));
 
@@ -320,15 +320,15 @@ contract('BorrowerWrappers', async accounts => {
     const troveCollAfter = await troveManager.getTroveColl(alice)
     const kusdBalanceAfter = await kusdToken.balanceOf(alice)
     const troveDebtAfter = await troveManager.getTroveDebt(alice)
-    const lqtyBalanceAfter = await lqtyToken.balanceOf(alice)
+    const kumoBalanceAfter = await kumoToken.balanceOf(alice)
     const ICRAfter = await troveManager.getCurrentICR(alice, price)
     const depositAfter = (await stabilityPool.deposits(alice))[0]
-    const stakeAfter = await lqtyStaking.stakes(alice)
+    const stakeAfter = await kumoStaking.stakes(alice)
 
     // check proxy balances remain the same
     assert.equal(ethBalanceAfter.toString(), ethBalanceBefore.toString())
     assert.equal(kusdBalanceAfter.toString(), kusdBalanceBefore.toString())
-    assert.equal(lqtyBalanceAfter.toString(), lqtyBalanceBefore.toString())
+    assert.equal(kumoBalanceAfter.toString(), kumoBalanceBefore.toString())
     // check trove has increased debt by the ICR proportional amount to ETH gain
     th.assertIsApproximatelyEqual(troveDebtAfter, troveDebtBefore.add(proportionalKUSD))
     // check trove has increased collateral by the ETH gain
@@ -337,11 +337,11 @@ contract('BorrowerWrappers', async accounts => {
     th.assertIsApproximatelyEqual(ICRAfter, ICRBefore)
     // check that Stability Pool deposit
     th.assertIsApproximatelyEqual(depositAfter, depositBefore.sub(expectedKUSDLoss_A).add(netDebtChange))
-    // check lqty balance remains the same
-    th.assertIsApproximatelyEqual(lqtyBalanceAfter, lqtyBalanceBefore)
+    // check kumo balance remains the same
+    th.assertIsApproximatelyEqual(kumoBalanceAfter, kumoBalanceBefore)
 
-    // LQTY staking
-    th.assertIsApproximatelyEqual(stakeAfter, stakeBefore.add(expectedLQTYGain_A))
+    // KUMO staking
+    th.assertIsApproximatelyEqual(stakeAfter, stakeBefore.add(expectedKUMOGain_A))
 
     // Expect Alice has withdrawn all ETH gain
     const alice_pendingETHGain = await stabilityPool.getDepositorETHGain(alice)
@@ -358,13 +358,13 @@ contract('BorrowerWrappers', async accounts => {
     // alice opens trove
     await openTrove({ extraKUSDAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
 
-    // mint some LQTY
-    await lqtyTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
-    await lqtyTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
+    // mint some KUMO
+    await kumoTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
+    await kumoTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
 
-    // stake LQTY
-    await lqtyStaking.stake(dec(1850, 18), { from: whale })
-    await lqtyStaking.stake(dec(150, 18), { from: alice })
+    // stake KUMO
+    await kumoStaking.stake(dec(1850, 18), { from: whale })
+    await kumoStaking.stake(dec(150, 18), { from: alice })
 
     // Defaulter Trove opened
     const { kusdAmount, netDebt, totalDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
@@ -395,13 +395,13 @@ contract('BorrowerWrappers', async accounts => {
     //await openTrove({ extraKUSDAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
     //await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
 
-    // mint some LQTY
-    await lqtyTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
-    await lqtyTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
+    // mint some KUMO
+    await kumoTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
+    await kumoTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
 
-    // stake LQTY
-    await lqtyStaking.stake(dec(1850, 18), { from: whale })
-    await lqtyStaking.stake(dec(150, 18), { from: alice })
+    // stake KUMO
+    await kumoStaking.stake(dec(1850, 18), { from: whale })
+    await kumoStaking.stake(dec(150, 18), { from: alice })
 
     // Defaulter Trove opened
     const { kusdAmount, netDebt, totalDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
@@ -421,10 +421,10 @@ contract('BorrowerWrappers', async accounts => {
     const troveCollBefore = await troveManager.getTroveColl(alice)
     const kusdBalanceBefore = await kusdToken.balanceOf(alice)
     const troveDebtBefore = await troveManager.getTroveDebt(alice)
-    const lqtyBalanceBefore = await lqtyToken.balanceOf(alice)
+    const kumoBalanceBefore = await kumoToken.balanceOf(alice)
     const ICRBefore = await troveManager.getCurrentICR(alice, price)
     const depositBefore = (await stabilityPool.deposits(alice))[0]
-    const stakeBefore = await lqtyStaking.stakes(alice)
+    const stakeBefore = await kumoStaking.stakes(alice)
 
     // Alice claims staking rewards and puts them back in the system through the proxy
     await assertRevert(
@@ -436,21 +436,21 @@ contract('BorrowerWrappers', async accounts => {
     const troveCollAfter = await troveManager.getTroveColl(alice)
     const kusdBalanceAfter = await kusdToken.balanceOf(alice)
     const troveDebtAfter = await troveManager.getTroveDebt(alice)
-    const lqtyBalanceAfter = await lqtyToken.balanceOf(alice)
+    const kumoBalanceAfter = await kumoToken.balanceOf(alice)
     const ICRAfter = await troveManager.getCurrentICR(alice, price)
     const depositAfter = (await stabilityPool.deposits(alice))[0]
-    const stakeAfter = await lqtyStaking.stakes(alice)
+    const stakeAfter = await kumoStaking.stakes(alice)
 
     // check everything remains the same
     assert.equal(ethBalanceAfter.toString(), ethBalanceBefore.toString())
     assert.equal(kusdBalanceAfter.toString(), kusdBalanceBefore.toString())
-    assert.equal(lqtyBalanceAfter.toString(), lqtyBalanceBefore.toString())
+    assert.equal(kumoBalanceAfter.toString(), kumoBalanceBefore.toString())
     th.assertIsApproximatelyEqual(troveDebtAfter, troveDebtBefore, 10000)
     th.assertIsApproximatelyEqual(troveCollAfter, troveCollBefore)
     th.assertIsApproximatelyEqual(ICRAfter, ICRBefore)
     th.assertIsApproximatelyEqual(depositAfter, depositBefore, 10000)
-    th.assertIsApproximatelyEqual(lqtyBalanceBefore, lqtyBalanceAfter)
-    // LQTY staking
+    th.assertIsApproximatelyEqual(kumoBalanceBefore, kumoBalanceAfter)
+    // KUMO staking
     th.assertIsApproximatelyEqual(stakeAfter, stakeBefore)
 
     // Expect Alice has withdrawn all ETH gain
@@ -472,13 +472,13 @@ contract('BorrowerWrappers', async accounts => {
     await openTrove({ extraKUSDAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
     await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
 
-    // mint some LQTY
-    await lqtyTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
-    await lqtyTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
+    // mint some KUMO
+    await kumoTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
+    await kumoTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
 
-    // stake LQTY
-    await lqtyStaking.stake(dec(1850, 18), { from: whale })
-    await lqtyStaking.stake(dec(150, 18), { from: alice })
+    // stake KUMO
+    await kumoStaking.stake(dec(1850, 18), { from: whale })
+    await kumoStaking.stake(dec(150, 18), { from: alice })
 
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
@@ -495,16 +495,16 @@ contract('BorrowerWrappers', async accounts => {
     const troveCollBefore = await troveManager.getTroveColl(alice)
     const kusdBalanceBefore = await kusdToken.balanceOf(alice)
     const troveDebtBefore = await troveManager.getTroveDebt(alice)
-    const lqtyBalanceBefore = await lqtyToken.balanceOf(alice)
+    const kumoBalanceBefore = await kumoToken.balanceOf(alice)
     const ICRBefore = await troveManager.getCurrentICR(alice, price)
     const depositBefore = (await stabilityPool.deposits(alice))[0]
-    const stakeBefore = await lqtyStaking.stakes(alice)
+    const stakeBefore = await kumoStaking.stakes(alice)
 
     const proportionalKUSD = expectedETHGain_A.mul(price).div(ICRBefore)
     const borrowingRate = await troveManagerOriginal.getBorrowingRateWithDecay()
     const netDebtChange = proportionalKUSD.mul(toBN(dec(1, 18))).div(toBN(dec(1, 18)).add(borrowingRate))
 
-    const expectedLQTYGain_A = toBN('839557069990108416000000')
+    const expectedKUMOGain_A = toBN('839557069990108416000000')
 
     const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
     // Alice claims staking rewards and puts them back in the system through the proxy
@@ -518,14 +518,14 @@ contract('BorrowerWrappers', async accounts => {
     const troveCollAfter = await troveManager.getTroveColl(alice)
     const kusdBalanceAfter = await kusdToken.balanceOf(alice)
     const troveDebtAfter = await troveManager.getTroveDebt(alice)
-    const lqtyBalanceAfter = await lqtyToken.balanceOf(alice)
+    const kumoBalanceAfter = await kumoToken.balanceOf(alice)
     const ICRAfter = await troveManager.getCurrentICR(alice, price)
     const depositAfter = (await stabilityPool.deposits(alice))[0]
-    const stakeAfter = await lqtyStaking.stakes(alice)
+    const stakeAfter = await kumoStaking.stakes(alice)
 
     // check proxy balances remain the same
     assert.equal(ethBalanceAfter.toString(), ethBalanceBefore.toString())
-    assert.equal(lqtyBalanceAfter.toString(), lqtyBalanceBefore.toString())
+    assert.equal(kumoBalanceAfter.toString(), kumoBalanceBefore.toString())
     // check proxy kusd balance has increased by own adjust trove reward
     th.assertIsApproximatelyEqual(kusdBalanceAfter, kusdBalanceBefore.add(expectedNewKUSDGain_A))
     // check trove has increased debt by the ICR proportional amount to ETH gain
@@ -536,11 +536,11 @@ contract('BorrowerWrappers', async accounts => {
     th.assertIsApproximatelyEqual(ICRAfter, ICRBefore)
     // check that Stability Pool deposit
     th.assertIsApproximatelyEqual(depositAfter, depositBefore.add(netDebtChange), 10000)
-    // check lqty balance remains the same
-    th.assertIsApproximatelyEqual(lqtyBalanceBefore, lqtyBalanceAfter)
+    // check kumo balance remains the same
+    th.assertIsApproximatelyEqual(kumoBalanceBefore, kumoBalanceAfter)
 
-    // LQTY staking
-    th.assertIsApproximatelyEqual(stakeAfter, stakeBefore.add(expectedLQTYGain_A))
+    // KUMO staking
+    th.assertIsApproximatelyEqual(stakeAfter, stakeBefore.add(expectedKUMOGain_A))
 
     // Expect Alice has withdrawn all ETH gain
     const alice_pendingETHGain = await stabilityPool.getDepositorETHGain(alice)
@@ -557,13 +557,13 @@ contract('BorrowerWrappers', async accounts => {
     await openTrove({ extraKUSDAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
     await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
 
-    // mint some LQTY
-    await lqtyTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
-    await lqtyTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
+    // mint some KUMO
+    await kumoTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
+    await kumoTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
 
-    // stake LQTY
-    await lqtyStaking.stake(dec(1850, 18), { from: whale })
-    await lqtyStaking.stake(dec(150, 18), { from: alice })
+    // stake KUMO
+    await kumoStaking.stake(dec(1850, 18), { from: whale })
+    await kumoStaking.stake(dec(150, 18), { from: alice })
 
     // Defaulter Trove opened
     const { kusdAmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
@@ -576,10 +576,10 @@ contract('BorrowerWrappers', async accounts => {
     const troveCollBefore = await troveManager.getTroveColl(alice)
     const kusdBalanceBefore = await kusdToken.balanceOf(alice)
     const troveDebtBefore = await troveManager.getTroveDebt(alice)
-    const lqtyBalanceBefore = await lqtyToken.balanceOf(alice)
+    const kumoBalanceBefore = await kumoToken.balanceOf(alice)
     const ICRBefore = await troveManager.getCurrentICR(alice, price)
     const depositBefore = (await stabilityPool.deposits(alice))[0]
-    const stakeBefore = await lqtyStaking.stakes(alice)
+    const stakeBefore = await kumoStaking.stakes(alice)
 
     const borrowingRate = await troveManagerOriginal.getBorrowingRateWithDecay()
 
@@ -590,14 +590,14 @@ contract('BorrowerWrappers', async accounts => {
     const troveCollAfter = await troveManager.getTroveColl(alice)
     const kusdBalanceAfter = await kusdToken.balanceOf(alice)
     const troveDebtAfter = await troveManager.getTroveDebt(alice)
-    const lqtyBalanceAfter = await lqtyToken.balanceOf(alice)
+    const kumoBalanceAfter = await kumoToken.balanceOf(alice)
     const ICRAfter = await troveManager.getCurrentICR(alice, price)
     const depositAfter = (await stabilityPool.deposits(alice))[0]
-    const stakeAfter = await lqtyStaking.stakes(alice)
+    const stakeAfter = await kumoStaking.stakes(alice)
 
     // check proxy balances remain the same
     assert.equal(ethBalanceAfter.toString(), ethBalanceBefore.toString())
-    assert.equal(lqtyBalanceAfter.toString(), lqtyBalanceBefore.toString())
+    assert.equal(kumoBalanceAfter.toString(), kumoBalanceBefore.toString())
     // check proxy kusd balance has increased by own adjust trove reward
     th.assertIsApproximatelyEqual(kusdBalanceAfter, kusdBalanceBefore)
     // check trove has increased debt by the ICR proportional amount to ETH gain
@@ -608,8 +608,8 @@ contract('BorrowerWrappers', async accounts => {
     th.assertIsApproximatelyEqual(ICRAfter, ICRBefore)
     // check that Stability Pool deposit
     th.assertIsApproximatelyEqual(depositAfter, depositBefore.add(expectedKUSDGain_A), 10000)
-    // check lqty balance remains the same
-    th.assertIsApproximatelyEqual(lqtyBalanceBefore, lqtyBalanceAfter)
+    // check kumo balance remains the same
+    th.assertIsApproximatelyEqual(kumoBalanceBefore, kumoBalanceAfter)
 
     // Expect Alice has withdrawn all ETH gain
     const alice_pendingETHGain = await stabilityPool.getDepositorETHGain(alice)
@@ -626,13 +626,13 @@ contract('BorrowerWrappers', async accounts => {
     await openTrove({ extraKUSDAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
     await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
 
-    // mint some LQTY
-    await lqtyTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
-    await lqtyTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
+    // mint some KUMO
+    await kumoTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
+    await kumoTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
 
-    // stake LQTY
-    await lqtyStaking.stake(dec(1850, 18), { from: whale })
-    await lqtyStaking.stake(dec(150, 18), { from: alice })
+    // stake KUMO
+    await kumoStaking.stake(dec(1850, 18), { from: whale })
+    await kumoStaking.stake(dec(150, 18), { from: alice })
 
     // Defaulter Trove opened
     const { kusdAmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
@@ -656,17 +656,17 @@ contract('BorrowerWrappers', async accounts => {
     const troveCollBefore = await troveManager.getTroveColl(alice)
     const kusdBalanceBefore = await kusdToken.balanceOf(alice)
     const troveDebtBefore = await troveManager.getTroveDebt(alice)
-    const lqtyBalanceBefore = await lqtyToken.balanceOf(alice)
+    const kumoBalanceBefore = await kumoToken.balanceOf(alice)
     const ICRBefore = await troveManager.getCurrentICR(alice, price)
     const depositBefore = (await stabilityPool.deposits(alice))[0]
-    const stakeBefore = await lqtyStaking.stakes(alice)
+    const stakeBefore = await kumoStaking.stakes(alice)
 
     const proportionalKUSD = expectedETHGain_A.mul(price).div(ICRBefore)
     const borrowingRate = await troveManagerOriginal.getBorrowingRateWithDecay()
     const netDebtChange = proportionalKUSD.mul(toBN(dec(1, 18))).div(toBN(dec(1, 18)).add(borrowingRate))
     const expectedTotalKUSD = expectedKUSDGain_A.add(netDebtChange)
 
-    const expectedLQTYGain_A = toBN('839557069990108416000000')
+    const expectedKUMOGain_A = toBN('839557069990108416000000')
 
     // Alice claims staking rewards and puts them back in the system through the proxy
     await borrowerWrappers.claimStakingGainsAndRecycle(th._100pct, alice, alice, { from: alice })
@@ -679,14 +679,14 @@ contract('BorrowerWrappers', async accounts => {
     const troveCollAfter = await troveManager.getTroveColl(alice)
     const kusdBalanceAfter = await kusdToken.balanceOf(alice)
     const troveDebtAfter = await troveManager.getTroveDebt(alice)
-    const lqtyBalanceAfter = await lqtyToken.balanceOf(alice)
+    const kumoBalanceAfter = await kumoToken.balanceOf(alice)
     const ICRAfter = await troveManager.getCurrentICR(alice, price)
     const depositAfter = (await stabilityPool.deposits(alice))[0]
-    const stakeAfter = await lqtyStaking.stakes(alice)
+    const stakeAfter = await kumoStaking.stakes(alice)
 
     // check proxy balances remain the same
     assert.equal(ethBalanceAfter.toString(), ethBalanceBefore.toString())
-    assert.equal(lqtyBalanceAfter.toString(), lqtyBalanceBefore.toString())
+    assert.equal(kumoBalanceAfter.toString(), kumoBalanceBefore.toString())
     // check proxy kusd balance has increased by own adjust trove reward
     th.assertIsApproximatelyEqual(kusdBalanceAfter, kusdBalanceBefore.add(expectedNewKUSDGain_A))
     // check trove has increased debt by the ICR proportional amount to ETH gain
@@ -697,11 +697,11 @@ contract('BorrowerWrappers', async accounts => {
     th.assertIsApproximatelyEqual(ICRAfter, ICRBefore)
     // check that Stability Pool deposit
     th.assertIsApproximatelyEqual(depositAfter, depositBefore.add(expectedTotalKUSD), 10000)
-    // check lqty balance remains the same
-    th.assertIsApproximatelyEqual(lqtyBalanceBefore, lqtyBalanceAfter)
+    // check kumo balance remains the same
+    th.assertIsApproximatelyEqual(kumoBalanceBefore, kumoBalanceAfter)
 
-    // LQTY staking
-    th.assertIsApproximatelyEqual(stakeAfter, stakeBefore.add(expectedLQTYGain_A))
+    // KUMO staking
+    th.assertIsApproximatelyEqual(stakeAfter, stakeBefore.add(expectedKUMOGain_A))
 
     // Expect Alice has withdrawn all ETH gain
     const alice_pendingETHGain = await stabilityPool.getDepositorETHGain(alice)

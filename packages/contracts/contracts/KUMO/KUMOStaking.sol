@@ -9,23 +9,23 @@ import "../Dependencies/SafeMath.sol";
 import "../Dependencies/Ownable.sol";
 import "../Dependencies/CheckContract.sol";
 import "../Dependencies/console.sol";
-import "../Interfaces/ILQTYToken.sol";
-import "../Interfaces/ILQTYStaking.sol";
+import "../Interfaces/IKUMOToken.sol";
+import "../Interfaces/IKUMOStaking.sol";
 import "../Dependencies/LiquityMath.sol";
 import "../Interfaces/IKUSDToken.sol";
 
-contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
+contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
     using SafeMath for uint;
 
     // bool public isInitialized;
     // --- Data ---
-    string constant public NAME = "LQTYStaking";
+    string constant public NAME = "KUMOStaking";
 
     mapping( address => uint) public stakes;
-    uint public totalLQTYStaked;
+    uint public totalKUMOStaked;
 
-    uint public F_ETH;  // Running sum of ETH fees per-LQTY-staked
-    uint public F_KUSD; // Running sum of LQTY fees per-LQTY-staked
+    uint public F_ETH;  // Running sum of ETH fees per-KUMO-staked
+    uint public F_KUSD; // Running sum of KUMO fees per-KUMO-staked
 
     // User snapshots of F_ETH and F_KUSD, taken at the point at which their latest deposit was made
     mapping (address => Snapshot) public snapshots; 
@@ -35,7 +35,7 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
         uint F_KUSD_Snapshot;
     }
     
-    ILQTYToken public lqtyToken;
+    IKUMOToken public kumoToken;
     IKUSDToken public kusdToken;
 
     address public troveManagerAddress;
@@ -44,7 +44,7 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
 
     // --- Events ---
 
-    // event LQTYTokenAddressSet(address _lqtyTokenAddress);
+    // event KUMOTokenAddressSet(address _kumoTokenAddress);
     // event KUSDTokenAddressSet(address _kusdTokenAddress);
     // event TroveManagerAddressSet(address _troveManager);
     // event BorrowerOperationsAddressSet(address _borrowerOperationsAddress);
@@ -54,7 +54,7 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
     // event StakingGainsWithdrawn(address indexed staker, uint KUSDGain, uint ETHGain);
     // event F_ETHUpdated(uint _F_ETH);
     // event F_KUSDUpdated(uint _F_KUSD);
-    // event TotalLQTYStakedUpdated(uint _totalLQTYStaked);
+    // event TotalKUMOStakedUpdated(uint _totalKUMOStaked);
     // event EtherSent(address _account, uint _amount);
     // event StakerSnapshotsUpdated(address _staker, uint _F_ETH, uint _F_KUSD);
 
@@ -62,7 +62,7 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
 
     function setAddresses
     (
-        address _lqtyTokenAddress,
+        address _kumoTokenAddress,
         address _kusdTokenAddress,
         address _troveManagerAddress, 
         address _borrowerOperationsAddress,
@@ -73,7 +73,7 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
         override 
     {
         // require(!isInitialized, "Already Initialized");
-        checkContract(_lqtyTokenAddress);
+        checkContract(_kumoTokenAddress);
         checkContract(_kusdTokenAddress);
         checkContract(_troveManagerAddress);
         checkContract(_borrowerOperationsAddress);
@@ -82,14 +82,14 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
 
         // __Ownable_init();
 
-        lqtyToken = ILQTYToken(_lqtyTokenAddress);
+        kumoToken = IKUMOToken(_kumoTokenAddress);
         kusdToken = IKUSDToken(_kusdTokenAddress);
         troveManagerAddress = _troveManagerAddress;
         borrowerOperationsAddress = _borrowerOperationsAddress;
         activePoolAddress = _activePoolAddress;
 
-        emit LQTYTokenAddressSet(_lqtyTokenAddress);
-        emit LQTYTokenAddressSet(_kusdTokenAddress);
+        emit KUMOTokenAddressSet(_kumoTokenAddress);
+        emit KUMOTokenAddressSet(_kusdTokenAddress);
         emit TroveManagerAddressSet(_troveManagerAddress);
         emit BorrowerOperationsAddressSet(_borrowerOperationsAddress);
         emit ActivePoolAddressSet(_activePoolAddress);
@@ -98,8 +98,8 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
     }
 
     // If caller has a pre-existing stake, send any accumulated ETH and KUSD gains to them. 
-    function stake(uint _LQTYamount) external override {
-        _requireNonZeroAmount(_LQTYamount);
+    function stake(uint _KUMOamount) external override {
+        _requireNonZeroAmount(_KUMOamount);
 
         uint currentStake = stakes[msg.sender];
 
@@ -113,15 +113,15 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
     
        _updateUserSnapshots(msg.sender);
 
-        uint newStake = currentStake.add(_LQTYamount);
+        uint newStake = currentStake.add(_KUMOamount);
 
-        // Increase user’s stake and total LQTY staked
+        // Increase user’s stake and total KUMO staked
         stakes[msg.sender] = newStake;
-        totalLQTYStaked = totalLQTYStaked.add(_LQTYamount);
-        emit TotalLQTYStakedUpdated(totalLQTYStaked);
+        totalKUMOStaked = totalKUMOStaked.add(_KUMOamount);
+        emit TotalKUMOStakedUpdated(totalKUMOStaked);
 
-        // Transfer LQTY from caller to this contract
-        lqtyToken.sendToLQTYStaking(msg.sender, _LQTYamount);
+        // Transfer KUMO from caller to this contract
+        kumoToken.sendToKUMOStaking(msg.sender, _KUMOamount);
 
         emit StakeChanged(msg.sender, newStake);
         emit StakingGainsWithdrawn(msg.sender, KUSDGain, ETHGain);
@@ -133,9 +133,9 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
         }
     }
 
-    // Unstake the LQTY and send the it back to the caller, along with their accumulated KUSD & ETH gains. 
+    // Unstake the KUMO and send the it back to the caller, along with their accumulated KUSD & ETH gains. 
     // If requested amount > stake, send their entire stake.
-    function unstake(uint _LQTYamount) external override {
+    function unstake(uint _KUMOamount) external override {
         uint currentStake = stakes[msg.sender];
         _requireUserHasStake(currentStake);
 
@@ -145,18 +145,18 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
         
         _updateUserSnapshots(msg.sender);
 
-        if (_LQTYamount > 0) {
-            uint LQTYToWithdraw = LiquityMath._min(_LQTYamount, currentStake);
+        if (_KUMOamount > 0) {
+            uint KUMOToWithdraw = LiquityMath._min(_KUMOamount, currentStake);
 
-            uint newStake = currentStake.sub(LQTYToWithdraw);
+            uint newStake = currentStake.sub(KUMOToWithdraw);
 
-            // Decrease user's stake and total LQTY staked
+            // Decrease user's stake and total KUMO staked
             stakes[msg.sender] = newStake;
-            totalLQTYStaked = totalLQTYStaked.sub(LQTYToWithdraw);
-            emit TotalLQTYStakedUpdated(totalLQTYStaked);
+            totalKUMOStaked = totalKUMOStaked.sub(KUMOToWithdraw);
+            emit TotalKUMOStakedUpdated(totalKUMOStaked);
 
-            // Transfer unstaked LQTY to user
-            lqtyToken.transfer(msg.sender, LQTYToWithdraw);
+            // Transfer unstaked KUMO to user
+            kumoToken.transfer(msg.sender, KUMOToWithdraw);
 
             emit StakeChanged(msg.sender, newStake);
         }
@@ -172,21 +172,21 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
 
     function increaseF_ETH(uint _ETHFee) external override {
         _requireCallerIsTroveManager();
-        uint ETHFeePerLQTYStaked;
+        uint ETHFeePerKUMOStaked;
      
-        if (totalLQTYStaked > 0) {ETHFeePerLQTYStaked = _ETHFee.mul(DECIMAL_PRECISION).div(totalLQTYStaked);}
+        if (totalKUMOStaked > 0) {ETHFeePerKUMOStaked = _ETHFee.mul(DECIMAL_PRECISION).div(totalKUMOStaked);}
 
-        F_ETH = F_ETH.add(ETHFeePerLQTYStaked); 
+        F_ETH = F_ETH.add(ETHFeePerKUMOStaked); 
         emit F_ETHUpdated(F_ETH);
     }
 
     function increaseF_KUSD(uint _KUSDFee) external override {
         _requireCallerIsBorrowerOperations();
-        uint KUSDFeePerLQTYStaked;
+        uint KUSDFeePerKUMOStaked;
         
-        if (totalLQTYStaked > 0) {KUSDFeePerLQTYStaked = _KUSDFee.mul(DECIMAL_PRECISION).div(totalLQTYStaked);}
+        if (totalKUMOStaked > 0) {KUSDFeePerKUMOStaked = _KUSDFee.mul(DECIMAL_PRECISION).div(totalKUMOStaked);}
         
-        F_KUSD = F_KUSD.add(KUSDFeePerLQTYStaked);
+        F_KUSD = F_KUSD.add(KUSDFeePerKUMOStaked);
         emit F_KUSDUpdated(F_KUSD);
     }
 
@@ -223,29 +223,29 @@ contract LQTYStaking is ILQTYStaking, Ownable, CheckContract, BaseMath {
     function _sendETHGainToUser(uint ETHGain) internal {
         emit EtherSent(msg.sender, ETHGain);
         (bool success, ) = msg.sender.call{value: ETHGain}("");
-        require(success, "LQTYStaking: Failed to send accumulated ETHGain");
+        require(success, "KUMOStaking: Failed to send accumulated ETHGain");
     }
 
     // --- 'require' functions ---
 
     function _requireCallerIsTroveManager() internal view {
-        require(msg.sender == troveManagerAddress, "LQTYStaking: caller is not TroveM");
+        require(msg.sender == troveManagerAddress, "KUMOStaking: caller is not TroveM");
     }
 
     function _requireCallerIsBorrowerOperations() internal view {
-        require(msg.sender == borrowerOperationsAddress, "LQTYStaking: caller is not BorrowerOps");
+        require(msg.sender == borrowerOperationsAddress, "KUMOStaking: caller is not BorrowerOps");
     }
 
      function _requireCallerIsActivePool() internal view {
-        require(msg.sender == activePoolAddress, "LQTYStaking: caller is not ActivePool");
+        require(msg.sender == activePoolAddress, "KUMOStaking: caller is not ActivePool");
     }
 
     function _requireUserHasStake(uint currentStake) internal pure {  
-        require(currentStake > 0, 'LQTYStaking: User must have a non-zero stake');  
+        require(currentStake > 0, 'KUMOStaking: User must have a non-zero stake');  
     }
 
     function _requireNonZeroAmount(uint _amount) internal pure {
-        require(_amount > 0, 'LQTYStaking: Amount must be non-zero');
+        require(_amount > 0, 'KUMOStaking: Amount must be non-zero');
     }
 
     receive() external payable {

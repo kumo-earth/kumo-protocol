@@ -1,13 +1,13 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "LQTYStakingScript",
-  "sourceName": "contracts/Proxy/LQTYStakingScript.sol",
+  "contractName": "KUMOStakingScript",
+  "sourceName": "contracts/Proxy/KUMOStakingScript.sol",
   "abi": [
     {
       "inputs": [
         {
           "internalType": "address",
-          "name": "_lqtyStakingAddress",
+          "name": "_kumoStakingAddress",
           "type": "address"
         }
       ],
@@ -18,7 +18,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_LQTYamount",
+          "name": "_KUMOamount",
           "type": "uint256"
         }
       ],

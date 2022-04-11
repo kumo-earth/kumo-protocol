@@ -4,16 +4,16 @@ import { Flex } from "theme-ui";
 import { LiquityStoreState } from "@liquity/lib-base";
 import { useLiquitySelector } from "@liquity/lib-react";
 
-const selector = ({ remainingLiquidityMiningLQTYReward }: LiquityStoreState) => ({
-  remainingLiquidityMiningLQTYReward
+const selector = ({ remainingLiquidityMiningKUMOReward }: LiquityStoreState) => ({
+  remainingLiquidityMiningKUMOReward
 });
 
-export const RemainingLQTY: React.FC = () => {
-  const { remainingLiquidityMiningLQTYReward } = useLiquitySelector(selector);
+export const RemainingKUMO: React.FC = () => {
+  const { remainingLiquidityMiningKUMOReward } = useLiquitySelector(selector);
 
   return (
     <Flex sx={{ mr: 2, fontSize: 2, fontWeight: "medium" }}>
-      {remainingLiquidityMiningLQTYReward.prettify(0)} LQTY remaining
+      {remainingLiquidityMiningKUMOReward.prettify(0)} KUMO remaining
     </Flex>
   );
 };

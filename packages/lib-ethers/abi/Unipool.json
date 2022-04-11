@@ -5,11 +5,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_lqtyTokenAddress",
+        "name": "_kumoTokenAddress",
         "type": "address"
       }
     ],
-    "name": "LQTYTokenAddressChanged",
+    "name": "KUMOTokenAddressChanged",
     "type": "event"
   },
   {
@@ -226,10 +226,10 @@
   },
   {
     "inputs": [],
-    "name": "lqtyToken",
+    "name": "kumoToken",
     "outputs": [
       {
-        "internalType": "contract ILQTYToken",
+        "internalType": "contract IKUMOToken",
         "name": "",
         "type": "address"
       }
@@ -325,7 +325,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_lqtyTokenAddress",
+        "name": "_kumoTokenAddress",
         "type": "address"
       },
       {

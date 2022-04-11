@@ -24,8 +24,8 @@ export class StabilityDeposit {
   /** Amount of native currency (e.g. Ether) received in exchange for the used-up KUSD. */
   readonly collateralGain: Decimal;
 
-  /** Amount of LQTY rewarded since the last modification of the Stability Deposit. */
-  readonly lqtyReward: Decimal;
+  /** Amount of KUMO rewarded since the last modification of the Stability Deposit. */
+  readonly kumoReward: Decimal;
 
   /**
    * Address of frontend through which this Stability Deposit was made.
@@ -41,13 +41,13 @@ export class StabilityDeposit {
     initialKUSD: Decimal,
     currentKUSD: Decimal,
     collateralGain: Decimal,
-    lqtyReward: Decimal,
+    kumoReward: Decimal,
     frontendTag: string
   ) {
     this.initialKUSD = initialKUSD;
     this.currentKUSD = currentKUSD;
     this.collateralGain = collateralGain;
-    this.lqtyReward = lqtyReward;
+    this.kumoReward = kumoReward;
     this.frontendTag = frontendTag;
 
     if (this.currentKUSD.gt(this.initialKUSD)) {
@@ -60,7 +60,7 @@ export class StabilityDeposit {
       this.initialKUSD.isZero &&
       this.currentKUSD.isZero &&
       this.collateralGain.isZero &&
-      this.lqtyReward.isZero
+      this.kumoReward.isZero
     );
   }
 
@@ -70,7 +70,7 @@ export class StabilityDeposit {
       `{ initialKUSD: ${this.initialKUSD}` +
       `, currentKUSD: ${this.currentKUSD}` +
       `, collateralGain: ${this.collateralGain}` +
-      `, lqtyReward: ${this.lqtyReward}` +
+      `, kumoReward: ${this.kumoReward}` +
       `, frontendTag: "${this.frontendTag}" }`
     );
   }
@@ -83,7 +83,7 @@ export class StabilityDeposit {
       this.initialKUSD.eq(that.initialKUSD) &&
       this.currentKUSD.eq(that.currentKUSD) &&
       this.collateralGain.eq(that.collateralGain) &&
-      this.lqtyReward.eq(that.lqtyReward) &&
+      this.kumoReward.eq(that.kumoReward) &&
       this.frontendTag === that.frontendTag
     );
   }

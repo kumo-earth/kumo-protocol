@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "LQTYStaking",
-  "sourceName": "contracts/LQTY/LQTYStaking.sol",
+  "contractName": "KUMOStaking",
+  "sourceName": "contracts/KUMO/KUMOStaking.sol",
   "abi": [
     {
       "anonymous": false,
@@ -80,11 +80,11 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_lqtyTokenAddress",
+          "name": "_kumoTokenAddress",
           "type": "address"
         }
       ],
-      "name": "LQTYTokenAddressSet",
+      "name": "KUMOTokenAddressSet",
       "type": "event"
     },
     {
@@ -194,11 +194,11 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_totalLQTYStaked",
+          "name": "_totalKUMOStaked",
           "type": "uint256"
         }
       ],
-      "name": "TotalLQTYStakedUpdated",
+      "name": "TotalKUMOStakedUpdated",
       "type": "event"
     },
     {
@@ -371,10 +371,10 @@
     },
     {
       "inputs": [],
-      "name": "lqtyToken",
+      "name": "kumoToken",
       "outputs": [
         {
-          "internalType": "contract ILQTYToken",
+          "internalType": "contract IKUMOToken",
           "name": "",
           "type": "address"
         }
@@ -412,7 +412,7 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_lqtyTokenAddress",
+          "name": "_kumoTokenAddress",
           "type": "address"
         },
         {
@@ -469,7 +469,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_LQTYamount",
+          "name": "_KUMOamount",
           "type": "uint256"
         }
       ],
@@ -499,7 +499,7 @@
     },
     {
       "inputs": [],
-      "name": "totalLQTYStaked",
+      "name": "totalKUMOStaked",
       "outputs": [
         {
           "internalType": "uint256",
@@ -527,7 +527,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_LQTYamount",
+          "name": "_KUMOamount",
           "type": "uint256"
         }
       ],

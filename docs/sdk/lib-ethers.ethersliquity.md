@@ -43,18 +43,18 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [getFrontendStatus(address, overrides)](./lib-ethers.ethersliquity.getfrontendstatus.md) |  | Check whether an address is registered as a Liquity frontend, and what its kickback rate is. |
 |  [getKUSDBalance(address, overrides)](./lib-ethers.ethersliquity.getkusdbalance.md) |  | Get the amount of KUSD held by an address. |
 |  [getKUSDInStabilityPool(overrides)](./lib-ethers.ethersliquity.getkusdinstabilitypool.md) |  | Get the total amount of KUSD currently deposited in the Stability Pool. |
-|  [getLiquidityMiningLQTYReward(address, overrides)](./lib-ethers.ethersliquity.getliquiditymininglqtyreward.md) |  | Get the amount of LQTY earned by an address through mining liquidity. |
+|  [getLiquidityMiningKUMOReward(address, overrides)](./lib-ethers.ethersliquity.getliquidityminingkumoreward.md) |  | Get the amount of KUMO earned by an address through mining liquidity. |
 |  [getLiquidityMiningStake(address, overrides)](./lib-ethers.ethersliquity.getliquidityminingstake.md) |  | Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in liquidity mining. |
-|  [getLQTYBalance(address, overrides)](./lib-ethers.ethersliquity.getlqtybalance.md) |  | Get the amount of LQTY held by an address. |
-|  [getLQTYStake(address, overrides)](./lib-ethers.ethersliquity.getlqtystake.md) |  | Get the current state of an LQTY Stake. |
+|  [getKUMOBalance(address, overrides)](./lib-ethers.ethersliquity.getkumobalance.md) |  | Get the amount of KUMO held by an address. |
+|  [getKUMOStake(address, overrides)](./lib-ethers.ethersliquity.getkumostake.md) |  | Get the current state of an KUMO Stake. |
 |  [getNumberOfTroves(overrides)](./lib-ethers.ethersliquity.getnumberoftroves.md) |  | Get number of Troves that are currently open. |
 |  [getPrice(overrides)](./lib-ethers.ethersliquity.getprice.md) |  | Get the current price of the native currency (e.g. Ether) in USD. |
-|  [getRemainingLiquidityMiningLQTYReward(overrides)](./lib-ethers.ethersliquity.getremainingliquiditymininglqtyreward.md) |  | Get the remaining LQTY that will be collectively rewarded to liquidity miners. |
-|  [getRemainingStabilityPoolLQTYReward(overrides)](./lib-ethers.ethersliquity.getremainingstabilitypoollqtyreward.md) |  | Get the remaining LQTY that will be collectively rewarded to stability depositors. |
+|  [getRemainingLiquidityMiningKUMOReward(overrides)](./lib-ethers.ethersliquity.getremainingliquidityminingkumoreward.md) |  | Get the remaining KUMO that will be collectively rewarded to liquidity miners. |
+|  [getRemainingStabilityPoolKUMOReward(overrides)](./lib-ethers.ethersliquity.getremainingstabilitypoolkumoreward.md) |  | Get the remaining KUMO that will be collectively rewarded to stability depositors. |
 |  [getStabilityDeposit(address, overrides)](./lib-ethers.ethersliquity.getstabilitydeposit.md) |  | Get the current state of a Stability Deposit. |
 |  [getTotal(overrides)](./lib-ethers.ethersliquity.gettotal.md) |  | Get the total amount of collateral and debt in the Liquity system. |
 |  [getTotalRedistributed(overrides)](./lib-ethers.ethersliquity.gettotalredistributed.md) |  | Get the total collateral and debt per stake that has been liquidated through redistribution. |
-|  [getTotalStakedLQTY(overrides)](./lib-ethers.ethersliquity.gettotalstakedlqty.md) |  | Get the total amount of LQTY currently staked. |
+|  [getTotalStakedKUMO(overrides)](./lib-ethers.ethersliquity.gettotalstakedkumo.md) |  | Get the total amount of KUMO currently staked. |
 |  [getTotalStakedUniTokens(overrides)](./lib-ethers.ethersliquity.gettotalstakedunitokens.md) |  | Get the total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining. |
 |  [getTrove(address, overrides)](./lib-ethers.ethersliquity.gettrove.md) |  | Get the current state of a Trove. |
 |  [getTroveBeforeRedistribution(address, overrides)](./lib-ethers.ethersliquity.gettrovebeforeredistribution.md) |  | Get a Trove in its state after the last direct modification. |
@@ -70,15 +70,15 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [registerFrontend(kickbackRate, overrides)](./lib-ethers.ethersliquity.registerfrontend.md) |  | Register current wallet address as a Liquity frontend. |
 |  [repayKUSD(amount, overrides)](./lib-ethers.ethersliquity.repaykusd.md) |  | Adjust existing Trove by repaying some of its debt. |
 |  [sendKUSD(toAddress, amount, overrides)](./lib-ethers.ethersliquity.sendkusd.md) |  | Send KUSD tokens to an address. |
-|  [sendLQTY(toAddress, amount, overrides)](./lib-ethers.ethersliquity.sendlqty.md) |  | Send LQTY tokens to an address. |
-|  [stakeLQTY(amount, overrides)](./lib-ethers.ethersliquity.stakelqty.md) |  | Stake LQTY to start earning fee revenue or increase existing stake. |
-|  [stakeUniTokens(amount, overrides)](./lib-ethers.ethersliquity.stakeunitokens.md) |  | Stake Uniswap ETH/KUSD LP tokens to participate in liquidity mining and earn LQTY. |
+|  [sendKUMO(toAddress, amount, overrides)](./lib-ethers.ethersliquity.sendkumo.md) |  | Send KUMO tokens to an address. |
+|  [stakeKUMO(amount, overrides)](./lib-ethers.ethersliquity.stakekumo.md) |  | Stake KUMO to start earning fee revenue or increase existing stake. |
+|  [stakeUniTokens(amount, overrides)](./lib-ethers.ethersliquity.stakeunitokens.md) |  | Stake Uniswap ETH/KUSD LP tokens to participate in liquidity mining and earn KUMO. |
 |  [transferCollateralGainToTrove(overrides)](./lib-ethers.ethersliquity.transfercollateralgaintotrove.md) |  | Transfer [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) from Stability Deposit to Trove. |
-|  [unstakeLQTY(amount, overrides)](./lib-ethers.ethersliquity.unstakelqty.md) |  | Withdraw LQTY from staking. |
+|  [unstakeKUMO(amount, overrides)](./lib-ethers.ethersliquity.unstakekumo.md) |  | Withdraw KUMO from staking. |
 |  [unstakeUniTokens(amount, overrides)](./lib-ethers.ethersliquity.unstakeunitokens.md) |  | Withdraw Uniswap ETH/KUSD LP tokens from liquidity mining. |
 |  [withdrawCollateral(amount, overrides)](./lib-ethers.ethersliquity.withdrawcollateral.md) |  | Adjust existing Trove by withdrawing some of its collateral. |
-|  [withdrawGainsFromStabilityPool(overrides)](./lib-ethers.ethersliquity.withdrawgainsfromstabilitypool.md) |  | Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [LQTY reward](./lib-base.stabilitydeposit.lqtyreward.md) from Stability Deposit. |
-|  [withdrawGainsFromStaking(overrides)](./lib-ethers.ethersliquity.withdrawgainsfromstaking.md) |  | Withdraw [collateral gain](./lib-base.lqtystake.collateralgain.md) and [KUSD gain](./lib-base.lqtystake.kusdgain.md) from LQTY stake. |
+|  [withdrawGainsFromStabilityPool(overrides)](./lib-ethers.ethersliquity.withdrawgainsfromstabilitypool.md) |  | Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [KUMO reward](./lib-base.stabilitydeposit.kumoreward.md) from Stability Deposit. |
+|  [withdrawGainsFromStaking(overrides)](./lib-ethers.ethersliquity.withdrawgainsfromstaking.md) |  | Withdraw [collateral gain](./lib-base.kumostake.collateralgain.md) and [KUSD gain](./lib-base.kumostake.kusdgain.md) from KUMO stake. |
 |  [withdrawKUSDFromStabilityPool(amount, overrides)](./lib-ethers.ethersliquity.withdrawkusdfromstabilitypool.md) |  | Withdraw KUSD from Stability Deposit. |
-|  [withdrawLQTYRewardFromLiquidityMining(overrides)](./lib-ethers.ethersliquity.withdrawlqtyrewardfromliquiditymining.md) |  | Withdraw LQTY that has been earned by mining liquidity. |
+|  [withdrawKUMORewardFromLiquidityMining(overrides)](./lib-ethers.ethersliquity.withdrawkumorewardfromliquiditymining.md) |  | Withdraw KUMO that has been earned by mining liquidity. |
 

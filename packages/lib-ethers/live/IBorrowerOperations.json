@@ -61,11 +61,11 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_lqtyStakingAddress",
+          "name": "_kumoStakingAddress",
           "type": "address"
         }
       ],
-      "name": "LQTYStakingAddressChanged",
+      "name": "KUMOStakingAddressChanged",
       "type": "event"
     },
     {
@@ -420,7 +420,7 @@
         },
         {
           "internalType": "address",
-          "name": "_lqtyStakingAddress",
+          "name": "_kumoStakingAddress",
           "type": "address"
         }
       ],

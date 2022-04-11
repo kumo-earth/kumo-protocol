@@ -1,46 +1,46 @@
 import { ethereum, Address, BigInt, BigDecimal } from "@graphprotocol/graph-ts";
 
-import { LqtyStakeChange, LqtyStake } from "../../generated/schema";
+import { KumoStakeChange, KumoStake } from "../../generated/schema";
 
 import { decimalize, DECIMAL_ZERO, BIGINT_ZERO } from "../utils/bignumbers";
 
 import {
-  decreaseNumberOfActiveLQTYStakes,
-  increaseNumberOfActiveLQTYStakes,
-  increaseTotalNumberOfLQTYStakes
+  decreaseNumberOfActiveKUMOStakes,
+  increaseNumberOfActiveKUMOStakes,
+  increaseTotalNumberOfKUMOStakes
 } from "./Global";
 
 import { getUser } from "./User";
 import { beginChange, initChange, finishChange } from "./Change";
-import { updateSystemStateByLqtyStakeChange } from "./SystemState";
+import { updateSystemStateByKumoStakeChange } from "./SystemState";
 
-function startLQTYStakeChange(event: ethereum.Event): LqtyStakeChange {
+function startKUMOStakeChange(event: ethereum.Event): KumoStakeChange {
   let sequenceNumber = beginChange();
-  let stakeChange = new LqtyStakeChange(sequenceNumber.toString());
+  let stakeChange = new KumoStakeChange(sequenceNumber.toString());
   stakeChange.issuanceGain = DECIMAL_ZERO;
   stakeChange.redemptionGain = DECIMAL_ZERO;
   initChange(stakeChange, event, sequenceNumber);
   return stakeChange;
 }
 
-function finishLQTYStakeChange(stakeChange: LqtyStakeChange): void {
+function finishKUMOStakeChange(stakeChange: KumoStakeChange): void {
   finishChange(stakeChange);
   stakeChange.save();
 }
 
-function getUserStake(address: Address): LqtyStake | null {
+function getUserStake(address: Address): KumoStake | null {
   let user = getUser(address);
 
   if (user.stake == null) {
     return null;
   }
 
-  return LqtyStake.load(user.stake);
+  return KumoStake.load(user.stake);
 }
 
-function createStake(address: Address): LqtyStake {
+function createStake(address: Address): KumoStake {
   let user = getUser(address);
-  let stake = new LqtyStake(address.toHexString());
+  let stake = new KumoStake(address.toHexString());
 
   stake.owner = user.id;
   stake.amount = DECIMAL_ZERO;
@@ -51,7 +51,7 @@ function createStake(address: Address): LqtyStake {
   return stake;
 }
 
-function getOperationType(stake: LqtyStake | null, nextStakeAmount: BigDecimal): string {
+function getOperationType(stake: KumoStake | null, nextStakeAmount: BigDecimal): string {
   let isCreating = stake.amount == DECIMAL_ZERO && nextStakeAmount > DECIMAL_ZERO;
   if (isCreating) {
     return "stakeCreated";
@@ -80,7 +80,7 @@ export function updateStake(event: ethereum.Event, address: Address, newStake: B
 
   let nextStakeAmount = decimalize(newStake);
 
-  let stakeChange = startLQTYStakeChange(event);
+  let stakeChange = startKUMOStakeChange(event);
   stakeChange.stake = stake.id;
   stakeChange.stakeOperation = getOperationType(stake, nextStakeAmount);
   stakeChange.stakedAmountBefore = stake.amount;
@@ -91,16 +91,16 @@ export function updateStake(event: ethereum.Event, address: Address, newStake: B
 
   if (stakeChange.stakeOperation == "stakeCreated") {
     if (isUserFirstStake) {
-      increaseTotalNumberOfLQTYStakes();
+      increaseTotalNumberOfKUMOStakes();
     } else {
-      increaseNumberOfActiveLQTYStakes();
+      increaseNumberOfActiveKUMOStakes();
     }
   } else if (stakeChange.stakeOperation == "stakeRemoved") {
-    decreaseNumberOfActiveLQTYStakes();
+    decreaseNumberOfActiveKUMOStakes();
   }
 
-  updateSystemStateByLqtyStakeChange(stakeChange);
-  finishLQTYStakeChange(stakeChange);
+  updateSystemStateByKumoStakeChange(stakeChange);
+  finishKUMOStakeChange(stakeChange);
 
   stake.save();
 }
@@ -116,7 +116,7 @@ export function withdrawStakeGains(
   }
 
   let stake = getUserStake(address) || createStake(address);
-  let stakeChange: LqtyStakeChange = startLQTYStakeChange(event);
+  let stakeChange: KumoStakeChange = startKUMOStakeChange(event);
   stakeChange.stake = stake.id;
   stakeChange.stakeOperation = "gainsWithdrawn";
   stakeChange.issuanceGain = decimalize(KUSDGain);
@@ -125,8 +125,8 @@ export function withdrawStakeGains(
   stakeChange.stakedAmountChange = DECIMAL_ZERO;
   stakeChange.stakedAmountAfter = stake.amount;
 
-  updateSystemStateByLqtyStakeChange(stakeChange);
-  finishLQTYStakeChange(stakeChange);
+  updateSystemStateByKumoStakeChange(stakeChange);
+  finishKUMOStakeChange(stakeChange);
 
   stake.save();
 }

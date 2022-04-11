@@ -215,7 +215,7 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
 
     beforeEach(async () => {
       contracts = await deploymentHelper.deployLiquityCore()
-      const LQTYContracts = await deploymentHelper.deployLQTYContracts(bountyAddress, lpRewardsAddress)
+      const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress)
 
       stabilityPool = contracts.stabilityPool
       priceFeed = contracts.priceFeedTestnet
@@ -225,9 +225,9 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
       borrowerOperations = contracts.borrowerOperations
       sortedTroves = contracts.sortedTroves
 
-      await deploymentHelper.connectLQTYContracts(LQTYContracts)
-      await deploymentHelper.connectCoreContracts(contracts, LQTYContracts)
-      await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, contracts)
+      await deploymentHelper.connectKUMOContracts(KUMOContracts)
+      await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+      await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
     })
 
     // mixed deposits/liquidations
