@@ -83,16 +83,19 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
   const kickbackRatePct = frontendTag === AddressZero ? "100" : kickbackRate?.mul(100).prettify();
 
   return (
-    <Card {...{ variant }} sx={{
-      background: "rgba(249,248,249,.1)",
-      backgroundColor: "#303553",
-      // color: "rgba(0, 0, 0, 0.87)",
-      transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-      boxShadow:
-        "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
-      overflow: "hidden",
-      borderRadius: "20px"
-    }}>
+    <Card
+      {...{ variant }}
+      sx={{
+        background: "rgba(249,248,249,.1)",
+        backgroundColor: "#303553",
+        // color: "rgba(0, 0, 0, 0.87)",
+        transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+        boxShadow:
+          "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
+        overflow: "hidden",
+        borderRadius: "20px"
+      }}
+    >
       {showBalances && <Balances />}
 
       <Heading>Kumo statistics</Heading>
@@ -120,7 +123,7 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
       <Statistic name="Troves" tooltip="The total number of active Troves in the system.">
         {Decimal.from(numberOfTroves).prettify(0)}
       </Statistic>
-      <Statistic name="KUSD supply" tooltip="The total KUSD minted by the Kumo Protocol.">
+      <Statistic name="KUSD supply" tooltip="The total KUSD minted by the Liquity Protocol.">
         {total.debt.shorten()}
       </Statistic>
       {kusdInStabilityPoolPct && (

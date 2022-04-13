@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 import { useKumoSelector } from "@liquity/lib-react";
 import { KumoStoreState } from "@liquity/lib-base";
@@ -7,8 +8,13 @@ import { useTroveView } from "./context/TroveViewContext";
 import { Icon } from "../Icon";
 import { COIN } from "../../strings";
 import { CollateralRatio } from "./CollateralRatio";
+import { useDashboard } from "../../hooks/DashboardContext";
 
 const select = ({ trove, price }: KumoStoreState) => ({ trove, price });
+
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
 
 export const ReadOnlyTrove: React.FC = () => {
   const { dispatchEvent } = useTroveView();
@@ -19,8 +25,11 @@ export const ReadOnlyTrove: React.FC = () => {
     dispatchEvent("CLOSE_TROVE_PRESSED");
   }, [dispatchEvent]);
 
-  const { trove, price } = useKumoSelector(select);
-
+  const { price } = useKumoSelector(select);
+  const location = useLocation();
+  const { vaults, openTroveT } = useDashboard();
+  const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
+  const { trove } = vaultType;
   // console.log("READONLY TROVE", trove.collateral.prettify(4));
   return (
     <Card
@@ -51,7 +60,7 @@ export const ReadOnlyTrove: React.FC = () => {
             label="Collateral"
             inputId="trove-collateral"
             amount={trove.collateral.prettify(4)}
-            unit="ETH"
+            unit={getPathName(location).toUpperCase()}
           />
 
           <DisabledEditableRow
@@ -61,7 +70,7 @@ export const ReadOnlyTrove: React.FC = () => {
             unit={COIN}
           />
 
-          <CollateralRatio value={trove.collateralRatio(price)} />
+          <CollateralRatio value={vaultType.collateralRatio} />
         </Box>
 
         <Flex variant="layout.actions">
