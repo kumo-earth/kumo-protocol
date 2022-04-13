@@ -45,7 +45,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
       contracts.stabilityPool.address,
       contracts.borrowerOperations.address
     )
-    const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
+    // const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
     priceFeed = contracts.priceFeedTestnet
     kusdToken = contracts.kusdToken
@@ -58,9 +58,9 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     functionCaller = contracts.functionCaller
     borrowerOperations = contracts.borrowerOperations
 
-    await deploymentHelper.connectKUMOContracts(KUMOContracts)
-    await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
-    await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
+    // await deploymentHelper.connectKUMOContracts(KUMOContracts)
+    // await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+    // await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
   })
 
   it("redistribution: A, B Open. B Liquidated. C, D Open. D Liquidated. Distributes correct rewards", async () => {

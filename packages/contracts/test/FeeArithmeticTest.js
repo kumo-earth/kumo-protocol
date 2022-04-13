@@ -340,11 +340,11 @@ contract('Fee arithmetic tests', async accounts => {
 
   beforeEach(async () => {
     contracts = await deploymentHelper.deployLiquityCore()
-    const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
+    // const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
-    await deploymentHelper.connectKUMOContracts(KUMOContracts)
-    await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
-    await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
+    // await deploymentHelper.connectKUMOContracts(KUMOContracts)
+    // await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+    // await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
   })
 
   it("minutesPassedSinceLastFeeOp(): returns minutes passed for no time increase", async () => {

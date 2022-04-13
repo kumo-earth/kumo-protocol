@@ -59,7 +59,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
 
     beforeEach(async () => {
       contracts = await deploymentHelper.deployLiquityCore()
-      const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
+      // const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
       contracts.troveManager = await TroveManagerTester.new()
       contracts = await deploymentHelper.deployKUSDToken(contracts)
 
@@ -72,9 +72,9 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       defaultPool = contracts.defaultPool
       borrowerOperations = contracts.borrowerOperations
 
-      await deploymentHelper.connectKUMOContracts(KUMOContracts)
-      await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
-      await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
+      // await deploymentHelper.connectKUMOContracts(KUMOContracts)
+      // await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+      // await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
     })
 
     // --- Compounding tests ---
