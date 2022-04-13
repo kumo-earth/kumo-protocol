@@ -1,17 +1,18 @@
 import React, { useState, useRef } from "react";
 import { useHistory } from "react-router-dom";
-import { Flex, Button, Progress, Box, Card, Heading, Text, Link } from "theme-ui";
+import { Flex, Box, Card, Heading, Divider } from "theme-ui";
 import { useLiquitySelector } from "@liquity/lib-react";
 import { Icon } from "../Icon";
 
 type CollateralCardProps = {
   collateralType?: string;
+  handleViewStakeDeposit: () => void;
 };
 
 export const StakingTypeCard: React.FC<CollateralCardProps> = ({
   collateralType,
+  handleViewStakeDeposit
 }) => {
-  const history = useHistory();
   return (
     <Card
       sx={{
@@ -23,7 +24,7 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
         maxWidth: 450,
         maxHeight: "425px"
       }}
-    //   onClick={() => history.push(`/dashboard/${collateralType}`)}
+      onClick={handleViewStakeDeposit}
     >
       <Heading
         sx={{
@@ -41,30 +42,30 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
       </Heading>
 
       <Box sx={{ p: [2, 3] }}>
-      <Flex sx={{ justifyContent: "space-between", alignItems: 'center' }}>
-        <Heading
-          as="h6"
-          sx={{
-            fontSize: 14,
-            color: "#f9f8f9",
-            padding: "1.5rem 1.5rem 10px 1.5rem"
-          }}
-        >
-          APR
-        </Heading>
-        <Heading
-          as="h6"
-          sx={{
-            fontFamily: "Roboto, Helvetica, Arial, sans-serif",
-            fontWeight: "bold",
-            letterSpacing: "0.5px",
-            fontSize: 14,
-            color: "#f9f8f9",
-            padding: "1.5rem 1.5rem 10px 1.5rem"
-          }}
-        >
-          Total KUMO In Pool
-        </Heading>
+        <Flex sx={{ justifyContent: "space-between", alignItems: "center" }}>
+          <Heading
+            as="h6"
+            sx={{
+              fontSize: 14,
+              color: "#f9f8f9",
+              padding: "1.5rem 1.5rem 10px 1.5rem"
+            }}
+          >
+            APR
+          </Heading>
+          <Heading
+            as="h6"
+            sx={{
+              fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+              fontWeight: "bold",
+              letterSpacing: "0.5px",
+              fontSize: 14,
+              color: "#f9f8f9",
+              padding: "1.5rem 1.5rem 10px 1.5rem"
+            }}
+          >
+            Total KUMO In Pool
+          </Heading>
         </Flex>
         <Flex sx={{ justifyContent: "space-between" }}>
           <Heading
@@ -91,23 +92,23 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
           >
             968,328.15
           </Heading>
-          
         </Flex>
         <Heading
-            as={'h6'}
-            sx={{
-              fontFamily: "Roboto, Helvetica, Arial, sans-serif",
-              fontWeight: "bold",
-              letterSpacing: "0.5px",
-              fontSize: "14px",
-              color: "#f9f8f9",
-              padding: "0 1.5rem 10px 1.5rem",
-              marginLeft: 'auto',
-              width: 'fit-content'
-            }}
-          >
-           ~ $995,810
-          </Heading>
+          as={"h6"}
+          sx={{
+            fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+            fontWeight: "bold",
+            letterSpacing: "0.5px",
+            fontSize: "14px",
+            color: "#f9f8f9",
+            padding: "0 1.5rem 10px 1.5rem",
+            marginLeft: "auto",
+            width: "fit-content"
+          }}
+        >
+          ~ $995,810
+        </Heading>
+        <Divider />
         <Flex sx={{ justifyContent: "space-between" }}>
           <Heading
             sx={{
@@ -119,7 +120,7 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            MINTED VST
+            Liquidation Gain APR
           </Heading>
           <Heading
             sx={{
@@ -131,35 +132,87 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            Heading
+            -
           </Heading>
         </Flex>
-        <Flex sx={{ padding: "1.5rem" }}>
-          <Text
+        <Flex sx={{ justifyContent: "space-between" }}>
+          <Heading
             sx={{
               fontFamily: "Roboto, Helvetica, Arial, sans-serif",
               fontWeight: "bold",
               letterSpacing: "0.5px",
               fontSize: "14px",
               color: "#f9f8f9",
-              paddingRight: "1rem",
-              flex: 1
+              padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            The system is in normal mode. Recovery mode will be activated if ETH price goes down by
-            51% to $1706.56.
-          </Text>
-          <Text
+            VSTA APR
+          </Heading>
+          <Heading
             sx={{
               fontFamily: "Roboto, Helvetica, Arial, sans-serif",
               fontWeight: "bold",
               letterSpacing: "0.5px",
               fontSize: "14px",
-              color: "#f9f8f9"
+              color: "#f9f8f9",
+              padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            42,42,496
-          </Text>
+            7.33%
+          </Heading>
+        </Flex>
+        <Divider />
+        <Flex sx={{ justifyContent: "space-between" }}>
+          <Heading
+            sx={{
+              fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+              fontWeight: "bold",
+              letterSpacing: "0.5px",
+              fontSize: "14px",
+              color: "#f9f8f9",
+              padding: "0 1.5rem 10px 1.5rem"
+            }}
+          >
+            YOUR STAKED KUSD
+          </Heading>
+          <Heading
+            sx={{
+              fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+              fontWeight: "bold",
+              letterSpacing: "0.5px",
+              fontSize: "14px",
+              color: "#f9f8f9",
+              padding: "0 1.5rem 10px 1.5rem"
+            }}
+          >
+            0
+          </Heading>
+        </Flex>
+        <Flex sx={{ justifyContent: "space-between" }}>
+          <Heading
+            sx={{
+              fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+              fontWeight: "bold",
+              letterSpacing: "0.5px",
+              fontSize: "14px",
+              color: "#f9f8f9",
+              padding: "0 1.5rem 10px 1.5rem"
+            }}
+          >
+            POOL SHARE
+          </Heading>
+          <Heading
+            sx={{
+              fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+              fontWeight: "bold",
+              letterSpacing: "0.5px",
+              fontSize: "14px",
+              color: "#f9f8f9",
+              padding: "0 1.5rem 10px 1.5rem"
+            }}
+          >
+            0%
+          </Heading>
         </Flex>
       </Box>
     </Card>

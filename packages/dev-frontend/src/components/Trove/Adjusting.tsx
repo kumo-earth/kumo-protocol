@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { Flex, Button, Box, Card, Heading } from "theme-ui";
 import {
   LiquityStoreState,
@@ -26,6 +27,7 @@ import {
   selectForTroveChangeValidation,
   validateTroveChange
 } from "./validation/validateTroveChange";
+import { useDashboard } from "../../hooks/DashboardContext";
 
 const selector = (state: LiquityStoreState) => {
   const { trove, fees, price, accountBalance } = state;
@@ -81,9 +83,17 @@ const applyUnsavedNetDebtChanges = (unsavedChanges: Difference, trove: Trove) =>
   return trove.netDebt;
 };
 
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
+
 export const Adjusting: React.FC = () => {
   const { dispatchEvent } = useTroveView();
-  const { trove, fees, price, accountBalance, validationContext } = useLiquitySelector(selector);
+  const { fees, price, accountBalance, validationContext } = useLiquitySelector(selector);
+  const location = useLocation();
+  const { vaults, adjustTroveT } = useDashboard();
+  const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
+  const { trove } = vaultType;
   const editingState = useState<string>();
   const previousTrove = useRef<Trove>(trove);
   const [collateral, setCollateral] = useState<Decimal>(trove.collateral);
@@ -94,6 +104,7 @@ export const Adjusting: React.FC = () => {
 
   useEffect(() => {
     if (transactionState.type === "confirmedOneShot") {
+      collateralRatio && adjustTroveT(getPathName(location), collateral, netDebt, price);
       dispatchEvent("TROVE_ADJUSTED");
     }
   }, [transactionState.type, dispatchEvent]);
@@ -154,7 +165,6 @@ export const Adjusting: React.FC = () => {
   const isTransactionPending =
     transactionState.type === "waitingForApproval" ||
     transactionState.type === "waitingForConfirmation";
-
   if (trove.status !== "open") {
     return null;
   }
@@ -195,9 +205,11 @@ export const Adjusting: React.FC = () => {
           maxAmount={maxCollateral.toString()}
           maxedOut={collateralMaxedOut}
           editingState={editingState}
-          unit="ETH"
+          unit={getPathName(location).toUpperCase()}
           editedAmount={collateral.toString(4)}
-          setEditedAmount={(amount: string) => setCollateral(Decimal.from(amount))}
+          setEditedAmount={(amount: string) => {
+            setCollateral(Decimal.from(amount));
+          }}
         />
 
         <EditableRow

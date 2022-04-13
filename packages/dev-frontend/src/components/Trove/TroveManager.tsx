@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Flex, Button } from "theme-ui";
 
 import { LiquityStoreState, Decimal, Trove, Decimalish, LUSD_MINIMUM_DEBT } from "@liquity/lib-base";
@@ -24,6 +25,10 @@ const init = ({ trove }: LiquityStoreState) => ({
   debtDirty: false,
   addedMinimumDebt: false
 });
+
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
 
 type TroveManagerState = ReturnType<typeof init>;
 type TroveManagerAction =
@@ -158,6 +163,7 @@ type TroveManagerProps = {
 export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) => {
   const [{ original, edited, changePending }, dispatch] = useLiquityReducer(reduce, init);
   const { fees, validationContext } = useLiquitySelector(select);
+  const location = useLocation();
 
   useEffect(() => {
     if (collateral !== undefined) {
@@ -217,7 +223,9 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
       {description ??
         (openingNewTrove ? (
           <ActionDescription>
-            Start by entering the amount of ETH you'd like to deposit as collateral.
+            {`Start by entering the amount of ${getPathName(
+              location
+            ).toUpperCase()} you'd like to deposit as collateral.`}
           </ActionDescription>
         ) : (
           <ActionDescription>

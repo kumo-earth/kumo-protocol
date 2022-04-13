@@ -12,7 +12,7 @@ import {
   TroveClosureParams,
   TroveCreationParams
 } from "@liquity/lib-base";
-
+import { useLocation } from "react-router-dom";
 import { COIN } from "../../../strings";
 
 import { ActionDescription, Amount } from "../../ActionDescription";
@@ -25,63 +25,94 @@ type TroveAdjustmentDescriptionParams = {
   params: TroveAdjustmentParams<Decimal>;
 };
 
-const TroveChangeDescription: React.FC<TroveAdjustmentDescriptionParams> = ({ params }) => (
-  <ActionDescription>
-    {params.depositCollateral && params.borrowLUSD ? (
-      <>
-        You will deposit <Amount>{params.depositCollateral.prettify()} ETH</Amount> and receive{" "}
-        <Amount>
-          {params.borrowLUSD.prettify()} {COIN}
-        </Amount>
-      </>
-    ) : params.repayLUSD && params.withdrawCollateral ? (
-      <>
-        You will pay{" "}
-        <Amount>
-          {params.repayLUSD.prettify()} {COIN}
-        </Amount>{" "}
-        and receive <Amount>{params.withdrawCollateral.prettify()} ETH</Amount>
-      </>
-    ) : params.depositCollateral && params.repayLUSD ? (
-      <>
-        You will deposit <Amount>{params.depositCollateral.prettify()} ETH</Amount> and pay{" "}
-        <Amount>
-          {params.repayLUSD.prettify()} {COIN}
-        </Amount>
-      </>
-    ) : params.borrowLUSD && params.withdrawCollateral ? (
-      <>
-        You will receive <Amount>{params.withdrawCollateral.prettify()} ETH</Amount> and{" "}
-        <Amount>
-          {params.borrowLUSD.prettify()} {COIN}
-        </Amount>
-      </>
-    ) : params.depositCollateral ? (
-      <>
-        You will deposit <Amount>{params.depositCollateral.prettify()} ETH</Amount>
-      </>
-    ) : params.withdrawCollateral ? (
-      <>
-        You will receive <Amount>{params.withdrawCollateral.prettify()} ETH</Amount>
-      </>
-    ) : params.borrowLUSD ? (
-      <>
-        You will receive{" "}
-        <Amount>
-          {params.borrowLUSD.prettify()} {COIN}
-        </Amount>
-      </>
-    ) : (
-      <>
-        You will pay{" "}
-        <Amount>
-          {params.repayLUSD.prettify()} {COIN}
-        </Amount>
-      </>
-    )}
-    .
-  </ActionDescription>
-);
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
+
+let unit: string = "";
+
+const TroveChangeDescription: React.FC<TroveAdjustmentDescriptionParams> = ({ params }) => {
+  const location = useLocation();
+  unit = getPathName(location).toUpperCase();
+  return (
+    <ActionDescription>
+      {params.depositCollateral && params.borrowLUSD ? (
+        <>
+          You will deposit{" "}
+          <Amount>
+            {params.depositCollateral.prettify()} {unit}
+          </Amount>{" "}
+          and receive{" "}
+          <Amount>
+            {params.borrowLUSD.prettify()} {COIN}
+          </Amount>
+        </>
+      ) : params.repayLUSD && params.withdrawCollateral ? (
+        <>
+          You will pay{" "}
+          <Amount>
+            {params.repayLUSD.prettify()} {COIN}
+          </Amount>{" "}
+          and receive{" "}
+          <Amount>
+            {params.withdrawCollateral.prettify()} {unit}
+          </Amount>
+        </>
+      ) : params.depositCollateral && params.repayLUSD ? (
+        <>
+          You will deposit{" "}
+          <Amount>
+            {params.depositCollateral.prettify()} {unit}
+          </Amount>{" "}
+          and pay{" "}
+          <Amount>
+            {params.repayLUSD.prettify()} {COIN}
+          </Amount>
+        </>
+      ) : params.borrowLUSD && params.withdrawCollateral ? (
+        <>
+          You will receive{" "}
+          <Amount>
+            {params.withdrawCollateral.prettify()} {unit}
+          </Amount>{" "}
+          and{" "}
+          <Amount>
+            {params.borrowLUSD.prettify()} {COIN}
+          </Amount>
+        </>
+      ) : params.depositCollateral ? (
+        <>
+          You will deposit{" "}
+          <Amount>
+            {params.depositCollateral.prettify()} {unit}
+          </Amount>
+        </>
+      ) : params.withdrawCollateral ? (
+        <>
+          You will receive{" "}
+          <Amount>
+            {params.withdrawCollateral.prettify()} {unit}
+          </Amount>
+        </>
+      ) : params.borrowLUSD ? (
+        <>
+          You will receive{" "}
+          <Amount>
+            {params.borrowLUSD.prettify()} {COIN}
+          </Amount>
+        </>
+      ) : (
+        <>
+          You will pay{" "}
+          <Amount>
+            {params.repayLUSD.prettify()} {COIN}
+          </Amount>
+        </>
+      )}
+      .
+    </ActionDescription>
+  );
+};
 
 export const selectForTroveChangeValidation = ({
   price,
@@ -215,7 +246,10 @@ const validateTroveCreation = (
     return (
       <ErrorDescription>
         The amount you're trying to deposit exceeds your balance by{" "}
-        <Amount>{depositCollateral.sub(accountBalance).prettify()} ETH</Amount>.
+        <Amount>
+          {depositCollateral.sub(accountBalance).prettify()} {unit}
+        </Amount>
+        .
       </ErrorDescription>
     );
   }
@@ -311,7 +345,10 @@ const validateTroveAdjustment = (
     return (
       <ErrorDescription>
         The amount you're trying to deposit exceeds your balance by{" "}
-        <Amount>{depositCollateral.sub(accountBalance).prettify()} ETH</Amount>.
+        <Amount>
+          {depositCollateral.sub(accountBalance).prettify()} {unit}
+        </Amount>
+        .
       </ErrorDescription>
     );
   }

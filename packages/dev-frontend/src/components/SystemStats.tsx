@@ -83,16 +83,19 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
   const kickbackRatePct = frontendTag === AddressZero ? "100" : kickbackRate?.mul(100).prettify();
 
   return (
-    <Card {...{ variant }} sx={{
-      background: "rgba(249,248,249,.1)",
-      backgroundColor: "#303553",
-      // color: "rgba(0, 0, 0, 0.87)",
-      transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-      boxShadow:
-        "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
-      overflow: "hidden",
-      borderRadius: "20px"
-    }}>
+    <Card
+      {...{ variant }}
+      sx={{
+        background: "rgba(249,248,249,.1)",
+        backgroundColor: "#303553",
+        // color: "rgba(0, 0, 0, 0.87)",
+        transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+        boxShadow:
+          "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
+        overflow: "hidden",
+        borderRadius: "20px"
+      }}
+    >
       {showBalances && <Balances />}
 
       <Heading>Liquity statistics</Heading>
@@ -103,7 +106,7 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
 
       <Statistic
         name="Borrowing Fee"
-        tooltip="The Borrowing Fee is a one-off fee charged as a percentage of the borrowed amount (in LUSD) and is part of a Trove's debt. The fee varies between 0.5% and 5% depending on LUSD redemption volumes."
+        tooltip="The Borrowing Fee is a one-off fee charged as a percentage of the borrowed amount (in KUSD) and is part of a Trove's debt. The fee varies between 0.5% and 5% depending on KUSD redemption volumes."
       >
         {borrowingFeePct.toString(2)}
       </Statistic>
@@ -120,13 +123,13 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
       <Statistic name="Troves" tooltip="The total number of active Troves in the system.">
         {Decimal.from(numberOfTroves).prettify(0)}
       </Statistic>
-      <Statistic name="LUSD supply" tooltip="The total LUSD minted by the Liquity Protocol.">
+      <Statistic name="KUSD supply" tooltip="The total KUSD minted by the Liquity Protocol.">
         {total.debt.shorten()}
       </Statistic>
       {lusdInStabilityPoolPct && (
         <Statistic
-          name="LUSD in Stability Pool"
-          tooltip="The total LUSD currently held in the Stability Pool, expressed as an amount and a fraction of the LUSD supply.
+          name="KUSD in Stability Pool"
+          tooltip="The total KUSD currently held in the Stability Pool, expressed as an amount and a fraction of the KUSD supply.
         "
         >
           {lusdInStabilityPool.shorten()}
@@ -134,8 +137,8 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
         </Statistic>
       )}
       <Statistic
-        name="Staked LQTY"
-        tooltip="The total amount of LQTY that is staked for earning fee revenue."
+        name="Staked KUMO"
+        tooltip="The total amount of KUMO that is staked for earning fee revenue."
       >
         {totalStakedLQTY.shorten()}
       </Statistic>
@@ -159,7 +162,7 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
       {kickbackRatePct && (
         <Statistic
           name="Kickback Rate"
-          tooltip="A rate between 0 and 100% set by the Frontend Operator that determines the fraction of LQTY that will be paid out as a kickback to the Stability Providers using the frontend."
+          tooltip="A rate between 0 and 100% set by the Frontend Operator that determines the fraction of KUMO that will be paid out as a kickback to the Stability Providers using the frontend."
         >
           {kickbackRatePct}%
         </Statistic>
