@@ -1,8 +1,10 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { useKumoSelector } from "@liquity/lib-react";
 import { KumoStoreState, UserTroveStatus } from "@liquity/lib-base";
 import { TroveViewContext } from "./TroveViewContext";
 import type { TroveView, TroveEvent } from "./types";
+import { useDashboard } from "../../../hooks/DashboardContext";
 
 type TroveEventTransitions = Record<TroveView, Partial<Record<TroveEvent, TroveView>>>;
 
@@ -77,13 +79,24 @@ const getInitialView = (troveStatus: UserTroveStatus): TroveView => {
 
 const select = ({ trove: { status } }: KumoStoreState) => status;
 
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
+
+
 export const TroveViewProvider: React.FC = props => {
   const { children } = props;
-  const troveStatus = useKumoSelector(select);
+  // const troveStatus = useLiquitySelector(select);
+  const location = useLocation();
+  const { vaults, openTroveT } = useDashboard();
+
+  
+
+  const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
+  const { troveStatus } = vaultType;
 
   const [view, setView] = useState<TroveView>(getInitialView(troveStatus));
   const viewRef = useRef<TroveView>(view);
-
   const dispatchEvent = useCallback((event: TroveEvent) => {
     const nextView = transition(viewRef.current, event);
 
@@ -99,6 +112,12 @@ export const TroveViewProvider: React.FC = props => {
   useEffect(() => {
     viewRef.current = view;
   }, [view]);
+
+  useEffect(() => {
+    if (view !== "OPENING") {
+      setView(getInitialView(troveStatus));
+    }
+  }, [troveStatus]);
 
   useEffect(() => {
     const event = troveStatusEvents[troveStatus] ?? null;

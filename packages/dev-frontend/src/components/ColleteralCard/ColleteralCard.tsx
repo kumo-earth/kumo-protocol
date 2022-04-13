@@ -25,7 +25,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
         boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
         borderRadius: "20px",
         maxWidth: 450,
-        maxHeight: "425px"
+        maxHeight: "380px"
       }}
       onClick={() => history.push(`/dashboard/${collateralType}`)}
     >
@@ -41,7 +41,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
           borderRadius: "20px 20px 0 0"
         }}
       >
-        {(collateralType === "eth" && "ETH") || (collateralType === "mco" && "MCO2")} Vault
+        {(collateralType === "bct" && "BCT") || (collateralType === "mco2" && "MCO2")} Vault
       </Heading>
 
       <Box sx={{ p: [2, 3] }}>
@@ -112,7 +112,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            MINTED VST
+            MINTED KUSD
           </Heading>
           <Heading
             sx={{
@@ -127,8 +127,8 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             {total?.debt.shorten()}
           </Heading>
         </Flex>
-        <Flex sx={{ padding: "1.5rem" }}>
-          <Text
+        {/* <Flex sx={{ padding: "1.5rem" }}> */}
+        {/* <Text
             sx={{
               fontFamily: "Roboto, Helvetica, Arial, sans-serif",
               fontWeight: "bold",
@@ -139,10 +139,11 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
               flex: 1
             }}
           >
-            The system is in normal mode. Recovery mode will be activated if ETH price goes down by
-            51% to $1706.56.
-          </Text>
-          <Text
+            { `The system is in normal mode. Recovery mode will be activated if ${'BCT'} price goes down by 51% to $1706.56.`}
+             
+           
+          </Text> */}
+        {/* <Text
             sx={{
               fontFamily: "Roboto, Helvetica, Arial, sans-serif",
               fontWeight: "bold",
@@ -152,8 +153,8 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             }}
           >
             42,42,496
-          </Text>
-        </Flex>
+          </Text> */}
+        {/* </Flex> */}
       </Box>
     </Card>
   );
