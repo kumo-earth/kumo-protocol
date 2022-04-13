@@ -25,6 +25,7 @@ import { Sidebar } from "./components/Sidebar/Siderbar";
 import { Collateral } from "./pages/Collateral";
 import { StabilityPoolStaking } from "./pages/StabilityPoolStaking";
 import { StakingType } from "./pages/StakingType";
+import { DashboardProvider } from "./hooks/DashboardContext";
 
 type KumoFrontendProps = {
   loader?: React.ReactNode;
@@ -46,88 +47,90 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
   return (
     <KumoStoreProvider {...{ loader }} store={liquity.store}>
       <Router>
-        <TroveViewProvider>
-          <StabilityViewProvider>
-            <StakingViewProvider>
-              <FarmViewProvider>
-                <Flex sx={{ flexWrap: "wrap", height: "100vh", overflow: "hidden" }}>
-                  <Flex
-                    sx={{
-                      p: 0,
-                      flexGrow: 1,
-                      flexBasis: 240,
-                      flexDirection: "column"
-                    }}
-                  >
-                    <Sidebar />
-                  </Flex>
-
-                  <Flex
-                    sx={{
-                      flexDirection: "column",
-                      p: 0,
-                      flexGrow: 99999,
-                      flexBasis: 0,
-                      minWidth: 320,
-                      backgroundImage: `url(https://vestafinance.xyz/img/backgrounds/products-bg.png)`,
-                      // backgroundImage: `url(https://vestafinance.xyz/img/backgrounds/createvault-bg.png)`,
-                      backgroundColor: "#091325",
-                      backgroundRepeat: "no-repeat",
-                      backgroundSize: "cover",
-                      color: "white",
-                      height: "100%"
-                    }}
-                  >
-                    <Header>
-                      <UserAccount />
-                      <SystemStatsPopup />
-                    </Header>
-
-                    <Container
-                      variant="main"
+        <DashboardProvider>
+          <TroveViewProvider>
+            <StabilityViewProvider>
+              <StakingViewProvider>
+                <FarmViewProvider>
+                  <Flex sx={{ flexWrap: "wrap", height: "100vh", overflow: "hidden" }}>
+                    <Flex
                       sx={{
-                        display: "flex",
+                        p: 0,
                         flexGrow: 1,
-                        width: "100%",
-                        maxWidth: "100%",
-                        margin: "0 !important",
-
-                        // flexDirection: "column",
-                        alignItems: "center",
-                        overflow: "auto"
+                        flexBasis: 240,
+                        flexDirection: "column"
                       }}
                     >
-                      {" "}
-                      <Switch>
-                        <Route path="/" exact>
-                          <PageSwitcher />
-                        </Route>
-                        <Route path="/dashboard/:collateralType" exact>
-                          <Collateral />
-                        </Route>
-                        <Route path="/staking" exact>
-                          <StabilityPoolStaking />
-                        </Route>
-                        <Route path="/staking/:stakingType" exact>
-                          <StakingType />
-                        </Route>
-                        <Route path="/farm">
-                          <Farm />
-                        </Route>
-                        <Route path="/risky-troves">
-                          <RiskyTrovesPage />
-                        </Route>
-                        <Route path="/redemption">
-                          <RedemptionPage />
-                        </Route>
-                      </Switch>
-                    </Container>
+                      <Sidebar />
+                    </Flex>
+
+                    <Flex
+                      sx={{
+                        flexDirection: "column",
+                        p: 0,
+                        flexGrow: 99999,
+                        flexBasis: 0,
+                        minWidth: 320,
+                        backgroundImage: `url(https://vestafinance.xyz/img/backgrounds/products-bg.png)`,
+                        // backgroundImage: `url(https://vestafinance.xyz/img/backgrounds/createvault-bg.png)`,
+                        backgroundColor: "#091325",
+                        backgroundRepeat: "no-repeat",
+                        backgroundSize: "cover",
+                        color: "white",
+                        height: "100%"
+                      }}
+                    >
+                      <Header>
+                        <UserAccount />
+                        <SystemStatsPopup />
+                      </Header>
+
+                      <Container
+                        variant="main"
+                        sx={{
+                          display: "flex",
+                          flexGrow: 1,
+                          width: "100%",
+                          maxWidth: "100%",
+                          margin: "0 !important",
+
+                          // flexDirection: "column",
+                          alignItems: "center",
+                          overflow: "auto"
+                        }}
+                      >
+                        {" "}
+                        <Switch>
+                          <Route path="/" exact>
+                            <PageSwitcher />
+                          </Route>
+                          <Route path="/dashboard/:collateralType" exact>
+                            <Collateral />
+                          </Route>
+                          <Route path="/staking" exact>
+                            <StabilityPoolStaking />
+                          </Route>
+                          <Route path="/staking/:stakingType" exact>
+                            <StakingType />
+                          </Route>
+                          <Route path="/farm">
+                            <Farm />
+                          </Route>
+                          <Route path="/risky-troves">
+                            <RiskyTrovesPage />
+                          </Route>
+                          <Route path="/redemption">
+                            <RedemptionPage />
+                          </Route>
+                        </Switch>
+                      </Container>
+                    </Flex>
                   </Flex>
-                </Flex>
-              </FarmViewProvider>
-            </StakingViewProvider>
-          </StabilityViewProvider>
-        </TroveViewProvider>
+                </FarmViewProvider>
+              </StakingViewProvider>
+            </StabilityViewProvider>
+          </TroveViewProvider>
+        </DashboardProvider>
       </Router>
       <TransactionMonitor />
     </KumoStoreProvider>
