@@ -59,7 +59,7 @@ contract('Gas compensation tests', async accounts => {
       contracts.stabilityPool.address,
       contracts.borrowerOperations.address
     )
-    // const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
+    const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
     priceFeed = contracts.priceFeedTestnet
     kusdToken = contracts.kusdToken
@@ -70,9 +70,9 @@ contract('Gas compensation tests', async accounts => {
     defaultPool = contracts.defaultPool
     borrowerOperations = contracts.borrowerOperations
 
-    // await deploymentHelper.connectKUMOContracts(KUMOContracts)
-    // await deploymentHelper.connectCoreContracts(contracts, KUMOContracts) 
-    // await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
+    await deploymentHelper.connectKUMOContracts(KUMOContracts)
+    await deploymentHelper.connectCoreContracts(contracts, KUMOContracts) 
+    await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
   })
 
   // --- Raw gas compensation calculations ---

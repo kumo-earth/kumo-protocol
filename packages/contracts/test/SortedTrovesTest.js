@@ -65,7 +65,7 @@ contract('SortedTroves', async accounts => {
         contracts.stabilityPool.address,
         contracts.borrowerOperations.address
       )
-      // const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
+      const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
       priceFeed = contracts.priceFeedTestnet
       sortedTroves = contracts.sortedTroves
@@ -73,9 +73,9 @@ contract('SortedTroves', async accounts => {
       borrowerOperations = contracts.borrowerOperations
       kusdToken = contracts.kusdToken
 
-      // await deploymentHelper.connectKUMOContracts(KUMOContracts)
-      // await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
-      // await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
+      await deploymentHelper.connectKUMOContracts(KUMOContracts)
+      await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+      await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
     })
 
     it('contains(): returns true for addresses that have opened troves', async () => {

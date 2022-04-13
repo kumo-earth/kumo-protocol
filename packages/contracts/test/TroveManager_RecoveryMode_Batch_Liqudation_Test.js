@@ -30,16 +30,16 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       contracts.stabilityPool.address,
       contracts.borrowerOperations.address
     )
-    // const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
+    const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
     troveManager = contracts.troveManager
     stabilityPool = contracts.stabilityPool
     priceFeed = contracts.priceFeedTestnet
     sortedTroves = contracts.sortedTroves
 
-    // await deploymentHelper.connectKUMOContracts(KUMOContracts)
-    // await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
-    // await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
+    await deploymentHelper.connectKUMOContracts(KUMOContracts)
+    await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+    await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
   })
 
   context('Batch liquidations', () => {

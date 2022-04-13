@@ -79,7 +79,7 @@ contract('HintHelpers', async accounts => {
       contracts.stabilityPool.address,
       contracts.borrowerOperations.address
     )
-    // const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
+    const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
     sortedTroves = contracts.sortedTroves
     troveManager = contracts.troveManager
@@ -87,9 +87,9 @@ contract('HintHelpers', async accounts => {
     hintHelpers = contracts.hintHelpers
     priceFeed = contracts.priceFeedTestnet
   
-    // await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
-    // await deploymentHelper.connectKUMOContracts(KUMOContracts)
-    // await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
+    await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+    await deploymentHelper.connectKUMOContracts(KUMOContracts)
+    await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
 
     numAccounts = 10
 
