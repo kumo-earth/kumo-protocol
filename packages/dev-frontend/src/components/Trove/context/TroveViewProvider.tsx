@@ -88,7 +88,7 @@ export const TroveViewProvider: React.FC = props => {
   const { children } = props;
   // const troveStatus = useLiquitySelector(select);
   const location = useLocation();
-  const { vaults, openTroveT } = useDashboard();
+  const { vaults } = useDashboard();
 
   
 

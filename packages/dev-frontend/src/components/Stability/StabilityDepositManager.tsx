@@ -1,8 +1,10 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Button, Flex } from "theme-ui";
 
 import { Decimal, Decimalish, KumoStoreState } from "@liquity/lib-base";
 import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@liquity/lib-react";
+import { useDashboard } from "../../hooks/DashboardContext";
 
 import { COIN } from "../../strings";
 
@@ -17,11 +19,13 @@ import {
   validateStabilityDepositChange
 } from "./validation/validateStabilityDepositChange";
 
-const init = ({ stabilityDeposit }: KumoStoreState) => ({
-  originalDeposit: stabilityDeposit,
-  editedKUSD: stabilityDeposit.currentKUSD,
-  changePending: false
-});
+const init = ({ stabilityDeposit }: KumoStoreState) => {
+  return {
+    originalDeposit: stabilityDeposit,
+    editedLUSD: stabilityDeposit.currentLUSD,
+    changePending: false
+  };
+};
 
 type StabilityDepositManagerState = ReturnType<typeof init>;
 type StabilityDepositManagerAction =
@@ -91,8 +95,26 @@ const reduce = (
 
 const transactionId = "stability-deposit";
 
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
+
 export const StabilityDepositManager: React.FC = () => {
-  const [{ originalDeposit, editedKUSD, changePending }, dispatch] = useKumoReducer(reduce, init);
+  const location = useLocation();
+  const { vaults, depositKusd, handleDepositKusd, openStabilityDeposit } = useDashboard();
+  const vaultType = vaults.find(vault => vault.type === getPathName(location)) || vaults[0];
+
+  const [{ originalDeposit, editedLUSD, changePending }, dispatch] = useKumoReducer(
+    reduce,
+    () => {
+      return {
+        originalDeposit: vaultType.stabilityDeposit,
+        editedLUSD: vaultType.stabilityDeposit.currentLUSD,
+        changePending: false
+      };
+    }
+  );
+
   const validationContext = useKumoSelector(selectForStabilityDepositChangeValidation);
   const { dispatchEvent } = useStabilityView();
 
@@ -116,9 +138,31 @@ export const StabilityDepositManager: React.FC = () => {
       myTransactionState.type === "waitingForConfirmation"
     ) {
       dispatch({ type: "startChange" });
+      if (validChange?.depositLUSD) {
+        handleDepositKusd(validChange?.depositLUSD, undefined, false);
+      } else if (validChange?.withdrawAllLUSD) {
+        handleDepositKusd(undefined, Decimal.ZERO, true);
+      } else if (validChange?.withdrawLUSD) {
+        handleDepositKusd(undefined, validChange?.withdrawLUSD, false);
+      }
     } else if (myTransactionState.type === "failed" || myTransactionState.type === "cancelled") {
       dispatch({ type: "finishChange" });
     } else if (myTransactionState.type === "confirmedOneShot") {
+      if (depositKusd?.depositLUSD) {
+        openStabilityDeposit(
+          getPathName(location),
+          vaultType.stabilityDeposit.currentLUSD.add(depositKusd?.depositLUSD)
+        );
+      }
+      if (depositKusd.withdrawAllLUSD) {
+        openStabilityDeposit(getPathName(location), Decimal.ZERO);
+      } else if (depositKusd?.withdrawLUSD) {
+        openStabilityDeposit(
+          getPathName(location),
+          vaultType.stabilityDeposit.currentLUSD.sub(depositKusd?.withdrawLUSD)
+        );
+      }
+      handleDepositKusd(undefined, undefined, false);
       dispatchEvent("DEPOSIT_CONFIRMED");
     }
   }, [myTransactionState.type, dispatch, dispatchEvent]);
