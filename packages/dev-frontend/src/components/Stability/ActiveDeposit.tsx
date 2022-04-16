@@ -1,8 +1,11 @@
 import React, { useCallback, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 
 import { KumoStoreState } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
+
+import { useDashboard } from "../../hooks/DashboardContext";
 
 import { COIN, GT } from "../../strings";
 import { Icon } from "../Icon";
@@ -22,9 +25,17 @@ const selector = ({ stabilityDeposit, trove, kusdInStabilityPool }: KumoStoreSta
   kusdInStabilityPool
 });
 
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
+
 export const ActiveDeposit: React.FC = () => {
   const { dispatchEvent } = useStabilityView();
-  const { stabilityDeposit, trove, kusdInStabilityPool } = useKumoSelector(selector);
+  const location = useLocation();
+  const { vaults } = useDashboard();
+  const vaultType = vaults.find(vault => vault.type === getPathName(location)) || vaults[0];
+  const { lusdInStabilityPool } = useKumoSelector(selector);
+  const { stabilityDeposit, trove } = vaultType;
 
   const poolShare = stabilityDeposit.currentKUSD.mulDiv(100, kusdInStabilityPool);
 

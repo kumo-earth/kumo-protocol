@@ -7,8 +7,16 @@ import {
   LiquityStoreState,
   UserTrove,
   UserTroveStatus,
+  StabilityDeposit
 } from "@liquity/lib-base";
 import { useLiquitySelector } from "@liquity/lib-react";
+import { width } from "@mui/system";
+
+type StabilityDepositChange = {
+  depositLUSD: Decimal | undefined;
+  withdrawLUSD: Decimal | undefined;
+  withdrawAllLUSD: boolean;
+};
 
 type DashboardContextValue = {
   numberOfTroves: number;
@@ -22,25 +30,29 @@ type DashboardContextValue = {
   lqtyStake: LQTYStake;
   selectedTrove: Trove;
   vaults: vaultsType;
-  openTroveT: (
-    type: string,
-    collateral: Decimal,
-    borrowAmount: Decimal,
-    price: Decimal
+  depositKusd: StabilityDepositChange;
+  handleDepositKusd: (
+    depositLUSD: Decimal | undefined,
+    withdrawLUSD: Decimal | undefined,
+    withdrawAllLUSD: boolean
   ) => void;
+  openTroveT: (type: string, collateral: Decimal, borrowAmount: Decimal, price: Decimal) => void;
   adjustTroveT: (
     type: string,
     collateral: Decimal,
     netDebt: Decimal,
     collateralRatio: Decimal
   ) => void;
+  openStabilityDeposit: (type: string, amount: Decimal) => void;
 };
 
 type vaultsType = Array<{
   type: string;
   collateralRatio: Decimal;
   troveStatus: UserTroveStatus;
+  stabilityStatus: Boolean;
   trove: UserTrove;
+  stabilityDeposit: StabilityDeposit;
 }>;
 
 const DashboardContext = createContext<DashboardContextValue | undefined>(undefined);
@@ -55,7 +67,8 @@ const select = ({
   redemptionRate,
   totalStakedLQTY,
   frontend,
-  lqtyStake
+  lqtyStake,
+  stabilityDeposit
 }: LiquityStoreState) => ({
   trove,
   numberOfTroves,
@@ -67,6 +80,7 @@ const select = ({
   totalStakedLQTY,
   frontend,
   lqtyStake,
+  stabilityDeposit,
   kickbackRate: frontend.status === "registered" ? frontend.kickbackRate : null
 });
 
@@ -81,75 +95,149 @@ export const DashboardProvider: React.FC = ({ children }) => {
     kickbackRate,
     frontend,
     lqtyStake,
-    trove
+    trove,
+    stabilityDeposit
   } = useLiquitySelector(select);
   const [vaults, setVaults] = useState<vaultsType>([
     {
       type: "bct",
       collateralRatio: Decimal.ZERO,
-      troveStatus: 'nonExistent',
-      trove: trove
+      troveStatus: "nonExistent",
+      stabilityStatus: true,
+      trove: trove,
+      stabilityDeposit: stabilityDeposit
     },
     {
       type: "mco2",
       collateralRatio: Decimal.ZERO,
-      troveStatus: 'nonExistent',
-      trove: trove
+      troveStatus: "nonExistent",
+      stabilityStatus: true,
+      trove: trove,
+      stabilityDeposit: stabilityDeposit
     }
   ]);
   const [selectedTrove, setSelectedTrove] = useState<UserTrove>(trove);
+  const [depositKusd, setDepositKusd] = useState<StabilityDepositChange>({
+    depositLUSD: undefined,
+    withdrawLUSD: undefined,
+    withdrawAllLUSD: false
+  });
 
   useEffect(() => {
-    const {status } = trove;
-    if(status === 'open') {
-     const updatedVaults = vaults && vaults.map(vault => {
-       if (vault.troveStatus === 'nonExistent') {
-         const updatedTrove = new UserTrove(vault.trove.ownerAddress, 'nonExistent',  Decimal.ZERO, Decimal.ZERO);
-         return { ...vault, collateralRatio: Decimal.ZERO, trove: updatedTrove };
-       }
-       return vault;
-     });
-      setVaults(updatedVaults)
+    const { status } = trove;
+    if (status === "open") {
+      const updatedVaults =
+        vaults &&
+        vaults.map(vault => {
+          if (vault.troveStatus === "nonExistent") {
+            if (stabilityDeposit.isEmpty === true) {
+              const updatedTrove = new UserTrove(
+                vault.trove.ownerAddress,
+                "nonExistent",
+                Decimal.ZERO,
+                Decimal.ZERO
+              );
+              const updatedStabilityDeposit = new StabilityDeposit(
+                Decimal.ZERO,
+                Decimal.ZERO,
+                Decimal.ZERO,
+                Decimal.ZERO,
+                ""
+              );
+              return {
+                ...vault,
+                stabilityStatus: true,
+                stabilityDiff: Decimal.ZERO,
+                collateralRatio: Decimal.ZERO,
+                trove: updatedTrove,
+                stabilityDeposit: updatedStabilityDeposit
+              };
+            }
+          }
+          return vault;
+        });
+      setVaults(updatedVaults);
     }
-  }, [trove])
-  
+  }, [trove, stabilityDeposit]);
+
+  const handleDepositKusd = (
+    depositLUSD: Decimal | undefined,
+    withdrawLUSD: Decimal | undefined,
+    withdrawAllLUSD: boolean
+  ) => {
+    setDepositKusd({ depositLUSD, withdrawLUSD, withdrawAllLUSD });
+  };
 
   const adjustTroveT = (
     type: string,
     collateral: Decimal,
     netDebt: Decimal,
     price: Decimal
-
   ): void => {
-    const updatedVaults = vaults && vaults.map(vault => {
-      if (vault.type === type) {
-        const updatedTrove = new UserTrove(vault.trove.ownerAddress, 'open',  collateral, netDebt);
-        const collateralRatio = updatedTrove.collateralRatio(price)
-        return { ...vault, collateralRatio: collateralRatio, trove: updatedTrove };
-      }
-      return vault;
-    });
+    const updatedVaults =
+      vaults &&
+      vaults.map(vault => {
+        if (vault.type === type) {
+          const updatedTrove = new UserTrove(vault.trove.ownerAddress, "open", collateral, netDebt);
+          const collateralRatio = updatedTrove.collateralRatio(price);
+          return { ...vault, collateralRatio: collateralRatio, trove: updatedTrove };
+        }
+        return vault;
+      });
     setVaults(updatedVaults);
-  };  
-   
+  };
+
   const openTroveT = (
     type: string,
     collateral: Decimal,
     borrowAmount: Decimal,
     price: Decimal
-
   ): void => {
-    const updatedVaults = vaults && vaults.map(vault => {
-      if (vault.type === type) {
-        const updatedTrove = new UserTrove(vault.trove.ownerAddress, 'open',  collateral, borrowAmount);
-        const collateralRatio = updatedTrove.collateralRatio(price)
-        return { ...vault, troveStatus: updatedTrove.status, collateralRatio: collateralRatio, trove: updatedTrove };
-      }
-      return vault;
-    });
+    const updatedVaults =
+      vaults &&
+      vaults.map(vault => {
+        if (vault.type === type) {
+          const updatedTrove = new UserTrove(
+            vault.trove.ownerAddress,
+            "open",
+            collateral,
+            borrowAmount
+          );
+          const collateralRatio = updatedTrove.collateralRatio(price);
+          return {
+            ...vault,
+            troveStatus: updatedTrove.status,
+            collateralRatio: collateralRatio,
+            trove: updatedTrove
+          };
+        }
+        return vault;
+      });
     setVaults(updatedVaults);
-  };  
-  
+  };
+  const openStabilityDeposit = (type: string, amount: Decimal): void => {
+    const updatedVaults =
+      vaults &&
+      vaults.map(vault => {
+        if (vault.troveStatus === "open" && vault.type === type) {
+          const updatedStabilityDeposit = new StabilityDeposit(
+            amount,
+            amount,
+            Decimal.ZERO,
+            Decimal.ZERO,
+            "0x0000000000000000000000000000000000000000"
+          );
+          return {
+            ...vault,
+            stabilityStatus: false,
+            stabilityDeposit: updatedStabilityDeposit
+          };
+        }
+        return vault;
+      });
+    setVaults(updatedVaults);
+  };
+
   return (
     <DashboardContext.Provider
       value={{
@@ -162,10 +250,13 @@ export const DashboardProvider: React.FC = ({ children }) => {
         kickbackRate,
         frontend,
         lqtyStake,
+        depositKusd,
+        handleDepositKusd,
         selectedTrove: selectedTrove ? selectedTrove : trove,
         vaults,
         openTroveT,
         adjustTroveT,
+        openStabilityDeposit
       }}
     >
       {children}
