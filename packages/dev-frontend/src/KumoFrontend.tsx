@@ -113,6 +113,9 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                           <Route path="/staking/:stakingType" exact>
                             <StakingType />
                           </Route>
+                          <Route path="/staking/:stakingType/:modalType" exact>
+                            <StakingType />
+                          </Route>
                           <Route path="/farm">
                             <Farm />
                           </Route>

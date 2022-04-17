@@ -85,7 +85,7 @@ const cardGapY = [3, 3, 4];
 
 const card: ThemeUIStyleObject = {
   position: "relative",
-  mt: cardGapY,
+  mt: ['0 !important'],
   border: 1,
   boxShadow: [1, null, 2]
 };

@@ -9,13 +9,13 @@ import {
   UserTroveStatus,
   StabilityDeposit
 } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { useLiquitySelector } from "@kumodao/lib-react";
 import { width } from "@mui/system";
 
 type StabilityDepositChange = {
-  depositLUSD: Decimal | undefined;
-  withdrawLUSD: Decimal | undefined;
-  withdrawAllLUSD: boolean;
+  depositKUSD: Decimal | undefined;
+  withdrawKUSD: Decimal | undefined;
+  withdrawAllKUSD: boolean;
 };
 
 type DashboardContextValue = {
@@ -32,9 +32,9 @@ type DashboardContextValue = {
   vaults: vaultsType;
   depositKusd: StabilityDepositChange;
   handleDepositKusd: (
-    depositLUSD: Decimal | undefined,
-    withdrawLUSD: Decimal | undefined,
-    withdrawAllLUSD: boolean
+    depositKUSD: Decimal | undefined,
+    withdrawKUSD: Decimal | undefined,
+    withdrawAllKUSD: boolean
   ) => void;
   openTroveT: (type: string, collateral: Decimal, borrowAmount: Decimal, price: Decimal) => void;
   adjustTroveT: (
@@ -118,9 +118,9 @@ export const DashboardProvider: React.FC = ({ children }) => {
   ]);
   const [selectedTrove, setSelectedTrove] = useState<UserTrove>(trove);
   const [depositKusd, setDepositKusd] = useState<StabilityDepositChange>({
-    depositLUSD: undefined,
-    withdrawLUSD: undefined,
-    withdrawAllLUSD: false
+    depositKUSD: undefined,
+    withdrawKUSD: undefined,
+    withdrawAllKUSD: false
   });
 
   useEffect(() => {
@@ -161,11 +161,11 @@ export const DashboardProvider: React.FC = ({ children }) => {
   }, [trove, stabilityDeposit]);
 
   const handleDepositKusd = (
-    depositLUSD: Decimal | undefined,
-    withdrawLUSD: Decimal | undefined,
-    withdrawAllLUSD: boolean
+    depositKUSD: Decimal | undefined,
+    withdrawKUSD: Decimal | undefined,
+    withdrawAllKUSD: boolean
   ) => {
-    setDepositKusd({ depositLUSD, withdrawLUSD, withdrawAllLUSD });
+    setDepositKusd({ depositKUSD, withdrawKUSD, withdrawAllKUSD });
   };
 
   const adjustTroveT = (

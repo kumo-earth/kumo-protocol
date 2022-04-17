@@ -1,13 +1,23 @@
 import React, { useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 import { InfoMessage } from "../InfoMessage";
 import { useStabilityView } from "./context/StabilityViewContext";
+import { useDashboard } from "../../hooks/DashboardContext";
 import { RemainingKUMO } from "./RemainingKUMO";
 import { Yield } from "./Yield";
+
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
 
 export const NoDeposit: React.FC = props => {
   const { dispatchEvent } = useStabilityView();
 
+  const location = useLocation();
+  const { vaults } = useDashboard();
+  const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
+  const { trove } = vaultType;
   const handleOpenTrove = useCallback(() => {
     dispatchEvent("DEPOSIT_PRESSED");
   }, [dispatchEvent]);
@@ -31,14 +41,14 @@ export const NoDeposit: React.FC = props => {
           color: "white"
         }}
       >
-        Stability Pool
+        {getPathName(location).toUpperCase()} Stability Pool
         <Flex sx={{ justifyContent: "flex-end" }}>
           <RemainingKUMO />
         </Flex>
       </Heading>
       <Box sx={{ p: [2, 3] }}>
         <InfoMessage title="You have no KUSD in the Stability Pool.">
-          You can earn ETH and KUMO rewards by depositing KUSD.
+          You can earn {getPathName(location).toUpperCase()} and KUMO rewards by depositing KUSD.
         </InfoMessage>
 
         <Flex variant="layout.actions">
@@ -54,6 +64,7 @@ export const NoDeposit: React.FC = props => {
               border: "none",
               color: "white"
             }}
+            disabled={vaultType.troveStatus === "nonExistent"}
           >
             Deposit
           </Button>

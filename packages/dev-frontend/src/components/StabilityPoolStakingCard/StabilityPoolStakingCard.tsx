@@ -51,7 +51,7 @@ export const StabilityPoolStakingCard: React.FC<CollateralCardProps> = ({
       <Box sx={{ m: "2rem 1.5rem 2rem 1.5rem" }}>
         <Heading>Liquidity Mining</Heading>
         <Text as={"p"} sx={{ mt: "1rem" }}>
-          Help bootstrap the Vesta ecosystem by providing and staking liquidity to receive rewards.
+          Help bootstrap the Kumo ecosystem by providing and staking liquidity to receive rewards.
         </Text>
       </Box>
     </Card>
