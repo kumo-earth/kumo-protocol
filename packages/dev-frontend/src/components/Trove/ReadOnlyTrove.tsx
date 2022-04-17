@@ -27,7 +27,7 @@ export const ReadOnlyTrove: React.FC = () => {
 
   const { price } = useKumoSelector(select);
   const location = useLocation();
-  const { vaults, openTroveT } = useDashboard();
+  const { vaults } = useDashboard();
   const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
   const { trove } = vaultType;
   // console.log("READONLY TROVE", trove.collateral.prettify(4));
@@ -42,8 +42,9 @@ export const ReadOnlyTrove: React.FC = () => {
           "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
         overflow: "hidden",
         borderRadius: "20px",
-        width: "90%",
-        color: "white"
+        width: "100%",
+        color: "white",
+        m: "0 !important"
       }}
     >
       <Heading
@@ -52,7 +53,7 @@ export const ReadOnlyTrove: React.FC = () => {
           color: "white"
         }}
       >
-        Trove
+        {vaultType.type.toUpperCase()} Trove
       </Heading>
       <Box sx={{ p: [2, 3] }}>
         <Box>

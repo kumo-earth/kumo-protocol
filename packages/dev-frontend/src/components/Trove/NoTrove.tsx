@@ -1,10 +1,16 @@
 import React, { useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 import { InfoMessage } from "../InfoMessage";
 import { useTroveView } from "./context/TroveViewContext";
 
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
+
 export const NoTrove: React.FC = props => {
   const { dispatchEvent } = useTroveView();
+  const location = useLocation();
 
   const handleOpenTrove = useCallback(() => {
     dispatchEvent("OPEN_TROVE_PRESSED");
@@ -21,7 +27,7 @@ export const NoTrove: React.FC = props => {
           "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
         overflow: "hidden",
         borderRadius: "20px",
-        width: "90%"
+        width: "100%"
       }}
     >
       <Heading
@@ -30,7 +36,7 @@ export const NoTrove: React.FC = props => {
           color: "white"
         }}
       >
-        Trove
+        {getPathName(location).toUpperCase()} Trove
       </Heading>
       <Box sx={{ p: [2, 3] }}>
         <InfoMessage title="You haven't borrowed any KUSD yet.">

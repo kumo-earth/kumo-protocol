@@ -29,7 +29,7 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
       <Heading
         sx={{
           height: "100px !important",
-          padding: "2rem 2rem 2rem 2rem",
+          padding: "1rem",
           borderBottom: "1px solid rgba(0, 0, 0, 0.281)",
           marginBottom: "-1px",
           overflow: "hidden",
@@ -38,7 +38,7 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
           borderRadius: "20px 20px 0 0"
         }}
       >
-        {(collateralType === "eth" && "ETH") || (collateralType === "mco" && "MCO2")}
+        {collateralType?.toUpperCase()} Stability Pool Staking
       </Heading>
 
       <Box sx={{ p: [2, 3] }}>

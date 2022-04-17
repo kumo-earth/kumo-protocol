@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
+
 import { Heading, Box, Card, Button } from "theme-ui";
 
 import {
@@ -30,6 +32,10 @@ type StabilityDepositEditorProps = {
   dispatch: (action: { type: "setDeposit"; newValue: Decimalish } | { type: "revert" }) => void;
 };
 
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
+
 export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   originalDeposit,
   editedKUSD,
@@ -39,6 +45,8 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
 }) => {
   const { kusdBalance, kusdInStabilityPool } = useKumoSelector(select);
   const editingState = useState<string>();
+
+  const location = useLocation();
 
   const edited = !editedKUSD.eq(originalDeposit.currentKUSD);
 
@@ -76,7 +84,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
           color: "white"
         }}
       >
-        Stability Pool
+        {getPathName(location).toUpperCase()} Stability Pool
         {edited && !changePending && (
           <Button
             variant="titleIcon"
@@ -121,7 +129,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
               inputId="deposit-gain"
               amount={originalDeposit.collateralGain.prettify(4)}
               color={originalDeposit.collateralGain.nonZero && "success"}
-              unit="ETH"
+              unit={getPathName(location).toUpperCase()}
             />
 
             <StaticRow
