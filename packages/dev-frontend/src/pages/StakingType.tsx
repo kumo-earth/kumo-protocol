@@ -1,23 +1,25 @@
 import { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { Grid, Box } from "theme-ui";
 import { Stability } from "../components/Stability/Stability";
 import { StakingTypeCard } from "../components/StakingTypeCard/StakingTypeCard";
 import { useStabilityView } from "../components/Stability/context/StabilityViewContext";
+import { useDashboard } from "../hooks/DashboardContext";
 import { Modal } from "@mui/material";
 
 export const StakingType: React.FC = () => {
-  const { view } = useStabilityView();
+  const { vaults } = useDashboard();
   const [stakeDeposit, setStakeDeposit] = useState(false);
-  console.log("viewview", view);
+  const history = useHistory();
   const style = {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 400,
+    width: 470,
     bgcolor: "background.paper",
-    border: "2px solid #000",
+    border: "none",
     boxShadow: 24,
-    p: 4
+    p: 0
   };
   return (
     <Grid
@@ -29,10 +31,25 @@ export const StakingType: React.FC = () => {
         height: "100%"
       }}
     >
-      {stakeDeposit ? (
+      {vaults.map(vault => {
+        // const totalCollateralRatioPct = new Percent(vault.collateralRatio);
+        return (
+          <StakingTypeCard
+            collateralType={vault.type}
+            handleViewStakeDeposit={() => {
+              setStakeDeposit(true);
+              history.push(`/staking/stability/${vault.type}`);
+            }}
+          />
+        );
+      })}
+      {stakeDeposit && (
         <Modal
           open={true}
-          onClose={() => setStakeDeposit(false)}
+          onClose={() => {
+            setStakeDeposit(false);
+            history.push("/staking/stability");
+          }}
           aria-labelledby="parent-modal-title"
           aria-describedby="parent-modal-description"
         >
@@ -40,11 +57,6 @@ export const StakingType: React.FC = () => {
             <Stability />
           </Box>
         </Modal>
-      ) : (
-        <StakingTypeCard
-          collateralType={"eth"}
-          handleViewStakeDeposit={() => setStakeDeposit(true)}
-        />
       )}
     </Grid>
   );

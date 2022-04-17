@@ -33,7 +33,7 @@ export const Sidebar: React.FC = props => {
         <Link to="/staking" sx={{ mt: "1rem !important" }}>
           Staking
         </Link>
-        <Link to="/farm" sx={{ mt: "1rem !important" }}>
+        {/* <Link to="/farm" sx={{ mt: "1rem !important" }}>
           Farm
         </Link>
         <Link sx={{ fontSize: 1, mt: "1rem !important" }} to="/risky-troves">
@@ -41,7 +41,7 @@ export const Sidebar: React.FC = props => {
         </Link>
         <Link sx={{ fontSize: 1, mt: "1rem !important" }} to="/redemption">
           Redemption
-        </Link>
+        </Link> */}
       </Box>
     </Flex>
   );
