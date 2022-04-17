@@ -148,15 +148,15 @@ export const StabilityDepositManager: React.FC = () => {
     } else if (myTransactionState.type === "failed" || myTransactionState.type === "cancelled") {
       dispatch({ type: "finishChange" });
     } else if (myTransactionState.type === "confirmedOneShot") {
-      if (depositKusd?.depositLUSD) {
+      if (depositKusd.depositLUSD) {
         openStabilityDeposit(
           getPathName(location),
-          vaultType.stabilityDeposit.currentLUSD.add(depositKusd?.depositLUSD)
+          vaultType.stabilityDeposit.currentLUSD.add(depositKusd.depositLUSD)
         );
       }
       if (depositKusd.withdrawAllLUSD) {
         openStabilityDeposit(getPathName(location), Decimal.ZERO);
-      } else if (depositKusd?.withdrawLUSD) {
+      } else if (depositKusd.withdrawLUSD) {
         openStabilityDeposit(
           getPathName(location),
           vaultType.stabilityDeposit.currentLUSD.sub(depositKusd?.withdrawLUSD)

@@ -80,7 +80,7 @@ export const ActiveDeposit: React.FC = () => {
           color: "white"
         }}
       >
-        Stability Pool
+        {getPathName(location).toUpperCase()} Stability Pool
         {!isWaitingForTransaction && (
           <Flex sx={{ justifyContent: "flex-end" }}>
             <RemainingKUMO />
@@ -108,7 +108,7 @@ export const ActiveDeposit: React.FC = () => {
             inputId="deposit-gain"
             amount={stabilityDeposit.collateralGain.prettify(4)}
             color={stabilityDeposit.collateralGain.nonZero && "success"}
-            unit="ETH"
+            unit={getPathName(location).toUpperCase()}
           />
 
           <Flex sx={{ alignItems: "center" }}>
@@ -152,11 +152,15 @@ export const ActiveDeposit: React.FC = () => {
             &nbsp;Adjust
           </Button>
 
-          <ClaimRewards disabled={!hasGain && !hasReward}>Claim ETH and KUMO</ClaimRewards>
+          <ClaimRewards disabled={!hasGain && !hasReward}>
+            Claim {getPathName(location).toUpperCase()} and LQTY
+          </ClaimRewards>
         </Flex>
 
         {hasTrove && (
-          <ClaimAndMove disabled={!hasGain}>Claim KUMO and move ETH to Trove</ClaimAndMove>
+          <ClaimAndMove disabled={!hasGain}>
+            Claim KUMO and move {getPathName(location).toUpperCase()} to Trove
+          </ClaimAndMove>
         )}
       </Box>
 
