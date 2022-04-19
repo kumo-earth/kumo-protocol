@@ -1,7 +1,7 @@
 const { red, blue, green, yellow, dim, bold } = require("chalk");
 const { Wallet, providers } = require("ethers");
 const { Decimal, UserTrove, KUSD_LIQUIDATION_RESERVE } = require("@liquity/lib-base");
-const { EthersLiquity, EthersLiquityWithStore } = require("@liquity/lib-ethers");
+const { EthersKumo, EthersKumoWithStore } = require("@liquity/lib-ethers");
 
 function log(message) {
   console.log(`${dim(`[${new Date().toLocaleTimeString()}]`)} ${message}`);
@@ -16,7 +16,7 @@ async function main() {
   // Replace URL if not using a local node
   const provider = new providers.JsonRpcProvider("http://localhost:8545");
   const wallet = new Wallet(process.env.PRIVATE_KEY).connect(provider);
-  const liquity = await EthersLiquity.connect(wallet, { useStore: "blockPolled" });
+  const liquity = await EthersKumo.connect(wallet, { useStore: "blockPolled" });
 
   liquity.store.onLoaded = () => {
     info("Waiting for price drops...");
@@ -47,7 +47,7 @@ const byDescendingCollateral = ({ collateral: a }, { collateral: b }) =>
   b.gt(a) ? 1 : b.lt(a) ? -1 : 0;
 
 /**
- * @param {EthersLiquityWithStore} [liquity]
+ * @param {EthersKumoWithStore} [liquity]
  */
 async function tryToLiquidate(liquity) {
   const { store } = liquity;

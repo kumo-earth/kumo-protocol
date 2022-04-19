@@ -9,13 +9,13 @@ import "./Interfaces/IKUSDToken.sol";
 import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/IKUMOToken.sol";
 import "./Interfaces/IKUMOStaking.sol";
-import "./Dependencies/LiquityBase.sol";
+import "./Dependencies/KumoBase.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 import "./Dependencies/SafeMath.sol";
 
-contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
+contract TroveManager is KumoBase, Ownable, CheckContract, ITroveManager {
     using SafeMath for uint256;
     
 	// bool public isInitialized;
@@ -152,7 +152,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         uint entireTroveDebt;
         uint entireTroveColl;
         uint collGasCompensation;
-        uint KUSDGasCompensation;
+        uint kusdGasCompensation;
         uint debtToOffset;
         uint collToSendToSP;
         uint debtToRedistribute;
@@ -164,7 +164,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         uint totalCollInSequence;
         uint totalDebtInSequence;
         uint totalCollGasCompensation;
-        uint totalKUSDGasCompensation;
+        uint totalkusdGasCompensation;
         uint totalDebtToOffset;
         uint totalCollToSendToSP;
         uint totalDebtToRedistribute;
@@ -214,7 +214,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
     // event KUMOTokenAddressChanged(address _kumoTokenAddress);
     // event KUMOStakingAddressChanged(address _kumoStakingAddress);
 
-    // event Liquidation(uint _liquidatedDebt, uint _liquidatedColl, uint _collGasCompensation, uint _KUSDGasCompensation);
+    // event Liquidation(uint _liquidatedDebt, uint _liquidatedColl, uint _collGasCompensation, uint _kusdGasCompensation);
     // event Redemption(uint _attemptedKUSDAmount, uint _actualKUSDAmount, uint _ETHSent, uint _ETHFee);
     event TroveUpdated(address indexed _borrower, uint _debt, uint _coll, uint _stake, TroveManagerOperation _operation);
     event TroveLiquidated(address indexed _borrower, uint _debt, uint _coll, TroveManagerOperation _operation);
@@ -339,7 +339,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         _removeStake(_borrower);
 
         singleLiquidation.collGasCompensation = _getCollGasCompensation(singleLiquidation.entireTroveColl);
-        singleLiquidation.KUSDGasCompensation = KUSD_GAS_COMPENSATION;
+        singleLiquidation.kusdGasCompensation = KUSD_GAS_COMPENSATION;
         uint collToLiquidate = singleLiquidation.entireTroveColl.sub(singleLiquidation.collGasCompensation);
 
         (singleLiquidation.debtToOffset,
@@ -374,7 +374,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         vars.pendingCollReward) = getEntireDebtAndColl(_borrower);
 
         singleLiquidation.collGasCompensation = _getCollGasCompensation(singleLiquidation.entireTroveColl);
-        singleLiquidation.KUSDGasCompensation = KUSD_GAS_COMPENSATION;
+        singleLiquidation.kusdGasCompensation = KUSD_GAS_COMPENSATION;
         vars.collToLiquidate = singleLiquidation.entireTroveColl.sub(singleLiquidation.collGasCompensation);
 
         // If ICR <= 100%, purely redistribute the Trove across all active Troves
@@ -457,7 +457,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         *  - Send a fraction of the trove's collateral to the Stability Pool, equal to the fraction of its offset debt
         *
         */
-            debtToOffset = LiquityMath._min(_debt, _KUSDInStabPool);
+            debtToOffset = KumoMath._min(_debt, _KUSDInStabPool);
             collToSendToSP = _coll.mul(debtToOffset).div(_debt);
             debtToRedistribute = _debt.sub(debtToOffset);
             collToRedistribute = _coll.sub(collToSendToSP);
@@ -487,7 +487,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         uint cappedCollPortion = _entireTroveDebt.mul(MCR).div(_price);
 
         singleLiquidation.collGasCompensation = _getCollGasCompensation(cappedCollPortion);
-        singleLiquidation.KUSDGasCompensation = KUSD_GAS_COMPENSATION;
+        singleLiquidation.kusdGasCompensation = KUSD_GAS_COMPENSATION;
 
         singleLiquidation.debtToOffset = _entireTroveDebt;
         singleLiquidation.collToSendToSP = cappedCollPortion.sub(singleLiquidation.collGasCompensation);
@@ -541,10 +541,10 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
 
         vars.liquidatedDebt = totals.totalDebtInSequence;
         vars.liquidatedColl = totals.totalCollInSequence.sub(totals.totalCollGasCompensation).sub(totals.totalCollSurplus);
-        emit Liquidation(vars.liquidatedDebt, vars.liquidatedColl, totals.totalCollGasCompensation, totals.totalKUSDGasCompensation);
+        emit Liquidation(vars.liquidatedDebt, vars.liquidatedColl, totals.totalCollGasCompensation, totals.totalkusdGasCompensation);
 
         // Send gas compensation to caller
-        _sendGasCompensation(contractsCache.activePool, msg.sender, totals.totalKUSDGasCompensation, totals.totalCollGasCompensation);
+        _sendGasCompensation(contractsCache.activePool, msg.sender, totals.totalkusdGasCompensation, totals.totalCollGasCompensation);
     }
 
     /*
@@ -581,7 +581,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
                 // Break the loop if ICR is greater than MCR and Stability Pool is empty
                 if (vars.ICR >= MCR && vars.remainingKUSDInStabPool == 0) { break; }
 
-                uint TCR = LiquityMath._computeCR(vars.entireSystemColl, vars.entireSystemDebt, _price);
+                uint TCR = KumoMath._computeCR(vars.entireSystemColl, vars.entireSystemDebt, _price);
 
                 singleLiquidation = _liquidateRecoveryMode(_contractsCache.activePool, _contractsCache.defaultPool, vars.user, vars.ICR, vars.remainingKUSDInStabPool, TCR, _price);
 
@@ -683,10 +683,10 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
 
         vars.liquidatedDebt = totals.totalDebtInSequence;
         vars.liquidatedColl = totals.totalCollInSequence.sub(totals.totalCollGasCompensation).sub(totals.totalCollSurplus);
-        emit Liquidation(vars.liquidatedDebt, vars.liquidatedColl, totals.totalCollGasCompensation, totals.totalKUSDGasCompensation);
+        emit Liquidation(vars.liquidatedDebt, vars.liquidatedColl, totals.totalCollGasCompensation, totals.totalkusdGasCompensation);
 
         // Send gas compensation to caller
-        _sendGasCompensation(activePoolCached, msg.sender, totals.totalKUSDGasCompensation, totals.totalCollGasCompensation);
+        _sendGasCompensation(activePoolCached, msg.sender, totals.totalkusdGasCompensation, totals.totalCollGasCompensation);
     }
 
     /*
@@ -723,7 +723,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
                 // Skip this trove if ICR is greater than MCR and Stability Pool is empty
                 if (vars.ICR >= MCR && vars.remainingKUSDInStabPool == 0) { continue; }
 
-                uint TCR = LiquityMath._computeCR(vars.entireSystemColl, vars.entireSystemDebt, _price);
+                uint TCR = KumoMath._computeCR(vars.entireSystemColl, vars.entireSystemDebt, _price);
 
                 singleLiquidation = _liquidateRecoveryMode(_activePool, _defaultPool, vars.user, vars.ICR, vars.remainingKUSDInStabPool, TCR, _price);
 
@@ -789,7 +789,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
 
         // Tally all the values with their respective running totals
         newTotals.totalCollGasCompensation = oldTotals.totalCollGasCompensation.add(singleLiquidation.collGasCompensation);
-        newTotals.totalKUSDGasCompensation = oldTotals.totalKUSDGasCompensation.add(singleLiquidation.KUSDGasCompensation);
+        newTotals.totalkusdGasCompensation = oldTotals.totalkusdGasCompensation.add(singleLiquidation.kusdGasCompensation);
         newTotals.totalDebtInSequence = oldTotals.totalDebtInSequence.add(singleLiquidation.entireTroveDebt);
         newTotals.totalCollInSequence = oldTotals.totalCollInSequence.add(singleLiquidation.entireTroveColl);
         newTotals.totalDebtToOffset = oldTotals.totalDebtToOffset.add(singleLiquidation.debtToOffset);
@@ -809,7 +809,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         }
 
         // ETH gas compensation could only be zero if all liquidated troves in the sequence had collateral lower than 200 Wei
-        // (see _getCollGasCompensation function in LiquityBase)
+        // (see _getCollGasCompensation function in KumoBase)
         // With the current values of min debt this seems quite unlikely, unless ETH price was in the order of magnitude of $10^19 or more,
         // but it’s ok to have this here as a sanity check
         if (_ETH > 0) {
@@ -839,7 +839,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         internal returns (SingleRedemptionValues memory singleRedemption)
     {
         // Determine the remaining amount (lot) to be redeemed, capped by the entire debt of the Trove minus the liquidation reserve
-        singleRedemption.KUSDLot = LiquityMath._min(_maxKUSDamount, Troves[_borrower].debt.sub(KUSD_GAS_COMPENSATION));
+        singleRedemption.KUSDLot = KumoMath._min(_maxKUSDamount, Troves[_borrower].debt.sub(KUSD_GAS_COMPENSATION));
 
         // Get the ETHLot of equivalent value in USD
         singleRedemption.ETHLot = singleRedemption.KUSDLot.mul(DECIMAL_PRECISION).div(_price);
@@ -856,7 +856,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
             emit TroveUpdated(_borrower, 0, 0, 0, TroveManagerOperation.redeemCollateral);
 
         } else {
-            uint newNICR = LiquityMath._computeNominalCR(newColl, newDebt);
+            uint newNICR = KumoMath._computeNominalCR(newColl, newDebt);
 
             /*
             * If the provided hint is out of date, we bail since trying to reinsert without a good hint will almost
@@ -1042,7 +1042,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
     function getNominalICR(address _borrower) public view override returns (uint) {
         (uint currentETH, uint currentKUSDDebt) = _getCurrentTroveAmounts(_borrower);
 
-        uint NICR = LiquityMath._computeNominalCR(currentETH, currentKUSDDebt);
+        uint NICR = KumoMath._computeNominalCR(currentETH, currentKUSDDebt);
         return NICR;
     }
 
@@ -1050,7 +1050,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
     function getCurrentICR(address _borrower, uint _price) public view override returns (uint) {
         (uint currentETH, uint currentKUSDDebt) = _getCurrentTroveAmounts(_borrower);
 
-        uint ICR = LiquityMath._computeCR(currentETH, currentKUSDDebt, _price);
+        uint ICR = KumoMath._computeCR(currentETH, currentKUSDDebt, _price);
         return ICR;
     }
 
@@ -1356,7 +1356,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         pure
     returns (bool)
     {
-        uint TCR = LiquityMath._computeCR(_entireSystemColl, _entireSystemDebt, _price);
+        uint TCR = KumoMath._computeCR(_entireSystemColl, _entireSystemDebt, _price);
 
         return TCR < CCR;
     }
@@ -1377,7 +1377,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
         uint redeemedKUSDFraction = _ETHDrawn.mul(_price).div(_totalKUSDSupply);
 
         uint newBaseRate = decayedBaseRate.add(redeemedKUSDFraction.div(BETA));
-        newBaseRate = LiquityMath._min(newBaseRate, DECIMAL_PRECISION); // cap baseRate at a maximum of 100%
+        newBaseRate = KumoMath._min(newBaseRate, DECIMAL_PRECISION); // cap baseRate at a maximum of 100%
         //assert(newBaseRate <= DECIMAL_PRECISION); // This is already enforced in the line above
         assert(newBaseRate > 0); // Base rate is always non-zero after redemption
 
@@ -1399,7 +1399,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
     }
 
     function _calcRedemptionRate(uint _baseRate) internal pure returns (uint) {
-        return LiquityMath._min(
+        return KumoMath._min(
             REDEMPTION_FEE_FLOOR.add(_baseRate),
             DECIMAL_PRECISION // cap at a maximum of 100%
         );
@@ -1430,7 +1430,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
     }
 
     function _calcBorrowingRate(uint _baseRate) internal pure returns (uint) {
-        return LiquityMath._min(
+        return KumoMath._min(
             BORROWING_FEE_FLOOR.add(_baseRate),
             MAX_BORROWING_FEE
         );
@@ -1476,7 +1476,7 @@ contract TroveManager is LiquityBase, Ownable, CheckContract, ITroveManager {
 
     function _calcDecayedBaseRate() internal view returns (uint) {
         uint minutesPassed = _minutesPassedSinceLastFeeOp();
-        uint decayFactor = LiquityMath._decPow(MINUTE_DECAY_FACTOR, minutesPassed);
+        uint decayFactor = KumoMath._decPow(MINUTE_DECAY_FACTOR, minutesPassed);
 
         return baseRate.mul(decayFactor).div(DECIMAL_PRECISION);
     }

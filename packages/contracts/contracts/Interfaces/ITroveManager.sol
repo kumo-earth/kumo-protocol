@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import "./ILiquityBase.sol";
+import "./IKumoBase.sol";
 import "./IStabilityPool.sol";
 import "./IKUSDToken.sol";
 import "./IKUMOToken.sol";
@@ -10,7 +10,7 @@ import "./IKUMOStaking.sol";
 
 
 // Common interface for the Trove Manager.
-interface ITroveManager is ILiquityBase {
+interface ITroveManager is IKumoBase {
     
     // --- Events ---
 
@@ -26,7 +26,7 @@ interface ITroveManager is ILiquityBase {
     event KUMOTokenAddressChanged(address _kumoTokenAddress);
     event KUMOStakingAddressChanged(address _kumoStakingAddress);
 
-    event Liquidation(uint _liquidatedDebt, uint _liquidatedColl, uint _collGasCompensation, uint _KUSDGasCompensation);
+    event Liquidation(uint _liquidatedDebt, uint _liquidatedColl, uint _collGasCompensation, uint _kusdGasCompensation);
     event Redemption(uint _attemptedKUSDAmount, uint _actualKUSDAmount, uint _ETHSent, uint _ETHFee);
     // event TroveUpdated(address indexed _borrower, uint _debt, uint _coll, uint stake, uint8 operation);
     // event TroveLiquidated(address indexed _borrower, uint _debt, uint _coll, uint8 operation);

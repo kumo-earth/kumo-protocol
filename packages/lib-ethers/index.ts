@@ -1,15 +1,15 @@
 export {
   _connectByChainId,
-  EthersLiquityConnection,
-  EthersLiquityConnectionOptionalParams,
-  EthersLiquityStoreOption,
+  EthersKumoConnection,
+  EthersKumoConnectionOptionalParams,
+  EthersKumoStoreOption,
   UnsupportedNetworkError
-} from "./src/EthersLiquityConnection";
+} from "./src/EthersKumoConnection";
 
 export * from "./src/types";
-export * from "./src/ReadableEthersLiquity";
-export * from "./src/ObservableEthersLiquity";
-export * from "./src/BlockPolledLiquityStore";
-export * from "./src/PopulatableEthersLiquity";
-export * from "./src/SendableEthersLiquity";
-export * from "./src/EthersLiquity";
+export * from "./src/ReadableEthersKumo";
+export * from "./src/ObservableEthersKumo";
+export * from "./src/BlockPolledKumoStore";
+export * from "./src/PopulatableEthersKumo";
+export * from "./src/SendableEthersKumo";
+export * from "./src/EthersKumo";

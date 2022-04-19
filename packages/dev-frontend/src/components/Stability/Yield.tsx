@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Card, Paragraph, Text } from "theme-ui";
-import { Decimal, LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { Decimal, KumoStoreState } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 import { InfoIcon } from "../InfoIcon";
-import { useLiquity } from "../../hooks/LiquityContext";
+import { useKumo } from "../../hooks/KumoContext";
 import { Badge } from "../Badge";
 import { fetchKumoPrice } from "./context/fetchKumoPrice";
 
-const selector = ({ kusdInStabilityPool, remainingStabilityPoolKUMOReward }: LiquityStoreState) => ({
+const selector = ({ kusdInStabilityPool, remainingStabilityPoolKUMOReward }: KumoStoreState) => ({
   kusdInStabilityPool,
   remainingStabilityPoolKUMOReward
 });
@@ -17,8 +17,8 @@ export const Yield: React.FC = () => {
     liquity: {
       connection: { addresses }
     }
-  } = useLiquity();
-  const { kusdInStabilityPool, remainingStabilityPoolKUMOReward } = useLiquitySelector(selector);
+  } = useKumo();
+  const { kusdInStabilityPool, remainingStabilityPoolKUMOReward } = useKumoSelector(selector);
 
   const [kumoPrice, setKumoPrice] = useState<Decimal | undefined>(undefined);
   const hasZeroValue = remainingStabilityPoolKUMOReward.isZero || kusdInStabilityPool.isZero;

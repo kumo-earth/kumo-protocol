@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button, Box, Flex, Card, Heading } from "theme-ui";
 
-import { Decimal, Percent, LiquityStoreState, MINIMUM_COLLATERAL_RATIO } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { Decimal, Percent, KumoStoreState, MINIMUM_COLLATERAL_RATIO } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 
 import { COIN } from "../../strings";
 
@@ -18,7 +18,7 @@ import { InfoIcon } from "../InfoIcon";
 
 const mcrPercent = new Percent(MINIMUM_COLLATERAL_RATIO).toString(0);
 
-const select = ({ price, fees, total, kusdBalance }: LiquityStoreState) => ({
+const select = ({ price, fees, total, kusdBalance }: KumoStoreState) => ({
   price,
   fees,
   total,
@@ -28,7 +28,7 @@ const select = ({ price, fees, total, kusdBalance }: LiquityStoreState) => ({
 const transactionId = "redemption";
 
 export const RedemptionManager: React.FC = () => {
-  const { price, fees, total, kusdBalance } = useLiquitySelector(select);
+  const { price, fees, total, kusdBalance } = useKumoSelector(select);
   const [kusdAmount, setKUSDAmount] = useState(Decimal.ZERO);
   const [changePending, setChangePending] = useState(false);
   const editingState = useState<string>();

@@ -22,7 +22,7 @@ contract('TroveManager', async accounts => {
   let borrowerOperations
   
   beforeEach(async () => {
-    contracts = await deploymentHelper.deployLiquityCore()
+    contracts = await deploymentHelper.deployKumoCore()
     const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress)
     
     kusdToken = contracts.kusdToken
@@ -1194,7 +1194,7 @@ it("11 accounts with random ETH and proportional KUSD (180:1). 10 liquidations. 
   
   4) StabilityPool Withdrawals accumulate ETH error in the StabilityPool
 
-  5) StabilityPool Withdrawals can accumulate KUSDLoss in the StabilityPool (i.e. they distribute too much KUSD), and can block
+  5) StabilityPool Withdrawals can accumulate kusdLoss in the StabilityPool (i.e. they distribute too much KUSD), and can block
   the final deposit withdrawal
 
   DeciMath:

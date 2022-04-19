@@ -4,7 +4,7 @@
 
 ## TroveAdjustmentParams type
 
-Parameters of an [adjustTrove()](./lib-base.transactableliquity.adjusttrove.md) transaction.
+Parameters of an [adjustTrove()](./lib-base.transactablekumo.adjusttrove.md) transaction.
 
 <b>Signature:</b>
 

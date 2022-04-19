@@ -13,7 +13,7 @@ const yaml = (strings, ...keys) =>
 
 const manifest = yaml`
 specVersion: 0.0.2
-description: Liquity is a decentralized borrowing protocol offering interest-free liquidity against collateral in Ether.
+description: Kumo is a decentralized borrowing protocol offering interest-free liquidity against collateral in Ether.
 repository: https://github.com/liquity/dev/tree/main/packages/subgraph
 schema:
   file: ./schema.graphql

@@ -36,7 +36,7 @@ export function handleLiquidation(event: Liquidation): void {
     event.params._liquidatedColl,
     event.params._liquidatedDebt,
     event.params._collGasCompensation,
-    event.params._KUSDGasCompensation
+    event.params._kusdGasCompensation
   );
 }
 

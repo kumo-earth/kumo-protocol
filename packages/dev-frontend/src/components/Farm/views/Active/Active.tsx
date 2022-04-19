@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 import { LP, GT } from "../../../../strings";
-import { LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { KumoStoreState } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 import { Icon } from "../../../Icon";
 import { LoadingOverlay } from "../../../LoadingOverlay";
 import { useMyTransactionState } from "../../../Transaction";
@@ -17,7 +17,7 @@ const selector = ({
   liquidityMiningStake,
   liquidityMiningKUMOReward,
   totalStakedUniTokens
-}: LiquityStoreState) => ({
+}: KumoStoreState) => ({
   liquidityMiningStake,
   liquidityMiningKUMOReward,
   totalStakedUniTokens
@@ -30,7 +30,7 @@ export const Active: React.FC = () => {
     liquidityMiningStake,
     liquidityMiningKUMOReward,
     totalStakedUniTokens
-  } = useLiquitySelector(selector);
+  } = useKumoSelector(selector);
 
   const handleAdjustPressed = useCallback(() => {
     dispatchEvent("ADJUST_PRESSED");

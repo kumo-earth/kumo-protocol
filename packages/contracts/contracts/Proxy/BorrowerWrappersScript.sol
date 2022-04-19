@@ -3,7 +3,7 @@
 pragma solidity 0.8.11;
 
 import "../Dependencies/SafeMath.sol";
-import "../Dependencies/LiquityMath.sol";
+import "../Dependencies/KumoMath.sol";
 import "../Dependencies/IERC20.sol";
 import "../Interfaces/IBorrowerOperations.sol";
 import "../Interfaces/ITroveManager.sol";
@@ -146,7 +146,7 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
 
         uint KUSDAmount = _collateral.mul(price).div(ICR);
         uint borrowingRate = troveManager.getBorrowingRateWithDecay();
-        uint netDebt = KUSDAmount.mul(LiquityMath.DECIMAL_PRECISION).div(LiquityMath.DECIMAL_PRECISION.add(borrowingRate));
+        uint netDebt = KUSDAmount.mul(KumoMath.DECIMAL_PRECISION).div(KumoMath.DECIMAL_PRECISION.add(borrowingRate));
 
         return netDebt;
     }

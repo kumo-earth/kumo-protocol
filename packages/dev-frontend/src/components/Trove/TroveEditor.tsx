@@ -7,10 +7,10 @@ import {
   Decimalish,
   Decimal,
   Trove,
-  LiquityStoreState,
+  KumoStoreState,
   KUSD_LIQUIDATION_RESERVE
 } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { useKumoSelector } from "@liquity/lib-react";
 
 import { COIN } from "../../strings";
 
@@ -30,7 +30,7 @@ type TroveEditorProps = {
   ) => void;
 };
 
-const select = ({ price }: LiquityStoreState) => ({ price });
+const select = ({ price }: KumoStoreState) => ({ price });
 
 export const TroveEditor: React.FC<TroveEditorProps> = ({
   children,
@@ -40,7 +40,7 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
   borrowingRate,
   changePending
 }) => {
-  const { price } = useLiquitySelector(select);
+  const { price } = useKumoSelector(select);
 
   const feePct = new Percent(borrowingRate);
 

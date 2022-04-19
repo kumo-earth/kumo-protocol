@@ -11,9 +11,9 @@
 |  [Decimal](./lib-base.decimal.md) | Fixed-point decimal bignumber with 18 digits of precision. |
 |  [Fees](./lib-base.fees.md) | Calculator for fees. |
 |  [KUMOStake](./lib-base.kumostake.md) | Represents a user's KUMO stake and accrued gains. |
-|  [LiquityStore](./lib-base.liquitystore.md) | Abstract base class of Liquity data store implementations. |
+|  [KumoStore](./lib-base.kumostore.md) | Abstract base class of Kumo data store implementations. |
 |  [StabilityDeposit](./lib-base.stabilitydeposit.md) | A Stability Deposit and its accrued gains. |
-|  [TransactionFailedError](./lib-base.transactionfailederror.md) | Thrown by [TransactableLiquity](./lib-base.transactableliquity.md) functions in case of transaction failure. |
+|  [TransactionFailedError](./lib-base.transactionfailederror.md) | Thrown by [TransactableKumo](./lib-base.transactablekumo.md) functions in case of transaction failure. |
 |  [Trove](./lib-base.trove.md) | A combination of collateral and debt. |
 |  [TroveWithPendingRedistribution](./lib-base.trovewithpendingredistribution.md) | A Trove in its state after the last direct modification. |
 |  [UserTrove](./lib-base.usertrove.md) | A Trove that is associated with a single owner. |
@@ -22,25 +22,25 @@
 
 |  Interface | Description |
 |  --- | --- |
-|  [CollateralGainTransferDetails](./lib-base.collateralgaintransferdetails.md) | Details of a [transferCollateralGainToTrove()](./lib-base.transactableliquity.transfercollateralgaintotrove.md) transaction. |
-|  [LiquidationDetails](./lib-base.liquidationdetails.md) | Details of a [liquidate()](./lib-base.transactableliquity.liquidate.md) or [liquidateUpTo()](./lib-base.transactableliquity.liquidateupto.md) transaction. |
-|  [LiquityStoreBaseState](./lib-base.liquitystorebasestate.md) | State variables read from the blockchain. |
-|  [LiquityStoreDerivedState](./lib-base.liquitystorederivedstate.md) | State variables derived from [LiquityStoreBaseState](./lib-base.liquitystorebasestate.md)<!-- -->. |
-|  [LiquityStoreListenerParams](./lib-base.liquitystorelistenerparams.md) | Parameters passed to [LiquityStore](./lib-base.liquitystore.md) listeners. |
-|  [PopulatableLiquity](./lib-base.populatableliquity.md) | Prepare Liquity transactions for sending. |
-|  [PopulatedLiquityTransaction](./lib-base.populatedliquitytransaction.md) | A transaction that has been prepared for sending. |
+|  [CollateralGainTransferDetails](./lib-base.collateralgaintransferdetails.md) | Details of a [transferCollateralGainToTrove()](./lib-base.transactablekumo.transfercollateralgaintotrove.md) transaction. |
+|  [KumoStoreBaseState](./lib-base.kumostorebasestate.md) | State variables read from the blockchain. |
+|  [KumoStoreDerivedState](./lib-base.kumostorederivedstate.md) | State variables derived from [KumoStoreBaseState](./lib-base.kumostorebasestate.md)<!-- -->. |
+|  [KumoStoreListenerParams](./lib-base.kumostorelistenerparams.md) | Parameters passed to [KumoStore](./lib-base.kumostore.md) listeners. |
+|  [LiquidationDetails](./lib-base.liquidationdetails.md) | Details of a [liquidate()](./lib-base.transactablekumo.liquidate.md) or [liquidateUpTo()](./lib-base.transactablekumo.liquidateupto.md) transaction. |
+|  [PopulatableKumo](./lib-base.populatablekumo.md) | Prepare Kumo transactions for sending. |
+|  [PopulatedKumoTransaction](./lib-base.populatedkumotransaction.md) | A transaction that has been prepared for sending. |
 |  [PopulatedRedemption](./lib-base.populatedredemption.md) | A redemption transaction that has been prepared for sending. |
-|  [ReadableLiquity](./lib-base.readableliquity.md) | Read the state of the Liquity protocol. |
-|  [RedemptionDetails](./lib-base.redemptiondetails.md) | Details of a [redeemKUSD()](./lib-base.transactableliquity.redeemkusd.md) transaction. |
-|  [SendableLiquity](./lib-base.sendableliquity.md) | Send Liquity transactions. |
-|  [SentLiquityTransaction](./lib-base.sentliquitytransaction.md) | A transaction that has already been sent. |
-|  [StabilityDepositChangeDetails](./lib-base.stabilitydepositchangedetails.md) | Details of a [depositKUSDInStabilityPool()](./lib-base.transactableliquity.depositkusdinstabilitypool.md) or [withdrawKUSDFromStabilityPool()](./lib-base.transactableliquity.withdrawkusdfromstabilitypool.md) transaction. |
-|  [StabilityPoolGainsWithdrawalDetails](./lib-base.stabilitypoolgainswithdrawaldetails.md) | Details of a [withdrawGainsFromStabilityPool()](./lib-base.transactableliquity.withdrawgainsfromstabilitypool.md) transaction. |
-|  [TransactableLiquity](./lib-base.transactableliquity.md) | Send Liquity transactions and wait for them to succeed. |
-|  [TroveAdjustmentDetails](./lib-base.troveadjustmentdetails.md) | Details of an [adjustTrove()](./lib-base.transactableliquity.adjusttrove.md) transaction. |
-|  [TroveClosureDetails](./lib-base.troveclosuredetails.md) | Details of a [closeTrove()](./lib-base.transactableliquity.closetrove.md) transaction. |
-|  [TroveCreationDetails](./lib-base.trovecreationdetails.md) | Details of an [openTrove()](./lib-base.transactableliquity.opentrove.md) transaction. |
-|  [TroveListingParams](./lib-base.trovelistingparams.md) | Parameters of the [getTroves()](./lib-base.readableliquity.gettroves_1.md) function. |
+|  [ReadableKumo](./lib-base.readablekumo.md) | Read the state of the Kumo protocol. |
+|  [RedemptionDetails](./lib-base.redemptiondetails.md) | Details of a [redeemKUSD()](./lib-base.transactablekumo.redeemkusd.md) transaction. |
+|  [SendableKumo](./lib-base.sendablekumo.md) | Send Kumo transactions. |
+|  [SentKumoTransaction](./lib-base.sentkumotransaction.md) | A transaction that has already been sent. |
+|  [StabilityDepositChangeDetails](./lib-base.stabilitydepositchangedetails.md) | Details of a [depositKUSDInStabilityPool()](./lib-base.transactablekumo.depositkusdinstabilitypool.md) or [withdrawKUSDFromStabilityPool()](./lib-base.transactablekumo.withdrawkusdfromstabilitypool.md) transaction. |
+|  [StabilityPoolGainsWithdrawalDetails](./lib-base.stabilitypoolgainswithdrawaldetails.md) | Details of a [withdrawGainsFromStabilityPool()](./lib-base.transactablekumo.withdrawgainsfromstabilitypool.md) transaction. |
+|  [TransactableKumo](./lib-base.transactablekumo.md) | Send Kumo transactions and wait for them to succeed. |
+|  [TroveAdjustmentDetails](./lib-base.troveadjustmentdetails.md) | Details of an [adjustTrove()](./lib-base.transactablekumo.adjusttrove.md) transaction. |
+|  [TroveClosureDetails](./lib-base.troveclosuredetails.md) | Details of a [closeTrove()](./lib-base.transactablekumo.closetrove.md) transaction. |
+|  [TroveCreationDetails](./lib-base.trovecreationdetails.md) | Details of an [openTrove()](./lib-base.transactablekumo.opentrove.md) transaction. |
+|  [TroveListingParams](./lib-base.trovelistingparams.md) | Parameters of the [getTroves()](./lib-base.readablekumo.gettroves_1.md) function. |
 
 ## Variables
 
@@ -61,18 +61,18 @@
 |  --- | --- |
 |  [Decimalish](./lib-base.decimalish.md) | Types that can be converted into a Decimal. |
 |  [FailedReceipt](./lib-base.failedreceipt.md) | Indicates that the transaction has been mined, but it failed. |
-|  [FrontendStatus](./lib-base.frontendstatus.md) | Represents whether an address has been registered as a Liquity frontend. |
+|  [FrontendStatus](./lib-base.frontendstatus.md) | Represents whether an address has been registered as a Kumo frontend. |
+|  [KumoReceipt](./lib-base.kumoreceipt.md) | One of either a [PendingReceipt](./lib-base.pendingreceipt.md)<!-- -->, a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](./lib-base.successfulreceipt.md)<!-- -->. |
 |  [KUMOStakeChange](./lib-base.kumostakechange.md) | Represents the change between two states of an KUMO Stake. |
-|  [LiquityReceipt](./lib-base.liquityreceipt.md) | One of either a [PendingReceipt](./lib-base.pendingreceipt.md)<!-- -->, a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](./lib-base.successfulreceipt.md)<!-- -->. |
-|  [LiquityStoreState](./lib-base.liquitystorestate.md) | Type of [LiquityStore](./lib-base.liquitystore.md)<!-- -->'s [state](./lib-base.liquitystore.state.md)<!-- -->. |
+|  [KumoStoreState](./lib-base.kumostorestate.md) | Type of [KumoStore](./lib-base.kumostore.md)<!-- -->'s [state](./lib-base.kumostore.state.md)<!-- -->. |
 |  [MinedReceipt](./lib-base.minedreceipt.md) | Either a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](./lib-base.successfulreceipt.md)<!-- -->. |
 |  [PendingReceipt](./lib-base.pendingreceipt.md) | Indicates that the transaction hasn't been mined yet. |
 |  [StabilityDepositChange](./lib-base.stabilitydepositchange.md) | Represents the change between two Stability Deposit states. |
 |  [SuccessfulReceipt](./lib-base.successfulreceipt.md) | Indicates that the transaction has succeeded. |
-|  [TroveAdjustmentParams](./lib-base.troveadjustmentparams.md) | Parameters of an [adjustTrove()](./lib-base.transactableliquity.adjusttrove.md) transaction. |
+|  [TroveAdjustmentParams](./lib-base.troveadjustmentparams.md) | Parameters of an [adjustTrove()](./lib-base.transactablekumo.adjusttrove.md) transaction. |
 |  [TroveChange](./lib-base.trovechange.md) | Represents the change between two Trove states. |
-|  [TroveClosureParams](./lib-base.troveclosureparams.md) | Parameters of a [closeTrove()](./lib-base.transactableliquity.closetrove.md) transaction. |
+|  [TroveClosureParams](./lib-base.troveclosureparams.md) | Parameters of a [closeTrove()](./lib-base.transactablekumo.closetrove.md) transaction. |
 |  [TroveCreationError](./lib-base.trovecreationerror.md) | Describes why a Trove could not be created. |
-|  [TroveCreationParams](./lib-base.trovecreationparams.md) | Parameters of an [openTrove()](./lib-base.transactableliquity.opentrove.md) transaction. |
+|  [TroveCreationParams](./lib-base.trovecreationparams.md) | Parameters of an [openTrove()](./lib-base.transactablekumo.opentrove.md) transaction. |
 |  [UserTroveStatus](./lib-base.usertrovestatus.md) | Represents whether a UserTrove is open or not, or why it was closed. |
 

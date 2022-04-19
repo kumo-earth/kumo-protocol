@@ -100,7 +100,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_KUSDLoss",
+        "name": "_kusdLoss",
         "type": "uint256"
       }
     ],
@@ -1085,7 +1085,7 @@
   },
   {
     "inputs": [],
-    "name": "lastKUSDLossError_Offset",
+    "name": "lastkusdLossError_Offset",
     "outputs": [
       {
         "internalType": "uint256",

@@ -4,12 +4,12 @@ import { Button, Flex } from "theme-ui";
 import {
   Decimal,
   Decimalish,
-  LiquityStoreState,
+  KumoStoreState,
   KUMOStake,
   KUMOStakeChange
 } from "@liquity/lib-base";
 
-import { LiquityStoreUpdate, useLiquityReducer, useLiquitySelector } from "@liquity/lib-react";
+import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@liquity/lib-react";
 
 import { GT, COIN } from "../../strings";
 
@@ -19,14 +19,14 @@ import { StakingManagerAction } from "./StakingManagerAction";
 import { ActionDescription, Amount } from "../ActionDescription";
 import { ErrorDescription } from "../ErrorDescription";
 
-const init = ({ kumoStake }: LiquityStoreState) => ({
+const init = ({ kumoStake }: KumoStoreState) => ({
   originalStake: kumoStake,
   editedKUMO: kumoStake.stakedKUMO
 });
 
 type StakeManagerState = ReturnType<typeof init>;
 type StakeManagerAction =
-  | LiquityStoreUpdate
+  | KumoStoreUpdate
   | { type: "revert" }
   | { type: "setStake"; newValue: Decimalish };
 
@@ -60,7 +60,7 @@ const reduce = (state: StakeManagerState, action: StakeManagerAction): StakeMana
   return state;
 };
 
-const selectKUMOBalance = ({ kumoBalance }: LiquityStoreState) => kumoBalance;
+const selectKUMOBalance = ({ kumoBalance }: KumoStoreState) => kumoBalance;
 
 type StakingManagerActionDescriptionProps = {
   originalStake: KUMOStake;
@@ -118,8 +118,8 @@ const StakingManagerActionDescription: React.FC<StakingManagerActionDescriptionP
 
 export const StakingManager: React.FC = () => {
   const { dispatch: dispatchStakingViewAction } = useStakingView();
-  const [{ originalStake, editedKUMO }, dispatch] = useLiquityReducer(reduce, init);
-  const kumoBalance = useLiquitySelector(selectKUMOBalance);
+  const [{ originalStake, editedKUMO }, dispatch] = useKumoReducer(reduce, init);
+  const kumoBalance = useKumoSelector(selectKUMOBalance);
 
   const change = originalStake.whatChanged(editedKUMO);
   const [validChange, description] = !change

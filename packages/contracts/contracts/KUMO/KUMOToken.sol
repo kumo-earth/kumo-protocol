@@ -18,11 +18,11 @@ import "../Dependencies/console.sol";
 *
 *  --- Functionality added specific to the KUMOToken ---
 * 
-* 1) Transfer protection: blacklist of addresses that are invalid recipients (i.e. core Liquity contracts) in external 
-* transfer() and transferFrom() calls. The purpose is to protect users from losing tokens by mistakenly sending KUMO directly to a Liquity
+* 1) Transfer protection: blacklist of addresses that are invalid recipients (i.e. core Kumo contracts) in external 
+* transfer() and transferFrom() calls. The purpose is to protect users from losing tokens by mistakenly sending KUMO directly to a Kumo
 * core contract, when they should rather call the right function.
 *
-* 2) sendToKUMOStaking(): callable only by Liquity core contracts, which move KUMO tokens from user -> KUMOStaking contract.
+* 2) sendToKUMOStaking(): callable only by Kumo core contracts, which move KUMO tokens from user -> KUMOStaking contract.
 *
 * 3) Supply hard-capped at 100 million
 *
@@ -34,10 +34,10 @@ import "../Dependencies/console.sol";
 *
 * 7) The LP rewards allocation of (1 + 1/3) million tokens is minted at deployent to a Staking contract
 *
-* 8) (64 + 2/3) million tokens are minted at deployment to the Liquity multisig
+* 8) (64 + 2/3) million tokens are minted at deployment to the Kumo multisig
 *
 * 9) Until one year from deployment:
-* -Liquity multisig may only transfer() tokens to LockupContracts that have been deployed via & registered in the 
+* -Kumo multisig may only transfer() tokens to LockupContracts that have been deployed via & registered in the 
 *  LockupContractFactory 
 * -approve(), increaseAllowance(), decreaseAllowance() revert when called by the multisig
 * -transferFrom() reverts when the multisig is the sender

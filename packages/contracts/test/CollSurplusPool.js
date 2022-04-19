@@ -28,7 +28,7 @@ contract('CollSurplusPool', async accounts => {
   const openTrove = async (params) => th.openTrove(contracts, params)
 
   beforeEach(async () => {
-    contracts = await deploymentHelper.deployLiquityCore()
+    contracts = await deploymentHelper.deployKumoCore()
     contracts.troveManager = await TroveManagerTester.new()
     contracts.kusdToken = await KUSDToken.new(
       contracts.troveManager.address,

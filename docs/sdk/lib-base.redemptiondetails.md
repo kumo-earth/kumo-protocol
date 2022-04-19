@@ -4,7 +4,7 @@
 
 ## RedemptionDetails interface
 
-Details of a [redeemKUSD()](./lib-base.transactableliquity.redeemkusd.md) transaction.
+Details of a [redeemKUSD()](./lib-base.transactablekumo.redeemkusd.md) transaction.
 
 <b>Signature:</b>
 

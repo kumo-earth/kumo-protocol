@@ -40,13 +40,13 @@ export function finishCurrentLiquidation(
   _liquidatedColl: BigInt,
   _liquidatedDebt: BigInt,
   _collGasCompensation: BigInt,
-  _KUSDGasCompensation: BigInt
+  _kusdGasCompensation: BigInt
 ): void {
   let currentLiquidation = getCurrentLiquidation(event);
   currentLiquidation.liquidatedCollateral = decimalize(_liquidatedColl);
   currentLiquidation.liquidatedDebt = decimalize(_liquidatedDebt);
   currentLiquidation.collGasCompensation = decimalize(_collGasCompensation);
-  currentLiquidation.tokenGasCompensation = decimalize(_KUSDGasCompensation);
+  currentLiquidation.tokenGasCompensation = decimalize(_kusdGasCompensation);
   currentLiquidation.save();
 
   let global = getGlobal();

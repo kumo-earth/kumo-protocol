@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect } from "react";
 import { Button, Flex } from "theme-ui";
 
-import { Decimal, Decimalish, LiquityStoreState } from "@liquity/lib-base";
-import { LiquityStoreUpdate, useLiquityReducer, useLiquitySelector } from "@liquity/lib-react";
+import { Decimal, Decimalish, KumoStoreState } from "@liquity/lib-base";
+import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@liquity/lib-react";
 
 import { COIN } from "../../strings";
 
@@ -17,7 +17,7 @@ import {
   validateStabilityDepositChange
 } from "./validation/validateStabilityDepositChange";
 
-const init = ({ stabilityDeposit }: LiquityStoreState) => ({
+const init = ({ stabilityDeposit }: KumoStoreState) => ({
   originalDeposit: stabilityDeposit,
   editedKUSD: stabilityDeposit.currentKUSD,
   changePending: false
@@ -25,7 +25,7 @@ const init = ({ stabilityDeposit }: LiquityStoreState) => ({
 
 type StabilityDepositManagerState = ReturnType<typeof init>;
 type StabilityDepositManagerAction =
-  | LiquityStoreUpdate
+  | KumoStoreUpdate
   | { type: "startChange" | "finishChange" | "revert" }
   | { type: "setDeposit"; newValue: Decimalish };
 
@@ -92,8 +92,8 @@ const reduce = (
 const transactionId = "stability-deposit";
 
 export const StabilityDepositManager: React.FC = () => {
-  const [{ originalDeposit, editedKUSD, changePending }, dispatch] = useLiquityReducer(reduce, init);
-  const validationContext = useLiquitySelector(selectForStabilityDepositChangeValidation);
+  const [{ originalDeposit, editedKUSD, changePending }, dispatch] = useKumoReducer(reduce, init);
+  const validationContext = useKumoSelector(selectForStabilityDepositChangeValidation);
   const { dispatchEvent } = useStabilityView();
 
   const handleCancel = useCallback(() => {

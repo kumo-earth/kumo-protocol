@@ -3,7 +3,7 @@ const deploymentHelper = require("../utils/deploymentHelpers.js")
 const { BNConverter } = require("../utils/BNConverter.js")
 const testHelpers = require("../utils/testHelpers.js")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
-const LiquityMathTester = artifacts.require("./LiquityMathTester.sol")
+const KumoMathTester = artifacts.require("./KumoMathTester.sol")
 
 const th = testHelpers.TestHelper
 const timeValues = testHelpers.TimeValues
@@ -334,12 +334,12 @@ contract('Fee arithmetic tests', async accounts => {
     troveManagerTester = await TroveManagerTester.new()
     TroveManagerTester.setAsDeployed(troveManagerTester)
 
-    mathTester = await LiquityMathTester.new()
-    LiquityMathTester.setAsDeployed(mathTester)
+    mathTester = await KumoMathTester.new()
+    KumoMathTester.setAsDeployed(mathTester)
   })
 
   beforeEach(async () => {
-    contracts = await deploymentHelper.deployLiquityCore()
+    contracts = await deploymentHelper.deployKumoCore()
     const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
     await deploymentHelper.connectKUMOContracts(KUMOContracts)

@@ -19,7 +19,7 @@ yarn run v1.22.11
 $ hardhat test
 
 
-  Contract: Access Control: Liquity functions with the caller restricted to Liquity contract(s)
+  Contract: Access Control: Kumo functions with the caller restricted to Kumo contract(s)
     BorrowerOperations
       ✓ moveETHGainToTrove(): reverts when called by an account that is not StabilityPool
     TroveManager
@@ -416,8 +416,8 @@ TCR: 11.892415157517211309
     Community Issuance deployment
       ✓ Stores the deployer's address
       ✓ Has a supply cap of 32 million
-      ✓ Liquity AG can set addresses if CI's KUMO balance is equal or greater than 32 million  (393ms)
-      ✓ Liquity AG can't set addresses if CI's KUMO balance is < 32 million  (367ms)
+      ✓ Kumo AG can set addresses if CI's KUMO balance is equal or greater than 32 million  (393ms)
+      ✓ Kumo AG can't set addresses if CI's KUMO balance is < 32 million  (367ms)
     Connecting KUMOToken to LCF, CI and KUMOStaking
       ✓ sets the correct KUMOToken address in KUMOStaking (1866ms)
       ✓ sets the correct KUMOToken address in LockupContractFactory
@@ -425,39 +425,39 @@ TCR: 11.892415157517211309
 
   Contract: During the initial lockup period
     KUMO transfer during first year after KUMO deployment
-      ✓ Liquity multisig can not transfer KUMO to a LC that was deployed directly (105ms)
-      ✓ Liquity multisig can not transfer to an EOA or Liquity system contracts (302ms)
-      ✓ Liquity multisig can not approve any EOA or Liquity system contract to spend their KUMO (546ms)
-      ✓ Liquity multisig can not increaseAllowance for any EOA or Liquity contract (285ms)
-      ✓ Liquity multisig can not decreaseAllowance for any EOA or Liquity contract (338ms)
-      ✓ Liquity multisig can not be the sender in a transferFrom() call
-      ✓ Liquity multisig can not stake their KUMO in the staking contract
-      ✓ Anyone (other than Liquity multisig) can transfer KUMO to LCs deployed by anyone through the Factory (359ms)
-      ✓ Anyone (other than Liquity multisig) can transfer KUMO to LCs deployed by anyone directly (141ms)
+      ✓ Kumo multisig can not transfer KUMO to a LC that was deployed directly (105ms)
+      ✓ Kumo multisig can not transfer to an EOA or Kumo system contracts (302ms)
+      ✓ Kumo multisig can not approve any EOA or Kumo system contract to spend their KUMO (546ms)
+      ✓ Kumo multisig can not increaseAllowance for any EOA or Kumo contract (285ms)
+      ✓ Kumo multisig can not decreaseAllowance for any EOA or Kumo contract (338ms)
+      ✓ Kumo multisig can not be the sender in a transferFrom() call
+      ✓ Kumo multisig can not stake their KUMO in the staking contract
+      ✓ Anyone (other than Kumo multisig) can transfer KUMO to LCs deployed by anyone through the Factory (359ms)
+      ✓ Anyone (other than Kumo multisig) can transfer KUMO to LCs deployed by anyone directly (141ms)
       ✓ Anyone (other than liquity multisig) can transfer to an EOA (106ms)
       ✓ Anyone (other than liquity multisig) can approve any EOA or to spend their KUMO
-      ✓ Anyone (other than liquity multisig) can increaseAllowance for any EOA or Liquity contract (244ms)
-      ✓ Anyone (other than liquity multisig) can decreaseAllowance for any EOA or Liquity contract (693ms)
+      ✓ Anyone (other than liquity multisig) can increaseAllowance for any EOA or Kumo contract (244ms)
+      ✓ Anyone (other than liquity multisig) can decreaseAllowance for any EOA or Kumo contract (693ms)
       ✓ Anyone (other than liquity multisig) can be the sender in a transferFrom() call (62ms)
       ✓ Anyone (other than liquity AG) can stake their KUMO in the staking contract
     Lockup Contract Factory negative tests
       ✓ deployLockupContract(): reverts when KUMO token address is not set (197ms)
     Transferring KUMO to LCs
-      ✓ Liquity multisig can transfer KUMO (vesting) to lockup contracts they deployed (198ms)
-      ✓ Liquity multisig can transfer KUMO to lockup contracts deployed by anyone (1798ms)
+      ✓ Kumo multisig can transfer KUMO (vesting) to lockup contracts they deployed (198ms)
+      ✓ Kumo multisig can transfer KUMO to lockup contracts deployed by anyone (1798ms)
     Deploying new LCs
       ✓ KUMO Deployer can deploy LCs through the Factory (46ms)
-      ✓ Liquity multisig can deploy LCs through the Factory
+      ✓ Kumo multisig can deploy LCs through the Factory
       ✓ Anyone can deploy LCs through the Factory (80ms)
       ✓ KUMO Deployer can deploy LCs directly (44ms)
-      ✓ Liquity multisig can deploy LCs directly (45ms)
+      ✓ Kumo multisig can deploy LCs directly (45ms)
       ✓ Anyone can deploy LCs directly (46ms)
       ✓ Anyone can deploy LCs with unlockTime = one year from deployment, directly and through factory (102ms)
       ✓ Anyone can deploy LCs with unlockTime > one year from deployment, directly and through factory (187ms)
       ✓ No one can deploy LCs with unlockTime < one year from deployment, directly or through factory (100ms)
       Withdrawal Attempts on LCs before unlockTime has passed 
-        ✓ Liquity multisig can't withdraw from a funded LC they deployed for another beneficiary through the Factory before the unlockTime
-        ✓ Liquity multisig can't withdraw from a funded LC that someone else deployed before the unlockTime (52ms)
+        ✓ Kumo multisig can't withdraw from a funded LC they deployed for another beneficiary through the Factory before the unlockTime
+        ✓ Kumo multisig can't withdraw from a funded LC that someone else deployed before the unlockTime (52ms)
         ✓ Beneficiary can't withdraw from their funded LC before the unlockTime (219ms)
         ✓ No one can withdraw from a beneficiary's funded LC before the unlockTime (475ms)
 
@@ -482,8 +482,8 @@ TCR: 11.892415157517211309
       ✓ Anyone can transfer KUMO to LCs deployed by anyone (179ms)
       ✓ Anyone can transfer to an EOA (421ms)
       ✓ Anyone can approve any EOA to spend their KUMO
-      ✓ Anyone can increaseAllowance for any EOA or Liquity contract (2441ms)
-      ✓ Anyone can decreaseAllowance for any EOA or Liquity contract (1034ms)
+      ✓ Anyone can increaseAllowance for any EOA or Kumo contract (2441ms)
+      ✓ Anyone can decreaseAllowance for any EOA or Kumo contract (1034ms)
       ✓ Anyone can be the sender in a transferFrom() call (101ms)
       ✓ Anyone can stake their KUMO in the staking contract (55ms)
     Withdrawal Attempts on new LCs before unlockTime has passed
@@ -497,12 +497,12 @@ TCR: 11.892415157517211309
       ✓ Beneficiary can withdraw from their funded LC, after the unlockTime (97ms)
       ✓ Non-beneficiaries can't withdraw from a beneficiary's funded LC, after the unlockTime (226ms)
 
-  Contract: LiquityMath
+  Contract: KumoMath
     ✓ max works if a > b
     ✓ max works if a = b
     ✓ max works if a < b
 
-  Contract: LiquitySafeMath128Tester
+  Contract: KumoSafeMath128Tester
     ✓ add(): reverts if overflows
     ✓ sub(): reverts if underflows
 
@@ -606,7 +606,7 @@ issuance fraction after: 949066037374286
       ✓ decreaseAllowance(): decreases allowance by the expected amount
       ✓ decreaseAllowance(): fails trying to decrease more than previously allowed (49ms)
 
-  Contract: All Liquity functions with onlyOwner modifier
+  Contract: All Kumo functions with onlyOwner modifier
     TroveManager
       ✓ setAddresses(): reverts when called by non-owner, with wrong addresses, or twice (857ms)
     BorrowerOperations
@@ -953,7 +953,7 @@ alice deposit: 0
       ✓ withdrawFromSP(), full withdrawal that reduces front end stake to 0: zero’s the front end’s snapshots (1248ms)
       ✓ withdrawFromSP(), reverts when initial deposit value is 0 (1037ms)
       ✓ withdrawETHGainToTrove(): reverts when user has no active deposit (1043ms)
-      ✓ withdrawETHGainToTrove(): Applies KUSDLoss to user's deposit, and redirects ETH reward to user's Trove (932ms)
+      ✓ withdrawETHGainToTrove(): Applies kusdLoss to user's deposit, and redirects ETH reward to user's Trove (932ms)
       ✓ withdrawETHGainToTrove(): reverts if it would leave trove with ICR < MCR (3920ms)
       ✓ withdrawETHGainToTrove(): Subsequent deposit and withdrawal attempt from same account, with no intermediate liquidations, withdraws zero ETH (976ms)
       ✓ withdrawETHGainToTrove(): decreases StabilityPool ETH and increases activePool ETH (976ms)

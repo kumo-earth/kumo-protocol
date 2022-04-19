@@ -1,20 +1,20 @@
 import React from "react";
 import { Card, Heading, Box, Flex } from "theme-ui";
-import { LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { KumoStoreState } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 import { InfoMessage } from "../../../InfoMessage";
 import { UnstakeAndClaim } from "../UnstakeAndClaim";
 import { RemainingKUMO } from "../RemainingKUMO";
 import { StaticRow } from "../../../Trove/Editor";
 import { GT, LP } from "../../../../strings";
 
-const selector = ({ liquidityMiningStake, liquidityMiningKUMOReward }: LiquityStoreState) => ({
+const selector = ({ liquidityMiningStake, liquidityMiningKUMOReward }: KumoStoreState) => ({
   liquidityMiningStake,
   liquidityMiningKUMOReward
 });
 
 export const Disabled: React.FC = () => {
-  const { liquidityMiningStake, liquidityMiningKUMOReward } = useLiquitySelector(selector);
+  const { liquidityMiningStake, liquidityMiningKUMOReward } = useKumoSelector(selector);
   const hasStake = !liquidityMiningStake.isZero;
 
   return (

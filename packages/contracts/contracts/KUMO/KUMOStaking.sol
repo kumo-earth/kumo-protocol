@@ -11,7 +11,7 @@ import "../Dependencies/CheckContract.sol";
 import "../Dependencies/console.sol";
 import "../Interfaces/IKUMOToken.sol";
 import "../Interfaces/IKUMOStaking.sol";
-import "../Dependencies/LiquityMath.sol";
+import "../Dependencies/KumoMath.sol";
 import "../Interfaces/IKUSDToken.sol";
 
 contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
@@ -146,7 +146,7 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
         _updateUserSnapshots(msg.sender);
 
         if (_KUMOamount > 0) {
-            uint KUMOToWithdraw = LiquityMath._min(_KUMOamount, currentStake);
+            uint KUMOToWithdraw = KumoMath._min(_KUMOamount, currentStake);
 
             uint newStake = currentStake.sub(KUMOToWithdraw);
 
@@ -168,7 +168,7 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
         _sendETHGainToUser(ETHGain);
     }
 
-    // --- Reward-per-unit-staked increase functions. Called by Liquity core contracts ---
+    // --- Reward-per-unit-staked increase functions. Called by Kumo core contracts ---
 
     function increaseF_ETH(uint _ETHFee) external override {
         _requireCallerIsTroveManager();

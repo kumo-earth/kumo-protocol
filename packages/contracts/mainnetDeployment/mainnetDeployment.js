@@ -41,57 +41,57 @@ async function mainnetDeploy(configParams) {
   const liquityCore = await mdh.deployLiquityCoreMainnet(configParams.externalAddrs.TELLOR_MASTER, deploymentState)
   await mdh.logContractObjects(liquityCore)
 
-  // Check Uniswap Pair KUSD-ETH pair before pair creation
-  let KUSDWETHPairAddr = await uniswapV2Factory.getPair(liquityCore.kusdToken.address, configParams.externalAddrs.WETH_ERC20)
-  let WETHKUSDPairAddr = await uniswapV2Factory.getPair(configParams.externalAddrs.WETH_ERC20, liquityCore.kusdToken.address)
-  assert.equal(KUSDWETHPairAddr, WETHKUSDPairAddr)
+  // Check Uniswap Pair LUSD-ETH pair before pair creation
+  let LUSDWETHPairAddr = await uniswapV2Factory.getPair(liquityCore.lusdToken.address, configParams.externalAddrs.WETH_ERC20)
+  let WETHLUSDPairAddr = await uniswapV2Factory.getPair(configParams.externalAddrs.WETH_ERC20, liquityCore.lusdToken.address)
+  assert.equal(LUSDWETHPairAddr, WETHLUSDPairAddr)
 
 
-  if (KUSDWETHPairAddr == th.ZERO_ADDRESS) {
-    // Deploy Unipool for KUSD-WETH
+  if (LUSDWETHPairAddr == th.ZERO_ADDRESS) {
+    // Deploy Unipool for LUSD-WETH
     await mdh.sendAndWaitForTransaction(uniswapV2Factory.createPair(
       configParams.externalAddrs.WETH_ERC20,
-      liquityCore.kusdToken.address,
+      liquityCore.lusdToken.address,
       { gasPrice }
     ))
 
-    // Check Uniswap Pair KUSD-WETH pair after pair creation (forwards and backwards should have same address)
-    KUSDWETHPairAddr = await uniswapV2Factory.getPair(liquityCore.kusdToken.address, configParams.externalAddrs.WETH_ERC20)
-    assert.notEqual(KUSDWETHPairAddr, th.ZERO_ADDRESS)
-    WETHKUSDPairAddr = await uniswapV2Factory.getPair(configParams.externalAddrs.WETH_ERC20, liquityCore.kusdToken.address)
-    console.log(`KUSD-WETH pair contract address after Uniswap pair creation: ${KUSDWETHPairAddr}`)
-    assert.equal(WETHKUSDPairAddr, KUSDWETHPairAddr)
+    // Check Uniswap Pair LUSD-WETH pair after pair creation (forwards and backwards should have same address)
+    LUSDWETHPairAddr = await uniswapV2Factory.getPair(liquityCore.lusdToken.address, configParams.externalAddrs.WETH_ERC20)
+    assert.notEqual(LUSDWETHPairAddr, th.ZERO_ADDRESS)
+    WETHLUSDPairAddr = await uniswapV2Factory.getPair(configParams.externalAddrs.WETH_ERC20, liquityCore.lusdToken.address)
+    console.log(`LUSD-WETH pair contract address after Uniswap pair creation: ${LUSDWETHPairAddr}`)
+    assert.equal(WETHLUSDPairAddr, LUSDWETHPairAddr)
   }
 
   // Deploy Unipool
   const unipool = await mdh.deployUnipoolMainnet(deploymentState)
 
-  // Deploy KUMO Contracts
-  const KUMOContracts = await mdh.deployKUMOContractsMainnet(
+  // Deploy LQTY Contracts
+  const LQTYContracts = await mdh.deployLQTYContractsMainnet(
     configParams.liquityAddrs.GENERAL_SAFE, // bounty address
     unipool.address,  // lp rewards address
-    configParams.liquityAddrs.KUMO_SAFE, // multisig KUMO endowment address
+    configParams.liquityAddrs.LQTY_SAFE, // multisig LQTY endowment address
     deploymentState,
   )
 
   // Connect all core contracts up
-  await mdh.connectCoreContractsMainnet(liquityCore, KUMOContracts, configParams.externalAddrs.CHAINLINK_ETHUSD_PROXY)
-  await mdh.connectKUMOContractsMainnet(KUMOContracts)
-  await mdh.connectKUMOContractsToCoreMainnet(KUMOContracts, liquityCore)
+  await mdh.connectCoreContractsMainnet(liquityCore, LQTYContracts, configParams.externalAddrs.CHAINLINK_ETHUSD_PROXY)
+  await mdh.connectLQTYContractsMainnet(LQTYContracts)
+  await mdh.connectLQTYContractsToCoreMainnet(LQTYContracts, liquityCore)
 
   // Deploy a read-only multi-trove getter
   const multiTroveGetter = await mdh.deployMultiTroveGetterMainnet(liquityCore, deploymentState)
 
-  // Connect Unipool to KUMOToken and the KUSD-WETH pair address, with a 6 week duration
+  // Connect Unipool to LQTYToken and the LUSD-WETH pair address, with a 6 week duration
   const LPRewardsDuration = timeVals.SECONDS_IN_SIX_WEEKS
-  await mdh.connectUnipoolMainnet(unipool, KUMOContracts, KUSDWETHPairAddr, LPRewardsDuration)
+  await mdh.connectUnipoolMainnet(unipool, LQTYContracts, LUSDWETHPairAddr, LPRewardsDuration)
 
-  // Log KUMO and Unipool addresses
-  await mdh.logContractObjects(KUMOContracts)
+  // Log LQTY and Unipool addresses
+  await mdh.logContractObjects(LQTYContracts)
   console.log(`Unipool address: ${unipool.address}`)
   
   // let latestBlock = await ethers.provider.getBlockNumber()
-  let deploymentStartTime = await KUMOContracts.kumoToken.getDeploymentStartTime()
+  let deploymentStartTime = await LQTYContracts.lqtyToken.getDeploymentStartTime()
 
   console.log(`deployment start time: ${deploymentStartTime}`)
   const oneYearFromDeployment = (Number(deploymentStartTime) + timeVals.SECONDS_IN_ONE_YEAR).toString()
@@ -110,7 +110,7 @@ async function mainnetDeploy(configParams) {
         deployerWallet
       )
     } else {
-      const txReceipt = await mdh.sendAndWaitForTransaction(KUMOContracts.lockupContractFactory.deployLockupContract(investorAddr, oneYearFromDeployment, { gasPrice }))
+      const txReceipt = await mdh.sendAndWaitForTransaction(LQTYContracts.lockupContractFactory.deployLockupContract(investorAddr, oneYearFromDeployment, { gasPrice }))
 
       const address = await txReceipt.logs[0].address // The deployment event emitted from the LC itself is is the first of two events, so this is its address 
       lockupContracts[investor] = new ethers.Contract(
@@ -127,18 +127,18 @@ async function mainnetDeploy(configParams) {
       mdh.saveDeployment(deploymentState)
     }
 
-    const kumoTokenAddr = KUMOContracts.kumoToken.address
+    const lqtyTokenAddr = LQTYContracts.lqtyToken.address
     // verify
     if (configParams.ETHERSCAN_BASE_URL) {
-      await mdh.verifyContract(investor, deploymentState, [kumoTokenAddr, investorAddr, oneYearFromDeployment])
+      await mdh.verifyContract(investor, deploymentState, [lqtyTokenAddr, investorAddr, oneYearFromDeployment])
     }
   }
 
   // // --- TESTS AND CHECKS  ---
 
-  // Deployer repay KUSD
+  // Deployer repay LUSD
   // console.log(`deployer trove debt before repaying: ${await liquityCore.troveManager.getTroveDebt(deployerWallet.address)}`)
- // await mdh.sendAndWaitForTransaction(liquityCore.borrowerOperations.repayKUSD(dec(800, 18), th.ZERO_ADDRESS, th.ZERO_ADDRESS, {gasPrice, gasLimit: 1000000}))
+ // await mdh.sendAndWaitForTransaction(liquityCore.borrowerOperations.repayLUSD(dec(800, 18), th.ZERO_ADDRESS, th.ZERO_ADDRESS, {gasPrice, gasLimit: 1000000}))
   // console.log(`deployer trove debt after repaying: ${await liquityCore.troveManager.getTroveDebt(deployerWallet.address)}`)
   
   // Deployer add coll
@@ -168,9 +168,9 @@ async function mainnetDeploy(configParams) {
   // Check lockup contracts exist for each beneficiary with correct unlock time
   for (investor of Object.keys(lockupContracts)) {
     const lockupContract = lockupContracts[investor]
-    // check LC references correct KUMOToken 
-    const storedKUMOTokenAddr = await lockupContract.kumoToken()
-    assert.equal(KUMOContracts.kumoToken.address, storedKUMOTokenAddr)
+    // check LC references correct LQTYToken 
+    const storedLQTYTokenAddr = await lockupContract.lqtyToken()
+    assert.equal(LQTYContracts.lqtyToken.address, storedLQTYTokenAddr)
     // Check contract has stored correct beneficary
     const onChainBeneficiary = await lockupContract.beneficiary()
     assert.equal(configParams.beneficiaries[investor].toLowerCase(), onChainBeneficiary.toLowerCase())
@@ -180,7 +180,7 @@ async function mainnetDeploy(configParams) {
 
     console.log(
       `lockupContract addr: ${lockupContract.address},
-            stored KUMOToken addr: ${storedKUMOTokenAddr}
+            stored LQTYToken addr: ${storedLQTYTokenAddr}
             beneficiary: ${investor},
             beneficiary addr: ${configParams.beneficiaries[investor]},
             on-chain beneficiary addr: ${onChainBeneficiary},
@@ -189,32 +189,32 @@ async function mainnetDeploy(configParams) {
     )
   }
 
-  // // --- Check correct addresses set in KUMOToken
-  // console.log("STORED ADDRESSES IN KUMO TOKEN")
-  // const storedMultisigAddress = await KUMOContracts.kumoToken.multisigAddress()
-  // assert.equal(configParams.liquityAddrs.KUMO_SAFE.toLowerCase(), storedMultisigAddress.toLowerCase())
-  // console.log(`multi-sig address stored in KUMOToken : ${th.squeezeAddr(storedMultisigAddress)}`)
-  // console.log(`KUMO Safe address: ${th.squeezeAddr(configParams.liquityAddrs.KUMO_SAFE)}`)
+  // // --- Check correct addresses set in LQTYToken
+  // console.log("STORED ADDRESSES IN LQTY TOKEN")
+  // const storedMultisigAddress = await LQTYContracts.lqtyToken.multisigAddress()
+  // assert.equal(configParams.liquityAddrs.LQTY_SAFE.toLowerCase(), storedMultisigAddress.toLowerCase())
+  // console.log(`multi-sig address stored in LQTYToken : ${th.squeezeAddr(storedMultisigAddress)}`)
+  // console.log(`LQTY Safe address: ${th.squeezeAddr(configParams.liquityAddrs.LQTY_SAFE)}`)
 
-  // // --- KUMO allowances of different addresses ---
-  // console.log("INITIAL KUMO BALANCES")
+  // // --- LQTY allowances of different addresses ---
+  // console.log("INITIAL LQTY BALANCES")
   // // Unipool
-  // const unipoolKUMOBal = await KUMOContracts.kumoToken.balanceOf(unipool.address)
-  // // assert.equal(unipoolKUMOBal.toString(), '1333333333333333333333333')
-  // th.logBN('Unipool KUMO balance       ', unipoolKUMOBal)
+  // const unipoolLQTYBal = await LQTYContracts.lqtyToken.balanceOf(unipool.address)
+  // // assert.equal(unipoolLQTYBal.toString(), '1333333333333333333333333')
+  // th.logBN('Unipool LQTY balance       ', unipoolLQTYBal)
 
-  // // KUMO Safe
-  // const kumoSafeBal = await KUMOContracts.kumoToken.balanceOf(configParams.liquityAddrs.KUMO_SAFE)
-  // assert.equal(kumoSafeBal.toString(), '64666666666666666666666667')
-  // th.logBN('KUMO Safe balance     ', kumoSafeBal)
+  // // LQTY Safe
+  // const lqtySafeBal = await LQTYContracts.lqtyToken.balanceOf(configParams.liquityAddrs.LQTY_SAFE)
+  // assert.equal(lqtySafeBal.toString(), '64666666666666666666666667')
+  // th.logBN('LQTY Safe balance     ', lqtySafeBal)
 
   // // Bounties/hackathons (General Safe)
-  // const generalSafeBal = await KUMOContracts.kumoToken.balanceOf(configParams.liquityAddrs.GENERAL_SAFE)
+  // const generalSafeBal = await LQTYContracts.lqtyToken.balanceOf(configParams.liquityAddrs.GENERAL_SAFE)
   // assert.equal(generalSafeBal.toString(), '2000000000000000000000000')
   // th.logBN('General Safe balance       ', generalSafeBal)
 
   // // CommunityIssuance contract
-  // const communityIssuanceBal = await KUMOContracts.kumoToken.balanceOf(KUMOContracts.communityIssuance.address)
+  // const communityIssuanceBal = await LQTYContracts.lqtyToken.balanceOf(LQTYContracts.communityIssuance.address)
   // // assert.equal(communityIssuanceBal.toString(), '32000000000000000000000000')
   // th.logBN('Community Issuance balance', communityIssuanceBal)
 
@@ -238,9 +238,9 @@ async function mainnetDeploy(configParams) {
 
   // // --- Unipool ---
 
-  // // Check Unipool's KUSD-ETH Uniswap Pair address
+  // // Check Unipool's LUSD-ETH Uniswap Pair address
   // const unipoolUniswapPairAddr = await unipool.uniToken()
-  // console.log(`Unipool's stored KUSD-ETH Uniswap Pair address: ${unipoolUniswapPairAddr}`)
+  // console.log(`Unipool's stored LUSD-ETH Uniswap Pair address: ${unipoolUniswapPairAddr}`)
 
   // console.log("SYSTEM GLOBAL VARS CHECKS")
   // // --- Sorted Troves ---
@@ -251,24 +251,24 @@ async function mainnetDeploy(configParams) {
 
   // // --- TroveManager ---
 
-  // const liqReserve = await liquityCore.troveManager.KUSD_GAS_COMPENSATION()
+  // const liqReserve = await liquityCore.troveManager.LUSD_GAS_COMPENSATION()
   // const minNetDebt = await liquityCore.troveManager.MIN_NET_DEBT()
 
   // th.logBN('system liquidation reserve', liqReserve)
   // th.logBN('system min net debt      ', minNetDebt)
 
-  // // --- Make first KUSD-ETH liquidity provision ---
+  // // --- Make first LUSD-ETH liquidity provision ---
 
   // // Open trove if not yet opened
   // const troveStatus = await liquityCore.troveManager.getTroveStatus(deployerWallet.address)
   // if (troveStatus.toString() != '1') {
-  //   let _3kKUSDWithdrawal = th.dec(3000, 18) // 3000 KUSD
+  //   let _3kLUSDWithdrawal = th.dec(3000, 18) // 3000 LUSD
   //   let _3ETHcoll = th.dec(3, 'ether') // 3 ETH
   //   console.log('Opening trove...')
   //   await mdh.sendAndWaitForTransaction(
   //     liquityCore.borrowerOperations.openTrove(
   //       th._100pct,
-  //       _3kKUSDWithdrawal,
+  //       _3kLUSDWithdrawal,
   //       th.ZERO_ADDRESS,
   //       th.ZERO_ADDRESS,
   //       { value: _3ETHcoll, gasPrice }
@@ -287,28 +287,28 @@ async function mainnetDeploy(configParams) {
   // th.logBN('deployer stake', deployerTrove[2])
   // console.log(`deployer's trove status: ${deployerTrove[3]}`)
 
-  // // Check deployer has KUSD
-  // let deployerKUSDBal = await liquityCore.kusdToken.balanceOf(deployerWallet.address)
-  // th.logBN("deployer's KUSD balance", deployerKUSDBal)
+  // // Check deployer has LUSD
+  // let deployerLUSDBal = await liquityCore.lusdToken.balanceOf(deployerWallet.address)
+  // th.logBN("deployer's LUSD balance", deployerLUSDBal)
 
-  // // Check Uniswap pool has KUSD and WETH tokens
-  const KUSDETHPair = await new ethers.Contract(
-    KUSDWETHPairAddr,
+  // // Check Uniswap pool has LUSD and WETH tokens
+  const LUSDETHPair = await new ethers.Contract(
+    LUSDWETHPairAddr,
     UniswapV2Pair.abi,
     deployerWallet
   )
 
-  // const token0Addr = await KUSDETHPair.token0()
-  // const token1Addr = await KUSDETHPair.token1()
-  // console.log(`KUSD-ETH Pair token 0: ${th.squeezeAddr(token0Addr)},
-  //       KUSDToken contract addr: ${th.squeezeAddr(liquityCore.kusdToken.address)}`)
-  // console.log(`KUSD-ETH Pair token 1: ${th.squeezeAddr(token1Addr)},
+  // const token0Addr = await LUSDETHPair.token0()
+  // const token1Addr = await LUSDETHPair.token1()
+  // console.log(`LUSD-ETH Pair token 0: ${th.squeezeAddr(token0Addr)},
+  //       LUSDToken contract addr: ${th.squeezeAddr(liquityCore.lusdToken.address)}`)
+  // console.log(`LUSD-ETH Pair token 1: ${th.squeezeAddr(token1Addr)},
   //       WETH ERC20 contract addr: ${th.squeezeAddr(configParams.externalAddrs.WETH_ERC20)}`)
 
-  // // Check initial KUSD-ETH pair reserves before provision
-  // let reserves = await KUSDETHPair.getReserves()
-  // th.logBN("KUSD-ETH Pair's KUSD reserves before provision", reserves[0])
-  // th.logBN("KUSD-ETH Pair's ETH reserves before provision", reserves[1])
+  // // Check initial LUSD-ETH pair reserves before provision
+  // let reserves = await LUSDETHPair.getReserves()
+  // th.logBN("LUSD-ETH Pair's LUSD reserves before provision", reserves[0])
+  // th.logBN("LUSD-ETH Pair's ETH reserves before provision", reserves[1])
 
   // // Get the UniswapV2Router contract
   // const uniswapV2Router02 = new ethers.Contract(
@@ -317,38 +317,38 @@ async function mainnetDeploy(configParams) {
   //   deployerWallet
   // )
 
-  // // --- Provide liquidity to KUSD-ETH pair if not yet done so ---
-  // let deployerLPTokenBal = await KUSDETHPair.balanceOf(deployerWallet.address)
+  // // --- Provide liquidity to LUSD-ETH pair if not yet done so ---
+  // let deployerLPTokenBal = await LUSDETHPair.balanceOf(deployerWallet.address)
   // if (deployerLPTokenBal.toString() == '0') {
   //   console.log('Providing liquidity to Uniswap...')
-  //   // Give router an allowance for KUSD
-  //   await liquityCore.kusdToken.increaseAllowance(uniswapV2Router02.address, dec(10000, 18))
+  //   // Give router an allowance for LUSD
+  //   await liquityCore.lusdToken.increaseAllowance(uniswapV2Router02.address, dec(10000, 18))
 
   //   // Check Router's spending allowance
-  //   const routerKUSDAllowanceFromDeployer = await liquityCore.kusdToken.allowance(deployerWallet.address, uniswapV2Router02.address)
-  //   th.logBN("router's spending allowance for deployer's KUSD", routerKUSDAllowanceFromDeployer)
+  //   const routerLUSDAllowanceFromDeployer = await liquityCore.lusdToken.allowance(deployerWallet.address, uniswapV2Router02.address)
+  //   th.logBN("router's spending allowance for deployer's LUSD", routerLUSDAllowanceFromDeployer)
 
   //   // Get amounts for liquidity provision
   //   const LP_ETH = dec(1, 'ether')
 
   //   // Convert 8-digit CL price to 18 and multiply by ETH amount
-  //   const KUSDAmount = toBigNum(chainlinkPrice)
+  //   const LUSDAmount = toBigNum(chainlinkPrice)
   //     .mul(toBigNum(dec(1, 10)))
   //     .mul(toBigNum(LP_ETH))
   //     .div(toBigNum(dec(1, 18)))
 
-  //   const minKUSDAmount = KUSDAmount.sub(toBigNum(dec(100, 18)))
+  //   const minLUSDAmount = LUSDAmount.sub(toBigNum(dec(100, 18)))
 
   //   latestBlock = await ethers.provider.getBlockNumber()
   //   now = (await ethers.provider.getBlock(latestBlock)).timestamp
   //   let tenMinsFromNow = now + (60 * 60 * 10)
 
-  //   // Provide liquidity to KUSD-ETH pair
+  //   // Provide liquidity to LUSD-ETH pair
   //   await mdh.sendAndWaitForTransaction(
   //     uniswapV2Router02.addLiquidityETH(
-  //       liquityCore.kusdToken.address, // address of KUSD token
-  //       KUSDAmount, // KUSD provision
-  //       minKUSDAmount, // minimum KUSD provision
+  //       liquityCore.lusdToken.address, // address of LUSD token
+  //       LUSDAmount, // LUSD provision
+  //       minLUSDAmount, // minimum LUSD provision
   //       LP_ETH, // minimum ETH provision
   //       deployerWallet.address, // address to send LP tokens to
   //       tenMinsFromNow, // deadline for this tx
@@ -362,33 +362,33 @@ async function mainnetDeploy(configParams) {
   // } else {
   //   console.log('Liquidity already provided to Uniswap')
   // }
-  // // Check KUSD-ETH reserves after liquidity provision:
-  // reserves = await KUSDETHPair.getReserves()
-  // th.logBN("KUSD-ETH Pair's KUSD reserves after provision", reserves[0])
-  // th.logBN("KUSD-ETH Pair's ETH reserves after provision", reserves[1])
+  // // Check LUSD-ETH reserves after liquidity provision:
+  // reserves = await LUSDETHPair.getReserves()
+  // th.logBN("LUSD-ETH Pair's LUSD reserves after provision", reserves[0])
+  // th.logBN("LUSD-ETH Pair's ETH reserves after provision", reserves[1])
 
 
 
   // // ---  Check LP staking  ---
-  // console.log("CHECK LP STAKING EARNS KUMO")
+  // console.log("CHECK LP STAKING EARNS LQTY")
 
   // // Check deployer's LP tokens
-  // deployerLPTokenBal = await KUSDETHPair.balanceOf(deployerWallet.address)
+  // deployerLPTokenBal = await LUSDETHPair.balanceOf(deployerWallet.address)
   // th.logBN("deployer's LP token balance", deployerLPTokenBal)
 
   // // Stake LP tokens in Unipool
-  // console.log(`KUSDETHPair addr: ${KUSDETHPair.address}`)
+  // console.log(`LUSDETHPair addr: ${LUSDETHPair.address}`)
   // console.log(`Pair addr stored in Unipool: ${await unipool.uniToken()}`)
 
-  // earnedKUMO = await unipool.earned(deployerWallet.address)
-  // th.logBN("deployer's farmed KUMO before staking LP tokens", earnedKUMO)
+  // earnedLQTY = await unipool.earned(deployerWallet.address)
+  // th.logBN("deployer's farmed LQTY before staking LP tokens", earnedLQTY)
 
   // const deployerUnipoolStake = await unipool.balanceOf(deployerWallet.address)
   // if (deployerUnipoolStake.toString() == '0') {
   //   console.log('Staking to Unipool...')
   //   // Deployer approves Unipool
   //   await mdh.sendAndWaitForTransaction(
-  //     KUSDETHPair.approve(unipool.address, deployerLPTokenBal, { gasPrice })
+  //     LUSDETHPair.approve(unipool.address, deployerLPTokenBal, { gasPrice })
   //   )
 
   //   await mdh.sendAndWaitForTransaction(unipool.stake(1, { gasPrice }))
@@ -399,26 +399,26 @@ async function mainnetDeploy(configParams) {
   // console.log("wait 90 seconds before checking earnings... ")
   // await configParams.waitFunction()
 
-  // earnedKUMO = await unipool.earned(deployerWallet.address)
-  // th.logBN("deployer's farmed KUMO from Unipool after waiting ~1.5mins", earnedKUMO)
+  // earnedLQTY = await unipool.earned(deployerWallet.address)
+  // th.logBN("deployer's farmed LQTY from Unipool after waiting ~1.5mins", earnedLQTY)
 
-  // let deployerKUMOBal = await KUMOContracts.kumoToken.balanceOf(deployerWallet.address)
-  // th.logBN("deployer KUMO Balance Before SP deposit", deployerKUMOBal)
+  // let deployerLQTYBal = await LQTYContracts.lqtyToken.balanceOf(deployerWallet.address)
+  // th.logBN("deployer LQTY Balance Before SP deposit", deployerLQTYBal)
 
 
 
-  // // --- Make SP deposit and earn KUMO ---
-  // console.log("CHECK DEPLOYER MAKING DEPOSIT AND EARNING KUMO")
+  // // --- Make SP deposit and earn LQTY ---
+  // console.log("CHECK DEPLOYER MAKING DEPOSIT AND EARNING LQTY")
 
-  // let SPDeposit = await liquityCore.stabilityPool.getCompoundedKUSDDeposit(deployerWallet.address)
+  // let SPDeposit = await liquityCore.stabilityPool.getCompoundedLUSDDeposit(deployerWallet.address)
   // th.logBN("deployer SP deposit before making deposit", SPDeposit)
 
   // // Provide to SP
   // await mdh.sendAndWaitForTransaction(liquityCore.stabilityPool.provideToSP(dec(15, 18), th.ZERO_ADDRESS, { gasPrice, gasLimit: 400000 }))
 
   // // Get SP deposit 
-  // SPDeposit = await liquityCore.stabilityPool.getCompoundedKUSDDeposit(deployerWallet.address)
-  // th.logBN("deployer SP deposit after depositing 15 KUSD", SPDeposit)
+  // SPDeposit = await liquityCore.stabilityPool.getCompoundedLUSDDeposit(deployerWallet.address)
+  // th.logBN("deployer SP deposit after depositing 15 LUSD", SPDeposit)
 
   // console.log("wait 90 seconds before withdrawing...")
   // // wait 90 seconds
@@ -427,11 +427,11 @@ async function mainnetDeploy(configParams) {
   // // Withdraw from SP
   // // await mdh.sendAndWaitForTransaction(liquityCore.stabilityPool.withdrawFromSP(dec(1000, 18), { gasPrice, gasLimit: 400000 }))
 
-  // // SPDeposit = await liquityCore.stabilityPool.getCompoundedKUSDDeposit(deployerWallet.address)
+  // // SPDeposit = await liquityCore.stabilityPool.getCompoundedLUSDDeposit(deployerWallet.address)
   // // th.logBN("deployer SP deposit after full withdrawal", SPDeposit)
 
-  // // deployerKUMOBal = await KUMOContracts.kumoToken.balanceOf(deployerWallet.address)
-  // // th.logBN("deployer KUMO Balance after SP deposit withdrawal", deployerKUMOBal)
+  // // deployerLQTYBal = await LQTYContracts.lqtyToken.balanceOf(deployerWallet.address)
+  // // th.logBN("deployer LQTY Balance after SP deposit withdrawal", deployerLQTYBal)
 
 
 
@@ -441,49 +441,49 @@ async function mainnetDeploy(configParams) {
   // // connect Acct2 wallet to the LC they are beneficiary of
   // let account2LockupContract = await lockupContracts["ACCOUNT_2"].connect(account2Wallet)
 
-  // // Deployer funds LC with 10 KUMO
-  // // await mdh.sendAndWaitForTransaction(KUMOContracts.kumoToken.transfer(account2LockupContract.address, dec(10, 18), { gasPrice }))
+  // // Deployer funds LC with 10 LQTY
+  // // await mdh.sendAndWaitForTransaction(LQTYContracts.lqtyToken.transfer(account2LockupContract.address, dec(10, 18), { gasPrice }))
 
-  // // account2 KUMO bal
-  // let account2bal = await KUMOContracts.kumoToken.balanceOf(account2Wallet.address)
-  // th.logBN("account2 KUMO bal before withdrawal attempt", account2bal)
+  // // account2 LQTY bal
+  // let account2bal = await LQTYContracts.lqtyToken.balanceOf(account2Wallet.address)
+  // th.logBN("account2 LQTY bal before withdrawal attempt", account2bal)
 
-  // // Check LC KUMO bal 
-  // let account2LockupContractBal = await KUMOContracts.kumoToken.balanceOf(account2LockupContract.address)
-  // th.logBN("account2's LC KUMO bal before withdrawal attempt", account2LockupContractBal)
+  // // Check LC LQTY bal 
+  // let account2LockupContractBal = await LQTYContracts.lqtyToken.balanceOf(account2LockupContract.address)
+  // th.logBN("account2's LC LQTY bal before withdrawal attempt", account2LockupContractBal)
 
   // // Acct2 attempts withdrawal from  LC
-  // await mdh.sendAndWaitForTransaction(account2LockupContract.withdrawKUMO({ gasPrice, gasLimit: 1000000 }))
+  // await mdh.sendAndWaitForTransaction(account2LockupContract.withdrawLQTY({ gasPrice, gasLimit: 1000000 }))
 
-  // // Acct KUMO bal
-  // account2bal = await KUMOContracts.kumoToken.balanceOf(account2Wallet.address)
-  // th.logBN("account2's KUMO bal after LC withdrawal attempt", account2bal)
+  // // Acct LQTY bal
+  // account2bal = await LQTYContracts.lqtyToken.balanceOf(account2Wallet.address)
+  // th.logBN("account2's LQTY bal after LC withdrawal attempt", account2bal)
 
   // // Check LC bal 
-  // account2LockupContractBal = await KUMOContracts.kumoToken.balanceOf(account2LockupContract.address)
-  // th.logBN("account2's LC KUMO bal LC withdrawal attempt", account2LockupContractBal)
+  // account2LockupContractBal = await LQTYContracts.lqtyToken.balanceOf(account2LockupContract.address)
+  // th.logBN("account2's LC LQTY bal LC withdrawal attempt", account2LockupContractBal)
 
-  // // --- Stake KUMO ---
-  // console.log("CHECK DEPLOYER STAKING KUMO")
+  // // --- Stake LQTY ---
+  // console.log("CHECK DEPLOYER STAKING LQTY")
 
-  // // Log deployer KUMO bal and stake before staking
-  // deployerKUMOBal = await KUMOContracts.kumoToken.balanceOf(deployerWallet.address)
-  // th.logBN("deployer KUMO bal before staking", deployerKUMOBal)
-  // let deployerKUMOStake = await KUMOContracts.kumoStaking.stakes(deployerWallet.address)
-  // th.logBN("deployer stake before staking", deployerKUMOStake)
+  // // Log deployer LQTY bal and stake before staking
+  // deployerLQTYBal = await LQTYContracts.lqtyToken.balanceOf(deployerWallet.address)
+  // th.logBN("deployer LQTY bal before staking", deployerLQTYBal)
+  // let deployerLQTYStake = await LQTYContracts.lqtyStaking.stakes(deployerWallet.address)
+  // th.logBN("deployer stake before staking", deployerLQTYStake)
 
-  // // stake 13 KUMO
-  // await mdh.sendAndWaitForTransaction(KUMOContracts.kumoStaking.stake(dec(13, 18), { gasPrice, gasLimit: 1000000 }))
+  // // stake 13 LQTY
+  // await mdh.sendAndWaitForTransaction(LQTYContracts.lqtyStaking.stake(dec(13, 18), { gasPrice, gasLimit: 1000000 }))
 
-  // // Log deployer KUMO bal and stake after staking
-  // deployerKUMOBal = await KUMOContracts.kumoToken.balanceOf(deployerWallet.address)
-  // th.logBN("deployer KUMO bal after staking", deployerKUMOBal)
-  // deployerKUMOStake = await KUMOContracts.kumoStaking.stakes(deployerWallet.address)
-  // th.logBN("deployer stake after staking", deployerKUMOStake)
+  // // Log deployer LQTY bal and stake after staking
+  // deployerLQTYBal = await LQTYContracts.lqtyToken.balanceOf(deployerWallet.address)
+  // th.logBN("deployer LQTY bal after staking", deployerLQTYBal)
+  // deployerLQTYStake = await LQTYContracts.lqtyStaking.stakes(deployerWallet.address)
+  // th.logBN("deployer stake after staking", deployerLQTYStake)
 
   // // Log deployer rev share immediately after staking
-  // let deployerKUSDRevShare = await KUMOContracts.kumoStaking.getPendingKUSDGain(deployerWallet.address)
-  // th.logBN("deployer pending KUSD revenue share", deployerKUSDRevShare)
+  // let deployerLUSDRevShare = await LQTYContracts.lqtyStaking.getPendingLUSDGain(deployerWallet.address)
+  // th.logBN("deployer pending LUSD revenue share", deployerLUSDRevShare)
 
 
 
@@ -491,12 +491,12 @@ async function mainnetDeploy(configParams) {
   // const trove2Status = await liquityCore.troveManager.getTroveStatus(account2Wallet.address)
   // if (trove2Status.toString() != '1') {
   //   console.log("Acct 2 opens a trove ...")
-  //   let _2kKUSDWithdrawal = th.dec(2000, 18) // 2000 KUSD
+  //   let _2kLUSDWithdrawal = th.dec(2000, 18) // 2000 LUSD
   //   let _1pt5_ETHcoll = th.dec(15, 17) // 1.5 ETH
   //   const borrowerOpsEthersFactory = await ethers.getContractFactory("BorrowerOperations", account2Wallet)
   //   const borrowerOpsAcct2 = await new ethers.Contract(liquityCore.borrowerOperations.address, borrowerOpsEthersFactory.interface, account2Wallet)
 
-  //   await mdh.sendAndWaitForTransaction(borrowerOpsAcct2.openTrove(th._100pct, _2kKUSDWithdrawal, th.ZERO_ADDRESS, th.ZERO_ADDRESS, { value: _1pt5_ETHcoll, gasPrice, gasLimit: 1000000 }))
+  //   await mdh.sendAndWaitForTransaction(borrowerOpsAcct2.openTrove(th._100pct, _2kLUSDWithdrawal, th.ZERO_ADDRESS, th.ZERO_ADDRESS, { value: _1pt5_ETHcoll, gasPrice, gasLimit: 1000000 }))
   // } else {
   //   console.log('Acct 2 already has an active trove')
   // }
@@ -507,31 +507,31 @@ async function mainnetDeploy(configParams) {
   // th.logBN('acct2 stake', acct2Trove[2])
   // console.log(`acct2 trove status: ${acct2Trove[3]}`)
 
-  // // Log deployer's pending KUSD gain - check fees went to staker (deloyer)
-  // deployerKUSDRevShare = await KUMOContracts.kumoStaking.getPendingKUSDGain(deployerWallet.address)
-  // th.logBN("deployer pending KUSD revenue share from staking, after acct 2 opened trove", deployerKUSDRevShare)
+  // // Log deployer's pending LUSD gain - check fees went to staker (deloyer)
+  // deployerLUSDRevShare = await LQTYContracts.lqtyStaking.getPendingLUSDGain(deployerWallet.address)
+  // th.logBN("deployer pending LUSD revenue share from staking, after acct 2 opened trove", deployerLUSDRevShare)
 
   // //  --- deployer withdraws staking gains ---
   // console.log("CHECK DEPLOYER WITHDRAWING STAKING GAINS")
 
-  // // check deployer's KUSD balance before withdrawing staking gains
-  // deployerKUSDBal = await liquityCore.kusdToken.balanceOf(deployerWallet.address)
-  // th.logBN('deployer KUSD bal before withdrawing staking gains', deployerKUSDBal)
+  // // check deployer's LUSD balance before withdrawing staking gains
+  // deployerLUSDBal = await liquityCore.lusdToken.balanceOf(deployerWallet.address)
+  // th.logBN('deployer LUSD bal before withdrawing staking gains', deployerLUSDBal)
 
   // // Deployer withdraws staking gains
-  // await mdh.sendAndWaitForTransaction(KUMOContracts.kumoStaking.unstake(0, { gasPrice, gasLimit: 1000000 }))
+  // await mdh.sendAndWaitForTransaction(LQTYContracts.lqtyStaking.unstake(0, { gasPrice, gasLimit: 1000000 }))
 
-  // // check deployer's KUSD balance after withdrawing staking gains
-  // deployerKUSDBal = await liquityCore.kusdToken.balanceOf(deployerWallet.address)
-  // th.logBN('deployer KUSD bal after withdrawing staking gains', deployerKUSDBal)
+  // // check deployer's LUSD balance after withdrawing staking gains
+  // deployerLUSDBal = await liquityCore.lusdToken.balanceOf(deployerWallet.address)
+  // th.logBN('deployer LUSD bal after withdrawing staking gains', deployerLUSDBal)
 
 
   // // --- System stats  ---
 
-  // Uniswap KUSD-ETH pool size
-  reserves = await KUSDETHPair.getReserves()
-  th.logBN("KUSD-ETH Pair's current KUSD reserves", reserves[0])
-  th.logBN("KUSD-ETH Pair's current ETH reserves", reserves[1])
+  // Uniswap LUSD-ETH pool size
+  reserves = await LUSDETHPair.getReserves()
+  th.logBN("LUSD-ETH Pair's current LUSD reserves", reserves[0])
+  th.logBN("LUSD-ETH Pair's current ETH reserves", reserves[1])
 
   // Number of troves
   const numTroves = await liquityCore.troveManager.getTroveOwnersCount()
@@ -558,16 +558,16 @@ async function mainnetDeploy(configParams) {
   th.logBN("Current borrowing rate", currentBorrowingRate)
 
   // total SP deposits
-  const totalSPDeposits = await liquityCore.stabilityPool.getTotalKUSDDeposits()
-  th.logBN("Total KUSD SP deposits", totalSPDeposits)
+  const totalSPDeposits = await liquityCore.stabilityPool.getTotalLUSDDeposits()
+  th.logBN("Total LUSD SP deposits", totalSPDeposits)
 
-  // total KUMO Staked in KUMOStaking
-  const totalKUMOStaked = await KUMOContracts.kumoStaking.totalKUMOStaked()
-  th.logBN("Total KUMO staked", totalKUMOStaked)
+  // total LQTY Staked in LQTYStaking
+  const totalLQTYStaked = await LQTYContracts.lqtyStaking.totalLQTYStaked()
+  th.logBN("Total LQTY staked", totalLQTYStaked)
 
   // total LP tokens staked in Unipool
   const totalLPTokensStaked = await unipool.totalSupply()
-  th.logBN("Total LP (KUSD-ETH) tokens staked in unipool", totalLPTokensStaked)
+  th.logBN("Total LP (LUSD-ETH) tokens staked in unipool", totalLPTokensStaked)
 
   // --- State variables ---
 
@@ -581,9 +581,9 @@ async function mainnetDeploy(configParams) {
   th.logBN("Snapshot of total trove collateral before last liq. ", totalCollateralSnapshot)
 
   const L_ETH = await liquityCore.troveManager.L_ETH()
-  const L_KUSDDebt = await liquityCore.troveManager.L_KUSDDebt()
+  const L_LUSDDebt = await liquityCore.troveManager.L_LUSDDebt()
   th.logBN("L_ETH", L_ETH)
-  th.logBN("L_KUSDDebt", L_KUSDDebt)
+  th.logBN("L_LUSDDebt", L_LUSDDebt)
 
   // StabilityPool
   console.log("StabilityPool state variables:")
@@ -598,21 +598,21 @@ async function mainnetDeploy(configParams) {
   th.logBN("Sum S, at current epoch and scale", S)
   th.logBN("Sum G, at current epoch and scale", G)
 
-  // KUMOStaking
-  console.log("KUMOStaking state variables:")
-  const F_KUSD = await KUMOContracts.kumoStaking.F_KUSD()
-  const F_ETH = await KUMOContracts.kumoStaking.F_ETH()
-  th.logBN("F_KUSD", F_KUSD)
+  // LQTYStaking
+  console.log("LQTYStaking state variables:")
+  const F_LUSD = await LQTYContracts.lqtyStaking.F_LUSD()
+  const F_ETH = await LQTYContracts.lqtyStaking.F_ETH()
+  th.logBN("F_LUSD", F_LUSD)
   th.logBN("F_ETH", F_ETH)
 
 
   // CommunityIssuance
   console.log("CommunityIssuance state variables:")
-  const totalKUMOIssued = await KUMOContracts.communityIssuance.totalKUMOIssued()
-  th.logBN("Total KUMO issued to depositors / front ends", totalKUMOIssued)
+  const totalLQTYIssued = await LQTYContracts.communityIssuance.totalLQTYIssued()
+  th.logBN("Total LQTY issued to depositors / front ends", totalLQTYIssued)
 
 
-  // TODO: Uniswap *KUMO-ETH* pool size (check it's deployed?)
+  // TODO: Uniswap *LQTY-ETH* pool size (check it's deployed?)
 
 
 
@@ -629,15 +629,15 @@ async function mainnetDeploy(configParams) {
 
 
   // ************************
-  // --- NOT FOR APRIL 5: Deploy a KUMOToken2 with General Safe as beneficiary to test minting KUMO showing up in Gnosis App  ---
+  // --- NOT FOR APRIL 5: Deploy a LQTYToken2 with General Safe as beneficiary to test minting LQTY showing up in Gnosis App  ---
 
-  // // General Safe KUMO bal before:
+  // // General Safe LQTY bal before:
   // const realGeneralSafeAddr = "0xF06016D822943C42e3Cb7FC3a6A3B1889C1045f8"
 
-  //   const KUMOToken2EthersFactory = await ethers.getContractFactory("KUMOToken2", deployerWallet)
-  //   const kumoToken2 = await KUMOToken2EthersFactory.deploy( 
+  //   const LQTYToken2EthersFactory = await ethers.getContractFactory("LQTYToken2", deployerWallet)
+  //   const lqtyToken2 = await LQTYToken2EthersFactory.deploy( 
   //     "0xF41E0DD45d411102ed74c047BdA544396cB71E27",  // CI param: LC1 
-  //     "0x9694a04263593AC6b895Fc01Df5929E1FC7495fA", // KUMO Staking param: LC2
+  //     "0x9694a04263593AC6b895Fc01Df5929E1FC7495fA", // LQTY Staking param: LC2
   //     "0x98f95E112da23c7b753D8AE39515A585be6Fb5Ef", // LCF param: LC3
   //     realGeneralSafeAddr,  // bounty/hackathon param: REAL general safe addr
   //     "0x98f95E112da23c7b753D8AE39515A585be6Fb5Ef", // LP rewards param: LC3
@@ -645,15 +645,15 @@ async function mainnetDeploy(configParams) {
   //     {gasPrice, gasLimit: 10000000}
   //   )
 
-  //   console.log(`kumo2 address: ${kumoToken2.address}`)
+  //   console.log(`lqty2 address: ${lqtyToken2.address}`)
 
-  //   let generalSafeKUMOBal = await kumoToken2.balanceOf(realGeneralSafeAddr)
-  //   console.log(`generalSafeKUMOBal: ${generalSafeKUMOBal}`)
+  //   let generalSafeLQTYBal = await lqtyToken2.balanceOf(realGeneralSafeAddr)
+  //   console.log(`generalSafeLQTYBal: ${generalSafeLQTYBal}`)
 
 
 
   // ************************
-  // --- NOT FOR APRIL 5: Test short-term lockup contract KUMO withdrawal on mainnet ---
+  // --- NOT FOR APRIL 5: Test short-term lockup contract LQTY withdrawal on mainnet ---
 
   // now = (await ethers.provider.getBlock(latestBlock)).timestamp
 
@@ -661,7 +661,7 @@ async function mainnetDeploy(configParams) {
 
   // new deployment
   // const LCshortTerm = await LCShortTermEthersFactory.deploy(
-  //   KUMOContracts.kumoToken.address,
+  //   LQTYContracts.lqtyToken.address,
   //   deployerWallet.address,
   //   now, 
   //   {gasPrice, gasLimit: 1000000}
@@ -689,25 +689,25 @@ async function mainnetDeploy(configParams) {
   //   now = (await ethers.provider.getBlock(latestBlock)).timestamp
   //   console.log(`time now: ${now}`)
 
-  //   // check deployer KUMO bal
-  //   let deployerKUMOBal = await KUMOContracts.kumoToken.balanceOf(deployerWallet.address)
-  //   console.log(`deployerKUMOBal before he withdraws: ${deployerKUMOBal}`)
+  //   // check deployer LQTY bal
+  //   let deployerLQTYBal = await LQTYContracts.lqtyToken.balanceOf(deployerWallet.address)
+  //   console.log(`deployerLQTYBal before he withdraws: ${deployerLQTYBal}`)
 
-  //   // check LC KUMO bal
-  //   let LC_KUMOBal = await KUMOContracts.kumoToken.balanceOf(deployedShortTermLC.address)
-  //   console.log(`LC KUMO bal before withdrawal: ${LC_KUMOBal}`)
+  //   // check LC LQTY bal
+  //   let LC_LQTYBal = await LQTYContracts.lqtyToken.balanceOf(deployedShortTermLC.address)
+  //   console.log(`LC LQTY bal before withdrawal: ${LC_LQTYBal}`)
 
   // // withdraw from LC
-  // const withdrawFromShortTermTx = await deployedShortTermLC.withdrawKUMO( {gasPrice, gasLimit: 1000000})
+  // const withdrawFromShortTermTx = await deployedShortTermLC.withdrawLQTY( {gasPrice, gasLimit: 1000000})
   // withdrawFromShortTermTx.wait()
 
   // // check deployer bal after LC withdrawal
-  // deployerKUMOBal = await KUMOContracts.kumoToken.balanceOf(deployerWallet.address)
-  // console.log(`deployerKUMOBal after he withdraws: ${deployerKUMOBal}`)
+  // deployerLQTYBal = await LQTYContracts.lqtyToken.balanceOf(deployerWallet.address)
+  // console.log(`deployerLQTYBal after he withdraws: ${deployerLQTYBal}`)
 
-  //   // check LC KUMO bal
-  //   LC_KUMOBal = await KUMOContracts.kumoToken.balanceOf(deployedShortTermLC.address)
-  //   console.log(`LC KUMO bal after withdrawal: ${LC_KUMOBal}`)
+  //   // check LC LQTY bal
+  //   LC_LQTYBal = await LQTYContracts.lqtyToken.balanceOf(deployedShortTermLC.address)
+  //   console.log(`LC LQTY bal after withdrawal: ${LC_LQTYBal}`)
 }
 
 module.exports = {

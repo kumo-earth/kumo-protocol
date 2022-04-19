@@ -63,7 +63,7 @@ contract('After the initial lockup period has passed', async accounts => {
   beforeEach(async () => {
     // Deploy all contracts from the first account
     KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
-    coreContracts = await deploymentHelper.deployLiquityCore()
+    coreContracts = await deploymentHelper.deployKumoCore()
 
     kumoStaking = KUMOContracts.kumoStaking
     kumoToken = KUMOContracts.kumoToken
@@ -520,7 +520,7 @@ contract('After the initial lockup period has passed', async accounts => {
       await assert.isTrue(KUMOapproveTx_3.receipt.status)
     })
 
-    it("Anyone can increaseAllowance for any EOA or Liquity contract", async () => {
+    it("Anyone can increaseAllowance for any EOA or Kumo contract", async () => {
       // Anyone can increaseAllowance of EOAs to spend KUMO
       const KUMOIncreaseAllowanceTx_1 = await kumoToken.increaseAllowance(A, dec(1, 18), { from: multisig })
       const KUMOIncreaseAllowanceTx_2 = await kumoToken.increaseAllowance(B, dec(1, 18), { from: G })
@@ -529,13 +529,13 @@ contract('After the initial lockup period has passed', async accounts => {
       await assert.isTrue(KUMOIncreaseAllowanceTx_2.receipt.status)
       await assert.isTrue(KUMOIncreaseAllowanceTx_3.receipt.status)
 
-      // Increase allowance of Liquity contracts from F
+      // Increase allowance of Kumo contracts from F
       for (const contract of Object.keys(coreContracts)) {
         const KUMOIncreaseAllowanceTx = await kumoToken.increaseAllowance(coreContracts[contract].address, dec(1, 18), { from: F })
         await assert.isTrue(KUMOIncreaseAllowanceTx.receipt.status)
       }
 
-      // Increase allowance of Liquity contracts from multisig
+      // Increase allowance of Kumo contracts from multisig
       for (const contract of Object.keys(coreContracts)) {
         const KUMOIncreaseAllowanceTx = await kumoToken.increaseAllowance(coreContracts[contract].address, dec(1, 18), { from: multisig })
         await assert.isTrue(KUMOIncreaseAllowanceTx.receipt.status)
@@ -554,7 +554,7 @@ contract('After the initial lockup period has passed', async accounts => {
       }
     })
 
-    it("Anyone can decreaseAllowance for any EOA or Liquity contract", async () => {
+    it("Anyone can decreaseAllowance for any EOA or Kumo contract", async () => {
       //First, increase allowance of A, B LiqAG and core contracts
       const KUMOapproveTx_1 = await kumoToken.approve(A, dec(1, 18), { from: multisig })
       const KUMOapproveTx_2 = await kumoToken.approve(B, dec(1, 18), { from: G })

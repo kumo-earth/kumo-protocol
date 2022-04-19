@@ -2,7 +2,7 @@ import { Button } from "theme-ui";
 
 import { Decimal, KUMOStakeChange } from "@liquity/lib-base";
 
-import { useLiquity } from "../../hooks/LiquityContext";
+import { useKumo } from "../../hooks/KumoContext";
 import { useTransactionFunction } from "../Transaction";
 
 type StakingActionProps = {
@@ -10,7 +10,7 @@ type StakingActionProps = {
 };
 
 export const StakingManagerAction: React.FC<StakingActionProps> = ({ change, children }) => {
-  const { liquity } = useLiquity();
+  const { liquity } = useKumo();
 
   const [sendTransaction] = useTransactionFunction(
     "stake",

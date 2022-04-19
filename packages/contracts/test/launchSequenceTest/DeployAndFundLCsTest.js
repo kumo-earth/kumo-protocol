@@ -398,7 +398,7 @@ contract('Deploying and funding One Year Lockup Contracts', async accounts => {
       // Grab contract objects from deployment tx events
       const LC_A = await th.getLCFromDeploymentTx(deployedLCtx_A)
 
-      // LiquityAG transfers KUMO to the LC
+      // KumoAG transfers KUMO to the LC
       await kumoToken.transfer(LC_A.address, KUMOEntitlement_A, { from: multisig })
 
       assert.equal(await kumoToken.balanceOf(LC_A.address), KUMOEntitlement_A)

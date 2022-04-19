@@ -1,15 +1,15 @@
 import React from "react";
 import { Flex } from "theme-ui";
 
-import { LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { KumoStoreState } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 
-const selector = ({ remainingLiquidityMiningKUMOReward }: LiquityStoreState) => ({
+const selector = ({ remainingLiquidityMiningKUMOReward }: KumoStoreState) => ({
   remainingLiquidityMiningKUMOReward
 });
 
 export const RemainingKUMO: React.FC = () => {
-  const { remainingLiquidityMiningKUMOReward } = useLiquitySelector(selector);
+  const { remainingLiquidityMiningKUMOReward } = useKumoSelector(selector);
 
   return (
     <Flex sx={{ mr: 2, fontSize: 2, fontWeight: "medium" }}>

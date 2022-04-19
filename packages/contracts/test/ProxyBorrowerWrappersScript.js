@@ -64,7 +64,7 @@ contract('BorrowerWrappers', async accounts => {
   const openTrove = async (params) => th.openTrove(contracts, params)
 
   beforeEach(async () => {
-    contracts = await deploymentHelper.deployLiquityCore()
+    contracts = await deploymentHelper.deployKumoCore()
     contracts.troveManager = await TroveManagerTester.new()
     contracts = await deploymentHelper.deployKUSDToken(contracts)
     const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
@@ -281,11 +281,11 @@ contract('BorrowerWrappers', async accounts => {
     const liquidationTX_1 = await troveManager.liquidate(defaulter_1, { from: owner })
     const [liquidatedDebt_1] = await th.getEmittedLiquidationValues(liquidationTX_1)
 
-    // Alice KUSDLoss is ((150/2500) * liquidatedDebt)
+    // Alice kusdLoss is ((150/2500) * liquidatedDebt)
     const totalDeposits = whaleDeposit.add(aliceDeposit)
-    const expectedKUSDLoss_A = liquidatedDebt_1.mul(aliceDeposit).div(totalDeposits)
+    const expectedkusdLoss_A = liquidatedDebt_1.mul(aliceDeposit).div(totalDeposits)
 
-    const expectedCompoundedKUSDDeposit_A = toBN(dec(150, 18)).sub(expectedKUSDLoss_A)
+    const expectedCompoundedKUSDDeposit_A = toBN(dec(150, 18)).sub(expectedkusdLoss_A)
     const compoundedKUSDDeposit_A = await stabilityPool.getCompoundedKUSDDeposit(alice)
     // collateral * 150 / 2500 * 0.995
     const expectedETHGain_A = collateral.mul(aliceDeposit).div(totalDeposits).mul(toBN(dec(995, 15))).div(mv._1e18BN)
@@ -336,7 +336,7 @@ contract('BorrowerWrappers', async accounts => {
     // check that ICR remains constant
     th.assertIsApproximatelyEqual(ICRAfter, ICRBefore)
     // check that Stability Pool deposit
-    th.assertIsApproximatelyEqual(depositAfter, depositBefore.sub(expectedKUSDLoss_A).add(netDebtChange))
+    th.assertIsApproximatelyEqual(depositAfter, depositBefore.sub(expectedkusdLoss_A).add(netDebtChange))
     // check kumo balance remains the same
     th.assertIsApproximatelyEqual(kumoBalanceAfter, kumoBalanceBefore)
 

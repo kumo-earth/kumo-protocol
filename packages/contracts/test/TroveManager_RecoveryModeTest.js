@@ -55,7 +55,7 @@ contract('TroveManager - in Recovery Mode', async accounts => {
   const openTrove = async (params) => th.openTrove(contracts, params)
 
   beforeEach(async () => {
-    contracts = await deploymentHelper.deployLiquityCore()
+    contracts = await deploymentHelper.deployKumoCore()
     contracts.troveManager = await TroveManagerTester.new()
     contracts.kusdToken = await KUSDToken.new(
       contracts.troveManager.address,
@@ -487,7 +487,7 @@ contract('TroveManager - in Recovery Mode', async accounts => {
     With 390 KUSD in the StabilityPool, 390 KUSD should be offset with the pool, leaving 0 in the pool.
   
     Stability Pool rewards for alice should be:
-    KUSDLoss: 390KUSD
+    kusdLoss: 390KUSD
     ETHGain: (390 / 2000) * 21*0.995 = 4.074525 ether
 
     After offsetting 390 KUSD and 4.074525 ether, the remainders - 1610 KUSD and 16.820475 ether - should be redistributed to all active Troves.

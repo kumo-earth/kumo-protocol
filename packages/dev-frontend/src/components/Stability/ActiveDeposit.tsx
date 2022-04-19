@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect } from "react";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 
-import { LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { KumoStoreState } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 
 import { COIN, GT } from "../../strings";
 import { Icon } from "../Icon";
@@ -16,7 +16,7 @@ import { RemainingKUMO } from "./RemainingKUMO";
 import { Yield } from "./Yield";
 import { InfoIcon } from "../InfoIcon";
 
-const selector = ({ stabilityDeposit, trove, kusdInStabilityPool }: LiquityStoreState) => ({
+const selector = ({ stabilityDeposit, trove, kusdInStabilityPool }: KumoStoreState) => ({
   stabilityDeposit,
   trove,
   kusdInStabilityPool
@@ -24,7 +24,7 @@ const selector = ({ stabilityDeposit, trove, kusdInStabilityPool }: LiquityStore
 
 export const ActiveDeposit: React.FC = () => {
   const { dispatchEvent } = useStabilityView();
-  const { stabilityDeposit, trove, kusdInStabilityPool } = useLiquitySelector(selector);
+  const { stabilityDeposit, trove, kusdInStabilityPool } = useKumoSelector(selector);
 
   const poolShare = stabilityDeposit.currentKUSD.mulDiv(100, kusdInStabilityPool);
 

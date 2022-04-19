@@ -4,7 +4,7 @@ import { Log } from "@ethersproject/abstract-provider";
 import { Signer } from "@ethersproject/abstract-signer";
 import { Overrides } from "@ethersproject/contracts";
 
-import { _LiquityContract, _TypedLiquityContract, _TypedLogDescription } from "../src/contracts";
+import { _KumoContract, _TypedKumoContract, _TypedLogDescription } from "../src/contracts";
 import { log } from "./deploy";
 
 const factoryAbi = [
@@ -17,7 +17,7 @@ const factoryAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
 const hasFactory = (chainId: number) => [1, 3, 4, 5, 42].includes(chainId);
 
 interface UniswapV2Factory
-  extends _TypedLiquityContract<
+  extends _TypedKumoContract<
     unknown,
     { createPair(tokenA: string, tokenB: string, _overrides?: Overrides): Promise<string> }
   > {
@@ -39,7 +39,7 @@ export const createUniswapV2Pair = async (
     throw new Error(`UniswapV2Factory is not deployed on this network (chainId = ${chainId})`);
   }
 
-  const factory = (new _LiquityContract(
+  const factory = (new _KumoContract(
     factoryAddress,
     factoryAbi,
     signer

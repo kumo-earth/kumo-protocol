@@ -13,7 +13,7 @@ export type KUMOStakeChange<T> =
  * Represents a user's KUMO stake and accrued gains.
  * 
  * @remarks
- * Returned by the {@link ReadableLiquity.getKUMOStake | getKUMOStake()} function.
+ * Returned by the {@link ReadableKumo.getKUMOStake | getKUMOStake()} function.
 
  * @public
  */

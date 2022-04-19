@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Button } from "theme-ui";
 import { Decimal } from "@liquity/lib-base";
-import { useLiquity } from "../../../hooks/LiquityContext";
+import { useKumo } from "../../../hooks/KumoContext";
 import { Transaction, useMyTransactionState } from "../../Transaction";
 import { useValidationState } from "../context/useValidationState";
 import { useFarmView } from "../context/FarmViewContext";
@@ -16,7 +16,7 @@ export const Confirm: React.FC<ConfirmProps> = ({ amount }) => {
   const { dispatchEvent } = useFarmView();
   const {
     liquity: { send: liquity }
-  } = useLiquity();
+  } = useKumo();
 
   const transactionState = useMyTransactionState(transactionId);
   const { isValid, isWithdrawing, amountChanged } = useValidationState(amount);

@@ -1,4 +1,4 @@
-/* Script that logs gas costs for Liquity operations under various conditions. 
+/* Script that logs gas costs for Kumo operations under various conditions. 
 
   Note: uses Mocha testing structure, but the purpose of each test is simply to print gas costs.
 
@@ -36,7 +36,7 @@ contract('Gas cost tests', async accounts => {
   let data = []
 
   beforeEach(async () => {
-    contracts = await deploymentHelper.deployLiquityCore()
+    contracts = await deploymentHelper.deployKumoCore()
     const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
     priceFeed = contracts.priceFeedTestnet

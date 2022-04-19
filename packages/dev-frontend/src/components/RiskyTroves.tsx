@@ -9,11 +9,11 @@ import {
   UserTrove,
   Decimal
 } from "@liquity/lib-base";
-import { BlockPolledLiquityStoreState } from "@liquity/lib-ethers";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { BlockPolledKumoStoreState } from "@liquity/lib-ethers";
+import { useKumoSelector } from "@liquity/lib-react";
 
 import { shortenAddress } from "../utils/shortenAddress";
-import { useLiquity } from "../hooks/LiquityContext";
+import { useKumo } from "../hooks/KumoContext";
 import { COIN } from "../strings";
 
 import { Icon } from "./Icon";
@@ -55,7 +55,7 @@ const select = ({
   total,
   kusdInStabilityPool,
   blockTag
-}: BlockPolledLiquityStoreState) => ({
+}: BlockPolledKumoStoreState) => ({
   numberOfTroves,
   price,
   recoveryMode: total.collateralRatioIsBelowCritical(price),
@@ -72,8 +72,8 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
     totalCollateralRatio,
     kusdInStabilityPool,
     price
-  } = useLiquitySelector(select);
-  const { liquity } = useLiquity();
+  } = useKumoSelector(select);
+  const { liquity } = useKumo();
 
   const [loading, setLoading] = useState(true);
   const [troves, setTroves] = useState<UserTrove[]>();

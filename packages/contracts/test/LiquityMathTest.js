@@ -1,9 +1,9 @@
-const LiquityMathTester = artifacts.require("./LiquityMathTester.sol")
+const KumoMathTester = artifacts.require("./KumoMathTester.sol")
 
-contract('LiquityMath', async accounts => {
+contract('KumoMath', async accounts => {
   let liquityMathTester
   beforeEach('deploy tester', async () => {
-    liquityMathTester = await LiquityMathTester.new()
+    liquityMathTester = await KumoMathTester.new()
   })
 
   const checkFunction = async (func, cond, params) => {

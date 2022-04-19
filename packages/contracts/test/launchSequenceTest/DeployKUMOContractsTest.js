@@ -117,12 +117,12 @@ contract('Deploying the KUMO contracts: LCF, CI, KUMOStaking, and KUMOToken ', a
       assert.isTrue(expectedCISupplyCap.eq(supplyCap))
     })
 
-    it("Liquity AG can set addresses if CI's KUMO balance is equal or greater than 32 million ", async () => {
+    it("Kumo AG can set addresses if CI's KUMO balance is equal or greater than 32 million ", async () => {
       const KUMOBalance = await kumoToken.balanceOf(communityIssuance.address)
       assert.isTrue(KUMOBalance.eq(expectedCISupplyCap))
 
       // Deploy core contracts, just to get the Stability Pool address
-      const coreContracts = await deploymentHelper.deployLiquityCore()
+      const coreContracts = await deploymentHelper.deployKumoCore()
 
       const tx = await communityIssuance.setAddresses(
         kumoToken.address,
@@ -132,14 +132,14 @@ contract('Deploying the KUMO contracts: LCF, CI, KUMOStaking, and KUMOToken ', a
       assert.isTrue(tx.receipt.status)
     })
 
-    it("Liquity AG can't set addresses if CI's KUMO balance is < 32 million ", async () => {
+    it("Kumo AG can't set addresses if CI's KUMO balance is < 32 million ", async () => {
       const newCI = await CommunityIssuance.new()
 
       const KUMOBalance = await kumoToken.balanceOf(newCI.address)
       assert.equal(KUMOBalance, '0')
 
       // Deploy core contracts, just to get the Stability Pool address
-      const coreContracts = await deploymentHelper.deployLiquityCore()
+      const coreContracts = await deploymentHelper.deployKumoCore()
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
       await kumoToken.transfer(newCI.address, '31999999999999999999999999', {from: multisig}) // 1e-18 less than CI expects (32 million)
@@ -160,7 +160,7 @@ contract('Deploying the KUMO contracts: LCF, CI, KUMOStaking, and KUMOToken ', a
   describe('Connecting KUMOToken to LCF, CI and KUMOStaking', async accounts => {
     it('sets the correct KUMOToken address in KUMOStaking', async () => {
       // Deploy core contracts and set the KUMOToken address in the CI and KUMOStaking
-      const coreContracts = await deploymentHelper.deployLiquityCore()
+      const coreContracts = await deploymentHelper.deployKumoCore()
       await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, coreContracts)
 
       const kumoTokenAddress = kumoToken.address
@@ -178,7 +178,7 @@ contract('Deploying the KUMO contracts: LCF, CI, KUMOStaking, and KUMOToken ', a
 
     it('sets the correct KUMOToken address in CommunityIssuance', async () => {
       // Deploy core contracts and set the KUMOToken address in the CI and KUMOStaking
-      const coreContracts = await deploymentHelper.deployLiquityCore()
+      const coreContracts = await deploymentHelper.deployKumoCore()
       await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, coreContracts)
 
       const kumoTokenAddress = kumoToken.address

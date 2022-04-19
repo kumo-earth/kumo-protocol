@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from "react";
 import { Flex, Button } from "theme-ui";
 
-import { LiquityStoreState, Decimal, Trove, Decimalish, KUSD_MINIMUM_DEBT } from "@liquity/lib-base";
+import { KumoStoreState, Decimal, Trove, Decimalish, KUSD_MINIMUM_DEBT } from "@liquity/lib-base";
 
-import { LiquityStoreUpdate, useLiquityReducer, useLiquitySelector } from "@liquity/lib-react";
+import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@liquity/lib-react";
 
 import { ActionDescription } from "../ActionDescription";
 import { useMyTransactionState } from "../Transaction";
@@ -17,7 +17,7 @@ import {
   validateTroveChange
 } from "./validation/validateTroveChange";
 
-const init = ({ trove }: LiquityStoreState) => ({
+const init = ({ trove }: KumoStoreState) => ({
   original: trove,
   edited: new Trove(trove.collateral, trove.debt),
   changePending: false,
@@ -27,7 +27,7 @@ const init = ({ trove }: LiquityStoreState) => ({
 
 type TroveManagerState = ReturnType<typeof init>;
 type TroveManagerAction =
-  | LiquityStoreUpdate
+  | KumoStoreUpdate
   | { type: "startChange" | "finishChange" | "revert" | "addMinimumDebt" | "removeMinimumDebt" }
   | { type: "setCollateral" | "setDebt"; newValue: Decimalish };
 
@@ -142,7 +142,7 @@ const feeFrom = (original: Trove, edited: Trove, borrowingRate: Decimal): Decima
   }
 };
 
-const select = (state: LiquityStoreState) => ({
+const select = (state: KumoStoreState) => ({
   fees: state.fees,
   validationContext: selectForTroveChangeValidation(state)
 });
@@ -156,8 +156,8 @@ type TroveManagerProps = {
 };
 
 export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) => {
-  const [{ original, edited, changePending }, dispatch] = useLiquityReducer(reduce, init);
-  const { fees, validationContext } = useLiquitySelector(select);
+  const [{ original, edited, changePending }, dispatch] = useKumoReducer(reduce, init);
+  const { fees, validationContext } = useKumoSelector(select);
 
   useEffect(() => {
     if (collateral !== undefined) {

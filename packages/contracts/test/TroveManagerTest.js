@@ -55,7 +55,7 @@ contract('TroveManager', async accounts => {
   const withdrawKUSD = async (params) => th.withdrawKUSD(contracts, params)
 
   beforeEach(async () => {
-    contracts = await deploymentHelper.deployLiquityCore()
+    contracts = await deploymentHelper.deployKumoCore()
     contracts.troveManager = await TroveManagerTester.new()
     contracts.kusdToken = await KUSDTokenTester.new(
       contracts.troveManager.address,
@@ -817,7 +817,7 @@ contract('TroveManager', async accounts => {
     /* Alice's KUSD Loss = (300 / 400) * 200 = 150 KUSD
        Alice's ETH gain = (300 / 400) * 2*0.995 = 1.4925 ETH
 
-       Bob's KUSDLoss = (100 / 400) * 200 = 50 KUSD
+       Bob's kusdLoss = (100 / 400) * 200 = 50 KUSD
        Bob's ETH gain = (100 / 400) * 2*0.995 = 0.4975 ETH
 
      Check Bob' SP deposit has been reduced to 50 KUSD, and his ETH gain has increased to 1.5 ETH. */

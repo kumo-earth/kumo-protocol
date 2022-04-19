@@ -58,7 +58,7 @@ contract('StabilityPool', async accounts => {
     })
 
     beforeEach(async () => {
-      contracts = await deploymentHelper.deployLiquityCore()
+      contracts = await deploymentHelper.deployKumoCore()
       contracts.troveManager = await TroveManagerTester.new()
       contracts.kusdToken = await KUSDToken.new(
         contracts.troveManager.address,
@@ -1505,11 +1505,11 @@ contract('StabilityPool', async accounts => {
       const [liquidatedDebt_1] = await th.getEmittedLiquidationValues(liquidationTX_1)
       const [liquidatedDebt_2] = await th.getEmittedLiquidationValues(liquidationTX_2)
 
-      // Alice KUSDLoss is ((15000/200000) * liquidatedDebt), for each liquidation
-      const expectedKUSDLoss_A = (liquidatedDebt_1.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
+      // Alice kusdLoss is ((15000/200000) * liquidatedDebt), for each liquidation
+      const expectedkusdLoss_A = (liquidatedDebt_1.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
         .add(liquidatedDebt_2.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
 
-      const expectedCompoundedKUSDDeposit_A = toBN(dec(15000, 18)).sub(expectedKUSDLoss_A)
+      const expectedCompoundedKUSDDeposit_A = toBN(dec(15000, 18)).sub(expectedkusdLoss_A)
       const compoundedKUSDDeposit_A = await stabilityPool.getCompoundedKUSDDeposit(alice)
 
       assert.isAtMost(th.getDifference(expectedCompoundedKUSDDeposit_A, compoundedKUSDDeposit_A), 100000)
@@ -1600,11 +1600,11 @@ contract('StabilityPool', async accounts => {
       const [liquidatedDebt_1] = await th.getEmittedLiquidationValues(liquidationTX_1)
       const [liquidatedDebt_2] = await th.getEmittedLiquidationValues(liquidationTX_2)
 
-      // Alice KUSDLoss is ((15000/200000) * liquidatedDebt), for each liquidation
-      const expectedKUSDLoss_A = (liquidatedDebt_1.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
+      // Alice kusdLoss is ((15000/200000) * liquidatedDebt), for each liquidation
+      const expectedkusdLoss_A = (liquidatedDebt_1.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
         .add(liquidatedDebt_2.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
 
-      const expectedCompoundedKUSDDeposit_A = toBN(dec(15000, 18)).sub(expectedKUSDLoss_A)
+      const expectedCompoundedKUSDDeposit_A = toBN(dec(15000, 18)).sub(expectedkusdLoss_A)
       const compoundedKUSDDeposit_A = await stabilityPool.getCompoundedKUSDDeposit(alice)
 
       assert.isAtMost(th.getDifference(expectedCompoundedKUSDDeposit_A, compoundedKUSDDeposit_A), 100000)
@@ -1820,7 +1820,7 @@ contract('StabilityPool', async accounts => {
       const bobBalBefore = await kusdToken.balanceOf(bob)
 
       /* From an offset of 10000 KUSD, each depositor receives
-      KUSDLoss = 1666.6666666666666666 KUSD
+      kusdLoss = 1666.6666666666666666 KUSD
 
       and thus with a deposit of 10000 KUSD, each should withdraw 8333.3333333333333333 KUSD (in practice, slightly less due to rounding error)
       */
@@ -3004,7 +3004,7 @@ contract('StabilityPool', async accounts => {
       await th.assertRevert(txPromise_B)
     })
 
-    it("withdrawETHGainToTrove(): Applies KUSDLoss to user's deposit, and redirects ETH reward to user's Trove", async () => {
+    it("withdrawETHGainToTrove(): Applies kusdLoss to user's deposit, and redirects ETH reward to user's Trove", async () => {
       // --- SETUP ---
       // Whale deposits 185000 KUSD in StabilityPool
       await openTrove({ extraKUSDAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
@@ -3036,15 +3036,15 @@ contract('StabilityPool', async accounts => {
 
       // Alice should receive rewards proportional to her deposit as share of total deposits
       const expectedETHGain_A = liquidatedColl.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
-      const expectedKUSDLoss_A = liquidatedDebt.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
-      const expectedCompoundedDeposit_A = toBN(dec(15000, 18)).sub(expectedKUSDLoss_A)
+      const expectedkusdLoss_A = liquidatedDebt.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
+      const expectedCompoundedDeposit_A = toBN(dec(15000, 18)).sub(expectedkusdLoss_A)
 
       assert.isAtMost(th.getDifference(expectedCompoundedDeposit_A, compoundedDeposit_A), 100000)
 
       // Alice sends her ETH Gains to her Trove
       await stabilityPool.withdrawETHGainToTrove(alice, alice, { from: alice })
 
-      // check Alice's KUSDLoss has been applied to her deposit expectedCompoundedDeposit_A
+      // check Alice's kusdLoss has been applied to her deposit expectedCompoundedDeposit_A
       alice_deposit_afterDefault = ((await stabilityPool.deposits(alice))[0])
       assert.isAtMost(th.getDifference(alice_deposit_afterDefault, expectedCompoundedDeposit_A), 100000)
 

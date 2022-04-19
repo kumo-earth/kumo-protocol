@@ -176,7 +176,7 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_KUSDGasCompensation",
+          "name": "_kusdGasCompensation",
           "type": "uint256"
         }
       ],

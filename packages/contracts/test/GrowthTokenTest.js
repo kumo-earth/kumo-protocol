@@ -108,7 +108,7 @@ contract('KUMO Token', async accounts => {
   }
 
   beforeEach(async () => {
-    contracts = await deploymentHelper.deployLiquityCore()
+    contracts = await deploymentHelper.deployKumoCore()
     const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
 
     kumoStaking = KUMOContracts.kumoStaking

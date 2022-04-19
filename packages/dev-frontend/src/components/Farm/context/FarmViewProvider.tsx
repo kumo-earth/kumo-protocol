@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { LiquityStoreState, Decimal } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { KumoStoreState, Decimal } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 import { FarmViewContext } from "./FarmViewContext";
 import { transitions } from "./transitions";
 import type { FarmView, FarmEvent } from "./transitions";
@@ -24,7 +24,7 @@ const selector = ({
   liquidityMiningStake,
   remainingLiquidityMiningKUMOReward,
   liquidityMiningKUMOReward
-}: LiquityStoreState) => ({
+}: KumoStoreState) => ({
   liquidityMiningStake,
   remainingLiquidityMiningKUMOReward,
   liquidityMiningKUMOReward
@@ -36,7 +36,7 @@ export const FarmViewProvider: React.FC = props => {
     liquidityMiningStake,
     remainingLiquidityMiningKUMOReward,
     liquidityMiningKUMOReward
-  } = useLiquitySelector(selector);
+  } = useKumoSelector(selector);
 
   const [view, setView] = useState<FarmView>(
     getInitialView(

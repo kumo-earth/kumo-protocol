@@ -51,7 +51,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
   describe("KUMO Rewards", async () => {
 
     beforeEach(async () => {
-      contracts = await deploymentHelper.deployLiquityCore()
+      contracts = await deploymentHelper.deployKumoCore()
       contracts.troveManager = await TroveManagerTester.new()
       contracts.kusdToken = await KUSDToken.new(
         contracts.troveManager.address,

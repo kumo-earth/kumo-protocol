@@ -1,6 +1,6 @@
 import React from "react";
 import { Text } from "theme-ui";
-import { useLiquity } from "../../../hooks/LiquityContext";
+import { useKumo } from "../../../hooks/KumoContext";
 import { LP } from "../../../strings";
 import { Transaction } from "../../Transaction";
 import { Decimal } from "@liquity/lib-base";
@@ -16,13 +16,13 @@ const transactionId = "farm-stake";
 export const Description: React.FC<DescriptionProps> = ({ amount }) => {
   const {
     liquity: { send: liquity }
-  } = useLiquity();
+  } = useKumo();
   const { isValid, hasApproved, isWithdrawing, amountChanged } = useValidationState(amount);
 
   if (!hasApproved) {
     return (
       <ActionDescription>
-        <Text>To stake your {LP} tokens you need to allow Liquity to stake them for you</Text>
+        <Text>To stake your {LP} tokens you need to allow Kumo to stake them for you</Text>
       </ActionDescription>
     );
   }

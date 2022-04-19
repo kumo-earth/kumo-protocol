@@ -147,7 +147,7 @@ contract EchidnaTester {
         uint price = priceFeedTestnet.getPrice();
         uint KUSDAmount = _KUSDAmount;
         uint compositeDebt = KUSDAmount.add(KUSD_GAS_COMPENSATION);
-        uint ICR = LiquityMath._computeCR(ETH, compositeDebt, price);
+        uint ICR = KumoMath._computeCR(ETH, compositeDebt, price);
         if (ICR < ratio) {
             compositeDebt = ETH.mul(price).div(ratio);
             KUSDAmount = compositeDebt.sub(KUSD_GAS_COMPENSATION);

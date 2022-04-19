@@ -15,8 +15,8 @@ import "../Dependencies/console.sol";
 * The LockupContractFactory deploys LockupContracts - its main purpose is to keep a registry of valid deployed 
 * LockupContracts. 
 * 
-* This registry is checked by KUMOToken when the Liquity deployer attempts to transfer KUMO tokens. During the first year 
-* since system deployment, the Liquity deployer is only allowed to transfer KUMO to valid LockupContracts that have been 
+* This registry is checked by KUMOToken when the Kumo deployer attempts to transfer KUMO tokens. During the first year 
+* since system deployment, the Kumo deployer is only allowed to transfer KUMO to valid LockupContracts that have been 
 * deployed by and recorded in the LockupContractFactory. This ensures the deployer's KUMO can't be traded or staked in the
 * first year, and can only be sent to a verified LockupContract which unlocks at least one year after system deployment.
 *

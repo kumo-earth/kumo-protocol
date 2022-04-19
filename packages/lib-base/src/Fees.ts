@@ -12,7 +12,7 @@ import {
  * Calculator for fees.
  *
  * @remarks
- * Returned by the {@link ReadableLiquity.getFees | getFees()} function.
+ * Returned by the {@link ReadableKumo.getFees | getFees()} function.
  *
  * @public
  */

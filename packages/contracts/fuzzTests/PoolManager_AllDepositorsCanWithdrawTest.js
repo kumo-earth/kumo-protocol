@@ -214,7 +214,7 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
     })
 
     beforeEach(async () => {
-      contracts = await deploymentHelper.deployLiquityCore()
+      contracts = await deploymentHelper.deployKumoCore()
       const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress)
 
       stabilityPool = contracts.stabilityPool

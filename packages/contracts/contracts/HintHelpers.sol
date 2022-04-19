@@ -4,12 +4,12 @@ pragma solidity 0.8.11;
 
 import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/ISortedTroves.sol";
-import "./Dependencies/LiquityBase.sol";
+import "./Dependencies/KumoBase.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafeMath.sol";
 
-contract HintHelpers is LiquityBase, CheckContract, Ownable {
+contract HintHelpers is KumoBase, CheckContract, Ownable {
     using SafeMath for uint256;
     string constant public NAME = "HintHelpers";
 
@@ -101,7 +101,7 @@ contract HintHelpers is LiquityBase, CheckContract, Ownable {
 
             if (netKUSDDebt > remainingKUSD) {
                 if (netKUSDDebt > MIN_NET_DEBT) {
-                    uint maxRedeemableKUSD = LiquityMath._min(remainingKUSD, netKUSDDebt.sub(MIN_NET_DEBT));
+                    uint maxRedeemableKUSD = KumoMath._min(remainingKUSD, netKUSDDebt.sub(MIN_NET_DEBT));
 
                     uint ETH = troveManager.getTroveColl(currentTroveuser)
                         .add(troveManager.getPendingETHReward(currentTroveuser));
@@ -110,7 +110,7 @@ contract HintHelpers is LiquityBase, CheckContract, Ownable {
                     uint newDebt = netKUSDDebt.sub(maxRedeemableKUSD);
 
                     uint compositeDebt = _getCompositeDebt(newDebt);
-                    partialRedemptionHintNICR = LiquityMath._computeNominalCR(newColl, compositeDebt);
+                    partialRedemptionHintNICR = KumoMath._computeNominalCR(newColl, compositeDebt);
 
                     remainingKUSD = remainingKUSD.sub(maxRedeemableKUSD);
                 }
@@ -146,7 +146,7 @@ contract HintHelpers is LiquityBase, CheckContract, Ownable {
         }
 
         hintAddress = sortedTroves.getLast();
-        diff = LiquityMath._getAbsoluteDifference(_CR, troveManager.getNominalICR(hintAddress));
+        diff = KumoMath._getAbsoluteDifference(_CR, troveManager.getNominalICR(hintAddress));
         latestRandomSeed = _inputRandomSeed;
 
         uint i = 1;
@@ -159,7 +159,7 @@ contract HintHelpers is LiquityBase, CheckContract, Ownable {
             uint currentNICR = troveManager.getNominalICR(currentAddress);
 
             // check if abs(current - CR) > abs(closest - CR), and update closest if current is closer
-            uint currentDiff = LiquityMath._getAbsoluteDifference(currentNICR, _CR);
+            uint currentDiff = KumoMath._getAbsoluteDifference(currentNICR, _CR);
 
             if (currentDiff < diff) {
                 diff = currentDiff;
@@ -170,10 +170,10 @@ contract HintHelpers is LiquityBase, CheckContract, Ownable {
     }
 
     function computeNominalCR(uint _coll, uint _debt) external pure returns (uint) {
-        return LiquityMath._computeNominalCR(_coll, _debt);
+        return KumoMath._computeNominalCR(_coll, _debt);
     }
 
     function computeCR(uint _coll, uint _debt, uint _price) external pure returns (uint) {
-        return LiquityMath._computeCR(_coll, _debt, _price);
+        return KumoMath._computeCR(_coll, _debt, _price);
     }
 }

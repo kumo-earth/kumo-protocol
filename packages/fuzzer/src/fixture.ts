@@ -6,12 +6,12 @@ import {
   KUMOStake,
   KUSD_MINIMUM_DEBT,
   StabilityDeposit,
-  TransactableLiquity,
+  TransactableKumo,
   Trove,
   TroveAdjustmentParams
 } from "@liquity/lib-base";
 
-import { EthersLiquity as Liquity } from "@liquity/lib-ethers";
+import { EthersKumo as Kumo } from "@liquity/lib-ethers";
 
 import {
   createRandomTrove,
@@ -32,7 +32,7 @@ type _GasHistogramsFrom<T> = {
 };
 
 type GasHistograms = Pick<
-  _GasHistogramsFrom<TransactableLiquity>,
+  _GasHistogramsFrom<TransactableKumo>,
   | "openTrove"
   | "adjustTrove"
   | "closeTrove"
@@ -44,9 +44,9 @@ type GasHistograms = Pick<
 >;
 
 export class Fixture {
-  private readonly deployerLiquity: Liquity;
+  private readonly deployerKumo: Kumo;
   private readonly funder: Signer;
-  private readonly funderLiquity: Liquity;
+  private readonly funderKumo: Kumo;
   private readonly funderAddress: string;
   private readonly frontendAddress: string;
   private readonly gasHistograms: GasHistograms;
@@ -56,16 +56,16 @@ export class Fixture {
   totalNumberOfLiquidations = 0;
 
   private constructor(
-    deployerLiquity: Liquity,
+    deployerKumo: Kumo,
     funder: Signer,
-    funderLiquity: Liquity,
+    funderKumo: Kumo,
     funderAddress: string,
     frontendAddress: string,
     price: Decimal
   ) {
-    this.deployerLiquity = deployerLiquity;
+    this.deployerKumo = deployerKumo;
     this.funder = funder;
-    this.funderLiquity = funderLiquity;
+    this.funderKumo = funderKumo;
     this.funderAddress = funderAddress;
     this.frontendAddress = frontendAddress;
     this.price = price;
@@ -83,21 +83,21 @@ export class Fixture {
   }
 
   static async setup(
-    deployerLiquity: Liquity,
+    deployerKumo: Kumo,
     funder: Signer,
-    funderLiquity: Liquity,
+    funderKumo: Kumo,
     frontendAddress: string,
-    frontendLiquity: Liquity
+    frontendKumo: Kumo
   ) {
     const funderAddress = await funder.getAddress();
-    const price = await deployerLiquity.getPrice();
+    const price = await deployerKumo.getPrice();
 
-    await frontendLiquity.registerFrontend(Decimal.from(10).div(11));
+    await frontendKumo.registerFrontend(Decimal.from(10).div(11));
 
     return new Fixture(
-      deployerLiquity,
+      deployerKumo,
       funder,
-      funderLiquity,
+      funderKumo,
       funderAddress,
       frontendAddress,
       price
@@ -107,12 +107,12 @@ export class Fixture {
   private async sendKUSDFromFunder(toAddress: string, amount: Decimalish) {
     amount = Decimal.from(amount);
 
-    const kusdBalance = await this.funderLiquity.getKUSDBalance();
+    const kusdBalance = await this.funderKumo.getKUSDBalance();
 
     if (kusdBalance.lt(amount)) {
-      const trove = await this.funderLiquity.getTrove();
-      const total = await this.funderLiquity.getTotal();
-      const fees = await this.funderLiquity.getFees();
+      const trove = await this.funderKumo.getTrove();
+      const total = await this.funderKumo.getTotal();
+      const fees = await this.funderKumo.getFees();
 
       const targetCollateralRatio =
         trove.isEmpty || !total.collateralRatioIsBelowCritical(this.price)
@@ -131,7 +131,7 @@ export class Fixture {
       if (trove.isEmpty) {
         const params = Trove.recreate(newTrove, fees.borrowingRate());
         console.log(`[funder] openTrove(${objToString(params)})`);
-        await this.funderLiquity.openTrove(params);
+        await this.funderKumo.openTrove(params);
       } else {
         let newTotal = total.add(newTrove).subtract(trove);
 
@@ -145,26 +145,26 @@ export class Fixture {
 
         const params = trove.adjustTo(newTrove, fees.borrowingRate());
         console.log(`[funder] adjustTrove(${objToString(params)})`);
-        await this.funderLiquity.adjustTrove(params);
+        await this.funderKumo.adjustTrove(params);
       }
     }
 
-    await this.funderLiquity.sendKUSD(toAddress, amount);
+    await this.funderKumo.sendKUSD(toAddress, amount);
   }
 
   async setRandomPrice() {
     this.price = this.price.add(200 * Math.random() + 100).div(2);
     console.log(`[deployer] setPrice(${this.price})`);
-    await this.deployerLiquity.setPrice(this.price);
+    await this.deployerKumo.setPrice(this.price);
 
     return this.price;
   }
 
   async liquidateRandomNumberOfTroves(price: Decimal) {
-    const kusdInStabilityPoolBefore = await this.deployerLiquity.getKUSDInStabilityPool();
+    const kusdInStabilityPoolBefore = await this.deployerKumo.getKUSDInStabilityPool();
     console.log(`// Stability Pool balance: ${kusdInStabilityPoolBefore}`);
 
-    const trovesBefore = await getListOfTroves(this.deployerLiquity);
+    const trovesBefore = await getListOfTroves(this.deployerKumo);
 
     if (trovesBefore.length === 0) {
       console.log("// No Troves to liquidate");
@@ -181,9 +181,9 @@ export class Fixture {
 
     const maximumNumberOfTrovesToLiquidate = Math.floor(50 * Math.random()) + 1;
     console.log(`[deployer] liquidateUpTo(${maximumNumberOfTrovesToLiquidate})`);
-    await this.deployerLiquity.liquidateUpTo(maximumNumberOfTrovesToLiquidate);
+    await this.deployerKumo.liquidateUpTo(maximumNumberOfTrovesToLiquidate);
 
-    const troveOwnersAfter = await getListOfTroveOwners(this.deployerLiquity);
+    const troveOwnersAfter = await getListOfTroveOwners(this.deployerKumo);
     const liquidatedTroves = listDifference(troveOwnersBefore, troveOwnersAfter);
 
     if (liquidatedTroves.length > 0) {
@@ -194,11 +194,11 @@ export class Fixture {
 
     this.totalNumberOfLiquidations += liquidatedTroves.length;
 
-    const kusdInStabilityPoolAfter = await this.deployerLiquity.getKUSDInStabilityPool();
+    const kusdInStabilityPoolAfter = await this.deployerKumo.getKUSDInStabilityPool();
     console.log(`// Stability Pool balance: ${kusdInStabilityPoolAfter}`);
   }
 
-  async openRandomTrove(userAddress: string, liquity: Liquity) {
+  async openRandomTrove(userAddress: string, liquity: Kumo) {
     const total = await liquity.getTotal();
     const fees = await liquity.getFees();
 
@@ -239,7 +239,7 @@ export class Fixture {
     }
   }
 
-  async randomlyAdjustTrove(userAddress: string, liquity: Liquity, trove: Trove) {
+  async randomlyAdjustTrove(userAddress: string, liquity: Kumo, trove: Trove) {
     const total = await liquity.getTotal();
     const fees = await liquity.getFees();
     const x = Math.random();
@@ -298,7 +298,7 @@ export class Fixture {
     }
   }
 
-  async closeTrove(userAddress: string, liquity: Liquity, trove: Trove) {
+  async closeTrove(userAddress: string, liquity: Kumo, trove: Trove) {
     const total = await liquity.getTotal();
 
     if (total.collateralRatioIsBelowCritical(this.price)) {
@@ -316,7 +316,7 @@ export class Fixture {
     );
   }
 
-  async redeemRandomAmount(userAddress: string, liquity: Liquity) {
+  async redeemRandomAmount(userAddress: string, liquity: Kumo) {
     const total = await liquity.getTotal();
 
     if (total.collateralRatioIsBelowMinimum(this.price)) {
@@ -342,7 +342,7 @@ export class Fixture {
     }
   }
 
-  async depositRandomAmountInStabilityPool(userAddress: string, liquity: Liquity) {
+  async depositRandomAmountInStabilityPool(userAddress: string, liquity: Kumo) {
     const amount = benford(20000);
 
     await this.sendKUSDFromFunder(userAddress, amount);
@@ -358,7 +358,7 @@ export class Fixture {
 
   async withdrawRandomAmountFromStabilityPool(
     userAddress: string,
-    liquity: Liquity,
+    liquity: Kumo,
     deposit: StabilityDeposit
   ) {
     const [lastTrove] = await liquity.getTroves({
@@ -389,11 +389,11 @@ export class Fixture {
     }
   }
 
-  async stakeRandomAmount(userAddress: string, liquity: Liquity) {
-    const kumoBalance = await this.funderLiquity.getKUMOBalance();
+  async stakeRandomAmount(userAddress: string, liquity: Kumo) {
+    const kumoBalance = await this.funderKumo.getKUMOBalance();
     const amount = kumoBalance.mul(Math.random() / 2);
 
-    await this.funderLiquity.sendKUMO(userAddress, amount);
+    await this.funderKumo.sendKUMO(userAddress, amount);
 
     if (amount.eq(0)) {
       console.log(`// [${shortenAddress(userAddress)}] stakeKUMO(${amount}) expected to fail`);
@@ -410,7 +410,7 @@ export class Fixture {
     }
   }
 
-  async unstakeRandomAmount(userAddress: string, liquity: Liquity, stake: KUMOStake) {
+  async unstakeRandomAmount(userAddress: string, liquity: Kumo, stake: KUMOStake) {
     const amount = stake.stakedKUMO.mul(1.1 * Math.random()).add(10 * Math.random());
 
     console.log(`[${shortenAddress(userAddress)}] unstakeKUMO(${amount})`);
@@ -420,7 +420,7 @@ export class Fixture {
     );
   }
 
-  async sweepKUSD(liquity: Liquity) {
+  async sweepKUSD(liquity: Kumo) {
     const kusdBalance = await liquity.getKUSDBalance();
 
     if (kusdBalance.nonZero) {
@@ -428,7 +428,7 @@ export class Fixture {
     }
   }
 
-  async sweepKUMO(liquity: Liquity) {
+  async sweepKUMO(liquity: Kumo) {
     const kumoBalance = await liquity.getKUMOBalance();
 
     if (kumoBalance.nonZero) {

@@ -17,11 +17,11 @@ import "./Dependencies/console.sol";
 *
 * --- Functionality added specific to the KUSDToken ---
 * 
-* 1) Transfer protection: blacklist of addresses that are invalid recipients (i.e. core Liquity contracts) in external 
-* transfer() and transferFrom() calls. The purpose is to protect users from losing tokens by mistakenly sending KUSD directly to a Liquity 
+* 1) Transfer protection: blacklist of addresses that are invalid recipients (i.e. core Kumo contracts) in external 
+* transfer() and transferFrom() calls. The purpose is to protect users from losing tokens by mistakenly sending KUSD directly to a Kumo 
 * core contract, when they should rather call the right function. 
 *
-* 2) sendToPool() and returnFromPool(): functions callable only Liquity core contracts, which move KUSD tokens between Liquity <-> user.
+* 2) sendToPool() and returnFromPool(): functions callable only Kumo core contracts, which move KUSD tokens between Kumo <-> user.
 */
 
 contract KUSDToken is CheckContract, IKUSDToken {
@@ -93,7 +93,7 @@ contract KUSDToken is CheckContract, IKUSDToken {
         _CACHED_DOMAIN_SEPARATOR = _buildDomainSeparator(_TYPE_HASH, hashedName, hashedVersion);
     }
 
-    // --- Functions for intra-Liquity calls ---
+    // --- Functions for intra-Kumo calls ---
 
     function mint(address _account, uint256 _amount) external override {
         _requireCallerIsBorrowerOperations();

@@ -4,7 +4,7 @@
 
 ## StabilityDepositChangeDetails interface
 
-Details of a [depositKUSDInStabilityPool()](./lib-base.transactableliquity.depositkusdinstabilitypool.md) or [withdrawKUSDFromStabilityPool()](./lib-base.transactableliquity.withdrawkusdfromstabilitypool.md) transaction.
+Details of a [depositKUSDInStabilityPool()](./lib-base.transactablekumo.depositkusdinstabilitypool.md) or [withdrawKUSDFromStabilityPool()](./lib-base.transactablekumo.withdrawkusdfromstabilitypool.md) transaction.
 
 <b>Signature:</b>
 

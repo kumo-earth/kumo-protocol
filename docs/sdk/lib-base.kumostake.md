@@ -14,7 +14,7 @@ export declare class KUMOStake
 
 ## Remarks
 
-Returned by the [getKUMOStake()](./lib-base.readableliquity.getkumostake.md) function.
+Returned by the [getKUMOStake()](./lib-base.readablekumo.getkumostake.md) function.
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `KUMOStake` class.
 

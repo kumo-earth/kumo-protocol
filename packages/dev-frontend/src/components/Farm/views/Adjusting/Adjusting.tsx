@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { Heading, Box, Flex, Card, Button } from "theme-ui";
-import { Decimal, Difference, LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { Decimal, Difference, KumoStoreState } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 
 import { LP, GT } from "../../../../strings";
 import { Icon } from "../../../Icon";
@@ -19,7 +19,7 @@ const selector = ({
   liquidityMiningKUMOReward,
   uniTokenBalance,
   totalStakedUniTokens
-}: LiquityStoreState) => ({
+}: KumoStoreState) => ({
   liquidityMiningStake,
   liquidityMiningKUMOReward,
   uniTokenBalance,
@@ -35,7 +35,7 @@ export const Adjusting: React.FC = () => {
     liquidityMiningKUMOReward,
     uniTokenBalance,
     totalStakedUniTokens
-  } = useLiquitySelector(selector);
+  } = useKumoSelector(selector);
   const [amount, setAmount] = useState<Decimal>(liquidityMiningStake);
   const editingState = useState<string>();
 

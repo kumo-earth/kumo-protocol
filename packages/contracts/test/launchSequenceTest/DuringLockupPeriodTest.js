@@ -62,7 +62,7 @@ contract('During the initial lockup period', async accounts => {
 
   beforeEach(async () => {
     // Deploy all contracts from the first account
-    coreContracts = await deploymentHelper.deployLiquityCore()
+    coreContracts = await deploymentHelper.deployKumoCore()
     KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
 
     kumoStaking = KUMOContracts.kumoStaking
@@ -112,9 +112,9 @@ contract('During the initial lockup period', async accounts => {
   })
 
   describe('KUMO transfer during first year after KUMO deployment', async accounts => {
-    // --- Liquity AG transfer restriction, 1st year ---
-    it("Liquity multisig can not transfer KUMO to a LC that was deployed directly", async () => {
-      // Liquity multisig deploys LC_A
+    // --- Kumo AG transfer restriction, 1st year ---
+    it("Kumo multisig can not transfer KUMO to a LC that was deployed directly", async () => {
+      // Kumo multisig deploys LC_A
       const LC_A = await LockupContract.new(kumoToken.address, A, oneYearFromSystemDeployment, { from: multisig })
 
       // Account F deploys LC_B
@@ -123,7 +123,7 @@ contract('During the initial lockup period', async accounts => {
       // KUMO deployer deploys LC_C
       const LC_C = await LockupContract.new(kumoToken.address, A, oneYearFromSystemDeployment, { from: liquityAG })
 
-      // Liquity multisig attempts KUMO transfer to LC_A
+      // Kumo multisig attempts KUMO transfer to LC_A
       try {
         const KUMOtransferTx_A = await kumoToken.transfer(LC_A.address, dec(1, 18), { from: multisig })
         assert.isFalse(KUMOtransferTx_A.receipt.status)
@@ -131,7 +131,7 @@ contract('During the initial lockup period', async accounts => {
         assert.include(error.message, "KUMOToken: recipient must be a LockupContract registered in the Factory")
       }
 
-      // Liquity multisig attempts KUMO transfer to LC_B
+      // Kumo multisig attempts KUMO transfer to LC_B
       try {
         const KUMOtransferTx_B = await kumoToken.transfer(LC_B.address, dec(1, 18), { from: multisig })
         assert.isFalse(KUMOtransferTx_B.receipt.status)
@@ -147,14 +147,14 @@ contract('During the initial lockup period', async accounts => {
       }
     })
 
-    it("Liquity multisig can not transfer to an EOA or Liquity system contracts", async () => {
+    it("Kumo multisig can not transfer to an EOA or Kumo system contracts", async () => {
       // Multisig attempts KUMO transfer to EOAs
       const KUMOtransferTxPromise_1 = kumoToken.transfer(A, dec(1, 18), { from: multisig })
       const KUMOtransferTxPromise_2 = kumoToken.transfer(B, dec(1, 18), { from: multisig })
       await assertRevert(KUMOtransferTxPromise_1)
       await assertRevert(KUMOtransferTxPromise_2)
 
-      // Multisig attempts KUMO transfer to core Liquity contracts
+      // Multisig attempts KUMO transfer to core Kumo contracts
       for (const contract of Object.keys(coreContracts)) {
         const KUMOtransferTxPromise = kumoToken.transfer(coreContracts[contract].address, dec(1, 18), { from: multisig })
         await assertRevert(KUMOtransferTxPromise, "KUMOToken: recipient must be a LockupContract registered in the Factory")
@@ -167,15 +167,15 @@ contract('During the initial lockup period', async accounts => {
       }
     })
 
-    // --- Liquity AG approval restriction, 1st year ---
-    it("Liquity multisig can not approve any EOA or Liquity system contract to spend their KUMO", async () => {
+    // --- Kumo AG approval restriction, 1st year ---
+    it("Kumo multisig can not approve any EOA or Kumo system contract to spend their KUMO", async () => {
       // Multisig attempts to approve EOAs to spend KUMO
       const KUMOApproveTxPromise_1 = kumoToken.approve(A, dec(1, 18), { from: multisig })
       const KUMOApproveTxPromise_2 = kumoToken.approve(B, dec(1, 18), { from: multisig })
       await assertRevert(KUMOApproveTxPromise_1, "KUMOToken: caller must not be the multisig")
       await assertRevert(KUMOApproveTxPromise_2, "KUMOToken: caller must not be the multisig")
 
-      // Multisig attempts to approve Liquity contracts to spend KUMO
+      // Multisig attempts to approve Kumo contracts to spend KUMO
       for (const contract of Object.keys(coreContracts)) {
         const KUMOApproveTxPromise = kumoToken.approve(coreContracts[contract].address, dec(1, 18), { from: multisig })
         await assertRevert(KUMOApproveTxPromise, "KUMOToken: caller must not be the multisig")
@@ -188,15 +188,15 @@ contract('During the initial lockup period', async accounts => {
       }
     })
 
-    // --- Liquity AG increaseAllowance restriction, 1st year ---
-    it("Liquity multisig can not increaseAllowance for any EOA or Liquity contract", async () => {
+    // --- Kumo AG increaseAllowance restriction, 1st year ---
+    it("Kumo multisig can not increaseAllowance for any EOA or Kumo contract", async () => {
       // Multisig attempts to approve EOAs to spend KUMO
       const KUMOIncreaseAllowanceTxPromise_1 = kumoToken.increaseAllowance(A, dec(1, 18), { from: multisig })
       const KUMOIncreaseAllowanceTxPromise_2 = kumoToken.increaseAllowance(B, dec(1, 18), { from: multisig })
       await assertRevert(KUMOIncreaseAllowanceTxPromise_1, "KUMOToken: caller must not be the multisig")
       await assertRevert(KUMOIncreaseAllowanceTxPromise_2, "KUMOToken: caller must not be the multisig")
 
-      // Multisig attempts to approve Liquity contracts to spend KUMO
+      // Multisig attempts to approve Kumo contracts to spend KUMO
       for (const contract of Object.keys(coreContracts)) {
         const KUMOIncreaseAllowanceTxPromise = kumoToken.increaseAllowance(coreContracts[contract].address, dec(1, 18), { from: multisig })
         await assertRevert(KUMOIncreaseAllowanceTxPromise, "KUMOToken: caller must not be the multisig")
@@ -209,15 +209,15 @@ contract('During the initial lockup period', async accounts => {
       }
     })
 
-    // --- Liquity AG decreaseAllowance restriction, 1st year ---
-    it("Liquity multisig can not decreaseAllowance for any EOA or Liquity contract", async () => {
+    // --- Kumo AG decreaseAllowance restriction, 1st year ---
+    it("Kumo multisig can not decreaseAllowance for any EOA or Kumo contract", async () => {
       // Multisig attempts to decreaseAllowance on EOAs 
       const KUMODecreaseAllowanceTxPromise_1 = kumoToken.decreaseAllowance(A, dec(1, 18), { from: multisig })
       const KUMODecreaseAllowanceTxPromise_2 = kumoToken.decreaseAllowance(B, dec(1, 18), { from: multisig })
       await assertRevert(KUMODecreaseAllowanceTxPromise_1, "KUMOToken: caller must not be the multisig")
       await assertRevert(KUMODecreaseAllowanceTxPromise_2, "KUMOToken: caller must not be the multisig")
 
-      // Multisig attempts to decrease allowance on Liquity contracts
+      // Multisig attempts to decrease allowance on Kumo contracts
       for (const contract of Object.keys(coreContracts)) {
         const KUMODecreaseAllowanceTxPromise = kumoToken.decreaseAllowance(coreContracts[contract].address, dec(1, 18), { from: multisig })
         await assertRevert(KUMODecreaseAllowanceTxPromise, "KUMOToken: caller must not be the multisig")
@@ -230,8 +230,8 @@ contract('During the initial lockup period', async accounts => {
       }
     })
 
-    // --- Liquity multisig transferFrom restriction, 1st year ---
-    it("Liquity multisig can not be the sender in a transferFrom() call", async () => {
+    // --- Kumo multisig transferFrom restriction, 1st year ---
+    it("Kumo multisig can not be the sender in a transferFrom() call", async () => {
       // EOAs attempt to use multisig as sender in a transferFrom()
       const KUMOtransferFromTxPromise_1 = kumoToken.transferFrom(multisig, A, dec(1, 18), { from: A })
       const KUMOtransferFromTxPromise_2 = kumoToken.transferFrom(multisig, C, dec(1, 18), { from: B })
@@ -240,20 +240,20 @@ contract('During the initial lockup period', async accounts => {
     })
 
     //  --- staking, 1st year ---
-    it("Liquity multisig can not stake their KUMO in the staking contract", async () => {
+    it("Kumo multisig can not stake their KUMO in the staking contract", async () => {
       const KUMOStakingTxPromise_1 = kumoStaking.stake(dec(1, 18), { from: multisig })
       await assertRevert(KUMOStakingTxPromise_1, "KUMOToken: sender must not be the multisig")
     })
 
     // --- Anyone else ---
 
-    it("Anyone (other than Liquity multisig) can transfer KUMO to LCs deployed by anyone through the Factory", async () => {
+    it("Anyone (other than Kumo multisig) can transfer KUMO to LCs deployed by anyone through the Factory", async () => {
       // Start D, E, F with some KUMO
       await kumoToken.unprotectedMint(D, dec(1, 24))
       await kumoToken.unprotectedMint(E, dec(2, 24))
       await kumoToken.unprotectedMint(F, dec(3, 24))
 
-      // H, I, and Liquity AG deploy lockup contracts with A, B, C as beneficiaries, respectively
+      // H, I, and Kumo AG deploy lockup contracts with A, B, C as beneficiaries, respectively
       const deployedLCtx_A = await lockupContractFactory.deployLockupContract(A, oneYearFromSystemDeployment, { from: H })
       const deployedLCtx_B = await lockupContractFactory.deployLockupContract(B, oneYearFromSystemDeployment, { from: I })
       const deployedLCtx_C = await lockupContractFactory.deployLockupContract(C, oneYearFromSystemDeployment, { from: multisig })
@@ -279,7 +279,7 @@ contract('During the initial lockup period', async accounts => {
       assert.equal(await kumoToken.balanceOf(LCAddress_C), dec(3, 24))
     })
 
-    it("Anyone (other than Liquity multisig) can transfer KUMO to LCs deployed by anyone directly", async () => {
+    it("Anyone (other than Kumo multisig) can transfer KUMO to LCs deployed by anyone directly", async () => {
       // Start D, E, F with some KUMO
       await kumoToken.unprotectedMint(D, dec(1, 24))
       await kumoToken.unprotectedMint(E, dec(2, 24))
@@ -330,14 +330,14 @@ contract('During the initial lockup period', async accounts => {
       await assert.isTrue(KUMOapproveTx_2.receipt.status)
     })
 
-    it("Anyone (other than liquity multisig) can increaseAllowance for any EOA or Liquity contract", async () => {
+    it("Anyone (other than liquity multisig) can increaseAllowance for any EOA or Kumo contract", async () => {
       // Anyone can increaseAllowance of EOAs to spend KUMO
       const KUMOIncreaseAllowanceTx_1 = await kumoToken.increaseAllowance(A, dec(1, 18), { from: F })
       const KUMOIncreaseAllowanceTx_2 = await kumoToken.increaseAllowance(B, dec(1, 18), { from: G })
       await assert.isTrue(KUMOIncreaseAllowanceTx_1.receipt.status)
       await assert.isTrue(KUMOIncreaseAllowanceTx_2.receipt.status)
 
-      // Increase allowance of core Liquity contracts
+      // Increase allowance of core Kumo contracts
       for (const contract of Object.keys(coreContracts)) {
         const KUMOIncreaseAllowanceTx = await kumoToken.increaseAllowance(coreContracts[contract].address, dec(1, 18), { from: F })
         await assert.isTrue(KUMOIncreaseAllowanceTx.receipt.status)
@@ -350,7 +350,7 @@ contract('During the initial lockup period', async accounts => {
       }
     })
 
-    it("Anyone (other than liquity multisig) can decreaseAllowance for any EOA or Liquity contract", async () => {
+    it("Anyone (other than liquity multisig) can decreaseAllowance for any EOA or Kumo contract", async () => {
       //First, increase allowance of A, B and coreContracts and KUMO contracts
       const KUMOIncreaseAllowanceTx_1 = await kumoToken.increaseAllowance(A, dec(1, 18), { from: F })
       const KUMOIncreaseAllowanceTx_2 = await kumoToken.increaseAllowance(B, dec(1, 18), { from: G })
@@ -431,7 +431,7 @@ contract('During the initial lockup period', async accounts => {
 
   // --- LCs ---
   describe('Transferring KUMO to LCs', async accounts => {
-    it("Liquity multisig can transfer KUMO (vesting) to lockup contracts they deployed", async () => {
+    it("Kumo multisig can transfer KUMO (vesting) to lockup contracts they deployed", async () => {
       const initialKUMOBalanceOfLC_T1 = await kumoToken.balanceOf(LC_T1.address)
       const initialKUMOBalanceOfLC_T2 = await kumoToken.balanceOf(LC_T2.address)
       const initialKUMOBalanceOfLC_T3 = await kumoToken.balanceOf(LC_T3.address)
@@ -444,7 +444,7 @@ contract('During the initial lockup period', async accounts => {
       // One month passes
       await th.fastForwardTime(SECONDS_IN_ONE_MONTH, web3.currentProvider)
 
-      // Liquity multisig transfers vesting amount
+      // Kumo multisig transfers vesting amount
       await kumoToken.transfer(LC_T1.address, dec(1, 24), { from: multisig })
       await kumoToken.transfer(LC_T2.address, dec(1, 24), { from: multisig })
       await kumoToken.transfer(LC_T3.address, dec(1, 24), { from: multisig })
@@ -462,7 +462,7 @@ contract('During the initial lockup period', async accounts => {
       // Another month passes
       await th.fastForwardTime(SECONDS_IN_ONE_MONTH, web3.currentProvider)
 
-      // Liquity multisig transfers vesting amount
+      // Kumo multisig transfers vesting amount
       await kumoToken.transfer(LC_T1.address, dec(1, 24), { from: multisig })
       await kumoToken.transfer(LC_T2.address, dec(1, 24), { from: multisig })
       await kumoToken.transfer(LC_T3.address, dec(1, 24), { from: multisig })
@@ -478,7 +478,7 @@ contract('During the initial lockup period', async accounts => {
       assert.isTrue(KUMOBalanceOfLC_T3_2.eq(KUMOBalanceOfLC_T3_1.add(th.toBN(dec(1, 24)))))
     })
 
-    it("Liquity multisig can transfer KUMO to lockup contracts deployed by anyone", async () => {
+    it("Kumo multisig can transfer KUMO to lockup contracts deployed by anyone", async () => {
       // A, B, C each deploy a lockup contract with themself as beneficiary
       const deployedLCtx_A = await lockupContractFactory.deployLockupContract(A, twoYearsFromSystemDeployment, { from: A })
       const deployedLCtx_B = await lockupContractFactory.deployLockupContract(B, twoYearsFromSystemDeployment, { from: B })
@@ -497,7 +497,7 @@ contract('During the initial lockup period', async accounts => {
       // One month passes
       await th.fastForwardTime(SECONDS_IN_ONE_MONTH, web3.currentProvider)
 
-      // Liquity multisig transfers KUMO to LCs deployed by other accounts
+      // Kumo multisig transfers KUMO to LCs deployed by other accounts
       await kumoToken.transfer(LC_A.address, dec(1, 24), { from: multisig })
       await kumoToken.transfer(LC_B.address, dec(2, 24), { from: multisig })
       await kumoToken.transfer(LC_C.address, dec(3, 24), { from: multisig })
@@ -521,7 +521,7 @@ contract('During the initial lockup period', async accounts => {
       assert.isTrue(LCDeploymentTx_C.receipt.status)
     })
 
-    it("Liquity multisig can deploy LCs through the Factory", async () => {
+    it("Kumo multisig can deploy LCs through the Factory", async () => {
       // KUMO deployer deploys LCs
       const LCDeploymentTx_A = await lockupContractFactory.deployLockupContract(A, oneYearFromSystemDeployment, { from: multisig })
       const LCDeploymentTx_B = await lockupContractFactory.deployLockupContract(B, twoYearsFromSystemDeployment, { from: multisig })
@@ -562,7 +562,7 @@ contract('During the initial lockup period', async accounts => {
       assert.isTrue(LC_C_txReceipt.status)
     })
 
-    it("Liquity multisig can deploy LCs directly", async () => {
+    it("Kumo multisig can deploy LCs directly", async () => {
       // KUMO deployer deploys LCs
       const LC_A = await LockupContract.new(kumoToken.address, A, oneYearFromSystemDeployment, { from: multisig })
       const LC_A_txReceipt = await web3.eth.getTransactionReceipt(LC_A.transactionHash)
@@ -673,14 +673,14 @@ contract('During the initial lockup period', async accounts => {
 
 
     describe('Withdrawal Attempts on LCs before unlockTime has passed ', async accounts => {
-      it("Liquity multisig can't withdraw from a funded LC they deployed for another beneficiary through the Factory before the unlockTime", async () => {
+      it("Kumo multisig can't withdraw from a funded LC they deployed for another beneficiary through the Factory before the unlockTime", async () => {
 
         // Check currentTime < unlockTime
         const currentTime = toBN(await th.getLatestBlockTimestamp(web3))
         const unlockTime = await LC_T1.unlockTime()
         assert.isTrue(currentTime.lt(unlockTime))
 
-        // Liquity multisig attempts withdrawal from LC they deployed through the Factory
+        // Kumo multisig attempts withdrawal from LC they deployed through the Factory
         try {
           const withdrawalAttempt = await LC_T1.withdrawKUMO({ from: multisig })
           assert.isFalse(withdrawalAttempt.receipt.status)
@@ -689,7 +689,7 @@ contract('During the initial lockup period', async accounts => {
         }
       })
 
-      it("Liquity multisig can't withdraw from a funded LC that someone else deployed before the unlockTime", async () => {
+      it("Kumo multisig can't withdraw from a funded LC that someone else deployed before the unlockTime", async () => {
         // Account D deploys a new LC via the Factory
         const deployedLCtx_B = await lockupContractFactory.deployLockupContract(B, oneYearFromSystemDeployment, { from: D })
         const LC_B = await th.getLCFromDeploymentTx(deployedLCtx_B)
@@ -702,7 +702,7 @@ contract('During the initial lockup period', async accounts => {
         const unlockTime = await LC_B.unlockTime()
         assert.isTrue(currentTime.lt(unlockTime))
 
-        // Liquity multisig attempts withdrawal from LCs
+        // Kumo multisig attempts withdrawal from LCs
         try {
           const withdrawalAttempt_B = await LC_B.withdrawKUMO({ from: multisig })
           assert.isFalse(withdrawalAttempt_B.receipt.status)
@@ -716,7 +716,7 @@ contract('During the initial lockup period', async accounts => {
         const deployedLCtx_B = await lockupContractFactory.deployLockupContract(B, oneYearFromSystemDeployment, { from: D })
         const LC_B = await th.getLCFromDeploymentTx(deployedLCtx_B)
 
-        // Liquity multisig funds contracts
+        // Kumo multisig funds contracts
         await kumoToken.transfer(LC_B.address, dec(2, 18), { from: multisig })
 
         // Check currentTime < unlockTime
@@ -752,7 +752,7 @@ contract('During the initial lockup period', async accounts => {
         const deployedLCtx_B = await lockupContractFactory.deployLockupContract(B, oneYearFromSystemDeployment, { from: D })
         const LC_B = await th.getLCFromDeploymentTx(deployedLCtx_B)
 
-        // Liquity multisig funds contract
+        // Kumo multisig funds contract
         await kumoToken.transfer(LC_B.address, dec(2, 18), { from: multisig })
 
         // Check currentTime < unlockTime

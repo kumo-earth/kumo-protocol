@@ -2,7 +2,7 @@ import { Button } from "theme-ui";
 
 import { Decimal } from "@liquity/lib-base";
 
-import { useLiquity } from "../../hooks/LiquityContext";
+import { useKumo } from "../../hooks/KumoContext";
 import { useTransactionFunction } from "../Transaction";
 
 type RedemptionActionProps = {
@@ -20,7 +20,7 @@ export const RedemptionAction: React.FC<RedemptionActionProps> = ({
 }) => {
   const {
     liquity: { send: liquity }
-  } = useLiquity();
+  } = useKumo();
 
   const [sendTransaction] = useTransactionFunction(
     transactionId,

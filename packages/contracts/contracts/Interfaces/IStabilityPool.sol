@@ -63,7 +63,7 @@ interface IStabilityPool {
     event UserDepositChanged(address indexed _depositor, uint _newDeposit);
     event FrontEndStakeChanged(address indexed _frontEnd, uint _newFrontEndStake, address _depositor);
 
-    event ETHGainWithdrawn(address indexed _depositor, uint _ETH, uint _KUSDLoss);
+    event ETHGainWithdrawn(address indexed _depositor, uint _ETH, uint _kusdLoss);
     event KUMOPaidToDepositor(address indexed _depositor, uint _KUMO);
     event KUMOPaidToFrontEnd(address indexed _frontEnd, uint _KUMO);
     event EtherSent(address _to, uint _amount);
@@ -71,7 +71,7 @@ interface IStabilityPool {
     // --- Functions ---
 
     /*
-     * Called only once on init, to set addresses of other Liquity contracts
+     * Called only once on init, to set addresses of other Kumo contracts
      * Callable only by owner, renounces ownership at the end
      */
     function setAddresses(

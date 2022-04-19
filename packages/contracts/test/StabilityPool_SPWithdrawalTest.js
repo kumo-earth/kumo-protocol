@@ -58,7 +58,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
     })
 
     beforeEach(async () => {
-      contracts = await deploymentHelper.deployLiquityCore()
+      contracts = await deploymentHelper.deployKumoCore()
       const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
       contracts.troveManager = await TroveManagerTester.new()
       contracts = await deploymentHelper.deployKUSDToken(contracts)

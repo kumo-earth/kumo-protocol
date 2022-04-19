@@ -8,13 +8,13 @@ import "./Interfaces/IKUSDToken.sol";
 import "./Interfaces/ICollSurplusPool.sol";
 import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/IKUMOStaking.sol";
-import "./Dependencies/LiquityBase.sol";
+import "./Dependencies/KumoBase.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 import "./Dependencies/SafeMath.sol";
 
-contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOperations {
+contract BorrowerOperations is KumoBase, Ownable, CheckContract, IBorrowerOperations {
     using SafeMath for uint256;
     string constant public NAME = "BorrowerOperations";
     // bool public isInitialized;
@@ -181,8 +181,8 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         vars.compositeDebt = _getCompositeDebt(vars.netDebt);
         assert(vars.compositeDebt > 0);
         
-        vars.ICR = LiquityMath._computeCR(msg.value, vars.compositeDebt, vars.price);
-        vars.NICR = LiquityMath._computeNominalCR(msg.value, vars.compositeDebt);
+        vars.ICR = KumoMath._computeCR(msg.value, vars.compositeDebt, vars.price);
+        vars.NICR = KumoMath._computeNominalCR(msg.value, vars.compositeDebt);
 
         if (isRecoveryMode) {
             _requireICRisAboveCCR(vars.ICR);
@@ -286,7 +286,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         vars.coll = contractsCache.troveManager.getTroveColl(_borrower);
         
         // Get the trove's old ICR before the adjustment, and what its new ICR will be after the adjustment
-        vars.oldICR = LiquityMath._computeCR(vars.coll, vars.debt, vars.price);
+        vars.oldICR = KumoMath._computeCR(vars.coll, vars.debt, vars.price);
         vars.newICR = _getNewICRFromTroveChange(vars.coll, vars.debt, vars.collChange, vars.isCollIncrease, vars.netDebtChange, _isDebtIncrease, vars.price);
         assert(_collWithdrawal <= vars.coll); 
 
@@ -598,7 +598,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
     {
         (uint newColl, uint newDebt) = _getNewTroveAmounts(_coll, _debt, _collChange, _isCollIncrease, _debtChange, _isDebtIncrease);
 
-        uint newNICR = LiquityMath._computeNominalCR(newColl, newDebt);
+        uint newNICR = KumoMath._computeNominalCR(newColl, newDebt);
         return newNICR;
     }
 
@@ -619,7 +619,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
     {
         (uint newColl, uint newDebt) = _getNewTroveAmounts(_coll, _debt, _collChange, _isCollIncrease, _debtChange, _isDebtIncrease);
 
-        uint newICR = LiquityMath._computeCR(newColl, newDebt, _price);
+        uint newICR = KumoMath._computeCR(newColl, newDebt, _price);
         return newICR;
     }
 
@@ -662,7 +662,7 @@ contract BorrowerOperations is LiquityBase, Ownable, CheckContract, IBorrowerOpe
         totalColl = _isCollIncrease ? totalColl.add(_collChange) : totalColl.sub(_collChange);
         totalDebt = _isDebtIncrease ? totalDebt.add(_debtChange) : totalDebt.sub(_debtChange);
 
-        uint newTCR = LiquityMath._computeCR(totalColl, totalDebt, _price);
+        uint newTCR = KumoMath._computeCR(totalColl, totalDebt, _price);
         return newTCR;
     }
 

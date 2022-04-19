@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Heading, Box, Card, Button } from "theme-ui";
 
-import { Decimal, Decimalish, Difference, LiquityStoreState, KUMOStake } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { Decimal, Decimalish, Difference, KumoStoreState, KUMOStake } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 
 import { COIN, GT } from "../../strings";
 
@@ -12,7 +12,7 @@ import { LoadingOverlay } from "../LoadingOverlay";
 
 import { useStakingView } from "./context/StakingViewContext";
 
-const select = ({ kumoBalance, totalStakedKUMO }: LiquityStoreState) => ({
+const select = ({ kumoBalance, totalStakedKUMO }: KumoStoreState) => ({
   kumoBalance,
   totalStakedKUMO
 });
@@ -31,7 +31,7 @@ export const StakingEditor: React.FC<StakingEditorProps> = ({
   editedKUMO,
   dispatch
 }) => {
-  const { kumoBalance, totalStakedKUMO } = useLiquitySelector(select);
+  const { kumoBalance, totalStakedKUMO } = useKumoSelector(select);
   const { changePending } = useStakingView();
   const editingState = useState<string>();
 

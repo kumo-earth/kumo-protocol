@@ -1,24 +1,24 @@
 import React from "react";
 import { Text, Flex, Box, Heading } from "theme-ui";
 
-import { LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { KumoStoreState } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 
 import { COIN, GT } from "../strings";
-import { useLiquity } from "../hooks/LiquityContext";
+import { useKumo } from "../hooks/KumoContext";
 import { shortenAddress } from "../utils/shortenAddress";
 
 import { Icon } from "./Icon";
 
-const select = ({ accountBalance, kusdBalance, kumoBalance }: LiquityStoreState) => ({
+const select = ({ accountBalance, kusdBalance, kumoBalance }: KumoStoreState) => ({
   accountBalance,
   kusdBalance,
   kumoBalance
 });
 
 export const UserAccount: React.FC = () => {
-  const { account } = useLiquity();
-  const { accountBalance, kusdBalance, kumoBalance } = useLiquitySelector(select);
+  const { account } = useKumo();
+  const { accountBalance, kusdBalance, kumoBalance } = useKumoSelector(select);
 
   return (
     <Box sx={{ display: ["none", "flex"] }}>

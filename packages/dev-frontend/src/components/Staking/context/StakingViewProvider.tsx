@@ -1,14 +1,14 @@
 import { useEffect } from "react";
 
-import { LiquityStoreState, KUMOStake } from "@liquity/lib-base";
-import { LiquityStoreUpdate, useLiquityReducer } from "@liquity/lib-react";
+import { KumoStoreState, KUMOStake } from "@liquity/lib-base";
+import { KumoStoreUpdate, useKumoReducer } from "@liquity/lib-react";
 
 import { useMyTransactionState } from "../../Transaction";
 
 import { StakingViewAction, StakingViewContext } from "./StakingViewContext";
 
 type StakingViewProviderAction =
-  | LiquityStoreUpdate
+  | KumoStoreUpdate
   | StakingViewAction
   | { type: "startChange" | "abortChange" };
 
@@ -18,7 +18,7 @@ type StakingViewProviderState = {
   adjusting: boolean;
 };
 
-const init = ({ kumoStake }: LiquityStoreState): StakingViewProviderState => ({
+const init = ({ kumoStake }: KumoStoreState): StakingViewProviderState => ({
   kumoStake,
   changePending: false,
   adjusting: false
@@ -71,7 +71,7 @@ const reduce = (
 
 export const StakingViewProvider: React.FC = ({ children }) => {
   const stakingTransactionState = useMyTransactionState("stake");
-  const [{ adjusting, changePending, kumoStake }, dispatch] = useLiquityReducer(reduce, init);
+  const [{ adjusting, changePending, kumoStake }, dispatch] = useKumoReducer(reduce, init);
 
   useEffect(() => {
     if (

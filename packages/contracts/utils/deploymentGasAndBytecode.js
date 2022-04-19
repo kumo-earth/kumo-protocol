@@ -18,7 +18,7 @@ const HintHelpers = artifacts.require("./HintHelpers.sol")
 const CommunityIssuanceTester = artifacts.require("./KUMO/CommunityIssuanceTester.sol")
 const ActivePoolTester = artifacts.require("./ActivePoolTester.sol")
 const DefaultPoolTester = artifacts.require("./DefaultPoolTester.sol")
-const LiquityMathTester = artifacts.require("./LiquityMathTester.sol")
+const KumoMathTester = artifacts.require("./KumoMathTester.sol")
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
 const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol")
@@ -52,7 +52,7 @@ const TesterContractABIs  = [
   CommunityIssuanceTester,
   ActivePoolTester,
   DefaultPoolTester,
-  LiquityMathTester,
+  KumoMathTester,
   BorrowerOperationsTester,
   TroveManagerTester,
   KUSDTokenTester,
@@ -108,7 +108,7 @@ const logContractBytecodeLengths = (contractABIs) => {
 
 // Run script: log deployment gas costs and bytecode lengths for all contracts
 async function main() {
-  const coreContracts = await dh.deployLiquityCoreHardhat()
+  const coreContracts = await dh.deployKumoCoreHardhat()
   const KUMOContracts = await dh.deployKUMOContractsHardhat(ARBITRARY_ADDRESS, ARBITRARY_ADDRESS)
   const testerContracts = await dh.deployTesterContractsHardhat()
 

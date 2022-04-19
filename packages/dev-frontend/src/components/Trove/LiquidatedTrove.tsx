@@ -1,17 +1,17 @@
 import React, { useCallback } from "react";
 import { Card, Heading, Box, Button, Flex } from "theme-ui";
 import { CollateralSurplusAction } from "../CollateralSurplusAction";
-import { LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { KumoStoreState } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 import { useTroveView } from "./context/TroveViewContext";
 import { InfoMessage } from "../InfoMessage";
 
-const select = ({ collateralSurplusBalance }: LiquityStoreState) => ({
+const select = ({ collateralSurplusBalance }: KumoStoreState) => ({
   hasSurplusCollateral: !collateralSurplusBalance.isZero
 });
 
 export const LiquidatedTrove: React.FC = () => {
-  const { hasSurplusCollateral } = useLiquitySelector(select);
+  const { hasSurplusCollateral } = useKumoSelector(select);
   const { dispatchEvent } = useTroveView();
 
   const handleOpenTrove = useCallback(() => {

@@ -7,7 +7,7 @@ pragma solidity 0.8.11;
 import "../Interfaces/IKUMOToken.sol";
 import "../Interfaces/ICommunityIssuance.sol";
 import "../Dependencies/BaseMath.sol";
-import "../Dependencies/LiquityMath.sol";
+import "../Dependencies/KumoMath.sol";
 import "../Dependencies/Ownable.sol";
 import "../Dependencies/CheckContract.sol";
 import "../Dependencies/SafeMath.sol";
@@ -116,7 +116,7 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
         uint timePassedInMinutes = block.timestamp.sub(deploymentTime).div(SECONDS_IN_ONE_MINUTE);
 
         // f^t
-        uint power = LiquityMath._decPow(ISSUANCE_FACTOR, timePassedInMinutes);
+        uint power = KumoMath._decPow(ISSUANCE_FACTOR, timePassedInMinutes);
 
         //  (1 - f^t)
         uint cumulativeIssuanceFraction = (uint(DECIMAL_PRECISION).sub(power));

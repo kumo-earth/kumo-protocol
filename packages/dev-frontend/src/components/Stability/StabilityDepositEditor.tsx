@@ -5,11 +5,11 @@ import {
   Decimal,
   Decimalish,
   StabilityDeposit,
-  LiquityStoreState,
+  KumoStoreState,
   Difference
 } from "@liquity/lib-base";
 
-import { useLiquitySelector } from "@liquity/lib-react";
+import { useKumoSelector } from "@liquity/lib-react";
 
 import { COIN, GT } from "../../strings";
 
@@ -18,7 +18,7 @@ import { EditableRow, StaticRow } from "../Trove/Editor";
 import { LoadingOverlay } from "../LoadingOverlay";
 import { InfoIcon } from "../InfoIcon";
 
-const select = ({ kusdBalance, kusdInStabilityPool }: LiquityStoreState) => ({
+const select = ({ kusdBalance, kusdInStabilityPool }: KumoStoreState) => ({
   kusdBalance,
   kusdInStabilityPool
 });
@@ -37,7 +37,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   dispatch,
   children
 }) => {
-  const { kusdBalance, kusdInStabilityPool } = useLiquitySelector(select);
+  const { kusdBalance, kusdInStabilityPool } = useKumoSelector(select);
   const editingState = useState<string>();
 
   const edited = !editedKUSD.eq(originalDeposit.currentKUSD);

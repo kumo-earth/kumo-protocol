@@ -9,7 +9,7 @@ import {
   EventFilter
 } from "@ethersproject/contracts";
 
-import { _TypedLiquityContract, _TypedLogDescription } from "../src/contracts";
+import { _TypedKumoContract, _TypedLogDescription } from "../src/contracts";
 
 interface ActivePoolCalls {
   NAME(_overrides?: CallOverrides): Promise<string>;
@@ -31,7 +31,7 @@ interface ActivePoolTransactions {
 }
 
 export interface ActivePool
-  extends _TypedLiquityContract<ActivePoolCalls, ActivePoolTransactions> {
+  extends _TypedKumoContract<ActivePoolCalls, ActivePoolTransactions> {
   readonly filters: {
     ActivePoolAddressChanged(_newActivePoolAddress?: null): EventFilter;
     ActivePoolETHBalanceUpdated(_ETH?: null): EventFilter;
@@ -97,7 +97,7 @@ interface BorrowerOperationsTransactions {
 }
 
 export interface BorrowerOperations
-  extends _TypedLiquityContract<BorrowerOperationsCalls, BorrowerOperationsTransactions> {
+  extends _TypedKumoContract<BorrowerOperationsCalls, BorrowerOperationsTransactions> {
   readonly filters: {
     ActivePoolAddressChanged(_activePoolAddress?: null): EventFilter;
     CollSurplusPoolAddressChanged(_collSurplusPoolAddress?: null): EventFilter;
@@ -150,7 +150,7 @@ interface CollSurplusPoolTransactions {
 }
 
 export interface CollSurplusPool
-  extends _TypedLiquityContract<CollSurplusPoolCalls, CollSurplusPoolTransactions> {
+  extends _TypedKumoContract<CollSurplusPoolCalls, CollSurplusPoolTransactions> {
   readonly filters: {
     ActivePoolAddressChanged(_newActivePoolAddress?: null): EventFilter;
     BorrowerOperationsAddressChanged(_newBorrowerOperationsAddress?: null): EventFilter;
@@ -189,7 +189,7 @@ interface CommunityIssuanceTransactions {
 }
 
 export interface CommunityIssuance
-  extends _TypedLiquityContract<CommunityIssuanceCalls, CommunityIssuanceTransactions> {
+  extends _TypedKumoContract<CommunityIssuanceCalls, CommunityIssuanceTransactions> {
   readonly filters: {
     KUMOTokenAddressSet(_kumoTokenAddress?: null): EventFilter;
     OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
@@ -220,7 +220,7 @@ interface DefaultPoolTransactions {
 }
 
 export interface DefaultPool
-  extends _TypedLiquityContract<DefaultPoolCalls, DefaultPoolTransactions> {
+  extends _TypedKumoContract<DefaultPoolCalls, DefaultPoolTransactions> {
   readonly filters: {
     ActivePoolAddressChanged(_newActivePoolAddress?: null): EventFilter;
     DefaultPoolAddressChanged(_newDefaultPoolAddress?: null): EventFilter;
@@ -267,7 +267,7 @@ interface ERC20MockTransactions {
 }
 
 export interface ERC20Mock
-  extends _TypedLiquityContract<ERC20MockCalls, ERC20MockTransactions> {
+  extends _TypedKumoContract<ERC20MockCalls, ERC20MockTransactions> {
   readonly filters: {
     Approval(owner?: string | null, spender?: string | null, value?: null): EventFilter;
     Transfer(from?: string | null, to?: string | null, value?: null): EventFilter;
@@ -283,7 +283,7 @@ interface GasPoolTransactions {
 }
 
 export interface GasPool
-  extends _TypedLiquityContract<GasPoolCalls, GasPoolTransactions> {
+  extends _TypedKumoContract<GasPoolCalls, GasPoolTransactions> {
   readonly filters: {
   };
 }
@@ -319,7 +319,7 @@ interface HintHelpersTransactions {
 }
 
 export interface HintHelpers
-  extends _TypedLiquityContract<HintHelpersCalls, HintHelpersTransactions> {
+  extends _TypedKumoContract<HintHelpersCalls, HintHelpersTransactions> {
   readonly filters: {
     OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
     SortedTrovesAddressChanged(_sortedTrovesAddress?: null): EventFilter;
@@ -345,7 +345,7 @@ interface IERC20Transactions {
 }
 
 export interface IERC20
-  extends _TypedLiquityContract<IERC20Calls, IERC20Transactions> {
+  extends _TypedKumoContract<IERC20Calls, IERC20Transactions> {
   readonly filters: {
     Approval(owner?: string | null, spender?: string | null, value?: null): EventFilter;
     Transfer(from?: string | null, to?: string | null, value?: null): EventFilter;
@@ -370,7 +370,7 @@ interface LockupContractFactoryTransactions {
 }
 
 export interface LockupContractFactory
-  extends _TypedLiquityContract<LockupContractFactoryCalls, LockupContractFactoryTransactions> {
+  extends _TypedKumoContract<LockupContractFactoryCalls, LockupContractFactoryTransactions> {
   readonly filters: {
     KUMOTokenAddressSet(_kumoTokenAddress?: null): EventFilter;
     LockupContractDeployedThroughFactory(_lockupContractAddress?: null, _beneficiary?: null, _unlockTime?: null, _deployer?: null): EventFilter;
@@ -411,7 +411,7 @@ interface KUSDTokenTransactions {
 }
 
 export interface KUSDToken
-  extends _TypedLiquityContract<KUSDTokenCalls, KUSDTokenTransactions> {
+  extends _TypedKumoContract<KUSDTokenCalls, KUSDTokenTransactions> {
   readonly filters: {
     Approval(owner?: string | null, spender?: string | null, value?: null): EventFilter;
     BorrowerOperationsAddressChanged(_newBorrowerOperationsAddress?: null): EventFilter;
@@ -456,7 +456,7 @@ interface KUMOStakingTransactions {
 }
 
 export interface KUMOStaking
-  extends _TypedLiquityContract<KUMOStakingCalls, KUMOStakingTransactions> {
+  extends _TypedKumoContract<KUMOStakingCalls, KUMOStakingTransactions> {
   readonly filters: {
     ActivePoolAddressSet(_activePoolAddress?: null): EventFilter;
     BorrowerOperationsAddressSet(_borrowerOperationsAddress?: null): EventFilter;
@@ -518,7 +518,7 @@ interface KUMOTokenTransactions {
 }
 
 export interface KUMOToken
-  extends _TypedLiquityContract<KUMOTokenCalls, KUMOTokenTransactions> {
+  extends _TypedKumoContract<KUMOTokenCalls, KUMOTokenTransactions> {
   readonly filters: {
     Approval(owner?: string | null, spender?: string | null, value?: null): EventFilter;
     CommunityIssuanceAddressSet(_communityIssuanceAddress?: null): EventFilter;
@@ -543,7 +543,7 @@ interface MultiTroveGetterTransactions {
 }
 
 export interface MultiTroveGetter
-  extends _TypedLiquityContract<MultiTroveGetterCalls, MultiTroveGetterTransactions> {
+  extends _TypedKumoContract<MultiTroveGetterCalls, MultiTroveGetterTransactions> {
   readonly filters: {
   };
 }
@@ -571,7 +571,7 @@ interface PriceFeedTransactions {
 }
 
 export interface PriceFeed
-  extends _TypedLiquityContract<PriceFeedCalls, PriceFeedTransactions> {
+  extends _TypedKumoContract<PriceFeedCalls, PriceFeedTransactions> {
   readonly filters: {
     LastGoodPriceUpdated(_lastGoodPrice?: null): EventFilter;
     OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
@@ -592,7 +592,7 @@ interface PriceFeedTestnetTransactions {
 }
 
 export interface PriceFeedTestnet
-  extends _TypedLiquityContract<PriceFeedTestnetCalls, PriceFeedTestnetTransactions> {
+  extends _TypedKumoContract<PriceFeedTestnetCalls, PriceFeedTestnetTransactions> {
   readonly filters: {
     LastGoodPriceUpdated(_lastGoodPrice?: null): EventFilter;
   };
@@ -627,7 +627,7 @@ interface SortedTrovesTransactions {
 }
 
 export interface SortedTroves
-  extends _TypedLiquityContract<SortedTrovesCalls, SortedTrovesTransactions> {
+  extends _TypedKumoContract<SortedTrovesCalls, SortedTrovesTransactions> {
   readonly filters: {
     BorrowerOperationsAddressChanged(_borrowerOperationsAddress?: null): EventFilter;
     NodeAdded(_id?: null, _NICR?: null): EventFilter;
@@ -682,7 +682,7 @@ interface StabilityPoolCalls {
   kusdToken(_overrides?: CallOverrides): Promise<string>;
   lastETHError_Offset(_overrides?: CallOverrides): Promise<BigNumber>;
   lastKUMOError(_overrides?: CallOverrides): Promise<BigNumber>;
-  lastKUSDLossError_Offset(_overrides?: CallOverrides): Promise<BigNumber>;
+  lastkusdLossError_Offset(_overrides?: CallOverrides): Promise<BigNumber>;
   owner(_overrides?: CallOverrides): Promise<string>;
   priceFeed(_overrides?: CallOverrides): Promise<string>;
   sortedTroves(_overrides?: CallOverrides): Promise<string>;
@@ -699,14 +699,14 @@ interface StabilityPoolTransactions {
 }
 
 export interface StabilityPool
-  extends _TypedLiquityContract<StabilityPoolCalls, StabilityPoolTransactions> {
+  extends _TypedKumoContract<StabilityPoolCalls, StabilityPoolTransactions> {
   readonly filters: {
     ActivePoolAddressChanged(_newActivePoolAddress?: null): EventFilter;
     BorrowerOperationsAddressChanged(_newBorrowerOperationsAddress?: null): EventFilter;
     CommunityIssuanceAddressChanged(_newCommunityIssuanceAddress?: null): EventFilter;
     DefaultPoolAddressChanged(_newDefaultPoolAddress?: null): EventFilter;
     DepositSnapshotUpdated(_depositor?: string | null, _P?: null, _S?: null, _G?: null): EventFilter;
-    ETHGainWithdrawn(_depositor?: string | null, _ETH?: null, _KUSDLoss?: null): EventFilter;
+    ETHGainWithdrawn(_depositor?: string | null, _ETH?: null, _kusdLoss?: null): EventFilter;
     EpochUpdated(_currentEpoch?: null): EventFilter;
     EtherSent(_to?: null, _amount?: null): EventFilter;
     FrontEndRegistered(_frontEnd?: string | null, _kickbackRate?: null): EventFilter;
@@ -734,7 +734,7 @@ export interface StabilityPool
   extractEvents(logs: Log[], name: "CommunityIssuanceAddressChanged"): _TypedLogDescription<{ _newCommunityIssuanceAddress: string }>[];
   extractEvents(logs: Log[], name: "DefaultPoolAddressChanged"): _TypedLogDescription<{ _newDefaultPoolAddress: string }>[];
   extractEvents(logs: Log[], name: "DepositSnapshotUpdated"): _TypedLogDescription<{ _depositor: string; _P: BigNumber; _S: BigNumber; _G: BigNumber }>[];
-  extractEvents(logs: Log[], name: "ETHGainWithdrawn"): _TypedLogDescription<{ _depositor: string; _ETH: BigNumber; _KUSDLoss: BigNumber }>[];
+  extractEvents(logs: Log[], name: "ETHGainWithdrawn"): _TypedLogDescription<{ _depositor: string; _ETH: BigNumber; _kusdLoss: BigNumber }>[];
   extractEvents(logs: Log[], name: "EpochUpdated"): _TypedLogDescription<{ _currentEpoch: BigNumber }>[];
   extractEvents(logs: Log[], name: "EtherSent"): _TypedLogDescription<{ _to: string; _amount: BigNumber }>[];
   extractEvents(logs: Log[], name: "FrontEndRegistered"): _TypedLogDescription<{ _frontEnd: string; _kickbackRate: BigNumber }>[];
@@ -843,7 +843,7 @@ interface TroveManagerTransactions {
 }
 
 export interface TroveManager
-  extends _TypedLiquityContract<TroveManagerCalls, TroveManagerTransactions> {
+  extends _TypedKumoContract<TroveManagerCalls, TroveManagerTransactions> {
   readonly filters: {
     ActivePoolAddressChanged(_activePoolAddress?: null): EventFilter;
     BaseRateUpdated(_baseRate?: null): EventFilter;
@@ -856,7 +856,7 @@ export interface TroveManager
     KUSDTokenAddressChanged(_newKUSDTokenAddress?: null): EventFilter;
     LTermsUpdated(_L_ETH?: null, _L_KUSDDebt?: null): EventFilter;
     LastFeeOpTimeUpdated(_lastFeeOpTime?: null): EventFilter;
-    Liquidation(_liquidatedDebt?: null, _liquidatedColl?: null, _collGasCompensation?: null, _KUSDGasCompensation?: null): EventFilter;
+    Liquidation(_liquidatedDebt?: null, _liquidatedColl?: null, _collGasCompensation?: null, _kusdGasCompensation?: null): EventFilter;
     OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
     PriceFeedAddressChanged(_newPriceFeedAddress?: null): EventFilter;
     Redemption(_attemptedKUSDAmount?: null, _actualKUSDAmount?: null, _ETHSent?: null, _ETHFee?: null): EventFilter;
@@ -881,7 +881,7 @@ export interface TroveManager
   extractEvents(logs: Log[], name: "KUSDTokenAddressChanged"): _TypedLogDescription<{ _newKUSDTokenAddress: string }>[];
   extractEvents(logs: Log[], name: "LTermsUpdated"): _TypedLogDescription<{ _L_ETH: BigNumber; _L_KUSDDebt: BigNumber }>[];
   extractEvents(logs: Log[], name: "LastFeeOpTimeUpdated"): _TypedLogDescription<{ _lastFeeOpTime: BigNumber }>[];
-  extractEvents(logs: Log[], name: "Liquidation"): _TypedLogDescription<{ _liquidatedDebt: BigNumber; _liquidatedColl: BigNumber; _collGasCompensation: BigNumber; _KUSDGasCompensation: BigNumber }>[];
+  extractEvents(logs: Log[], name: "Liquidation"): _TypedLogDescription<{ _liquidatedDebt: BigNumber; _liquidatedColl: BigNumber; _collGasCompensation: BigNumber; _kusdGasCompensation: BigNumber }>[];
   extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
   extractEvents(logs: Log[], name: "PriceFeedAddressChanged"): _TypedLogDescription<{ _newPriceFeedAddress: string }>[];
   extractEvents(logs: Log[], name: "Redemption"): _TypedLogDescription<{ _attemptedKUSDAmount: BigNumber; _actualKUSDAmount: BigNumber; _ETHSent: BigNumber; _ETHFee: BigNumber }>[];
@@ -925,7 +925,7 @@ interface UnipoolTransactions {
 }
 
 export interface Unipool
-  extends _TypedLiquityContract<UnipoolCalls, UnipoolTransactions> {
+  extends _TypedKumoContract<UnipoolCalls, UnipoolTransactions> {
   readonly filters: {
     KUMOTokenAddressChanged(_kumoTokenAddress?: null): EventFilter;
     OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;

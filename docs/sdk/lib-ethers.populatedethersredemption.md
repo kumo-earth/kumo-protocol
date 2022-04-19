@@ -9,17 +9,17 @@ A redemption transaction that has been prepared for sending.
 <b>Signature:</b>
 
 ```typescript
-export declare class PopulatedEthersRedemption extends PopulatedEthersLiquityTransaction<RedemptionDetails> implements PopulatedRedemption<EthersPopulatedTransaction, EthersTransactionResponse, EthersTransactionReceipt> 
+export declare class PopulatedEthersRedemption extends PopulatedEthersKumoTransaction<RedemptionDetails> implements PopulatedRedemption<EthersPopulatedTransaction, EthersTransactionResponse, EthersTransactionReceipt> 
 ```
-<b>Extends:</b> [PopulatedEthersLiquityTransaction](./lib-ethers.populatedethersliquitytransaction.md)<!-- -->&lt;[RedemptionDetails](./lib-base.redemptiondetails.md)<!-- -->&gt;
+<b>Extends:</b> [PopulatedEthersKumoTransaction](./lib-ethers.populatedetherskumotransaction.md)<!-- -->&lt;[RedemptionDetails](./lib-base.redemptiondetails.md)<!-- -->&gt;
 
 <b>Implements:</b> [PopulatedRedemption](./lib-base.populatedredemption.md)<!-- -->&lt;[EthersPopulatedTransaction](./lib-ethers.etherspopulatedtransaction.md)<!-- -->, [EthersTransactionResponse](./lib-ethers.etherstransactionresponse.md)<!-- -->, [EthersTransactionReceipt](./lib-ethers.etherstransactionreceipt.md)<!-- -->&gt;
 
 ## Remarks
 
-The Liquity protocol fulfills redemptions by repaying the debt of Troves in ascending order of their collateralization ratio, and taking a portion of their collateral in exchange. Due to the [minimum debt](./lib-base.kusd_minimum_debt.md) requirement that Troves must fulfill, some KUSD amounts are not possible to redeem exactly.
+The Kumo protocol fulfills redemptions by repaying the debt of Troves in ascending order of their collateralization ratio, and taking a portion of their collateral in exchange. Due to the [minimum debt](./lib-base.kusd_minimum_debt.md) requirement that Troves must fulfill, some KUSD amounts are not possible to redeem exactly.
 
-When [redeemKUSD()](./lib-base.populatableliquity.redeemkusd.md) is called with an amount that can't be fully redeemed, the amount will be truncated (see the `redeemableKUSDAmount` property). When this happens, the redeemer can either redeem the truncated amount by sending the transaction unchanged, or prepare a new transaction by [increasing the amount](./lib-base.populatedredemption.increaseamountbyminimumnetdebt.md) to the next lowest possible value, which is the sum of the truncated amount and [KUSD\_MINIMUM\_NET\_DEBT](./lib-base.kusd_minimum_net_debt.md)<!-- -->.
+When [redeemKUSD()](./lib-base.populatablekumo.redeemkusd.md) is called with an amount that can't be fully redeemed, the amount will be truncated (see the `redeemableKUSDAmount` property). When this happens, the redeemer can either redeem the truncated amount by sending the transaction unchanged, or prepare a new transaction by [increasing the amount](./lib-base.populatedredemption.increaseamountbyminimumnetdebt.md) to the next lowest possible value, which is the sum of the truncated amount and [KUSD\_MINIMUM\_NET\_DEBT](./lib-base.kusd_minimum_net_debt.md)<!-- -->.
 
 ## Properties
 

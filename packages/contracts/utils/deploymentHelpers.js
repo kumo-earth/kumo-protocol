@@ -23,7 +23,7 @@ const CommunityIssuanceTester = artifacts.require("./CommunityIssuanceTester.sol
 const StabilityPoolTester = artifacts.require("./StabilityPoolTester.sol")
 const ActivePoolTester = artifacts.require("./ActivePoolTester.sol")
 const DefaultPoolTester = artifacts.require("./DefaultPoolTester.sol")
-const LiquityMathTester = artifacts.require("./LiquityMathTester.sol")
+const KumoMathTester = artifacts.require("./KumoMathTester.sol")
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
 const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol")
@@ -46,7 +46,7 @@ const {
   KUMOStakingProxy
 } = require('../utils/proxyHelpers.js')
 
-/* "Liquity core" consists of all contracts in the core Liquity system.
+/* "Kumo core" consists of all contracts in the core Kumo system.
 
 KUMO contracts consist of only those contracts related to the KUMO Token:
 
@@ -61,15 +61,15 @@ const maxBytes32 = '0x' + 'f'.repeat(64)
 
 class DeploymentHelper {
 
-  static async deployLiquityCore() {
+  static async deployKumoCore() {
     const cmdLineArgs = process.argv
     const frameworkPath = cmdLineArgs[1]
     // console.log(`Framework used:  ${frameworkPath}`)
 
     if (frameworkPath.includes("hardhat")) {
-      return this.deployLiquityCoreHardhat()
+      return this.deployKumoCoreHardhat()
     } else if (frameworkPath.includes("truffle")) {
-      return this.deployLiquityCoreTruffle()
+      return this.deployKumoCoreTruffle()
     }
   }
 
@@ -85,7 +85,7 @@ class DeploymentHelper {
     }
   }
 
-  static async deployLiquityCoreHardhat() {
+  static async deployKumoCoreHardhat() {
     const priceFeedTestnet = await PriceFeedTestnet.new()
     const sortedTroves = await SortedTroves.new()
     const troveManager = await TroveManager.new()
@@ -145,7 +145,7 @@ class DeploymentHelper {
     testerContracts.stabilityPool = await StabilityPoolTester.new()
     testerContracts.gasPool = await GasPool.new()
     testerContracts.collSurplusPool = await CollSurplusPool.new()
-    testerContracts.math = await LiquityMathTester.new()
+    testerContracts.math = await KumoMathTester.new()
     testerContracts.borrowerOperations = await BorrowerOperationsTester.new()
     testerContracts.troveManager = await TroveManagerTester.new()
     testerContracts.functionCaller = await FunctionCaller.new()
@@ -216,7 +216,7 @@ class DeploymentHelper {
     return KUMOContracts
   }
 
-  static async deployLiquityCoreTruffle() {
+  static async deployKumoCoreTruffle() {
     const priceFeedTestnet = await PriceFeedTestnet.new()
     const sortedTroves = await SortedTroves.new()
     const troveManager = await TroveManager.new()

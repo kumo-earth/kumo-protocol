@@ -62,7 +62,7 @@ class MainnetDeploymentHelper {
     return contract
   }
 
-  async deployLiquityCoreMainnet(tellorMasterAddr, deploymentState) {
+  async deployKumoCoreMainnet(tellorMasterAddr, deploymentState) {
     // Get contract factories
     const priceFeedFactory = await this.getFactory("PriceFeed")
     const sortedTrovesFactory = await this.getFactory("SortedTroves")
