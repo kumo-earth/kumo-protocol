@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
+
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "../Dependencies/CheckContract.sol";
 import "../Dependencies/SafeMath.sol";
@@ -26,6 +28,7 @@ import "../Dependencies/console.sol";
 contract LockupContractFactory is ILockupContractFactory, Ownable, CheckContract {
     using SafeMath for uint;
 
+	// bool public isInitialized;
     // --- Data ---
     string constant public NAME = "LockupContractFactory";
 
@@ -37,13 +40,17 @@ contract LockupContractFactory is ILockupContractFactory, Ownable, CheckContract
 
     // --- Events ---
 
-    event LQTYTokenAddressSet(address _lqtyTokenAddress);
-    event LockupContractDeployedThroughFactory(address _lockupContractAddress, address _beneficiary, uint _unlockTime, address _deployer);
+    // event LQTYTokenAddressSet(address _lqtyTokenAddress);
+    // event LockupContractDeployedThroughFactory(address _lockupContractAddress, address _beneficiary, uint _unlockTime, address _deployer);
 
     // --- Functions ---
 
     function setLQTYTokenAddress(address _lqtyTokenAddress) external override onlyOwner {
+        // require(!isInitialized, "Already initialized");
         checkContract(_lqtyTokenAddress);
+		// isInitialized = true;
+
+		// __Ownable_init();
 
         lqtyTokenAddress = _lqtyTokenAddress;
         emit LQTYTokenAddressSet(_lqtyTokenAddress);

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
 // Common interface for the Trove Manager.
 interface IBorrowerOperations {
@@ -19,7 +19,7 @@ interface IBorrowerOperations {
     event LQTYStakingAddressChanged(address _lqtyStakingAddress);
 
     event TroveCreated(address indexed _borrower, uint arrayIndex);
-    event TroveUpdated(address indexed _borrower, uint _debt, uint _coll, uint stake, uint8 operation);
+    // event TroveUpdated(address indexed _borrower, uint _debt, uint _coll, uint stake, uint8 operation);
     event LUSDBorrowingFeePaid(address indexed _borrower, uint _LUSDFee);
 
     // --- Functions ---

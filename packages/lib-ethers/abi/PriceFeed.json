@@ -154,7 +154,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "latestprice_",
         "type": "uint256"
       }
     ],
