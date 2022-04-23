@@ -9,11 +9,11 @@ import {
   UserTrove,
   Decimal
 } from "@liquity/lib-base";
-import { BlockPolledLiquityStoreState } from "@liquity/lib-ethers";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { BlockPolledKumoStoreState } from "@liquity/lib-ethers";
+import { useKumoSelector } from "@liquity/lib-react";
 
 import { shortenAddress } from "../utils/shortenAddress";
-import { useLiquity } from "../hooks/LiquityContext";
+import { useKumo } from "../hooks/KumoContext";
 import { COIN } from "../strings";
 
 import { Icon } from "./Icon";
@@ -31,14 +31,14 @@ const liquidatableInRecoveryMode = (
   trove: UserTrove,
   price: Decimal,
   totalCollateralRatio: Decimal,
-  lusdInStabilityPool: Decimal
+  kusdInStabilityPool: Decimal
 ) => {
   const collateralRatio = trove.collateralRatio(price);
 
   if (collateralRatio.gte(MINIMUM_COLLATERAL_RATIO) && collateralRatio.lt(totalCollateralRatio)) {
     return [
-      trove.debt.lte(lusdInStabilityPool),
-      "There's not enough LUSD in the Stability pool to cover the debt"
+      trove.debt.lte(kusdInStabilityPool),
+      "There's not enough KUSD in the Stability pool to cover the debt"
     ] as const;
   } else {
     return liquidatableInNormalMode(trove, price);
@@ -53,14 +53,14 @@ const select = ({
   numberOfTroves,
   price,
   total,
-  lusdInStabilityPool,
+  kusdInStabilityPool,
   blockTag
-}: BlockPolledLiquityStoreState) => ({
+}: BlockPolledKumoStoreState) => ({
   numberOfTroves,
   price,
   recoveryMode: total.collateralRatioIsBelowCritical(price),
   totalCollateralRatio: total.collateralRatio(price),
-  lusdInStabilityPool,
+  kusdInStabilityPool,
   blockTag
 });
 
@@ -70,10 +70,10 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
     numberOfTroves,
     recoveryMode,
     totalCollateralRatio,
-    lusdInStabilityPool,
+    kusdInStabilityPool,
     price
-  } = useLiquitySelector(select);
-  const { liquity } = useLiquity();
+  } = useKumoSelector(select);
+  const { liquity } = useKumo();
 
   const [loading, setLoading] = useState(true);
   const [troves, setTroves] = useState<UserTrove[]>();
@@ -325,7 +325,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
                                   trove,
                                   price,
                                   totalCollateralRatio,
-                                  lusdInStabilityPool
+                                  kusdInStabilityPool
                                 )
                               : liquidatableInNormalMode(trove, price)
                           ]}

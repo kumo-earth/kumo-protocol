@@ -6,7 +6,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
   
   let priceFeed
-  let lusdToken
+  let kusdToken
   let sortedTroves
   let troveManager
   let activePool
@@ -14,17 +14,17 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   let defaultPool
   let functionCaller
   let borrowerOperations
-  let lqtyStaking
-  let lqtyToken
+  let kumoStaking
+  let kumoToken
   let communityIssuance
   let lockupContractFactory
 
   before(async () => {
-    const coreContracts = await deploymentHelper.deployLiquityCore()
-    const LQTYContracts = await deploymentHelper.deployLQTYContracts(bountyAddress, lpRewardsAddress, multisig)
+    const coreContracts = await deploymentHelper.deployKumoCore()
+    const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
     priceFeed = coreContracts.priceFeedTestnet
-    lusdToken = coreContracts.lusdToken
+    kusdToken = coreContracts.kusdToken
     sortedTroves = coreContracts.sortedTroves
     troveManager = coreContracts.troveManager
     activePool = coreContracts.activePool
@@ -33,14 +33,14 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     functionCaller = coreContracts.functionCaller
     borrowerOperations = coreContracts.borrowerOperations
 
-    lqtyStaking = LQTYContracts.lqtyStaking
-    lqtyToken = LQTYContracts.lqtyToken
-    communityIssuance = LQTYContracts.communityIssuance
-    lockupContractFactory = LQTYContracts.lockupContractFactory
+    kumoStaking = KUMOContracts.kumoStaking
+    kumoToken = KUMOContracts.kumoToken
+    communityIssuance = KUMOContracts.communityIssuance
+    lockupContractFactory = KUMOContracts.lockupContractFactory
 
-    await deploymentHelper.connectLQTYContracts(LQTYContracts)
-    await deploymentHelper.connectCoreContracts(coreContracts, LQTYContracts)
-    await deploymentHelper.connectLQTYContractsToCore(LQTYContracts, coreContracts)
+    await deploymentHelper.connectKUMOContracts(KUMOContracts)
+    await deploymentHelper.connectCoreContracts(coreContracts, KUMOContracts)
+    await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, coreContracts)
   })
 
   it('Sets the correct PriceFeed address in TroveManager', async () => {
@@ -51,12 +51,12 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     assert.equal(priceFeedAddress, recordedPriceFeedAddress)
   })
 
-  it('Sets the correct LUSDToken address in TroveManager', async () => {
-    const lusdTokenAddress = lusdToken.address
+  it('Sets the correct KUSDToken address in TroveManager', async () => {
+    const kusdTokenAddress = kusdToken.address
 
-    const recordedClvTokenAddress = await troveManager.lusdToken()
+    const recordedClvTokenAddress = await troveManager.kusdToken()
 
-    assert.equal(lusdTokenAddress, recordedClvTokenAddress)
+    assert.equal(kusdTokenAddress, recordedClvTokenAddress)
   })
 
   it('Sets the correct SortedTroves address in TroveManager', async () => {
@@ -102,12 +102,12 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     assert.equal(stabilityPoolAddress, recordedStabilityPoolAddresss)
   })
 
-  // LQTY Staking in TroveM
-  it('Sets the correct LQTYStaking address in TroveManager', async () => {
-    const lqtyStakingAddress = lqtyStaking.address
+  // KUMO Staking in TroveM
+  it('Sets the correct KUMOStaking address in TroveManager', async () => {
+    const kumoStakingAddress = kumoStaking.address
 
-    const recordedLQTYStakingAddress = await troveManager.lqtyStaking()
-    assert.equal(lqtyStakingAddress, recordedLQTYStakingAddress)
+    const recordedKUMOStakingAddress = await troveManager.kumoStaking()
+    assert.equal(kumoStakingAddress, recordedKUMOStakingAddress)
   })
 
   // Active Pool
@@ -160,12 +160,12 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     assert.equal(borrowerOperationsAddress, recordedBorrowerOperationsAddress)
   })
 
-  it('Sets the correct LUSDToken address in StabilityPool', async () => {
-    const lusdTokenAddress = lusdToken.address
+  it('Sets the correct KUSDToken address in StabilityPool', async () => {
+    const kusdTokenAddress = kusdToken.address
 
-    const recordedClvTokenAddress = await stabilityPool.lusdToken()
+    const recordedClvTokenAddress = await stabilityPool.kusdToken()
 
-    assert.equal(lusdTokenAddress, recordedClvTokenAddress)
+    assert.equal(kusdTokenAddress, recordedClvTokenAddress)
   })
 
   it('Sets the correct TroveManager address in StabilityPool', async () => {
@@ -247,101 +247,101 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     assert.equal(defaultPoolAddress, recordedDefaultPoolAddress)
   })
 
-  // LQTY Staking in BO
-  it('Sets the correct LQTYStaking address in BorrowerOperations', async () => {
-    const lqtyStakingAddress = lqtyStaking.address
+  // KUMO Staking in BO
+  it('Sets the correct KUMOStaking address in BorrowerOperations', async () => {
+    const kumoStakingAddress = kumoStaking.address
 
-    const recordedLQTYStakingAddress = await borrowerOperations.lqtyStakingAddress()
-    assert.equal(lqtyStakingAddress, recordedLQTYStakingAddress)
+    const recordedKUMOStakingAddress = await borrowerOperations.kumoStakingAddress()
+    assert.equal(kumoStakingAddress, recordedKUMOStakingAddress)
   })
 
 
-  // --- LQTY Staking ---
+  // --- KUMO Staking ---
 
-  // Sets LQTYToken in LQTYStaking
-  it('Sets the correct LQTYToken address in LQTYStaking', async () => {
-    const lqtyTokenAddress = lqtyToken.address
+  // Sets KUMOToken in KUMOStaking
+  it('Sets the correct KUMOToken address in KUMOStaking', async () => {
+    const kumoTokenAddress = kumoToken.address
 
-    const recordedLQTYTokenAddress = await lqtyStaking.lqtyToken()
-    assert.equal(lqtyTokenAddress, recordedLQTYTokenAddress)
+    const recordedKUMOTokenAddress = await kumoStaking.kumoToken()
+    assert.equal(kumoTokenAddress, recordedKUMOTokenAddress)
   })
 
-  // Sets ActivePool in LQTYStaking
-  it('Sets the correct ActivePool address in LQTYStaking', async () => {
+  // Sets ActivePool in KUMOStaking
+  it('Sets the correct ActivePool address in KUMOStaking', async () => {
     const activePoolAddress = activePool.address
 
-    const recordedActivePoolAddress = await lqtyStaking.activePoolAddress()
+    const recordedActivePoolAddress = await kumoStaking.activePoolAddress()
     assert.equal(activePoolAddress, recordedActivePoolAddress)
   })
 
-  // Sets LUSDToken in LQTYStaking
-  it('Sets the correct ActivePool address in LQTYStaking', async () => {
-    const lusdTokenAddress = lusdToken.address
+  // Sets KUSDToken in KUMOStaking
+  it('Sets the correct ActivePool address in KUMOStaking', async () => {
+    const kusdTokenAddress = kusdToken.address
 
-    const recordedLUSDTokenAddress = await lqtyStaking.lusdToken()
-    assert.equal(lusdTokenAddress, recordedLUSDTokenAddress)
+    const recordedKUSDTokenAddress = await kumoStaking.kusdToken()
+    assert.equal(kusdTokenAddress, recordedKUSDTokenAddress)
   })
 
-  // Sets TroveManager in LQTYStaking
-  it('Sets the correct ActivePool address in LQTYStaking', async () => {
+  // Sets TroveManager in KUMOStaking
+  it('Sets the correct ActivePool address in KUMOStaking', async () => {
     const troveManagerAddress = troveManager.address
 
-    const recordedTroveManagerAddress = await lqtyStaking.troveManagerAddress()
+    const recordedTroveManagerAddress = await kumoStaking.troveManagerAddress()
     assert.equal(troveManagerAddress, recordedTroveManagerAddress)
   })
 
-  // Sets BorrowerOperations in LQTYStaking
-  it('Sets the correct BorrowerOperations address in LQTYStaking', async () => {
+  // Sets BorrowerOperations in KUMOStaking
+  it('Sets the correct BorrowerOperations address in KUMOStaking', async () => {
     const borrowerOperationsAddress = borrowerOperations.address
 
-    const recordedBorrowerOperationsAddress = await lqtyStaking.borrowerOperationsAddress()
+    const recordedBorrowerOperationsAddress = await kumoStaking.borrowerOperationsAddress()
     assert.equal(borrowerOperationsAddress, recordedBorrowerOperationsAddress)
   })
 
-  // ---  LQTYToken ---
+  // ---  KUMOToken ---
 
-  // Sets CI in LQTYToken
-  it('Sets the correct CommunityIssuance address in LQTYToken', async () => {
+  // Sets CI in KUMOToken
+  it('Sets the correct CommunityIssuance address in KUMOToken', async () => {
     const communityIssuanceAddress = communityIssuance.address
 
-    const recordedcommunityIssuanceAddress = await lqtyToken.communityIssuanceAddress()
+    const recordedcommunityIssuanceAddress = await kumoToken.communityIssuanceAddress()
     assert.equal(communityIssuanceAddress, recordedcommunityIssuanceAddress)
   })
 
-  // Sets LQTYStaking in LQTYToken
-  it('Sets the correct LQTYStaking address in LQTYToken', async () => {
-    const lqtyStakingAddress = lqtyStaking.address
+  // Sets KUMOStaking in KUMOToken
+  it('Sets the correct KUMOStaking address in KUMOToken', async () => {
+    const kumoStakingAddress = kumoStaking.address
 
-    const recordedLQTYStakingAddress =  await lqtyToken.lqtyStakingAddress()
-    assert.equal(lqtyStakingAddress, recordedLQTYStakingAddress)
+    const recordedKUMOStakingAddress =  await kumoToken.kumoStakingAddress()
+    assert.equal(kumoStakingAddress, recordedKUMOStakingAddress)
   })
 
-  // Sets LCF in LQTYToken
-  it('Sets the correct LockupContractFactory address in LQTYToken', async () => {
+  // Sets LCF in KUMOToken
+  it('Sets the correct LockupContractFactory address in KUMOToken', async () => {
     const LCFAddress = lockupContractFactory.address
 
-    const recordedLCFAddress =  await lqtyToken.lockupContractFactory()
+    const recordedLCFAddress =  await kumoToken.lockupContractFactory()
     assert.equal(LCFAddress, recordedLCFAddress)
   })
 
   // --- LCF  ---
 
-  // Sets LQTYToken in LockupContractFactory
-  it('Sets the correct LQTYToken address in LockupContractFactory', async () => {
-    const lqtyTokenAddress = lqtyToken.address
+  // Sets KUMOToken in LockupContractFactory
+  it('Sets the correct KUMOToken address in LockupContractFactory', async () => {
+    const kumoTokenAddress = kumoToken.address
 
-    const recordedLQTYTokenAddress = await lockupContractFactory.lqtyTokenAddress()
-    assert.equal(lqtyTokenAddress, recordedLQTYTokenAddress)
+    const recordedKUMOTokenAddress = await lockupContractFactory.kumoTokenAddress()
+    assert.equal(kumoTokenAddress, recordedKUMOTokenAddress)
   })
 
   // --- CI ---
 
-  // Sets LQTYToken in CommunityIssuance
-  it('Sets the correct LQTYToken address in CommunityIssuance', async () => {
-    const lqtyTokenAddress = lqtyToken.address
+  // Sets KUMOToken in CommunityIssuance
+  it('Sets the correct KUMOToken address in CommunityIssuance', async () => {
+    const kumoTokenAddress = kumoToken.address
 
-    const recordedLQTYTokenAddress = await communityIssuance.lqtyToken()
-    assert.equal(lqtyTokenAddress, recordedLQTYTokenAddress)
+    const recordedKUMOTokenAddress = await communityIssuance.kumoToken()
+    assert.equal(kumoTokenAddress, recordedKUMOTokenAddress)
   })
 
   it('Sets the correct StabilityPool address in CommunityIssuance', async () => {

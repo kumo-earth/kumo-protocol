@@ -310,7 +310,7 @@
     },
     {
       "inputs": [],
-      "name": "echidna_LUSD_global_balances",
+      "name": "echidna_KUSD_global_balances",
       "outputs": [
         {
           "internalType": "bool",
@@ -466,10 +466,10 @@
     },
     {
       "inputs": [],
-      "name": "lusdToken",
+      "name": "kusdToken",
       "outputs": [
         {
-          "internalType": "contract LUSDToken",
+          "internalType": "contract KUSDToken",
           "name": "",
           "type": "address"
         }
@@ -491,7 +491,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "_LUSDAmount",
+          "name": "_KUSDAmount",
           "type": "uint256"
         }
       ],
@@ -514,7 +514,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "_LUSDAmount",
+          "name": "_KUSDAmount",
           "type": "uint256"
         },
         {
@@ -570,7 +570,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "_LUSDAmount",
+          "name": "_KUSDAmount",
           "type": "uint256"
         },
         {
@@ -622,7 +622,7 @@
           "type": "address"
         }
       ],
-      "name": "repayLUSDExt",
+      "name": "repayKUSDExt",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -803,7 +803,7 @@
           "type": "uint256"
         }
       ],
-      "name": "withdrawLUSDExt",
+      "name": "withdrawKUSDExt",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

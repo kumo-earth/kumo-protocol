@@ -6,15 +6,15 @@ interface ICommunityIssuance {
     
     // --- Events ---
     
-    event LQTYTokenAddressSet(address _lqtyTokenAddress);
+    event KUMOTokenAddressSet(address _kumoTokenAddress);
     event StabilityPoolAddressSet(address _stabilityPoolAddress);
-    event TotalLQTYIssuedUpdated(uint _totalLQTYIssued);
+    event TotalKUMOIssuedUpdated(uint _totalKUMOIssued);
 
     // --- Functions ---
 
-    function setAddresses(address _lqtyTokenAddress, address _stabilityPoolAddress) external;
+    function setAddresses(address _kumoTokenAddress, address _stabilityPoolAddress) external;
 
-    function issueLQTY() external returns (uint);
+    function issueKUMO() external returns (uint);
 
-    function sendLQTY(address _account, uint _LQTYamount) external;
+    function sendKUMO(address _account, uint _KUMOamount) external;
 }

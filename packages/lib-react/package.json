@@ -1,9 +1,9 @@
 {
   "name": "@liquity/lib-react",
   "version": "0.0.0-semantic-release",
-  "description": "Components and hooks for React-based Liquity frontends",
+  "description": "Components and hooks for React-based Kumo frontends",
   "keywords": [
-    "Liquity",
+    "Kumo",
     "protocol",
     "DeFi",
     "Ethereum"

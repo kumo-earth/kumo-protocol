@@ -4,7 +4,7 @@
 
 ## TransactionFailedError class
 
-Thrown by [TransactableLiquity](./lib-base.transactableliquity.md) functions in case of transaction failure.
+Thrown by [TransactableKumo](./lib-base.transactablekumo.md) functions in case of transaction failure.
 
 <b>Signature:</b>
 

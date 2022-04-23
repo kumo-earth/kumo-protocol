@@ -24,7 +24,7 @@ boolean
 
 ## Example
 
-Can be used to check whether the Liquity protocol is in recovery mode by using it on the return value of [getTotal()](./lib-base.readableliquity.gettotal.md)<!-- -->. For example:
+Can be used to check whether the Kumo protocol is in recovery mode by using it on the return value of [getTotal()](./lib-base.readablekumo.gettotal.md)<!-- -->. For example:
 
 ```typescript
 const total = await liquity.getTotal();

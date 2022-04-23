@@ -6,7 +6,7 @@ pragma solidity 0.8.11;
 import "./TroveManager.sol";
 import "./SortedTroves.sol";
 
-/*  Helper contract for grabbing Trove data for the front end. Not part of the core Liquity system. */
+/*  Helper contract for grabbing Trove data for the front end. Not part of the core Kumo system. */
 contract MultiTroveGetter {
     struct CombinedTroveData {
         address owner;
@@ -16,7 +16,7 @@ contract MultiTroveGetter {
         uint stake;
 
         uint snapshotETH;
-        uint snapshotLUSDDebt;
+        uint snapshotKUSDDebt;
     }
 
     TroveManager public troveManager; // XXX Troves missing from ITroveManager?
@@ -82,7 +82,7 @@ contract MultiTroveGetter {
             ) = troveManager.Troves(currentTroveowner);
             (
                 _troves[idx].snapshotETH,
-                _troves[idx].snapshotLUSDDebt
+                _troves[idx].snapshotKUSDDebt
             ) = troveManager.rewardSnapshots(currentTroveowner);
 
             currentTroveowner = sortedTroves.getNext(currentTroveowner);
@@ -111,7 +111,7 @@ contract MultiTroveGetter {
             ) = troveManager.Troves(currentTroveowner);
             (
                 _troves[idx].snapshotETH,
-                _troves[idx].snapshotLUSDDebt
+                _troves[idx].snapshotKUSDDebt
             ) = troveManager.rewardSnapshots(currentTroveowner);
 
             currentTroveowner = sortedTroves.getPrev(currentTroveowner);

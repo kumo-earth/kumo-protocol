@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { useLiquitySelector } from "@liquity/lib-react";
-import { LiquityStoreState, StabilityDeposit } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
+import { KumoStoreState, StabilityDeposit } from "@liquity/lib-base";
 import { StabilityViewContext } from "./StabilityViewContext";
 import type { StabilityView, StabilityEvent } from "./types";
 
@@ -38,11 +38,11 @@ const getInitialView = (stabilityDeposit: StabilityDeposit): StabilityView => {
   return stabilityDeposit.isEmpty ? "NONE" : "ACTIVE";
 };
 
-const select = ({ stabilityDeposit }: LiquityStoreState): StabilityDeposit => stabilityDeposit;
+const select = ({ stabilityDeposit }: KumoStoreState): StabilityDeposit => stabilityDeposit;
 
 export const StabilityViewProvider: React.FC = props => {
   const { children } = props;
-  const stabilityDeposit = useLiquitySelector(select);
+  const stabilityDeposit = useKumoSelector(select);
 
   const [view, setView] = useState<StabilityView>(getInitialView(stabilityDeposit));
   const viewRef = useRef<StabilityView>(view);

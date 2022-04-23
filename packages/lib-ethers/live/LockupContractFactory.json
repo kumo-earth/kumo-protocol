@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "LockupContractFactory",
-  "sourceName": "contracts/LQTY/LockupContractFactory.sol",
+  "sourceName": "contracts/KUMO/LockupContractFactory.sol",
   "abi": [
     {
       "anonymous": false,
@@ -9,11 +9,11 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_lqtyTokenAddress",
+          "name": "_kumoTokenAddress",
           "type": "address"
         }
       ],
-      "name": "LQTYTokenAddressSet",
+      "name": "KUMOTokenAddressSet",
       "type": "event"
     },
     {
@@ -163,7 +163,7 @@
     },
     {
       "inputs": [],
-      "name": "lqtyTokenAddress",
+      "name": "kumoTokenAddress",
       "outputs": [
         {
           "internalType": "address",
@@ -191,11 +191,11 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_lqtyTokenAddress",
+          "name": "_kumoTokenAddress",
           "type": "address"
         }
       ],
-      "name": "setLQTYTokenAddress",
+      "name": "setKUMOTokenAddress",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
