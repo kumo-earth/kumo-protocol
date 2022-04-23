@@ -16,7 +16,7 @@ import "@nomiclabs/hardhat-ethers";
 import { Decimal } from "@liquity/lib-base";
 
 import { deployAndSetupContracts, deployTellorCaller, setSilent } from "./utils/deploy";
-import { _connectToContracts, _LiquityDeploymentJSON, _priceFeedIsTestnet } from "./src/contracts";
+import { _connectToContracts, _KumoDeploymentJSON, _priceFeedIsTestnet } from "./src/contracts";
 
 import accounts from "./accounts.json";
 
@@ -127,12 +127,12 @@ const config: HardhatUserConfig = {
 
 declare module "hardhat/types/runtime" {
   interface HardhatRuntimeEnvironment {
-    deployLiquity: (
+    deployKumo: (
       deployer: Signer,
       useRealPriceFeed?: boolean,
       wethAddress?: string,
       overrides?: Overrides
-    ) => Promise<_LiquityDeploymentJSON>;
+    ) => Promise<_KumoDeploymentJSON>;
   }
 }
 
@@ -149,7 +149,7 @@ const getContractFactory: (
   : env => env.ethers.getContractFactory;
 
 extendEnvironment(env => {
-  env.deployLiquity = async (
+  env.deployKumo = async (
     deployer,
     useRealPriceFeed = false,
     wethAddress = undefined,
@@ -188,7 +188,7 @@ task("deploy", "Deploys the contracts to the network")
   )
   .addOptionalParam(
     "createUniswapPair",
-    "Create a real Uniswap v2 WETH-LUSD pair instead of a mock ERC20 token",
+    "Create a real Uniswap v2 WETH-KUSD pair instead of a mock ERC20 token",
     undefined,
     types.boolean
   )
@@ -213,7 +213,7 @@ task("deploy", "Deploys the contracts to the network")
 
       setSilent(false);
 
-      const deployment = await env.deployLiquity(deployer, useRealPriceFeed, wethAddress, overrides);
+      const deployment = await env.deployKumo(deployer, useRealPriceFeed, wethAddress, overrides);
 
       if (useRealPriceFeed) {
         const contracts = _connectToContracts(deployer, deployment);

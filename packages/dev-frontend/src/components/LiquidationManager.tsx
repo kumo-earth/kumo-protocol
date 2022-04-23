@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, Box, Heading, Flex, Button, Label, Input } from "theme-ui";
 
-import { useLiquity } from "../hooks/LiquityContext";
+import { useKumo } from "../hooks/KumoContext";
 
 import { Icon } from "./Icon";
 import { Transaction } from "./Transaction";
@@ -9,7 +9,7 @@ import { Transaction } from "./Transaction";
 export const LiquidationManager: React.FC = () => {
   const {
     liquity: { send: liquity }
-  } = useLiquity();
+  } = useKumo();
   const [numberOfTrovesToLiquidate, setNumberOfTrovesToLiquidate] = useState("90");
 
   return (

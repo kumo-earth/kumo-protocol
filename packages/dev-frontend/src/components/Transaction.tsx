@@ -8,9 +8,9 @@ import { buildStyles, CircularProgressbarWithChildren } from "react-circular-pro
 import "react-circular-progressbar/dist/styles.css";
 
 import { EthersTransactionOverrides, EthersTransactionCancelledError } from "@liquity/lib-ethers";
-import { SentLiquityTransaction, LiquityReceipt } from "@liquity/lib-base";
+import { SentKumoTransaction, KumoReceipt } from "@liquity/lib-base";
 
-import { useLiquity } from "../hooks/LiquityContext";
+import { useKumo } from "../hooks/KumoContext";
 
 import { Icon } from "./Icon";
 import { Tooltip, TooltipProps, Hoverable } from "./Tooltip";
@@ -126,9 +126,9 @@ type ButtonlikeProps = {
   onClick?: () => void;
 };
 
-type SentTransaction = SentLiquityTransaction<
+type SentTransaction = SentKumoTransaction<
   TransactionResponse,
-  LiquityReceipt<TransactionReceipt>
+  KumoReceipt<TransactionReceipt>
 >;
 
 export type TransactionFunction = (
@@ -286,7 +286,7 @@ const TransactionProgressDonut: React.FC<TransactionProgressDonutProps> = ({ sta
 };
 
 export const TransactionMonitor: React.FC = () => {
-  const { provider } = useLiquity();
+  const { provider } = useKumo();
   const [transactionState, setTransactionState] = useTransactionState();
 
   const id = transactionState.type !== "idle" ? transactionState.id : undefined;

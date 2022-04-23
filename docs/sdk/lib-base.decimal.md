@@ -14,7 +14,7 @@ export declare class Decimal
 
 ## Remarks
 
-Used by Liquity libraries to precisely represent native currency (e.g. Ether), LUSD and LQTY amounts, as well as derived metrics like collateral ratios.
+Used by Kumo libraries to precisely represent native currency (e.g. Ether), KUSD and KUMO amounts, as well as derived metrics like collateral ratios.
 
 ## Properties
 

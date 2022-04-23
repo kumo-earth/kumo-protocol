@@ -14,7 +14,7 @@ export declare class Fees
 
 ## Remarks
 
-Returned by the [getFees()](./lib-base.readableliquity.getfees.md) function.
+Returned by the [getFees()](./lib-base.readablekumo.getfees.md) function.
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Fees` class.
 

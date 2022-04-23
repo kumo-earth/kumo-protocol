@@ -15,7 +15,7 @@ export declare class UserTrove extends Trove
 
 ## Remarks
 
-The SDK uses the base [Trove](./lib-base.trove.md) class as a generic container of collateral and debt, for example to represent the [total collateral and debt](./lib-base.readableliquity.gettotal.md) locked up in the protocol.
+The SDK uses the base [Trove](./lib-base.trove.md) class as a generic container of collateral and debt, for example to represent the [total collateral and debt](./lib-base.readablekumo.gettotal.md) locked up in the protocol.
 
 The `UserTrove` class extends `Trove` with extra information that's only available for Troves that are associated with a single owner (such as the owner's address, or the Trove's status).
 

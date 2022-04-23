@@ -104,7 +104,7 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_LUSDLoss",
+          "name": "_kusdLoss",
           "type": "uint256"
         }
       ],
@@ -268,11 +268,11 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_LQTY",
+          "name": "_KUMO",
           "type": "uint256"
         }
       ],
-      "name": "LQTYPaidToDepositor",
+      "name": "KUMOPaidToDepositor",
       "type": "event"
     },
     {
@@ -287,11 +287,11 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_LQTY",
+          "name": "_KUMO",
           "type": "uint256"
         }
       ],
-      "name": "LQTYPaidToFrontEnd",
+      "name": "KUMOPaidToFrontEnd",
       "type": "event"
     },
     {
@@ -300,11 +300,11 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_newLUSDTokenAddress",
+          "name": "_newKUSDTokenAddress",
           "type": "address"
         }
       ],
-      "name": "LUSDTokenAddressChanged",
+      "name": "KUSDTokenAddressChanged",
       "type": "event"
     },
     {
@@ -407,7 +407,7 @@
           "type": "uint256"
         }
       ],
-      "name": "StabilityPoolLUSDBalanceUpdated",
+      "name": "StabilityPoolKUSDBalanceUpdated",
       "type": "event"
     },
     {
@@ -469,7 +469,7 @@
           "type": "address"
         }
       ],
-      "name": "getCompoundedLUSDDeposit",
+      "name": "getCompoundedKUSDDeposit",
       "outputs": [
         {
           "internalType": "uint256",
@@ -507,7 +507,7 @@
           "type": "address"
         }
       ],
-      "name": "getDepositorLQTYGain",
+      "name": "getDepositorKUMOGain",
       "outputs": [
         {
           "internalType": "uint256",
@@ -539,7 +539,7 @@
           "type": "address"
         }
       ],
-      "name": "getFrontEndLQTYGain",
+      "name": "getFrontEndKUMOGain",
       "outputs": [
         {
           "internalType": "uint256",
@@ -552,7 +552,7 @@
     },
     {
       "inputs": [],
-      "name": "getTotalLUSDDeposits",
+      "name": "getTotalKUSDDeposits",
       "outputs": [
         {
           "internalType": "uint256",
@@ -631,7 +631,7 @@
         },
         {
           "internalType": "address",
-          "name": "_lusdTokenAddress",
+          "name": "_kusdTokenAddress",
           "type": "address"
         },
         {

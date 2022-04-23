@@ -3,8 +3,8 @@ import { TransactionResponse } from "@ethersproject/abstract-provider";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
 
-import { Decimal, LUSD_MINIMUM_DEBT, Trove } from "@liquity/lib-base";
-import { EthersLiquity, EthersLiquityWithStore, BlockPolledLiquityStore } from "@liquity/lib-ethers";
+import { Decimal, KUSD_MINIMUM_DEBT, Trove } from "@liquity/lib-base";
+import { EthersKumo, EthersKumoWithStore, BlockPolledKumoStore } from "@liquity/lib-ethers";
 
 import {
   Batched,
@@ -24,7 +24,7 @@ const funderKey = "0x4d5db4107d237df6a3d58ee5f70ae63d73d7658d4026f2eefd2f204c816
 
 let provider: BatchedProvider & WebSocketAugmentedProvider & JsonRpcProvider;
 let funder: Wallet;
-let liquity: EthersLiquityWithStore<BlockPolledLiquityStore>;
+let liquity: EthersKumoWithStore<BlockPolledKumoStore>;
 
 const waitForSuccess = (tx: TransactionResponse) =>
   tx.wait().then(receipt => {
@@ -37,7 +37,7 @@ const waitForSuccess = (tx: TransactionResponse) =>
 const createTrove = async (nominalCollateralRatio: Decimal) => {
   const randomWallet = Wallet.createRandom().connect(provider);
 
-  const debt = LUSD_MINIMUM_DEBT.mul(2);
+  const debt = KUSD_MINIMUM_DEBT.mul(2);
   const collateral = debt.mul(nominalCollateralRatio);
 
   await funder
@@ -83,7 +83,7 @@ const main = async () => {
     network
   );
 
-  liquity = await EthersLiquity.connect(provider, { useStore: "blockPolled" });
+  liquity = await EthersKumo.connect(provider, { useStore: "blockPolled" });
 
   let stopStore: () => void;
 

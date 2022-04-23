@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Card, Box, Heading, Flex, Button, Label, Input } from "theme-ui";
 
-import { Decimal, LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { Decimal, KumoStoreState } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 
-import { useLiquity } from "../hooks/LiquityContext";
+import { useKumo } from "../hooks/KumoContext";
 
 import { Icon } from "./Icon";
 import { Transaction } from "./Transaction";
 
-const selectPrice = ({ price }: LiquityStoreState) => price;
+const selectPrice = ({ price }: KumoStoreState) => price;
 
 export const PriceManager: React.FC = () => {
   const {
@@ -17,9 +17,9 @@ export const PriceManager: React.FC = () => {
       send: liquity,
       connection: { _priceFeedIsTestnet: canSetPrice }
     }
-  } = useLiquity();
+  } = useKumo();
 
-  const price = useLiquitySelector(selectPrice);
+  const price = useKumoSelector(selectPrice);
   const [editedPrice, setEditedPrice] = useState(price.toString(2));
 
   useEffect(() => {
