@@ -32,7 +32,7 @@ export const UserAccount: React.FC = () => {
         </Flex>
       </Flex>
 
-      <Flex sx={{ alignItems: "center" }}>
+      {/* <Flex sx={{ alignItems: "center" }}>
         <Icon name="wallet" size="lg" />
 
         {([
@@ -45,7 +45,7 @@ export const UserAccount: React.FC = () => {
             <Text sx={{ fontSize: 1 }}>{balance.prettify()}</Text>
           </Flex>
         ))}
-      </Flex>
+      </Flex> */}
     </Box>
   );
 };
