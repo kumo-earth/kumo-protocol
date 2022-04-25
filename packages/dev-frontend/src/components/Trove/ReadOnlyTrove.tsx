@@ -8,7 +8,6 @@ import { COIN } from "../../strings";
 import { CollateralRatio } from "./CollateralRatio";
 import { useDashboard } from "../../hooks/DashboardContext";
 
-
 const getPathName = (location: any) => {
   return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
 };
