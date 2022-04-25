@@ -226,7 +226,17 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
         ))}
 
       <Flex variant="layout.actions">
-        <Button variant="cancel" onClick={handleCancel}>
+        <Button
+          sx={{
+            backgroundColor: "rgb(152, 80, 90)",
+            boxShadow:
+              "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
+            border: "none",
+            color: "white"
+          }}
+          variant="cancel"
+          onClick={handleCancel}
+        >
           Cancel
         </Button>
 
@@ -240,7 +250,18 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
             Confirm
           </TroveAction>
         ) : (
-          <Button disabled>Confirm</Button>
+          <Button
+            sx={{
+              backgroundColor: "rgb(152, 80, 90)",
+              boxShadow:
+                "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
+              border: "none",
+              color: "white"
+            }}
+            disabled
+          >
+            Confirm
+          </Button>
         )}
       </Flex>
     </TroveEditor>

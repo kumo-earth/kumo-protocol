@@ -160,8 +160,25 @@ export const Adjusting: React.FC = () => {
   }
 
   return (
-    <Card>
-      <Heading>
+    <Card
+      sx={{
+        background: "rgba(249,248,249,.1)",
+        backgroundColor: "#303553",
+        // color: "rgba(0, 0, 0, 0.87)",
+        transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+        boxShadow:
+          "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
+        overflow: "hidden",
+        borderRadius: "20px",
+        color: "white"
+      }}
+    >
+      <Heading
+        sx={{
+          background: "linear-gradient(103.69deg, #2b2b2b 18.43%, #525252 100%)",
+          color: "white"
+        }}
+      >
         Trove
         {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
@@ -269,7 +286,17 @@ export const Adjusting: React.FC = () => {
         />
 
         <Flex variant="layout.actions">
-          <Button variant="cancel" onClick={handleCancelPressed}>
+          <Button
+            sx={{
+              backgroundColor: "rgb(152, 80, 90)",
+              boxShadow:
+                "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
+              border: "none",
+              color: "white"
+            }}
+            variant="cancel"
+            onClick={handleCancelPressed}
+          >
             Cancel
           </Button>
 
@@ -283,7 +310,18 @@ export const Adjusting: React.FC = () => {
               Confirm
             </TroveAction>
           ) : (
-            <Button disabled>Confirm</Button>
+            <Button
+              sx={{
+                backgroundColor: "rgb(152, 80, 90)",
+                boxShadow:
+                  "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
+                border: "none",
+                color: "white"
+              }}
+              disabled
+            >
+              Confirm
+            </Button>
           )}
         </Flex>
       </Box>
