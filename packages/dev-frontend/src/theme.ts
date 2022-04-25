@@ -336,14 +336,14 @@ const theme: Theme = {
       alignItems: "stretch",
 
       position: ["fixed", "relative"],
-      width: "100vw",
+      // width: "100vw",
       top: 0,
       zIndex: 1,
 
       px: [2, "12px", "12px", 5],
       py: [2, "12px", "12px"],
 
-      ...headerGradient,
+      // ...headerGradient,
       boxShadow: [1, "none"]
     },
 
