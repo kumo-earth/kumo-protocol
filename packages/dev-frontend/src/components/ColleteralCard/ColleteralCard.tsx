@@ -125,8 +125,8 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             {total?.debt.shorten()}
           </Heading>
         </Flex>
-        {/* <Flex sx={{ padding: "1.5rem" }}> */}
-        {/* <Text
+        {/*<Flex sx={{ padding: "1.5rem" }}>
+          <Text
             sx={{
               fontFamily: "Roboto, Helvetica, Arial, sans-serif",
               fontWeight: "bold",
@@ -140,8 +140,8 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             { `The system is in normal mode. Recovery mode will be activated if ${'BCT'} price goes down by 51% to $1706.56.`}
              
            
-          </Text> */}
-        {/* <Text
+          </Text>
+          <Text
             sx={{
               fontFamily: "Roboto, Helvetica, Arial, sans-serif",
               fontWeight: "bold",
@@ -151,8 +151,8 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             }}
           >
             42,42,496
-          </Text> */}
-        {/* </Flex> */}
+          </Text>
+         </Flex>  */}
       </Box>
     </Card>
   );
