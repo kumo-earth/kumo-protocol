@@ -22,7 +22,7 @@ import {
 const init = ({ stabilityDeposit }: KumoStoreState) => {
   return {
     originalDeposit: stabilityDeposit,
-    editedLUSD: stabilityDeposit.currentLUSD,
+    editedKUSD: stabilityDeposit.currentKUSD,
     changePending: false
   };
 };
@@ -33,9 +33,10 @@ type StabilityDepositManagerAction =
   | { type: "startChange" | "finishChange" | "revert" }
   | { type: "setDeposit"; newValue: Decimalish };
 
-const reduceWith = (action: StabilityDepositManagerAction) => (
-  state: StabilityDepositManagerState
-): StabilityDepositManagerState => reduce(state, action);
+const reduceWith =
+  (action: StabilityDepositManagerAction) =>
+  (state: StabilityDepositManagerState): StabilityDepositManagerState =>
+    reduce(state, action);
 
 const finishChange = reduceWith({ type: "finishChange" });
 const revert = reduceWith({ type: "revert" });
@@ -104,16 +105,13 @@ export const StabilityDepositManager: React.FC = () => {
   const { vaults, depositKusd, handleDepositKusd, openStabilityDeposit } = useDashboard();
   const vaultType = vaults.find(vault => vault.type === getPathName(location)) || vaults[0];
 
-  const [{ originalDeposit, editedLUSD, changePending }, dispatch] = useKumoReducer(
-    reduce,
-    () => {
-      return {
-        originalDeposit: vaultType.stabilityDeposit,
-        editedLUSD: vaultType.stabilityDeposit.currentLUSD,
-        changePending: false
-      };
-    }
-  );
+  const [{ originalDeposit, editedKUSD, changePending }, dispatch] = useKumoReducer(reduce, () => {
+    return {
+      originalDeposit: vaultType.stabilityDeposit,
+      editedKUSD: vaultType.stabilityDeposit.currentKUSD,
+      changePending: false
+    };
+  });
 
   const validationContext = useKumoSelector(selectForStabilityDepositChangeValidation);
   const { dispatchEvent } = useStabilityView();
@@ -138,12 +136,12 @@ export const StabilityDepositManager: React.FC = () => {
       myTransactionState.type === "waitingForConfirmation"
     ) {
       dispatch({ type: "startChange" });
-      if (validChange?.depositLUSD) {
-        handleDepositKusd(validChange?.depositLUSD, undefined, false);
-      } else if (validChange?.withdrawAllLUSD) {
+      if (validChange?.depositKUSD) {
+        handleDepositKusd(validChange?.depositKUSD, undefined, false);
+      } else if (validChange?.withdrawAllKUSD) {
         handleDepositKusd(undefined, Decimal.ZERO, true);
-      } else if (validChange?.withdrawLUSD) {
-        handleDepositKusd(undefined, validChange?.withdrawLUSD, false);
+      } else if (validChange?.withdrawKUSD) {
+        handleDepositKusd(undefined, validChange?.withdrawKUSD, false);
       }
     } else if (myTransactionState.type === "failed" || myTransactionState.type === "cancelled") {
       dispatch({ type: "finishChange" });
@@ -151,7 +149,7 @@ export const StabilityDepositManager: React.FC = () => {
       if (depositKusd.depositLUSD) {
         openStabilityDeposit(
           getPathName(location),
-          vaultType.stabilityDeposit.currentLUSD.add(depositKusd.depositLUSD)
+          vaultType.stabilityDeposit.currentKUSD.add(depositKusd.depositLUSD)
         );
       }
       if (depositKusd.withdrawAllLUSD) {
@@ -159,7 +157,7 @@ export const StabilityDepositManager: React.FC = () => {
       } else if (depositKusd.withdrawLUSD) {
         openStabilityDeposit(
           getPathName(location),
-          vaultType.stabilityDeposit.currentLUSD.sub(depositKusd?.withdrawLUSD)
+          vaultType.stabilityDeposit.currentKUSD.sub(depositKusd?.withdrawLUSD)
         );
       }
       handleDepositKusd(undefined, undefined, false);
