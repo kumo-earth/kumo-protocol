@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import CopyToClipboard from "react-copy-to-clipboard";
+// import CopyToClipboard from "react-copy-to-clipboard";
 import { Card, Button, Text, Box, Heading, Flex } from "theme-ui";
 
 import {
@@ -278,9 +278,9 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
                           </Text>
                         </Tooltip>
 
-                        <CopyToClipboard
-                          text={trove.ownerAddress}
-                          onCopy={() => setCopied(trove.ownerAddress)}
+                        {/* <CopyToClipboard
+                          text={trove?.ownerAddress}
+                          onCopy={() => setCopied(trove?.ownerAddress)}
                         >
                           <Button variant="icon" sx={{ width: "24px", height: "24px" }}>
                             <Icon
@@ -288,7 +288,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
                               size="sm"
                             />
                           </Button>
-                        </CopyToClipboard>
+                        </CopyToClipboard> */}
                       </td>
                       <td>
                         <Abbreviation short={trove.collateral.shorten()}>

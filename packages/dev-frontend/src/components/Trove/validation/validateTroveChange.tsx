@@ -37,7 +37,7 @@ const TroveChangeDescription: React.FC<TroveAdjustmentDescriptionParams> = ({ pa
   unit = getPathName(location).toUpperCase();
   return (
     <ActionDescription>
-      {params.depositCollateral && params.borrowLUSD ? (
+      {params.depositCollateral && params.borrowKUSD ? (
         <>
           You will deposit{" "}
           <Amount>
@@ -45,21 +45,21 @@ const TroveChangeDescription: React.FC<TroveAdjustmentDescriptionParams> = ({ pa
           </Amount>{" "}
           and receive{" "}
           <Amount>
-            {params.borrowLUSD.prettify()} {COIN}
+            {params.borrowKUSD.prettify()} {COIN}
           </Amount>
         </>
-      ) : params.repayLUSD && params.withdrawCollateral ? (
+      ) : params.repayKUSD && params.withdrawCollateral ? (
         <>
           You will pay{" "}
           <Amount>
-            {params.repayLUSD.prettify()} {COIN}
+            {params.repayKUSD.prettify()} {COIN}
           </Amount>{" "}
           and receive{" "}
           <Amount>
             {params.withdrawCollateral.prettify()} {unit}
           </Amount>
         </>
-      ) : params.depositCollateral && params.repayLUSD ? (
+      ) : params.depositCollateral && params.repayKUSD ? (
         <>
           You will deposit{" "}
           <Amount>
@@ -67,10 +67,10 @@ const TroveChangeDescription: React.FC<TroveAdjustmentDescriptionParams> = ({ pa
           </Amount>{" "}
           and pay{" "}
           <Amount>
-            {params.repayLUSD.prettify()} {COIN}
+            {params.repayKUSD.prettify()} {COIN}
           </Amount>
         </>
-      ) : params.borrowLUSD && params.withdrawCollateral ? (
+      ) : params.borrowKUSD && params.withdrawCollateral ? (
         <>
           You will receive{" "}
           <Amount>
@@ -78,7 +78,7 @@ const TroveChangeDescription: React.FC<TroveAdjustmentDescriptionParams> = ({ pa
           </Amount>{" "}
           and{" "}
           <Amount>
-            {params.borrowLUSD.prettify()} {COIN}
+            {params.borrowKUSD.prettify()} {COIN}
           </Amount>
         </>
       ) : params.depositCollateral ? (
@@ -95,18 +95,18 @@ const TroveChangeDescription: React.FC<TroveAdjustmentDescriptionParams> = ({ pa
             {params.withdrawCollateral.prettify()} {unit}
           </Amount>
         </>
-      ) : params.borrowLUSD ? (
+      ) : params.borrowKUSD ? (
         <>
           You will receive{" "}
           <Amount>
-            {params.borrowLUSD.prettify()} {COIN}
+            {params.borrowKUSD.prettify()} {COIN}
           </Amount>
         </>
       ) : (
         <>
           You will pay{" "}
           <Amount>
-            {params.repayLUSD.prettify()} {COIN}
+            {params.repayKUSD.prettify()} {COIN}
           </Amount>
         </>
       )}

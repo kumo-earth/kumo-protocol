@@ -1,8 +1,6 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
-import { Flex, Button, Progress, Box, Card, Heading, Text, Link } from "theme-ui";
-import { useLiquitySelector } from "@liquity/lib-react";
-import { Icon } from "../Icon";
+import { Flex, Progress, Box, Card, Heading } from "theme-ui";
 
 type CollateralCardProps = {
   collateralType?: string;

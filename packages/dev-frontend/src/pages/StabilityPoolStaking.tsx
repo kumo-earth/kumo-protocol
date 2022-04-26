@@ -1,44 +1,30 @@
-import { Container, Grid, Card, Image, Text } from "theme-ui";
-import { Decimal, Percent, LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
-import { useLiquity } from "../hooks/LiquityContext";
-import { Trove } from "../components/Trove/Trove";
-import { Stability } from "../components/Stability/Stability";
-import { SystemStats } from "../components/SystemStats";
-import { PriceManager } from "../components/PriceManager";
-import { Staking } from "../components/Staking/Staking";
+import { Grid } from "theme-ui";
+import { Percent, KumoStoreState } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 import { StabilityPoolStakingCard } from "../components/StabilityPoolStakingCard/StabilityPoolStakingCard";
 
 const select = ({
   numberOfTroves,
   price,
   total,
-  lusdInStabilityPool,
+  kusdInStabilityPool,
   borrowingRate,
   redemptionRate,
-  totalStakedLQTY,
+  totalStakedKUMO,
   frontend
-}: LiquityStoreState) => ({
+}: KumoStoreState) => ({
   numberOfTroves,
   price,
   total,
-  lusdInStabilityPool,
+  kusdInStabilityPool,
   borrowingRate,
   redemptionRate,
-  totalStakedLQTY,
+  totalStakedKUMO,
   kickbackRate: frontend.status === "registered" ? frontend.kickbackRate : null
 });
 
 export const StabilityPoolStaking: React.FC = () => {
-  const {
-    numberOfTroves,
-    price,
-    lusdInStabilityPool,
-    total,
-    borrowingRate,
-    totalStakedLQTY,
-    kickbackRate
-  } = useLiquitySelector(select);
+  const { price, total } = useKumoSelector(select);
 
   const totalCollateralRatioPct = new Percent(total.collateralRatio(price));
   return (
@@ -56,7 +42,7 @@ export const StabilityPoolStaking: React.FC = () => {
         totalCollateralRatioPct={totalCollateralRatioPct.prettify()}
         total={total}
       />
-       <StabilityPoolStakingCard
+      <StabilityPoolStakingCard
         stakingType={"liquidity"}
         totalCollateralRatioPct={totalCollateralRatioPct.prettify()}
         total={total}
