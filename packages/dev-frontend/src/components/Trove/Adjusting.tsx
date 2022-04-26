@@ -89,7 +89,7 @@ const getPathName = (location: any) => {
 
 export const Adjusting: React.FC = () => {
   const { dispatchEvent } = useTroveView();
-  const { fees, price, accountBalance, validationContext } = useLiquitySelector(selector);
+  const { fees, price, accountBalance, validationContext } = useKumoSelector(selector);
   const location = useLocation();
   const { vaults, adjustTroveT } = useDashboard();
   const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];

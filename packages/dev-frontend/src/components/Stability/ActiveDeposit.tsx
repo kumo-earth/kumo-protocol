@@ -34,7 +34,7 @@ export const ActiveDeposit: React.FC = () => {
   const location = useLocation();
   const { vaults } = useDashboard();
   const vaultType = vaults.find(vault => vault.type === getPathName(location)) || vaults[0];
-  const { lusdInStabilityPool } = useKumoSelector(selector);
+  const { kusdInStabilityPool } = useKumoSelector(selector);
   const { stabilityDeposit, trove } = vaultType;
 
   const poolShare = stabilityDeposit.currentKUSD.mulDiv(100, kusdInStabilityPool);
