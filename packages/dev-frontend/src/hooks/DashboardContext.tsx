@@ -1,16 +1,21 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState
+} from "react";
 import {
   Decimal,
   FrontendStatus,
-  LQTYStake,
+  KUMOStake,
   Trove,
-  LiquityStoreState,
+  KumoStoreState,
   UserTrove,
   UserTroveStatus,
   StabilityDeposit
 } from "@liquity/lib-base";
-import { useLiquitySelector } from "@kumodao/lib-react";
-import { width } from "@mui/system";
+import { useKumoSelector } from "@kumodao/lib-react";
+
 
 type StabilityDepositChange = {
   depositKUSD: Decimal | undefined;
@@ -21,13 +26,13 @@ type StabilityDepositChange = {
 type DashboardContextValue = {
   numberOfTroves: number;
   price: Decimal;
-  lusdInStabilityPool: Decimal;
+  kusdInStabilityPool: Decimal;
   total: Trove;
   borrowingRate: Decimal;
-  totalStakedLQTY: Decimal;
+  totalStakedKUMO: Decimal;
   kickbackRate: Decimal | null;
   frontend: FrontendStatus;
-  lqtyStake: LQTYStake;
+  kumoStake: KUMOStake;
   selectedTrove: Trove;
   vaults: vaultsType;
   depositKusd: StabilityDepositChange;
@@ -62,24 +67,24 @@ const select = ({
   numberOfTroves,
   price,
   total,
-  lusdInStabilityPool,
+  kusdInStabilityPool,
   borrowingRate,
   redemptionRate,
-  totalStakedLQTY,
+  totalStakedKUMO,
   frontend,
-  lqtyStake,
+  kumoStake,
   stabilityDeposit
-}: LiquityStoreState) => ({
+}: KumoStoreState) => ({
   trove,
   numberOfTroves,
   price,
   total,
-  lusdInStabilityPool,
+  kusdInStabilityPool,
   borrowingRate,
   redemptionRate,
-  totalStakedLQTY,
+  totalStakedKUMO,
   frontend,
-  lqtyStake,
+  kumoStake,
   stabilityDeposit,
   kickbackRate: frontend.status === "registered" ? frontend.kickbackRate : null
 });
@@ -88,16 +93,16 @@ export const DashboardProvider: React.FC = ({ children }) => {
   const {
     numberOfTroves,
     price,
-    lusdInStabilityPool,
+    kusdInStabilityPool,
     total,
     borrowingRate,
-    totalStakedLQTY,
+    totalStakedKUMO,
     kickbackRate,
     frontend,
-    lqtyStake,
+    kumoStake,
     trove,
     stabilityDeposit
-  } = useLiquitySelector(select);
+  } = useKumoSelector(select);
   const [vaults, setVaults] = useState<vaultsType>([
     {
       type: "bct",
@@ -243,13 +248,13 @@ export const DashboardProvider: React.FC = ({ children }) => {
       value={{
         numberOfTroves,
         price,
-        lusdInStabilityPool,
+        kusdInStabilityPool,
         total,
         borrowingRate,
-        totalStakedLQTY,
+        totalStakedKUMO,
         kickbackRate,
         frontend,
-        lqtyStake,
+        kumoStake,
         depositKusd,
         handleDepositKusd,
         selectedTrove: selectedTrove ? selectedTrove : trove,

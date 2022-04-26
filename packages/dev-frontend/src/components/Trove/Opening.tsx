@@ -247,7 +247,7 @@ export const Opening: React.FC = () => {
             troveChange={
               vaultType
                 ? {
-                    params: { borrowLUSD: borrowAmount, depositCollateral: collateral },
+                    params: { borrowKUSD: borrowAmount, depositCollateral: collateral },
                     type: "creation"
                   }
                 : stableTroveChange

@@ -3,7 +3,6 @@ import { useHistory } from "react-router-dom";
 import { Grid, Box } from "theme-ui";
 import { Stability } from "../components/Stability/Stability";
 import { StakingTypeCard } from "../components/StakingTypeCard/StakingTypeCard";
-import { useStabilityView } from "../components/Stability/context/StabilityViewContext";
 import { useDashboard } from "../hooks/DashboardContext";
 import { Modal } from "@mui/material";
 
@@ -35,6 +34,7 @@ export const StakingType: React.FC = () => {
         // const totalCollateralRatioPct = new Percent(vault.collateralRatio);
         return (
           <StakingTypeCard
+            key={vault.type}
             collateralType={vault.type}
             handleViewStakeDeposit={() => {
               setStakeDeposit(true);
