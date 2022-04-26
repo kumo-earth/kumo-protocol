@@ -33,9 +33,10 @@ type StabilityDepositManagerAction =
   | { type: "startChange" | "finishChange" | "revert" }
   | { type: "setDeposit"; newValue: Decimalish };
 
-const reduceWith = (action: StabilityDepositManagerAction) => (
-  state: StabilityDepositManagerState
-): StabilityDepositManagerState => reduce(state, action);
+const reduceWith =
+  (action: StabilityDepositManagerAction) =>
+  (state: StabilityDepositManagerState): StabilityDepositManagerState =>
+    reduce(state, action);
 
 const finishChange = reduceWith({ type: "finishChange" });
 const revert = reduceWith({ type: "revert" });
