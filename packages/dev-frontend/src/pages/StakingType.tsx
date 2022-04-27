@@ -35,7 +35,7 @@ export const StakingType: React.FC = () => {
         return (
           <StakingTypeCard
             key={vault.type}
-            collateralType={vault.type}
+            vault={vault}
             handleViewStakeDeposit={() => {
               setStakeDeposit(true);
               history.push(`/staking/stability/${vault.type}`);
