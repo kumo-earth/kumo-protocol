@@ -1,15 +1,27 @@
 import React from "react";
+import { Decimal, UserTroveStatus, UserTrove, StabilityDeposit, Percent } from "@liquity/lib-base";
 import { Flex, Box, Card, Heading, Divider } from "theme-ui";
 
-type CollateralCardProps = {
-  collateralType?: string;
+type StakingTypeCardProps = {
+  vault?: {
+    type: string;
+    collateralRatio: Decimal;
+    troveStatus: UserTroveStatus;
+    stabilityStatus: Boolean;
+    trove: UserTrove;
+    stabilityDeposit: StabilityDeposit;
+  };
   handleViewStakeDeposit: () => void;
 };
 
-export const StakingTypeCard: React.FC<CollateralCardProps> = ({
-  collateralType,
+export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
+  vault,
   handleViewStakeDeposit
 }) => {
+  const divdideVal = vault?.stabilityDeposit?.currentKUSD.div(vault?.stabilityDeposit?.currentKUSD);
+
+  const aprRatio = divdideVal ? new Percent(divdideVal) : new Percent(Decimal.ZERO);
+
   return (
     <Card
       sx={{
@@ -19,7 +31,7 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
         boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
         borderRadius: "20px",
         maxWidth: 450,
-        maxHeight: "425px"
+        maxHeight: 390
       }}
       onClick={handleViewStakeDeposit}
     >
@@ -35,7 +47,7 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
           borderRadius: "20px 20px 0 0"
         }}
       >
-        {collateralType?.toUpperCase()} Stability Pool Staking
+        {vault?.type?.toUpperCase()} Stability Pool Staking
       </Heading>
 
       <Box sx={{ p: [2, 3] }}>
@@ -61,7 +73,7 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
               padding: "1.5rem 1.5rem 10px 1.5rem"
             }}
           >
-            Total KUMO In Pool
+            Total KUSD In Pool
           </Heading>
         </Flex>
         <Flex sx={{ justifyContent: "space-between" }}>
@@ -75,7 +87,7 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            8.13%
+            {aprRatio.toString(1) === "∞" ? Decimal.ZERO.prettify() : aprRatio.prettify()}
           </Heading>
           <Heading
             sx={{
@@ -87,10 +99,10 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            968,328.15
+            {vault?.stabilityDeposit?.currentKUSD.shorten()}
           </Heading>
         </Flex>
-        <Heading
+        {/* <Heading
           as={"h6"}
           sx={{
             fontFamily: "Roboto, Helvetica, Arial, sans-serif",
@@ -104,7 +116,7 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
           }}
         >
           ~ $995,810
-        </Heading>
+        </Heading> */}
         <Divider />
         <Flex sx={{ justifyContent: "space-between" }}>
           <Heading
@@ -143,7 +155,7 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            VSTA APR
+            KUMO APR
           </Heading>
           <Heading
             sx={{
@@ -155,7 +167,7 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            7.33%
+            {aprRatio.toString(1) === "∞" ? Decimal.ZERO.prettify() : aprRatio.prettify()}
           </Heading>
         </Flex>
         <Divider />
@@ -179,13 +191,13 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
               letterSpacing: "0.5px",
               fontSize: "14px",
               color: "#f9f8f9",
-              padding: "0 1.5rem 10px 1.5rem"
+              padding: "0 1.5rem 0 1.5rem"
             }}
           >
-            0
+            {vault?.stabilityDeposit?.currentKUSD.shorten()}
           </Heading>
         </Flex>
-        <Flex sx={{ justifyContent: "space-between" }}>
+        {/* <Flex sx={{ justifyContent: "space-between" }}>
           <Heading
             sx={{
               fontFamily: "Roboto, Helvetica, Arial, sans-serif",
@@ -210,7 +222,7 @@ export const StakingTypeCard: React.FC<CollateralCardProps> = ({
           >
             0%
           </Heading>
-        </Flex>
+        </Flex> */}
       </Box>
     </Card>
   );
