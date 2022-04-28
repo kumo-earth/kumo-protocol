@@ -111,6 +111,10 @@ const config: HardhatUserConfig = {
       url: "http://localhost:8545",
       accounts: [deployerAccount, devChainRichAccount, ...generateRandomAccounts(numAccounts - 2)]
     },
+    mumbai: {
+      url: `https://rpc-mumbai.maticvigil.com`,
+      accounts: ['ff126760c1b50be914c632a2cfbcbbfc569e21d07008c92c861e8977f0c01544']
+    },
 
     ...infuraNetwork("ropsten"),
     ...infuraNetwork("rinkeby"),

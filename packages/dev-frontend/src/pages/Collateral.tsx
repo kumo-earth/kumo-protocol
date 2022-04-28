@@ -1,7 +1,6 @@
 import { Grid, Flex } from "theme-ui";
 import { Trove } from "../components/Trove/Trove";
 import { Stability } from "../components/Stability/Stability";
-import { SystemStats } from "../components/SystemStats";
 
 export const Collateral: React.FC = () => {
   return (
