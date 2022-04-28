@@ -130,6 +130,7 @@ export const StabilityDepositManager: React.FC = () => {
 
   const myTransactionState = useMyTransactionState(transactionId);
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (
       myTransactionState.type === "waitingForApproval" ||

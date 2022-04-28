@@ -12,10 +12,6 @@ const getPathName = (location: any) => {
   return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
 };
 
-const getPathName = (location: any) => {
-  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-};
-
 export const ReadOnlyTrove: React.FC = () => {
   const { dispatchEvent } = useTroveView();
   const handleAdjustTrove = useCallback(() => {
