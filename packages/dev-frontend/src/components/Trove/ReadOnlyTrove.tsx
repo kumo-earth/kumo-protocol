@@ -1,8 +1,6 @@
 import React, { useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
-import { useKumoSelector } from "@kumodao/lib-react";
-import { KumoStoreState } from "@kumodao/lib-base";
 import { DisabledEditableRow } from "./Editor";
 import { useTroveView } from "./context/TroveViewContext";
 import { Icon } from "../Icon";
@@ -10,7 +8,6 @@ import { COIN } from "../../strings";
 import { CollateralRatio } from "./CollateralRatio";
 import { useDashboard } from "../../hooks/DashboardContext";
 
-const select = ({ trove, price }: KumoStoreState) => ({ trove, price });
 
 const getPathName = (location: any) => {
   return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
