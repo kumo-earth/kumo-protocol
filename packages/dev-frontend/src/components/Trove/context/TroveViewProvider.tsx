@@ -81,11 +81,6 @@ const getPathName = (location: any) => {
 };
 
 
-const getPathName = (location: any) => {
-  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-};
-
-
 export const TroveViewProvider: React.FC = props => {
   const { children } = props;
   // const troveStatus = useLiquitySelector(select);
