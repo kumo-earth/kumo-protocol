@@ -98,6 +98,7 @@ export const Opening: React.FC = () => {
     setBorrowAmount(Decimal.ZERO);
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (transactionState.type === "confirmedOneShot") {
       if (!vaultType) {
