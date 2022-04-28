@@ -23,6 +23,7 @@ export const Dashboard: React.FC = () => {
             collateralType={vault.type}
             totalCollateralRatioPct={totalCollateralRatioPct.prettify()}
             total={vault.trove}
+            key={vault.type}
           />
         );
       })}
