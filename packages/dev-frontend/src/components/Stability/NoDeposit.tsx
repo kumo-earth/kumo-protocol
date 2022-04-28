@@ -17,7 +17,6 @@ export const NoDeposit: React.FC = props => {
   const location = useLocation();
   const { vaults } = useDashboard();
   const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
-  const { trove } = vaultType;
   const handleOpenTrove = useCallback(() => {
     dispatchEvent("DEPOSIT_PRESSED");
   }, [dispatchEvent]);

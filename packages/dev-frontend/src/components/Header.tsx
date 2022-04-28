@@ -5,11 +5,7 @@ import { Container, Flex, Box } from "theme-ui";
 import { AddressZero } from "@ethersproject/constants";
 import { useKumo } from "../hooks/KumoContext";
 
-import { KumoLogo } from "./KumoLogo";
-import { Nav } from "./Nav";
 import { SideNav } from "./SideNav";
-
-const logoHeight = "32px";
 
 const select = ({ frontend }: KumoStoreState) => ({
   frontend
