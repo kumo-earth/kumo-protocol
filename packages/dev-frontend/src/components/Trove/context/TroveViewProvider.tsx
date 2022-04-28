@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { useKumoSelector } from "@liquity/lib-react";
 import { KumoStoreState, UserTroveStatus } from "@liquity/lib-base";
 import { TroveViewContext } from "./TroveViewContext";
 import type { TroveView, TroveEvent } from "./types";
@@ -77,8 +76,6 @@ const getInitialView = (troveStatus: UserTroveStatus): TroveView => {
   return "NONE";
 };
 
-const select = ({ trove: { status } }: KumoStoreState) => status;
-
 const getPathName = (location: any) => {
   return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
 };
@@ -117,7 +114,7 @@ export const TroveViewProvider: React.FC = props => {
     if (view !== "OPENING") {
       setView(getInitialView(troveStatus));
     }
-  }, [troveStatus]);
+  }, [troveStatus, view]);
 
   useEffect(() => {
     const event = troveStatusEvents[troveStatus] ?? null;
