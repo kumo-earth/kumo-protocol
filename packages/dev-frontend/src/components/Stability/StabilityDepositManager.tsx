@@ -130,7 +130,7 @@ export const StabilityDepositManager: React.FC = () => {
 
   const myTransactionState = useMyTransactionState(transactionId);
 
-// eslint-disable-next-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     if (
       myTransactionState.type === "waitingForApproval" ||
@@ -164,6 +164,7 @@ export const StabilityDepositManager: React.FC = () => {
       handleDepositKusd(undefined, undefined, false);
       dispatchEvent("DEPOSIT_CONFIRMED");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myTransactionState.type, dispatch, dispatchEvent]);
 
   return (

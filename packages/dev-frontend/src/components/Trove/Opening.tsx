@@ -52,7 +52,7 @@ export const Opening: React.FC = () => {
   const { fees, price, accountBalance, validationContext } = useKumoSelector(selector);
 
   const location = useLocation();
-  const { vaults, openTroveT, adjustTroveT } = useDashboard();
+  const { vaults, openTroveT } = useDashboard();
   const vaultType = vaults.some(vault => vault.troveStatus === "open");
   const borrowingRate = fees.borrowingRate();
   const editingState = useState<string>();
@@ -98,7 +98,6 @@ export const Opening: React.FC = () => {
     setBorrowAmount(Decimal.ZERO);
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (transactionState.type === "confirmedOneShot") {
       if (!vaultType) {
@@ -108,6 +107,7 @@ export const Opening: React.FC = () => {
         dispatchEvent("CANCEL_ADJUST_TROVE_PRESSED");
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionState.type]);
 
   //   params:
