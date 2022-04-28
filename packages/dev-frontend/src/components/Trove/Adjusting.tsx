@@ -102,7 +102,6 @@ export const Adjusting: React.FC = () => {
   const transactionState = useMyTransactionState(TRANSACTION_ID);
   const borrowingRate = fees.borrowingRate();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (transactionState.type === "confirmedOneShot") {
       collateralRatio && adjustTroveT(getPathName(location), collateral, netDebt, price);
