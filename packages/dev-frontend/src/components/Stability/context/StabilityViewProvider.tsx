@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { KumoStoreState, StabilityDeposit } from "@liquity/lib-base";
 import { StabilityViewContext } from "./StabilityViewContext";
 import { useDashboard } from "../../../hooks/DashboardContext";
 import type { StabilityView, StabilityEvent } from "./types";

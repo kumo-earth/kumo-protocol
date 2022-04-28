@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { KumoStoreState, UserTroveStatus } from "@liquity/lib-base";
+import { UserTroveStatus } from "@liquity/lib-base";
 import { TroveViewContext } from "./TroveViewContext";
 import type { TroveView, TroveEvent } from "./types";
 import { useDashboard } from "../../../hooks/DashboardContext";
