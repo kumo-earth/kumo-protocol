@@ -25,7 +25,6 @@ export const ReadOnlyTrove: React.FC = () => {
     dispatchEvent("CLOSE_TROVE_PRESSED");
   }, [dispatchEvent]);
 
-  const { price } = useKumoSelector(select);
   const location = useLocation();
   const { vaults } = useDashboard();
   const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];

@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { KumoStoreState, StabilityDeposit } from "@kumodao/lib-base";
 import { StabilityViewContext } from "./StabilityViewContext";
 import { useDashboard } from "../../../hooks/DashboardContext";
 import type { StabilityView, StabilityEvent } from "./types";
@@ -39,8 +38,6 @@ const getInitialView = (isEmpty: Boolean): StabilityView => {
   return isEmpty ? "NONE" : "ACTIVE";
 };
 
-const select = ({ stabilityDeposit }: KumoStoreState): StabilityDeposit => stabilityDeposit;
-
 const getPathName = (location: any) => {
   return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
 };
@@ -64,7 +61,7 @@ export const StabilityViewProvider: React.FC = props => {
       const nextView = isEmpty ? transition(viewRef.current, event) : transition("ACTIVE", event);
       setView(nextView);
     }
-  }, []);
+  }, [isEmpty]);
 
   useEffect(() => {
     viewRef.current = view;

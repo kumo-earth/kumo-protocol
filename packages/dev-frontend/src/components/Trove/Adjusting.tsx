@@ -107,7 +107,7 @@ export const Adjusting: React.FC = () => {
       collateralRatio && adjustTroveT(getPathName(location), collateral, netDebt, price);
       dispatchEvent("TROVE_ADJUSTED");
     }
-  }, [transactionState.type, dispatchEvent]);
+  }, [transactionState.type, dispatchEvent, location, collateral, netDebt, price]);
 
   useEffect(() => {
     if (!previousTrove.current.collateral.eq(trove.collateral)) {

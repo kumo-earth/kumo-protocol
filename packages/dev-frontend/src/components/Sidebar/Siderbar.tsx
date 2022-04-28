@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { Flex, Box, Text } from "theme-ui";
 import { LiquityLogo } from "../LiquityLogo";
 import { Link } from "../Link";

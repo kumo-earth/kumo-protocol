@@ -121,7 +121,7 @@ export const DashboardProvider: React.FC = ({ children }) => {
       stabilityDeposit: stabilityDeposit
     }
   ]);
-  const [selectedTrove, setSelectedTrove] = useState<UserTrove>(trove);
+  const [selectedTrove] = useState<UserTrove>(trove);
   const [depositKusd, setDepositKusd] = useState<StabilityDepositChange>({
     depositKUSD: undefined,
     withdrawKUSD: undefined,
@@ -163,7 +163,7 @@ export const DashboardProvider: React.FC = ({ children }) => {
         });
       setVaults(updatedVaults);
     }
-  }, [trove, stabilityDeposit]);
+  }, [trove, stabilityDeposit, vaults]);
 
   const handleDepositKusd = (
     depositKUSD: Decimal | undefined,
