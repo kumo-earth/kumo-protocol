@@ -57,7 +57,7 @@
     "chai-spies": "1.0.0",
     "cross-env": "7.0.3",
     "dotenv": "16.0.0",
-    "eslint": "7.22.0",
+    "eslint": "8.14.0",
     "eslint-plugin-tsdoc": "0.2.14",
     "ethers": "~5.4.7",
     "fs-extra": "9.1.0",
