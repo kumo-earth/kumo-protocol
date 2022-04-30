@@ -2,7 +2,6 @@ import { Grid } from "theme-ui";
 import { Percent } from "@liquity/lib-base";
 import { CollateralCard } from "../components/ColleteralCard/ColleteralCard";
 import { useDashboard } from "../hooks/DashboardContext";
-import { Trove } from "../components/Trove/Trove";
 
 export const Dashboard: React.FC = () => {
   const { vaults } = useDashboard();
@@ -17,7 +16,6 @@ export const Dashboard: React.FC = () => {
         height: "100%"
       }}
     >
-      <Trove />
       {vaults.map(vault => {
         const totalCollateralRatioPct = new Percent(vault.collateralRatio);
         return (
