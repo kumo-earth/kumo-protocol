@@ -10,11 +10,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_lqtyTokenAddress",
+        "name": "_kumoTokenAddress",
         "type": "address"
       }
     ],
-    "name": "LQTYTokenAddressSet",
+    "name": "KUMOTokenAddressSet",
     "type": "event"
   },
   {
@@ -55,11 +55,11 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_totalLQTYIssued",
+        "name": "_totalKUMOIssued",
         "type": "uint256"
       }
     ],
-    "name": "TotalLQTYIssuedUpdated",
+    "name": "TotalKUMOIssuedUpdated",
     "type": "event"
   },
   {
@@ -90,7 +90,7 @@
   },
   {
     "inputs": [],
-    "name": "LQTYSupplyCap",
+    "name": "KUMOSupplyCap",
     "outputs": [
       {
         "internalType": "uint256",
@@ -142,6 +142,19 @@
   },
   {
     "inputs": [],
+    "name": "isInitialized",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "isOwner",
     "outputs": [
       {
@@ -155,7 +168,7 @@
   },
   {
     "inputs": [],
-    "name": "issueLQTY",
+    "name": "issueKUMO",
     "outputs": [
       {
         "internalType": "uint256",
@@ -168,10 +181,10 @@
   },
   {
     "inputs": [],
-    "name": "lqtyToken",
+    "name": "kumoToken",
     "outputs": [
       {
-        "internalType": "contract ILQTYToken",
+        "internalType": "contract IKUMOToken",
         "name": "",
         "type": "address"
       }
@@ -201,11 +214,11 @@
       },
       {
         "internalType": "uint256",
-        "name": "_LQTYamount",
+        "name": "_KUMOamount",
         "type": "uint256"
       }
     ],
-    "name": "sendLQTY",
+    "name": "sendKUMO",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -214,7 +227,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_lqtyTokenAddress",
+        "name": "_kumoTokenAddress",
         "type": "address"
       },
       {
@@ -243,7 +256,7 @@
   },
   {
     "inputs": [],
-    "name": "totalLQTYIssued",
+    "name": "totalKUMOIssued",
     "outputs": [
       {
         "internalType": "uint256",

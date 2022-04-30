@@ -57,11 +57,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_lqtyStakingAddress",
+        "name": "_kumoStakingAddress",
         "type": "address"
       }
     ],
-    "name": "LQTYStakingAddressChanged",
+    "name": "KUMOStakingAddressChanged",
     "type": "event"
   },
   {
@@ -76,11 +76,11 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_LUSDFee",
+        "name": "_KUSDFee",
         "type": "uint256"
       }
     ],
-    "name": "LUSDBorrowingFeePaid",
+    "name": "KUSDBorrowingFeePaid",
     "type": "event"
   },
   {
@@ -89,11 +89,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_lusdTokenAddress",
+        "name": "_kusdTokenAddress",
         "type": "address"
       }
     ],
-    "name": "LUSDTokenAddressChanged",
+    "name": "KUSDTokenAddressChanged",
     "type": "event"
   },
   {
@@ -224,6 +224,19 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newAddress",
+        "type": "address"
+      }
+    ],
+    "name": "VaultParametersBaseChanged",
+    "type": "event"
+  },
+  {
     "inputs": [],
     "name": "BORROWING_FEE_FLOOR",
     "outputs": [
@@ -264,7 +277,7 @@
   },
   {
     "inputs": [],
-    "name": "LUSD_GAS_COMPENSATION",
+    "name": "KUSD_GAS_COMPENSATION",
     "outputs": [
       {
         "internalType": "uint256",
@@ -385,7 +398,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_LUSDChange",
+        "name": "_KUSDChange",
         "type": "uint256"
       },
       {
@@ -496,10 +509,10 @@
   },
   {
     "inputs": [],
-    "name": "lqtyStaking",
+    "name": "kumoStaking",
     "outputs": [
       {
-        "internalType": "contract ILQTYStaking",
+        "internalType": "contract IKUMOStaking",
         "name": "",
         "type": "address"
       }
@@ -509,7 +522,7 @@
   },
   {
     "inputs": [],
-    "name": "lqtyStakingAddress",
+    "name": "kumoStakingAddress",
     "outputs": [
       {
         "internalType": "address",
@@ -522,10 +535,10 @@
   },
   {
     "inputs": [],
-    "name": "lusdToken",
+    "name": "kusdToken",
     "outputs": [
       {
-        "internalType": "contract ILUSDToken",
+        "internalType": "contract IKUSDToken",
         "name": "",
         "type": "address"
       }
@@ -565,7 +578,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_LUSDAmount",
+        "name": "_KUSDAmount",
         "type": "uint256"
       },
       {
@@ -614,7 +627,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_LUSDAmount",
+        "name": "_KUSDAmount",
         "type": "uint256"
       },
       {
@@ -628,7 +641,7 @@
         "type": "address"
       }
     ],
-    "name": "repayLUSD",
+    "name": "repayKUSD",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -677,12 +690,12 @@
       },
       {
         "internalType": "address",
-        "name": "_lusdTokenAddress",
+        "name": "_kusdTokenAddress",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_lqtyStakingAddress",
+        "name": "_kumoStakingAddress",
         "type": "address"
       }
     ],
@@ -749,7 +762,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_LUSDAmount",
+        "name": "_KUSDAmount",
         "type": "uint256"
       },
       {
@@ -763,7 +776,7 @@
         "type": "address"
       }
     ],
-    "name": "withdrawLUSD",
+    "name": "withdrawKUSD",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

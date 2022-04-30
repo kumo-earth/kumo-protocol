@@ -1,11 +1,11 @@
-import { Decimal, LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { Decimal, KumoStoreState } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 
 const selector = ({
   uniTokenBalance,
   uniTokenAllowance,
   liquidityMiningStake
-}: LiquityStoreState) => ({
+}: KumoStoreState) => ({
   uniTokenBalance,
   uniTokenAllowance,
   liquidityMiningStake
@@ -22,7 +22,7 @@ type FarmStakeValidation = {
 };
 
 export const useValidationState = (amount: Decimal): FarmStakeValidation => {
-  const { uniTokenBalance, uniTokenAllowance, liquidityMiningStake } = useLiquitySelector(selector);
+  const { uniTokenBalance, uniTokenAllowance, liquidityMiningStake } = useKumoSelector(selector);
   const isWithdrawing = liquidityMiningStake.gt(amount);
   const amountChanged = isWithdrawing
     ? liquidityMiningStake.sub(amount)

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Box, Button, Container, Flex } from "theme-ui";
 import { Icon } from "./Icon";
-import { LiquityLogo } from "./LiquityLogo";
+import { KumoLogo } from "./KumoLogo";
 import { Link } from "./Link";
 
 const logoHeight = "32px";
@@ -29,13 +29,13 @@ export const SideNav: React.FC = () => {
     >
       <Flex variant="layout.sidenav">
         <Button
-          sx={{ position: "fixed", right: "25vw", m: 2 }}
+          sx={{ position: "fixed", m: 2 }}
           variant="icon"
           onClick={() => setIsVisible(false)}
         >
           <Icon name="times" size="2x" />
         </Button>
-        <LiquityLogo height={logoHeight} p={2} />
+        <KumoLogo height={logoHeight} p={2} />
         <Box as="nav" sx={{ m: 3, mt: 1, p: 0 }} onClick={() => setIsVisible(false)}>
           <Link to="/">Dashboard</Link>
           <Link to="/farm">Farm</Link>

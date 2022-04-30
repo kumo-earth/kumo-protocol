@@ -1,25 +1,27 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
 
-import "../LQTY/CommunityIssuance.sol";
+import "../KUMO/CommunityIssuance.sol";
 
 contract CommunityIssuanceTester is CommunityIssuance {
-    function obtainLQTY(uint _amount) external {
-        lqtyToken.transfer(msg.sender, _amount);
+    using SafeMath for uint256;
+    
+    function obtainKUMO(uint _amount) external {
+        kumoToken.transfer(msg.sender, _amount);
     }
 
     function getCumulativeIssuanceFraction() external view returns (uint) {
        return _getCumulativeIssuanceFraction();
     }
 
-    function unprotectedIssueLQTY() external returns (uint) {
+    function unprotectedIssueKUMO() external returns (uint) {
         // No checks on caller address
        
-        uint latestTotalLQTYIssued = LQTYSupplyCap.mul(_getCumulativeIssuanceFraction()).div(DECIMAL_PRECISION);
-        uint issuance = latestTotalLQTYIssued.sub(totalLQTYIssued);
+        uint latestTotalKUMOIssued = KUMOSupplyCap.mul(_getCumulativeIssuanceFraction()).div(DECIMAL_PRECISION);
+        uint issuance = latestTotalKUMOIssued.sub(totalKUMOIssued);
       
-        totalLQTYIssued = latestTotalLQTYIssued;
+        totalKUMOIssued = latestTotalKUMOIssued;
         return issuance;
     }
 }

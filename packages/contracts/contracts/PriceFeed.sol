@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
+
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./Interfaces/IPriceFeed.sol";
 import "./Interfaces/ITellorCaller.sol";
@@ -9,7 +11,7 @@ import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/BaseMath.sol";
-import "./Dependencies/LiquityMath.sol";
+import "./Dependencies/KumoMath.sol";
 import "./Dependencies/console.sol";
 
 /*
@@ -23,12 +25,14 @@ import "./Dependencies/console.sol";
 contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     using SafeMath for uint256;
 
+	// bool public isInitialized;
+
     string constant public NAME = "PriceFeed";
 
     AggregatorV3Interface public priceAggregator;  // Mainnet Chainlink aggregator
     ITellorCaller public tellorCaller;  // Wrapper contract that calls the Tellor system
 
-    // Core Liquity contracts
+    // Core Kumo contracts
     address borrowerOperationsAddress;
     address troveManagerAddress;
 
@@ -50,7 +54,7 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     */
     uint constant public MAX_PRICE_DIFFERENCE_BETWEEN_ORACLES = 5e16; // 5%
 
-    // The last good price seen from an oracle by Liquity
+    // The last good price seen from an oracle by Kumo
     uint public lastGoodPrice;
 
     struct ChainlinkResponse {
@@ -79,7 +83,7 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     // The current status of the PricFeed, which determines the conditions for the next price fetch attempt
     Status public status;
 
-    event LastGoodPriceUpdated(uint _lastGoodPrice);
+    // event LastGoodPriceUpdated(uint _lastGoodPrice);
     event PriceFeedStatusChanged(Status newStatus);
 
     // --- Dependency setters ---
@@ -89,10 +93,13 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
         address _tellorCallerAddress
     )
         external
-        onlyOwner
-    {
+        onlyOwner {
+		// require(!isInitialized);
         checkContract(_priceAggregatorAddress);
         checkContract(_tellorCallerAddress);
+		// isInitialized = true;
+
+		// __Ownable_init();
        
         priceAggregator = AggregatorV3Interface(_priceAggregatorAddress);
         tellorCaller = ITellorCaller(_tellorCallerAddress);
@@ -116,17 +123,17 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
 
     /*
     * fetchPrice():
-    * Returns the latest price obtained from the Oracle. Called by Liquity functions that require a current price.
+    * Returns the latest price obtained from the Oracle. Called by Kumo functions that require a current price.
     *
     * Also callable by anyone externally.
     *
-    * Non-view function - it stores the last good price seen by Liquity.
+    * Non-view function - it stores the last good price seen by Kumo.
     *
     * Uses a main oracle (Chainlink) and a fallback oracle (Tellor) in case Chainlink fails. If both fail, 
-    * it uses the last good price seen by Liquity.
+    * it uses the last good price seen by Kumo.
     *
     */
-    function fetchPrice() external override returns (uint) {
+    function fetchPrice() external override returns (uint latestprice_) {
         // Get current and previous price data from Chainlink, and current price data from Tellor
         ChainlinkResponse memory chainlinkResponse = _getCurrentChainlinkResponse();
         ChainlinkResponse memory prevChainlinkResponse = _getPrevChainlinkResponse(chainlinkResponse.roundId, chainlinkResponse.decimals);
@@ -139,7 +146,8 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
                 // If Tellor is broken then both oracles are untrusted, so return the last good price
                 if (_tellorIsBroken(tellorResponse)) {
                     _changeStatus(Status.bothOraclesUntrusted);
-                    return lastGoodPrice; 
+                    latestprice_ = lastGoodPrice;
+                    return latestprice_; 
                 }
                 /*
                 * If Tellor is only frozen but otherwise returning valid data, return the last good price.
@@ -368,8 +376,8 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
         uint currentScaledPrice = _scaleChainlinkPriceByDigits(uint256(_currentResponse.answer), _currentResponse.decimals);
         uint prevScaledPrice = _scaleChainlinkPriceByDigits(uint256(_prevResponse.answer), _prevResponse.decimals);
 
-        uint minPrice = LiquityMath._min(currentScaledPrice, prevScaledPrice);
-        uint maxPrice = LiquityMath._max(currentScaledPrice, prevScaledPrice);
+        uint minPrice = KumoMath._min(currentScaledPrice, prevScaledPrice);
+        uint maxPrice = KumoMath._max(currentScaledPrice, prevScaledPrice);
 
         /*
         * Use the larger price as the denominator:
@@ -427,8 +435,8 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
         uint scaledTellorPrice = _scaleTellorPriceByDigits(_tellorResponse.value);
 
         // Get the relative price difference between the oracles. Use the lower price as the denominator, i.e. the reference for the calculation.
-        uint minPrice = LiquityMath._min(scaledTellorPrice, scaledChainlinkPrice);
-        uint maxPrice = LiquityMath._max(scaledTellorPrice, scaledChainlinkPrice);
+        uint minPrice = KumoMath._min(scaledTellorPrice, scaledChainlinkPrice);
+        uint maxPrice = KumoMath._max(scaledTellorPrice, scaledChainlinkPrice);
         uint percentPriceDifference = maxPrice.sub(minPrice).mul(DECIMAL_PRECISION).div(minPrice);
 
         /*
@@ -440,18 +448,18 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
 
     function _scaleChainlinkPriceByDigits(uint _price, uint _answerDigits) internal pure returns (uint) {
         /*
-        * Convert the price returned by the Chainlink oracle to an 18-digit decimal for use by Liquity.
-        * At date of Liquity launch, Chainlink uses an 8-digit price, but we also handle the possibility of
+        * Convert the price returned by the Chainlink oracle to an 18-digit decimal for use by Kumo.
+        * At date of Kumo launch, Chainlink uses an 8-digit price, but we also handle the possibility of
         * future changes.
         *
         */
         uint price;
         if (_answerDigits >= TARGET_DIGITS) {
-            // Scale the returned price value down to Liquity's target precision
+            // Scale the returned price value down to Kumo's target precision
             price = _price.div(10 ** (_answerDigits - TARGET_DIGITS));
         }
         else if (_answerDigits < TARGET_DIGITS) {
-            // Scale the returned price value up to Liquity's target precision
+            // Scale the returned price value up to Kumo's target precision
             price = _price.mul(10 ** (TARGET_DIGITS - _answerDigits));
         }
         return price;

@@ -8,8 +8,8 @@ const paramsEq = (a?: Decimal, b?: Decimal) => (a && b ? a.eq(b) : !a && !b);
 const equals = (a: ValidTroveChange, b: ValidTroveChange): boolean => {
   return (
     a.type === b.type &&
-    paramsEq(a.params.borrowLUSD, b.params.borrowLUSD) &&
-    paramsEq(a.params.repayLUSD, b.params.repayLUSD) &&
+    paramsEq(a.params.borrowKUSD, b.params.borrowKUSD) &&
+    paramsEq(a.params.repayKUSD, b.params.repayKUSD) &&
     paramsEq(a.params.depositCollateral, b.params.depositCollateral) &&
     paramsEq(a.params.withdrawCollateral, b.params.withdrawCollateral)
   );

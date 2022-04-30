@@ -1,14 +1,15 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { Flex, Button, Box, Card, Heading } from "theme-ui";
 import {
-  LiquityStoreState,
+  KumoStoreState,
   Decimal,
   Trove,
-  LUSD_LIQUIDATION_RESERVE,
+  KUSD_LIQUIDATION_RESERVE,
   Percent,
   Difference
 } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { useKumoSelector } from "@liquity/lib-react";
 
 import { useStableTroveChange } from "../../hooks/useStableTroveChange";
 import { ActionDescription } from "../ActionDescription";
@@ -26,8 +27,9 @@ import {
   selectForTroveChangeValidation,
   validateTroveChange
 } from "./validation/validateTroveChange";
+import { useDashboard } from "../../hooks/DashboardContext";
 
-const selector = (state: LiquityStoreState) => {
+const selector = (state: KumoStoreState) => {
   const { trove, fees, price, accountBalance } = state;
   return {
     trove,
@@ -44,8 +46,8 @@ const GAS_ROOM_ETH = Decimal.from(0.1);
 const feeFrom = (original: Trove, edited: Trove, borrowingRate: Decimal): Decimal => {
   const change = original.whatChanged(edited, borrowingRate);
 
-  if (change && change.type !== "invalidCreation" && change.params.borrowLUSD) {
-    return change.params.borrowLUSD.mul(borrowingRate);
+  if (change && change.type !== "invalidCreation" && change.params.borrowKUSD) {
+    return change.params.borrowKUSD.mul(borrowingRate);
   } else {
     return Decimal.ZERO;
   }
@@ -81,9 +83,17 @@ const applyUnsavedNetDebtChanges = (unsavedChanges: Difference, trove: Trove) =>
   return trove.netDebt;
 };
 
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
+
 export const Adjusting: React.FC = () => {
   const { dispatchEvent } = useTroveView();
-  const { trove, fees, price, accountBalance, validationContext } = useLiquitySelector(selector);
+  const { fees, price, accountBalance, validationContext } = useKumoSelector(selector);
+  const location = useLocation();
+  const { vaults, adjustTroveT } = useDashboard();
+  const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
+  const { trove } = vaultType;
   const editingState = useState<string>();
   const previousTrove = useRef<Trove>(trove);
   const [collateral, setCollateral] = useState<Decimal>(trove.collateral);
@@ -94,8 +104,10 @@ export const Adjusting: React.FC = () => {
 
   useEffect(() => {
     if (transactionState.type === "confirmedOneShot") {
+      collateralRatio && adjustTroveT(getPathName(location), collateral, netDebt, price);
       dispatchEvent("TROVE_ADJUSTED");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactionState.type, dispatchEvent]);
 
   useEffect(() => {
@@ -128,7 +140,7 @@ export const Adjusting: React.FC = () => {
   const fee = isDebtIncrease
     ? feeFrom(trove, new Trove(trove.collateral, trove.debt.add(debtIncreaseAmount)), borrowingRate)
     : Decimal.ZERO;
-  const totalDebt = netDebt.add(LUSD_LIQUIDATION_RESERVE).add(fee);
+  const totalDebt = netDebt.add(KUSD_LIQUIDATION_RESERVE).add(fee);
   const maxBorrowingRate = borrowingRate.add(0.005);
   const updatedTrove = isDirty ? new Trove(collateral, totalDebt) : trove;
   const feePct = new Percent(borrowingRate);
@@ -154,15 +166,32 @@ export const Adjusting: React.FC = () => {
   const isTransactionPending =
     transactionState.type === "waitingForApproval" ||
     transactionState.type === "waitingForConfirmation";
-
   if (trove.status !== "open") {
     return null;
   }
 
   return (
-    <Card>
-      <Heading>
-        Trove
+    <Card
+      sx={{
+        background: "rgba(249,248,249,.1)",
+        backgroundColor: "#303553",
+        // color: "rgba(0, 0, 0, 0.87)",
+        transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+        boxShadow:
+          "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
+        overflow: "hidden",
+        borderRadius: "20px",
+        width: "100%",
+        color: "white"
+      }}
+    >
+      <Heading
+        sx={{
+          background: "linear-gradient(103.69deg, #2b2b2b 18.43%, #525252 100%)",
+          color: "white"
+        }}
+      >
+        {vaultType.type.toUpperCase()} Trove
         {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
             <Icon name="history" size="lg" />
@@ -178,9 +207,11 @@ export const Adjusting: React.FC = () => {
           maxAmount={maxCollateral.toString()}
           maxedOut={collateralMaxedOut}
           editingState={editingState}
-          unit="ETH"
+          unit={getPathName(location).toUpperCase()}
           editedAmount={collateral.toString(4)}
-          setEditedAmount={(amount: string) => setCollateral(Decimal.from(amount))}
+          setEditedAmount={(amount: string) => {
+            setCollateral(Decimal.from(amount));
+          }}
         />
 
         <EditableRow
@@ -196,7 +227,7 @@ export const Adjusting: React.FC = () => {
         <StaticRow
           label="Liquidation Reserve"
           inputId="trove-liquidation-reserve"
-          amount={`${LUSD_LIQUIDATION_RESERVE}`}
+          amount={`${KUSD_LIQUIDATION_RESERVE}`}
           unit={COIN}
           infoIcon={
             <InfoIcon
@@ -238,11 +269,11 @@ export const Adjusting: React.FC = () => {
             <InfoIcon
               tooltip={
                 <Card variant="tooltip" sx={{ width: "240px" }}>
-                  The total amount of LUSD your Trove will hold.{" "}
+                  The total amount of KUSD your Trove will hold.{" "}
                   {isDirty && (
                     <>
-                      You will need to repay {totalDebt.sub(LUSD_LIQUIDATION_RESERVE).prettify(2)}{" "}
-                      LUSD to reclaim your collateral ({LUSD_LIQUIDATION_RESERVE.toString()} LUSD
+                      You will need to repay {totalDebt.sub(KUSD_LIQUIDATION_RESERVE).prettify(2)}{" "}
+                      KUSD to reclaim your collateral ({KUSD_LIQUIDATION_RESERVE.toString()} KUSD
                       Liquidation Reserve excluded).
                     </>
                   )}
@@ -269,7 +300,17 @@ export const Adjusting: React.FC = () => {
         />
 
         <Flex variant="layout.actions">
-          <Button variant="cancel" onClick={handleCancelPressed}>
+          <Button
+            sx={{
+              backgroundColor: "rgb(152, 80, 90)",
+              boxShadow:
+                "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
+              border: "none",
+              color: "white"
+            }}
+            variant="cancel"
+            onClick={handleCancelPressed}
+          >
             Cancel
           </Button>
 
@@ -283,7 +324,18 @@ export const Adjusting: React.FC = () => {
               Confirm
             </TroveAction>
           ) : (
-            <Button disabled>Confirm</Button>
+            <Button
+              sx={{
+                backgroundColor: "rgb(152, 80, 90)",
+                boxShadow:
+                  "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
+                border: "none",
+                color: "white"
+              }}
+              disabled
+            >
+              Confirm
+            </Button>
           )}
         </Flex>
       </Box>

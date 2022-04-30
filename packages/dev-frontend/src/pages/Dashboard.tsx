@@ -1,22 +1,32 @@
-import { Container } from "theme-ui";
+import { Grid } from "theme-ui";
+import { Percent } from "@liquity/lib-base";
+import { CollateralCard } from "../components/ColleteralCard/ColleteralCard";
+import { useDashboard } from "../hooks/DashboardContext";
 
-import { Trove } from "../components/Trove/Trove";
-import { Stability } from "../components/Stability/Stability";
-import { SystemStats } from "../components/SystemStats";
-import { PriceManager } from "../components/PriceManager";
-import { Staking } from "../components/Staking/Staking";
+export const Dashboard: React.FC = () => {
+  const { vaults } = useDashboard();
 
-export const Dashboard: React.FC = () => (
-  <Container variant="columns">
-    <Container variant="left">
-      <Trove />
-      <Stability />
-      <Staking />
-    </Container>
-
-    <Container variant="right">
-      <SystemStats />
-      <PriceManager />
-    </Container>
-  </Container>
-);
+  return (
+    <Grid
+      sx={{
+        width: "100%",
+        display: "grid",
+        gridGap: 2,
+        gridTemplateColumns: `repeat(auto-fill, minmax(400px, 1fr))`,
+        height: "100%"
+      }}
+    >
+      {vaults.map(vault => {
+        const totalCollateralRatioPct = new Percent(vault.collateralRatio);
+        return (
+          <CollateralCard
+            collateralType={vault.type}
+            totalCollateralRatioPct={totalCollateralRatioPct.prettify()}
+            total={vault.trove}
+            key={vault.type}
+          />
+        );
+      })}
+    </Grid>
+  );
+};

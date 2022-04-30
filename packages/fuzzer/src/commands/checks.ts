@@ -1,4 +1,4 @@
-import { EthersLiquity } from "@liquity/lib-ethers";
+import { EthersKumo } from "@liquity/lib-ethers";
 
 import { deployer, subgraph } from "../globals";
 
@@ -10,10 +10,10 @@ import {
 } from "../utils";
 
 export const checkSorting = async () => {
-  const deployerLiquity = await EthersLiquity.connect(deployer);
-  const listOfTroves = await getListOfTrovesBeforeRedistribution(deployerLiquity);
-  const totalRedistributed = await deployerLiquity.getTotalRedistributed();
-  const price = await deployerLiquity.getPrice();
+  const deployerKumo = await EthersKumo.connect(deployer);
+  const listOfTroves = await getListOfTrovesBeforeRedistribution(deployerKumo);
+  const totalRedistributed = await deployerKumo.getTotalRedistributed();
+  const price = await deployerKumo.getPrice();
 
   checkTroveOrdering(listOfTroves, totalRedistributed, price);
 
@@ -21,18 +21,18 @@ export const checkSorting = async () => {
 };
 
 export const checkSubgraphCmd = async () => {
-  const deployerLiquity = await EthersLiquity.connect(deployer);
+  const deployerKumo = await EthersKumo.connect(deployer);
 
-  await checkSubgraph(subgraph, deployerLiquity);
+  await checkSubgraph(subgraph, deployerKumo);
 
   console.log("Subgraph looks fine.");
 };
 
 export const dumpTrovesCmd = async () => {
-  const deployerLiquity = await EthersLiquity.connect(deployer);
-  const listOfTroves = await getListOfTrovesBeforeRedistribution(deployerLiquity);
-  const totalRedistributed = await deployerLiquity.getTotalRedistributed();
-  const price = await deployerLiquity.getPrice();
+  const deployerKumo = await EthersKumo.connect(deployer);
+  const listOfTroves = await getListOfTrovesBeforeRedistribution(deployerKumo);
+  const totalRedistributed = await deployerKumo.getTotalRedistributed();
+  const price = await deployerKumo.getPrice();
 
   dumpTroves(listOfTroves, totalRedistributed, price);
 };

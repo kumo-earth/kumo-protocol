@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.11;
+pragma solidity 0.8.11;
     
 interface ILockupContractFactory {
     
     // --- Events ---
 
-    event LQTYTokenAddressSet(address _lqtyTokenAddress);
+    event KUMOTokenAddressSet(address _kumoTokenAddress);
     event LockupContractDeployedThroughFactory(address _lockupContractAddress, address _beneficiary, uint _unlockTime, address _deployer);
 
     // --- Functions ---
 
-    function setLQTYTokenAddress(address _lqtyTokenAddress) external;
+    function setKUMOTokenAddress(address _kumoTokenAddress) external;
 
     function deployLockupContract(address _beneficiary, uint _unlockTime) external;
 
