@@ -1,19 +1,22 @@
 {
-  "name": "@liquity/lib-base",
+  "name": "@kumo/lib-base",
   "version": "0.0.0-semantic-release",
-  "description": "Liquity SDK shared interfaces",
+  "description": "Kumo SDK shared interfaces",
   "keywords": [
     "Liquity",
     "protocol",
     "DeFi",
     "Ethereum"
   ],
-  "homepage": "https://github.com/liquity/liquity#readme",
+  "homepage": "https://github.com/kumodao/borrowprot#readme",
   "license": "MIT",
-  "author": "Daniel Simon <dani@liquity.org>",
+  "author": "Robin Klemens <robin@kumo.earth>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": "https://github.com/liquity/dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kumodao/borrowprot.git"
+  },
   "scripts": {
     "prepare": "run-s prepare:*",
     "prepare:eslint": "eslint src",
@@ -36,5 +39,11 @@
     "npm-run-all": "4.1.5",
     "ts-node": "9.1.1",
     "typescript": "4.1.5"
+  },
+  "bugs": {
+    "url": "https://github.com/kumodao/borrowprot/issues"
+  },
+  "directories": {
+    "test": "test"
   }
 }
