@@ -4,14 +4,14 @@ const { TestHelper: th, MoneyValues: mv } = require("../utils/testHelpers.js")
 const GasPool = artifacts.require("./GasPool.sol")
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol")
 
-contract('All Liquity functions with onlyOwner modifier', async accounts => {
+contract('All Kumo functions with onlyOwner modifier', async accounts => {
 
   const [owner, alice, bob] = accounts;
 
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
   
   let contracts
-  let lusdToken
+  let kusdToken
   let sortedTroves
   let troveManager
   let activePool
@@ -19,18 +19,18 @@ contract('All Liquity functions with onlyOwner modifier', async accounts => {
   let defaultPool
   let borrowerOperations
 
-  let lqtyStaking
+  let kumoStaking
   let communityIssuance
-  let lqtyToken 
+  let kumoToken 
   let lockupContractFactory
 
   before(async () => {
-    contracts = await deploymentHelper.deployLiquityCore()
+    contracts = await deploymentHelper.deployKumoCore()
     contracts.borrowerOperations = await BorrowerOperationsTester.new()
-    contracts = await deploymentHelper.deployLUSDToken(contracts)
-    const LQTYContracts = await deploymentHelper.deployLQTYContracts(bountyAddress, lpRewardsAddress, multisig)
+    contracts = await deploymentHelper.deployKUSDToken(contracts)
+    const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
-    lusdToken = contracts.lusdToken
+    kusdToken = contracts.kusdToken
     sortedTroves = contracts.sortedTroves
     troveManager = contracts.troveManager
     activePool = contracts.activePool
@@ -38,10 +38,10 @@ contract('All Liquity functions with onlyOwner modifier', async accounts => {
     defaultPool = contracts.defaultPool
     borrowerOperations = contracts.borrowerOperations
 
-    lqtyStaking = LQTYContracts.lqtyStaking
-    communityIssuance = LQTYContracts.communityIssuance
-    lqtyToken = LQTYContracts.lqtyToken
-    lockupContractFactory = LQTYContracts.lockupContractFactory
+    kumoStaking = KUMOContracts.kumoStaking
+    communityIssuance = KUMOContracts.communityIssuance
+    kumoToken = KUMOContracts.kumoToken
+    lockupContractFactory = KUMOContracts.lockupContractFactory
   })
 
   const testZeroAddress = async (contract, params, method = 'setAddresses', skip = 0) => {
@@ -131,7 +131,7 @@ contract('All Liquity functions with onlyOwner modifier', async accounts => {
 
   describe('CommunityIssuance', async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      const params = [lqtyToken.address, stabilityPool.address]
+      const params = [kumoToken.address, stabilityPool.address]
       await th.assertRevert(communityIssuance.setAddresses(...params, { from: alice }))
 
       // Attempt to use zero address
@@ -148,29 +148,29 @@ contract('All Liquity functions with onlyOwner modifier', async accounts => {
     })
   })
 
-  describe('LQTYStaking', async accounts => {
+  describe('KUMOStaking', async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      await testSetAddresses(lqtyStaking, 5)
+      await testSetAddresses(kumoStaking, 5)
     })
   })
 
   describe('LockupContractFactory', async accounts => {
-    it("setLQTYAddress(): reverts when called by non-owner, with wrong address, or twice", async () => {
-      await th.assertRevert(lockupContractFactory.setLQTYTokenAddress(lqtyToken.address, { from: alice }))
+    it("setKUMOAddress(): reverts when called by non-owner, with wrong address, or twice", async () => {
+      await th.assertRevert(lockupContractFactory.setKUMOTokenAddress(kumoToken.address, { from: alice }))
 
-      const params = [lqtyToken.address]
+      const params = [kumoToken.address]
 
       // Attempt to use zero address
-      await testZeroAddress(lockupContractFactory, params, 'setLQTYTokenAddress')
+      await testZeroAddress(lockupContractFactory, params, 'setKUMOTokenAddress')
       // Attempt to use non contract
-      await testNonContractAddress(lockupContractFactory, params, 'setLQTYTokenAddress')
+      await testNonContractAddress(lockupContractFactory, params, 'setKUMOTokenAddress')
 
       // Owner can successfully set any address
-      const txOwner = await lockupContractFactory.setLQTYTokenAddress(lqtyToken.address, { from: owner })
+      const txOwner = await lockupContractFactory.setKUMOTokenAddress(kumoToken.address, { from: owner })
 
       assert.isTrue(txOwner.receipt.status)
       // fails if called twice
-      await th.assertRevert(lockupContractFactory.setLQTYTokenAddress(lqtyToken.address, { from: owner }))
+      await th.assertRevert(lockupContractFactory.setKUMOTokenAddress(kumoToken.address, { from: owner }))
     })
   })
 })

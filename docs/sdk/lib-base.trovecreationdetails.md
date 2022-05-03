@@ -4,7 +4,7 @@
 
 ## TroveCreationDetails interface
 
-Details of an [openTrove()](./lib-base.transactableliquity.opentrove.md) transaction.
+Details of an [openTrove()](./lib-base.transactablekumo.opentrove.md) transaction.
 
 <b>Signature:</b>
 
@@ -16,7 +16,7 @@ export interface TroveCreationDetails
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [fee](./lib-base.trovecreationdetails.fee.md) | [Decimal](./lib-base.decimal.md) | Amount of LUSD added to the Trove's debt as borrowing fee. |
+|  [fee](./lib-base.trovecreationdetails.fee.md) | [Decimal](./lib-base.decimal.md) | Amount of KUSD added to the Trove's debt as borrowing fee. |
 |  [newTrove](./lib-base.trovecreationdetails.newtrove.md) | [Trove](./lib-base.trove.md) | The Trove that was created by the transaction. |
 |  [params](./lib-base.trovecreationdetails.params.md) | [TroveCreationParams](./lib-base.trovecreationparams.md)<!-- -->&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt; | How much was deposited and borrowed. |
 

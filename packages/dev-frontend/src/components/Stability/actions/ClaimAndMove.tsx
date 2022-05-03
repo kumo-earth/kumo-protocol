@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "theme-ui";
-import { useLiquity } from "../../../hooks/LiquityContext";
+import { useKumo } from "../../../hooks/KumoContext";
 import { useTransactionFunction } from "../../Transaction";
 
 type ClaimAndMoveProps = {
@@ -8,7 +8,7 @@ type ClaimAndMoveProps = {
 };
 
 export const ClaimAndMove: React.FC<ClaimAndMoveProps> = ({ disabled, children }) => {
-  const { liquity } = useLiquity();
+  const { liquity } = useKumo();
 
   const [sendTransaction] = useTransactionFunction(
     "stability-deposit",

@@ -4,7 +4,7 @@ import { Card, Heading, Box, Flex, Input, Label, Paragraph, Button, Spinner } fr
 import { Decimal } from "@liquity/lib-base";
 
 import { shortenAddress } from "../utils/shortenAddress";
-import { useLiquity } from "../hooks/LiquityContext";
+import { useKumo } from "../hooks/KumoContext";
 import { Transaction, useMyTransactionState } from "../components/Transaction";
 import { Icon } from "../components/Icon";
 
@@ -15,7 +15,7 @@ type FrontendRegistrationActionProps = {
 const FrontendRegistrationAction: React.FC<FrontendRegistrationActionProps> = ({ kickbackRate }) => {
   const {
     liquity: { send: liquity }
-  } = useLiquity();
+  } = useKumo();
 
   const myTransactionId = "register-frontend";
   const myTransactionState = useMyTransactionState(myTransactionId);
@@ -34,7 +34,7 @@ const FrontendRegistrationAction: React.FC<FrontendRegistrationActionProps> = ({
 };
 
 export const FrontendRegistration: React.FC = () => {
-  const { account } = useLiquity();
+  const { account } = useKumo();
 
   const [kickbackRate, setKickbackRate] = useState(Decimal.from(0.8));
   const [cut, setCut] = useState(Decimal.from(0.2));
@@ -98,7 +98,7 @@ export const FrontendRegistration: React.FC = () => {
 
         <Paragraph sx={{ fontSize: 1, mt: 3 }}>
           You are about to register <b>{shortenAddress(account)}</b> to receive{" "}
-          <b>{cut.mul(100).toString()}%</b> of the LQTY rewards earned through this frontend.
+          <b>{cut.mul(100).toString()}%</b> of the KUMO rewards earned through this frontend.
         </Paragraph>
 
         <Paragraph sx={{ fontSize: 1, mt: 3, fontWeight: "bold" }}>

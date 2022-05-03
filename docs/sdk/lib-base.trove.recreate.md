@@ -4,7 +4,7 @@
 
 ## Trove.recreate() method
 
-Calculate the parameters of an [openTrove()](./lib-base.transactableliquity.opentrove.md) transaction that will result in the given Trove.
+Calculate the parameters of an [openTrove()](./lib-base.transactablekumo.opentrove.md) transaction that will result in the given Trove.
 
 <b>Signature:</b>
 

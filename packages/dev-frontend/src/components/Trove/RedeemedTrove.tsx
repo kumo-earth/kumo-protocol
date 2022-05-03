@@ -1,17 +1,17 @@
 import React, { useCallback } from "react";
 import { Card, Heading, Box, Button, Flex } from "theme-ui";
 import { CollateralSurplusAction } from "../CollateralSurplusAction";
-import { LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { KumoStoreState } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 import { useTroveView } from "./context/TroveViewContext";
 import { InfoMessage } from "../InfoMessage";
 
-const select = ({ collateralSurplusBalance }: LiquityStoreState) => ({
+const select = ({ collateralSurplusBalance }: KumoStoreState) => ({
   hasSurplusCollateral: !collateralSurplusBalance.isZero
 });
 
 export const RedeemedTrove: React.FC = () => {
-  const { hasSurplusCollateral } = useLiquitySelector(select);
+  const { hasSurplusCollateral } = useKumoSelector(select);
   const { dispatchEvent } = useTroveView();
 
   const handleOpenTrove = useCallback(() => {
@@ -25,7 +25,7 @@ export const RedeemedTrove: React.FC = () => {
         <InfoMessage title="Your Trove has been redeemed.">
           {hasSurplusCollateral
             ? "Please reclaim your remaining collateral before opening a new Trove."
-            : "You can borrow LUSD by opening a Trove."}
+            : "You can borrow KUSD by opening a Trove."}
         </InfoMessage>
 
         <Flex variant="layout.actions">

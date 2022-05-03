@@ -21,9 +21,9 @@
   "dependencies": {
     "decimal.js": "^10.3.1",
     "eth-mutants": "^0.1.1",
-    "ethereumjs-util": "^7.0.9",
+    "ethereumjs-util": "^7.1.4",
     "ethers": "~5.4.7",
-    "solc": "^0.8.11",
+    "solc": "^0.8.13",
     "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
@@ -31,7 +31,7 @@
     "@nomiclabs/hardhat-etherscan": "^3.0.1",
     "@nomiclabs/hardhat-truffle5": "^2.0.4",
     "@nomiclabs/hardhat-web3": "^2.0.0",
-    "@openzeppelin/contracts": "^4.5.0",
+    "@openzeppelin/contracts": "^4.6.0",
     "@openzeppelin/test-helpers": "^0.5.13",
     "eth-gas-reporter": "^0.2.22",
     "hardhat": "^2.8.4",

@@ -4,7 +4,7 @@
 
 ## UnsupportedNetworkError class
 
-Thrown when trying to connect to a network where Liquity is not deployed.
+Thrown when trying to connect to a network where Kumo is not deployed.
 
 <b>Signature:</b>
 
@@ -15,7 +15,7 @@ export declare class UnsupportedNetworkError extends Error
 
 ## Remarks
 
-Thrown by [ReadableEthersLiquity.connect()](./lib-ethers.readableethersliquity.connect_1.md) and [EthersLiquity.connect()](./lib-ethers.ethersliquity.connect_1.md)<!-- -->.
+Thrown by [ReadableEthersKumo.connect()](./lib-ethers.readableetherskumo.connect_1.md) and [EthersKumo.connect()](./lib-ethers.etherskumo.connect_1.md)<!-- -->.
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `UnsupportedNetworkError` class.
 

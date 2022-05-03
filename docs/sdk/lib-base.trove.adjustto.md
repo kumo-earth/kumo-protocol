@@ -4,7 +4,7 @@
 
 ## Trove.adjustTo() method
 
-Calculate the parameters of an [adjustTrove()](./lib-base.transactableliquity.adjusttrove.md) transaction that will change this Trove into the given Trove.
+Calculate the parameters of an [adjustTrove()](./lib-base.transactablekumo.adjusttrove.md) transaction that will change this Trove into the given Trove.
 
 <b>Signature:</b>
 

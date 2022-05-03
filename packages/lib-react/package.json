@@ -1,7 +1,7 @@
 {
   "name": "@kumodao/lib-react",
   "version": "0.0.0-semantic-release",
-  "description": "Components and hooks for React-based Liquity frontends",
+  "description": "Components and hooks for React-based Kumo frontends",
   "keywords": [
     "Kumo",
     "protocol",
@@ -25,13 +25,13 @@
     "react": "^16.13.1"
   },
   "devDependencies": {
-    "@ethersproject/bignumber": "5.4.1",
+    "@ethersproject/bignumber": "5.6.0",
     "@types/react": "17.0.3",
     "@typescript-eslint/eslint-plugin": "4.17.0",
-    "@typescript-eslint/parser": "4.18.0",
+    "@typescript-eslint/parser": "4.33.0",
     "eslint": "7.22.0",
     "eslint-plugin-react": "7.22.0",
-    "eslint-plugin-react-hooks": "4.2.0",
+    "eslint-plugin-react-hooks": "4.5.0",
     "npm-run-all": "4.1.5",
     "react": "17.0.1",
     "typescript": "4.1.5"

@@ -1,25 +1,25 @@
 import { useEffect } from "react";
 
-import { LiquityStoreState, LQTYStake } from "@liquity/lib-base";
-import { LiquityStoreUpdate, useLiquityReducer } from "@liquity/lib-react";
+import { KumoStoreState, KUMOStake } from "@liquity/lib-base";
+import { KumoStoreUpdate, useKumoReducer } from "@liquity/lib-react";
 
 import { useMyTransactionState } from "../../Transaction";
 
 import { StakingViewAction, StakingViewContext } from "./StakingViewContext";
 
 type StakingViewProviderAction =
-  | LiquityStoreUpdate
+  | KumoStoreUpdate
   | StakingViewAction
   | { type: "startChange" | "abortChange" };
 
 type StakingViewProviderState = {
-  lqtyStake: LQTYStake;
+  kumoStake: KUMOStake;
   changePending: boolean;
   adjusting: boolean;
 };
 
-const init = ({ lqtyStake }: LiquityStoreState): StakingViewProviderState => ({
-  lqtyStake,
+const init = ({ kumoStake }: KumoStoreState): StakingViewProviderState => ({
+  kumoStake,
   changePending: false,
   adjusting: false
 });
@@ -46,19 +46,19 @@ const reduce = (
 
     case "updateStore": {
       const {
-        oldState: { lqtyStake: oldStake },
-        stateChange: { lqtyStake: updatedStake }
+        oldState: { kumoStake: oldStake },
+        stateChange: { kumoStake: updatedStake }
       } = action;
 
       if (updatedStake) {
         const changeCommitted =
-          !updatedStake.stakedLQTY.eq(oldStake.stakedLQTY) ||
+          !updatedStake.stakedKUMO.eq(oldStake.stakedKUMO) ||
           updatedStake.collateralGain.lt(oldStake.collateralGain) ||
-          updatedStake.lusdGain.lt(oldStake.lusdGain);
+          updatedStake.kusdGain.lt(oldStake.kusdGain);
 
         return {
           ...state,
-          lqtyStake: updatedStake,
+          kumoStake: updatedStake,
           adjusting: false,
           changePending: changeCommitted ? false : state.changePending
         };
@@ -71,7 +71,7 @@ const reduce = (
 
 export const StakingViewProvider: React.FC = ({ children }) => {
   const stakingTransactionState = useMyTransactionState("stake");
-  const [{ adjusting, changePending, lqtyStake }, dispatch] = useLiquityReducer(reduce, init);
+  const [{ adjusting, changePending, kumoStake }, dispatch] = useKumoReducer(reduce, init);
 
   useEffect(() => {
     if (
@@ -90,7 +90,7 @@ export const StakingViewProvider: React.FC = ({ children }) => {
   return (
     <StakingViewContext.Provider
       value={{
-        view: adjusting ? "ADJUSTING" : lqtyStake.isEmpty ? "NONE" : "ACTIVE",
+        view: adjusting ? "ADJUSTING" : kumoStake.isEmpty ? "NONE" : "ACTIVE",
         changePending,
         dispatch
       }}

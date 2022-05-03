@@ -4,7 +4,7 @@
 
 ## TroveAdjustmentParams type
 
-Parameters of an [adjustTrove()](./lib-base.transactableliquity.adjusttrove.md) transaction.
+Parameters of an [adjustTrove()](./lib-base.transactablekumo.adjusttrove.md) transaction.
 
 <b>Signature:</b>
 
@@ -18,7 +18,7 @@ The type parameter `T` specifies the allowed value type(s) of the particular `Tr
 
 Even though all properties are optional, a valid `TroveAdjustmentParams` object must define at least one.
 
-Defining both `depositCollateral` and `withdrawCollateral`<!-- -->, or both `borrowLUSD` and `repayLUSD` at the same time is disallowed, and will result in a type-checking error.
+Defining both `depositCollateral` and `withdrawCollateral`<!-- -->, or both `borrowKUSD` and `repayKUSD` at the same time is disallowed, and will result in a type-checking error.
 
 <h2>Properties</h2>
 
@@ -30,9 +30,9 @@ Defining both `depositCollateral` and `withdrawCollateral`<!-- -->, or both `bor
 
 <tr> <td> withdrawCollateral? </td> <td> T </td> <td> <i>(Optional)</i> The amount of collateral that's withdrawn. </td> </tr>
 
-<tr> <td> borrowLUSD? </td> <td> T </td> <td> <i>(Optional)</i> The amount of LUSD that's borrowed. </td> </tr>
+<tr> <td> borrowKUSD? </td> <td> T </td> <td> <i>(Optional)</i> The amount of KUSD that's borrowed. </td> </tr>
 
-<tr> <td> repayLUSD? </td> <td> T </td> <td> <i>(Optional)</i> The amount of LUSD that's repaid. </td> </tr>
+<tr> <td> repayKUSD? </td> <td> T </td> <td> <i>(Optional)</i> The amount of KUSD that's repaid. </td> </tr>
 
 </table>
 

@@ -4,11 +4,11 @@ pragma solidity 0.8.11;
 
 // import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-import "../Dependencies/LiquityMath.sol";
+import "../Dependencies/KumoMath.sol";
 import "../Dependencies/SafeMath.sol";
 import "../Dependencies/Ownable.sol";
 import "../Dependencies/CheckContract.sol";
-import "../Interfaces/ILQTYToken.sol";
+import "../Interfaces/IKUMOToken.sol";
 import "./Dependencies/SafeERC20.sol";
 import "./Interfaces/ILPTokenWrapper.sol";
 import "./Interfaces/IUnipool.sol";
@@ -53,7 +53,7 @@ contract LPTokenWrapper is ILPTokenWrapper {
 }
 
 /*
- * On deployment a new Uniswap pool will be created for the pair LUSD/ETH and its token will be set here.
+ * On deployment a new Uniswap pool will be created for the pair KUSD/ETH and its token will be set here.
 
  * Essentially the way it works is:
 
@@ -63,14 +63,14 @@ contract LPTokenWrapper is ILPTokenWrapper {
  * - Liquidity providers can claim their rewards when they want
  * - Liquidity providers can unstake UNIv2 LP tokens to exit the program (i.e., stop earning rewards) when they want
 
- * Funds for rewards will only be added once, on deployment of LQTY token,
+ * Funds for rewards will only be added once, on deployment of KUMO token,
  * which will happen after this contract is deployed and before this `setParams` in this contract is called.
 
  * If at some point the total amount of staked tokens is zero, the clock will be “stopped”,
  * so the period will be extended by the time during which the staking pool is empty,
- * in order to avoid getting LQTY tokens locked.
+ * in order to avoid getting KUMO tokens locked.
  * That also means that the start time for the program will be the event that occurs first:
- * either LQTY token contract is deployed, and therefore LQTY tokens are minted to Unipool contract,
+ * either KUMO token contract is deployed, and therefore KUMO tokens are minted to Unipool contract,
  * or first liquidity provider stakes UNIv2 LP tokens into it.
  */
 contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
@@ -79,7 +79,7 @@ contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
     // bool public isInitialized;
 
     uint256 public duration;
-    ILQTYToken public lqtyToken;
+    IKUMOToken public kumoToken;
 
     uint256 public periodFinish = 0;
     uint256 public rewardRate = 0;
@@ -88,7 +88,7 @@ contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
     mapping(address => uint256) public userRewardPerTokenPaid;
     mapping(address => uint256) public rewards;
 
-    event LQTYTokenAddressChanged(address _lqtyTokenAddress);
+    event KUMOTokenAddressChanged(address _kumoTokenAddress);
     event UniTokenAddressChanged(address _uniTokenAddress);
     event RewardAdded(uint256 reward);
     event Staked(address indexed user, uint256 amount);
@@ -97,7 +97,7 @@ contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
 
     // initialization function
     function setParams(
-        address _lqtyTokenAddress,
+        address _kumoTokenAddress,
         address _uniTokenAddress,
         uint _duration
     )
@@ -106,19 +106,19 @@ contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
         onlyOwner
     {
         // require(!isInitialized, "Already initialized");
-        checkContract(_lqtyTokenAddress);
+        checkContract(_kumoTokenAddress);
         checkContract(_uniTokenAddress);
 		// isInitialized = true;
 
 		// __Ownable_init();
         
         uniToken = IERC20(_uniTokenAddress);
-        lqtyToken = ILQTYToken(_lqtyTokenAddress);
+        kumoToken = IKUMOToken(_kumoTokenAddress);
         duration = _duration;
 
-        _notifyRewardAmount(lqtyToken.getLpRewardsEntitlement(), _duration);
+        _notifyRewardAmount(kumoToken.getLpRewardsEntitlement(), _duration);
 
-        emit LQTYTokenAddressChanged(_lqtyTokenAddress);
+        emit KUMOTokenAddressChanged(_kumoTokenAddress);
         emit UniTokenAddressChanged(_uniTokenAddress);
 
         _renounceOwnership();
@@ -126,7 +126,7 @@ contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
 
     // Returns current timestamp if the rewards program has not finished yet, end time otherwise
     function lastTimeRewardApplicable() public view override returns (uint256) {
-        return LiquityMath._min(block.timestamp, periodFinish);
+        return KumoMath._min(block.timestamp, periodFinish);
     }
 
     // Returns the amount of rewards that correspond to each staked token
@@ -194,14 +194,14 @@ contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
         require(reward > 0, "Nothing to claim");
 
         rewards[msg.sender] = 0;
-        lqtyToken.transfer(msg.sender, reward);
+        kumoToken.transfer(msg.sender, reward);
         emit RewardPaid(msg.sender, reward);
     }
 
     // Used only on initialization, sets the reward rate and the end time for the program
     function _notifyRewardAmount(uint256 _reward, uint256 _duration) internal {
         assert(_reward > 0);
-        assert(_reward == lqtyToken.balanceOf(address(this)));
+        assert(_reward == kumoToken.balanceOf(address(this)));
         assert(periodFinish == 0);
 
         _updateReward();

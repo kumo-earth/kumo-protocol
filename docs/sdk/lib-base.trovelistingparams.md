@@ -4,7 +4,7 @@
 
 ## TroveListingParams interface
 
-Parameters of the [getTroves()](./lib-base.readableliquity.gettroves_1.md) function.
+Parameters of the [getTroves()](./lib-base.readablekumo.gettroves_1.md) function.
 
 <b>Signature:</b>
 

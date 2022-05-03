@@ -120,7 +120,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(1, 9))
     await priceFeed.fetchPrice()
     let price = await priceFeed.lastGoodPrice()
-    // Check Liquity PriceFeed gives 10, with 18 digit precision
+    // Check Kumo PriceFeed gives 10, with 18 digit precision
     assert.equal(price, dec(10, 18))
 
     // Oracle price is 1e9
@@ -129,7 +129,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(1, 9))
     await priceFeed.fetchPrice()
     price = await priceFeed.lastGoodPrice()
-    // Check Liquity PriceFeed gives 1e9, with 18 digit precision
+    // Check Kumo PriceFeed gives 1e9, with 18 digit precision
     assert.isTrue(price.eq(toBN(dec(1, 27))))
 
     // Oracle price is 0.0001
@@ -140,7 +140,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(1, 14))
     await priceFeed.fetchPrice()
     price = await priceFeed.lastGoodPrice()
-    // Check Liquity PriceFeed gives 0.0001 with 18 digit precision
+    // Check Kumo PriceFeed gives 0.0001 with 18 digit precision
     assert.isTrue(price.eq(toBN(dec(1, 14))))
 
     // Oracle price is 1234.56789
@@ -149,7 +149,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(123456789))
     await priceFeed.fetchPrice()
     price = await priceFeed.lastGoodPrice()
-    // Check Liquity PriceFeed gives 0.0001 with 18 digit precision
+    // Check Kumo PriceFeed gives 0.0001 with 18 digit precision
     assert.equal(price, '1234567890000000000000')
   })
 
@@ -178,21 +178,21 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(dec(10, 6))
     await priceFeed.fetchPrice()
     price = await priceFeed.lastGoodPrice()
-    // Check Liquity PriceFeed gives 10, with 18 digit precision
+    // Check Kumo PriceFeed gives 10, with 18 digit precision
     assert.equal(price, dec(10, 18))
 
     // Tellor price is 1e9 at 6-digit precision
     await mockTellor.setPrice(dec(1, 15))
     await priceFeed.fetchPrice()
     price = await priceFeed.lastGoodPrice()
-    // Check Liquity PriceFeed gives 1e9, with 18 digit precision
+    // Check Kumo PriceFeed gives 1e9, with 18 digit precision
     assert.equal(price, dec(1, 27))
 
     // Tellor price is 0.0001 at 6-digit precision
     await mockTellor.setPrice(100)
     await priceFeed.fetchPrice()
     price = await priceFeed.lastGoodPrice()
-    // Check Liquity PriceFeed gives 0.0001 with 18 digit precision
+    // Check Kumo PriceFeed gives 0.0001 with 18 digit precision
 
     assert.equal(price, dec(1, 14))
 
@@ -200,7 +200,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(dec(1234567890))
     await priceFeed.fetchPrice()
     price = await priceFeed.lastGoodPrice()
-    // Check Liquity PriceFeed gives 0.0001 with 18 digit precision
+    // Check Kumo PriceFeed gives 0.0001 with 18 digit precision
     assert.equal(price, '1234567890000000000000')
   })
 
