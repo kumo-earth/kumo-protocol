@@ -2,12 +2,12 @@ import { Box, Flex, Heading, Paragraph } from "theme-ui";
 
 import { shortenAddress } from "../utils/shortenAddress";
 import { Icon } from "../components/Icon";
-import { useLiquity } from "../hooks/LiquityContext";
+import { useKumo } from "../hooks/KumoContext";
 
 export const UnregisteredFrontend: React.FC = () => {
   const {
     config: { frontendTag }
-  } = useLiquity();
+  } = useKumo();
 
   return (
     <Box

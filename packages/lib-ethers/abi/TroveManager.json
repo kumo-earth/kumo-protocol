@@ -83,11 +83,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_lqtyStakingAddress",
+        "name": "_kumoStakingAddress",
         "type": "address"
       }
     ],
-    "name": "LQTYStakingAddressChanged",
+    "name": "KUMOStakingAddressChanged",
     "type": "event"
   },
   {
@@ -96,11 +96,24 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_lqtyTokenAddress",
+        "name": "_kumoTokenAddress",
         "type": "address"
       }
     ],
-    "name": "LQTYTokenAddressChanged",
+    "name": "KUMOTokenAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_newKUSDTokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "KUSDTokenAddressChanged",
     "type": "event"
   },
   {
@@ -115,24 +128,11 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_L_LUSDDebt",
+        "name": "_L_KUSDDebt",
         "type": "uint256"
       }
     ],
     "name": "LTermsUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_newLUSDTokenAddress",
-        "type": "address"
-      }
-    ],
-    "name": "LUSDTokenAddressChanged",
     "type": "event"
   },
   {
@@ -172,7 +172,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_LUSDGasCompensation",
+        "name": "_kusdGasCompensation",
         "type": "uint256"
       }
     ],
@@ -217,13 +217,13 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_attemptedLUSDAmount",
+        "name": "_attemptedKUSDAmount",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_actualLUSDAmount",
+        "name": "_actualKUSDAmount",
         "type": "uint256"
       },
       {
@@ -362,7 +362,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_L_LUSDDebt",
+        "name": "_L_KUSDDebt",
         "type": "uint256"
       }
     ],
@@ -486,7 +486,7 @@
   },
   {
     "inputs": [],
-    "name": "LUSD_GAS_COMPENSATION",
+    "name": "KUSD_GAS_COMPENSATION",
     "outputs": [
       {
         "internalType": "uint256",
@@ -512,7 +512,7 @@
   },
   {
     "inputs": [],
-    "name": "L_LUSDDebt",
+    "name": "L_KUSDDebt",
     "outputs": [
       {
         "internalType": "uint256",
@@ -886,7 +886,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_LUSDDebt",
+        "name": "_KUSDDebt",
         "type": "uint256"
       }
     ],
@@ -905,7 +905,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_LUSDDebt",
+        "name": "_KUSDDebt",
         "type": "uint256"
       }
     ],
@@ -992,7 +992,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "pendingLUSDDebtReward",
+        "name": "pendingKUSDDebtReward",
         "type": "uint256"
       },
       {
@@ -1076,7 +1076,7 @@
         "type": "address"
       }
     ],
-    "name": "getPendingLUSDDebtReward",
+    "name": "getPendingKUSDDebtReward",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1341,6 +1341,45 @@
   },
   {
     "inputs": [],
+    "name": "kumoStaking",
+    "outputs": [
+      {
+        "internalType": "contract IKUMOStaking",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "kumoToken",
+    "outputs": [
+      {
+        "internalType": "contract IKUMOToken",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "kusdToken",
+    "outputs": [
+      {
+        "internalType": "contract IKUSDToken",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "lastETHError_Redistribution",
     "outputs": [
       {
@@ -1367,7 +1406,7 @@
   },
   {
     "inputs": [],
-    "name": "lastLUSDDebtError_Redistribution",
+    "name": "lastKUSDDebtError_Redistribution",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1406,45 +1445,6 @@
   },
   {
     "inputs": [],
-    "name": "lqtyStaking",
-    "outputs": [
-      {
-        "internalType": "contract ILQTYStaking",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "lqtyToken",
-    "outputs": [
-      {
-        "internalType": "contract ILQTYToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "lusdToken",
-    "outputs": [
-      {
-        "internalType": "contract ILUSDToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -1473,7 +1473,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_LUSDamount",
+        "name": "_KUSDamount",
         "type": "uint256"
       },
       {
@@ -1542,7 +1542,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "LUSDDebt",
+        "name": "KUSDDebt",
         "type": "uint256"
       }
     ],
@@ -1588,7 +1588,7 @@
       },
       {
         "internalType": "address",
-        "name": "_lusdTokenAddress",
+        "name": "_kusdTokenAddress",
         "type": "address"
       },
       {
@@ -1598,12 +1598,12 @@
       },
       {
         "internalType": "address",
-        "name": "_lqtyTokenAddress",
+        "name": "_kumoTokenAddress",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_lqtyStakingAddress",
+        "name": "_kumoStakingAddress",
         "type": "address"
       }
     ],

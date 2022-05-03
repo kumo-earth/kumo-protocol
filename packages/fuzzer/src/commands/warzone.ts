@@ -1,7 +1,7 @@
 import { Wallet } from "@ethersproject/wallet";
 
-import { Decimal, LUSD_MINIMUM_DEBT, Trove } from "@liquity/lib-base";
-import { EthersLiquity } from "@liquity/lib-ethers";
+import { Decimal, KUSD_MINIMUM_DEBT, Trove } from "@liquity/lib-base";
+import { EthersKumo } from "@liquity/lib-ethers";
 
 import { deployer, funder, provider } from "../globals";
 
@@ -10,17 +10,17 @@ export interface WarzoneParams {
 }
 
 export const warzone = async ({ troves: numberOfTroves }: WarzoneParams) => {
-  const deployerLiquity = await EthersLiquity.connect(deployer);
+  const deployerKumo = await EthersKumo.connect(deployer);
 
-  const price = await deployerLiquity.getPrice();
+  const price = await deployerKumo.getPrice();
 
   for (let i = 1; i <= numberOfTroves; ++i) {
     const user = Wallet.createRandom().connect(provider);
     const userAddress = await user.getAddress();
-    const debt = LUSD_MINIMUM_DEBT.add(99999 * Math.random());
+    const debt = KUSD_MINIMUM_DEBT.add(99999 * Math.random());
     const collateral = debt.mulDiv(1.11 + 3 * Math.random(), price);
 
-    const liquity = await EthersLiquity.connect(user);
+    const liquity = await EthersKumo.connect(user);
 
     await funder.sendTransaction({
       to: userAddress,
@@ -36,8 +36,8 @@ export const warzone = async ({ troves: numberOfTroves }: WarzoneParams) => {
     );
 
     if (i % 4 === 0) {
-      const lusdBalance = await liquity.getLUSDBalance();
-      await liquity.depositLUSDInStabilityPool(lusdBalance);
+      const kusdBalance = await liquity.getKUSDBalance();
+      await liquity.depositKUSDInStabilityPool(kusdBalance);
     }
 
     if (i % 10 === 0) {

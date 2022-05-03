@@ -1,7 +1,7 @@
 const { red, blue, green, yellow, dim, bold } = require("chalk");
 const { Wallet, providers } = require("ethers");
-const { Decimal, UserTrove, LUSD_LIQUIDATION_RESERVE } = require("@liquity/lib-base");
-const { EthersLiquity, EthersLiquityWithStore } = require("@liquity/lib-ethers");
+const { Decimal, UserTrove, KUSD_LIQUIDATION_RESERVE } = require("@liquity/lib-base");
+const { EthersKumo, EthersKumoWithStore } = require("@liquity/lib-ethers");
 
 function log(message) {
   console.log(`${dim(`[${new Date().toLocaleTimeString()}]`)} ${message}`);
@@ -16,7 +16,7 @@ async function main() {
   // Replace URL if not using a local node
   const provider = new providers.JsonRpcProvider("http://localhost:8545");
   const wallet = new Wallet(process.env.PRIVATE_KEY).connect(provider);
-  const liquity = await EthersLiquity.connect(wallet, { useStore: "blockPolled" });
+  const liquity = await EthersKumo.connect(wallet, { useStore: "blockPolled" });
 
   liquity.store.onLoaded = () => {
     info("Waiting for price drops...");
@@ -47,7 +47,7 @@ const byDescendingCollateral = ({ collateral: a }, { collateral: b }) =>
   b.gt(a) ? 1 : b.lt(a) ? -1 : 0;
 
 /**
- * @param {EthersLiquityWithStore} [liquity]
+ * @param {EthersKumoWithStore} [liquity]
  */
 async function tryToLiquidate(liquity) {
   const { store } = liquity;
@@ -84,7 +84,7 @@ async function tryToLiquidate(liquity) {
     const expectedCompensation = total.collateral
       .mul(0.005)
       .mul(store.state.price)
-      .add(LUSD_LIQUIDATION_RESERVE.mul(troves.length));
+      .add(KUSD_LIQUIDATION_RESERVE.mul(troves.length));
 
     if (expectedCost.gt(expectedCompensation)) {
       // In reality, the TX cost will be lower than this thanks to storage refunds, but let's be
@@ -106,15 +106,15 @@ async function tryToLiquidate(liquity) {
       return;
     }
 
-    const { collateralGasCompensation, lusdGasCompensation, liquidatedAddresses } = receipt.details;
+    const { collateralGasCompensation, kusdGasCompensation, liquidatedAddresses } = receipt.details;
     const gasCost = gasPrice.mul(receipt.rawReceipt.gasUsed.toNumber()).mul(store.state.price);
     const totalCompensation = collateralGasCompensation
       .mul(store.state.price)
-      .add(lusdGasCompensation);
+      .add(kusdGasCompensation);
 
     success(
       `Received ${bold(`${collateralGasCompensation.toString(4)} ETH`)} + ` +
-        `${bold(`${lusdGasCompensation.toString(2)} LUSD`)} compensation (` +
+        `${bold(`${kusdGasCompensation.toString(2)} KUSD`)} compensation (` +
         (totalCompensation.gte(gasCost)
           ? `${green(`$${totalCompensation.sub(gasCost).toString(2)}`)} profit`
           : `${red(`$${gasCost.sub(totalCompensation).toString(2)}`)} loss`) +

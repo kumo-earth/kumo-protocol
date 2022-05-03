@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Card, Paragraph, Text } from "theme-ui";
-import { Decimal, LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { Decimal, KumoStoreState } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 import { InfoIcon } from "../InfoIcon";
-import { useLiquity } from "../../hooks/LiquityContext";
+import { useKumo } from "../../hooks/KumoContext";
 import { Badge } from "../Badge";
-import { fetchLqtyPrice } from "./context/fetchLqtyPrice";
+import { fetchKumoPrice } from "./context/fetchKumoPrice";
 
-const selector = ({ lusdInStabilityPool, remainingStabilityPoolLQTYReward }: LiquityStoreState) => ({
-  lusdInStabilityPool,
-  remainingStabilityPoolLQTYReward
+const selector = ({ kusdInStabilityPool, remainingStabilityPoolKUMOReward }: KumoStoreState) => ({
+  kusdInStabilityPool,
+  remainingStabilityPoolKUMOReward
 });
 
 export const Yield: React.FC = () => {
@@ -17,52 +17,52 @@ export const Yield: React.FC = () => {
     liquity: {
       connection: { addresses }
     }
-  } = useLiquity();
-  const { lusdInStabilityPool, remainingStabilityPoolLQTYReward } = useLiquitySelector(selector);
+  } = useKumo();
+  const { kusdInStabilityPool, remainingStabilityPoolKUMOReward } = useKumoSelector(selector);
 
-  const [lqtyPrice, setLqtyPrice] = useState<Decimal | undefined>(undefined);
-  const hasZeroValue = remainingStabilityPoolLQTYReward.isZero || lusdInStabilityPool.isZero;
-  const lqtyTokenAddress = addresses["lqtyToken"];
+  const [kumoPrice, setKumoPrice] = useState<Decimal | undefined>(undefined);
+  const hasZeroValue = remainingStabilityPoolKUMOReward.isZero || kusdInStabilityPool.isZero;
+  const kumoTokenAddress = addresses["kumoToken"];
 
   useEffect(() => {
     (async () => {
       try {
-        const { lqtyPriceUSD } = await fetchLqtyPrice(lqtyTokenAddress);
-        setLqtyPrice(lqtyPriceUSD);
+        const { kumoPriceUSD } = await fetchKumoPrice(kumoTokenAddress);
+        setKumoPrice(kumoPriceUSD);
       } catch (error) {
         console.error(error);
       }
     })();
-  }, [lqtyTokenAddress]);
+  }, [kumoTokenAddress]);
 
-  if (hasZeroValue || lqtyPrice === undefined) return null;
+  if (hasZeroValue || kumoPrice === undefined) return null;
 
-  const yearlyHalvingSchedule = 0.5; // 50% see LQTY distribution schedule for more info
-  const remainingLqtyOneYear = remainingStabilityPoolLQTYReward.mul(yearlyHalvingSchedule);
-  const remainingLqtyOneYearInUSD = remainingLqtyOneYear.mul(lqtyPrice);
-  const aprPercentage = remainingLqtyOneYearInUSD.div(lusdInStabilityPool).mul(100);
-  const remainingLqtyInUSD = remainingStabilityPoolLQTYReward.mul(lqtyPrice);
+  const yearlyHalvingSchedule = 0.5; // 50% see KUMO distribution schedule for more info
+  const remainingKumoOneYear = remainingStabilityPoolKUMOReward.mul(yearlyHalvingSchedule);
+  const remainingKumoOneYearInUSD = remainingKumoOneYear.mul(kumoPrice);
+  const aprPercentage = remainingKumoOneYearInUSD.div(kusdInStabilityPool).mul(100);
+  const remainingKumoInUSD = remainingStabilityPoolKUMOReward.mul(kumoPrice);
 
   if (aprPercentage.isZero) return null;
 
   return (
     <Badge>
-      <Text>LQTY APR {aprPercentage.toString(2)}%</Text>
+      <Text>KUMO APR {aprPercentage.toString(2)}%</Text>
       <InfoIcon
         tooltip={
           <Card variant="tooltip" sx={{ width: ["220px", "518px"] }}>
             <Paragraph>
-              An <Text sx={{ fontWeight: "bold" }}>estimate</Text> of the LQTY return on the LUSD
+              An <Text sx={{ fontWeight: "bold" }}>estimate</Text> of the KUMO return on the KUSD
               deposited to the Stability Pool over the next year, not including your ETH gains from
               liquidations.
             </Paragraph>
             <Paragraph sx={{ fontSize: "12px", fontFamily: "monospace", mt: 2 }}>
-              (($LQTY_REWARDS * YEARLY_DISTRIBUTION%) / DEPOSITED_LUSD) * 100 ={" "}
+              (($KUMO_REWARDS * YEARLY_DISTRIBUTION%) / DEPOSITED_KUSD) * 100 ={" "}
               <Text sx={{ fontWeight: "bold" }}> APR</Text>
             </Paragraph>
             <Paragraph sx={{ fontSize: "12px", fontFamily: "monospace" }}>
               ($
-              {remainingLqtyInUSD.shorten()} * 50% / ${lusdInStabilityPool.shorten()}) * 100 =
+              {remainingKumoInUSD.shorten()} * 50% / ${kusdInStabilityPool.shorten()}) * 100 =
               <Text sx={{ fontWeight: "bold" }}> {aprPercentage.toString(2)}%</Text>
             </Paragraph>
           </Card>

@@ -16,17 +16,18 @@ Connecting to an Ethereum node and sending a transaction:
 const { Wallet, providers } = require("ethers");
 const { EthersLiquity } = require("kumodao/lib-ethers");
 
+
 async function example() {
   const provider = new providers.JsonRpcProvider("http://localhost:8545");
   const wallet = new Wallet(process.env.PRIVATE_KEY).connect(provider);
-  const liquity = await EthersLiquity.connect(wallet);
+  const liquity = await EthersKumo.connect(wallet);
 
   const { newTrove } = await liquity.openTrove({
     depositCollateral: 5, // ETH
-    borrowLUSD: 2000
+    borrowKUSD: 2000
   });
 
-  console.log(`Successfully opened a Liquity Trove (${newTrove})!`);
+  console.log(`Successfully opened a Kumo Trove (${newTrove})!`);
 }
 ```
 
@@ -39,4 +40,3 @@ Kumo's [Dev UI](https://github.com/kumodao/borrowprot/tree/master/packages/dev-f
 ## API Reference
 
 For now, it can be found in the public Kumo [repo](https://github.com/kumodao/borrowprot/blob/master/docs/sdk/lib-ethers.md).
-

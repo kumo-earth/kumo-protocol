@@ -1,14 +1,14 @@
 import React, { useEffect } from "react";
 
 import { Decimal, TroveChange } from "@liquity/lib-base";
-import { PopulatedEthersLiquityTransaction } from "@liquity/lib-ethers";
+import { PopulatedEthersKumoTransaction } from "@liquity/lib-ethers";
 
-import { useLiquity } from "../../hooks/LiquityContext";
+import { useKumo } from "../../hooks/KumoContext";
 import { Warning } from "../Warning";
 
 export type GasEstimationState =
   | { type: "idle" | "inProgress" }
-  | { type: "complete"; populatedTx: PopulatedEthersLiquityTransaction };
+  | { type: "complete"; populatedTx: PopulatedEthersKumoTransaction };
 
 type ExpensiveTroveChangeWarningParams = {
   troveChange?: Exclude<TroveChange<Decimal>, { type: "invalidCreation" }>;
@@ -25,7 +25,7 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
   gasEstimationState,
   setGasEstimationState
 }) => {
-  const { liquity } = useLiquity();
+  const { liquity } = useKumo();
 
   useEffect(() => {
     if (troveChange && troveChange.type !== "closure") {

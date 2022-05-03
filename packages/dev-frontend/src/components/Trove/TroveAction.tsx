@@ -2,7 +2,7 @@ import { Button } from "theme-ui";
 
 import { Decimal, TroveChange } from "@liquity/lib-base";
 
-import { useLiquity } from "../../hooks/LiquityContext";
+import { useKumo } from "../../hooks/KumoContext";
 import { useTransactionFunction } from "../Transaction";
 
 type TroveActionProps = {
@@ -19,7 +19,7 @@ export const TroveAction: React.FC<TroveActionProps> = ({
   maxBorrowingRate,
   borrowingFeeDecayToleranceMinutes
 }) => {
-  const { liquity } = useLiquity();
+  const { liquity } = useKumo();
 
   const [sendTransaction] = useTransactionFunction(
     transactionId,

@@ -1,53 +1,53 @@
 import React, { useEffect, useState } from "react";
 import { Card, Paragraph, Text } from "theme-ui";
-import { Decimal, LiquityStoreState } from "@liquity/lib-base";
-import { useLiquitySelector } from "@liquity/lib-react";
+import { Decimal, KumoStoreState } from "@liquity/lib-base";
+import { useKumoSelector } from "@liquity/lib-react";
 import { InfoIcon } from "../../InfoIcon";
-import { useLiquity } from "../../../hooks/LiquityContext";
+import { useKumo } from "../../../hooks/KumoContext";
 import { Badge } from "../../Badge";
 import { fetchPrices } from "../context/fetchPrices";
 
 const selector = ({
-  remainingLiquidityMiningLQTYReward,
+  remainingLiquidityMiningKUMOReward,
   totalStakedUniTokens
-}: LiquityStoreState) => ({
-  remainingLiquidityMiningLQTYReward,
+}: KumoStoreState) => ({
+  remainingLiquidityMiningKUMOReward,
   totalStakedUniTokens
 });
 
 export const Yield: React.FC = () => {
   const {
     liquity: {
-      connection: { addresses, liquidityMiningLQTYRewardRate }
+      connection: { addresses, liquidityMiningKUMORewardRate }
     }
-  } = useLiquity();
+  } = useKumo();
 
-  const { remainingLiquidityMiningLQTYReward, totalStakedUniTokens } = useLiquitySelector(selector);
-  const [lqtyPrice, setLqtyPrice] = useState<Decimal | undefined>(undefined);
+  const { remainingLiquidityMiningKUMOReward, totalStakedUniTokens } = useKumoSelector(selector);
+  const [kumoPrice, setKumoPrice] = useState<Decimal | undefined>(undefined);
   const [uniLpPrice, setUniLpPrice] = useState<Decimal | undefined>(undefined);
-  const hasZeroValue = remainingLiquidityMiningLQTYReward.isZero || totalStakedUniTokens.isZero;
-  const lqtyTokenAddress = addresses["lqtyToken"];
+  const hasZeroValue = remainingLiquidityMiningKUMOReward.isZero || totalStakedUniTokens.isZero;
+  const kumoTokenAddress = addresses["kumoToken"];
   const uniTokenAddress = addresses["uniToken"];
-  const secondsRemaining = remainingLiquidityMiningLQTYReward.div(liquidityMiningLQTYRewardRate);
+  const secondsRemaining = remainingLiquidityMiningKUMOReward.div(liquidityMiningKUMORewardRate);
   const daysRemaining = secondsRemaining.div(60 * 60 * 24);
 
   useEffect(() => {
     (async () => {
       try {
-        const { lqtyPriceUSD, uniLpPriceUSD } = await fetchPrices(lqtyTokenAddress, uniTokenAddress);
-        setLqtyPrice(lqtyPriceUSD);
+        const { kumoPriceUSD, uniLpPriceUSD } = await fetchPrices(kumoTokenAddress, uniTokenAddress);
+        setKumoPrice(kumoPriceUSD);
         setUniLpPrice(uniLpPriceUSD);
       } catch (error) {
         console.error(error);
       }
     })();
-  }, [lqtyTokenAddress, uniTokenAddress]);
+  }, [kumoTokenAddress, uniTokenAddress]);
 
-  if (hasZeroValue || lqtyPrice === undefined || uniLpPrice === undefined) return null;
+  if (hasZeroValue || kumoPrice === undefined || uniLpPrice === undefined) return null;
 
-  const remainingLqtyInUSD = remainingLiquidityMiningLQTYReward.mul(lqtyPrice);
+  const remainingKumoInUSD = remainingLiquidityMiningKUMOReward.mul(kumoPrice);
   const totalStakedUniLpInUSD = totalStakedUniTokens.mul(uniLpPrice);
-  const yieldPercentage = remainingLqtyInUSD.div(totalStakedUniLpInUSD).mul(100);
+  const yieldPercentage = remainingKumoInUSD.div(totalStakedUniLpInUSD).mul(100);
 
   if (yieldPercentage.isZero) return null;
 
@@ -60,16 +60,16 @@ export const Yield: React.FC = () => {
         tooltip={
           <Card variant="tooltip" sx={{ minWidth: ["auto", "352px"] }}>
             <Paragraph>
-              An <Text sx={{ fontWeight: "bold" }}>estimate</Text> of the LQTY return on staked UNI
+              An <Text sx={{ fontWeight: "bold" }}>estimate</Text> of the KUMO return on staked UNI
               LP tokens. The farm runs for 6-weeks, and the return is relative to the time remaining.
             </Paragraph>
             <Paragraph sx={{ fontSize: "12px", fontFamily: "monospace", mt: 2 }}>
-              ($LQTY_REWARDS / $STAKED_UNI_LP) * 100 ={" "}
+              ($KUMO_REWARDS / $STAKED_UNI_LP) * 100 ={" "}
               <Text sx={{ fontWeight: "bold" }}> Yield</Text>
             </Paragraph>
             <Paragraph sx={{ fontSize: "12px", fontFamily: "monospace" }}>
               ($
-              {remainingLqtyInUSD.shorten()} / ${totalStakedUniLpInUSD.shorten()}) * 100 =
+              {remainingKumoInUSD.shorten()} / ${totalStakedUniLpInUSD.shorten()}) * 100 =
               <Text sx={{ fontWeight: "bold" }}> {yieldPercentage.toString(2)}%</Text>
             </Paragraph>
           </Card>

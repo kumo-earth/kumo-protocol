@@ -5,7 +5,7 @@
 // import "./IActivePool.sol";
 // import "./IDefaultPool.sol";
 // import "./IPriceFeed.sol";
-// import "./ILiquityBase.sol";
+// import "./IKumoBase.sol";
 
 // interface IKumoParameters {
 // 	error SafeCheckError(

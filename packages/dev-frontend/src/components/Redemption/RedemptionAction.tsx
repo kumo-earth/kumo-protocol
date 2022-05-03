@@ -2,29 +2,29 @@ import { Button } from "theme-ui";
 
 import { Decimal } from "@liquity/lib-base";
 
-import { useLiquity } from "../../hooks/LiquityContext";
+import { useKumo } from "../../hooks/KumoContext";
 import { useTransactionFunction } from "../Transaction";
 
 type RedemptionActionProps = {
   transactionId: string;
   disabled?: boolean;
-  lusdAmount: Decimal;
+  kusdAmount: Decimal;
   maxRedemptionRate: Decimal;
 };
 
 export const RedemptionAction: React.FC<RedemptionActionProps> = ({
   transactionId,
   disabled,
-  lusdAmount,
+  kusdAmount,
   maxRedemptionRate
 }) => {
   const {
     liquity: { send: liquity }
-  } = useLiquity();
+  } = useKumo();
 
   const [sendTransaction] = useTransactionFunction(
     transactionId,
-    liquity.redeemLUSD.bind(liquity, lusdAmount, maxRedemptionRate)
+    liquity.redeemKUSD.bind(liquity, kusdAmount, maxRedemptionRate)
   );
 
   return (
