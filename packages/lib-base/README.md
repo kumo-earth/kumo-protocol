@@ -2,7 +2,7 @@
 
 Shared interfaces and classes of the Kumo SDK.
 
-Needs to be installed in order to use other Kumo SDK packages, for example [@kumo/lib-ethers](https://www.npmjs.com/package/@liquity/lib-ethers).
+Needs to be installed in order to use other Kumo SDK packages, for example [@kumodao/lib-ethers](https://www.npmjs.com/package/@kumodao/lib-ethers).
 
 ## API Reference
 

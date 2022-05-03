@@ -1,9 +1,9 @@
 {
-  "name": "@kumo/lib-ethers",
+  "name": "@kumodao/lib-ethers",
   "version": "0.0.0-semantic-release",
   "description": "Kumo SDK Ethers-based implementation",
   "keywords": [
-    "Liquity",
+    "Kumo",
     "protocol",
     "DeFi",
     "Ethereum"

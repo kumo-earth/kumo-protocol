@@ -1,9 +1,9 @@
 {
-  "name": "@kumo/lib-base",
+  "name": "@kumodao/lib-base",
   "version": "0.0.0-semantic-release",
   "description": "Kumo SDK shared interfaces",
   "keywords": [
-    "Liquity",
+    "Kumo",
     "protocol",
     "DeFi",
     "Ethereum"
