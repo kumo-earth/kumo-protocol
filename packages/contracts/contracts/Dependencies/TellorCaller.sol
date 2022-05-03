@@ -8,7 +8,7 @@ import "./SafeMath.sol";
 /*
 * This contract has a single external function that calls Tellor: getTellorCurrentValue(). 
 *
-* The function is called by the Liquity contract PriceFeed.sol. If any of its inner calls to Tellor revert, 
+* The function is called by the Kumo contract PriceFeed.sol. If any of its inner calls to Tellor revert, 
 * this function will revert, and PriceFeed will catch the failure and handle it accordingly.
 *
 * The function comes from Tellor's own wrapper contract, 'UsingTellor.sol':

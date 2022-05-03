@@ -6,8 +6,8 @@ import { Decimal, Decimalish } from "./Decimal";
  * @public
  */
 export type StabilityDepositChange<T> =
-  | { depositLUSD: T; withdrawLUSD?: undefined }
-  | { depositLUSD?: undefined; withdrawLUSD: T; withdrawAllLUSD: boolean };
+  | { depositKUSD: T; withdrawKUSD?: undefined }
+  | { depositKUSD?: undefined; withdrawKUSD: T; withdrawAllKUSD: boolean };
 
 /**
  * A Stability Deposit and its accrued gains.
@@ -15,17 +15,17 @@ export type StabilityDepositChange<T> =
  * @public
  */
 export class StabilityDeposit {
-  /** Amount of LUSD in the Stability Deposit at the time of the last direct modification. */
-  readonly initialLUSD: Decimal;
+  /** Amount of KUSD in the Stability Deposit at the time of the last direct modification. */
+  readonly initialKUSD: Decimal;
 
-  /** Amount of LUSD left in the Stability Deposit. */
-  readonly currentLUSD: Decimal;
+  /** Amount of KUSD left in the Stability Deposit. */
+  readonly currentKUSD: Decimal;
 
-  /** Amount of native currency (e.g. Ether) received in exchange for the used-up LUSD. */
+  /** Amount of native currency (e.g. Ether) received in exchange for the used-up KUSD. */
   readonly collateralGain: Decimal;
 
-  /** Amount of LQTY rewarded since the last modification of the Stability Deposit. */
-  readonly lqtyReward: Decimal;
+  /** Amount of KUMO rewarded since the last modification of the Stability Deposit. */
+  readonly kumoReward: Decimal;
 
   /**
    * Address of frontend through which this Stability Deposit was made.
@@ -38,39 +38,39 @@ export class StabilityDeposit {
 
   /** @internal */
   constructor(
-    initialLUSD: Decimal,
-    currentLUSD: Decimal,
+    initialKUSD: Decimal,
+    currentKUSD: Decimal,
     collateralGain: Decimal,
-    lqtyReward: Decimal,
+    kumoReward: Decimal,
     frontendTag: string
   ) {
-    this.initialLUSD = initialLUSD;
-    this.currentLUSD = currentLUSD;
+    this.initialKUSD = initialKUSD;
+    this.currentKUSD = currentKUSD;
     this.collateralGain = collateralGain;
-    this.lqtyReward = lqtyReward;
+    this.kumoReward = kumoReward;
     this.frontendTag = frontendTag;
 
-    if (this.currentLUSD.gt(this.initialLUSD)) {
-      throw new Error("currentLUSD can't be greater than initialLUSD");
+    if (this.currentKUSD.gt(this.initialKUSD)) {
+      throw new Error("currentKUSD can't be greater than initialKUSD");
     }
   }
 
   get isEmpty(): boolean {
     return (
-      this.initialLUSD.isZero &&
-      this.currentLUSD.isZero &&
+      this.initialKUSD.isZero &&
+      this.currentKUSD.isZero &&
       this.collateralGain.isZero &&
-      this.lqtyReward.isZero
+      this.kumoReward.isZero
     );
   }
 
   /** @internal */
   toString(): string {
     return (
-      `{ initialLUSD: ${this.initialLUSD}` +
-      `, currentLUSD: ${this.currentLUSD}` +
+      `{ initialKUSD: ${this.initialKUSD}` +
+      `, currentKUSD: ${this.currentKUSD}` +
       `, collateralGain: ${this.collateralGain}` +
-      `, lqtyReward: ${this.lqtyReward}` +
+      `, kumoReward: ${this.kumoReward}` +
       `, frontendTag: "${this.frontendTag}" }`
     );
   }
@@ -80,47 +80,47 @@ export class StabilityDeposit {
    */
   equals(that: StabilityDeposit): boolean {
     return (
-      this.initialLUSD.eq(that.initialLUSD) &&
-      this.currentLUSD.eq(that.currentLUSD) &&
+      this.initialKUSD.eq(that.initialKUSD) &&
+      this.currentKUSD.eq(that.currentKUSD) &&
       this.collateralGain.eq(that.collateralGain) &&
-      this.lqtyReward.eq(that.lqtyReward) &&
+      this.kumoReward.eq(that.kumoReward) &&
       this.frontendTag === that.frontendTag
     );
   }
 
   /**
-   * Calculate the difference between the `currentLUSD` in this Stability Deposit and `thatLUSD`.
+   * Calculate the difference between the `currentKUSD` in this Stability Deposit and `thatKUSD`.
    *
    * @returns An object representing the change, or `undefined` if the deposited amounts are equal.
    */
-  whatChanged(thatLUSD: Decimalish): StabilityDepositChange<Decimal> | undefined {
-    thatLUSD = Decimal.from(thatLUSD);
+  whatChanged(thatKUSD: Decimalish): StabilityDepositChange<Decimal> | undefined {
+    thatKUSD = Decimal.from(thatKUSD);
 
-    if (thatLUSD.lt(this.currentLUSD)) {
-      return { withdrawLUSD: this.currentLUSD.sub(thatLUSD), withdrawAllLUSD: thatLUSD.isZero };
+    if (thatKUSD.lt(this.currentKUSD)) {
+      return { withdrawKUSD: this.currentKUSD.sub(thatKUSD), withdrawAllKUSD: thatKUSD.isZero };
     }
 
-    if (thatLUSD.gt(this.currentLUSD)) {
-      return { depositLUSD: thatLUSD.sub(this.currentLUSD) };
+    if (thatKUSD.gt(this.currentKUSD)) {
+      return { depositKUSD: thatKUSD.sub(this.currentKUSD) };
     }
   }
 
   /**
    * Apply a {@link StabilityDepositChange} to this Stability Deposit.
    *
-   * @returns The new deposited LUSD amount.
+   * @returns The new deposited KUSD amount.
    */
   apply(change: StabilityDepositChange<Decimalish> | undefined): Decimal {
     if (!change) {
-      return this.currentLUSD;
+      return this.currentKUSD;
     }
 
-    if (change.withdrawLUSD !== undefined) {
-      return change.withdrawAllLUSD || this.currentLUSD.lte(change.withdrawLUSD)
+    if (change.withdrawKUSD !== undefined) {
+      return change.withdrawAllKUSD || this.currentKUSD.lte(change.withdrawKUSD)
         ? Decimal.ZERO
-        : this.currentLUSD.sub(change.withdrawLUSD);
+        : this.currentKUSD.sub(change.withdrawKUSD);
     } else {
-      return this.currentLUSD.add(change.depositLUSD);
+      return this.currentKUSD.add(change.depositKUSD);
     }
   }
 }

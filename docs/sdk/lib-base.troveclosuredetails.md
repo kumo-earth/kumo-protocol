@@ -4,7 +4,7 @@
 
 ## TroveClosureDetails interface
 
-Details of a [closeTrove()](./lib-base.transactableliquity.closetrove.md) transaction.
+Details of a [closeTrove()](./lib-base.transactablekumo.closetrove.md) transaction.
 
 <b>Signature:</b>
 

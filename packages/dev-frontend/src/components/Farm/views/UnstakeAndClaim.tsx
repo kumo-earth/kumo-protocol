@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Button } from "theme-ui";
-import { useLiquity } from "../../../hooks/LiquityContext";
+import { useKumo } from "../../../hooks/KumoContext";
 import { Transaction, useMyTransactionState } from "../../Transaction";
 import { useFarmView } from "../context/FarmViewContext";
 
@@ -11,7 +11,7 @@ export const UnstakeAndClaim: React.FC = () => {
 
   const {
     liquity: { send: liquity }
-  } = useLiquity();
+  } = useKumo();
 
   const transactionState = useMyTransactionState(transactionId);
 

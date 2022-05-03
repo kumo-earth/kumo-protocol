@@ -4,7 +4,7 @@
 
 ## Trove.adjust() method
 
-Calculate the result of an [adjustTrove()](./lib-base.transactableliquity.adjusttrove.md) transaction on this Trove.
+Calculate the result of an [adjustTrove()](./lib-base.transactablekumo.adjusttrove.md) transaction on this Trove.
 
 <b>Signature:</b>
 

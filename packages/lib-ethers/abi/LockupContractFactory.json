@@ -5,11 +5,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_lqtyTokenAddress",
+        "name": "_kumoTokenAddress",
         "type": "address"
       }
     ],
-    "name": "LQTYTokenAddressSet",
+    "name": "KUMOTokenAddressSet",
     "type": "event"
   },
   {
@@ -139,14 +139,8 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "lockupContractToDeployer",
+    "inputs": [],
+    "name": "kumoTokenAddress",
     "outputs": [
       {
         "internalType": "address",
@@ -158,8 +152,14 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "lqtyTokenAddress",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "lockupContractToDeployer",
     "outputs": [
       {
         "internalType": "address",
@@ -187,11 +187,11 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_lqtyTokenAddress",
+        "name": "_kumoTokenAddress",
         "type": "address"
       }
     ],
-    "name": "setLQTYTokenAddress",
+    "name": "setKUMOTokenAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

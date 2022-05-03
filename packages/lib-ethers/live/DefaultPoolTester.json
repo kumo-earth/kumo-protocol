@@ -48,11 +48,11 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_LUSDDebt",
+          "name": "_KUSDDebt",
           "type": "uint256"
         }
       ],
-      "name": "DefaultPoolLUSDDebtUpdated",
+      "name": "DefaultPoolKUSDDebtUpdated",
       "type": "event"
     },
     {
@@ -97,7 +97,7 @@
           "type": "uint256"
         }
       ],
-      "name": "LUSDBalanceUpdated",
+      "name": "KUSDBalanceUpdated",
       "type": "event"
     },
     {
@@ -179,7 +179,7 @@
           "type": "uint256"
         }
       ],
-      "name": "decreaseLUSDDebt",
+      "name": "decreaseKUSDDebt",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -199,7 +199,7 @@
     },
     {
       "inputs": [],
-      "name": "getLUSDDebt",
+      "name": "getKUSDDebt",
       "outputs": [
         {
           "internalType": "uint256",
@@ -218,7 +218,7 @@
           "type": "uint256"
         }
       ],
-      "name": "increaseLUSDDebt",
+      "name": "increaseKUSDDebt",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -301,7 +301,7 @@
           "type": "uint256"
         }
       ],
-      "name": "unprotectedIncreaseLUSDDebt",
+      "name": "unprotectedIncreaseKUSDDebt",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

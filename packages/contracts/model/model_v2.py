@@ -71,7 +71,7 @@ def get_new_base_fee(data, redeemed_amount):
     base_fee = (data.base_fee[-1] + (redeemed_amount / (2 * data.token_supply[-1]))) *params.D
     return base_fee
 
-# return the exogenous market demand for holding LQTY tokens. Assume constant. Could be a function of:
+# return the exogenous market demand for holding KUMO tokens. Assume constant. Could be a function of:
 # - Demand for a safe-haven $1-pegged asset  
 # - Traders' demand for short-term liquidity
 def get_token_demand():
@@ -115,7 +115,7 @@ def get_new_token_supply(trove_issuance, redeemed):
     else: 
         return new_supply
 
-# Given Liquity's hard price ceiling of 1.10, 
+# Given Kumo's hard price ceiling of 1.10, 
 # compute the excess trove issuance needed to maintain the price at 1.1, according to QTM.
 def get_excess_issuance(token_price, token_supply):
     if token_price > 1.1:

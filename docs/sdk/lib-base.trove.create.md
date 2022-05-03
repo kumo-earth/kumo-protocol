@@ -4,7 +4,7 @@
 
 ## Trove.create() method
 
-Calculate the result of an [openTrove()](./lib-base.transactableliquity.opentrove.md) transaction.
+Calculate the result of an [openTrove()](./lib-base.transactablekumo.opentrove.md) transaction.
 
 <b>Signature:</b>
 
