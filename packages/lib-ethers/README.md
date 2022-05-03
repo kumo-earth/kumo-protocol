@@ -14,12 +14,12 @@ Connecting to an Ethereum node and sending a transaction:
 
 ```javascript
 const { Wallet, providers } = require("ethers");
-const { EthersLiquity } = require("kumodao/lib-ethers");
+const { EthersKumo} = require("kumodao/lib-ethers");
 
 async function example() {
   const provider = new providers.JsonRpcProvider("http://localhost:8545");
   const wallet = new Wallet(process.env.PRIVATE_KEY).connect(provider);
-  const liquity = await EthersLiquity.connect(wallet);
+  const liquity = await EthersKumo.connect(wallet);
 
   const { newTrove } = await liquity.openTrove({
     depositCollateral: 5, // ETH

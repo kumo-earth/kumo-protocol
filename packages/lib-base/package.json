@@ -13,10 +13,7 @@
   "author": "Robin Klemens <robin@kumo.earth>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kumodao/borrowprot.git"
-  },
+  "repository": "git+https://github.com/kumodao/borrowprot.git",
   "scripts": {
     "prepare": "run-s prepare:*",
     "prepare:eslint": "eslint src",
