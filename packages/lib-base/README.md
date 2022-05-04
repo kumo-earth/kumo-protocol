@@ -1,4 +1,4 @@
-# @liquity/lib-base
+# @kumodao/lib-base
 
 Shared interfaces and classes of the Kumo SDK.
 
