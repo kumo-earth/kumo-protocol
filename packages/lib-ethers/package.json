@@ -1,5 +1,5 @@
 {
-  "name": "@liquity/lib-ethers",
+  "name": "@kumodao/lib-ethers",
   "version": "0.0.0-semantic-release",
   "description": "Kumo SDK Ethers-based implementation",
   "keywords": [
@@ -8,12 +8,12 @@
     "DeFi",
     "Ethereum"
   ],
-  "homepage": "https://github.com/liquity/liquity#readme",
+  "homepage": "https://github.com/kumodao/borrowprot#readme",
   "license": "MIT",
-  "author": "Daniel Simon <dani@liquity.org>",
+  "author": "Robin Klemens <robin@kumo.earth>",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": "https://github.com/liquity/dev",
+  "repository": "https://github.com/kumodao/borrowprot",
   "scripts": {
     "hardhat": "hardhat",
     "check-live-version": "ts-node scripts/check-live-version.ts",
