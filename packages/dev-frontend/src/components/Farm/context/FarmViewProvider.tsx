@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { KumoStoreState, Decimal } from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+import { KumoStoreState, Decimal } from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 import { FarmViewContext } from "./FarmViewContext";
 import { transitions } from "./transitions";
 import type { FarmView, FarmEvent } from "./transitions";

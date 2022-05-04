@@ -7,8 +7,8 @@ import {
   KUSD_LIQUIDATION_RESERVE,
   KUSD_MINIMUM_NET_DEBT,
   Percent
-} from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+} from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 
 import { useStableTroveChange } from "../../hooks/useStableTroveChange";
 import { ActionDescription } from "../ActionDescription";

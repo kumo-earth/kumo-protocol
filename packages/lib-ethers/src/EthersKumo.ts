@@ -25,7 +25,7 @@ import {
   TroveListingParams,
   TroveWithPendingRedistribution,
   UserTrove
-} from "@liquity/lib-base";
+} from "@kumodao/lib-base";
 
 import {
   EthersKumoConnection,
@@ -157,12 +157,12 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     return false;
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getTotalRedistributed} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTotalRedistributed} */
   getTotalRedistributed(overrides?: EthersCallOverrides): Promise<Trove> {
     return this._readable.getTotalRedistributed(overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getTroveBeforeRedistribution} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTroveBeforeRedistribution} */
   getTroveBeforeRedistribution(
     address?: string,
     overrides?: EthersCallOverrides
@@ -170,17 +170,17 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     return this._readable.getTroveBeforeRedistribution(address, overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getTrove} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTrove} */
   getTrove(address?: string, overrides?: EthersCallOverrides): Promise<UserTrove> {
     return this._readable.getTrove(address, overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getNumberOfTroves} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getNumberOfTroves} */
   getNumberOfTroves(overrides?: EthersCallOverrides): Promise<number> {
     return this._readable.getNumberOfTroves(overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getPrice} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getPrice} */
   getPrice(overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getPrice(overrides);
   }
@@ -195,42 +195,42 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     return this._readable._getDefaultPool(overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getTotal} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTotal} */
   getTotal(overrides?: EthersCallOverrides): Promise<Trove> {
     return this._readable.getTotal(overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getStabilityDeposit} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getStabilityDeposit} */
   getStabilityDeposit(address?: string, overrides?: EthersCallOverrides): Promise<StabilityDeposit> {
     return this._readable.getStabilityDeposit(address, overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getRemainingStabilityPoolKUMOReward} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getRemainingStabilityPoolKUMOReward} */
   getRemainingStabilityPoolKUMOReward(overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getRemainingStabilityPoolKUMOReward(overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getKUSDInStabilityPool} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDInStabilityPool} */
   getKUSDInStabilityPool(overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getKUSDInStabilityPool(overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getKUSDBalance} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDBalance} */
   getKUSDBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getKUSDBalance(address, overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getKUMOBalance} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUMOBalance} */
   getKUMOBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getKUMOBalance(address, overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getUniTokenBalance} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getUniTokenBalance} */
   getUniTokenBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getUniTokenBalance(address, overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getUniTokenAllowance} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getUniTokenAllowance} */
   getUniTokenAllowance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getUniTokenAllowance(address, overrides);
   }
@@ -242,27 +242,27 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     return this._readable._getRemainingLiquidityMiningKUMORewardCalculator(overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getRemainingLiquidityMiningKUMOReward} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getRemainingLiquidityMiningKUMOReward} */
   getRemainingLiquidityMiningKUMOReward(overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getRemainingLiquidityMiningKUMOReward(overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getLiquidityMiningStake} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getLiquidityMiningStake} */
   getLiquidityMiningStake(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getLiquidityMiningStake(address, overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getTotalStakedUniTokens} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTotalStakedUniTokens} */
   getTotalStakedUniTokens(overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getTotalStakedUniTokens(overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getLiquidityMiningKUMOReward} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getLiquidityMiningKUMOReward} */
   getLiquidityMiningKUMOReward(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getLiquidityMiningKUMOReward(address, overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getCollateralSurplusBalance} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getCollateralSurplusBalance} */
   getCollateralSurplusBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getCollateralSurplusBalance(address, overrides);
   }
@@ -273,7 +273,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     overrides?: EthersCallOverrides
   ): Promise<TroveWithPendingRedistribution[]>;
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.(getTroves:2)} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.(getTroves:2)} */
   getTroves(params: TroveListingParams, overrides?: EthersCallOverrides): Promise<UserTrove[]>;
 
   getTroves(params: TroveListingParams, overrides?: EthersCallOverrides): Promise<UserTrove[]> {
@@ -292,28 +292,28 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     return this._readable._getFeesFactory(overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getFees} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getFees} */
   getFees(overrides?: EthersCallOverrides): Promise<Fees> {
     return this._readable.getFees(overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getKUMOStake} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUMOStake} */
   getKUMOStake(address?: string, overrides?: EthersCallOverrides): Promise<KUMOStake> {
     return this._readable.getKUMOStake(address, overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getTotalStakedKUMO} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTotalStakedKUMO} */
   getTotalStakedKUMO(overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getTotalStakedKUMO(overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#ReadableKumo.getFrontendStatus} */
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getFrontendStatus} */
   getFrontendStatus(address?: string, overrides?: EthersCallOverrides): Promise<FrontendStatus> {
     return this._readable.getFrontendStatus(address, overrides);
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.openTrove}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.openTrove}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -330,7 +330,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.closeTrove}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.closeTrove}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -341,7 +341,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.adjustTrove}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.adjustTrove}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -358,7 +358,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.depositCollateral}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.depositCollateral}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -372,7 +372,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.withdrawCollateral}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.withdrawCollateral}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -386,7 +386,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.borrowKUSD}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.borrowKUSD}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -401,7 +401,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.repayKUSD}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.repayKUSD}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -420,7 +420,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.liquidate}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.liquidate}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -434,7 +434,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.liquidateUpTo}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.liquidateUpTo}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -448,7 +448,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.depositKUSDInStabilityPool}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.depositKUSDInStabilityPool}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -463,7 +463,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.withdrawKUSDFromStabilityPool}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.withdrawKUSDFromStabilityPool}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -477,7 +477,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.withdrawGainsFromStabilityPool}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.withdrawGainsFromStabilityPool}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -490,7 +490,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.transferCollateralGainToTrove}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.transferCollateralGainToTrove}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -503,7 +503,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.sendKUSD}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.sendKUSD}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -518,7 +518,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.sendKUMO}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.sendKUMO}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -533,7 +533,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.redeemKUSD}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.redeemKUSD}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -548,7 +548,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.claimCollateralSurplus}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.claimCollateralSurplus}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -559,7 +559,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.stakeKUMO}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.stakeKUMO}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -570,7 +570,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.unstakeKUMO}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.unstakeKUMO}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -581,7 +581,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.withdrawGainsFromStaking}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.withdrawGainsFromStaking}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -592,7 +592,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.registerFrontend}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.registerFrontend}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -612,7 +612,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.approveUniTokens}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.approveUniTokens}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -623,7 +623,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.stakeUniTokens}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.stakeUniTokens}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -634,7 +634,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.unstakeUniTokens}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.unstakeUniTokens}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -645,7 +645,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.withdrawKUMORewardFromLiquidityMining}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.withdrawKUMORewardFromLiquidityMining}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -656,7 +656,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#TransactableKumo.exitLiquidityMining}
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.exitLiquidityMining}
    *
    * @throws
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
@@ -668,7 +668,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
 }
 
 /**
- * Variant of {@link EthersKumo} that exposes a {@link @liquity/lib-base#KumoStore}.
+ * Variant of {@link EthersKumo} that exposes a {@link @kumodao/lib-base#KumoStore}.
  *
  * @public
  */

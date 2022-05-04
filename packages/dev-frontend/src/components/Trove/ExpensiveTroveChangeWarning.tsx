@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 
-import { Decimal, TroveChange } from "@liquity/lib-base";
-import { PopulatedEthersKumoTransaction } from "@liquity/lib-ethers";
+import { Decimal, TroveChange } from "@kumodao/lib-base";
+import { PopulatedEthersKumoTransaction } from "@kumodao/lib-ethers";
 
 import { useKumo } from "../../hooks/KumoContext";
 import { Warning } from "../Warning";

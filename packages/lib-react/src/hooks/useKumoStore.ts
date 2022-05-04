@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import { KumoStore } from "@liquity/lib-base";
+import { KumoStore } from "@kumodao/lib-base";
 
 import { KumoStoreContext } from "../components/KumoStoreProvider";
 

@@ -1,7 +1,7 @@
 import { Wallet } from "@ethersproject/wallet";
 
-import { Decimal, KUSD_MINIMUM_DEBT, Trove } from "@liquity/lib-base";
-import { EthersKumo } from "@liquity/lib-ethers";
+import { Decimal, KUSD_MINIMUM_DEBT, Trove } from "@kumodao/lib-base";
+import { EthersKumo } from "@kumodao/lib-ethers";
 
 import { deployer, funder, provider } from "../globals";
 

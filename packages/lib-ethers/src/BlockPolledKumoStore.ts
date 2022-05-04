@@ -9,7 +9,7 @@ import {
   KUMOStake,
   KumoStore,
   Fees
-} from "@liquity/lib-base";
+} from "@kumodao/lib-base";
 
 import { decimalify, promiseAllValues } from "./_utils";
 import { ReadableEthersKumo } from "./ReadableEthersKumo";
@@ -17,7 +17,7 @@ import { EthersKumoConnection, _getProvider } from "./EthersKumoConnection";
 import { EthersCallOverrides, EthersProvider } from "./types";
 
 /**
- * Extra state added to {@link @liquity/lib-base#KumoStoreState} by
+ * Extra state added to {@link @kumodao/lib-base#KumoStoreState} by
  * {@link BlockPolledKumoStore}.
  *
  * @public
@@ -42,14 +42,14 @@ export interface BlockPolledKumoStoreExtraState {
 
 /**
  * The type of {@link BlockPolledKumoStore}'s
- * {@link @liquity/lib-base#KumoStore.state | state}.
+ * {@link @kumodao/lib-base#KumoStore.state | state}.
  *
  * @public
  */
 export type BlockPolledKumoStoreState = KumoStoreState<BlockPolledKumoStoreExtraState>;
 
 /**
- * Ethers-based {@link @liquity/lib-base#KumoStore} that updates state whenever there's a new
+ * Ethers-based {@link @kumodao/lib-base#KumoStore} that updates state whenever there's a new
  * block.
  *
  * @public

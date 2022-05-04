@@ -11,7 +11,7 @@ import {
   KumoStoreState,
   TroveClosureParams,
   TroveCreationParams
-} from "@liquity/lib-base";
+} from "@kumodao/lib-base";
 
 import { COIN } from "../../../strings";
 

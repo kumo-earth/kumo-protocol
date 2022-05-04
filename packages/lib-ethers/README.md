@@ -14,7 +14,8 @@ Connecting to an Ethereum node and sending a transaction:
 
 ```javascript
 const { Wallet, providers } = require("ethers");
-const { EthersKumo } = require("@liquity/lib-ethers");
+const { EthersKumo} = require("kumodao/lib-ethers");
+
 
 async function example() {
   const provider = new providers.JsonRpcProvider("http://localhost:8545");
@@ -32,11 +33,10 @@ async function example() {
 
 ## More examples
 
-See [packages/examples](https://github.com/liquity/liquity/tree/master/packages/examples) in the repo.
+See [packages/examples](https://github.com/kumodao/borrowprot/tree/master/packages/examples) in the repo.
 
-Kumo's [Dev UI](https://github.com/liquity/liquity/tree/master/packages/dev-frontend) itself contains many examples of `@liquity/lib-ethers` use.
+Kumo's [Dev UI](https://github.com/kumodao/borrowprot/tree/master/packages/dev-frontend) itself contains many examples of `@kumodao/lib-ethers` use.
 
 ## API Reference
 
-For now, it can be found in the public Kumo [repo](https://github.com/liquity/liquity/blob/master/docs/sdk/lib-ethers.md).
-
+For now, it can be found in the public Kumo [repo](https://github.com/kumodao/borrowprot/blob/master/docs/sdk/lib-ethers.md).

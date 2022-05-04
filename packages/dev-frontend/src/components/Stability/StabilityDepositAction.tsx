@@ -1,6 +1,6 @@
 import { Button } from "theme-ui";
-import { Decimal, KumoStoreState, StabilityDepositChange } from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+import { Decimal, KumoStoreState, StabilityDepositChange } from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 
 import { useKumo } from "../../hooks/KumoContext";
 import { useTransactionFunction } from "../Transaction";

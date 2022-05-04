@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Paragraph, Text } from "theme-ui";
-import { Decimal, KumoStoreState } from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+import { Decimal, KumoStoreState } from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 import { InfoIcon } from "../InfoIcon";
 import { useKumo } from "../../hooks/KumoContext";
 import { Badge } from "../Badge";

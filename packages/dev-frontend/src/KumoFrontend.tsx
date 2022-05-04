@@ -3,8 +3,8 @@ import { Flex, Container } from "theme-ui";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import { Wallet } from "@ethersproject/wallet";
 
-import { Decimal, Difference, Trove } from "@liquity/lib-base";
-import { KumoStoreProvider } from "@liquity/lib-react";
+import { Decimal, Difference, Trove } from "@kumodao/lib-base";
+import { KumoStoreProvider } from "@kumodao/lib-react";
 
 import { useKumo } from "./hooks/KumoContext";
 import { TransactionMonitor } from "./components/Transaction";

@@ -48,7 +48,7 @@ export interface TroveListingParams {
  * Read the state of the Kumo protocol.
  *
  * @remarks
- * Implemented by {@link @liquity/lib-ethers#EthersKumo}.
+ * Implemented by {@link @kumodao/lib-ethers#EthersKumo}.
  *
  * @public
  */
@@ -57,7 +57,7 @@ export interface ReadableKumo {
    * Get the total collateral and debt per stake that has been liquidated through redistribution.
    *
    * @remarks
-   * Needed when dealing with instances of {@link @liquity/lib-base#TroveWithPendingRedistribution}.
+   * Needed when dealing with instances of {@link @kumodao/lib-base#TroveWithPendingRedistribution}.
    */
   getTotalRedistributed(): Promise<Trove>;
 
@@ -68,7 +68,7 @@ export interface ReadableKumo {
    *
    * @remarks
    * The current state of a Trove can be fetched using
-   * {@link @liquity/lib-base#ReadableKumo.getTrove | getTrove()}.
+   * {@link @kumodao/lib-base#ReadableKumo.getTrove | getTrove()}.
    */
   getTroveBeforeRedistribution(address?: string): Promise<TroveWithPendingRedistribution>;
 
@@ -170,7 +170,7 @@ export interface ReadableKumo {
    * When a Trove gets liquidated or redeemed, any collateral it has above 110% (in case of
    * liquidation) or 100% collateralization (in case of redemption) gets sent to a pool, where it
    * can be withdrawn from using
-   * {@link @liquity/lib-base#TransactableKumo.claimCollateralSurplus | claimCollateralSurplus()}.
+   * {@link @kumodao/lib-base#TransactableKumo.claimCollateralSurplus | claimCollateralSurplus()}.
    */
   getCollateralSurplusBalance(address?: string): Promise<Decimal>;
 
