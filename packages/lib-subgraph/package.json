@@ -1,5 +1,5 @@
 {
-  "name": "@liquity/lib-subgraph",
+  "name": "@kumodao/lib-subgraph",
   "version": "0.0.1",
   "private": true,
   "main": "dist/index.js",
