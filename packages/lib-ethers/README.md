@@ -1,4 +1,4 @@
-# @liquity/lib-ethers
+# @kumodao/lib-ethers
 
 [Ethers](https://www.npmjs.com/package/ethers)-based library for reading Kumo protocol state and sending transactions.
 
@@ -7,7 +7,7 @@
 Install in your project:
 
 ```
-npm install --save @liquity/lib-base @liquity/lib-ethers ethers@^5.0.0
+npm install --save @kumodao/lib-base @kumodao/lib-ethers ethers@^5.0.0
 ```
 
 Connecting to an Ethereum node and sending a transaction:
@@ -20,9 +20,9 @@ const { EthersKumo} = require("kumodao/lib-ethers");
 async function example() {
   const provider = new providers.JsonRpcProvider("http://localhost:8545");
   const wallet = new Wallet(process.env.PRIVATE_KEY).connect(provider);
-  const liquity = await EthersKumo.connect(wallet);
+  const kumodao = await EthersKumo.connect(wallet);
 
-  const { newTrove } = await liquity.openTrove({
+  const { newTrove } = await kumodao.openTrove({
     depositCollateral: 5, // ETH
     borrowKUSD: 2000
   });
