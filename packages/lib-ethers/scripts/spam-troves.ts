@@ -3,15 +3,15 @@ import { TransactionResponse } from "@ethersproject/abstract-provider";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
 
-import { Decimal, KUSD_MINIMUM_DEBT, Trove } from "@liquity/lib-base";
-import { EthersKumo, EthersKumoWithStore, BlockPolledKumoStore } from "@liquity/lib-ethers";
+import { Decimal, KUSD_MINIMUM_DEBT, Trove } from "@kumodao/lib-base";
+import { EthersKumo, EthersKumoWithStore, BlockPolledKumoStore } from "@kumodao/lib-ethers";
 
 import {
   Batched,
   BatchedProvider,
   WebSocketAugmented,
   WebSocketAugmentedProvider
-} from "@liquity/providers";
+} from "@kumodao/providers";
 
 const BatchedWebSocketAugmentedJsonRpcProvider = Batched(WebSocketAugmented(JsonRpcProvider));
 

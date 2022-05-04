@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { useKumoSelector } from "@liquity/lib-react";
-import { KumoStoreState, StabilityDeposit } from "@liquity/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
+import { KumoStoreState, StabilityDeposit } from "@kumodao/lib-base";
 import { StabilityViewContext } from "./StabilityViewContext";
 import type { StabilityView, StabilityEvent } from "./types";
 

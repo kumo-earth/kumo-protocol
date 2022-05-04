@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 
-import { SubgraphKumo } from "@liquity/lib-subgraph";
+import { SubgraphKumo } from "@kumodao/lib-subgraph";
 
 dotenv.config();
 

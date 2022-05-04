@@ -11,9 +11,9 @@ import {
   TroveWithPendingRedistribution,
   ReadableKumo,
   KUSD_LIQUIDATION_RESERVE
-} from "@liquity/lib-base";
-import { EthersKumo, ReadableEthersKumo } from "@liquity/lib-ethers";
-import { SubgraphKumo } from "@liquity/lib-subgraph";
+} from "@kumodao/lib-base";
+import { EthersKumo, ReadableEthersKumo } from "@kumodao/lib-ethers";
+import { SubgraphKumo } from "@kumodao/lib-subgraph";
 
 export const objToString = (o: Record<string, unknown>) =>
   "{ " +

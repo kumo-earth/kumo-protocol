@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Heading, Box, Card, Button } from "theme-ui";
 
-import { Decimal, Decimalish, Difference, KumoStoreState, KUMOStake } from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+import { Decimal, Decimalish, Difference, KumoStoreState, KUMOStake } from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 
 import { COIN, GT } from "../../strings";
 

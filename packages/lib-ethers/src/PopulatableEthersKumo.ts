@@ -34,7 +34,7 @@ import {
   _normalizeTroveCreation,
   _pendingReceipt,
   _successfulReceipt
-} from "@liquity/lib-base";
+} from "@kumodao/lib-base";
 
 import {
   EthersPopulatedTransaction,
@@ -247,13 +247,13 @@ export class SentEthersKumoTransaction<T = unknown>
     }
   }
 
-  /** {@inheritDoc @liquity/lib-base#SentKumoTransaction.getReceipt} */
+  /** {@inheritDoc @kumodao/lib-base#SentKumoTransaction.getReceipt} */
   async getReceipt(): Promise<KumoReceipt<EthersTransactionReceipt, T>> {
     return this._receiptFrom(await this._waitForRawReceipt(0));
   }
 
   /**
-   * {@inheritDoc @liquity/lib-base#SentKumoTransaction.waitForReceipt}
+   * {@inheritDoc @kumodao/lib-base#SentKumoTransaction.waitForReceipt}
    *
    * @throws
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
@@ -273,7 +273,7 @@ export class SentEthersKumoTransaction<T = unknown>
  */
 export interface BorrowingOperationOptionalParams {
   /**
-   * Maximum acceptable {@link @liquity/lib-base#Fees.borrowingRate | borrowing rate}
+   * Maximum acceptable {@link @kumodao/lib-base#Fees.borrowingRate | borrowing rate}
    * (default: current borrowing rate plus 0.5%).
    */
   maxBorrowingRate?: Decimalish;
@@ -384,7 +384,7 @@ export class PopulatedEthersKumoTransaction<T = unknown>
     }
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatedKumoTransaction.send} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatedKumoTransaction.send} */
   async send(): Promise<SentEthersKumoTransaction<T>> {
     return new SentEthersKumoTransaction(
       await _requireSigner(this._connection).sendTransaction(this.rawPopulatedTransaction),
@@ -395,7 +395,7 @@ export class PopulatedEthersKumoTransaction<T = unknown>
 }
 
 /**
- * {@inheritDoc @liquity/lib-base#PopulatedRedemption}
+ * {@inheritDoc @kumodao/lib-base#PopulatedRedemption}
  *
  * @public
  */
@@ -407,13 +407,13 @@ export class PopulatedEthersRedemption
       EthersTransactionResponse,
       EthersTransactionReceipt
     > {
-  /** {@inheritDoc @liquity/lib-base#PopulatedRedemption.attemptedKUSDAmount} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatedRedemption.attemptedKUSDAmount} */
   readonly attemptedKUSDAmount: Decimal;
 
-  /** {@inheritDoc @liquity/lib-base#PopulatedRedemption.redeemableKUSDAmount} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatedRedemption.redeemableKUSDAmount} */
   readonly redeemableKUSDAmount: Decimal;
 
-  /** {@inheritDoc @liquity/lib-base#PopulatedRedemption.isTruncated} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatedRedemption.isTruncated} */
   readonly isTruncated: boolean;
 
   private readonly _increaseAmountByMinimumNetDebt?: (
@@ -453,7 +453,7 @@ export class PopulatedEthersRedemption
     this._increaseAmountByMinimumNetDebt = increaseAmountByMinimumNetDebt;
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatedRedemption.increaseAmountByMinimumNetDebt} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatedRedemption.increaseAmountByMinimumNetDebt} */
   increaseAmountByMinimumNetDebt(
     maxRedemptionRate?: Decimalish
   ): Promise<PopulatedEthersRedemption> {
@@ -476,7 +476,7 @@ export interface _TroveChangeWithFees<T> {
 }
 
 /**
- * Ethers-based implementation of {@link @liquity/lib-base#PopulatableKumo}.
+ * Ethers-based implementation of {@link @kumodao/lib-base#PopulatableKumo}.
  *
  * @public
  */
@@ -809,7 +809,7 @@ export class PopulatableEthersKumo
     ];
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.openTrove} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.openTrove} */
   async openTrove(
     params: TroveCreationParams<Decimalish>,
     maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams,
@@ -888,7 +888,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.closeTrove} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.closeTrove} */
   async closeTrove(
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<TroveClosureDetails>> {
@@ -899,7 +899,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.depositCollateral} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.depositCollateral} */
   depositCollateral(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
@@ -907,7 +907,7 @@ export class PopulatableEthersKumo
     return this.adjustTrove({ depositCollateral: amount }, undefined, overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.withdrawCollateral} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.withdrawCollateral} */
   withdrawCollateral(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
@@ -915,7 +915,7 @@ export class PopulatableEthersKumo
     return this.adjustTrove({ withdrawCollateral: amount }, undefined, overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.borrowKUSD} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.borrowKUSD} */
   borrowKUSD(
     amount: Decimalish,
     maxBorrowingRate?: Decimalish,
@@ -924,7 +924,7 @@ export class PopulatableEthersKumo
     return this.adjustTrove({ borrowKUSD: amount }, maxBorrowingRate, overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.repayKUSD} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.repayKUSD} */
   repayKUSD(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
@@ -932,7 +932,7 @@ export class PopulatableEthersKumo
     return this.adjustTrove({ repayKUSD: amount }, undefined, overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.adjustTrove} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.adjustTrove} */
   async adjustTrove(
     params: TroveAdjustmentParams<Decimalish>,
     maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams,
@@ -1024,7 +1024,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.claimCollateralSurplus} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.claimCollateralSurplus} */
   async claimCollateralSurplus(
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<void>> {
@@ -1051,7 +1051,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.liquidate} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.liquidate} */
   async liquidate(
     address: string | string[],
     overrides?: EthersTransactionOverrides
@@ -1077,7 +1077,7 @@ export class PopulatableEthersKumo
     }
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.liquidateUpTo} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.liquidateUpTo} */
   async liquidateUpTo(
     maximumNumberOfTrovesToLiquidate: number,
     overrides?: EthersTransactionOverrides
@@ -1093,7 +1093,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.depositKUSDInStabilityPool} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.depositKUSDInStabilityPool} */
   async depositKUSDInStabilityPool(
     amount: Decimalish,
     frontendTag?: string,
@@ -1113,7 +1113,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.withdrawKUSDFromStabilityPool} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.withdrawKUSDFromStabilityPool} */
   async withdrawKUSDFromStabilityPool(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
@@ -1129,7 +1129,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.withdrawGainsFromStabilityPool} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.withdrawGainsFromStabilityPool} */
   async withdrawGainsFromStabilityPool(
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<StabilityPoolGainsWithdrawalDetails>> {
@@ -1144,7 +1144,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.transferCollateralGainToTrove} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.transferCollateralGainToTrove} */
   async transferCollateralGainToTrove(
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<CollateralGainTransferDetails>> {
@@ -1167,7 +1167,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.sendKUSD} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.sendKUSD} */
   async sendKUSD(
     toAddress: string,
     amount: Decimalish,
@@ -1185,7 +1185,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.sendKUMO} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.sendKUMO} */
   async sendKUMO(
     toAddress: string,
     amount: Decimalish,
@@ -1203,7 +1203,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.redeemKUSD} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.redeemKUSD} */
   async redeemKUSD(
     amount: Decimalish,
     maxRedemptionRate?: Decimalish,
@@ -1273,7 +1273,7 @@ export class PopulatableEthersKumo
     return populateRedemption(attemptedKUSDAmount, maxRedemptionRate, truncatedAmount, partialHints);
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.stakeKUMO} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.stakeKUMO} */
   async stakeKUMO(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
@@ -1285,7 +1285,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.unstakeKUMO} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.unstakeKUMO} */
   async unstakeKUMO(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
@@ -1297,14 +1297,14 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.withdrawGainsFromStaking} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.withdrawGainsFromStaking} */
   withdrawGainsFromStaking(
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<void>> {
     return this.unstakeKUMO(Decimal.ZERO, overrides);
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.registerFrontend} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.registerFrontend} */
   async registerFrontend(
     kickbackRate: Decimalish,
     overrides?: EthersTransactionOverrides
@@ -1343,7 +1343,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.approveUniTokens} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.approveUniTokens} */
   async approveUniTokens(
     allowance?: Decimalish,
     overrides?: EthersTransactionOverrides
@@ -1360,7 +1360,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.stakeUniTokens} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.stakeUniTokens} */
   async stakeUniTokens(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
@@ -1376,7 +1376,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.unstakeUniTokens} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.unstakeUniTokens} */
   async unstakeUniTokens(
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
@@ -1392,7 +1392,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.withdrawKUMORewardFromLiquidityMining} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.withdrawKUMORewardFromLiquidityMining} */
   async withdrawKUMORewardFromLiquidityMining(
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<void>> {
@@ -1403,7 +1403,7 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @liquity/lib-base#PopulatableKumo.exitLiquidityMining} */
+  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.exitLiquidityMining} */
   async exitLiquidityMining(
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<void>> {

@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect } from "react";
 import { Button, Flex } from "theme-ui";
 
-import { Decimal, Decimalish, KumoStoreState } from "@liquity/lib-base";
-import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@liquity/lib-react";
+import { Decimal, Decimalish, KumoStoreState } from "@kumodao/lib-base";
+import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@kumodao/lib-react";
 
 import { COIN } from "../../strings";
 

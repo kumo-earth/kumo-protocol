@@ -7,7 +7,7 @@ import {
   StabilityDeposit,
   Trove,
   TroveWithPendingRedistribution
-} from "@liquity/lib-base";
+} from "@kumodao/lib-base";
 
 import { _getContracts, _requireAddress } from "./EthersKumoConnection";
 import { ReadableEthersKumo } from "./ReadableEthersKumo";

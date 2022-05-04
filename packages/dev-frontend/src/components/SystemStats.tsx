@@ -1,8 +1,8 @@
 import React from "react";
 import { Card, Heading, Link, Box, Text } from "theme-ui";
 import { AddressZero } from "@ethersproject/constants";
-import { Decimal, Percent, KumoStoreState } from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+import { Decimal, Percent, KumoStoreState } from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 
 import { useKumo } from "../hooks/KumoContext";
 import { COIN, GT } from "../strings";

@@ -9,9 +9,9 @@ import {
   TransactableKumo,
   Trove,
   TroveAdjustmentParams
-} from "@liquity/lib-base";
+} from "@kumodao/lib-base";
 
-import { EthersKumo as Kumo } from "@liquity/lib-ethers";
+import { EthersKumo as Kumo } from "@kumodao/lib-ethers";
 
 import {
   createRandomTrove,
