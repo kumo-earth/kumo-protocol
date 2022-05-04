@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, Heading, Box, Flex, Input, Label, Paragraph, Button, Spinner } from "theme-ui";
 
-import { Decimal } from "@liquity/lib-base";
+import { Decimal } from "@kumodao/lib-base";
 
 import { shortenAddress } from "../utils/shortenAddress";
 import { useKumo } from "../hooks/KumoContext";

@@ -1,6 +1,6 @@
 import React from "react";
-import { KumoStoreState } from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+import { KumoStoreState } from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 import { Container, Flex, Box } from "theme-ui";
 import { AddressZero } from "@ethersproject/constants";
 import { useKumo } from "../hooks/KumoContext";

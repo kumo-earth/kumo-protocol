@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { AddressZero } from "@ethersproject/constants";
 
-import { KumoStoreState } from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+import { KumoStoreState } from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 
 import { useKumo } from "../hooks/KumoContext";
 

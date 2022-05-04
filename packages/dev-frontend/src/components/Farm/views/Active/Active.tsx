@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 import { LP, GT } from "../../../../strings";
-import { KumoStoreState } from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+import { KumoStoreState } from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 import { Icon } from "../../../Icon";
 import { LoadingOverlay } from "../../../LoadingOverlay";
 import { useMyTransactionState } from "../../../Transaction";

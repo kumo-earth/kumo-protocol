@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, Heading, Box, Flex } from "theme-ui";
-import { KumoStoreState } from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+import { KumoStoreState } from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 import { InfoMessage } from "../../../InfoMessage";
 import { UnstakeAndClaim } from "../UnstakeAndClaim";
 import { RemainingKUMO } from "../RemainingKUMO";

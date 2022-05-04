@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
-import { useKumoSelector } from "@liquity/lib-react";
-import { KumoStoreState } from "@liquity/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
+import { KumoStoreState } from "@kumodao/lib-base";
 import { DisabledEditableRow } from "./Editor";
 import { useTroveView } from "./context/TroveViewContext";
 import { Icon } from "../Icon";

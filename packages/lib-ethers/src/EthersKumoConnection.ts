@@ -1,7 +1,7 @@
 import { Block, BlockTag } from "@ethersproject/abstract-provider";
 import { Signer } from "@ethersproject/abstract-signer";
 
-import { Decimal } from "@liquity/lib-base";
+import { Decimal } from "@kumodao/lib-base";
 
 import devOrNull from "../deployments/dev.json";
 import goerli from "../deployments/goerli.json";
@@ -268,7 +268,7 @@ export interface EthersKumoConnectionOptionalParams {
   readonly frontendTag?: string;
 
   /**
-   * Create a {@link @liquity/lib-base#KumoStore} and expose it as the `store` property.
+   * Create a {@link @kumodao/lib-base#KumoStore} and expose it as the `store` property.
    *
    * @remarks
    * When set to one of the available {@link EthersKumoStoreOption | options},
@@ -278,7 +278,7 @@ export interface EthersKumoConnectionOptionalParams {
    * {@link EthersKumoWithStore}.
    *
    * Note that the store won't start monitoring the blockchain until its
-   * {@link @liquity/lib-base#KumoStore.start | start()} function is called.
+   * {@link @kumodao/lib-base#KumoStore.start | start()} function is called.
    */
   readonly useStore?: EthersKumoStoreOption;
 }

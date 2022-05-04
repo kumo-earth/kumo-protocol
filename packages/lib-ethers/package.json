@@ -36,7 +36,7 @@
   },
   "peerDependencies": {
     "@openzeppelin/contracts-upgradeable": "^4.4.1",
-    "@liquity/lib-base": "^3.0.0",
+    "@kumodao/lib-base": "^3.0.0",
     "ethers": "^5.3.0"
   },
   "devDependencies": {

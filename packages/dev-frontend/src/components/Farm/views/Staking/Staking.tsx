@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { Heading, Box, Flex, Card, Button } from "theme-ui";
-import { Decimal, KumoStoreState } from "@liquity/lib-base";
+import { Decimal, KumoStoreState } from "@kumodao/lib-base";
 import { LP } from "../../../../strings";
 import { Icon } from "../../../Icon";
 import { EditableRow, StaticRow } from "../../../Trove/Editor";
@@ -12,7 +12,7 @@ import { Description } from "../Description";
 import { Approve } from "../Approve";
 import { Validation } from "../Validation";
 import { useValidationState } from "../../context/useValidationState";
-import { useKumoSelector } from "@liquity/lib-react";
+import { useKumoSelector } from "@kumodao/lib-react";
 
 const transactionId = /farm-/;
 const selector = ({ totalStakedUniTokens }: KumoStoreState) => ({ totalStakedUniTokens });

@@ -21,7 +21,7 @@
     "prepare:tsc": "tsc --project tsconfig.dist.json"
   },
   "peerDependencies": {
-    "@liquity/lib-base": "^3.0.0",
+    "@kumodao/lib-base": "^3.0.0",
     "react": "^16.13.1"
   },
   "devDependencies": {

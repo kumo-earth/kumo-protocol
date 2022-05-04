@@ -17,7 +17,7 @@ import {
  * A transaction that has already been sent.
  *
  * @remarks
- * Implemented by {@link @liquity/lib-ethers#SentEthersKumoTransaction}.
+ * Implemented by {@link @kumodao/lib-ethers#SentEthersKumoTransaction}.
  *
  * @public
  */
@@ -29,7 +29,7 @@ export interface SentKumoTransaction<S = unknown, T extends KumoReceipt = KumoRe
    * Check whether the transaction has been mined, and whether it was successful.
    *
    * @remarks
-   * Unlike {@link @liquity/lib-base#SentKumoTransaction.waitForReceipt | waitForReceipt()},
+   * Unlike {@link @kumodao/lib-base#SentKumoTransaction.waitForReceipt | waitForReceipt()},
    * this function doesn't wait for the transaction to be mined.
    */
   getReceipt(): Promise<T>;
@@ -37,8 +37,8 @@ export interface SentKumoTransaction<S = unknown, T extends KumoReceipt = KumoRe
   /**
    * Wait for the transaction to be mined, and check whether it was successful.
    *
-   * @returns Either a {@link @liquity/lib-base#FailedReceipt} or a
-   *          {@link @liquity/lib-base#SuccessfulReceipt}.
+   * @returns Either a {@link @kumodao/lib-base#FailedReceipt} or a
+   *          {@link @kumodao/lib-base#SuccessfulReceipt}.
    */
   waitForReceipt(): Promise<Extract<T, MinedReceipt>>;
 }
@@ -136,7 +136,7 @@ export type _SendableFrom<T, R, S> = {
  * The functions return an object implementing {@link SentKumoTransaction}, which can be used
  * to monitor the transaction and get its details when it succeeds.
  *
- * Implemented by {@link @liquity/lib-ethers#SendableEthersKumo}.
+ * Implemented by {@link @kumodao/lib-ethers#SendableEthersKumo}.
  *
  * @public
  */

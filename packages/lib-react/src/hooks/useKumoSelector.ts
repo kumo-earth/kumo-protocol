@@ -1,6 +1,6 @@
 import { useEffect, useReducer } from "react";
 
-import { KumoStoreState } from "@liquity/lib-base";
+import { KumoStoreState } from "@kumodao/lib-base";
 
 import { equals } from "../utils/equals";
 import { useKumoStore } from "./useKumoStore";

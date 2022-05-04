@@ -7,9 +7,9 @@ import {
   KumoStoreState,
   KUMOStake,
   KUMOStakeChange
-} from "@liquity/lib-base";
+} from "@kumodao/lib-base";
 
-import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@liquity/lib-react";
+import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@kumodao/lib-react";
 
 import { GT, COIN } from "../../strings";
 
