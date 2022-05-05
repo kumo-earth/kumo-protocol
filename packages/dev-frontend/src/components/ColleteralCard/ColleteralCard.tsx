@@ -89,7 +89,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            {total?.collateral.shorten()}
+            {total?.collateral.prettify(2)} {(collateralType === "bct" && "BCT") || (collateralType === "mco2" && "MCO2")}
           </Heading>
         </Flex>
         <Box sx={{ padding: "0 1.5rem 10px 1.5rem" }}>
@@ -122,11 +122,11 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            {total?.debt.shorten()}
+            {total?.debt.prettify(2)} KUSD
           </Heading>
         </Flex>
-        {/*<Flex sx={{ padding: "1.5rem" }}>
-          <Text
+        {/* <Flex sx={{ padding: "1.5rem" }}> */}
+        {/* <Text
             sx={{
               fontFamily: "Roboto, Helvetica, Arial, sans-serif",
               fontWeight: "bold",
@@ -140,8 +140,8 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             { `The system is in normal mode. Recovery mode will be activated if ${'BCT'} price goes down by 51% to $1706.56.`}
              
            
-          </Text>
-          <Text
+          </Text> */}
+        {/* <Text
             sx={{
               fontFamily: "Roboto, Helvetica, Arial, sans-serif",
               fontWeight: "bold",
@@ -151,8 +151,8 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             }}
           >
             42,42,496
-          </Text>
-         </Flex>  */}
+          </Text> */}
+        {/* </Flex> */}
       </Box>
     </Card>
   );

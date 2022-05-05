@@ -30,6 +30,5 @@ Equivalent to:
 
 ```typescript
 adjustTrove({ borrowKUSD: amount }, maxBorrowingRate)
-
 ```
 
