@@ -85,13 +85,13 @@ const applyUnsavedNetDebtChanges = (unsavedChanges: Difference, trove: Trove) =>
 
 const getPathName = (location: any) => {
   return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-};
+}
 
 export const Adjusting: React.FC = () => {
   const { dispatchEvent } = useTroveView();
   const { fees, price, accountBalance, validationContext } = useKumoSelector(selector);
   const location = useLocation();
-  const { vaults, adjustTroveT } = useDashboard();
+  const { vaults, adjustTroveT, bctPrice, mco2Price } = useDashboard();
   const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
   const { trove } = vaultType;
   const editingState = useState<string>();
@@ -212,6 +212,7 @@ export const Adjusting: React.FC = () => {
           setEditedAmount={(amount: string) => {
             setCollateral(Decimal.from(amount));
           }}
+          tokenPrice={getPathName(location) === 'bct' ? bctPrice : getPathName(location) === 'mco2' ? mco2Price : Decimal.ZERO }
         />
 
         <EditableRow
@@ -222,6 +223,7 @@ export const Adjusting: React.FC = () => {
           editingState={editingState}
           editedAmount={netDebt.toString(2)}
           setEditedAmount={(amount: string) => setNetDebt(Decimal.from(amount))}
+          tokenPrice={getPathName(location) === 'bct' ? bctPrice : getPathName(location) === 'mco2' ? mco2Price : Decimal.ZERO }
         />
 
         <StaticRow

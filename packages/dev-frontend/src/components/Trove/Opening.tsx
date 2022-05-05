@@ -52,7 +52,7 @@ export const Opening: React.FC = () => {
   const { fees, price, accountBalance, validationContext } = useKumoSelector(selector);
 
   const location = useLocation();
-  const { vaults, openTroveT } = useDashboard();
+  const { vaults, openTroveT, bctPrice, mco2Price } = useDashboard();
   const vaultType = vaults.some(vault => vault.troveStatus === "open");
   const borrowingRate = fees.borrowingRate();
   const editingState = useState<string>();
@@ -162,6 +162,13 @@ export const Opening: React.FC = () => {
           unit={getPathName(location).toUpperCase()}
           editedAmount={collateral.toString(4)}
           setEditedAmount={(amount: string) => setCollateral(Decimal.from(amount))}
+          tokenPrice={
+            getPathName(location) === "bct"
+              ? bctPrice
+              : getPathName(location) === "mco2"
+              ? mco2Price
+              : Decimal.ZERO
+          }
         />
 
         <EditableRow
@@ -172,6 +179,13 @@ export const Opening: React.FC = () => {
           editingState={editingState}
           editedAmount={borrowAmount.toString(2)}
           setEditedAmount={(amount: string) => setBorrowAmount(Decimal.from(amount))}
+          tokenPrice={
+            getPathName(location) === "bct"
+              ? bctPrice
+              : getPathName(location) === "mco2"
+              ? mco2Price
+              : Decimal.ZERO
+          }
         />
 
         <StaticRow

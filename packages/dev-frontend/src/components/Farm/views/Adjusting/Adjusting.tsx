@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Heading, Box, Flex, Card, Button } from "theme-ui";
 import { Decimal, Difference, KumoStoreState } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
@@ -13,6 +14,7 @@ import { Confirm } from "../Confirm";
 import { Description } from "../Description";
 import { Approve } from "../Approve";
 import { Validation } from "../Validation";
+import { useDashboard } from "../../../../hooks/DashboardContext"
 
 const selector = ({
   liquidityMiningStake,
@@ -28,6 +30,10 @@ const selector = ({
 
 const transactionId = /farm-/;
 
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
+
 export const Adjusting: React.FC = () => {
   const { dispatchEvent } = useFarmView();
   const {
@@ -38,6 +44,8 @@ export const Adjusting: React.FC = () => {
   } = useKumoSelector(selector);
   const [amount, setAmount] = useState<Decimal>(liquidityMiningStake);
   const editingState = useState<string>();
+  const { bctPrice, mco2Price } = useDashboard();
+  const location = useLocation();
 
   const transactionState = useMyTransactionState(transactionId);
   const isTransactionPending =
@@ -87,6 +95,7 @@ export const Adjusting: React.FC = () => {
           setEditedAmount={amount => setAmount(Decimal.from(amount))}
           maxAmount={maximumAmount.toString()}
           maxedOut={hasSetMaximumAmount}
+          tokenPrice={getPathName(location) === 'bct' ? bctPrice : getPathName(location) === 'mco2' ? mco2Price : Decimal.ZERO }
         ></EditableRow>
 
         {poolShare.infinite ? (

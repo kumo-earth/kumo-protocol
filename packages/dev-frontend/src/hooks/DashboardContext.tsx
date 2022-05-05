@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   Decimal,
   FrontendStatus,
@@ -15,7 +10,7 @@ import {
   StabilityDeposit
 } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
-
+import { getTokenPrice } from "../tokensPrice";
 
 type StabilityDepositChange = {
   depositKUSD: Decimal | undefined;
@@ -35,6 +30,7 @@ type DashboardContextValue = {
   kumoStake: KUMOStake;
   selectedTrove: Trove;
   vaults: vaultsType;
+  totalCollDebt: { totalColl: Decimal; totalDebt: Decimal };
   depositKusd: StabilityDepositChange;
   handleDepositKusd: (
     depositKUSD: Decimal | undefined,
@@ -49,6 +45,8 @@ type DashboardContextValue = {
     collateralRatio: Decimal
   ) => void;
   openStabilityDeposit: (type: string, amount: Decimal) => void;
+  bctPrice: Decimal;
+  mco2Price: Decimal;
 };
 
 type vaultsType = Array<{
@@ -127,6 +125,12 @@ export const DashboardProvider: React.FC = ({ children }) => {
     withdrawKUSD: undefined,
     withdrawAllKUSD: false
   });
+  const [totalCollDebt, setTotalCollDebt] = useState({
+    totalColl: Decimal.ZERO,
+    totalDebt: Decimal.ZERO
+  });
+  const [bctPrice, setBctPrice] = useState<Decimal>(Decimal.ZERO);
+  const [mco2Price, setMco2Price] = useState<Decimal>(Decimal.ZERO);
 
   useEffect(() => {
     const { status } = trove;
@@ -163,7 +167,32 @@ export const DashboardProvider: React.FC = ({ children }) => {
         });
       setVaults(updatedVaults);
     }
-  }, [trove, stabilityDeposit, vaults]);
+  }, [trove]);
+
+  useEffect(() => {
+    let calcCollat = Decimal.ZERO;
+    let calcDebt = Decimal.ZERO;
+    vaults.forEach(async vault => {
+      calcDebt = calcDebt.add(vault.trove.debt);
+      if (vault.type === "bct" && vault.trove.collateral.nonZero) {
+        calcCollat = calcCollat.add(vault.trove.collateral.mul(bctPrice));
+      } else if (vault.type === "mco2" && vault.trove.collateral.nonZero) {
+        calcCollat = calcCollat.add(vault.trove.collateral.mul(mco2Price));
+      }
+      setTotalCollDebt({ totalColl: calcCollat, totalDebt: calcDebt });
+    });
+  }, [vaults]);
+
+  useEffect(() => {
+    setPrices();
+  }, []);
+
+  const setPrices = async () => {
+    const bctResponse = await getTokenPrice("toucan-protocol-base-carbon-tonne");
+    setBctPrice(bctResponse.data);
+    const mco2Response = await getTokenPrice("moss-carbon-credit");
+    setMco2Price(mco2Response.data);
+  };
 
   const handleDepositKusd = (
     depositKUSD: Decimal | undefined,
@@ -259,9 +288,12 @@ export const DashboardProvider: React.FC = ({ children }) => {
         handleDepositKusd,
         selectedTrove: selectedTrove ? selectedTrove : trove,
         vaults,
+        totalCollDebt,
         openTroveT,
         adjustTroveT,
-        openStabilityDeposit
+        openStabilityDeposit,
+        bctPrice,
+        mco2Price
       }}
     >
       {children}

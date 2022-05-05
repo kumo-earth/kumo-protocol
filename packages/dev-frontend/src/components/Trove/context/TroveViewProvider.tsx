@@ -80,14 +80,11 @@ const getPathName = (location: any) => {
   return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
 };
 
-
 export const TroveViewProvider: React.FC = props => {
   const { children } = props;
   // const troveStatus = useLiquitySelector(select);
   const location = useLocation();
   const { vaults } = useDashboard();
-
-  
 
   const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
   const { troveStatus } = vaultType;
@@ -114,7 +111,7 @@ export const TroveViewProvider: React.FC = props => {
     if (view !== "OPENING") {
       setView(getInitialView(troveStatus));
     }
-  }, [troveStatus, view]);
+  }, [troveStatus]);
 
   useEffect(() => {
     const event = troveStatusEvents[troveStatus] ?? null;

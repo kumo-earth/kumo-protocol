@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Heading, Box, Card, Button } from "theme-ui";
+import { useLocation } from "react-router-dom";
 
 import { Decimal, Decimalish, Difference, KumoStoreState, KUMOStake } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
@@ -11,6 +12,7 @@ import { EditableRow, StaticRow } from "../Trove/Editor";
 import { LoadingOverlay } from "../LoadingOverlay";
 
 import { useStakingView } from "./context/StakingViewContext";
+import { useDashboard } from "../../hooks/DashboardContext";
 
 const select = ({ kumoBalance, totalStakedKUMO }: KumoStoreState) => ({
   kumoBalance,
@@ -24,6 +26,10 @@ type StakingEditorProps = {
   dispatch: (action: { type: "setStake"; newValue: Decimalish } | { type: "revert" }) => void;
 };
 
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
+
 export const StakingEditor: React.FC<StakingEditorProps> = ({
   children,
   title,
@@ -34,6 +40,8 @@ export const StakingEditor: React.FC<StakingEditorProps> = ({
   const { kumoBalance, totalStakedKUMO } = useKumoSelector(select);
   const { changePending } = useStakingView();
   const editingState = useState<string>();
+  const { bctPrice, mco2Price } = useDashboard()
+  const location = useLocation();
 
   const edited = !editedKUMO.eq(originalStake.stakedKUMO);
 
@@ -73,6 +81,7 @@ export const StakingEditor: React.FC<StakingEditorProps> = ({
           {...{ editingState }}
           editedAmount={editedKUMO.toString(2)}
           setEditedAmount={newValue => dispatch({ type: "setStake", newValue })}
+          tokenPrice={getPathName(location) === 'bct' ? bctPrice : getPathName(location) === 'mco2' ? mco2Price : Decimal.ZERO }
         />
 
         {newPoolShare.infinite ? (

@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Heading, Box, Flex, Card, Button } from "theme-ui";
 import { Decimal, KumoStoreState } from "@kumodao/lib-base";
 import { LP } from "../../../../strings";
@@ -13,9 +14,14 @@ import { Approve } from "../Approve";
 import { Validation } from "../Validation";
 import { useValidationState } from "../../context/useValidationState";
 import { useKumoSelector } from "@kumodao/lib-react";
+import { useDashboard } from "../../../../hooks/DashboardContext";
 
 const transactionId = /farm-/;
 const selector = ({ totalStakedUniTokens }: KumoStoreState) => ({ totalStakedUniTokens });
+
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
 
 export const Staking: React.FC = () => {
   const { dispatchEvent } = useFarmView();
@@ -23,6 +29,10 @@ export const Staking: React.FC = () => {
 
   const [amount, setAmount] = useState<Decimal>(Decimal.from(0));
   const editingState = useState<string>();
+
+  const location = useLocation();
+  const { bctPrice, mco2Price } = useDashboard();
+
   const isDirty = !amount.isZero;
 
   const { maximumStake, hasSetMaximumStake } = useValidationState(amount);
@@ -66,6 +76,13 @@ export const Staking: React.FC = () => {
           setEditedAmount={amount => setAmount(Decimal.from(amount))}
           maxAmount={maximumStake.toString()}
           maxedOut={hasSetMaximumStake}
+          tokenPrice={
+            getPathName(location) === "bct"
+              ? bctPrice
+              : getPathName(location) === "mco2"
+              ? mco2Price
+              : Decimal.ZERO
+          }
         ></EditableRow>
 
         {poolShare.infinite ? (
