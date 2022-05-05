@@ -13,7 +13,7 @@ import {
   UserTrove,
   UserTroveStatus,
   StabilityDeposit
-} from "@liquity/lib-base";
+} from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 
 
