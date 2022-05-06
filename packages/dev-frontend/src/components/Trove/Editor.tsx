@@ -234,7 +234,7 @@ type EditableRowProps = DisabledEditableRowProps & {
   setEditedAmount: (editedAmount: string) => void;
   maxAmount?: string;
   maxedOut?: boolean;
-  tokenPrice: Decimal;
+  tokenPrice?: Decimal;
 };
 
 export const EditableRow: React.FC<EditableRowProps> = ({
@@ -286,7 +286,7 @@ export const EditableRow: React.FC<EditableRowProps> = ({
           bg: invalid ? "invalid" : "background"
         }}
       />
-      <TokenUsd tokenPrice={tokenPrice} editedVal={Decimal.from(editedAmount)} />
+      {tokenPrice && <TokenUsd tokenPrice={tokenPrice} editedVal={Decimal.from(editedAmount)} />}
     </Row>
   ) : (
     <Row labelId={`${inputId}-label`} {...{ label, unit }} sx={{ position: "relative" }}>

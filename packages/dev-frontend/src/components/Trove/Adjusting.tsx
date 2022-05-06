@@ -85,7 +85,7 @@ const applyUnsavedNetDebtChanges = (unsavedChanges: Difference, trove: Trove) =>
 
 const getPathName = (location: any) => {
   return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-}
+};
 
 export const Adjusting: React.FC = () => {
   const { dispatchEvent } = useTroveView();
@@ -104,7 +104,7 @@ export const Adjusting: React.FC = () => {
 
   useEffect(() => {
     if (transactionState.type === "confirmedOneShot") {
-      collateralRatio && adjustTroveT(getPathName(location), collateral, netDebt, price);
+      collateralRatio && adjustTroveT(getPathName(location), collateral, totalDebt, netDebt);
       dispatchEvent("TROVE_ADJUSTED");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -149,9 +149,17 @@ export const Adjusting: React.FC = () => {
     : Decimal.ZERO;
   const maxCollateral = trove.collateral.add(availableEth);
   const collateralMaxedOut = collateral.eq(maxCollateral);
-  const collateralRatio =
-    !collateral.isZero && !netDebt.isZero ? updatedTrove.collateralRatio(price) : undefined;
-  const collateralRatioChange = Difference.between(collateralRatio, trove.collateralRatio(price));
+  let collateralRatioChange = Difference.between(Decimal.ZERO, Decimal.ZERO);
+  let collateralRatio: Decimal | undefined = undefined;
+  if (getPathName(location) === "bct") {
+    collateralRatio =
+      !collateral.isZero && !netDebt.isZero ? updatedTrove.collateralRatio(bctPrice) : undefined;
+    collateralRatioChange = Difference.between(collateralRatio, trove.collateralRatio(bctPrice));
+  } else if (getPathName(location) === "mco2") {
+    collateralRatio =
+      !collateral.isZero && !netDebt.isZero ? updatedTrove.collateralRatio(mco2Price) : undefined;
+    collateralRatioChange = Difference.between(collateralRatio, trove.collateralRatio(mco2Price));
+  }
 
   const [troveChange, description] = validateTroveChange(
     trove,
@@ -212,7 +220,13 @@ export const Adjusting: React.FC = () => {
           setEditedAmount={(amount: string) => {
             setCollateral(Decimal.from(amount));
           }}
-          tokenPrice={getPathName(location) === 'bct' ? bctPrice : getPathName(location) === 'mco2' ? mco2Price : Decimal.ZERO }
+          tokenPrice={
+            getPathName(location) === "bct"
+              ? bctPrice
+              : getPathName(location) === "mco2"
+              ? mco2Price
+              : Decimal.ZERO
+          }
         />
 
         <EditableRow
@@ -223,7 +237,6 @@ export const Adjusting: React.FC = () => {
           editingState={editingState}
           editedAmount={netDebt.toString(2)}
           setEditedAmount={(amount: string) => setNetDebt(Decimal.from(amount))}
-          tokenPrice={getPathName(location) === 'bct' ? bctPrice : getPathName(location) === 'mco2' ? mco2Price : Decimal.ZERO }
         />
 
         <StaticRow

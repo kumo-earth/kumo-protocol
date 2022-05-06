@@ -71,8 +71,14 @@ export const Opening: React.FC = () => {
     ? accountBalance.sub(GAS_ROOM_ETH)
     : Decimal.ZERO;
   const collateralMaxedOut = collateral.eq(maxCollateral);
-  const collateralRatio =
-    !collateral.isZero && !borrowAmount.isZero ? trove.collateralRatio(price) : undefined;
+  let collateralRatio: Decimal | undefined = undefined;
+  if (getPathName(location) === "bct") {
+    collateralRatio =
+      !collateral.isZero && !borrowAmount.isZero ? trove.collateralRatio(bctPrice) : undefined;
+  } else if (getPathName(location) === "mco2") {
+    collateralRatio =
+      !collateral.isZero && !borrowAmount.isZero ? trove.collateralRatio(mco2Price) : undefined;
+  }
 
   const [troveChange, description] = validateTroveChange(
     EMPTY_TROVE,
@@ -101,9 +107,11 @@ export const Opening: React.FC = () => {
   useEffect(() => {
     if (transactionState.type === "confirmedOneShot") {
       if (!vaultType) {
-        collateralRatio && openTroveT(getPathName(location), collateral, borrowAmount, price);
+        collateralRatio &&
+          openTroveT(getPathName(location), collateral, totalDebt, borrowAmount.add(fee));
       } else {
-        collateralRatio && openTroveT(getPathName(location), collateral, borrowAmount, price);
+        collateralRatio &&
+          openTroveT(getPathName(location), collateral, totalDebt, borrowAmount.add(fee));
         dispatchEvent("CANCEL_ADJUST_TROVE_PRESSED");
       }
     }
@@ -121,6 +129,8 @@ export const Opening: React.FC = () => {
       setBorrowAmount(KUSD_MINIMUM_NET_DEBT);
     }
   }, [collateral, borrowAmount]);
+
+  console.log("OpeningTrove12", collateral, borrowAmount, totalDebt, fee.prettify(0));
 
   return (
     <Card
@@ -179,13 +189,6 @@ export const Opening: React.FC = () => {
           editingState={editingState}
           editedAmount={borrowAmount.toString(2)}
           setEditedAmount={(amount: string) => setBorrowAmount(Decimal.from(amount))}
-          tokenPrice={
-            getPathName(location) === "bct"
-              ? bctPrice
-              : getPathName(location) === "mco2"
-              ? mco2Price
-              : Decimal.ZERO
-          }
         />
 
         <StaticRow

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import { Button, Box, Flex, Card, Heading } from "theme-ui";
 
 import { Decimal, Percent, KumoStoreState, MINIMUM_COLLATERAL_RATIO } from "@kumodao/lib-base";
@@ -16,7 +15,6 @@ import { useMyTransactionState } from "../Transaction";
 
 import { RedemptionAction } from "./RedemptionAction";
 import { InfoIcon } from "../InfoIcon";
-import { useDashboard } from "../../hooks/DashboardContext";
 
 const mcrPercent = new Percent(MINIMUM_COLLATERAL_RATIO).toString(0);
 
@@ -29,18 +27,11 @@ const select = ({ price, fees, total, kusdBalance }: KumoStoreState) => ({
 
 const transactionId = "redemption";
 
-const getPathName = (location: any) => {
-  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-}
-
 export const RedemptionManager: React.FC = () => {
   const { price, fees, total, kusdBalance } = useKumoSelector(select);
   const [kusdAmount, setKUSDAmount] = useState(Decimal.ZERO);
   const [changePending, setChangePending] = useState(false);
   const editingState = useState<string>();
-
-  const location = useLocation();
-  const { bctPrice, mco2Price } = useDashboard();
 
   const dirty = !kusdAmount.isZero;
   const ethAmount = kusdAmount.div(price);
@@ -121,7 +112,6 @@ export const RedemptionManager: React.FC = () => {
           {...{ editingState }}
           editedAmount={kusdAmount.toString(2)}
           setEditedAmount={amount => setKUSDAmount(Decimal.from(amount))}
-          tokenPrice={getPathName(location) === 'bct' ? bctPrice : getPathName(location) === 'mco2' ? mco2Price : Decimal.ZERO }
         />
 
         <StaticRow
