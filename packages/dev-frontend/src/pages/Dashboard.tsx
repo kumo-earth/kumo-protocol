@@ -59,6 +59,31 @@ export const Dashboard: React.FC = () => {
             {totalCollDebt.totalDebt.prettify(2)}
           </Heading>
         </Box>
+        <Box>
+          <Heading
+            as="h6"
+            sx={{
+              fontSize: 14,
+              color: "#f9f8f9",
+              padding: "1.5rem 1.5rem 10px 1.5rem"
+            }}
+          >
+            CARBON CREDITS TONNES
+          </Heading>
+          <Heading
+            as="h4"
+            sx={{
+              fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+              fontWeight: "bold",
+              letterSpacing: "0.5px",
+              fontSize: "32px",
+              color: "#f9f8f9",
+              padding: "0 1.5rem 30px 1.5rem"
+            }}
+          >
+            {totalCollDebt.totalCarbonCredits.prettify(0)}
+          </Heading>
+        </Box>
       </Container>
       <Grid
         sx={{

@@ -30,7 +30,7 @@ type DashboardContextValue = {
   kumoStake: KUMOStake;
   selectedTrove: Trove;
   vaults: vaultsType;
-  totalCollDebt: { totalColl: Decimal; totalDebt: Decimal };
+  totalCollDebt: { totalColl: Decimal; totalDebt: Decimal; totalCarbonCredits: Decimal };
   depositKusd: StabilityDepositChange;
   handleDepositKusd: (
     depositKUSD: Decimal | undefined,
@@ -127,7 +127,8 @@ export const DashboardProvider: React.FC = ({ children }) => {
   });
   const [totalCollDebt, setTotalCollDebt] = useState({
     totalColl: Decimal.ZERO,
-    totalDebt: Decimal.ZERO
+    totalDebt: Decimal.ZERO,
+    totalCarbonCredits: Decimal.ZERO
   });
   const [bctPrice, setBctPrice] = useState<Decimal>(Decimal.ZERO);
   const [mco2Price, setMco2Price] = useState<Decimal>(Decimal.ZERO);
@@ -172,14 +173,20 @@ export const DashboardProvider: React.FC = ({ children }) => {
   useEffect(() => {
     let calcCollat = Decimal.ZERO;
     let calcDebt = Decimal.ZERO;
+    let calcCarbonCredits = Decimal.ZERO;
     vaults.forEach(async vault => {
       calcDebt = calcDebt.add(vault.trove.debt);
+      calcCarbonCredits = calcCarbonCredits.add(vault.trove.collateral);
       if (vault.type === "bct" && vault.trove.collateral.nonZero) {
         calcCollat = calcCollat.add(vault.trove.collateral.mul(bctPrice));
       } else if (vault.type === "mco2" && vault.trove.collateral.nonZero) {
         calcCollat = calcCollat.add(vault.trove.collateral.mul(mco2Price));
       }
-      setTotalCollDebt({ totalColl: calcCollat, totalDebt: calcDebt });
+      setTotalCollDebt({
+        totalColl: calcCollat,
+        totalDebt: calcDebt,
+        totalCarbonCredits: calcCarbonCredits
+      });
     });
   }, [vaults]);
 
@@ -205,15 +212,28 @@ export const DashboardProvider: React.FC = ({ children }) => {
   const adjustTroveT = (
     type: string,
     collateral: Decimal,
-    netDebt: Decimal,
-    price: Decimal
+    totalDebt: Decimal,
+    netDebt: Decimal
   ): void => {
     const updatedVaults =
       vaults &&
       vaults.map(vault => {
         if (vault.type === type) {
-          const updatedTrove = new UserTrove(vault.trove.ownerAddress, "open", collateral, netDebt);
-          const collateralRatio = updatedTrove.collateralRatio(price);
+          const updatedTrove = new UserTrove(
+            vault.trove.ownerAddress,
+            "open",
+            collateral,
+            totalDebt
+          );
+          updatedTrove.netDebt.sub(updatedTrove.netDebt);
+          updatedTrove.netDebt.add(netDebt);
+          let collateralRatio = Decimal.ZERO;
+          if (type === "bct") {
+            collateralRatio = updatedTrove.collateralRatio(bctPrice);
+          } else if (type === "mco2") {
+            collateralRatio = updatedTrove.collateralRatio(mco2Price);
+          }
+
           return { ...vault, collateralRatio: collateralRatio, trove: updatedTrove };
         }
         return vault;
@@ -224,8 +244,8 @@ export const DashboardProvider: React.FC = ({ children }) => {
   const openTroveT = (
     type: string,
     collateral: Decimal,
-    borrowAmount: Decimal,
-    price: Decimal
+    totalDebt: Decimal,
+    netDebt: Decimal
   ): void => {
     const updatedVaults =
       vaults &&
@@ -235,9 +255,15 @@ export const DashboardProvider: React.FC = ({ children }) => {
             vault.trove.ownerAddress,
             "open",
             collateral,
-            borrowAmount
+            totalDebt
           );
-          const collateralRatio = updatedTrove.collateralRatio(price);
+          updatedTrove.netDebt.add(netDebt);
+          let collateralRatio = Decimal.ZERO;
+          if (type === "bct") {
+            collateralRatio = updatedTrove.collateralRatio(bctPrice);
+          } else if (type === "mco2") {
+            collateralRatio = updatedTrove.collateralRatio(mco2Price);
+          }
           return {
             ...vault,
             troveStatus: updatedTrove.status,
