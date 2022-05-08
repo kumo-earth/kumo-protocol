@@ -1,4 +1,4 @@
-import { Grid, Container, Box, Heading } from "theme-ui";
+import { Grid, Container, Box, Heading, } from "theme-ui";
 import { Percent } from "@kumodao/lib-base";
 import { CollateralCard } from "../components/ColleteralCard/ColleteralCard";
 import { useDashboard } from "../hooks/DashboardContext";
@@ -31,7 +31,7 @@ export const Dashboard: React.FC = () => {
               padding: "0 1.5rem 30px 1.5rem"
             }}
           >
-            ${totalCollDebt.totalColl.prettify(2)}
+            ${totalCollDebt.totalColl.prettify(0)}
           </Heading>
         </Box>
         <Box>
@@ -56,7 +56,7 @@ export const Dashboard: React.FC = () => {
               padding: "0 1.5rem 30px 1.5rem"
             }}
           >
-            {totalCollDebt.totalDebt.prettify(2)}
+            {totalCollDebt.totalDebt.prettify(0)}
           </Heading>
         </Box>
         <Box>
@@ -68,7 +68,7 @@ export const Dashboard: React.FC = () => {
               padding: "1.5rem 1.5rem 10px 1.5rem"
             }}
           >
-            CARBON CREDITS TONNES
+            TOTAL CARBON CREDITS
           </Heading>
           <Heading
             as="h4"

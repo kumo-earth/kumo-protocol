@@ -18,7 +18,6 @@ import { Icon } from "../Icon";
 import { EditableRow, StaticRow } from "../Trove/Editor";
 import { LoadingOverlay } from "../LoadingOverlay";
 import { InfoIcon } from "../InfoIcon";
-import { useDashboard } from "../../hooks/DashboardContext";
 
 const select = ({ kusdBalance, kusdInStabilityPool }: KumoStoreState) => ({
   kusdBalance,
@@ -47,8 +46,6 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   const editingState = useState<string>();
 
   const location = useLocation();
-
-  const { bctPrice, mco2Price } = useDashboard();
 
   const edited = !editedKUSD.eq(originalDeposit.currentKUSD);
 
@@ -109,13 +106,6 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
           {...{ editingState }}
           editedAmount={editedKUSD.toString(2)}
           setEditedAmount={newValue => dispatch({ type: "setDeposit", newValue })}
-          tokenPrice={
-            getPathName(location) === "bct"
-              ? bctPrice
-              : getPathName(location) === "mco2"
-              ? mco2Price
-              : Decimal.ZERO
-          }
         />
 
         {newPoolShare.infinite ? (
