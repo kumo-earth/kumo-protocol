@@ -56,7 +56,7 @@ export const Dashboard: React.FC = () => {
               padding: "0 1.5rem 30px 1.5rem"
             }}
           >
-            {totalCollDebt.totalDebt.prettify(0)}
+            ${totalCollDebt.totalDebt.prettify(0)}
           </Heading>
         </Box>
         <Box>

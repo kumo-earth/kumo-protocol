@@ -41,9 +41,9 @@ export const NoDeposit: React.FC = props => {
         }}
       >
         {getPathName(location).toUpperCase()} Stability Pool
-        <Flex sx={{ justifyContent: "flex-end" }}>
+        {/* <Flex sx={{ justifyContent: "flex-end" }}>
           <RemainingKUMO />
-        </Flex>
+        </Flex> */}
       </Heading>
       <Box sx={{ p: [2, 3] }}>
         <InfoMessage title="You have no KUSD in the Stability Pool.">
