@@ -92,6 +92,7 @@ export const Adjusting: React.FC = () => {
   const { fees, price, accountBalance, validationContext } = useKumoSelector(selector);
   const location = useLocation();
   const { vaults, adjustTroveT, bctPrice, mco2Price } = useDashboard();
+
   const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
   const { trove } = vaultType;
   const editingState = useState<string>();

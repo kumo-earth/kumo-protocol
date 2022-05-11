@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { UserTroveStatus } from "@kumodao/lib-base";
+
 import { TroveViewContext } from "./TroveViewContext";
 import type { TroveView, TroveEvent } from "./types";
 import { useDashboard } from "../../../hooks/DashboardContext";
@@ -85,7 +86,7 @@ export const TroveViewProvider: React.FC = props => {
   // const troveStatus = useLiquitySelector(select);
   const location = useLocation();
   const { vaults } = useDashboard();
-
+  
   const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
   const { troveStatus } = vaultType;
 

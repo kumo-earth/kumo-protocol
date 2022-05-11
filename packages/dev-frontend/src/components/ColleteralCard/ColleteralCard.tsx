@@ -1,6 +1,7 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { Flex, Progress, Box, Card, Heading } from "theme-ui";
+
 import { useTroveView } from "../Trove/context/TroveViewContext";
 
 type CollateralCardProps = {

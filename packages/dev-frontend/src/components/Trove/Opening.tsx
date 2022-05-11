@@ -53,6 +53,7 @@ export const Opening: React.FC = () => {
 
   const location = useLocation();
   const { vaults, openTroveT, bctPrice, mco2Price } = useDashboard();
+
   const vaultType = vaults.some(vault => vault.troveStatus === "open");
   const borrowingRate = fees.borrowingRate();
   const editingState = useState<string>();

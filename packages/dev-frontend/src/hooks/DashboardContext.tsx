@@ -47,7 +47,7 @@ type DashboardContextValue = {
   openStabilityDeposit: (type: string, amount: Decimal) => void;
   bctPrice: Decimal;
   mco2Price: Decimal;
-};
+
 
 type vaultsType = Array<{
   type: string;
@@ -233,7 +233,6 @@ export const DashboardProvider: React.FC = ({ children }) => {
           } else if (type === "mco2") {
             collateralRatio = updatedTrove.collateralRatio(mco2Price);
           }
-
           return { ...vault, collateralRatio: collateralRatio, trove: updatedTrove };
         }
         return vault;

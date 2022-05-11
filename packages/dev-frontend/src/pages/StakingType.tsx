@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 import { useHistory } from "react-router-dom";
 import { Grid, Box } from "theme-ui";
 import { Stability } from "../components/Stability/Stability";
@@ -28,7 +29,6 @@ export const StakingType: React.FC = () => {
     boxShadow: 24,
     p: 0
   };
-
   return (
     <Grid
       sx={{
@@ -52,7 +52,6 @@ export const StakingType: React.FC = () => {
           />
         );
       })}
-
       {stakeDeposit && (
         <Dialog {...dialog}>
           <Box sx={{ ...style, position: "absolute" }}>
