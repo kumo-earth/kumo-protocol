@@ -291,7 +291,7 @@ async function mainnetDeploy(configParams) {
   // let deployerLUSDBal = await liquityCore.lusdToken.balanceOf(deployerWallet.address)
   // th.logBN("deployer's LUSD balance", deployerLUSDBal)
 
-  // // Check Uniswap pool has LUSD and WETH tokens
+  // Check Uniswap pool has LUSD and WETH tokens
   const LUSDETHPair = await new ethers.Contract(
     LUSDWETHPairAddr,
     UniswapV2Pair.abi,
