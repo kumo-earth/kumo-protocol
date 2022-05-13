@@ -3,10 +3,9 @@ const externalAddrs  = {
   CHAINLINK_ETHUSD_PROXY: "0x0715A7794a1dc8e42615F059dD6e406A6594651A", 
   // https://docs.tellor.io/tellor/integration/reference
   TELLOR_MASTER:"0x41b66dd93b03e89D29114a7613A6f9f0d4F40178",
-  // https://uniswap.org/docs/v2/smart-contracts/factory/
-  // FUTURE WILL BE SUSHISWAP
-  // UNISWAP_V2_FACTORY: "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f",
-  // UNISWAP_V2_ROUTER02: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+  // Below are SushiSwap addresses https://dev.sushi.com/sushiswap/contracts
+  UNISWAP_V2_FACTORY: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
+  UNISWAP_V2_ROUTER02: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
   // https://mumbai.polygonscan.com/token/0xa6fa4fb5f76172d178d61b04b0ecd319c5d1c0aa
   WETH_ERC20: "0xa6fa4fb5f76172d178d61b04b0ecd319c5d1c0aa", 
 }
