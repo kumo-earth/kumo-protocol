@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Decimal, StabilityDeposit, StabilityDepositChange } from "@liquity/lib-base";
+import { Decimal, StabilityDeposit, StabilityDepositChange } from "@kumodao/lib-base";
 
 import { COIN, GT } from "../../strings";
 import { ActionDescription, Amount } from "../ActionDescription";

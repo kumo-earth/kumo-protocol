@@ -8,8 +8,8 @@ import {
   KUSD_LIQUIDATION_RESERVE,
   Percent,
   Difference
-} from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+} from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 
 import { useStableTroveChange } from "../../hooks/useStableTroveChange";
 import { ActionDescription } from "../ActionDescription";
@@ -91,7 +91,8 @@ export const Adjusting: React.FC = () => {
   const { dispatchEvent } = useTroveView();
   const { fees, price, accountBalance, validationContext } = useKumoSelector(selector);
   const location = useLocation();
-  const { vaults, adjustTroveT } = useDashboard();
+  const { vaults, adjustTroveT, bctPrice, mco2Price } = useDashboard();
+
   const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
   const { trove } = vaultType;
   const editingState = useState<string>();
@@ -104,7 +105,7 @@ export const Adjusting: React.FC = () => {
 
   useEffect(() => {
     if (transactionState.type === "confirmedOneShot") {
-      collateralRatio && adjustTroveT(getPathName(location), collateral, netDebt, price);
+      collateralRatio && adjustTroveT(getPathName(location), collateral, totalDebt, netDebt);
       dispatchEvent("TROVE_ADJUSTED");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -149,9 +150,17 @@ export const Adjusting: React.FC = () => {
     : Decimal.ZERO;
   const maxCollateral = trove.collateral.add(availableEth);
   const collateralMaxedOut = collateral.eq(maxCollateral);
-  const collateralRatio =
-    !collateral.isZero && !netDebt.isZero ? updatedTrove.collateralRatio(price) : undefined;
-  const collateralRatioChange = Difference.between(collateralRatio, trove.collateralRatio(price));
+  let collateralRatioChange = Difference.between(Decimal.ZERO, Decimal.ZERO);
+  let collateralRatio: Decimal | undefined = undefined;
+  if (getPathName(location) === "bct") {
+    collateralRatio =
+      !collateral.isZero && !netDebt.isZero ? updatedTrove.collateralRatio(bctPrice) : undefined;
+    collateralRatioChange = Difference.between(collateralRatio, trove.collateralRatio(bctPrice));
+  } else if (getPathName(location) === "mco2") {
+    collateralRatio =
+      !collateral.isZero && !netDebt.isZero ? updatedTrove.collateralRatio(mco2Price) : undefined;
+    collateralRatioChange = Difference.between(collateralRatio, trove.collateralRatio(mco2Price));
+  }
 
   const [troveChange, description] = validateTroveChange(
     trove,
@@ -212,6 +221,13 @@ export const Adjusting: React.FC = () => {
           setEditedAmount={(amount: string) => {
             setCollateral(Decimal.from(amount));
           }}
+          tokenPrice={
+            getPathName(location) === "bct"
+              ? bctPrice
+              : getPathName(location) === "mco2"
+              ? mco2Price
+              : Decimal.ZERO
+          }
         />
 
         <EditableRow

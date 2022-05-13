@@ -8,8 +8,8 @@ import {
   KUSD_LIQUIDATION_RESERVE,
   KUSD_MINIMUM_NET_DEBT,
   Percent
-} from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+} from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 
 import { useStableTroveChange } from "../../hooks/useStableTroveChange";
 import { ActionDescription } from "../ActionDescription";
@@ -52,7 +52,8 @@ export const Opening: React.FC = () => {
   const { fees, price, accountBalance, validationContext } = useKumoSelector(selector);
 
   const location = useLocation();
-  const { vaults, openTroveT } = useDashboard();
+  const { vaults, openTroveT, bctPrice, mco2Price } = useDashboard();
+
   const vaultType = vaults.some(vault => vault.troveStatus === "open");
   const borrowingRate = fees.borrowingRate();
   const editingState = useState<string>();
@@ -71,8 +72,14 @@ export const Opening: React.FC = () => {
     ? accountBalance.sub(GAS_ROOM_ETH)
     : Decimal.ZERO;
   const collateralMaxedOut = collateral.eq(maxCollateral);
-  const collateralRatio =
-    !collateral.isZero && !borrowAmount.isZero ? trove.collateralRatio(price) : undefined;
+  let collateralRatio: Decimal | undefined = undefined;
+  if (getPathName(location) === "bct") {
+    collateralRatio =
+      !collateral.isZero && !borrowAmount.isZero ? trove.collateralRatio(bctPrice) : undefined;
+  } else if (getPathName(location) === "mco2") {
+    collateralRatio =
+      !collateral.isZero && !borrowAmount.isZero ? trove.collateralRatio(mco2Price) : undefined;
+  }
 
   const [troveChange, description] = validateTroveChange(
     EMPTY_TROVE,
@@ -101,9 +108,11 @@ export const Opening: React.FC = () => {
   useEffect(() => {
     if (transactionState.type === "confirmedOneShot") {
       if (!vaultType) {
-        collateralRatio && openTroveT(getPathName(location), collateral, borrowAmount, price);
+        collateralRatio &&
+          openTroveT(getPathName(location), collateral, totalDebt, borrowAmount.add(fee));
       } else {
-        collateralRatio && openTroveT(getPathName(location), collateral, borrowAmount, price);
+        collateralRatio &&
+          openTroveT(getPathName(location), collateral, totalDebt, borrowAmount.add(fee));
         dispatchEvent("CANCEL_ADJUST_TROVE_PRESSED");
       }
     }
@@ -121,6 +130,8 @@ export const Opening: React.FC = () => {
       setBorrowAmount(KUSD_MINIMUM_NET_DEBT);
     }
   }, [collateral, borrowAmount]);
+
+  console.log("OpeningTrove12", collateral, borrowAmount, totalDebt, fee.prettify(0));
 
   return (
     <Card
@@ -162,6 +173,13 @@ export const Opening: React.FC = () => {
           unit={getPathName(location).toUpperCase()}
           editedAmount={collateral.toString(4)}
           setEditedAmount={(amount: string) => setCollateral(Decimal.from(amount))}
+          tokenPrice={
+            getPathName(location) === "bct"
+              ? bctPrice
+              : getPathName(location) === "mco2"
+              ? mco2Price
+              : Decimal.ZERO
+          }
         />
 
         <EditableRow

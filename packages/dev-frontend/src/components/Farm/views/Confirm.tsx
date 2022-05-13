@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Button } from "theme-ui";
-import { Decimal } from "@liquity/lib-base";
+import { Decimal } from "@kumodao/lib-base";
 import { useKumo } from "../../../hooks/KumoContext";
 import { Transaction, useMyTransactionState } from "../../Transaction";
 import { useValidationState } from "../context/useValidationState";

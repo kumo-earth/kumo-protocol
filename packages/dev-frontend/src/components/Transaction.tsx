@@ -7,8 +7,8 @@ import { defaultAbiCoder } from "@ethersproject/abi";
 import { buildStyles, CircularProgressbarWithChildren } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
-import { EthersTransactionOverrides, EthersTransactionCancelledError } from "@liquity/lib-ethers";
-import { SentKumoTransaction, KumoReceipt } from "@liquity/lib-base";
+import { EthersTransactionOverrides, EthersTransactionCancelledError } from "@kumodao/lib-ethers";
+import { SentKumoTransaction, KumoReceipt } from "@kumodao/lib-base";
 
 import { useKumo } from "../hooks/KumoContext";
 
@@ -418,7 +418,8 @@ export const TransactionMonitor: React.FC = () => {
         position: "fixed",
         width: "100vw",
         bottom: 0,
-        overflow: "hidden"
+        overflow: "hidden",
+        zIndex: 99999
       }}
     >
       <Box sx={{ mr: 3, width: "40px", height: "40px" }}>

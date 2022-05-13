@@ -2,6 +2,8 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import { Flex, Progress, Box, Card, Heading } from "theme-ui";
 
+import { useTroveView } from "../Trove/context/TroveViewContext";
+
 type CollateralCardProps = {
   collateralType?: string;
   totalCollateralRatioPct?: string;
@@ -13,7 +15,15 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
   totalCollateralRatioPct,
   total
 }) => {
+  const { dispatchEvent, view } = useTroveView();
   const history = useHistory();
+
+  const handleClick = () => {
+    if (view === "ADJUSTING") {
+      dispatchEvent("CANCEL_ADJUST_TROVE_PRESSED");
+    }
+    history.push(`/dashboard/${collateralType}`);
+  };
   return (
     <Card
       sx={{
@@ -25,7 +35,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
         maxWidth: 450,
         maxHeight: "380px"
       }}
-      onClick={() => history.push(`/dashboard/${collateralType}`)}
+      onClick={() => handleClick()}
     >
       <Heading
         sx={{
@@ -89,7 +99,8 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            {total?.collateral.shorten()}
+            {total?.collateral.prettify(2)}{" "}
+            {(collateralType === "bct" && "BCT") || (collateralType === "mco2" && "MCO2")}
           </Heading>
         </Flex>
         <Box sx={{ padding: "0 1.5rem 10px 1.5rem" }}>
@@ -122,7 +133,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            {total?.debt.shorten()}
+            {total?.debt.prettify(2)} KUSD
           </Heading>
         </Flex>
         {/* <Flex sx={{ padding: "1.5rem" }}> */}

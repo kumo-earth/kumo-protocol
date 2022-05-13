@@ -1,6 +1,6 @@
 import { Button } from "theme-ui";
 
-import { Decimal, TroveChange } from "@liquity/lib-base";
+import { Decimal, TroveChange } from "@kumodao/lib-base";
 
 import { useKumo } from "../../hooks/KumoContext";
 import { useTransactionFunction } from "../Transaction";

@@ -161,7 +161,7 @@ export interface CollateralGainTransferDetails extends StabilityPoolGainsWithdra
  * The functions return the details of the transaction (if any), or throw an implementation-specific
  * subclass of {@link TransactionFailedError} in case of transaction failure.
  *
- * Implemented by {@link @liquity/lib-ethers#EthersKumo}.
+ * Implemented by {@link @kumodao/lib-ethers#EthersKumo}.
  *
  * @public
  */
@@ -171,7 +171,7 @@ export interface TransactableKumo {
    *
    * @param params - How much to deposit and borrow.
    * @param maxBorrowingRate - Maximum acceptable
-   *                           {@link @liquity/lib-base#Fees.borrowingRate | borrowing rate}.
+   *                           {@link @kumodao/lib-base#Fees.borrowingRate | borrowing rate}.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
@@ -198,7 +198,7 @@ export interface TransactableKumo {
    *
    * @param params - Parameters of the adjustment.
    * @param maxBorrowingRate - Maximum acceptable
-   *                           {@link @liquity/lib-base#Fees.borrowingRate | borrowing rate} if
+   *                           {@link @kumodao/lib-base#Fees.borrowingRate | borrowing rate} if
    *                           `params` includes `borrowKUSD`.
    *
    * @throws
@@ -206,7 +206,7 @@ export interface TransactableKumo {
    *
    * @remarks
    * The transaction will fail if the Trove's debt would fall below
-   * {@link @liquity/lib-base#KUSD_MINIMUM_DEBT}.
+   * {@link @kumodao/lib-base#KUSD_MINIMUM_DEBT}.
    *
    * If `maxBorrowingRate` is omitted, the current borrowing rate plus 0.5% is used as maximum
    * acceptable rate.
@@ -255,7 +255,7 @@ export interface TransactableKumo {
    *
    * @param amount - The amount of KUSD to borrow.
    * @param maxBorrowingRate - Maximum acceptable
-   *                           {@link @liquity/lib-base#Fees.borrowingRate | borrowing rate}.
+   *                           {@link @kumodao/lib-base#Fees.borrowingRate | borrowing rate}.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
@@ -322,8 +322,8 @@ export interface TransactableKumo {
    * The `frontendTag` parameter is only effective when making a new deposit.
    *
    * As a side-effect, the transaction will also pay out an existing Stability Deposit's
-   * {@link @liquity/lib-base#StabilityDeposit.collateralGain | collateral gain} and
-   * {@link @liquity/lib-base#StabilityDeposit.kumoReward | KUMO reward}.
+   * {@link @kumodao/lib-base#StabilityDeposit.collateralGain | collateral gain} and
+   * {@link @kumodao/lib-base#StabilityDeposit.kumoReward | KUMO reward}.
    */
   depositKUSDInStabilityPool(
     amount: Decimalish,
@@ -340,14 +340,14 @@ export interface TransactableKumo {
    *
    * @remarks
    * As a side-effect, the transaction will also pay out the Stability Deposit's
-   * {@link @liquity/lib-base#StabilityDeposit.collateralGain | collateral gain} and
-   * {@link @liquity/lib-base#StabilityDeposit.kumoReward | KUMO reward}.
+   * {@link @kumodao/lib-base#StabilityDeposit.collateralGain | collateral gain} and
+   * {@link @kumodao/lib-base#StabilityDeposit.kumoReward | KUMO reward}.
    */
   withdrawKUSDFromStabilityPool(amount: Decimalish): Promise<StabilityDepositChangeDetails>;
 
   /**
-   * Withdraw {@link @liquity/lib-base#StabilityDeposit.collateralGain | collateral gain} and
-   * {@link @liquity/lib-base#StabilityDeposit.kumoReward | KUMO reward} from Stability Deposit.
+   * Withdraw {@link @kumodao/lib-base#StabilityDeposit.collateralGain | collateral gain} and
+   * {@link @kumodao/lib-base#StabilityDeposit.kumoReward | KUMO reward} from Stability Deposit.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
@@ -355,7 +355,7 @@ export interface TransactableKumo {
   withdrawGainsFromStabilityPool(): Promise<StabilityPoolGainsWithdrawalDetails>;
 
   /**
-   * Transfer {@link @liquity/lib-base#StabilityDeposit.collateralGain | collateral gain} from
+   * Transfer {@link @kumodao/lib-base#StabilityDeposit.collateralGain | collateral gain} from
    * Stability Deposit to Trove.
    *
    * @throws
@@ -365,7 +365,7 @@ export interface TransactableKumo {
    * The collateral gain is transfered to the Trove as additional collateral.
    *
    * As a side-effect, the transaction will also pay out the Stability Deposit's
-   * {@link @liquity/lib-base#StabilityDeposit.kumoReward | KUMO reward}.
+   * {@link @kumodao/lib-base#StabilityDeposit.kumoReward | KUMO reward}.
    */
   transferCollateralGainToTrove(): Promise<CollateralGainTransferDetails>;
 
@@ -396,7 +396,7 @@ export interface TransactableKumo {
    *
    * @param amount - Amount of KUSD to be redeemed.
    * @param maxRedemptionRate - Maximum acceptable
-   *                            {@link @liquity/lib-base#Fees.redemptionRate | redemption rate}.
+   *                            {@link @kumodao/lib-base#Fees.redemptionRate | redemption rate}.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
@@ -411,7 +411,7 @@ export interface TransactableKumo {
    * Claim leftover collateral after a liquidation or redemption.
    *
    * @remarks
-   * Use {@link @liquity/lib-base#ReadableKumo.getCollateralSurplusBalance | getCollateralSurplusBalance()}
+   * Use {@link @kumodao/lib-base#ReadableKumo.getCollateralSurplusBalance | getCollateralSurplusBalance()}
    * to check the amount of collateral available for withdrawal.
    *
    * @throws
@@ -429,8 +429,8 @@ export interface TransactableKumo {
    *
    * @remarks
    * As a side-effect, the transaction will also pay out an existing KUMO stake's
-   * {@link @liquity/lib-base#KUMOStake.collateralGain | collateral gain} and
-   * {@link @liquity/lib-base#KUMOStake.kusdGain | KUSD gain}.
+   * {@link @kumodao/lib-base#KUMOStake.collateralGain | collateral gain} and
+   * {@link @kumodao/lib-base#KUMOStake.kusdGain | KUSD gain}.
    */
   stakeKUMO(amount: Decimalish): Promise<void>;
 
@@ -444,14 +444,14 @@ export interface TransactableKumo {
    *
    * @remarks
    * As a side-effect, the transaction will also pay out the KUMO stake's
-   * {@link @liquity/lib-base#KUMOStake.collateralGain | collateral gain} and
-   * {@link @liquity/lib-base#KUMOStake.kusdGain | KUSD gain}.
+   * {@link @kumodao/lib-base#KUMOStake.collateralGain | collateral gain} and
+   * {@link @kumodao/lib-base#KUMOStake.kusdGain | KUSD gain}.
    */
   unstakeKUMO(amount: Decimalish): Promise<void>;
 
   /**
-   * Withdraw {@link @liquity/lib-base#KUMOStake.collateralGain | collateral gain} and
-   * {@link @liquity/lib-base#KUMOStake.kusdGain | KUSD gain} from KUMO stake.
+   * Withdraw {@link @kumodao/lib-base#KUMOStake.collateralGain | collateral gain} and
+   * {@link @kumodao/lib-base#KUMOStake.kusdGain | KUSD gain} from KUMO stake.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
@@ -460,14 +460,14 @@ export interface TransactableKumo {
 
   /**
    * Allow the liquidity mining contract to use Uniswap ETH/KUSD LP tokens for
-   * {@link @liquity/lib-base#TransactableKumo.stakeUniTokens | staking}.
+   * {@link @kumodao/lib-base#TransactableKumo.stakeUniTokens | staking}.
    *
    * @param allowance - Maximum amount of LP tokens that will be transferrable to liquidity mining
    *                    (`2^256 - 1` by default).
    *
    * @remarks
    * Must be performed before calling
-   * {@link @liquity/lib-base#TransactableKumo.stakeUniTokens | stakeUniTokens()}.
+   * {@link @kumodao/lib-base#TransactableKumo.stakeUniTokens | stakeUniTokens()}.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.

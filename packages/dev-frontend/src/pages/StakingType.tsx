@@ -1,17 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import { useHistory } from "react-router-dom";
 import { Grid, Box } from "theme-ui";
 import { Stability } from "../components/Stability/Stability";
 import { StakingTypeCard } from "../components/StakingTypeCard/StakingTypeCard";
 import { useDashboard } from "../hooks/DashboardContext";
-import { Modal } from "@mui/material";
+import { useDialogState, Dialog } from "reakit/Dialog";
 
 export const StakingType: React.FC = () => {
+  const dialog = useDialogState();
   const { vaults } = useDashboard();
   const [stakeDeposit, setStakeDeposit] = useState(false);
   const history = useHistory();
+
+  useEffect(() => {
+    if (!dialog.visible) {
+      history.push("/staking/stability");
+    }
+  }, [dialog.visible]);
+
   const style = {
-    top: "50%",
+    top: "45%",
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 470,
@@ -31,32 +40,24 @@ export const StakingType: React.FC = () => {
       }}
     >
       {vaults.map(vault => {
-        // const totalCollateralRatioPct = new Percent(vault.collateralRatio);
         return (
           <StakingTypeCard
             key={vault.type}
             vault={vault}
             handleViewStakeDeposit={() => {
               setStakeDeposit(true);
+              dialog.setVisible(true);
               history.push(`/staking/stability/${vault.type}`);
             }}
           />
         );
       })}
       {stakeDeposit && (
-        <Modal
-          open={true}
-          onClose={() => {
-            setStakeDeposit(false);
-            history.push("/staking/stability");
-          }}
-          aria-labelledby="parent-modal-title"
-          aria-describedby="parent-modal-description"
-        >
+        <Dialog {...dialog}>
           <Box sx={{ ...style, position: "absolute" }}>
             <Stability />
           </Box>
-        </Modal>
+        </Dialog>
       )}
     </Grid>
   );

@@ -2,8 +2,10 @@ import React, { useCallback, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 
-import { KumoStoreState } from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+import { KumoStoreState } from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
+
+import { useDashboard } from "../../hooks/DashboardContext";
 
 import { useDashboard } from "../../hooks/DashboardContext";
 

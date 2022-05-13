@@ -8,9 +8,9 @@ import {
   CRITICAL_COLLATERAL_RATIO,
   UserTrove,
   Decimal
-} from "@liquity/lib-base";
-import { BlockPolledKumoStoreState } from "@liquity/lib-ethers";
-import { useKumoSelector } from "@liquity/lib-react";
+} from "@kumodao/lib-base";
+import { BlockPolledKumoStoreState } from "@kumodao/lib-ethers";
+import { useKumoSelector } from "@kumodao/lib-react";
 
 import { shortenAddress } from "../utils/shortenAddress";
 import { useKumo } from "../hooks/KumoContext";

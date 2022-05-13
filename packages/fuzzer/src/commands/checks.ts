@@ -1,4 +1,4 @@
-import { EthersKumo } from "@liquity/lib-ethers";
+import { EthersKumo } from "@kumodao/lib-ethers";
 
 import { deployer, subgraph } from "../globals";
 

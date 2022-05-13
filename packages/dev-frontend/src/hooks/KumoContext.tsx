@@ -4,13 +4,13 @@ import { getNetwork } from "@ethersproject/networks";
 import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 
-import { isBatchedProvider, isWebSocketAugmentedProvider } from "@liquity/providers";
+import { isBatchedProvider, isWebSocketAugmentedProvider } from "@kumodao/providers";
 import {
   BlockPolledKumoStore,
   EthersKumo,
   EthersKumoWithStore,
   _connectByChainId
-} from "@liquity/lib-ethers";
+} from "@kumodao/lib-ethers";
 
 import { KumoFrontendConfig, getConfig } from "../config";
 

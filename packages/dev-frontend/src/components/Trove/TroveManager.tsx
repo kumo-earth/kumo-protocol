@@ -2,9 +2,9 @@ import { useCallback, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Flex, Button } from "theme-ui";
 
-import { KumoStoreState, Decimal, Trove, Decimalish, KUSD_MINIMUM_DEBT } from "@liquity/lib-base";
+import { KumoStoreState, Decimal, Trove, Decimalish, KUSD_MINIMUM_DEBT } from "@kumodao/lib-base";
 
-import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@liquity/lib-react";
+import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@kumodao/lib-react";
 
 import { ActionDescription } from "../ActionDescription";
 import { useMyTransactionState } from "../Transaction";
