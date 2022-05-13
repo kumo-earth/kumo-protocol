@@ -1,0 +1,13 @@
+name: Test contracts
+# Handles skipped but required checks
+
+on:
+  pull_request:
+    paths-ignore:
+      - "packages/contracts/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'echo "No tests required" '
