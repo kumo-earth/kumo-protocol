@@ -27,27 +27,27 @@ contract TellorCaller is ITellorCaller {
     /*
     * getTellorCurrentValue(): identical to getCurrentValue() in UsingTellor.sol
     *
-    * @dev Allows the user to get the latest value for the requestId specified
-    * @param _requestId is the requestId to look up the value for
-    * @return ifRetrieve bool true if it is able to retrieve a value, the value, and the value's timestamp
+    * @dev Allows the user to get the latest value for the queryId specified
+    * @param _queryId is the id to look up the value for
+    * @return ifRetrieve bool true if non-zero value successfully retrieved
     * @return value the value retrieved
-    * @return _timestampRetrieved the value's timestamp
+    * @return _timestampRetrieved the retrieved value's timestamp
     */
-    function getTellorCurrentValue(uint256 _requestId)
+    function getTellorCurrentValue(bytes32 _queryId)
         external
         view
         override
         returns (
-            bool ifRetrieve,
-            uint256 value,
+            bool _ifRetrieve,
+            uint256 _value,
             uint256 _timestampRetrieved
         )
     {
-        uint256 _count = tellor.getNewValueCountbyRequestId(_requestId);
+        uint256 _count = tellor.getNewValueCountbyQueryId(_queryId);
         uint256 _time =
-            tellor.getTimestampbyRequestIDandIndex(_requestId, _count.sub(1));
-        uint256 _value = tellor.retrieveData(_requestId, _time);
-        if (_value > 0) return (true, _value, _time);
-        return (false, 0, _time);
+            tellor.getTimestampbyQueryIdandIndex(_queryId, _count.sub(1));
+        uint256 value = abi.decode(tellor.retrieveData(_queryId, _time),(uint256));
+        if (value > 0) return (true, value, _time);
+        return (false, value, _time);
     }
 }

@@ -159,7 +159,17 @@ async function mainnetDeploy(configParams) {
   console.log(`current Chainlink price: ${chainlinkPrice}`)
 
   // Check Tellor price directly (through our TellorCaller)
-  let tellorPriceResponse = await liquityCore.tellorCaller.getTellorCurrentValue(1) // id == 1: the ETH-USD request ID
+  function uintTob32(n){
+    let vars = web3.utils.toHex(n)
+    vars = vars.slice(2)
+    while(vars.length < 64){
+      vars = "0" + vars
+    }
+    vars = "0x" + vars
+    return vars
+  }
+  
+  let tellorPriceResponse = await liquityCore.tellorCaller.getTellorCurrentValue(uintTob32(1)) // id == 1: the ETH-USD request ID
   console.log(`current Tellor price: ${tellorPriceResponse[1]}`)
   console.log(`current Tellor timestamp: ${tellorPriceResponse[2]}`)
 
