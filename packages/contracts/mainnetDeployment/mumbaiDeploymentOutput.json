@@ -1,117 +1,117 @@
 {
   "sortedTroves": {
-    "address": "0xB7dD95941e855B36195f426e9F6b3b5BDBc899ac",
-    "txHash": "0x38e9d6cabea01b38f69c557e206d088dafae4048abc102d0e00251aee9f70149",
-    "verification": "https://mumbai.polygonscan.com/address/0xB7dD95941e855B36195f426e9F6b3b5BDBc899ac#code"
+    "address": "0x932D95b32f74ea07B0554b07Dd083Ea3F3a1823e",
+    "txHash": "0xf781337c2eade71b4c00098c42e7565d815611399dbe345db3f906383592c08f",
+    "verification": "https://mumbai.polygonscan.com/address/0x932D95b32f74ea07B0554b07Dd083Ea3F3a1823e#code"
   },
   "troveManager": {
-    "address": "0x72c05C0fc38B9CC258757772F84401915FE308cb",
-    "txHash": "0xe3d3570031cd5476f93898e891ea81183af50c4bb09c0ab9c8b7ed381fa5e677",
-    "verification": "https://mumbai.polygonscan.com/address/0x72c05C0fc38B9CC258757772F84401915FE308cb#code"
+    "address": "0xF22EDff9Fd20a8Fa48aCe613cAcdfeCfAD27B320",
+    "txHash": "0x4081501a1480eedaec4c960116eac50e3954db6af0e04b24f37d3e8eb210deb4",
+    "verification": "https://mumbai.polygonscan.com/address/0xF22EDff9Fd20a8Fa48aCe613cAcdfeCfAD27B320#code"
   },
   "activePool": {
-    "address": "0xA00eA04B3eDB5bC3dE849C0F0a41225a0059e1F8",
-    "txHash": "0xece9816efdf70dc6a9a1b24b1fd65b2fdf3fbb746e6aceac6cec85ab6ec3ff51",
-    "verification": "https://mumbai.polygonscan.com/address/0xA00eA04B3eDB5bC3dE849C0F0a41225a0059e1F8#code"
+    "address": "0x763A8366555b6a6362a741d35c65311e9a892C95",
+    "txHash": "0x18ba7393581a4b955789ed96a06308e8745f2967013c8065df35a4a3fa07dbcb",
+    "verification": "https://mumbai.polygonscan.com/address/0x763A8366555b6a6362a741d35c65311e9a892C95#code"
   },
   "stabilityPool": {
-    "address": "0x65c5621a49e92534803dee48e1734327C4E6e08a",
-    "txHash": "0x6ecf00279f91ba0f07d297cbdbc027e5c4d80759efe893f0f9ed35f38fa9f99e",
-    "verification": "https://mumbai.polygonscan.com/address/0x65c5621a49e92534803dee48e1734327C4E6e08a#code"
+    "address": "0xa676FeF744b6dA3Be143e6d31655B530a2162374",
+    "txHash": "0x80e4e00acf0e451cde68c8632baa8a9900e6f84c97209d6716fffa6d16d6ea30",
+    "verification": "https://mumbai.polygonscan.com/address/0xa676FeF744b6dA3Be143e6d31655B530a2162374#code"
   },
   "gasPool": {
-    "address": "0xb6aDD56481904faa232de8DC5d917e527BDc6C6D",
-    "txHash": "0x169536e6f4f80260076faaaeb3090897f87c0f54917ae307f86c62a4e46065d5",
-    "verification": "https://mumbai.polygonscan.com/address/0xb6aDD56481904faa232de8DC5d917e527BDc6C6D#code"
+    "address": "0xB968Ede984588b85b19380E10993520eCEb561d0",
+    "txHash": "0x59074ad5e388c802289d5673538cae06097b11336033b29d91bce735acbf8079",
+    "verification": "https://mumbai.polygonscan.com/address/0xB968Ede984588b85b19380E10993520eCEb561d0#code"
   },
   "defaultPool": {
-    "address": "0x972d963C2Bf4EC8E7b1fe987F1E45d65A3eF9237",
-    "txHash": "0xf7f9b75557ce95dcee2c53e2148d111c09be62366ed5489eabb2c47026ced83d",
-    "verification": "https://mumbai.polygonscan.com/address/0x972d963C2Bf4EC8E7b1fe987F1E45d65A3eF9237#code"
+    "address": "0x2192AEe30b3c82586f0C37D17A93Bba376Ae3C52",
+    "txHash": "0x8a521afe8b6c74ee4a04cd76aa07a9df95b372da828fc3c35298a8357a3c5dbe",
+    "verification": "https://mumbai.polygonscan.com/address/0x2192AEe30b3c82586f0C37D17A93Bba376Ae3C52#code"
   },
   "collSurplusPool": {
-    "address": "0xc09B085e0E61A6997Fa0718a4780F0AC82dfc896",
-    "txHash": "0xef907982128a3ecfc3eb1bd1255211dd992e49305d6771917c07c88a1c9d77e0",
-    "verification": "https://mumbai.polygonscan.com/address/0xc09B085e0E61A6997Fa0718a4780F0AC82dfc896#code"
+    "address": "0x9F6b7995AfD1569b9c260116e87D0735A100025f",
+    "txHash": "0x77c0e5ecf57bfb7dec5ba7a4bfd8c387dae59a7eddb4413e5ef90de0f59d4b6c",
+    "verification": "https://mumbai.polygonscan.com/address/0x9F6b7995AfD1569b9c260116e87D0735A100025f#code"
   },
   "borrowerOperations": {
-    "address": "0x584A4bc8cb2Ad47FBAb2Fd8c02EcAC033Df9Cba3",
-    "txHash": "0x794abb22646f8fb975cd482e0cc573f921677fb0308cf21a8dbdf32988235fe7",
-    "verification": "https://mumbai.polygonscan.com/address/0x584A4bc8cb2Ad47FBAb2Fd8c02EcAC033Df9Cba3#code"
+    "address": "0x96D104CA7A10cf5325898A72c2001B311Cfb3e19",
+    "txHash": "0x30bdd68d37fa3c199245d78741fd9a3a454fa5f514d79cae91082abb629b2487",
+    "verification": "https://mumbai.polygonscan.com/address/0x96D104CA7A10cf5325898A72c2001B311Cfb3e19#code"
   },
   "hintHelpers": {
-    "address": "0x8771Ae652978Be2E5e65C9E50E993f3d27763Eb5",
-    "txHash": "0xd3481fa661a95f610d6feb6a3307d1138f3f05642e38a21ae8278b1e5ccf24d6",
-    "verification": "https://mumbai.polygonscan.com/address/0x8771Ae652978Be2E5e65C9E50E993f3d27763Eb5#code"
+    "address": "0x25141D85Ea91e575348f0A85719797CC3dDFC587",
+    "txHash": "0x0f25462abf287469abfaf1c96e9b028b6d2d7655b3526cddf955265b65361c05",
+    "verification": "https://mumbai.polygonscan.com/address/0x25141D85Ea91e575348f0A85719797CC3dDFC587#code"
   },
-  "lusdToken": {
-    "address": "0xfC1A6cf98933F2568FaAe7c149967d402be9f3C9",
-    "txHash": "0xe7d93eea44a8fa81e67bcf450196f0fda905bbe015ccb98ac3573d5e6ac8f163",
-    "verification": "https://mumbai.polygonscan.com/address/0xfC1A6cf98933F2568FaAe7c149967d402be9f3C9#code"
-  },
-  "lqtyStaking": {
-    "address": "0x6c71C2dd60711667601E0799EF0075F82A660e9A",
-    "txHash": "0xcfc2827f8323d6cf6c47eded9395d5f73bd54929e59e2f4a2198127ab0c278df",
-    "verification": "https://mumbai.polygonscan.com/address/0x6c71C2dd60711667601E0799EF0075F82A660e9A#code"
-  },
-  "lockupContractFactory": {
-    "address": "0x9959869Fc865a8A742E3EC540D1af9408223F447",
-    "txHash": "0x24c67e9474b3a9ee183644fbbb5192c922823f000d772b377fd1ec068bd05513",
-    "verification": "https://mumbai.polygonscan.com/address/0x9959869Fc865a8A742E3EC540D1af9408223F447#code"
-  },
-  "communityIssuance": {
-    "address": "0xFc7D377c8b9FF820dBf81309A3d0258301D3c78A",
-    "txHash": "0x1b2fb5c219332dd3c12b639cb580c84afe696caec52b4282f136d952aa955fd9",
-    "verification": "https://mumbai.polygonscan.com/address/0xFc7D377c8b9FF820dBf81309A3d0258301D3c78A#code"
-  },
-  "lqtyToken": {
-    "address": "0x9850176a20f2a95c7e7aa5EfB31cD15Db03d57EB",
-    "txHash": "0x247d30c47afad9c8a9441501b24cf50945f9b09fbb91fc41fef849c495bbd5e4",
-    "verification": "https://mumbai.polygonscan.com/address/0x9850176a20f2a95c7e7aa5EfB31cD15Db03d57EB#code"
-  },
-  "multiTroveGetter": {
-    "address": "0x9a0d0477152D27d916e6C8d9178863323d3c0768",
-    "txHash": "0xbc173443a7ce2e27e54cbe169b989cdb2e3dc672d0726fc470c40e559149082d",
-    "verification": "https://mumbai.polygonscan.com/address/0x9a0d0477152D27d916e6C8d9178863323d3c0768#code"
-  },
-  "TEST_INVESTOR_A": {
-    "address": "0x3f5CC23E01680817D80194fb8Cb3C0b27C0d82e1",
-    "txHash": "0x1b5362fb361bcbd7a20da4f97983a5f10f899df94c26221134e488dfbb63c883",
-    "verification": "https://mumbai.polygonscan.com/address/0x3f5CC23E01680817D80194fb8Cb3C0b27C0d82e1#code"
-  },
-  "TEST_INVESTOR_B": {
-    "address": "0xD9b0E07E9ab9b3e890bB388B833a278F97CecAAF",
-    "txHash": "0x105cfcff64b5149215a73e70dd28e8cf077106e349e57b949abb77c05ca7e800",
-    "verification": "https://mumbai.polygonscan.com/address/0xD9b0E07E9ab9b3e890bB388B833a278F97CecAAF#code"
-  },
-  "TEST_INVESTOR_C": {
-    "address": "0x2f491d1C442ed9C6B55288372E6bd002EC14f18E",
-    "txHash": "0xac9b0f976d2f192d1fa42d7b4b66efa16ff8bf309599317a2f955aaf4da3b334",
-    "verification": "https://mumbai.polygonscan.com/address/0x2f491d1C442ed9C6B55288372E6bd002EC14f18E#code"
-  },
-  "TEST_INVESTOR_D": {
-    "address": "0xb82Ca1f30d6C196B8A89012aeb02a1D25A44Bac3",
-    "txHash": "0x050595608ebc6dea8889015a3caefcf1ab537d1aa77a420c7f760b7a24b4b119",
-    "verification": "https://mumbai.polygonscan.com/address/0xb82Ca1f30d6C196B8A89012aeb02a1D25A44Bac3#code"
-  },
-  "TEST_INVESTOR_E": {
-    "address": "0x6c00494beAF6f34E4E66e23ef5F58cA37fc83A2d",
-    "txHash": "0xd6a9a173b9d5b0c388e7eba341b8795008dea2b9336feaddda8d42681c5f9c0e",
-    "verification": "https://mumbai.polygonscan.com/address/0x6c00494beAF6f34E4E66e23ef5F58cA37fc83A2d#code"
-  },
-  "priceFeed": {
-    "address": "0x3f5C17250FbD2f251C4220dAa8e69947ae3780cf",
-    "txHash": "0xccdc3c812106d97f0d4022eac338bd8d5cb8e62d7d52250a546c9d5ac16289ad",
-    "verification": "https://mumbai.polygonscan.com/address/0x3f5C17250FbD2f251C4220dAa8e69947ae3780cf#code"
-  },
-  "tellorCaller": {
-    "address": "0x1049a5E4c600584a67EB5B3c37fC3dC0A741cD6f",
-    "txHash": "0x04ba72936ea322bf3169489044af8dde443e060a2be1f4a46fcbb1a48ca8ae48",
-    "verification": "https://mumbai.polygonscan.com/address/0x1049a5E4c600584a67EB5B3c37fC3dC0A741cD6f#code"
+  "kusdToken": {
+    "address": "0xe0658f83129d0472CbA56C63F5c44D5916bF1bcF",
+    "txHash": "0x321582410cfd9ebd4fa5133f760ad9ebc15168d497454fe00371aa73ff463b1e",
+    "verification": "https://mumbai.polygonscan.com/address/0xe0658f83129d0472CbA56C63F5c44D5916bF1bcF#code"
   },
   "unipool": {
-    "address": "0x10f0412d13DE8095ee47638db31711694fD22BAd",
-    "txHash": "0x386ec5dce96d5c65857e09e64740fd3cd19bb3b975d0a5bb08866ef05f77564f",
-    "verification": "https://mumbai.polygonscan.com/address/0x10f0412d13DE8095ee47638db31711694fD22BAd#code"
+    "address": "0xfeAD77DC61f21644F7333c7b93508Ea5dDe8c18D",
+    "txHash": "0xcbe8d9676b64a249a39c8899e540454480037087c38af3a9580608cd990b3e90",
+    "verification": "https://mumbai.polygonscan.com/address/0xfeAD77DC61f21644F7333c7b93508Ea5dDe8c18D#code"
+  },
+  "kumoStaking": {
+    "address": "0x88b49A0Df53Cd467b5bCAe6E40A15F571987f87d",
+    "txHash": "0xbebd8ecfd87979d472784e8e5193718f9acff6fce64396b8b26b4c107e3671d5",
+    "verification": "https://mumbai.polygonscan.com/address/0x88b49A0Df53Cd467b5bCAe6E40A15F571987f87d#code"
+  },
+  "lockupContractFactory": {
+    "address": "0x5B0C013EaFE509E2C8d94B4A2dC3a022E0119bf8",
+    "txHash": "0x1befe91460e526036826d7e9cc6faa5e49bce04148c24428356d3de88b51fcfa",
+    "verification": "https://mumbai.polygonscan.com/address/0x5B0C013EaFE509E2C8d94B4A2dC3a022E0119bf8#code"
+  },
+  "communityIssuance": {
+    "address": "0xbE4C17499AEB066963e0eab18227DcC548509Dd3",
+    "txHash": "0x9cb1ffea9a8584b81c336c07ea0d982f6fd7a0d4622e59f5eb6d4390e26665dc",
+    "verification": "https://mumbai.polygonscan.com/address/0xbE4C17499AEB066963e0eab18227DcC548509Dd3#code"
+  },
+  "kumoToken": {
+    "address": "0x16fABb353b46d0C507B49258DfAA62C403E4c408",
+    "txHash": "0x2d5c4e850aee33df3cf4e0b380a4af5a5815e1d4d80019d6a053f18a2834792d",
+    "verification": "https://mumbai.polygonscan.com/address/0x16fABb353b46d0C507B49258DfAA62C403E4c408#code"
+  },
+  "multiTroveGetter": {
+    "address": "0x02B676bFEeb0B160cC15F82f2674C40AE356Bf24",
+    "txHash": "0x4463b8219ce212a67ac3cffaf08ec41b01515e167b7c679510f3bf7b359f9971",
+    "verification": "https://mumbai.polygonscan.com/address/0x02B676bFEeb0B160cC15F82f2674C40AE356Bf24#code"
+  },
+  "TEST_INVESTOR_A": {
+    "address": "0x2ACA6Cb5fca294AB1177910c07C3cC8Ea63aB7CC",
+    "txHash": "0x66518c57224836224825a85e1ee313a6ec2d9428b6247be4e8066e44b3dea874",
+    "verification": "https://mumbai.polygonscan.com/address/0x2ACA6Cb5fca294AB1177910c07C3cC8Ea63aB7CC#code"
+  },
+  "TEST_INVESTOR_B": {
+    "address": "0x0fa1BB97cEf6Af136608948C620169ed623303e2",
+    "txHash": "0x521f9a56dab5545c7ba249adaba3ba1567ad7e1bd6fd02c3663d1643525322db",
+    "verification": "https://mumbai.polygonscan.com/address/0x0fa1BB97cEf6Af136608948C620169ed623303e2#code"
+  },
+  "TEST_INVESTOR_C": {
+    "address": "0x3bEc67a42841a0d8C3b5f2bABD480E5956C0EDE1",
+    "txHash": "0x084590c62be59680f0bfe546b39801ae870d4d924954dbdf21365d7c667cd638",
+    "verification": "https://mumbai.polygonscan.com/address/0x3bEc67a42841a0d8C3b5f2bABD480E5956C0EDE1#code"
+  },
+  "TEST_INVESTOR_D": {
+    "address": "0x5d30f03381c1bAb5914f4DFc563F8D2e991dbEf3",
+    "txHash": "0x800df2856d8eb121294d8de246847e7e3ddca2cdc49339d843b94b58ff36947d",
+    "verification": "https://mumbai.polygonscan.com/address/0x5d30f03381c1bAb5914f4DFc563F8D2e991dbEf3#code"
+  },
+  "TEST_INVESTOR_E": {
+    "address": "0x849803c19B6Eb4a2D5044687Fc9B17Fbbd3b17E6",
+    "txHash": "0xd06f228ae2ab4cc41bdce19a86a807b560723aabab9c6734e1b3ad73caa93dd0",
+    "verification": "https://mumbai.polygonscan.com/address/0x849803c19B6Eb4a2D5044687Fc9B17Fbbd3b17E6#code"
+  },
+  "priceFeed": {
+    "address": "0x5Bd807bca2eC026eB95bFc2D25bb51070B1a39e2",
+    "txHash": "0x1344fe83aaba0baba61100886027636cf796fc4a97721f439089c1a370c6e331",
+    "verification": "https://mumbai.polygonscan.com/address/0x5Bd807bca2eC026eB95bFc2D25bb51070B1a39e2#code"
+  },
+  "tellorCaller": {
+    "address": "0xd43100DB99ed1ac91e7FDB203E7996a803B46268",
+    "txHash": "0x591902d80233649ebe67119bb47fde8dcd7cf65b72110c35b8c4c5fc1656eda1",
+    "verification": "https://mumbai.polygonscan.com/address/0xd43100DB99ed1ac91e7FDB203E7996a803B46268#code"
   }
 }

@@ -20,7 +20,7 @@ const liquityAddrsTest = {
 const liquityAddrs = {
   GENERAL_SAFE:"0x3c198B7f3bA594804aEeA8894d0a58BCc345b8ce", // TODO
   LQTY_SAFE:"0xbFdECf1Db5c22d4CD3B0Bb970cF867BEFd2caE27", // TODO
-  DEPLOYER: "0xD598B0a53A5cd999B8d4a343b97347f901fBaf7e",
+  DEPLOYER: "0xdA68753F75AbFA16CdDf0596e4460636F2e8e986",
 }
 
 const beneficiaries = {
