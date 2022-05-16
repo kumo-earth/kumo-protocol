@@ -7,8 +7,6 @@ import { useKumoSelector } from "@kumodao/lib-react";
 
 import { useDashboard } from "../../hooks/DashboardContext";
 
-import { useDashboard } from "../../hooks/DashboardContext";
-
 import { COIN, GT } from "../../strings";
 import { Icon } from "../Icon";
 import { LoadingOverlay } from "../LoadingOverlay";

@@ -47,7 +47,7 @@ type DashboardContextValue = {
   openStabilityDeposit: (type: string, amount: Decimal) => void;
   bctPrice: Decimal;
   mco2Price: Decimal;
-
+};
 
 type vaultsType = Array<{
   type: string;
