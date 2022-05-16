@@ -112,8 +112,8 @@ const config: HardhatUserConfig = {
       accounts: [deployerAccount, devChainRichAccount, ...generateRandomAccounts(numAccounts - 2)]
     },
     mumbai: {
-      url: `https://rpc-mumbai.maticvigil.com`,
-      accounts: ['ff126760c1b50be914c632a2cfbcbbfc569e21d07008c92c861e8977f0c01544']
+      url: `https://matic-mumbai.chainstacklabs.com`,
+      accounts: ['private_key']
     },
 
     ...infuraNetwork("ropsten"),
