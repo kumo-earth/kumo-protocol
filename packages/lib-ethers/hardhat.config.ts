@@ -111,6 +111,10 @@ const config: HardhatUserConfig = {
       url: "http://localhost:8545",
       accounts: [deployerAccount, devChainRichAccount, ...generateRandomAccounts(numAccounts - 2)]
     },
+    mumbai: {
+      url: `https://matic-mumbai.chainstacklabs.com`,
+      accounts: ['private_key']
+    },
 
     ...infuraNetwork("ropsten"),
     ...infuraNetwork("rinkeby"),

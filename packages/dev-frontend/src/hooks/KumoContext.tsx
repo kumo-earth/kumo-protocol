@@ -34,7 +34,7 @@ const wsParams = (network: string, infuraApiKey: string): [string, string] => [
   network
 ];
 
-const supportedNetworks = ["homestead", "kovan", "rinkeby", "ropsten", "goerli"];
+const supportedNetworks = ["homestead", "kovan", "rinkeby", "ropsten", "goerli", "mumbai"];
 
 export const KumoProvider: React.FC<KumoProviderProps> = ({
   children,
@@ -47,13 +47,16 @@ export const KumoProvider: React.FC<KumoProviderProps> = ({
 
   const connection = useMemo(() => {
     if (config && provider && account && chainId) {
+      console.log("connection1", config, provider, account, chainId)
       try {
         return _connectByChainId(provider, provider.getSigner(account), chainId, {
           userAddress: account,
           frontendTag: config.frontendTag,
           useStore: "blockPolled"
         });
-      } catch {}
+      } catch(error) {
+        console.log("connection1Error", error)
+      }
     }
   }, [config, provider, account, chainId]);
 
@@ -62,8 +65,11 @@ export const KumoProvider: React.FC<KumoProviderProps> = ({
   }, []);
 
   useEffect(() => {
+    console.log("connection", connection)
     if (config && connection) {
       const { provider, chainId } = connection;
+
+      
 
       if (isBatchedProvider(provider) && provider.chainId !== chainId) {
         provider.chainId = chainId;
