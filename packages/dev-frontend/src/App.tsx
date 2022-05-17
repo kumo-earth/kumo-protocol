@@ -57,7 +57,7 @@ const UnsupportedMainnetFallback: React.FC = () => (
     </Heading>
 
     <Paragraph sx={{ mb: 3 }}>
-      Please change your network to Ropsten, Rinkeby, Kovan or Görli.
+      Please change your network to mumbai.
     </Paragraph>
 
     <Paragraph>
