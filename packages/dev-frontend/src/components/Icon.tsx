@@ -15,7 +15,6 @@ import {
   faUserCircle,
   faWallet,
   faExternalLinkAlt,
-  faClipboard,
   faClipboardCheck,
   faCog,
   faCheck,
@@ -29,8 +28,8 @@ import {
   faHandPaper,
   faHeartbeat,
   faBars,
-  faQuestionCircle
 } from "@fortawesome/free-solid-svg-icons";
+import { faClipboard, faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 
 library.add(
