@@ -34,7 +34,7 @@ const wsParams = (network: string, infuraApiKey: string): [string, string] => [
   network
 ];
 
-const supportedNetworks = ["homestead", "mumbai"];
+const supportedNetworks = ["homestead", "kovan", "rinkeby", "ropsten", "goerli", "mumbai"];
 
 export const KumoProvider: React.FC<KumoProviderProps> = ({
   children,
