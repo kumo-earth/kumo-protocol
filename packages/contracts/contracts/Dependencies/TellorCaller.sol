@@ -44,6 +44,11 @@ contract TellorCaller is ITellorCaller {
         )
     {
         uint256 _count = tellor.getNewValueCountbyQueryId(_queryId);
+
+        if (_count == 0) {
+            return (false, 0, 0);
+        }
+
         uint256 _time =
             tellor.getTimestampbyQueryIdandIndex(_queryId, _count.sub(1));
         uint256 value = abi.decode(tellor.retrieveData(_queryId, _time),(uint256));
