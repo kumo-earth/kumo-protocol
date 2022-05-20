@@ -2,10 +2,11 @@
 
 pragma solidity 0.8.11;
 
-import "../Dependencies/IERC20.sol";
+//import "../Dependencies/IERC20.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "../Dependencies/IERC2612.sol";
 
-interface IKUMOToken is IERC20, IERC2612 { 
+interface IKUMOToken is IERC20Upgradeable, IERC2612 { 
    
     // --- Events ---
     

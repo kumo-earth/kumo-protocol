@@ -42,6 +42,5 @@ const redeemedKUSDAmount = Decimal.from(100);
 const redeemedFractionOfSupply = redeemedKUSDAmount.div(total.debt);
 const redemptionRate = fees.redemptionRate(redeemedFractionOfSupply);
 const redemptionFeeKUSD = redemptionRate.mul(redeemedKUSDAmount);
-
 ```
 

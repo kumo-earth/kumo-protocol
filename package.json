@@ -98,5 +98,9 @@
     "prettier": "^2.6.2",
     "semantic-release": "^17.4.2",
     "semantic-release-monorepo": "^7.0.4"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts-upgradeable": "^4.6.0",
+    "@openzeppelin/hardhat-upgrades": "^1.17.0"
   }
 }

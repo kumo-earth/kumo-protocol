@@ -8,6 +8,12 @@ import "../Interfaces/IKUMOToken.sol";
 import "../Interfaces/ILockupContractFactory.sol";
 import "../Dependencies/console.sol";
 
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+
+
 /*
 * Based upon OpenZeppelin's ERC20 contract:
 * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol
@@ -47,7 +53,7 @@ import "../Dependencies/console.sol";
 * and the multisig has the same rights as any other address.
 */
 
-contract KUMOToken is CheckContract, IKUMOToken {
+contract KUMOToken is CheckContract, Initializable, OwnableUpgradeable, UUPSUpgradeable, IKUMOToken, ERC20Upgradeable  {
     using SafeMath for uint256;
 
     // --- ERC20 Data ---
@@ -102,7 +108,7 @@ contract KUMOToken is CheckContract, IKUMOToken {
     // event LockupContractFactoryAddressSet(address _lockupContractFactoryAddress);
 
     // --- Functions ---
-
+    /// @custom:oz-upgrades-unsafe-allow constructor
     constructor 
     (
         address _communityIssuanceAddress, 
@@ -112,8 +118,9 @@ contract KUMOToken is CheckContract, IKUMOToken {
         address _lpRewardsAddress,
         address _multisigAddress
     ) 
-        
+
     {
+        _disableInitializers();
         checkContract(_communityIssuanceAddress);
         checkContract(_kumoStakingAddress);
         checkContract(_lockupFactoryAddress);
@@ -154,25 +161,37 @@ contract KUMOToken is CheckContract, IKUMOToken {
         _mint(_multisigAddress, multisigEntitlement);
     }
 
+    function initialize() initializer public {
+        __ERC20_init("KUMO", "KUMO");
+        __Ownable_init();
+        __UUPSUpgradeable_init();
+    }
+
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        onlyOwner
+        override
+    {}
+
     // --- External functions ---
 
-    function totalSupply() external view override returns (uint256) {
+    function totalSupply() public view virtual override (ERC20Upgradeable, IERC20Upgradeable) returns (uint256) {
         return _totalSupply;
     }
 
-    function balanceOf(address account) external view override returns (uint256) {
+    function balanceOf(address account) public view virtual override (ERC20Upgradeable, IERC20Upgradeable) returns (uint256) {
         return _balances[account];
     }
 
-    function getDeploymentStartTime() external view override returns (uint256) {
+    function getDeploymentStartTime() external view returns (uint256) {
         return deploymentStartTime;
     }
 
-    function getLpRewardsEntitlement() external view override returns (uint256) {
+    function getLpRewardsEntitlement() external view  returns (uint256) {
         return lpRewardsEntitlement;
     }
 
-    function transfer(address recipient, uint256 amount) external override returns (bool) {
+    function transfer(address recipient, uint256 amount) public virtual  override (ERC20Upgradeable, IERC20Upgradeable)  returns (bool) {
         // Restrict the multisig's transfers in first year
         if (_callerIsMultisig() && _isFirstYear()) {
             _requireRecipientIsRegisteredLC(recipient);
@@ -185,18 +204,18 @@ contract KUMOToken is CheckContract, IKUMOToken {
         return true;
     }
 
-    function allowance(address owner, address spender) external view override returns (uint256) {
+    function allowance(address owner, address spender) public view virtual override (ERC20Upgradeable, IERC20Upgradeable) returns (uint256) {
         return _allowances[owner][spender];
     }
 
-    function approve(address spender, uint256 amount) external override returns (bool) {
+    function approve(address spender, uint256 amount) public virtual override (ERC20Upgradeable, IERC20Upgradeable)  returns (bool) {
         if (_isFirstYear()) { _requireCallerIsNotMultisig(); }
 
         _approve(msg.sender, spender, amount);
         return true;
     }
 
-    function transferFrom(address sender, address recipient, uint256 amount) external override returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) public virtual override (ERC20Upgradeable, IERC20Upgradeable)  returns (bool) {
         if (_isFirstYear()) { _requireSenderIsNotMultisig(sender); }
         
         _requireValidRecipient(recipient);
@@ -206,21 +225,21 @@ contract KUMOToken is CheckContract, IKUMOToken {
         return true;
     }
 
-    function increaseAllowance(address spender, uint256 addedValue) external override returns (bool) {
+    function increaseAllowance(address spender, uint256 addedValue) public virtual override returns (bool) {
         if (_isFirstYear()) { _requireCallerIsNotMultisig(); }
         
         _approve(msg.sender, spender, _allowances[msg.sender][spender].add(addedValue));
         return true;
     }
 
-    function decreaseAllowance(address spender, uint256 subtractedValue) external override returns (bool) {
+    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual override returns  (bool) {
         if (_isFirstYear()) { _requireCallerIsNotMultisig(); }
         
         _approve(msg.sender, spender, _allowances[msg.sender][spender].sub(subtractedValue, "ERC20: decreased allowance below zero"));
         return true;
     }
 
-    function sendToKUMOStaking(address _sender, uint256 _amount) external override {
+    function sendToKUMOStaking(address _sender, uint256 _amount) external {
         _requireCallerIsKUMOStaking();
         if (_isFirstYear()) { _requireSenderIsNotMultisig(_sender); }  // Prevent the multisig from staking KUMO
         _transfer(_sender, kumoStakingAddress, _amount);
@@ -228,7 +247,7 @@ contract KUMOToken is CheckContract, IKUMOToken {
 
     // --- EIP 2612 functionality ---
 
-    function domainSeparator() public view override returns (bytes32) {    
+    function domainSeparator() public view returns (bytes32) {    
         if (_chainID() == _CACHED_CHAIN_ID) {
             return _CACHED_DOMAIN_SEPARATOR;
         } else {
@@ -246,8 +265,7 @@ contract KUMOToken is CheckContract, IKUMOToken {
         bytes32 r, 
         bytes32 s
     ) 
-        external 
-        override 
+        external  
     {            
         require(deadline >= block.timestamp, 'KUMO: expired deadline');
         bytes32 digest = keccak256(abi.encodePacked('\x19\x01', 
@@ -259,7 +277,7 @@ contract KUMOToken is CheckContract, IKUMOToken {
         _approve(owner, spender, amount);
     }
 
-    function nonces(address owner) external view override returns (uint256) { // FOR EIP 2612
+    function nonces(address owner) external view returns (uint256) { // FOR EIP 2612
         return _nonces[owner];
     }
 
@@ -275,7 +293,7 @@ contract KUMOToken is CheckContract, IKUMOToken {
         return keccak256(abi.encode(typeHash, _name, _version, _chainID(), address(this)));
     }
 
-    function _transfer(address sender, address recipient, uint256 amount) internal {
+    function _transfer(address sender, address recipient, uint256 amount) internal override {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
 
@@ -284,7 +302,7 @@ contract KUMOToken is CheckContract, IKUMOToken {
         emit Transfer(sender, recipient, amount);
     }
 
-    function _mint(address account, uint256 amount) internal {
+    function _mint(address account, uint256 amount) internal override {
         require(account != address(0), "ERC20: mint to the zero address");
 
         _totalSupply = _totalSupply.add(amount);
@@ -292,7 +310,7 @@ contract KUMOToken is CheckContract, IKUMOToken {
         emit Transfer(address(0), account, amount);
     }
 
-    function _approve(address owner, address spender, uint256 amount) internal {
+    function _approve(address owner, address spender, uint256 amount) internal override {
         require(owner != address(0), "ERC20: approve from the zero address");
         require(spender != address(0), "ERC20: approve to the zero address");
 
@@ -344,23 +362,23 @@ contract KUMOToken is CheckContract, IKUMOToken {
 
     // --- Optional functions ---
 
-    function name() external pure override returns (string memory) {
+    function name() public view virtual override returns (string memory) {
         return _NAME;
     }
 
-    function symbol() external pure override returns (string memory) {
+    function symbol() public view virtual override returns (string memory) {
         return _SYMBOL;
     }
 
-    function decimals() external pure override returns (uint8) {
+    function decimals() public view virtual override returns (uint8) {
         return _DECIMALS;
     }
 
-    function version() external pure override returns (string memory) {
+    function version() public view virtual returns (string memory) {
         return _VERSION;
     }
 
-    function permitTypeHash() external pure override returns (bytes32) {
+    function permitTypeHash() public view virtual returns (bytes32) {
         return _PERMIT_TYPEHASH;
     }
 }

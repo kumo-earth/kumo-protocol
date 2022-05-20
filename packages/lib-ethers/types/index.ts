@@ -501,7 +501,9 @@ interface KUMOTokenCalls {
   multisigAddress(_overrides?: CallOverrides): Promise<string>;
   name(_overrides?: CallOverrides): Promise<string>;
   nonces(owner: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  owner(_overrides?: CallOverrides): Promise<string>;
   permitTypeHash(_overrides?: CallOverrides): Promise<string>;
+  proxiableUUID(_overrides?: CallOverrides): Promise<string>;
   symbol(_overrides?: CallOverrides): Promise<string>;
   totalSupply(_overrides?: CallOverrides): Promise<BigNumber>;
   version(_overrides?: CallOverrides): Promise<string>;
@@ -511,26 +513,41 @@ interface KUMOTokenTransactions {
   approve(spender: string, amount: BigNumberish, _overrides?: Overrides): Promise<boolean>;
   decreaseAllowance(spender: string, subtractedValue: BigNumberish, _overrides?: Overrides): Promise<boolean>;
   increaseAllowance(spender: string, addedValue: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  initialize(_overrides?: Overrides): Promise<void>;
   permit(owner: string, spender: string, amount: BigNumberish, deadline: BigNumberish, v: BigNumberish, r: BytesLike, s: BytesLike, _overrides?: Overrides): Promise<void>;
+  renounceOwnership(_overrides?: Overrides): Promise<void>;
   sendToKUMOStaking(_sender: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   transfer(recipient: string, amount: BigNumberish, _overrides?: Overrides): Promise<boolean>;
   transferFrom(sender: string, recipient: string, amount: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  transferOwnership(newOwner: string, _overrides?: Overrides): Promise<void>;
+  upgradeTo(newImplementation: string, _overrides?: Overrides): Promise<void>;
+  upgradeToAndCall(newImplementation: string, data: BytesLike, _overrides?: PayableOverrides): Promise<void>;
 }
 
 export interface KUMOToken
   extends _TypedKumoContract<KUMOTokenCalls, KUMOTokenTransactions> {
   readonly filters: {
+    AdminChanged(previousAdmin?: null, newAdmin?: null): EventFilter;
     Approval(owner?: string | null, spender?: string | null, value?: null): EventFilter;
+    BeaconUpgraded(beacon?: string | null): EventFilter;
     CommunityIssuanceAddressSet(_communityIssuanceAddress?: null): EventFilter;
+    Initialized(version?: null): EventFilter;
     KUMOStakingAddressSet(_kumoStakingAddress?: null): EventFilter;
     LockupContractFactoryAddressSet(_lockupContractFactoryAddress?: null): EventFilter;
+    OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
     Transfer(from?: string | null, to?: string | null, value?: null): EventFilter;
+    Upgraded(implementation?: string | null): EventFilter;
   };
+  extractEvents(logs: Log[], name: "AdminChanged"): _TypedLogDescription<{ previousAdmin: string; newAdmin: string }>[];
   extractEvents(logs: Log[], name: "Approval"): _TypedLogDescription<{ owner: string; spender: string; value: BigNumber }>[];
+  extractEvents(logs: Log[], name: "BeaconUpgraded"): _TypedLogDescription<{ beacon: string }>[];
   extractEvents(logs: Log[], name: "CommunityIssuanceAddressSet"): _TypedLogDescription<{ _communityIssuanceAddress: string }>[];
+  extractEvents(logs: Log[], name: "Initialized"): _TypedLogDescription<{ version: number }>[];
   extractEvents(logs: Log[], name: "KUMOStakingAddressSet"): _TypedLogDescription<{ _kumoStakingAddress: string }>[];
   extractEvents(logs: Log[], name: "LockupContractFactoryAddressSet"): _TypedLogDescription<{ _lockupContractFactoryAddress: string }>[];
+  extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
   extractEvents(logs: Log[], name: "Transfer"): _TypedLogDescription<{ from: string; to: string; value: BigNumber }>[];
+  extractEvents(logs: Log[], name: "Upgraded"): _TypedLogDescription<{ implementation: string }>[];
 }
 
 interface MultiTroveGetterCalls {
