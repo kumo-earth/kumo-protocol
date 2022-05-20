@@ -1,8 +1,8 @@
 import React from "react";
 import { Flex } from "theme-ui";
 
-import { KumoStoreState } from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+import { KumoStoreState } from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 
 const selector = ({ remainingLiquidityMiningKUMOReward }: KumoStoreState) => ({
   remainingLiquidityMiningKUMOReward

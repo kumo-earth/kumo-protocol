@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button, Box, Flex, Card, Heading } from "theme-ui";
 
-import { Decimal, Percent, KumoStoreState, MINIMUM_COLLATERAL_RATIO } from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+import { Decimal, Percent, KumoStoreState, MINIMUM_COLLATERAL_RATIO } from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 
 import { COIN } from "../../strings";
 

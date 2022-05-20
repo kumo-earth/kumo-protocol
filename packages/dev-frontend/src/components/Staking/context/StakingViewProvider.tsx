@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
-import { KumoStoreState, KUMOStake } from "@liquity/lib-base";
-import { KumoStoreUpdate, useKumoReducer } from "@liquity/lib-react";
+import { KumoStoreState, KUMOStake } from "@kumodao/lib-base";
+import { KumoStoreUpdate, useKumoReducer } from "@kumodao/lib-react";
 
 import { useMyTransactionState } from "../../Transaction";
 

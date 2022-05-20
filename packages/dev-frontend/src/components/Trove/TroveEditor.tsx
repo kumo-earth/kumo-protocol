@@ -9,8 +9,8 @@ import {
   Trove,
   KumoStoreState,
   KUSD_LIQUIDATION_RESERVE
-} from "@liquity/lib-base";
-import { useKumoSelector } from "@liquity/lib-react";
+} from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 
 import { COIN } from "../../strings";
 

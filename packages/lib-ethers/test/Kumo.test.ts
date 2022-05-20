@@ -21,7 +21,7 @@ import {
   MINIMUM_BORROWING_RATE,
   KUSD_MINIMUM_DEBT,
   KUSD_MINIMUM_NET_DEBT
-} from "@liquity/lib-base";
+} from "@kumodao/lib-base";
 
 import { HintHelpers } from "../types";
 

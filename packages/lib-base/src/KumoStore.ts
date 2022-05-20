@@ -204,7 +204,7 @@ const difference = <T>(a: T, b: T) =>
  * The type parameter `T` may be used to type extra state added to {@link KumoStoreState} by the
  * subclass.
  *
- * Implemented by {@link @liquity/lib-ethers#BlockPolledKumoStore}.
+ * Implemented by {@link @kumodao/lib-ethers#BlockPolledKumoStore}.
  *
  * @public
  */

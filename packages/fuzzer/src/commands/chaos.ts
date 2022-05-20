@@ -6,7 +6,7 @@ import {
   KUSD_MINIMUM_DEBT,
   Trove,
   TroveWithPendingRedistribution
-} from "@liquity/lib-base";
+} from "@kumodao/lib-base";
 
 import { Fixture } from "../fixture";
 import { deployer, funder, provider, subgraph } from "../globals";

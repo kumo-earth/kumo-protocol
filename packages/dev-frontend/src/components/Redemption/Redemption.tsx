@@ -1,5 +1,5 @@
-import { BlockPolledKumoStoreState } from "@liquity/lib-ethers";
-import { useKumoSelector } from "@liquity/lib-react";
+import { BlockPolledKumoStoreState } from "@kumodao/lib-ethers";
+import { useKumoSelector } from "@kumodao/lib-react";
 
 import { useKumo } from "../../hooks/KumoContext";
 import { DisabledRedemption } from "./DisabledRedemption";

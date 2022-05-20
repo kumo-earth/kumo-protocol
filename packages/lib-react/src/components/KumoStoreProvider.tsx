@@ -1,4 +1,4 @@
-import { KumoStore } from "@liquity/lib-base";
+import { KumoStore } from "@kumodao/lib-base";
 import React, { createContext, useEffect, useState } from "react";
 
 export const KumoStoreContext = createContext<KumoStore | undefined>(undefined);

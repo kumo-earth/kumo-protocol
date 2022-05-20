@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { useKumoSelector } from "@liquity/lib-react";
-import { KumoStoreState, UserTroveStatus } from "@liquity/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
+import { KumoStoreState, UserTroveStatus } from "@kumodao/lib-base";
 import { TroveViewContext } from "./TroveViewContext";
 import type { TroveView, TroveEvent } from "./types";
 
