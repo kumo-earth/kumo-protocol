@@ -1,0 +1,243 @@
+{
+  "manifestVersion": "3.2",
+  "proxies": [
+    {
+      "address": "0x3DaD300A888CE2c31925079c1EBEb54feEE847B9",
+      "txHash": "0x329557123607e47959a2810ea061485740a72b291cafc2b8bf6e8aad448052c9",
+      "kind": "uups"
+    },
+    {
+      "address": "0x88400A8e74619127C301B3d8aC7BBd8A08b76f9f",
+      "txHash": "0x49f76b6eed43b761fba2e42bbefd5864bdf5207381b53287d23c50bb39e7b7da",
+      "kind": "uups"
+    },
+    {
+      "address": "0x30dD941929b2446eD899af59C8C1E07D5B6B2A68",
+      "txHash": "0x838fce0585d02d786b3c80c311d91a414f12cd239b18461536081dc2a64b2c16",
+      "kind": "uups"
+    },
+    {
+      "address": "0x0EA9135f1DdA2f47EE2a9D515B1186D5bE0bdc6B",
+      "txHash": "0x8a43e306bcd75e77d09f266a469a93868ba0d66719c039833bf2a0fc57269527",
+      "kind": "uups"
+    },
+    {
+      "address": "0x3A8cCdFEA8E1E92Aa64aDb44C7Cd03273866cED5",
+      "txHash": "0x6c94db761901f71837431ebfaef3b9fc2451838938ad5125df970995971c3856",
+      "kind": "uups"
+    },
+    {
+      "address": "0x849747f599B20080b648662Cf782214a6A5C198b",
+      "txHash": "0xf2bbb7f96db875514343d018fbabf188aa6277927267c2f51dc822e15de7d300",
+      "kind": "uups"
+    },
+    {
+      "address": "0xc0ba983753b5dFab44546e3bCDe7B9847D2cEbB2",
+      "txHash": "0xcd606ed7cdf5d3ae26e96703a3fd24a2a4fcdaa0d91fa98a4a2f6c688b0c9ea5",
+      "kind": "uups"
+    },
+    {
+      "address": "0xbFA98DE6bc356222e20C1ee683a314602552cacE",
+      "txHash": "0x40e50e0c990204c602c5dab4c5ed63d70765971c99bd9097497c587912a16d1f",
+      "kind": "uups"
+    },
+    {
+      "address": "0x644Cf31BE5cfCbbD0e9b5f53D646563Ff585829A",
+      "txHash": "0xc7218cf34d2516185da1e40ebb08b2a6479d8b2d9f37a03e1177d510bf383ecd",
+      "kind": "uups"
+    }
+  ],
+  "impls": {
+    "78b7e56df75036c797831fa13948f4a3167dc794e8b6131012ed6bedbb972770": {
+      "address": "0xFC623e91a3A638718cDA6dCC108BD60a9F8109E1",
+      "txHash": "0x343686ca47b47a8d55b628ab6776bfa300e7b76f4324928a5b8c19c2566fad90",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "isInitialized",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_bool",
+            "contract": "SortedTroves",
+            "src": "contracts/SortedTroves.sol:54"
+          },
+          {
+            "label": "borrowerOperationsAddress",
+            "offset": 1,
+            "slot": "201",
+            "type": "t_address",
+            "contract": "SortedTroves",
+            "src": "contracts/SortedTroves.sol:64"
+          },
+          {
+            "label": "troveManager",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_contract(ITroveManager)18234",
+            "contract": "SortedTroves",
+            "src": "contracts/SortedTroves.sol:66"
+          },
+          {
+            "label": "data",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_struct(Data)25145_storage",
+            "contract": "SortedTroves",
+            "src": "contracts/SortedTroves.sol:84"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(ITroveManager)18234": {
+            "label": "contract ITroveManager",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_struct(Node)25131_storage)": {
+            "label": "mapping(address => struct SortedTroves.Node)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Data)25145_storage": {
+            "label": "struct SortedTroves.Data",
+            "members": [
+              {
+                "label": "head",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "tail",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "maxSize",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "size",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "nodes",
+                "type": "t_mapping(t_address,t_struct(Node)25131_storage)",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_struct(Node)25131_storage": {
+            "label": "struct SortedTroves.Node",
+            "members": [
+              {
+                "label": "exists",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "nextId",
+                "type": "t_address",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "prevId",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    }
+  }
+}
