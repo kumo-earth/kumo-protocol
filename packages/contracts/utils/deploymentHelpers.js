@@ -1,13 +1,13 @@
  const { ethers, upgrades } = require('hardhat');
 //let KUMOToken;
-
+let ActivePool;
 let SortedTroves;
 getFactory();
 //const SortedTroves = artifacts.require("./SortedTroves.sol")
 const TroveManager = artifacts.require("./TroveManager.sol")
 const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol")
 const KUSDToken = artifacts.require("./KUSDToken.sol")
-const ActivePool = artifacts.require("./ActivePool.sol");
+//const ActivePool = artifacts.require("./ActivePool.sol");
 const DefaultPool = artifacts.require("./DefaultPool.sol");
 const StabilityPool = artifacts.require("./StabilityPool.sol")
 const GasPool = artifacts.require("./GasPool.sol")
@@ -67,6 +67,7 @@ const maxBytes32 = '0x' + 'f'.repeat(64)
 async function  getFactory(){
   //KUMOToken = await ethers.getContractFactory("KUMOToken")
   SortedTroves = await ethers.getContractFactory("SortedTroves")
+  ActivePool = await ethers.getContractFactory("ActivePool")
 }
 
 class DeploymentHelper {
@@ -99,8 +100,8 @@ class DeploymentHelper {
     const priceFeedTestnet = await PriceFeedTestnet.new()
     //const sortedTroves = await SortedTroves.new()
     const sortedTroves = await upgrades.deployProxy(SortedTroves,{kind: "uups"})
+    const activePool = await upgrades.deployProxy(ActivePool,{kind: "uups"})
     const troveManager = await TroveManager.new()
-    const activePool = await ActivePool.new()
     const stabilityPool = await StabilityPool.new()
     const gasPool = await GasPool.new()
     const defaultPool = await DefaultPool.new()
@@ -117,8 +118,9 @@ class DeploymentHelper {
     DefaultPool.setAsDeployed(defaultPool)
     PriceFeedTestnet.setAsDeployed(priceFeedTestnet)
     sortedTroves.deployed()
+    activePool.deployed()
     TroveManager.setAsDeployed(troveManager)
-    ActivePool.setAsDeployed(activePool)
+    //ActivePool.setAsDeployed(activePool)
     StabilityPool.setAsDeployed(stabilityPool)
     GasPool.setAsDeployed(gasPool)
     CollSurplusPool.setAsDeployed(collSurplusPool)
@@ -208,7 +210,7 @@ class DeploymentHelper {
     CommunityIssuanceTester.setAsDeployed(communityIssuance)
 
     // Deploy KUMO Token, passing Community Issuance and Factory addresses to the constructor 
-    const kumoToken = await KUMOToken.new (
+    const kumoToken = await KUMOTokenTester.new (
       communityIssuance.address, 
       kumoStaking.address,
       lockupContractFactory.address,
@@ -217,7 +219,7 @@ class DeploymentHelper {
       multisigAddress
     )
 
-    KUMOToken.setAsDeployed(kumoToken)
+    KUMOTokenTester.setAsDeployed(kumoToken)
 
     const KUMOContracts = {
       kumoStaking,
