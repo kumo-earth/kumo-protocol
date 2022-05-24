@@ -10,11 +10,15 @@ import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
+
+contract CollSurplusPool is Initializable, OwnableUpgradeable, CheckContract, UUPSUpgradeable, ICollSurplusPool {
     using SafeMath for uint256;
 
-    // bool public isInitialized;
+    bool public isInitialized;
     string constant public NAME = "CollSurplusPool";
 
     address public borrowerOperationsAddress;
@@ -44,15 +48,15 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
     )
         external
         override
-        onlyOwner
+        initializer
     {
-		// require(!isInitialized, "Already initialized");
+		require(!isInitialized, "Already initialized");
 		checkContract(_borrowerOperationsAddress);
 		checkContract(_troveManagerAddress);
 		checkContract(_activePoolAddress);
-		// isInitialized = true;
+		isInitialized = true;
 
-		// __Ownable_init();
+		__Ownable_init();
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;
@@ -62,8 +66,11 @@ contract CollSurplusPool is Ownable, CheckContract, ICollSurplusPool {
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit ActivePoolAddressChanged(_activePoolAddress);
 
-        _renounceOwnership();
+        renounceOwnership();
     }
+
+    function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
+
 
     /* Returns the ETH state variable at ActivePool address.
        Not necessarily equal to the raw ether balance - ether can be forcibly sent to contracts. */

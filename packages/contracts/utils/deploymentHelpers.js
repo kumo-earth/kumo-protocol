@@ -2,10 +2,12 @@
 //let KUMOToken;
 let ActivePool;
 let BorrowerOperations;
+let CollSurplusPool;
 let SortedTroves;
 getFactory();
 //const ActivePool = artifacts.require("./ActivePool.sol");
 //const BorrowerOperations = artifacts.require("./BorrowerOperations.sol")
+//const CollSurplusPool = artifacts.require("./CollSurplusPool.sol")
 //const SortedTroves = artifacts.require("./SortedTroves.sol")
 const TroveManager = artifacts.require("./TroveManager.sol")
 const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol")
@@ -14,7 +16,6 @@ const KUSDToken = artifacts.require("./KUSDToken.sol")
 const DefaultPool = artifacts.require("./DefaultPool.sol");
 const StabilityPool = artifacts.require("./StabilityPool.sol")
 const GasPool = artifacts.require("./GasPool.sol")
-const CollSurplusPool = artifacts.require("./CollSurplusPool.sol")
 const FunctionCaller = artifacts.require("./TestContracts/FunctionCaller.sol")
 
 const HintHelpers = artifacts.require("./HintHelpers.sol")
@@ -71,6 +72,7 @@ async function  getFactory(){
   //KUMOToken = await ethers.getContractFactory("KUMOToken")
   ActivePool = await ethers.getContractFactory("ActivePool")
   BorrowerOperations = await ethers.getContractFactory("BorrowerOperations")
+  CollSurplusPool = await ethers.getContractFactory("CollSurplusPool")
   SortedTroves = await ethers.getContractFactory("SortedTroves")
 }
 
@@ -103,15 +105,17 @@ class DeploymentHelper {
   static async deployKumoCoreHardhat() {
     const priceFeedTestnet = await PriceFeedTestnet.new()
     //const borrowerOperations = await BorrowerOperations.new()
+    //const collSurplusPool = await CollSurplusPool.new()
     //const sortedTroves = await SortedTroves.new()
     const activePool = await upgrades.deployProxy(ActivePool,{kind: "uups"})
     const borrowerOperations = await upgrades.deployProxy(BorrowerOperations,{kind: "uups"})
+    const collSurplusPool = await upgrades.deployProxy(CollSurplusPool,{kind: "uups"})
     const sortedTroves = await upgrades.deployProxy(SortedTroves,{kind: "uups"})
     const troveManager = await TroveManager.new()
     const stabilityPool = await StabilityPool.new()
     const gasPool = await GasPool.new()
     const defaultPool = await DefaultPool.new()
-    const collSurplusPool = await CollSurplusPool.new()
+
     const functionCaller = await FunctionCaller.new()
     const hintHelpers = await HintHelpers.new()
     const kusdToken = await KUSDToken.new(
@@ -124,11 +128,12 @@ class DeploymentHelper {
     PriceFeedTestnet.setAsDeployed(priceFeedTestnet)
     activePool.deployed()
     borrowerOperations.deployed()
+    collSurplusPool.deployed()
     sortedTroves.deployed()
     TroveManager.setAsDeployed(troveManager)
     StabilityPool.setAsDeployed(stabilityPool)
     GasPool.setAsDeployed(gasPool)
-    CollSurplusPool.setAsDeployed(collSurplusPool)
+
     FunctionCaller.setAsDeployed(functionCaller)
     
     HintHelpers.setAsDeployed(hintHelpers)
