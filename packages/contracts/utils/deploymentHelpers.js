@@ -1,19 +1,22 @@
  const { ethers, upgrades } = require('hardhat');
 //let KUMOToken;
 let ActivePool;
+let BorrowerOperations;
 let SortedTroves;
 getFactory();
+//const ActivePool = artifacts.require("./ActivePool.sol");
+//const BorrowerOperations = artifacts.require("./BorrowerOperations.sol")
 //const SortedTroves = artifacts.require("./SortedTroves.sol")
 const TroveManager = artifacts.require("./TroveManager.sol")
 const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol")
 const KUSDToken = artifacts.require("./KUSDToken.sol")
-//const ActivePool = artifacts.require("./ActivePool.sol");
+
 const DefaultPool = artifacts.require("./DefaultPool.sol");
 const StabilityPool = artifacts.require("./StabilityPool.sol")
 const GasPool = artifacts.require("./GasPool.sol")
 const CollSurplusPool = artifacts.require("./CollSurplusPool.sol")
 const FunctionCaller = artifacts.require("./TestContracts/FunctionCaller.sol")
-const BorrowerOperations = artifacts.require("./BorrowerOperations.sol")
+
 const HintHelpers = artifacts.require("./HintHelpers.sol")
 
 const KUMOStaking = artifacts.require("./KUMOStaking.sol")
@@ -66,8 +69,9 @@ const maxBytes32 = '0x' + 'f'.repeat(64)
 
 async function  getFactory(){
   //KUMOToken = await ethers.getContractFactory("KUMOToken")
-  SortedTroves = await ethers.getContractFactory("SortedTroves")
   ActivePool = await ethers.getContractFactory("ActivePool")
+  BorrowerOperations = await ethers.getContractFactory("BorrowerOperations")
+  SortedTroves = await ethers.getContractFactory("SortedTroves")
 }
 
 class DeploymentHelper {
@@ -98,16 +102,17 @@ class DeploymentHelper {
 
   static async deployKumoCoreHardhat() {
     const priceFeedTestnet = await PriceFeedTestnet.new()
+    //const borrowerOperations = await BorrowerOperations.new()
     //const sortedTroves = await SortedTroves.new()
-    const sortedTroves = await upgrades.deployProxy(SortedTroves,{kind: "uups"})
     const activePool = await upgrades.deployProxy(ActivePool,{kind: "uups"})
+    const borrowerOperations = await upgrades.deployProxy(BorrowerOperations,{kind: "uups"})
+    const sortedTroves = await upgrades.deployProxy(SortedTroves,{kind: "uups"})
     const troveManager = await TroveManager.new()
     const stabilityPool = await StabilityPool.new()
     const gasPool = await GasPool.new()
     const defaultPool = await DefaultPool.new()
     const collSurplusPool = await CollSurplusPool.new()
     const functionCaller = await FunctionCaller.new()
-    const borrowerOperations = await BorrowerOperations.new()
     const hintHelpers = await HintHelpers.new()
     const kusdToken = await KUSDToken.new(
       troveManager.address,
@@ -117,15 +122,15 @@ class DeploymentHelper {
     KUSDToken.setAsDeployed(kusdToken)
     DefaultPool.setAsDeployed(defaultPool)
     PriceFeedTestnet.setAsDeployed(priceFeedTestnet)
-    sortedTroves.deployed()
     activePool.deployed()
+    borrowerOperations.deployed()
+    sortedTroves.deployed()
     TroveManager.setAsDeployed(troveManager)
-    //ActivePool.setAsDeployed(activePool)
     StabilityPool.setAsDeployed(stabilityPool)
     GasPool.setAsDeployed(gasPool)
     CollSurplusPool.setAsDeployed(collSurplusPool)
     FunctionCaller.setAsDeployed(functionCaller)
-    BorrowerOperations.setAsDeployed(borrowerOperations)
+    
     HintHelpers.setAsDeployed(hintHelpers)
 
     const coreContracts = {
