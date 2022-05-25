@@ -65,6 +65,7 @@ contract ActivePool is
         isInitialized = true;
 
         __Ownable_init();
+        __UUPSUpgradeable_init();
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;

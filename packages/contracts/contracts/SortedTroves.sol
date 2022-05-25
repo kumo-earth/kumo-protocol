@@ -93,6 +93,7 @@ contract SortedTroves is Initializable, OwnableUpgradeable, UUPSUpgradeable, Che
 	    isInitialized = true;
 
 	   __Ownable_init();
+       __UUPSUpgradeable_init();
 
         data.maxSize = _size;
 

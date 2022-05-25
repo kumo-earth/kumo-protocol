@@ -5,18 +5,19 @@ let BorrowerOperations;
 let CollSurplusPool;
 let DefaultPool;
 let SortedTroves;
+let StabilityPool;
 getFactory();
 //const ActivePool = artifacts.require("./ActivePool.sol");
 //const BorrowerOperations = artifacts.require("./BorrowerOperations.sol")
 //const CollSurplusPool = artifacts.require("./CollSurplusPool.sol")
 //const DefaultPool = artifacts.require("./DefaultPool.sol");
 //const SortedTroves = artifacts.require("./SortedTroves.sol")
+//const StabilityPool = artifacts.require("./StabilityPool.sol")
 const TroveManager = artifacts.require("./TroveManager.sol")
 const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol")
 const KUSDToken = artifacts.require("./KUSDToken.sol")
 
 
-const StabilityPool = artifacts.require("./StabilityPool.sol")
 const GasPool = artifacts.require("./GasPool.sol")
 const FunctionCaller = artifacts.require("./TestContracts/FunctionCaller.sol")
 
@@ -77,6 +78,7 @@ async function  getFactory(){
   CollSurplusPool = await ethers.getContractFactory("CollSurplusPool")
   DefaultPool = await ethers.getContractFactory("DefaultPool")
   SortedTroves = await ethers.getContractFactory("SortedTroves")
+  StabilityPool = await ethers.getContractFactory("StabilityPool")
 }
 
 class DeploymentHelper {
@@ -111,13 +113,14 @@ class DeploymentHelper {
     //const collSurplusPool = await CollSurplusPool.new()
     //const sortedTroves = await SortedTroves.new()
     //const defaultPool = await DefaultPool.new()
+    //const stabilityPool = await StabilityPool.new()
     const activePool = await upgrades.deployProxy(ActivePool,{kind: "uups"})
     const borrowerOperations = await upgrades.deployProxy(BorrowerOperations,{kind: "uups"})
     const collSurplusPool = await upgrades.deployProxy(CollSurplusPool,{kind: "uups"})
     const defaultPool = await upgrades.deployProxy(DefaultPool,{kind: "uups"})
     const sortedTroves = await upgrades.deployProxy(SortedTroves,{kind: "uups"})
+    const stabilityPool = await upgrades.deployProxy(StabilityPool,{kind: "uups"})
     const troveManager = await TroveManager.new()
-    const stabilityPool = await StabilityPool.new()
     const gasPool = await GasPool.new()
 
     const functionCaller = await FunctionCaller.new()
@@ -134,8 +137,9 @@ class DeploymentHelper {
     collSurplusPool.deployed()
     defaultPool.deployed()
     sortedTroves.deployed()
+    stabilityPool.deployed()
     TroveManager.setAsDeployed(troveManager)
-    StabilityPool.setAsDeployed(stabilityPool)
+
     GasPool.setAsDeployed(gasPool)
 
     FunctionCaller.setAsDeployed(functionCaller)

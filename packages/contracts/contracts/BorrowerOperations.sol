@@ -134,6 +134,7 @@ contract BorrowerOperations is KumoBase, Initializable, OwnableUpgradeable, Chec
         isInitialized = true;
         
         __Ownable_init();
+        __UUPSUpgradeable_init();
 
         troveManager = ITroveManager(_troveManagerAddress);
         activePool = IActivePool(_activePoolAddress);

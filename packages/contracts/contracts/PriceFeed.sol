@@ -102,6 +102,7 @@ contract PriceFeed is Initializable, OwnableUpgradeable, CheckContract, BaseMath
 		isInitialized = true;
 
 		__Ownable_init();
+        __UUPSUpgradeable_init();
        
         priceAggregator = AggregatorV3Interface(_priceAggregatorAddress);
         tellorCaller = ITellorCaller(_tellorCallerAddress);

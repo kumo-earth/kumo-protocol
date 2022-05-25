@@ -51,6 +51,7 @@ contract DefaultPool is Initializable, OwnableUpgradeable, CheckContract, UUPSUp
 		isInitialized = true;
 
 		__Ownable_init();
+        __UUPSUpgradeable_init();
 
         troveManagerAddress = _troveManagerAddress;
         activePoolAddress = _activePoolAddress;
