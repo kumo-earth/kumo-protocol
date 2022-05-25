@@ -6,12 +6,8 @@ import "../Dependencies/CheckContract.sol";
 import "../Dependencies/SafeMath.sol";
 import "../Interfaces/IKUMOToken.sol";
 import "../Interfaces/ILockupContractFactory.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "../Dependencies/console.sol";
-
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 
 /*
@@ -53,7 +49,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 * and the multisig has the same rights as any other address.
 */
 
-contract KUMOToken is CheckContract, Initializable, OwnableUpgradeable, UUPSUpgradeable, IKUMOToken, ERC20Upgradeable  {
+contract KUMOToken is CheckContract, Ownable, IKUMOToken  {
     using SafeMath for uint256;
 
     // --- ERC20 Data ---
@@ -120,7 +116,6 @@ contract KUMOToken is CheckContract, Initializable, OwnableUpgradeable, UUPSUpgr
     ) 
 
     {
-        _disableInitializers();
         checkContract(_communityIssuanceAddress);
         checkContract(_kumoStakingAddress);
         checkContract(_lockupFactoryAddress);
@@ -159,27 +154,18 @@ contract KUMOToken is CheckContract, Initializable, OwnableUpgradeable, UUPSUpgr
             .sub(_lpRewardsEntitlement);
 
         _mint(_multisigAddress, multisigEntitlement);
+
+        renounceOwnership();
     }
 
-    function initialize() initializer public {
-        __ERC20_init("KUMO", "KUMO");
-        __Ownable_init();
-        __UUPSUpgradeable_init();
-    }
-
-    function _authorizeUpgrade(address newImplementation)
-        internal
-        onlyOwner
-        override
-    {}
 
     // --- External functions ---
 
-    function totalSupply() public view virtual override (ERC20Upgradeable, IERC20Upgradeable) returns (uint256) {
+    function totalSupply() public view virtual override  returns (uint256) {
         return _totalSupply;
     }
 
-    function balanceOf(address account) public view virtual override (ERC20Upgradeable, IERC20Upgradeable) returns (uint256) {
+    function balanceOf(address account) public view virtual override  returns (uint256) {
         return _balances[account];
     }
 
@@ -191,7 +177,7 @@ contract KUMOToken is CheckContract, Initializable, OwnableUpgradeable, UUPSUpgr
         return lpRewardsEntitlement;
     }
 
-    function transfer(address recipient, uint256 amount) public virtual  override (ERC20Upgradeable, IERC20Upgradeable)  returns (bool) {
+    function transfer(address recipient, uint256 amount) public virtual  override   returns (bool) {
         // Restrict the multisig's transfers in first year
         if (_callerIsMultisig() && _isFirstYear()) {
             _requireRecipientIsRegisteredLC(recipient);
@@ -204,18 +190,18 @@ contract KUMOToken is CheckContract, Initializable, OwnableUpgradeable, UUPSUpgr
         return true;
     }
 
-    function allowance(address owner, address spender) public view virtual override (ERC20Upgradeable, IERC20Upgradeable) returns (uint256) {
+    function allowance(address owner, address spender) public view virtual override  returns (uint256) {
         return _allowances[owner][spender];
     }
 
-    function approve(address spender, uint256 amount) public virtual override (ERC20Upgradeable, IERC20Upgradeable)  returns (bool) {
+    function approve(address spender, uint256 amount) public virtual override   returns (bool) {
         if (_isFirstYear()) { _requireCallerIsNotMultisig(); }
 
         _approve(msg.sender, spender, amount);
         return true;
     }
 
-    function transferFrom(address sender, address recipient, uint256 amount) public virtual override (ERC20Upgradeable, IERC20Upgradeable)  returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) public virtual override   returns (bool) {
         if (_isFirstYear()) { _requireSenderIsNotMultisig(sender); }
         
         _requireValidRecipient(recipient);
@@ -225,14 +211,14 @@ contract KUMOToken is CheckContract, Initializable, OwnableUpgradeable, UUPSUpgr
         return true;
     }
 
-    function increaseAllowance(address spender, uint256 addedValue) public virtual override returns (bool) {
+    function increaseAllowance(address spender, uint256 addedValue) public virtual  returns (bool) {
         if (_isFirstYear()) { _requireCallerIsNotMultisig(); }
         
         _approve(msg.sender, spender, _allowances[msg.sender][spender].add(addedValue));
         return true;
     }
 
-    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual override returns  (bool) {
+    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns  (bool) {
         if (_isFirstYear()) { _requireCallerIsNotMultisig(); }
         
         _approve(msg.sender, spender, _allowances[msg.sender][spender].sub(subtractedValue, "ERC20: decreased allowance below zero"));
@@ -293,7 +279,7 @@ contract KUMOToken is CheckContract, Initializable, OwnableUpgradeable, UUPSUpgr
         return keccak256(abi.encode(typeHash, _name, _version, _chainID(), address(this)));
     }
 
-    function _transfer(address sender, address recipient, uint256 amount) internal override {
+    function _transfer(address sender, address recipient, uint256 amount) internal  {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
 
@@ -302,7 +288,7 @@ contract KUMOToken is CheckContract, Initializable, OwnableUpgradeable, UUPSUpgr
         emit Transfer(sender, recipient, amount);
     }
 
-    function _mint(address account, uint256 amount) internal override {
+    function _mint(address account, uint256 amount) internal {
         require(account != address(0), "ERC20: mint to the zero address");
 
         _totalSupply = _totalSupply.add(amount);
@@ -310,7 +296,7 @@ contract KUMOToken is CheckContract, Initializable, OwnableUpgradeable, UUPSUpgr
         emit Transfer(address(0), account, amount);
     }
 
-    function _approve(address owner, address spender, uint256 amount) internal override {
+    function _approve(address owner, address spender, uint256 amount) internal {
         require(owner != address(0), "ERC20: approve from the zero address");
         require(spender != address(0), "ERC20: approve to the zero address");
 
@@ -362,15 +348,15 @@ contract KUMOToken is CheckContract, Initializable, OwnableUpgradeable, UUPSUpgr
 
     // --- Optional functions ---
 
-    function name() public view virtual override returns (string memory) {
+    function name() public view virtual returns (string memory) {
         return _NAME;
     }
 
-    function symbol() public view virtual override returns (string memory) {
+    function symbol() public view virtual returns (string memory) {
         return _SYMBOL;
     }
 
-    function decimals() public view virtual override returns (uint8) {
+    function decimals() public view virtual returns (uint8) {
         return _DECIMALS;
     }
 
