@@ -72,7 +72,7 @@ const oracleAddresses = {
   },
   mumbai: {
     chainlink: "0x0715A7794a1dc8e42615F059dD6e406A6594651A",
-    tellor: "0x3477EB82263dabb59AC0CAcE47a61292f28A2eA7" // Core
+    tellor: "0x3477EB82263dabb59AC0CAcE47a61292f28A2eA7"
   },
 };
 
