@@ -67,12 +67,12 @@ const infuraNetwork = (name: string): { [name: string]: NetworkUserConfig } => (
 
 const oracleAddresses = {
   mainnet: {
-    chainlink: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
-    tellor: "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0"
+    chainlink: "0xF9680D99D6C9589e2a93a78A04A279e509205945",
+    tellor: "0xFd45Ae72E81Adaaf01cC61c8bCe016b7060DD537"
   },
   mumbai: {
-    chainlink: "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e",
-    tellor: "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0" // Core
+    chainlink: "0x0715A7794a1dc8e42615F059dD6e406A6594651A",
+    tellor: "0x3477EB82263dabb59AC0CAcE47a61292f28A2eA7"
   },
 };
 
@@ -80,8 +80,8 @@ const hasOracles = (network: string): network is keyof typeof oracleAddresses =>
   network in oracleAddresses;
 
 const wethAddresses = {
-  mainnet: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  mumbai: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
+  mainnet: "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+  mumbai: "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
 };
 
 const hasWETH = (network: string): network is keyof typeof wethAddresses => network in wethAddresses;
@@ -106,7 +106,7 @@ const config: HardhatUserConfig = {
     },
     mumbai: {
       url: `https://matic-mumbai.chainstacklabs.com`,
-      accounts: ['ff126760c1b50be914c632a2cfbcbbfc569e21d07008c92c861e8977f0c01544'],
+      accounts: [deployerAccount],
       timeout: 100000
     },
 
