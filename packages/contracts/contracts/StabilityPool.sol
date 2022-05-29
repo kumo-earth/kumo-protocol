@@ -12,7 +12,7 @@ import "./Interfaces/ICommunityIssuance.sol";
 import "./Dependencies/KumoBase.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/KumoSafeMath128.sol";
-import "./Dependencies/Ownable.sol";
+//import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 
@@ -149,7 +149,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
  * The product P (and snapshot P_t) is re-used, as the ratio P/P_t tracks a deposit's depletion due to liquidations.
  *
  */
-contract StabilityPool is KumoBase, Initializable, OwnableUpgradeable, CheckContract, UUPSUpgradeable, IStabilityPool {
+contract StabilityPool is KumoBase, CheckContract, UUPSUpgradeable, IStabilityPool {
     using KumoSafeMath128 for uint128;
     using SafeMath for uint256;
 

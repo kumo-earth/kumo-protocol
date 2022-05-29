@@ -5,11 +5,11 @@ pragma solidity 0.8.11;
 import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/ISortedTroves.sol";
 import "./Dependencies/KumoBase.sol";
-import "./Dependencies/Ownable.sol";
+//import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafeMath.sol";
 
-contract HintHelpers is KumoBase, CheckContract, Ownable {
+contract HintHelpers is KumoBase, CheckContract {
     using SafeMath for uint256;
     string constant public NAME = "HintHelpers";
 
@@ -29,7 +29,7 @@ contract HintHelpers is KumoBase, CheckContract, Ownable {
         address _troveManagerAddress
     )
         external
-        onlyOwner 
+        initializer 
         {
 		// require(!isInitialized, "Already initialized");
 		checkContract(_sortedTrovesAddress);
@@ -37,7 +37,7 @@ contract HintHelpers is KumoBase, CheckContract, Ownable {
 		// checkContract(_vaultParametersAddress);
 		// isInitialized = true;
 
-		// __Ownable_init();
+		__Ownable_init();
 
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         troveManager = ITroveManager(_troveManagerAddress);
@@ -45,7 +45,7 @@ contract HintHelpers is KumoBase, CheckContract, Ownable {
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
 
-        _renounceOwnership();
+        renounceOwnership();
     }
 
     // --- Functions ---

@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.11;
 
-// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./BaseMath.sol";
 import "./KumoMath.sol";
@@ -15,7 +15,7 @@ import "../Interfaces/IKumoBase.sol";
 * Base contract for TroveManager, BorrowerOperations and StabilityPool. Contains global system constants and
 * common functions. 
 */
-contract KumoBase is BaseMath, IKumoBase {
+contract KumoBase is BaseMath, OwnableUpgradeable, IKumoBase {
     using SafeMath for uint;
 
     // IKumoParameters public override kumoParams;

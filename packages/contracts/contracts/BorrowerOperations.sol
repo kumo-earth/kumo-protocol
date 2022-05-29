@@ -15,10 +15,10 @@ import "./Dependencies/console.sol";
 import "./Dependencies/SafeMath.sol";
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+//import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-contract BorrowerOperations is KumoBase, Initializable, OwnableUpgradeable, CheckContract, UUPSUpgradeable, IBorrowerOperations {
+contract BorrowerOperations is KumoBase, CheckContract, UUPSUpgradeable, IBorrowerOperations {
     using SafeMath for uint256;
     string constant public NAME = "BorrowerOperations";
     bool public isInitialized;

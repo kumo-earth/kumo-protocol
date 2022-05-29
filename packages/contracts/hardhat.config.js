@@ -88,6 +88,8 @@ module.exports = {
             blockGasLimit: 150000000, 
             gasPrice: 200000000000,
             initialBaseFeePerGas: 0,
+            allowUnlimitedContractSize: true,
+            blockGasLimit: 0x1fffffffffffff
         },
         mainnet: {
             url: alchemyUrl(),
