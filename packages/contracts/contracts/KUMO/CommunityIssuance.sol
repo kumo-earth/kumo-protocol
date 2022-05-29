@@ -2,18 +2,18 @@
 
 pragma solidity 0.8.11;
 
-// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "../Interfaces/IKUMOToken.sol";
 import "../Interfaces/ICommunityIssuance.sol";
 import "../Dependencies/BaseMath.sol";
 import "../Dependencies/KumoMath.sol";
-import "../Dependencies/Ownable.sol";
+// import "../Dependencies/Ownable.sol";
 import "../Dependencies/CheckContract.sol";
 import "../Dependencies/SafeMath.sol";
 
 
-contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMath {
+contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContract, BaseMath {
     using SafeMath for uint;
 
     bool public isInitialized;
@@ -73,14 +73,14 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
     ) 
         external 
         override 
-        onlyOwner
+        initializer
     {
         // require(!isInitialized, "Already initialized");
         checkContract(_kumoTokenAddress);
         checkContract(_stabilityPoolAddress);
         
 		// isInitialized = true;
-		// __Ownable_init();
+		__Ownable_init();
 
         kumoToken = IKUMOToken(_kumoTokenAddress);
         stabilityPoolAddress = _stabilityPoolAddress;
@@ -92,7 +92,7 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
         emit KUMOTokenAddressSet(_kumoTokenAddress);
         emit StabilityPoolAddressSet(_stabilityPoolAddress);
 
-        _renounceOwnership();
+        renounceOwnership();
     }
 
     function issueKUMO() external override returns (uint) {
