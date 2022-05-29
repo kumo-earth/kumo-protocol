@@ -13,11 +13,13 @@ import "./Dependencies/KumoBase.sol";
 //import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
-import "./Dependencies/SafeMath.sol";
+// import "./Dependencies/SafeMath.sol";
+
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 contract TroveManager is KumoBase, CheckContract, UUPSUpgradeable, ITroveManager {
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
     
 	// bool public isInitialized;
 

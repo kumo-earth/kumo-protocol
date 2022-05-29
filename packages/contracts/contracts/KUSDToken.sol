@@ -3,9 +3,12 @@
 pragma solidity 0.8.11;
 
 import "./Interfaces/IKUSDToken.sol";
-import "./Dependencies/SafeMath.sol";
+// import "./Dependencies/SafeMath.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
+
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+
 /*
 *
 * Based upon OpenZeppelin's ERC20 contract:
@@ -25,7 +28,7 @@ import "./Dependencies/console.sol";
 */
 
 contract KUSDToken is CheckContract, IKUSDToken {
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
     
     uint256 private _totalSupply;
     string constant internal _NAME = "KUSD Stablecoin";

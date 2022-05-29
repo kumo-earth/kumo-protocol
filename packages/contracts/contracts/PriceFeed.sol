@@ -5,13 +5,14 @@ pragma solidity 0.8.11;
 import "./Interfaces/IPriceFeed.sol";
 import "./Interfaces/ITellorCaller.sol";
 import "./Dependencies/AggregatorV3Interface.sol";
-import "./Dependencies/SafeMath.sol";
+// import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/BaseMath.sol";
 import "./Dependencies/KumoMath.sol";
 import "./Dependencies/console.sol";
 
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -25,7 +26,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 * Chainlink oracle.
 */
 contract PriceFeed is Initializable, OwnableUpgradeable, CheckContract, BaseMath, UUPSUpgradeable, IPriceFeed {
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
 
 	bool public isInitialized;
 

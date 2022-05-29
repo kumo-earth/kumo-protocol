@@ -2,6 +2,7 @@
 
 pragma solidity 0.8.11;
 
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./BaseMath.sol";
@@ -16,7 +17,7 @@ import "../Interfaces/IKumoBase.sol";
 * common functions. 
 */
 contract KumoBase is BaseMath, OwnableUpgradeable, IKumoBase {
-    using SafeMath for uint;
+    using SafeMathUpgradeable for uint;
 
     // IKumoParameters public override kumoParams;
 

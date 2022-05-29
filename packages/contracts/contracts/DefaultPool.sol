@@ -5,11 +5,12 @@ pragma solidity 0.8.11;
 // import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import './Interfaces/IDefaultPool.sol';
-import "./Dependencies/SafeMath.sol";
+// import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -22,7 +23,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
  * from the Default Pool to the Active Pool.
  */
 contract DefaultPool is Initializable, OwnableUpgradeable, CheckContract, UUPSUpgradeable, IDefaultPool {
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
 	bool public isInitialized;
     
     string constant public NAME = "DefaultPool";

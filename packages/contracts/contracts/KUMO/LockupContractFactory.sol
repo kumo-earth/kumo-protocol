@@ -3,9 +3,10 @@
 pragma solidity 0.8.11;
 
 // import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 
 import "../Dependencies/CheckContract.sol";
-import "../Dependencies/SafeMath.sol";
+// import "../Dependencies/SafeMath.sol";
 import "../Dependencies/Ownable.sol";
 import "../Interfaces/ILockupContractFactory.sol";
 import "./LockupContract.sol";
@@ -26,7 +27,7 @@ import "../Dependencies/console.sol";
 */
 
 contract LockupContractFactory is ILockupContractFactory, Ownable, CheckContract {
-    using SafeMath for uint;
+    using SafeMathUpgradeable for uint;
 
 	// bool public isInitialized;
     // --- Data ---

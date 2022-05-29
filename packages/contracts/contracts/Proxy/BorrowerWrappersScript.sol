@@ -2,7 +2,8 @@
 
 pragma solidity 0.8.11;
 
-import "../Dependencies/SafeMath.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+//import "../Dependencies/SafeMath.sol";
 import "../Dependencies/KumoMath.sol";
 import "../Dependencies/IERC20.sol";
 import "../Interfaces/IBorrowerOperations.sol";
@@ -17,7 +18,7 @@ import "../Dependencies/console.sol";
 
 
 contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, KUMOStakingScript {
-    using SafeMath for uint;
+    using SafeMathUpgradeable for uint;
 
     string constant public NAME = "BorrowerWrappersScript";
 

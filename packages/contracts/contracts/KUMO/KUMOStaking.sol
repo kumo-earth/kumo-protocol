@@ -3,9 +3,10 @@
 pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 
 import "../Dependencies/BaseMath.sol";
-import "../Dependencies/SafeMath.sol";
+// import "../Dependencies/SafeMath.sol";
 // import "../Dependencies/Ownable.sol";
 import "../Dependencies/CheckContract.sol";
 import "../Dependencies/console.sol";
@@ -15,7 +16,7 @@ import "../Dependencies/KumoMath.sol";
 import "../Interfaces/IKUSDToken.sol";
 
 contract KUMOStaking is IKUMOStaking, OwnableUpgradeable, CheckContract, BaseMath {
-    using SafeMath for uint;
+    using SafeMathUpgradeable for uint;
 
     // bool public isInitialized;
     // --- Data ---

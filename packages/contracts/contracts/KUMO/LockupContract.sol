@@ -2,7 +2,9 @@
 
 pragma solidity 0.8.11;
 
-import "../Dependencies/SafeMath.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+
+//import "../Dependencies/SafeMath.sol";
 import "../Interfaces/IKUMOToken.sol";
 
 /*
@@ -17,7 +19,7 @@ import "../Interfaces/IKUMOToken.sol";
 * enter circulating supply and cannot be staked to earn system revenue.
 */
 contract LockupContract {
-    using SafeMath for uint;
+    using SafeMathUpgradeable for uint;
 	// bool public isInitialized;
     // --- Data ---
     string constant public NAME = "LockupContract";

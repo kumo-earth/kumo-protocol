@@ -9,6 +9,8 @@ import "../Interfaces/ILockupContractFactory.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../Dependencies/console.sol";
 
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+
 
 /*
 * Based upon OpenZeppelin's ERC20 contract:
@@ -50,7 +52,7 @@ import "../Dependencies/console.sol";
 */
 
 contract KUMOToken is CheckContract, Ownable, IKUMOToken  {
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
 
     // --- ERC20 Data ---
 

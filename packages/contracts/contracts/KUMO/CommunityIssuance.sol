@@ -3,6 +3,7 @@
 pragma solidity 0.8.11;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 
 import "../Interfaces/IKUMOToken.sol";
 import "../Interfaces/ICommunityIssuance.sol";
@@ -14,7 +15,7 @@ import "../Dependencies/SafeMath.sol";
 
 
 contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContract, BaseMath {
-    using SafeMath for uint;
+    using SafeMathUpgradeable for uint;
 
     bool public isInitialized;
     // --- Data ---

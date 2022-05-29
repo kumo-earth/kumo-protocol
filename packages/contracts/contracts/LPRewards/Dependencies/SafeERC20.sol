@@ -2,8 +2,9 @@
 
 pragma solidity 0.8.11;
 
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "../../Dependencies/IERC20.sol";
-import "../../Dependencies/SafeMath.sol";
+// import "../../Dependencies/SafeMath.sol";
 import "./Address.sol";
 
 /**
@@ -16,7 +17,7 @@ import "./Address.sol";
  * which allows you to call the safe operations as `token.safeTransfer(...)`, etc.
  */
 library SafeERC20 {
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
     using Address for address;
 
     function safeTransfer(IERC20 token, address to, uint256 value) internal {

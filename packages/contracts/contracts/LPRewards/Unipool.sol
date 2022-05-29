@@ -3,9 +3,10 @@
 pragma solidity 0.8.11;
 
 // import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 
 import "../Dependencies/KumoMath.sol";
-import "../Dependencies/SafeMath.sol";
+// import "../Dependencies/SafeMath.sol";
 import "../Dependencies/Ownable.sol";
 import "../Dependencies/CheckContract.sol";
 import "../Interfaces/IKUMOToken.sol";
@@ -23,7 +24,7 @@ import "../Dependencies/console.sol";
 
 // LPTokenWrapper contains the basic staking functionality
 contract LPTokenWrapper is ILPTokenWrapper {
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
     using SafeERC20 for IERC20;
 
     IERC20 public uniToken;
@@ -74,7 +75,7 @@ contract LPTokenWrapper is ILPTokenWrapper {
  * or first liquidity provider stakes UNIv2 LP tokens into it.
  */
 contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
     string constant public NAME = "Unipool";
     // bool public isInitialized;
 

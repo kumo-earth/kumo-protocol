@@ -20,7 +20,7 @@ import "./EchidnaProxy.sol";
 // ~/.local/bin/echidna-test contracts/TestContracts/EchidnaTester.sol --contract EchidnaTester --config fuzzTests/echidna_config.yaml
 
 contract EchidnaTester {
-    using SafeMath for uint;
+    using SafeMathUpgradeable for uint;
 
     uint constant private NUMBER_OF_ACTORS = 100;
     uint constant private INITIAL_BALANCE = 1e24;

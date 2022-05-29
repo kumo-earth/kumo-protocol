@@ -10,12 +10,13 @@ import './Interfaces/IKUSDToken.sol';
 import './Interfaces/ISortedTroves.sol';
 import "./Interfaces/ICommunityIssuance.sol";
 import "./Dependencies/KumoBase.sol";
-import "./Dependencies/SafeMath.sol";
+/// import "./Dependencies/SafeMath.sol";
 import "./Dependencies/KumoSafeMath128.sol";
 //import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -151,7 +152,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
  */
 contract StabilityPool is KumoBase, CheckContract, UUPSUpgradeable, IStabilityPool {
     using KumoSafeMath128 for uint128;
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
 
     bool public isInitialized;
 

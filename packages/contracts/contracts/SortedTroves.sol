@@ -2,16 +2,15 @@
 
 pragma solidity 0.8.11;
 
-// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-
 import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/IBorrowerOperations.sol";
-import "./Dependencies/SafeMath.sol";
+// import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
@@ -50,7 +49,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 * - Public functions with parameters have been made internal to save gas, and given an external wrapper function for external access
 */
 contract SortedTroves is Initializable, OwnableUpgradeable, UUPSUpgradeable, CheckContract, ISortedTroves {
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
     bool public isInitialized;
 
     string constant public NAME = "SortedTroves";

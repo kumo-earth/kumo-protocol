@@ -7,10 +7,12 @@ import "./Interfaces/ISortedTroves.sol";
 import "./Dependencies/KumoBase.sol";
 //import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
-import "./Dependencies/SafeMath.sol";
+//import "./Dependencies/SafeMath.sol";
+
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 
 contract HintHelpers is KumoBase, CheckContract {
-    using SafeMath for uint256;
+    using SafeMathUpgradeable for uint256;
     string constant public NAME = "HintHelpers";
 
 	bool public isInitialized;
