@@ -21,7 +21,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 contract TroveManager is KumoBase, CheckContract, UUPSUpgradeable, ITroveManager {
     using SafeMathUpgradeable for uint256;
     
-	// bool public isInitialized;
+	bool public isInitialized;
 
     string constant public NAME = "TroveManager";
 
@@ -256,7 +256,7 @@ contract TroveManager is KumoBase, CheckContract, UUPSUpgradeable, ITroveManager
         override
         initializer
     {
-        // require(!isInitialized, "Already initialized");
+        require(!isInitialized, "Already initialized");
         checkContract(_borrowerOperationsAddress);
         checkContract(_activePoolAddress);
         checkContract(_defaultPoolAddress);
@@ -268,7 +268,7 @@ contract TroveManager is KumoBase, CheckContract, UUPSUpgradeable, ITroveManager
         checkContract(_sortedTrovesAddress);
         checkContract(_kumoTokenAddress);
         checkContract(_kumoStakingAddress);
-        // isInitialized = true;
+        isInitialized = true;
 		__Ownable_init();
         __UUPSUpgradeable_init();
 
