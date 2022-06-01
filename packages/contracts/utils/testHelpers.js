@@ -305,6 +305,7 @@ class TestHelper {
   // Adds the gas compensation (50 KUSD)
   static async getCompositeDebt(contracts, debt) {
     const compositeDebt = contracts.borrowerOperations.getCompositeDebt(debt)
+    console.log("CompositeDebt: " + compositeDebt)
     return compositeDebt
   }
 
@@ -326,7 +327,9 @@ class TestHelper {
    */
   static async getOpenTroveTotalDebt(contracts, kusdAmount) {
     const fee = await contracts.troveManager.getBorrowingFee(kusdAmount)
+    console.log("Fee : " + fee)
     const compositeDebt = await this.getCompositeDebt(contracts, kusdAmount)
+    console.log("Debt :" + compositeDebt)
     return compositeDebt.add(fee)
   }
 

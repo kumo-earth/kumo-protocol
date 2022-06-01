@@ -5,7 +5,8 @@ pragma solidity 0.8.11;
 import "./Interfaces/IKUSDToken.sol";
 // import "./Dependencies/SafeMath.sol";
 import "./Dependencies/CheckContract.sol";
-import "./Dependencies/console.sol";
+// import "./Dependencies/console.sol";
+
 
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 

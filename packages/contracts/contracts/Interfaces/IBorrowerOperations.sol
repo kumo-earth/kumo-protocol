@@ -55,5 +55,5 @@ interface IBorrowerOperations {
 
     function claimCollateral() external;
 
-    function getCompositeDebt(uint _debt) external pure returns (uint);
+    function getCompositeDebt(uint _debt) external view returns (uint);
 }

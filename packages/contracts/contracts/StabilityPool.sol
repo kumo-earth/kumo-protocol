@@ -14,7 +14,8 @@ import "./Dependencies/KumoBase.sol";
 import "./Dependencies/KumoSafeMath128.sol";
 //import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
-import "./Dependencies/console.sol";
+// import "./Dependencies/console.sol";
+
 
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";

@@ -102,7 +102,6 @@
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.0",
     "@openzeppelin/contracts-upgradeable": "^4.6.0",
-    "@openzeppelin/hardhat-upgrades": "^1.17.0",
-    "bn.js": "^5.2.1"
+    "@openzeppelin/hardhat-upgrades": "^1.17.0"
   }
 }

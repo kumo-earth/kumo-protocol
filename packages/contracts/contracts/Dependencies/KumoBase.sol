@@ -12,6 +12,8 @@ import "../Interfaces/IDefaultPool.sol";
 import "../Interfaces/IPriceFeed.sol";
 import "../Interfaces/IKumoBase.sol";
 
+// import "hardhat/console.sol";
+
 /* 
 * Base contract for TroveManager, BorrowerOperations and StabilityPool. Contains global system constants and
 * common functions. 

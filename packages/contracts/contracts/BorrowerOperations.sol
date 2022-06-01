@@ -11,7 +11,8 @@ import "./Interfaces/IKUMOStaking.sol";
 import "./Dependencies/KumoBase.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
-import "./Dependencies/console.sol";
+// import "./Dependencies/console.sol";
+
 // import "./Dependencies/SafeMath.sol";
 
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
@@ -675,7 +676,8 @@ contract BorrowerOperations is KumoBase, CheckContract, UUPSUpgradeable, IBorrow
         return newTCR;
     }
 
-    function getCompositeDebt(uint _debt) external pure override returns (uint) {
+    function getCompositeDebt(uint _debt) external view override returns (uint) {
+        console.log("BorrowerOperations DEBT: %s", _debt);
         return _getCompositeDebt(_debt);
     }
 }
