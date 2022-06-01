@@ -67,28 +67,21 @@ const infuraNetwork = (name: string): { [name: string]: NetworkUserConfig } => (
 
 const oracleAddresses = {
   mainnet: {
-    chainlink: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
-    tellor: "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0"
+    chainlink: "0xF9680D99D6C9589e2a93a78A04A279e509205945",
+    tellor: "0xFd45Ae72E81Adaaf01cC61c8bCe016b7060DD537"
   },
-  rinkeby: {
-    chainlink: "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e",
-    tellor: "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0" // Core
+  mumbai: {
+    chainlink: "0x0715A7794a1dc8e42615F059dD6e406A6594651A",
+    tellor: "0x3477EB82263dabb59AC0CAcE47a61292f28A2eA7"
   },
-  kovan: {
-    chainlink: "0x9326BFA02ADD2366b30bacB125260Af641031331",
-    tellor: "0x20374E579832859f180536A69093A126Db1c8aE9" // Playground
-  }
 };
 
 const hasOracles = (network: string): network is keyof typeof oracleAddresses =>
   network in oracleAddresses;
 
 const wethAddresses = {
-  mainnet: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  ropsten: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
-  rinkeby: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
-  goerli: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
-  kovan: "0xd0A1E359811322d97991E03f863a0C30C2cF029C"
+  mainnet: "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+  mumbai: "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
 };
 
 const hasWETH = (network: string): network is keyof typeof wethAddresses => network in wethAddresses;
@@ -104,7 +97,7 @@ const config: HardhatUserConfig = {
       // Let Ethers throw instead of Buidler EVM
       // This is closer to what will happen in production
       throwOnCallFailures: false,
-      throwOnTransactionFailures: false
+      throwOnTransactionFailures: false,
     },
 
     dev: {
@@ -112,14 +105,12 @@ const config: HardhatUserConfig = {
       accounts: [deployerAccount, devChainRichAccount, ...generateRandomAccounts(numAccounts - 2)]
     },
     mumbai: {
-      url: `https://rpc-mumbai.maticvigil.com`,
-      accounts: ['ff126760c1b50be914c632a2cfbcbbfc569e21d07008c92c861e8977f0c01544']
+      url: `https://matic-mumbai.chainstacklabs.com`,
+      accounts: [deployerAccount],
+      timeout: 100000
     },
 
-    ...infuraNetwork("ropsten"),
-    ...infuraNetwork("rinkeby"),
-    ...infuraNetwork("goerli"),
-    ...infuraNetwork("kovan"),
+    // ...infuraNetwork("mumbai"),
     ...infuraNetwork("mainnet")
   },
 
