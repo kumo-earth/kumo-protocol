@@ -32,6 +32,5 @@ Equivalent to:
 
 ```typescript
 adjustTrove({ depositCollateral: amount })
-
 ```
 
