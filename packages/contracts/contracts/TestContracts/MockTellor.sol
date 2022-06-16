@@ -8,14 +8,14 @@ contract MockTellor {
     // --- Mock price data ---
 
     bool didRetrieve = true; // default to a positive retrieval
-    uint private price;
+    bytes private price;
     uint private updateTime;
 
     bool private revertRequest;
 
     // --- Setters for mock price data ---
 
-    function setPrice(uint _price) external {
+    function setPrice(bytes memory _price) external {
         price = _price;
     }
 
@@ -33,16 +33,16 @@ contract MockTellor {
 
     // --- Mock data reporting functions --- 
 
-    function getTimestampbyRequestIDandIndex(uint, uint) external view returns (uint) {
+    function getTimestampbyQueryIdandIndex(bytes32, uint) external view returns (uint) {
         return updateTime;
     }
 
-    function getNewValueCountbyRequestId(uint) external view returns (uint) {
+    function getNewValueCountbyQueryId(bytes32) external view returns (uint) {
         if (revertRequest) {require (1 == 0, "Tellor request reverted");}
         return 1;
     }
 
-    function retrieveData(uint256, uint256) external view returns (uint256) {
+    function retrieveData(bytes32, uint256) external view returns (bytes memory) {
         return price;
     }
 

@@ -33,6 +33,5 @@ Equivalent to:
 
 ```typescript
 adjustTrove({ repayKUSD: amount })
-
 ```
 

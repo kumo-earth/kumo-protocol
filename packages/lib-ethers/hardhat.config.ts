@@ -53,11 +53,11 @@ const generateRandomAccounts = (numberOfAccounts: number) => {
 const deployerAccount = process.env.DEPLOYER_PRIVATE_KEY || Wallet.createRandom().privateKey;
 const devChainRichAccount = "0x4d5db4107d237df6a3d58ee5f70ae63d73d7658d4026f2eefd2f204c81682cb7";
 
-const infuraApiKey = "ad9cef41c9c844a7b54d10be24d416e5";
+const alchemyKey = "Kof4wTwV6VCW_QrnUjL5VnV4LQ-nYPJf";
 
-const infuraNetwork = (name: string): { [name: string]: NetworkUserConfig } => ({
+const alchemyNetwork = (name: string): { [name: string]: NetworkUserConfig } => ({
   [name]: {
-    url: `https://${name}.infura.io/v3/${infuraApiKey}`,
+    url: `https://${name}.g.alchemy.com/v2/${alchemyKey}`,
     accounts: [deployerAccount]
   }
 });
@@ -67,28 +67,21 @@ const infuraNetwork = (name: string): { [name: string]: NetworkUserConfig } => (
 
 const oracleAddresses = {
   mainnet: {
-    chainlink: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
-    tellor: "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0"
+    chainlink: "0xF9680D99D6C9589e2a93a78A04A279e509205945",
+    tellor: "0xFd45Ae72E81Adaaf01cC61c8bCe016b7060DD537"
   },
-  rinkeby: {
-    chainlink: "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e",
-    tellor: "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0" // Core
+  "polygon-mumbai": {
+    chainlink: "0x0715A7794a1dc8e42615F059dD6e406A6594651A",
+    tellor: "0x41b66dd93b03e89D29114a7613A6f9f0d4F40178"
   },
-  kovan: {
-    chainlink: "0x9326BFA02ADD2366b30bacB125260Af641031331",
-    tellor: "0x20374E579832859f180536A69093A126Db1c8aE9" // Playground
-  }
 };
 
 const hasOracles = (network: string): network is keyof typeof oracleAddresses =>
   network in oracleAddresses;
 
 const wethAddresses = {
-  mainnet: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  ropsten: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
-  rinkeby: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
-  goerli: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
-  kovan: "0xd0A1E359811322d97991E03f863a0C30C2cF029C"
+  mainnet: "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+  "polygon-mumbai": "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
 };
 
 const hasWETH = (network: string): network is keyof typeof wethAddresses => network in wethAddresses;
@@ -104,7 +97,7 @@ const config: HardhatUserConfig = {
       // Let Ethers throw instead of Buidler EVM
       // This is closer to what will happen in production
       throwOnCallFailures: false,
-      throwOnTransactionFailures: false
+      throwOnTransactionFailures: false,
     },
 
     dev: {
@@ -112,11 +105,7 @@ const config: HardhatUserConfig = {
       accounts: [deployerAccount, devChainRichAccount, ...generateRandomAccounts(numAccounts - 2)]
     },
 
-    ...infuraNetwork("ropsten"),
-    ...infuraNetwork("rinkeby"),
-    ...infuraNetwork("goerli"),
-    ...infuraNetwork("kovan"),
-    ...infuraNetwork("mainnet")
+    ...alchemyNetwork("polygon-mumbai"),
   },
 
   paths: {
