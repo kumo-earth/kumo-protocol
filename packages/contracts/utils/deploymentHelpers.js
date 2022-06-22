@@ -16,6 +16,8 @@ const KUMOToken = artifacts.require("./KUMOToken.sol")
 const LockupContractFactory = artifacts.require("./LockupContractFactory.sol")
 const CommunityIssuance = artifacts.require("./CommunityIssuance.sol")
 
+const KumoParameters = artifacts.require("./KumoParameters.sol")
+
 const Unipool =  artifacts.require("./Unipool.sol")
 
 const KUMOTokenTester = artifacts.require("./KUMOTokenTester.sol")
@@ -102,6 +104,8 @@ class DeploymentHelper {
       stabilityPool.address,
       borrowerOperations.address
     )
+    const kumoParameters = await KumoParameters.new()
+
     KUSDToken.setAsDeployed(kusdToken)
     DefaultPool.setAsDeployed(defaultPool)
     PriceFeedTestnet.setAsDeployed(priceFeedTestnet)
@@ -114,6 +118,7 @@ class DeploymentHelper {
     FunctionCaller.setAsDeployed(functionCaller)
     BorrowerOperations.setAsDeployed(borrowerOperations)
     HintHelpers.setAsDeployed(hintHelpers)
+    KumoParameters.setAsDeployed(kumoParameters)
 
     const coreContracts = {
       priceFeedTestnet,
@@ -127,7 +132,8 @@ class DeploymentHelper {
       collSurplusPool,
       functionCaller,
       borrowerOperations,
-      hintHelpers
+      hintHelpers,
+      kumoParameters
     }
     return coreContracts
   }
@@ -338,6 +344,12 @@ class DeploymentHelper {
     await contracts.functionCaller.setTroveManagerAddress(contracts.troveManager.address)
     await contracts.functionCaller.setSortedTrovesAddress(contracts.sortedTroves.address)
 
+    await contracts.kumoParameters.setAddresses(
+      contracts.activePool.address,
+      contracts.defaultPool.address,
+      contracts.priceFeedTestnet.address
+    )
+
     // set contracts in the Trove Manager
     await contracts.troveManager.setAddresses(
       contracts.borrowerOperations.address,
@@ -356,7 +368,6 @@ class DeploymentHelper {
     // set contracts in BorrowerOperations 
     await contracts.borrowerOperations.setAddresses(
       contracts.troveManager.address,
-      contracts.activePool.address,
       contracts.defaultPool.address,
       contracts.stabilityPool.address,
       contracts.gasPool.address,
@@ -364,7 +375,8 @@ class DeploymentHelper {
       contracts.priceFeedTestnet.address,
       contracts.sortedTroves.address,
       contracts.kusdToken.address,
-      KUMOContracts.kumoStaking.address
+      KUMOContracts.kumoStaking.address,
+      contracts.kumoParameters.address
     )
 
     // set contracts in the Pools

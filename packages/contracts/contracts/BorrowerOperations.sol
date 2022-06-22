@@ -9,12 +9,11 @@ import "./Interfaces/ICollSurplusPool.sol";
 import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/IKUMOStaking.sol";
 import "./Dependencies/KumoBase.sol";
-import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 import "./Dependencies/SafeMath.sol";
 
-contract BorrowerOperations is KumoBase, Ownable, CheckContract, IBorrowerOperations {
+contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     using SafeMath for uint256;
     string constant public NAME = "BorrowerOperations";
     // bool public isInitialized;
@@ -99,7 +98,6 @@ contract BorrowerOperations is KumoBase, Ownable, CheckContract, IBorrowerOperat
 
     function setAddresses(
         address _troveManagerAddress,
-        address _activePoolAddress,
         address _defaultPoolAddress,
         address _stabilityPoolAddress,
         address _gasPoolAddress,
@@ -107,7 +105,8 @@ contract BorrowerOperations is KumoBase, Ownable, CheckContract, IBorrowerOperat
         address _priceFeedAddress,
         address _sortedTrovesAddress,
         address _kusdTokenAddress,
-        address _kumoStakingAddress
+        address _kumoStakingAddress,
+        address _kumoParamsAddress
     )
         external
         override
@@ -117,7 +116,6 @@ contract BorrowerOperations is KumoBase, Ownable, CheckContract, IBorrowerOperat
         assert(MIN_NET_DEBT > 0);
         // require(!isInitialized, "Already initialized");
         checkContract(_troveManagerAddress);
-        checkContract(_activePoolAddress);
         checkContract(_defaultPoolAddress);
         checkContract(_stabilityPoolAddress);
         checkContract(_gasPoolAddress);
@@ -126,12 +124,12 @@ contract BorrowerOperations is KumoBase, Ownable, CheckContract, IBorrowerOperat
         checkContract(_sortedTrovesAddress);
         checkContract(_kusdTokenAddress);
         checkContract(_kumoStakingAddress);
+        CheckContract(_kumoParamsAddress);
         // isInitialized = true;
         
         // __Ownable_init();
 
         troveManager = ITroveManager(_troveManagerAddress);
-        activePool = IActivePool(_activePoolAddress);
         defaultPool = IDefaultPool(_defaultPoolAddress);
         stabilityPoolAddress = _stabilityPoolAddress;
         gasPoolAddress = _gasPoolAddress;
@@ -142,8 +140,9 @@ contract BorrowerOperations is KumoBase, Ownable, CheckContract, IBorrowerOperat
         kumoStakingAddress = _kumoStakingAddress;
         kumoStaking = IKUMOStaking(_kumoStakingAddress);
 
+        setKumoParameters(_kumoParamsAddress);
+
         emit TroveManagerAddressChanged(_troveManagerAddress);
-        emit ActivePoolAddressChanged(_activePoolAddress);
         emit DefaultPoolAddressChanged(_defaultPoolAddress);
         emit StabilityPoolAddressChanged(_stabilityPoolAddress);
         emit GasPoolAddressChanged(_gasPoolAddress);
@@ -158,8 +157,9 @@ contract BorrowerOperations is KumoBase, Ownable, CheckContract, IBorrowerOperat
 
     // --- Borrower Trove Operations ---
 
-    function openTrove(uint _maxFeePercentage, uint _KUSDAmount, address _upperHint, address _lowerHint) external payable override {
-        ContractsCache memory contractsCache = ContractsCache(troveManager, activePool, kusdToken);
+    function openTrove( uint _maxFeePercentage, uint _KUSDAmount, address _upperHint, address _lowerHint) external payable override {
+        //kumoParams.sanitizeParameters(_asset);
+        ContractsCache memory contractsCache = ContractsCache(troveManager, kumoParams.activePool(), kusdToken);
         LocalVariables_openTrove memory vars;
 
         vars.price = priceFeed.fetchPrice();
@@ -252,7 +252,7 @@ contract BorrowerOperations is KumoBase, Ownable, CheckContract, IBorrowerOperat
     * If both are positive, it will revert.
     */
     function _adjustTrove(address _borrower, uint _collWithdrawal, uint _KUSDChange, bool _isDebtIncrease, address _upperHint, address _lowerHint, uint _maxFeePercentage) internal {
-        ContractsCache memory contractsCache = ContractsCache(troveManager, activePool, kusdToken);
+        ContractsCache memory contractsCache = ContractsCache(troveManager, kumoParams.activePool(), kusdToken);
         LocalVariables_adjustTrove memory vars;
 
         vars.price = priceFeed.fetchPrice();
@@ -325,7 +325,7 @@ contract BorrowerOperations is KumoBase, Ownable, CheckContract, IBorrowerOperat
 
     function closeTrove() external override {
         ITroveManager troveManagerCached = troveManager;
-        IActivePool activePoolCached = activePool;
+        IActivePool activePoolCached = kumoParams.activePool();
         IKUSDToken kusdTokenCached = kusdToken;
 
         _requireTroveisActive(troveManagerCached, msg.sender);

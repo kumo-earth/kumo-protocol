@@ -6,6 +6,7 @@ pragma solidity 0.8.11;
 
 import "./BaseMath.sol";
 import "./KumoMath.sol";
+import "./Ownable.sol";
 import "../Interfaces/IActivePool.sol";
 import "../Interfaces/IDefaultPool.sol";
 import "../Interfaces/IPriceFeed.sol";
@@ -15,15 +16,15 @@ import "../Interfaces/IKumoBase.sol";
 * Base contract for TroveManager, BorrowerOperations and StabilityPool. Contains global system constants and
 * common functions. 
 */
-contract KumoBase is BaseMath, IKumoBase {
+contract KumoBase is BaseMath, Ownable, IKumoBase {
     using SafeMath for uint;
 
-    // IKumoParameters public override kumoParams;
+    IKumoParameters public override kumoParams;
 
-	// function setKumoParameters(address _vaultParams) public onlyOwner {
-	// 	kumoParams = IKumoParameters(_vaultParams);
-	// 	emit VaultParametersBaseChanged(_vaultParams);
-	// }
+	function setKumoParameters(address _vaultParams) public onlyOwner {
+		kumoParams = IKumoParameters(_vaultParams);
+		emit VaultParametersBaseChanged(_vaultParams);
+	}
 
     uint constant public _100pct = 1000000000000000000; // 1e18 == 100%
 
@@ -67,14 +68,14 @@ contract KumoBase is BaseMath, IKumoBase {
     }
 
     function getEntireSystemColl() public view returns (uint entireSystemColl) {
-        uint activeColl = activePool.getETH();
+        uint activeColl = kumoParams.activePool().getETH();
         uint liquidatedColl = defaultPool.getETH();
 
         return activeColl.add(liquidatedColl);
     }
 
     function getEntireSystemDebt() public view returns (uint entireSystemDebt) {
-        uint activeDebt = activePool.getKUSDDebt();
+        uint activeDebt = kumoParams.activePool().getKUSDDebt();
         uint closedDebt = defaultPool.getKUSDDebt();
 
         return activeDebt.add(closedDebt);

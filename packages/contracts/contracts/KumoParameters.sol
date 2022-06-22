@@ -2,12 +2,13 @@
 
 pragma solidity ^0.8.11;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./Dependencies/CheckContract.sol";
+import "./Dependencies/Ownable.sol";
 import "./Interfaces/IKumoParameters.sol";
 
-contract KumoParameters is IKumoParameters, OwnableUpgradeable, CheckContract {
+contract KumoParameters is IKumoParameters, Ownable, CheckContract {
 	string public constant NAME = "KumoParameters";
 
 	uint256 public constant override DECIMAL_PRECISION = 1 ether;
@@ -58,7 +59,7 @@ contract KumoParameters is IKumoParameters, OwnableUpgradeable, CheckContract {
 		address _defaultPool,
 		address _priceFeed //,
 		// address _adminContract
-	) external override initializer {
+	) external override onlyOwner {
 		require(!isInitialized, "Already initalized");
 		checkContract(_activePool);
 		checkContract(_defaultPool);
@@ -66,7 +67,7 @@ contract KumoParameters is IKumoParameters, OwnableUpgradeable, CheckContract {
 		// checkContract(_adminContract);
 		isInitialized = true;
 
-		__Ownable_init();
+		// __Ownable_init();
 
 		// admincontract = _adminContract;
 		activePool = IActivePool(_activePool);

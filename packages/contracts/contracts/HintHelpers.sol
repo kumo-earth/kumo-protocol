@@ -5,11 +5,10 @@ pragma solidity 0.8.11;
 import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/ISortedTroves.sol";
 import "./Dependencies/KumoBase.sol";
-import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafeMath.sol";
 
-contract HintHelpers is KumoBase, CheckContract, Ownable {
+contract HintHelpers is KumoBase, CheckContract {
     using SafeMath for uint256;
     string constant public NAME = "HintHelpers";
 
