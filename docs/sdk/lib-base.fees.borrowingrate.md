@@ -37,6 +37,5 @@ const fees = await liquity.getFees();
 const borrowedKUSDAmount = 100;
 const borrowingRate = fees.borrowingRate();
 const borrowingFeeKUSD = borrowingRate.mul(borrowedKUSDAmount);
-
 ```
 
