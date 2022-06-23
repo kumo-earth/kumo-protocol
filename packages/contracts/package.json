@@ -19,6 +19,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@openzeppelin/contracts-upgradeable": "^4.6.0",
+    "@openzeppelin/hardhat-upgrades": "^1.19.0",
     "decimal.js": "^10.3.1",
     "eth-mutants": "^0.1.1",
     "ethereumjs-util": "^7.1.5",
