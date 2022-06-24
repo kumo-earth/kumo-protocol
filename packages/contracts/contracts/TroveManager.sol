@@ -10,12 +10,11 @@ import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/IKUMOToken.sol";
 import "./Interfaces/IKUMOStaking.sol";
 import "./Dependencies/KumoBase.sol";
-import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 import "./Dependencies/SafeMath.sol";
 
-contract TroveManager is KumoBase, Ownable, CheckContract, ITroveManager {
+contract TroveManager is KumoBase, CheckContract, ITroveManager {
     using SafeMath for uint256;
     
 	// bool public isInitialized;
