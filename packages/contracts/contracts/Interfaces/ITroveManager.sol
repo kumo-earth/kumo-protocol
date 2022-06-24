@@ -51,7 +51,9 @@ interface ITroveManager is IKumoBase {
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
         address _kumoTokenAddress,
-        address _kumoStakingAddress
+        address _kumoStakingAddress,
+        address _kumoParamsAddress
+
     ) external;
 
     function stabilityPool() external view returns (IStabilityPool);

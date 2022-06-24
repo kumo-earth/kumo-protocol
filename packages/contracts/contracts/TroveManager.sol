@@ -246,7 +246,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
         address _kumoTokenAddress,
-        address _kumoStakingAddress
+        address _kumoStakingAddress,
+        address _kumoParamsAddress
     )
         external
         override
@@ -264,6 +265,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         checkContract(_sortedTrovesAddress);
         checkContract(_kumoTokenAddress);
         checkContract(_kumoStakingAddress);
+        CheckContract(_kumoParamsAddress);
+
+        
         // isInitialized = true;
 		// __Ownable_init();
 
@@ -278,6 +282,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         kumoToken = IKUMOToken(_kumoTokenAddress);
         kumoStaking = IKUMOStaking(_kumoStakingAddress);
+
+        setKumoParameters(_kumoParamsAddress);
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit ActivePoolAddressChanged(_activePoolAddress);

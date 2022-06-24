@@ -362,7 +362,8 @@ class DeploymentHelper {
       contracts.kusdToken.address,
       contracts.sortedTroves.address,
       KUMOContracts.kumoToken.address,
-      KUMOContracts.kumoStaking.address
+      KUMOContracts.kumoStaking.address,
+      contracts.kumoParameters.address
     )
 
     // set contracts in BorrowerOperations 

@@ -86,11 +86,8 @@ contract KumoBase is BaseMath, Ownable, IKumoBase {
     }
 
     function getEntireSystemDebt() public view returns (uint entireSystemDebt) {
-        console.log("#################################");
         uint activeDebt = kumoParams.activePool().getKUSDDebt();
-        console.log("Active Debt: %s" , activeDebt);
         uint closedDebt = defaultPool.getKUSDDebt();
-
 
         return activeDebt.add(closedDebt);
     }
@@ -106,7 +103,6 @@ contract KumoBase is BaseMath, Ownable, IKumoBase {
 
     function _checkRecoveryMode(uint _price) internal view returns (bool) {
         uint TCR = _getTCR(_price);
-        console.log("GET TCR: %s" , TCR);
         return TCR < CCR;
     }
 

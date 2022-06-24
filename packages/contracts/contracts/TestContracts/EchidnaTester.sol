@@ -67,7 +67,7 @@ contract EchidnaTester {
             address(activePool), address(defaultPool), 
             address(stabilityPool), address(gasPool), address(collSurplusPool),
             address(priceFeedTestnet), address(kusdToken), 
-            address(sortedTroves), address(0), address(0));
+            address(sortedTroves), address(0), address(0), address(kumoParams));
        
         borrowerOperations.setAddresses(address(troveManager), 
             address(defaultPool), 

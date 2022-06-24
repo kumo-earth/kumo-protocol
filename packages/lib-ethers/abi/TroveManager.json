@@ -1618,6 +1618,11 @@
         "internalType": "address",
         "name": "_kumoStakingAddress",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_kumoParamsAddress",
+        "type": "address"
       }
     ],
     "name": "setAddresses",
