@@ -111,7 +111,8 @@ contract('BorrowerOperations', async accounts => {
       // Price drops
       await priceFeed.setPrice(dec(100, 18))
       const price = await priceFeed.getPrice()
-
+      console.log("+++++++++++++++++++++++++++++++++++++++++")
+      console.log("TroveManager CheckRecovery: %s" , await troveManager.checkRecoveryMode(price))
       assert.isFalse(await troveManager.checkRecoveryMode(price))
       assert.isTrue((await troveManager.getCurrentICR(alice, price)).lt(toBN(dec(110, 16))))
 

@@ -11,6 +11,8 @@ import "../Interfaces/IActivePool.sol";
 import "../Interfaces/IDefaultPool.sol";
 import "../Interfaces/IPriceFeed.sol";
 import "../Interfaces/IKumoBase.sol";
+// import "hardhat/console.sol";
+
 
 /* 
 * Base contract for TroveManager, BorrowerOperations and StabilityPool. Contains global system constants and
@@ -68,15 +70,27 @@ contract KumoBase is BaseMath, Ownable, IKumoBase {
     }
 
     function getEntireSystemColl() public view returns (uint entireSystemColl) {
+        
+        // const activePoool = kumoParams.activePool();
+        // console.log("AP: %s" , activePool);
+        // uint activeColll = activePool.getETH();
+        // console.log("ActiveColl: ", activeColll);
+
         uint activeColl = kumoParams.activePool().getETH();
+        
+        // console.log("Kumo Active: ",activeColl);
+       
         uint liquidatedColl = defaultPool.getETH();
 
         return activeColl.add(liquidatedColl);
     }
 
     function getEntireSystemDebt() public view returns (uint entireSystemDebt) {
+        console.log("#################################");
         uint activeDebt = kumoParams.activePool().getKUSDDebt();
+        console.log("Active Debt: %s" , activeDebt);
         uint closedDebt = defaultPool.getKUSDDebt();
+
 
         return activeDebt.add(closedDebt);
     }
@@ -92,7 +106,7 @@ contract KumoBase is BaseMath, Ownable, IKumoBase {
 
     function _checkRecoveryMode(uint _price) internal view returns (bool) {
         uint TCR = _getTCR(_price);
-
+        console.log("GET TCR: %s" , TCR);
         return TCR < CCR;
     }
 
