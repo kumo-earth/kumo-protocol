@@ -1348,7 +1348,6 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     }
 
     function checkRecoveryMode(uint _price) external view override returns (bool) {
-        console.log("checkRecoveryMode: %s" ,_checkRecoveryMode(_price));
         return _checkRecoveryMode(_price);
     }
 

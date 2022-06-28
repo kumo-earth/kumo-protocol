@@ -156,6 +156,7 @@ class DeploymentHelper {
     testerContracts.troveManager = await TroveManagerTester.new()
     testerContracts.functionCaller = await FunctionCaller.new()
     testerContracts.hintHelpers = await HintHelpers.new()
+    testerContracts.kumoParameters = await KumoParameters.new()
     testerContracts.kusdToken =  await KUSDTokenTester.new(
       testerContracts.troveManager.address,
       testerContracts.stabilityPool.address,
@@ -353,7 +354,7 @@ class DeploymentHelper {
     // set contracts in the Trove Manager
     await contracts.troveManager.setAddresses(
       contracts.borrowerOperations.address,
-      contracts.activePool.address,
+      // contracts.activePool.address,
       contracts.defaultPool.address,
       contracts.stabilityPool.address,
       contracts.gasPool.address,

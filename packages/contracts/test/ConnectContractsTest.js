@@ -18,6 +18,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   let kumoToken
   let communityIssuance
   let lockupContractFactory
+  let kumoParameters
 
   before(async () => {
     const coreContracts = await deploymentHelper.deployKumoCore()
@@ -32,6 +33,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     defaultPool = coreContracts.defaultPool
     functionCaller = coreContracts.functionCaller
     borrowerOperations = coreContracts.borrowerOperations
+    kumoParameters = coreContracts.kumoParameters
 
     kumoStaking = KUMOContracts.kumoStaking
     kumoToken = KUMOContracts.kumoToken
@@ -41,6 +43,12 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     await deploymentHelper.connectKUMOContracts(KUMOContracts)
     await deploymentHelper.connectCoreContracts(coreContracts, KUMOContracts)
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, coreContracts)
+  })
+
+  it('Check if correct Addresses in Vault Parameters', async () => {
+    assert.equal(priceFeed.address, await kumoParameters.priceFeed())
+    assert.equal(activePool.address, await kumoParameters.activePool())
+    assert.equal(defaultPool.address, await kumoParameters.defaultPool())
   })
 
   it('Sets the correct PriceFeed address in TroveManager', async () => {
@@ -207,6 +215,10 @@ contract('Deployment script - Sets correct contract addresses dependencies after
 
   //--- BorrowerOperations ---
 
+  it('Sets the correct KumoParameters address in BorrowerOperations', async () => {
+    assert.equal(kumoParameters.address, await borrowerOperations.kumoParams())
+  })
+  
   // TroveManager in BO
   it('Sets the correct TroveManager address in BorrowerOperations', async () => {
     const troveManagerAddress = troveManager.address
@@ -232,12 +244,13 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   })
 
   // setActivePool in BO
-  it('Sets the correct ActivePool address in BorrowerOperations', async () => {
-    const activePoolAddress = activePool.address
+  // ActivePool is set in KumoParameters
+  // it('Sets the correct ActivePool address in BorrowerOperations', async () => {
+  //   const activePoolAddress = activePool.address
 
-    const recordedActivePoolAddress = await borrowerOperations.activePool()
-    assert.equal(activePoolAddress, recordedActivePoolAddress)
-  })
+  //   const recordedActivePoolAddress = await borrowerOperations.activePool()
+  //   assert.equal(activePoolAddress, recordedActivePoolAddress)
+  // })
 
   // setDefaultPool in BO
   it('Sets the correct DefaultPool address in BorrowerOperations', async () => {
