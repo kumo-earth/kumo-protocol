@@ -9,12 +9,11 @@ import "./Interfaces/ICollSurplusPool.sol";
 import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/IKUMOStaking.sol";
 import "./Dependencies/KumoBase.sol";
-import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 import "./Dependencies/SafeMath.sol";
 
-contract BorrowerOperations is KumoBase, Ownable, CheckContract, IBorrowerOperations {
+contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     using SafeMath for uint256;
     string constant public NAME = "BorrowerOperations";
     // bool public isInitialized;
