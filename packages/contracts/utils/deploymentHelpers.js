@@ -354,7 +354,7 @@ class DeploymentHelper {
     // set contracts in the Trove Manager
     await contracts.troveManager.setAddresses(
       contracts.borrowerOperations.address,
-      // contracts.activePool.address,
+      contracts.activePool.address,
       contracts.defaultPool.address,
       contracts.stabilityPool.address,
       contracts.gasPool.address,
