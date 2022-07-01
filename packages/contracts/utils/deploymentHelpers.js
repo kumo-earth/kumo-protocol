@@ -367,7 +367,7 @@ class DeploymentHelper {
       contracts.kumoParameters.address
     )
 
-    // set contracts in BorrowerOperations 
+    // set contracts in BorrowerOperations
     await contracts.borrowerOperations.setAddresses(
       contracts.troveManager.address,
       contracts.defaultPool.address,

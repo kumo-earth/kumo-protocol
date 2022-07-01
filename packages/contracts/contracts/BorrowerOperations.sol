@@ -124,7 +124,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         checkContract(_sortedTrovesAddress);
         checkContract(_kusdTokenAddress);
         checkContract(_kumoStakingAddress);
-        CheckContract(_kumoParamsAddress);
+        checkContract(_kumoParamsAddress);
         // isInitialized = true;
         
         // __Ownable_init();

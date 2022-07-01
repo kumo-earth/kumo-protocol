@@ -265,7 +265,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         checkContract(_sortedTrovesAddress);
         checkContract(_kumoTokenAddress);
         checkContract(_kumoStakingAddress);
-        CheckContract(_kumoParamsAddress);
+        checkContract(_kumoParamsAddress);
 
         
         // isInitialized = true;
