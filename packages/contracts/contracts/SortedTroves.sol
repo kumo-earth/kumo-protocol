@@ -8,7 +8,7 @@ import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/IBorrowerOperations.sol";
 import "./Dependencies/SafeMath.sol";
-import "./Dependencies/Ownable.sol";
+// import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 
@@ -52,8 +52,6 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 contract SortedTroves is Initializable, UUPSUpgradeable, OwnableUpgradeable, CheckContract, ISortedTroves {
     using SafeMath for uint256;
 
-	bool public isInitialized;
-
     string constant public NAME = "SortedTroves";
 
     event TroveManagerAddressChanged(address _troveManagerAddress);
@@ -86,12 +84,11 @@ contract SortedTroves is Initializable, UUPSUpgradeable, OwnableUpgradeable, Che
 
     // --- Dependency setters ---
 
-    function setParams(uint256 _size, address _troveManagerAddress, address _borrowerOperationsAddress) external override initializer {
+    function setParams(uint256 _size, address _troveManagerAddress, address _borrowerOperationsAddress) external initializer {
         require(_size > 0, "SortedTroves: Size can't be zero");
-		require(!isInitialized, "Already initialized");
+
 		checkContract(_troveManagerAddress);
 		checkContract(_borrowerOperationsAddress);
-		isInitialized = true;
 
 		__Ownable_init();
         __UUPSUpgradeable_init();
@@ -103,9 +100,9 @@ contract SortedTroves is Initializable, UUPSUpgradeable, OwnableUpgradeable, Che
 
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
+    }
 
-        renounceOwnership();
-        openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol
+    function _authorizeUpgrade(address) internal override onlyOwner {}
 
     /*
      * @dev Add a node to the list
