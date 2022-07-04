@@ -385,6 +385,19 @@
   },
   {
     "inputs": [],
+    "name": "kumoParams",
+    "outputs": [
+      {
+        "internalType": "contract IKumoParameters",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -423,6 +436,19 @@
       }
     ],
     "name": "setAddresses",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vaultParams",
+        "type": "address"
+      }
+    ],
+    "name": "setKumoParameters",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

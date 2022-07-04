@@ -13,6 +13,7 @@ import "../KUSDToken.sol";
 import "./PriceFeedTestnet.sol";
 import "../SortedTroves.sol";
 import "./EchidnaProxy.sol";
+import "../KumoParameters.sol";
 //import "../Dependencies/console.sol";
 
 // Run with:
@@ -38,6 +39,7 @@ contract EchidnaTester {
     KUSDToken public kusdToken;
     PriceFeedTestnet priceFeedTestnet;
     SortedTroves sortedTroves;
+    KumoParameters kumoParams;
 
     EchidnaProxy[NUMBER_OF_ACTORS] public echidnaProxies;
 
@@ -65,13 +67,13 @@ contract EchidnaTester {
             address(activePool), address(defaultPool), 
             address(stabilityPool), address(gasPool), address(collSurplusPool),
             address(priceFeedTestnet), address(kusdToken), 
-            address(sortedTroves), address(0), address(0));
+            address(sortedTroves), address(0), address(0), address(kumoParams));
        
         borrowerOperations.setAddresses(address(troveManager), 
-            address(activePool), address(defaultPool), 
+            address(defaultPool), 
             address(stabilityPool), address(gasPool), address(collSurplusPool),
             address(priceFeedTestnet), address(sortedTroves), 
-            address(kusdToken), address(0));
+            address(kusdToken), address(0), address(kumoParams));
 
         activePool.setAddresses(address(borrowerOperations), 
             address(troveManager), address(stabilityPool), address(defaultPool));

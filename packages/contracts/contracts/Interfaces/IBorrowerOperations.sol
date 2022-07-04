@@ -26,7 +26,7 @@ interface IBorrowerOperations {
 
     function setAddresses(
         address _troveManagerAddress,
-        address _activePoolAddress,
+        // address _activePoolAddress,
         address _defaultPoolAddress,
         address _stabilityPoolAddress,
         address _gasPoolAddress,
@@ -34,7 +34,8 @@ interface IBorrowerOperations {
         address _priceFeedAddress,
         address _sortedTrovesAddress,
         address _kusdTokenAddress,
-        address _kumoStakingAddress
+        address _kumoStakingAddress,
+        address _kumoParamsAddress
     ) external;
 
     function openTrove(uint _maxFee, uint _KUSDAmount, address _upperHint, address _lowerHint) external payable;
@@ -55,5 +56,5 @@ interface IBorrowerOperations {
 
     function claimCollateral() external;
 
-    function getCompositeDebt(uint _debt) external pure returns (uint);
+    function getCompositeDebt(uint _debt) external view returns (uint);
 }

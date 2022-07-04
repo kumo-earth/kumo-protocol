@@ -10,12 +10,11 @@ import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/IKUMOToken.sol";
 import "./Interfaces/IKUMOStaking.sol";
 import "./Dependencies/KumoBase.sol";
-import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 import "./Dependencies/SafeMath.sol";
 
-contract TroveManager is KumoBase, Ownable, CheckContract, ITroveManager {
+contract TroveManager is KumoBase, CheckContract, ITroveManager {
     using SafeMath for uint256;
     
 	// bool public isInitialized;
@@ -247,7 +246,8 @@ contract TroveManager is KumoBase, Ownable, CheckContract, ITroveManager {
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
         address _kumoTokenAddress,
-        address _kumoStakingAddress
+        address _kumoStakingAddress,
+        address _kumoParamsAddress
     )
         external
         override
@@ -265,6 +265,9 @@ contract TroveManager is KumoBase, Ownable, CheckContract, ITroveManager {
         checkContract(_sortedTrovesAddress);
         checkContract(_kumoTokenAddress);
         checkContract(_kumoStakingAddress);
+        checkContract(_kumoParamsAddress);
+
+        
         // isInitialized = true;
 		// __Ownable_init();
 
@@ -279,6 +282,8 @@ contract TroveManager is KumoBase, Ownable, CheckContract, ITroveManager {
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         kumoToken = IKUMOToken(_kumoTokenAddress);
         kumoStaking = IKUMOStaking(_kumoStakingAddress);
+
+        setKumoParameters(_kumoParamsAddress);
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit ActivePoolAddressChanged(_activePoolAddress);
