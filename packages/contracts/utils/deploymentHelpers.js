@@ -1,4 +1,5 @@
 const TroveManager = artifacts.require("./TroveManager.sol")
+// const SortedTroves = artifacts.require("./SortedTroves.sol")
 const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol")
 const KUSDToken = artifacts.require("./KUSDToken.sol")
 const ActivePool = artifacts.require("./ActivePool.sol");
@@ -27,11 +28,12 @@ const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.s
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
 const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol")
 
-const { ethers, ugrades } = require('hardhat')
-const SortedTroves = getFactory("./SortedTroves.sol")
+// const { ethers, upgrades } = require('hardhat')
+// const { deployProxy } = require('@openzeppelin/truffle-upgrades')
+const SortedTroves = getFactory("SortedTroves")
 // Upgradable Contracts
 
-async function getFactory(contract) {
+async function getFactory(contract) {z
   const contractFactory = await ethers.getContractFactory(contract)
   return contractFactory
 }
@@ -95,7 +97,7 @@ class DeploymentHelper {
 
   static async deployKumoCoreHardhat() {
     const priceFeedTestnet = await PriceFeedTestnet.new()
-    const troveManager = await TroveManager.new()
+        const troveManager = await TroveManager.new()
     const activePool = await ActivePool.new()
     const stabilityPool = await StabilityPool.new()
     const gasPool = await GasPool.new()
@@ -110,8 +112,10 @@ class DeploymentHelper {
       borrowerOperations.address
     )
 
+    // const sortedTroves = await deployProxy(SortedTroves, {kind: "uups"} )
+    // SortedTroves.setAsDeployed(sortedTroves)
     // Upgradable Contracts
-    const sortedTroves = await upgrades.deployProxy(SortedTroves, {kind: "uups", initializer: "initialize"})
+    const sortedTroves = await upgrades.deployProxy(SortedTroves, {kind: "uups"})
     await sortedTroves.deployed()
 
     KUSDToken.setAsDeployed(kusdToken)
@@ -148,7 +152,8 @@ class DeploymentHelper {
 
     // Contract without testers (yet)
     testerContracts.priceFeedTestnet = await PriceFeedTestnet.new()
-    testerContracts.sortedTroves = await SortedTroves.new()
+    testerContracts.sortedTroves = await upgrades.deployProxy(SortedTroves, {kind: "uups"})
+    // testerContracts.sortedTroves = await SortedTroves.new()
     // Actual tester contracts
     testerContracts.communityIssuance = await CommunityIssuanceTester.new()
     testerContracts.activePool = await ActivePoolTester.new()
