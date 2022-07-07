@@ -26,12 +26,9 @@ interface IBorrowerOperations {
 
     function setAddresses(
         address _troveManagerAddress,
-        // address _activePoolAddress,
-        address _defaultPoolAddress,
         address _stabilityPoolAddress,
         address _gasPoolAddress,
         address _collSurplusPoolAddress,
-        address _priceFeedAddress,
         address _sortedTrovesAddress,
         address _kusdTokenAddress,
         address _kumoStakingAddress,

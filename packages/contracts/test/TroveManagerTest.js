@@ -44,6 +44,7 @@ contract('TroveManager', async accounts => {
   let defaultPool
   let borrowerOperations
   let hintHelpers
+  let kumoParams
 
   let contracts
 
@@ -74,6 +75,7 @@ contract('TroveManager', async accounts => {
     collSurplusPool = contracts.collSurplusPool
     borrowerOperations = contracts.borrowerOperations
     hintHelpers = contracts.hintHelpers
+    kumoParams = contracts.kumoParameters
 
     kumoStaking = KUMOContracts.kumoStaking
     kumoToken = KUMOContracts.kumoToken
@@ -93,7 +95,7 @@ contract('TroveManager', async accounts => {
     const ICR_Before = await troveManager.getCurrentICR(alice, price)
     assert.equal(ICR_Before, dec(4, 18))
 
-    const MCR = (await troveManager.MCR()).toString()
+    const MCR = (await kumoParams.MCR()).toString()
     assert.equal(MCR.toString(), '1100000000000000000')
 
     // Alice increases debt to 180 KUSD, lowering her ICR to 1.11

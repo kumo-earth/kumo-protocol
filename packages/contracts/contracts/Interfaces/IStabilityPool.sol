@@ -77,11 +77,11 @@ interface IStabilityPool {
     function setAddresses(
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
-        address _activePoolAddress,
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
-        address _priceFeedAddress,
-        address _communityIssuanceAddress
+        address _communityIssuanceAddress,
+        address _kumoParamsAddress
+
     ) external;
 
     /*

@@ -13,15 +13,15 @@ contract TroveManagerTester is TroveManager {
         return KumoMath._computeCR(_coll, _debt, _price);
     }
 
-    function getCollGasCompensation(uint256 _coll) external pure returns (uint256) {
+    function getCollGasCompensation(uint256 _coll) external view returns (uint256) {
         return _getCollGasCompensation(_coll);
     }
 
-    function getkusdGasCompensation() external pure returns (uint256) {
-        return KUSD_GAS_COMPENSATION;
+    function getkusdGasCompensation() external view returns (uint256) {
+        return kumoParams.KUSD_GAS_COMPENSATION();
     }
 
-    function getCompositeDebt(uint256 _debt) external pure returns (uint256) {
+    function getCompositeDebt(uint256 _debt) external view returns (uint256) {
         return _getCompositeDebt(_debt);
     }
 
@@ -49,7 +49,7 @@ contract TroveManagerTester is TroveManager {
         return _getRedemptionFee(_ETHDrawn);
     }  
 
-    function getActualDebtFromComposite(uint256 _debtVal) external pure returns (uint256) {
+    function getActualDebtFromComposite(uint256 _debtVal) external view returns (uint256) {
         return _getNetDebt(_debtVal);
     }
 

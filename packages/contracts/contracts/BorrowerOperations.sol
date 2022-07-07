@@ -98,11 +98,9 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
 
     function setAddresses(
         address _troveManagerAddress,
-        address _defaultPoolAddress,
         address _stabilityPoolAddress,
         address _gasPoolAddress,
         address _collSurplusPoolAddress,
-        address _priceFeedAddress,
         address _sortedTrovesAddress,
         address _kusdTokenAddress,
         address _kumoStakingAddress,
@@ -113,14 +111,12 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         onlyOwner
     {
         // This makes impossible to open a trove with zero withdrawn KUSD
-        assert(MIN_NET_DEBT > 0);
+        assert(MIN_NET_DEBT> 0);
         // require(!isInitialized, "Already initialized");
         checkContract(_troveManagerAddress);
-        checkContract(_defaultPoolAddress);
         checkContract(_stabilityPoolAddress);
         checkContract(_gasPoolAddress);
         checkContract(_collSurplusPoolAddress);
-        checkContract(_priceFeedAddress);
         checkContract(_sortedTrovesAddress);
         checkContract(_kusdTokenAddress);
         checkContract(_kumoStakingAddress);
@@ -130,11 +126,9 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         // __Ownable_init();
 
         troveManager = ITroveManager(_troveManagerAddress);
-        defaultPool = IDefaultPool(_defaultPoolAddress);
         stabilityPoolAddress = _stabilityPoolAddress;
         gasPoolAddress = _gasPoolAddress;
         collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
-        priceFeed = IPriceFeed(_priceFeedAddress);
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         kusdToken = IKUSDToken(_kusdTokenAddress);
         kumoStakingAddress = _kumoStakingAddress;
@@ -143,11 +137,9 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         setKumoParameters(_kumoParamsAddress);
 
         emit TroveManagerAddressChanged(_troveManagerAddress);
-        emit DefaultPoolAddressChanged(_defaultPoolAddress);
         emit StabilityPoolAddressChanged(_stabilityPoolAddress);
         emit GasPoolAddressChanged(_gasPoolAddress);
         emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
-        emit PriceFeedAddressChanged(_priceFeedAddress);
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit KUSDTokenAddressChanged(_kusdTokenAddress);
         emit KUMOStakingAddressChanged(_kumoStakingAddress);
@@ -162,7 +154,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         ContractsCache memory contractsCache = ContractsCache(troveManager, kumoParams.activePool(), kusdToken);
         LocalVariables_openTrove memory vars;
 
-        vars.price = priceFeed.fetchPrice();
+        vars.price = kumoParams.priceFeed().fetchPrice();
         bool isRecoveryMode = _checkRecoveryMode(vars.price);
 
         _requireValidMaxFeePercentage(_maxFeePercentage, isRecoveryMode);
@@ -208,7 +200,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         _activePoolAddColl(contractsCache.activePool, msg.value);
         _withdrawKUSD(contractsCache.activePool, contractsCache.kusdToken, msg.sender, _KUSDAmount, vars.netDebt);
         // Move the KUSD gas compensation to the Gas Pool
-        _withdrawKUSD(contractsCache.activePool, contractsCache.kusdToken, gasPoolAddress, KUSD_GAS_COMPENSATION, KUSD_GAS_COMPENSATION);
+        _withdrawKUSD(contractsCache.activePool, contractsCache.kusdToken, gasPoolAddress, kumoParams.KUSD_GAS_COMPENSATION(), kumoParams.KUSD_GAS_COMPENSATION());
 
         emit TroveUpdated(msg.sender, vars.compositeDebt, msg.value, vars.stake, BorrowerOperation.openTrove);
         emit KUSDBorrowingFeePaid(msg.sender, vars.KUSDFee);
@@ -255,7 +247,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         ContractsCache memory contractsCache = ContractsCache(troveManager, kumoParams.activePool(), kusdToken);
         LocalVariables_adjustTrove memory vars;
 
-        vars.price = priceFeed.fetchPrice();
+        vars.price = kumoParams.priceFeed().fetchPrice();
         bool isRecoveryMode = _checkRecoveryMode(vars.price);
 
         if (_isDebtIncrease) {
@@ -329,7 +321,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         IKUSDToken kusdTokenCached = kusdToken;
 
         _requireTroveisActive(troveManagerCached, msg.sender);
-        uint price = priceFeed.fetchPrice();
+        uint price = kumoParams.priceFeed().fetchPrice();
         _requireNotInRecoveryMode(price);
 
         troveManagerCached.applyPendingRewards(msg.sender);
@@ -337,7 +329,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         uint coll = troveManagerCached.getTroveColl(msg.sender);
         uint debt = troveManagerCached.getTroveDebt(msg.sender);
 
-        _requireSufficientKUSDBalance(kusdTokenCached, msg.sender, debt.sub(KUSD_GAS_COMPENSATION));
+        _requireSufficientKUSDBalance(kusdTokenCached, msg.sender, debt.sub(kumoParams.KUSD_GAS_COMPENSATION()));
 
         uint newTCR = _getNewTCRFromTroveChange(coll, false, debt, false, price);
         _requireNewTCRisAboveCCR(newTCR);
@@ -348,8 +340,8 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         emit TroveUpdated(msg.sender, 0, 0, 0, BorrowerOperation.closeTrove);
 
         // Burn the repaid KUSD from the user's balance and the gas compensation from the Gas Pool
-        _repayKUSD(activePoolCached, kusdTokenCached, msg.sender, debt.sub(KUSD_GAS_COMPENSATION));
-        _repayKUSD(activePoolCached, kusdTokenCached, gasPoolAddress, KUSD_GAS_COMPENSATION);
+        _repayKUSD(activePoolCached, kusdTokenCached, msg.sender, debt.sub(kumoParams.KUSD_GAS_COMPENSATION()));
+        _repayKUSD(activePoolCached, kusdTokenCached, gasPoolAddress, kumoParams.KUSD_GAS_COMPENSATION());
 
         // Send the collateral back to the user
         activePoolCached.sendETH(msg.sender, coll);
@@ -537,28 +529,28 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         }
     }
 
-    function _requireICRisAboveMCR(uint _newICR) internal pure {
-        require(_newICR >= MCR, "BorrowerOps: An operation that would result in ICR < MCR is not permitted");
+    function _requireICRisAboveMCR(uint _newICR) internal view {
+        require(_newICR >= kumoParams.MCR(), "BorrowerOps: An operation that would result in ICR < MCR is not permitted");
     }
 
-    function _requireICRisAboveCCR(uint _newICR) internal pure {
-        require(_newICR >= CCR, "BorrowerOps: Operation must leave trove with ICR >= CCR");
+    function _requireICRisAboveCCR(uint _newICR) internal view {
+        require(_newICR >= kumoParams.CCR(), "BorrowerOps: Operation must leave trove with ICR >= CCR");
     }
 
     function _requireNewICRisAboveOldICR(uint _newICR, uint _oldICR) internal pure {
         require(_newICR >= _oldICR, "BorrowerOps: Cannot decrease your Trove's ICR in Recovery Mode");
     }
 
-    function _requireNewTCRisAboveCCR(uint _newTCR) internal pure {
-        require(_newTCR >= CCR, "BorrowerOps: An operation that would result in TCR < CCR is not permitted");
+    function _requireNewTCRisAboveCCR(uint _newTCR) internal view {
+        require(_newTCR >= kumoParams.CCR(), "BorrowerOps: An operation that would result in TCR < CCR is not permitted");
     }
 
-    function _requireAtLeastMinNetDebt(uint _netDebt) internal pure {
-        require (_netDebt >= MIN_NET_DEBT, "BorrowerOps: Trove's net debt must be greater than minimum");
+    function _requireAtLeastMinNetDebt(uint _netDebt) internal view {
+        require (_netDebt >= kumoParams.MIN_NET_DEBT(), "BorrowerOps: Trove's net debt must be greater than minimum");
     }
 
-    function _requireValidKUSDRepayment(uint _currentDebt, uint _debtRepayment) internal pure {
-        require(_debtRepayment <= _currentDebt.sub(KUSD_GAS_COMPENSATION), "BorrowerOps: Amount repaid must not be larger than the Trove's debt");
+    function _requireValidKUSDRepayment(uint _currentDebt, uint _debtRepayment) internal view {
+        require(_debtRepayment <= _currentDebt.sub(kumoParams.KUSD_GAS_COMPENSATION()), "BorrowerOps: Amount repaid must not be larger than the Trove's debt");
     }
 
     function _requireCallerIsStabilityPool() internal view {
@@ -569,13 +561,13 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         require(_kusdToken.balanceOf(_borrower) >= _debtRepayment, "BorrowerOps: Caller doesnt have enough KUSD to make repayment");
     }
 
-    function _requireValidMaxFeePercentage(uint _maxFeePercentage, bool _isRecoveryMode) internal pure {
+    function _requireValidMaxFeePercentage(uint _maxFeePercentage, bool _isRecoveryMode) internal view {
         // In recovery mode we are not charging borrowing fee, so we can ignore this param
         if (_isRecoveryMode) {
-            require(_maxFeePercentage <= DECIMAL_PRECISION,
+            require(_maxFeePercentage <= kumoParams.DECIMAL_PRECISION(),
                 "Max fee percentage must less than or equal to 100%");
         } else {
-            require(_maxFeePercentage >= BORROWING_FEE_FLOOR && _maxFeePercentage <= DECIMAL_PRECISION,
+            require(_maxFeePercentage >= kumoParams.BORROWING_FEE_FLOOR() && _maxFeePercentage <= kumoParams.DECIMAL_PRECISION(),
                 "Max fee percentage must be between 0.5% and 100%");
         }
     }
@@ -666,7 +658,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         return newTCR;
     }
 
-    function getCompositeDebt(uint _debt) external pure override returns (uint) {
+    function getCompositeDebt(uint _debt) external view override returns (uint) {
         return _getCompositeDebt(_debt);
     }
 }

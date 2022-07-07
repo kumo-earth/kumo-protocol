@@ -274,11 +274,10 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     function setAddresses(
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
-        address _activePoolAddress,
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
-        address _priceFeedAddress,
-        address _communityIssuanceAddress
+        address _communityIssuanceAddress,
+        address _kumoParamsAddress
     )
         external
         override
@@ -287,29 +286,26 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         // require(!isInitialized, "Already initialized");
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
-        checkContract(_activePoolAddress);
         checkContract(_kusdTokenAddress);
         checkContract(_sortedTrovesAddress);
-        checkContract(_priceFeedAddress);
         checkContract(_communityIssuanceAddress);
+        checkContract(_kumoParamsAddress);
 
 		// isInitialized = true;
 		// __Ownable_init();
 
         borrowerOperations = IBorrowerOperations(_borrowerOperationsAddress);
         troveManager = ITroveManager(_troveManagerAddress);
-        activePool = IActivePool(_activePoolAddress);
         kusdToken = IKUSDToken(_kusdTokenAddress);
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
-        priceFeed = IPriceFeed(_priceFeedAddress);
         communityIssuance = ICommunityIssuance(_communityIssuanceAddress);
+
+        setKumoParameters(_kumoParamsAddress);
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
-        emit ActivePoolAddressChanged(_activePoolAddress);
         emit KUSDTokenAddressChanged(_kusdTokenAddress);
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
-        emit PriceFeedAddressChanged(_priceFeedAddress);
         emit CommunityIssuanceAddressChanged(_communityIssuanceAddress);
 
         _renounceOwnership();
@@ -628,7 +624,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     }
 
     function _moveOffsetCollAndDebt(uint _collToAdd, uint _debtToOffset) internal {
-        IActivePool activePoolCached = activePool;
+        IActivePool activePoolCached = kumoParams.activePool();
 
         // Cancel the liquidated KUSD debt with the KUSD in the stability pool
         activePoolCached.decreaseKUSDDebt(_debtToOffset);
@@ -945,7 +941,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     // --- 'require' functions ---
 
     function _requireCallerIsActivePool() internal view {
-        require( msg.sender == address(activePool), "StabilityPool: Caller is not ActivePool");
+        require( msg.sender == address(kumoParams.activePool()), "StabilityPool: Caller is not ActivePool");
     }
 
     function _requireCallerIsTroveManager() internal view {
@@ -953,10 +949,10 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     }
 
     function _requireNoUnderCollateralizedTroves() internal {
-        uint price = priceFeed.fetchPrice();
+        uint price = kumoParams.priceFeed().fetchPrice();
         address lowestTrove = sortedTroves.getLast();
         uint ICR = troveManager.getCurrentICR(lowestTrove, price);
-        require(ICR >= MCR, "StabilityPool: Cannot withdraw while there are troves with ICR < MCR");
+        require(ICR >= kumoParams.MCR(), "StabilityPool: Cannot withdraw while there are troves with ICR < MCR");
     }
 
     function _requireUserHasDeposit(uint _initialDeposit) internal pure {

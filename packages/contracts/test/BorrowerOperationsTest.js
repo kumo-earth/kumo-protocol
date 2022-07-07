@@ -61,6 +61,7 @@ contract('BorrowerOperations', async accounts => {
   let KUSD_GAS_COMPENSATION
   let MIN_NET_DEBT
   let BORROWING_FEE_FLOOR
+  let kumoParams
 
   before(async () => {
 
@@ -92,15 +93,16 @@ contract('BorrowerOperations', async accounts => {
       defaultPool = contracts.defaultPool
       borrowerOperations = contracts.borrowerOperations
       hintHelpers = contracts.hintHelpers
+      kumoParams = contracts.kumoParameters
 
       kumoStaking = KUMOContracts.kumoStaking
       kumoToken = KUMOContracts.kumoToken
       communityIssuance = KUMOContracts.communityIssuance
       lockupContractFactory = KUMOContracts.lockupContractFactory
 
-      KUSD_GAS_COMPENSATION = await borrowerOperations.KUSD_GAS_COMPENSATION()
-      MIN_NET_DEBT = await borrowerOperations.MIN_NET_DEBT()
-      BORROWING_FEE_FLOOR = await borrowerOperations.BORROWING_FEE_FLOOR()
+      KUSD_GAS_COMPENSATION = await kumoParams.KUSD_GAS_COMPENSATION()
+      MIN_NET_DEBT = await kumoParams.MIN_NET_DEBT()
+      BORROWING_FEE_FLOOR = await kumoParams.BORROWING_FEE_FLOOR()
     })
 
     it("addColl(): reverts when top-up would leave trove with ICR < MCR", async () => {
@@ -2011,7 +2013,7 @@ contract('BorrowerOperations', async accounts => {
     it("adjustTrove(): debt increase that would leave ICR < 150% reverts in Recovery Mode", async () => {
       await openTrove({ extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
       await openTrove({ extraKUSDAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      const CCR = await troveManager.CCR()
+      const CCR = await kumoParams.CCR()
 
       assert.isFalse(await th.checkRecoveryMode(contracts))
 
@@ -2039,7 +2041,7 @@ contract('BorrowerOperations', async accounts => {
     it("adjustTrove(): debt increase that would reduce the ICR reverts in Recovery Mode", async () => {
       await openTrove({ extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
       await openTrove({ extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      const CCR = await troveManager.CCR()
+      const CCR = await kumoParams.CCR()
 
       assert.isFalse(await th.checkRecoveryMode(contracts))
 
@@ -2092,7 +2094,7 @@ contract('BorrowerOperations', async accounts => {
     it("adjustTrove(): A trove with ICR < CCR in Recovery Mode can adjust their trove to ICR > CCR", async () => {
       await openTrove({ extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
       await openTrove({ extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      const CCR = await troveManager.CCR()
+      const CCR = await kumoParams.CCR()
 
       assert.isFalse(await th.checkRecoveryMode(contracts))
 
@@ -2125,7 +2127,7 @@ contract('BorrowerOperations', async accounts => {
     it("adjustTrove(): A trove with ICR > CCR in Recovery Mode can improve their ICR", async () => {
       await openTrove({ extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
       await openTrove({ extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      const CCR = await troveManager.CCR()
+      const CCR = await kumoParams.CCR()
 
       assert.isFalse(await th.checkRecoveryMode(contracts))
 

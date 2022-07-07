@@ -25,7 +25,8 @@ contract HintHelpers is KumoBase, CheckContract {
 
     function setAddresses(
         address _sortedTrovesAddress,
-        address _troveManagerAddress
+        address _troveManagerAddress,
+        address _vaultParametersAddress
     )
         external
         onlyOwner 
@@ -33,7 +34,7 @@ contract HintHelpers is KumoBase, CheckContract {
 		// require(!isInitialized, "Already initialized");
 		checkContract(_sortedTrovesAddress);
 		checkContract(_troveManagerAddress);
-		// checkContract(_vaultParametersAddress);
+		checkContract(_vaultParametersAddress);
 		// isInitialized = true;
 
 		// __Ownable_init();
@@ -43,6 +44,8 @@ contract HintHelpers is KumoBase, CheckContract {
 
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
+
+        setKumoParameters(_vaultParametersAddress);
 
         _renounceOwnership();
     }
@@ -84,7 +87,7 @@ contract HintHelpers is KumoBase, CheckContract {
         uint remainingKUSD = _KUSDamount;
         address currentTroveuser = sortedTrovesCached.getLast();
 
-        while (currentTroveuser != address(0) && troveManager.getCurrentICR(currentTroveuser, _price) < MCR) {
+        while (currentTroveuser != address(0) && troveManager.getCurrentICR(currentTroveuser, _price) < kumoParams.MCR()) {
             currentTroveuser = sortedTrovesCached.getPrev(currentTroveuser);
         }
 
@@ -99,8 +102,8 @@ contract HintHelpers is KumoBase, CheckContract {
                 .add(troveManager.getPendingKUSDDebtReward(currentTroveuser));
 
             if (netKUSDDebt > remainingKUSD) {
-                if (netKUSDDebt > MIN_NET_DEBT) {
-                    uint maxRedeemableKUSD = KumoMath._min(remainingKUSD, netKUSDDebt.sub(MIN_NET_DEBT));
+                if (netKUSDDebt > kumoParams.MIN_NET_DEBT()) {
+                    uint maxRedeemableKUSD = KumoMath._min(remainingKUSD, netKUSDDebt.sub(kumoParams.MIN_NET_DEBT()));
 
                     uint ETH = troveManager.getTroveColl(currentTroveuser)
                         .add(troveManager.getPendingETHReward(currentTroveuser));

@@ -2,6 +2,7 @@ const deploymentHelper = require("../utils/deploymentHelpers.js")
 const testHelpers = require("../utils/testHelpers.js")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol")
+const KumoParameters = artifacts.require("./KumoParameters.sol")
 const KUSDToken = artifacts.require("KUSDToken")
 
 const th = testHelpers.TestHelper
@@ -29,6 +30,7 @@ contract('Gas compensation tests', async accounts => {
   let stabilityPool
   let defaultPool
   let borrowerOperations
+  let kumoParameters
 
   let contracts
   let troveManagerTester
@@ -46,6 +48,9 @@ contract('Gas compensation tests', async accounts => {
   before(async () => {
     troveManagerTester = await TroveManagerTester.new()
     borrowerOperationsTester = await BorrowerOperationsTester.new()
+
+    kumoParameters = await KumoParameters.new();
+    KumoParameters.setAsDeployed(kumoParameters);
 
     TroveManagerTester.setAsDeployed(troveManagerTester)
     BorrowerOperationsTester.setAsDeployed(borrowerOperationsTester)
@@ -69,6 +74,8 @@ contract('Gas compensation tests', async accounts => {
     stabilityPool = contracts.stabilityPool
     defaultPool = contracts.defaultPool
     borrowerOperations = contracts.borrowerOperations
+    
+    await troveManagerTester.setKumoParameters(kumoParameters.address)
 
     await deploymentHelper.connectKUMOContracts(KUMOContracts)
     await deploymentHelper.connectCoreContracts(contracts, KUMOContracts) 
@@ -84,6 +91,7 @@ contract('Gas compensation tests', async accounts => {
     -> Expect 0.5% of collaterall as gas compensation */
     await priceFeed.setPrice(dec(1, 18))
     // const price_1 = await priceFeed.getPrice()
+
     const gasCompensation_1 = (await troveManagerTester.getCollGasCompensation(dec(1, 'ether'))).toString()
     assert.equal(gasCompensation_1, dec(5, 15))
 
@@ -207,6 +215,7 @@ contract('Gas compensation tests', async accounts => {
     debt = 10 KUSD
     0.5% of coll = 0.04995 ETH. USD value: $9.99
     -> Expect composite debt = 10 + 200  = 2100 KUSD*/
+    // console.log("Trove Kumo Params: " + await troveManager.kumoParams())
     const compositeDebt_1 = await troveManagerTester.getCompositeDebt(dec(10, 18))
     assert.equal(compositeDebt_1, dec(210, 18))
 
