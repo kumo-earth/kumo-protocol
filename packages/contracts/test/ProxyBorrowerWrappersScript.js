@@ -3,6 +3,7 @@ const testHelpers = require("../utils/testHelpers.js")
 
 const TroveManagerTester = artifacts.require("TroveManagerTester")
 const KUMOTokenTester = artifacts.require("KUMOTokenTester")
+const KumoParameters = artifacts.require("./KumoParameters.sol")
 
 const th = testHelpers.TestHelper
 
@@ -69,6 +70,9 @@ contract('BorrowerWrappers', async accounts => {
     contracts = await deploymentHelper.deployKUSDToken(contracts)
     const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
 
+    kumoParameters = await KumoParameters.new();
+    KumoParameters.setAsDeployed(kumoParameters);
+
     await deploymentHelper.connectKUMOContracts(KUMOContracts)
     await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
@@ -92,7 +96,7 @@ contract('BorrowerWrappers', async accounts => {
     kumoStaking = KUMOContracts.kumoStaking
     kumoToken = KUMOContracts.kumoToken
 
-    KUSD_GAS_COMPENSATION = await borrowerOperations.KUSD_GAS_COMPENSATION()
+    KUSD_GAS_COMPENSATION = await kumoParameters.KUSD_GAS_COMPENSATION()
   })
 
   it('proxy owner can recover ETH', async () => {

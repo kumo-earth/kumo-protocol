@@ -44,7 +44,7 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
         checkContract(address(stabilityPoolCached));
         stabilityPool = stabilityPoolCached;
 
-        IPriceFeed priceFeedCached = troveManagerCached.priceFeed();
+        IPriceFeed priceFeedCached = troveManagerCached.kumoParams().priceFeed();
         checkContract(address(priceFeedCached));
         priceFeed = priceFeedCached;
 

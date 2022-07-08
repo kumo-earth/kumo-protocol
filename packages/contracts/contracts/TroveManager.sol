@@ -237,12 +237,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
     function setAddresses(
         address _borrowerOperationsAddress,
-        address _activePoolAddress,
-        address _defaultPoolAddress,
         address _stabilityPoolAddress,
         address _gasPoolAddress,
         address _collSurplusPoolAddress,
-        address _priceFeedAddress,
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
         address _kumoTokenAddress,
@@ -255,12 +252,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     {
         // require(!isInitialized, "Already initialized");
         checkContract(_borrowerOperationsAddress);
-        checkContract(_activePoolAddress);
-        checkContract(_defaultPoolAddress);
         checkContract(_stabilityPoolAddress);
         checkContract(_gasPoolAddress);
         checkContract(_collSurplusPoolAddress);
-        checkContract(_priceFeedAddress);
         checkContract(_kusdTokenAddress);
         checkContract(_sortedTrovesAddress);
         checkContract(_kumoTokenAddress);
@@ -272,12 +266,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 		// __Ownable_init();
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
-        activePool = IActivePool(_activePoolAddress);
-        defaultPool = IDefaultPool(_defaultPoolAddress);
         stabilityPool = IStabilityPool(_stabilityPoolAddress);
         gasPoolAddress = _gasPoolAddress;
         collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
-        priceFeed = IPriceFeed(_priceFeedAddress);
         kusdToken = IKUSDToken(_kusdTokenAddress);
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         kumoToken = IKUMOToken(_kumoTokenAddress);
@@ -286,12 +277,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         setKumoParameters(_kumoParamsAddress);
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
-        emit ActivePoolAddressChanged(_activePoolAddress);
-        emit DefaultPoolAddressChanged(_defaultPoolAddress);
         emit StabilityPoolAddressChanged(_stabilityPoolAddress);
         emit GasPoolAddressChanged(_gasPoolAddress);
         emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
-        emit PriceFeedAddressChanged(_priceFeedAddress);
         emit KUSDTokenAddressChanged(_kusdTokenAddress);
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit KUMOTokenAddressChanged(_kumoTokenAddress);
@@ -344,7 +332,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         _removeStake(_borrower);
 
         singleLiquidation.collGasCompensation = _getCollGasCompensation(singleLiquidation.entireTroveColl);
-        singleLiquidation.kusdGasCompensation = KUSD_GAS_COMPENSATION;
+        singleLiquidation.kusdGasCompensation = kumoParams.KUSD_GAS_COMPENSATION();
         uint collToLiquidate = singleLiquidation.entireTroveColl.sub(singleLiquidation.collGasCompensation);
 
         (singleLiquidation.debtToOffset,
@@ -379,11 +367,11 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         vars.pendingCollReward) = getEntireDebtAndColl(_borrower);
 
         singleLiquidation.collGasCompensation = _getCollGasCompensation(singleLiquidation.entireTroveColl);
-        singleLiquidation.kusdGasCompensation = KUSD_GAS_COMPENSATION;
+        singleLiquidation.kusdGasCompensation = kumoParams.KUSD_GAS_COMPENSATION();
         vars.collToLiquidate = singleLiquidation.entireTroveColl.sub(singleLiquidation.collGasCompensation);
 
         // If ICR <= 100%, purely redistribute the Trove across all active Troves
-        if (_ICR <= _100pct) {
+        if (_ICR <= kumoParams._100pct()) {
             _movePendingTroveRewardsToActivePool(_activePool, _defaultPool, vars.pendingDebtReward, vars.pendingCollReward);
             _removeStake(_borrower);
            
@@ -397,7 +385,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
             emit TroveUpdated(_borrower, 0, 0, 0, TroveManagerOperation.liquidateInRecoveryMode);
             
         // If 100% < ICR < MCR, offset as much as possible, and redistribute the remainder
-        } else if ((_ICR > _100pct) && (_ICR < MCR)) {
+        } else if ((_ICR > kumoParams._100pct()) && (_ICR < kumoParams.MCR())) {
              _movePendingTroveRewardsToActivePool(_activePool, _defaultPool, vars.pendingDebtReward, vars.pendingCollReward);
             _removeStake(_borrower);
 
@@ -415,7 +403,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         * but at a capped rate of 1.1 and only if the whole debt can be liquidated.
         * The remainder due to the capped rate will be claimable as collateral surplus.
         */
-        } else if ((_ICR >= MCR) && (_ICR < _TCR) && (singleLiquidation.entireTroveDebt <= _KUSDInStabPool)) {
+        } else if ((_ICR >= kumoParams.MCR()) && (_ICR < _TCR) && (singleLiquidation.entireTroveDebt <= _KUSDInStabPool)) {
             _movePendingTroveRewardsToActivePool(_activePool, _defaultPool, vars.pendingDebtReward, vars.pendingCollReward);
             assert(_KUSDInStabPool != 0);
 
@@ -484,15 +472,15 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint _price
     )
         internal
-        pure
+        view
         returns (LiquidationValues memory singleLiquidation)
     {
         singleLiquidation.entireTroveDebt = _entireTroveDebt;
         singleLiquidation.entireTroveColl = _entireTroveColl;
-        uint cappedCollPortion = _entireTroveDebt.mul(MCR).div(_price);
+        uint cappedCollPortion = _entireTroveDebt.mul(kumoParams.MCR()).div(_price);
 
         singleLiquidation.collGasCompensation = _getCollGasCompensation(cappedCollPortion);
-        singleLiquidation.kusdGasCompensation = KUSD_GAS_COMPENSATION;
+        singleLiquidation.kusdGasCompensation = kumoParams.KUSD_GAS_COMPENSATION();
 
         singleLiquidation.debtToOffset = _entireTroveDebt;
         singleLiquidation.collToSendToSP = cappedCollPortion.sub(singleLiquidation.collGasCompensation);
@@ -507,8 +495,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     */
     function liquidateTroves(uint _n) external override {
         ContractsCache memory contractsCache = ContractsCache(
-            activePool,
-            defaultPool,
+            kumoParams.activePool(),
+            kumoParams.defaultPool(),
             IKUSDToken(address(0)),
             IKUMOStaking(address(0)),
             sortedTroves,
@@ -521,7 +509,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
         LiquidationTotals memory totals;
 
-        vars.price = priceFeed.fetchPrice();
+        vars.price = kumoParams.priceFeed().fetchPrice();
         vars.KUSDInStabPool = stabilityPoolCached.getTotalKUSDDeposits();
         vars.recoveryModeAtStart = _checkRecoveryMode(vars.price);
 
@@ -542,7 +530,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         }
 
         // Update system snapshots
-        _updateSystemSnapshots_excludeCollRemainder(contractsCache.activePool, totals.totalCollGasCompensation);
+        _updateSystemSnapshots_excludeCollRemainder( totals.totalCollGasCompensation);
 
         vars.liquidatedDebt = totals.totalDebtInSequence;
         vars.liquidatedColl = totals.totalCollInSequence.sub(totals.totalCollGasCompensation).sub(totals.totalCollSurplus);
@@ -584,7 +572,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
             if (!vars.backToNormalMode) {
                 // Break the loop if ICR is greater than MCR and Stability Pool is empty
-                if (vars.ICR >= MCR && vars.remainingKUSDInStabPool == 0) { break; }
+                if (vars.ICR >= kumoParams.MCR() && vars.remainingKUSDInStabPool == 0) { break; }
 
                 uint TCR = KumoMath._computeCR(vars.entireSystemColl, vars.entireSystemDebt, _price);
 
@@ -603,7 +591,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
                 vars.backToNormalMode = !_checkPotentialRecoveryMode(vars.entireSystemColl, vars.entireSystemDebt, _price);
             }
-            else if (vars.backToNormalMode && vars.ICR < MCR) {
+            else if (vars.backToNormalMode && vars.ICR < kumoParams.MCR()) {
                 singleLiquidation = _liquidateNormalMode(_contractsCache.activePool, _contractsCache.defaultPool, vars.user, vars.remainingKUSDInStabPool);
 
                 vars.remainingKUSDInStabPool = vars.remainingKUSDInStabPool.sub(singleLiquidation.debtToOffset);
@@ -638,7 +626,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
             vars.user = sortedTrovesCached.getLast();
             vars.ICR = getCurrentICR(vars.user, _price);
 
-            if (vars.ICR < MCR) {
+            if (vars.ICR < kumoParams.MCR()) {
                 singleLiquidation = _liquidateNormalMode(_activePool, _defaultPool, vars.user, vars.remainingKUSDInStabPool);
 
                 vars.remainingKUSDInStabPool = vars.remainingKUSDInStabPool.sub(singleLiquidation.debtToOffset);
@@ -656,14 +644,14 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     function batchLiquidateTroves(address[] memory _troveArray) public override {
         require(_troveArray.length != 0, "TroveManager: Calldata address array must not be empty");
 
-        IActivePool activePoolCached = activePool;
-        IDefaultPool defaultPoolCached = defaultPool;
+        IActivePool activePoolCached = kumoParams.activePool();
+        IDefaultPool defaultPoolCached = kumoParams.defaultPool();
         IStabilityPool stabilityPoolCached = stabilityPool;
 
         LocalVariables_OuterLiquidationFunction memory vars;
         LiquidationTotals memory totals;
 
-        vars.price = priceFeed.fetchPrice();
+        vars.price = kumoParams.priceFeed().fetchPrice();
         vars.KUSDInStabPool = stabilityPoolCached.getTotalKUSDDeposits();
         vars.recoveryModeAtStart = _checkRecoveryMode(vars.price);
 
@@ -684,7 +672,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         }
 
         // Update system snapshots
-        _updateSystemSnapshots_excludeCollRemainder(activePoolCached, totals.totalCollGasCompensation);
+        _updateSystemSnapshots_excludeCollRemainder(totals.totalCollGasCompensation);
 
         vars.liquidatedDebt = totals.totalDebtInSequence;
         vars.liquidatedColl = totals.totalCollInSequence.sub(totals.totalCollGasCompensation).sub(totals.totalCollSurplus);
@@ -726,7 +714,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
             if (!vars.backToNormalMode) {
 
                 // Skip this trove if ICR is greater than MCR and Stability Pool is empty
-                if (vars.ICR >= MCR && vars.remainingKUSDInStabPool == 0) { continue; }
+                if (vars.ICR >= kumoParams.MCR() && vars.remainingKUSDInStabPool == 0) { continue; }
 
                 uint TCR = KumoMath._computeCR(vars.entireSystemColl, vars.entireSystemDebt, _price);
 
@@ -746,7 +734,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
                 vars.backToNormalMode = !_checkPotentialRecoveryMode(vars.entireSystemColl, vars.entireSystemDebt, _price);
             }
 
-            else if (vars.backToNormalMode && vars.ICR < MCR) {
+            else if (vars.backToNormalMode && vars.ICR < kumoParams.MCR()) {
                 singleLiquidation = _liquidateNormalMode(_activePool, _defaultPool, vars.user, vars.remainingKUSDInStabPool);
                 vars.remainingKUSDInStabPool = vars.remainingKUSDInStabPool.sub(singleLiquidation.debtToOffset);
 
@@ -777,7 +765,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
             vars.user = _troveArray[vars.i];
             vars.ICR = getCurrentICR(vars.user, _price);
 
-            if (vars.ICR < MCR) {
+            if (vars.ICR < kumoParams.MCR()) {
                 singleLiquidation = _liquidateNormalMode(_activePool, _defaultPool, vars.user, vars.remainingKUSDInStabPool);
                 vars.remainingKUSDInStabPool = vars.remainingKUSDInStabPool.sub(singleLiquidation.debtToOffset);
 
@@ -844,7 +832,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         internal returns (SingleRedemptionValues memory singleRedemption)
     {
         // Determine the remaining amount (lot) to be redeemed, capped by the entire debt of the Trove minus the liquidation reserve
-        singleRedemption.KUSDLot = KumoMath._min(_maxKUSDamount, Troves[_borrower].debt.sub(KUSD_GAS_COMPENSATION));
+        singleRedemption.KUSDLot = KumoMath._min(_maxKUSDamount, Troves[_borrower].debt.sub(kumoParams.KUSD_GAS_COMPENSATION()));
 
         // Get the ETHLot of equivalent value in USD
         singleRedemption.ETHLot = singleRedemption.KUSDLot.mul(DECIMAL_PRECISION).div(_price);
@@ -853,11 +841,11 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint newDebt = (Troves[_borrower].debt).sub(singleRedemption.KUSDLot);
         uint newColl = (Troves[_borrower].coll).sub(singleRedemption.ETHLot);
 
-        if (newDebt == KUSD_GAS_COMPENSATION) {
+        if (newDebt == kumoParams.KUSD_GAS_COMPENSATION()) {
             // No debt left in the Trove (except for the liquidation reserve), therefore the trove gets closed
             _removeStake(_borrower);
             _closeTrove(_borrower, Status.closedByRedemption);
-            _redeemCloseTrove(_contractsCache, _borrower, KUSD_GAS_COMPENSATION, newColl);
+            _redeemCloseTrove(_contractsCache, _borrower, kumoParams.KUSD_GAS_COMPENSATION(), newColl);
             emit TroveUpdated(_borrower, 0, 0, 0, TroveManagerOperation.redeemCollateral);
 
         } else {
@@ -869,7 +857,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
             *
             * If the resultant net debt of the partial is less than the minimum, net debt we bail.
             */
-            if (newNICR != _partialRedemptionHintNICR || _getNetDebt(newDebt) < MIN_NET_DEBT) {
+            if (newNICR != _partialRedemptionHintNICR || _getNetDebt(newDebt) < kumoParams.MIN_NET_DEBT()) {
                 singleRedemption.cancelledPartial = true;
                 return singleRedemption;
             }
@@ -911,13 +899,13 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     function _isValidFirstRedemptionHint(ISortedTroves _sortedTroves, address _firstRedemptionHint, uint _price) internal view returns (bool) {
         if (_firstRedemptionHint == address(0) ||
             !_sortedTroves.contains(_firstRedemptionHint) ||
-            getCurrentICR(_firstRedemptionHint, _price) < MCR
+            getCurrentICR(_firstRedemptionHint, _price) < kumoParams.MCR()
         ) {
             return false;
         }
 
         address nextTrove = _sortedTroves.getNext(_firstRedemptionHint);
-        return nextTrove == address(0) || getCurrentICR(nextTrove, _price) < MCR;
+        return nextTrove == address(0) || getCurrentICR(nextTrove, _price) < kumoParams.MCR();
     }
 
     /* Send _KUSDamount KUSD to the system and redeem the corresponding amount of collateral from as many Troves as are needed to fill the redemption
@@ -954,8 +942,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         override
     {
         ContractsCache memory contractsCache = ContractsCache(
-            activePool,
-            defaultPool,
+            kumoParams.activePool(),
+            kumoParams.defaultPool(),
             kusdToken,
             kumoStaking,
             sortedTroves,
@@ -966,7 +954,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
         _requireValidMaxFeePercentage(_maxFeePercentage);
         _requireAfterBootstrapPeriod();
-        totals.price = priceFeed.fetchPrice();
+        totals.price = kumoParams.priceFeed().fetchPrice();
         _requireTCRoverMCR(totals.price);
         _requireAmountGreaterThanZero(_KUSDamount);
         _requireKUSDBalanceCoversRedemption(contractsCache.kusdToken, msg.sender, _KUSDamount);
@@ -983,7 +971,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         } else {
             currentBorrower = contractsCache.sortedTroves.getLast();
             // Find the first trove with ICR >= MCR
-            while (currentBorrower != address(0) && getCurrentICR(currentBorrower, totals.price) < MCR) {
+            while (currentBorrower != address(0) && getCurrentICR(currentBorrower, totals.price) < kumoParams.MCR()) {
                 currentBorrower = contractsCache.sortedTroves.getPrev(currentBorrower);
             }
         }
@@ -1071,7 +1059,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
     function applyPendingRewards(address _borrower) external override {
         _requireCallerIsBorrowerOperations();
-        return _applyPendingRewards(activePool, defaultPool, _borrower);
+        return _applyPendingRewards(kumoParams.activePool(), kumoParams.defaultPool(), _borrower);
     }
 
     // Add the borrowers's coll and debt rewards earned from redistributions, to their Trove
@@ -1287,11 +1275,11 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     *
     * The ETH as compensation must be excluded as it is always sent out at the very end of the liquidation sequence.
     */
-    function _updateSystemSnapshots_excludeCollRemainder(IActivePool _activePool, uint _collRemainder) internal {
+    function _updateSystemSnapshots_excludeCollRemainder(uint _collRemainder) internal {
         totalStakesSnapshot = totalStakes;
 
-        uint activeColl = _activePool.getETH();
-        uint liquidatedColl = defaultPool.getETH();
+        uint activeColl = kumoParams.activePool().getETH();
+        uint liquidatedColl = kumoParams.defaultPool().getETH();
         totalCollateralSnapshot = activeColl.sub(_collRemainder).add(liquidatedColl);
 
         emit SystemSnapshotsUpdated(totalStakesSnapshot, totalCollateralSnapshot);
@@ -1358,12 +1346,12 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint _price
     )
         internal
-        pure
+        view
     returns (bool)
     {
         uint TCR = KumoMath._computeCR(_entireSystemColl, _entireSystemDebt, _price);
 
-        return TCR < CCR;
+        return TCR < kumoParams.CCR();
     }
 
     // --- Redemption fee functions ---
@@ -1434,9 +1422,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         return _calcBorrowingRate(_calcDecayedBaseRate());
     }
 
-    function _calcBorrowingRate(uint _baseRate) internal pure returns (uint) {
+    function _calcBorrowingRate(uint _baseRate) internal view returns (uint) {
         return KumoMath._min(
-            BORROWING_FEE_FLOOR.add(_baseRate),
+            kumoParams.BORROWING_FEE_FLOOR().add(_baseRate),
             MAX_BORROWING_FEE
         );
     }
@@ -1513,7 +1501,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     }
 
     function _requireTCRoverMCR(uint _price) internal view {
-        require(_getTCR(_price) >= MCR, "TroveManager: Cannot redeem when TCR < MCR");
+        require(_getTCR(_price) >= kumoParams.MCR(), "TroveManager: Cannot redeem when TCR < MCR");
     }
 
     function _requireAfterBootstrapPeriod() internal view {

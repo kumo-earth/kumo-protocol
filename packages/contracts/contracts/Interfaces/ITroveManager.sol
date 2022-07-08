@@ -42,12 +42,9 @@ interface ITroveManager is IKumoBase {
 
     function setAddresses(
         address _borrowerOperationsAddress,
-        address _activePoolAddress,
-        address _defaultPoolAddress,
         address _stabilityPoolAddress,
         address _gasPoolAddress,
         address _collSurplusPoolAddress,
-        address _priceFeedAddress,
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
         address _kumoTokenAddress,

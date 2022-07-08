@@ -354,12 +354,9 @@ class DeploymentHelper {
     // set contracts in the Trove Manager
     await contracts.troveManager.setAddresses(
       contracts.borrowerOperations.address,
-      contracts.activePool.address,
-      contracts.defaultPool.address,
       contracts.stabilityPool.address,
       contracts.gasPool.address,
       contracts.collSurplusPool.address,
-      contracts.priceFeedTestnet.address,
       contracts.kusdToken.address,
       contracts.sortedTroves.address,
       KUMOContracts.kumoToken.address,
@@ -370,11 +367,9 @@ class DeploymentHelper {
     // set contracts in BorrowerOperations
     await contracts.borrowerOperations.setAddresses(
       contracts.troveManager.address,
-      contracts.defaultPool.address,
       contracts.stabilityPool.address,
       contracts.gasPool.address,
       contracts.collSurplusPool.address,
-      contracts.priceFeedTestnet.address,
       contracts.sortedTroves.address,
       contracts.kusdToken.address,
       KUMOContracts.kumoStaking.address,
@@ -385,11 +380,10 @@ class DeploymentHelper {
     await contracts.stabilityPool.setAddresses(
       contracts.borrowerOperations.address,
       contracts.troveManager.address,
-      contracts.activePool.address,
       contracts.kusdToken.address,
       contracts.sortedTroves.address,
-      contracts.priceFeedTestnet.address,
-      KUMOContracts.communityIssuance.address
+      KUMOContracts.communityIssuance.address,
+      contracts.kumoParameters.address
     )
 
     await contracts.activePool.setAddresses(
@@ -413,7 +407,8 @@ class DeploymentHelper {
     // set contracts in HintHelpers
     await contracts.hintHelpers.setAddresses(
       contracts.sortedTroves.address,
-      contracts.troveManager.address
+      contracts.troveManager.address,
+      contracts.kumoParameters.address
     )
   }
 

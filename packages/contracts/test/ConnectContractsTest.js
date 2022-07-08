@@ -51,14 +51,6 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     assert.equal(defaultPool.address, await kumoParameters.defaultPool())
   })
 
-  it('Sets the correct PriceFeed address in TroveManager', async () => {
-    const priceFeedAddress = priceFeed.address
-
-    const recordedPriceFeedAddress = await troveManager.priceFeed()
-
-    assert.equal(priceFeedAddress, recordedPriceFeedAddress)
-  })
-
   it('Sets the correct KUSDToken address in TroveManager', async () => {
     const kusdTokenAddress = kusdToken.address
 
@@ -81,24 +73,6 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     const recordedBorrowerOperationsAddress = await troveManager.borrowerOperationsAddress()
 
     assert.equal(borrowerOperationsAddress, recordedBorrowerOperationsAddress)
-  })
-
-  // ActivePool in TroveM
-  it('Sets the correct ActivePool address in TroveManager', async () => {
-    const activePoolAddress = activePool.address
-
-    const recordedActivePoolAddresss = await troveManager.activePool()
-
-    assert.equal(activePoolAddress, recordedActivePoolAddresss)
-  })
-
-  // DefaultPool in TroveM
-  it('Sets the correct DefaultPool address in TroveManager', async () => {
-    const defaultPoolAddress = defaultPool.address
-
-    const recordedDefaultPoolAddresss = await troveManager.defaultPool()
-
-    assert.equal(defaultPoolAddress, recordedDefaultPoolAddresss)
   })
 
   // StabilityPool in TroveM
@@ -152,14 +126,6 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   })
 
   // Stability Pool
-
-  it('Sets the correct ActivePool address in StabilityPool', async () => {
-    const activePoolAddress = activePool.address
-
-    const recordedActivePoolAddress = await stabilityPool.activePool()
-    assert.equal(activePoolAddress, recordedActivePoolAddress)
-  })
-
   it('Sets the correct BorrowerOperations address in StabilityPool', async () => {
     const borrowerOperationsAddress = borrowerOperations.address
 
@@ -227,14 +193,6 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     assert.equal(troveManagerAddress, recordedTroveManagerAddress)
   })
 
-  // setPriceFeed in BO
-  it('Sets the correct PriceFeed address in BorrowerOperations', async () => {
-    const priceFeedAddress = priceFeed.address
-
-    const recordedPriceFeedAddress = await borrowerOperations.priceFeed()
-    assert.equal(priceFeedAddress, recordedPriceFeedAddress)
-  })
-
   // setSortedTroves in BO
   it('Sets the correct SortedTroves address in BorrowerOperations', async () => {
     const sortedTrovesAddress = sortedTroves.address
@@ -251,14 +209,6 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   //   const recordedActivePoolAddress = await borrowerOperations.activePool()
   //   assert.equal(activePoolAddress, recordedActivePoolAddress)
   // })
-
-  // setDefaultPool in BO
-  it('Sets the correct DefaultPool address in BorrowerOperations', async () => {
-    const defaultPoolAddress = defaultPool.address
-
-    const recordedDefaultPoolAddress = await borrowerOperations.defaultPool()
-    assert.equal(defaultPoolAddress, recordedDefaultPoolAddress)
-  })
 
   // KUMO Staking in BO
   it('Sets the correct KUMOStaking address in BorrowerOperations', async () => {

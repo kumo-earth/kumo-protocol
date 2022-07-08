@@ -11,6 +11,4 @@ interface IKumoBase {
     event VaultParametersBaseChanged(address indexed newAddress);
 
 	function kumoParams() external view returns (IKumoParameters);
-
-    function priceFeed() external view returns (IPriceFeed);
 }

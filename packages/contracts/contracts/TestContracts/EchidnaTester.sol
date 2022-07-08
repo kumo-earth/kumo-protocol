@@ -14,6 +14,7 @@ import "./PriceFeedTestnet.sol";
 import "../SortedTroves.sol";
 import "./EchidnaProxy.sol";
 import "../KumoParameters.sol";
+
 //import "../Dependencies/console.sol";
 
 // Run with:
@@ -64,15 +65,13 @@ contract EchidnaTester {
         sortedTroves = new SortedTroves();
 
         troveManager.setAddresses(address(borrowerOperations), 
-            address(activePool), address(defaultPool), 
             address(stabilityPool), address(gasPool), address(collSurplusPool),
-            address(priceFeedTestnet), address(kusdToken), 
+            address(kusdToken), 
             address(sortedTroves), address(0), address(0), address(kumoParams));
        
         borrowerOperations.setAddresses(address(troveManager), 
-            address(defaultPool), 
             address(stabilityPool), address(gasPool), address(collSurplusPool),
-            address(priceFeedTestnet), address(sortedTroves), 
+            address(sortedTroves), 
             address(kusdToken), address(0), address(kumoParams));
 
         activePool.setAddresses(address(borrowerOperations), 
@@ -81,8 +80,8 @@ contract EchidnaTester {
         defaultPool.setAddresses(address(troveManager), address(activePool));
         
         stabilityPool.setAddresses(address(borrowerOperations), 
-            address(troveManager), address(activePool), address(kusdToken), 
-            address(sortedTroves), address(priceFeedTestnet), address(0));
+            address(troveManager), address(kusdToken), 
+            address(sortedTroves), address(0), address(kumoParams));
 
         collSurplusPool.setAddresses(address(borrowerOperations), 
              address(troveManager), address(activePool));
@@ -95,9 +94,9 @@ contract EchidnaTester {
             require(success);
         }
 
-        MCR = borrowerOperations.MCR();
-        CCR = borrowerOperations.CCR();
-        KUSD_GAS_COMPENSATION = borrowerOperations.KUSD_GAS_COMPENSATION();
+        MCR = kumoParams.MCR();
+        CCR = kumoParams.CCR();
+        KUSD_GAS_COMPENSATION = kumoParams.KUSD_GAS_COMPENSATION();
         require(MCR > 0);
         require(CCR > 0);
 
@@ -139,7 +138,7 @@ contract EchidnaTester {
     function getAdjustedETH(uint actorBalance, uint _ETH, uint ratio) internal view returns (uint) {
         uint price = priceFeedTestnet.getPrice();
         require(price > 0);
-        uint minETH = ratio.mul(KUSD_GAS_COMPENSATION).div(price);
+        uint minETH = ratio.mul(kumoParams.KUSD_GAS_COMPENSATION()).div(price);
         require(actorBalance > minETH);
         uint ETH = minETH + _ETH % (actorBalance - minETH);
         return ETH;
@@ -148,11 +147,11 @@ contract EchidnaTester {
     function getAdjustedKUSD(uint ETH, uint _KUSDAmount, uint ratio) internal view returns (uint) {
         uint price = priceFeedTestnet.getPrice();
         uint KUSDAmount = _KUSDAmount;
-        uint compositeDebt = KUSDAmount.add(KUSD_GAS_COMPENSATION);
+        uint compositeDebt = KUSDAmount.add(kumoParams.KUSD_GAS_COMPENSATION());
         uint ICR = KumoMath._computeCR(ETH, compositeDebt, price);
         if (ICR < ratio) {
             compositeDebt = ETH.mul(price).div(ratio);
-            KUSDAmount = compositeDebt.sub(KUSD_GAS_COMPENSATION);
+            KUSDAmount = compositeDebt.sub(kumoParams.KUSD_GAS_COMPENSATION());
         }
         return KUSDAmount;
     }
@@ -336,7 +335,7 @@ contract EchidnaTester {
             //else return false;
 
             // Minimum debt (gas compensation)
-            if (troveManager.getTroveDebt(currentTrove) < KUSD_GAS_COMPENSATION) {
+            if (troveManager.getTroveDebt(currentTrove) < kumoParams.KUSD_GAS_COMPENSATION()) {
                 return false;
             }
             // Uncomment to check that the condition is meaningful
