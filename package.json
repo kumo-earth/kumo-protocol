@@ -98,5 +98,9 @@
     "prettier": "^2.6.2",
     "semantic-release": "^17.4.2",
     "semantic-release-monorepo": "^7.0.4"
+  },
+  "engineStrict": true,
+  "engines": {
+    "node": "16.15.0"
   }
 }

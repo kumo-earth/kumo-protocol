@@ -18,9 +18,9 @@ Implemented by [SentEthersKumoTransaction](./lib-ethers.sentetherskumotransactio
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [rawSentTransaction](./lib-base.sentkumotransaction.rawsenttransaction.md) | S | Implementation-specific sent transaction object. |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [rawSentTransaction](./lib-base.sentkumotransaction.rawsenttransaction.md) |  | S | Implementation-specific sent transaction object. |
 
 ## Methods
 
