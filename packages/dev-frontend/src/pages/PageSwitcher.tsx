@@ -10,12 +10,13 @@ import { Dashboard } from "./Dashboard";
 import { UnregisteredFrontend } from "./UnregisteredFrontend";
 import { FrontendRegistration } from "./FrontendRegistration";
 import { FrontendRegistrationSuccess } from "./FrontendRegistrationSuccess";
+import { useWeb3React } from "@web3-react/core";
 
 const selectFrontend = ({ frontend }: KumoStoreState) => frontend;
 
 export const PageSwitcher: React.FC = () => {
+  const { account } = useWeb3React();
   const {
-    account,
     config: { frontendTag }
   } = useKumo();
 

@@ -53,11 +53,11 @@ const generateRandomAccounts = (numberOfAccounts: number) => {
 const deployerAccount = process.env.DEPLOYER_PRIVATE_KEY || Wallet.createRandom().privateKey;
 const devChainRichAccount = "0x4d5db4107d237df6a3d58ee5f70ae63d73d7658d4026f2eefd2f204c81682cb7";
 
-const infuraApiKey = "ad9cef41c9c844a7b54d10be24d416e5";
+const alchemyKey = process.env.ALCHEMY_API_KEY;
 
-const infuraNetwork = (name: string): { [name: string]: NetworkUserConfig } => ({
+const alchemyNetwork = (name: string): { [name: string]: NetworkUserConfig } => ({
   [name]: {
-    url: `https://${name}.infura.io/v3/${infuraApiKey}`,
+    url: `https://${name}.g.alchemy.com/v2/${alchemyKey}`,
     accounts: [deployerAccount]
   }
 });
@@ -70,10 +70,10 @@ const oracleAddresses = {
     chainlink: "0xF9680D99D6C9589e2a93a78A04A279e509205945",
     tellor: "0xFd45Ae72E81Adaaf01cC61c8bCe016b7060DD537"
   },
-  mumbai: {
+  "polygon-mumbai": {
     chainlink: "0x0715A7794a1dc8e42615F059dD6e406A6594651A",
-    tellor: "0x3477EB82263dabb59AC0CAcE47a61292f28A2eA7"
-  },
+    tellor: "0x41b66dd93b03e89D29114a7613A6f9f0d4F40178"
+  }
 };
 
 const hasOracles = (network: string): network is keyof typeof oracleAddresses =>
@@ -81,7 +81,7 @@ const hasOracles = (network: string): network is keyof typeof oracleAddresses =>
 
 const wethAddresses = {
   mainnet: "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
-  mumbai: "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
+  "polygon-mumbai": "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa"
 };
 
 const hasWETH = (network: string): network is keyof typeof wethAddresses => network in wethAddresses;
@@ -97,21 +97,15 @@ const config: HardhatUserConfig = {
       // Let Ethers throw instead of Buidler EVM
       // This is closer to what will happen in production
       throwOnCallFailures: false,
-      throwOnTransactionFailures: false,
+      throwOnTransactionFailures: false
     },
 
     dev: {
       url: "http://localhost:8545",
       accounts: [deployerAccount, devChainRichAccount, ...generateRandomAccounts(numAccounts - 2)]
     },
-    mumbai: {
-      url: `https://matic-mumbai.chainstacklabs.com`,
-      accounts: [deployerAccount],
-      timeout: 100000
-    },
 
-    // ...infuraNetwork("mumbai"),
-    ...infuraNetwork("mainnet")
+    ...alchemyNetwork("polygon-mumbai")
   },
 
   paths: {

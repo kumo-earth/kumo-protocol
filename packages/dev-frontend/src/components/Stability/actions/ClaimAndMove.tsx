@@ -8,11 +8,11 @@ type ClaimAndMoveProps = {
 };
 
 export const ClaimAndMove: React.FC<ClaimAndMoveProps> = ({ disabled, children }) => {
-  const { liquity } = useKumo();
+  const { kumo } = useKumo();
 
   const [sendTransaction] = useTransactionFunction(
     "stability-deposit",
-    liquity.send.transferCollateralGainToTrove.bind(liquity.send)
+    kumo.send.transferCollateralGainToTrove.bind(kumo.send)
   );
 
   return (

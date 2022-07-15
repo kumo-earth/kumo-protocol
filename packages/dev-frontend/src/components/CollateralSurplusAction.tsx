@@ -16,7 +16,7 @@ const select = ({ collateralSurplusBalance }: KumoStoreState) => ({
 export const CollateralSurplusAction: React.FC = () => {
   const { collateralSurplusBalance } = useKumoSelector(select);
   const {
-    liquity: { send: liquity }
+    kumo: { send: kumo }
   } = useKumo();
 
   const myTransactionId = "claim-coll-surplus";
@@ -42,7 +42,7 @@ export const CollateralSurplusAction: React.FC = () => {
     <Flex variant="layout.actions">
       <Transaction
         id={myTransactionId}
-        send={liquity.claimCollateralSurplus.bind(liquity, undefined)}
+        send={kumo.claimCollateralSurplus.bind(kumo, undefined)}
       >
         <Button sx={{ mx: 2 }}>Claim {collateralSurplusBalance.prettify()} ETH</Button>
       </Transaction>

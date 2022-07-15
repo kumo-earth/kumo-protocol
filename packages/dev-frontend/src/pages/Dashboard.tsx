@@ -1,4 +1,4 @@
-import { Grid, Container, Box, Heading, } from "theme-ui";
+import { Grid, Container, Box, Heading } from "theme-ui";
 import { Percent } from "@kumodao/lib-base";
 import { CollateralCard } from "../components/ColleteralCard/ColleteralCard";
 import { useDashboard } from "../hooks/DashboardContext";
@@ -96,11 +96,12 @@ export const Dashboard: React.FC = () => {
       >
         {vaults.map(vault => {
           const totalCollateralRatioPct = new Percent(vault.collateralRatio);
+
           return (
             <CollateralCard
               collateralType={vault.type}
               totalCollateralRatioPct={totalCollateralRatioPct.prettify()}
-              total={vault.trove}
+              usersTroves={vault.usersTroves}
               key={vault.type}
             />
           );

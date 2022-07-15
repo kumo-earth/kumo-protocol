@@ -11,7 +11,7 @@ const selectBlockTimestamp = ({ blockTimestamp }: BlockPolledKumoStoreState) => 
 
 export const Redemption: React.FC = () => {
   const {
-    liquity: {
+    kumo: {
       connection: { deploymentDate, bootstrapPeriod }
     }
   } = useKumo();

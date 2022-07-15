@@ -76,14 +76,14 @@ export interface BorrowingOperationOptionalParams {
 }
 
 // @internal (undocumented)
-export function _connectByChainId<T>(provider: EthersProvider, signer: EthersSigner | undefined, chainId: number, optionalParams: EthersKumoConnectionOptionalParams & {
+export function _connectByChainId<T>(provider: EthersProvider, chainId: number, optionalParams: EthersKumoConnectionOptionalParams & {
     useStore: T;
-}): EthersKumoConnection & {
+}, signer?: EthersSigner | undefined): EthersKumoConnection & {
     useStore: T;
 };
 
 // @internal (undocumented)
-export function _connectByChainId(provider: EthersProvider, signer: EthersSigner | undefined, chainId: number, optionalParams?: EthersKumoConnectionOptionalParams): EthersKumoConnection;
+export function _connectByChainId(provider: EthersProvider, chainId: number, optionalParams?: EthersKumoConnectionOptionalParams, signer?: EthersSigner | undefined): EthersKumoConnection;
 
 // @public
 export interface EthersCallOverrides {

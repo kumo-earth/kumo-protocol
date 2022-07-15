@@ -3,12 +3,13 @@ import { isAddress, getAddress } from "@ethersproject/address";
 
 export type KumoFrontendConfig = {
   frontendTag: string;
-  infuraApiKey?: string;
+  alchemyApiKey?: string;
   testnetOnly?: boolean;
 };
 
 const defaultConfig: KumoFrontendConfig = {
-  frontendTag: AddressZero
+  frontendTag: AddressZero,
+  alchemyApiKey: process.env.REACT_APP_ALCHEMY_API
 };
 
 function hasKey<K extends string>(o: object, k: K): o is Record<K, unknown> {
@@ -30,14 +31,14 @@ const parseConfig = (json: unknown): KumoFrontendConfig => {
       }
     }
 
-    if (hasKey(json, "infuraApiKey") && json.infuraApiKey !== "") {
-      const { infuraApiKey } = json;
+    if (hasKey(json, "alchemyApiKey") && json.alchemyApiKey !== "") {
+      const { alchemyApiKey } = json;
 
-      if (typeof infuraApiKey === "string") {
-        config.infuraApiKey = infuraApiKey;
+      if (typeof alchemyApiKey === "string") {
+        config.alchemyApiKey = alchemyApiKey;
       } else {
-        console.error("Malformed infuraApiKey:");
-        console.log(infuraApiKey);
+        console.error("Malformed alchemyApiKey:");
+        console.log(alchemyApiKey);
       }
     }
 

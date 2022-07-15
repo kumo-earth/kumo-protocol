@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { UserTroveStatus } from "@kumodao/lib-base";
+import { UserTroveStatus, Decimal, UserTrove } from "@kumodao/lib-base";
+import { Web3Provider } from "@ethersproject/providers";
+import { useWeb3React } from "@web3-react/core";
 
 import { TroveViewContext } from "./TroveViewContext";
 import type { TroveView, TroveEvent } from "./types";
@@ -84,11 +86,15 @@ const getPathName = (location: any) => {
 export const TroveViewProvider: React.FC = props => {
   const { children } = props;
   // const troveStatus = useLiquitySelector(select);
+  const { account } = useWeb3React<Web3Provider>();
   const location = useLocation();
   const { vaults } = useDashboard();
   
-  const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
-  const { troveStatus } = vaultType;
+  const vaultType = vaults.find(vault => vault.type === getPathName(location)) || vaults[0];
+  const trove =
+    vaultType.usersTroves.find(userT => userT.ownerAddress === account) ||
+    new UserTrove(account || "0x0", "nonExistent", Decimal.ZERO, Decimal.ZERO);
+  const { status : troveStatus } = trove;
 
   const [view, setView] = useState<TroveView>(getInitialView(troveStatus));
   const viewRef = useRef<TroveView>(view);

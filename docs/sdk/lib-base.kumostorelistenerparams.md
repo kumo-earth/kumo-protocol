@@ -18,9 +18,9 @@ Use the [subscribe()](./lib-base.kumostore.subscribe.md) function to register a 
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [newState](./lib-base.kumostorelistenerparams.newstate.md) | [KumoStoreState](./lib-base.kumostorestate.md)<!-- -->&lt;T&gt; | The entire previous state. |
-|  [oldState](./lib-base.kumostorelistenerparams.oldstate.md) | [KumoStoreState](./lib-base.kumostorestate.md)<!-- -->&lt;T&gt; | The entire new state. |
-|  [stateChange](./lib-base.kumostorelistenerparams.statechange.md) | Partial&lt;[KumoStoreState](./lib-base.kumostorestate.md)<!-- -->&lt;T&gt;&gt; | Only the state variables that have changed. |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [newState](./lib-base.kumostorelistenerparams.newstate.md) |  | [KumoStoreState](./lib-base.kumostorestate.md)<!-- -->&lt;T&gt; | The entire previous state. |
+|  [oldState](./lib-base.kumostorelistenerparams.oldstate.md) |  | [KumoStoreState](./lib-base.kumostorestate.md)<!-- -->&lt;T&gt; | The entire new state. |
+|  [stateChange](./lib-base.kumostorelistenerparams.statechange.md) |  | Partial&lt;[KumoStoreState](./lib-base.kumostorestate.md)<!-- -->&lt;T&gt;&gt; | Only the state variables that have changed. |
 

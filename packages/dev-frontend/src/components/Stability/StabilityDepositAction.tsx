@@ -18,7 +18,7 @@ export const StabilityDepositAction: React.FC<StabilityDepositActionProps> = ({
   transactionId,
   change
 }) => {
-  const { config, liquity } = useKumo();
+  const { config, kumo } = useKumo();
   const frontendRegistered = useKumoSelector(selectFrontendRegistered);
 
   const frontendTag = frontendRegistered ? config.frontendTag : undefined;
@@ -26,8 +26,8 @@ export const StabilityDepositAction: React.FC<StabilityDepositActionProps> = ({
   const [sendTransaction] = useTransactionFunction(
     transactionId,
     change.depositKUSD
-      ? liquity.send.depositKUSDInStabilityPool.bind(liquity.send, change.depositKUSD, frontendTag)
-      : liquity.send.withdrawKUSDFromStabilityPool.bind(liquity.send, change.withdrawKUSD)
+      ? kumo.send.depositKUSDInStabilityPool.bind(kumo.send, change.depositKUSD, frontendTag)
+      : kumo.send.withdrawKUSDFromStabilityPool.bind(kumo.send, change.withdrawKUSD)
   );
 
   return (

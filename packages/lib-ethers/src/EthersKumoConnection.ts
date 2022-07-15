@@ -280,25 +280,25 @@ export interface EthersKumoConnectionOptionalParams {
 /** @internal */
 export function _connectByChainId<T>(
   provider: EthersProvider,
-  signer: EthersSigner | undefined,
   chainId: number,
-  optionalParams: EthersKumoConnectionOptionalParams & { useStore: T }
+  optionalParams: EthersKumoConnectionOptionalParams & { useStore: T },
+  signer?: EthersSigner | undefined
 ): EthersKumoConnection & { useStore: T };
 
 /** @internal */
 export function _connectByChainId(
   provider: EthersProvider,
-  signer: EthersSigner | undefined,
   chainId: number,
-  optionalParams?: EthersKumoConnectionOptionalParams
+  optionalParams?: EthersKumoConnectionOptionalParams,
+  signer?: EthersSigner | undefined
 ): EthersKumoConnection;
 
 /** @internal */
 export function _connectByChainId(
   provider: EthersProvider,
-  signer: EthersSigner | undefined,
   chainId: number,
-  optionalParams?: EthersKumoConnectionOptionalParams
+  optionalParams?: EthersKumoConnectionOptionalParams,
+  signer?: EthersSigner | undefined
 ): EthersKumoConnection {
   const deployment: _KumoDeploymentJSON =
     deployments[chainId] ?? panic(new UnsupportedNetworkError(chainId));
@@ -331,5 +331,5 @@ export const _connect = async (
     };
   }
 
-  return _connectByChainId(provider, signer, (await provider.getNetwork()).chainId, optionalParams);
+  return _connectByChainId(provider, (await provider.getNetwork()).chainId, optionalParams, signer);
 };

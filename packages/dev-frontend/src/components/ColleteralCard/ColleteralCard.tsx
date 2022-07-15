@@ -1,22 +1,34 @@
+import { Decimal, UserTrove } from "@kumodao/lib-base";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { Flex, Progress, Box, Card, Heading } from "theme-ui";
+import { Web3Provider } from "@ethersproject/providers";
+import { useWeb3React } from "@web3-react/core";
 
 import { useTroveView } from "../Trove/context/TroveViewContext";
 
 type CollateralCardProps = {
   collateralType?: string;
   totalCollateralRatioPct?: string;
-  total?: { collateral: any; debt: any };
+  usersTroves: UserTrove[];
 };
 
 export const CollateralCard: React.FC<CollateralCardProps> = ({
   collateralType,
   totalCollateralRatioPct,
-  total
+  usersTroves
 }) => {
+  const { account } = useWeb3React<Web3Provider>();
   const { dispatchEvent, view } = useTroveView();
   const history = useHistory();
+
+  let collateral = Decimal.ZERO;
+  let debt = Decimal.ZERO;
+
+  usersTroves.forEach(userTrove => {
+    collateral = collateral.add(userTrove.debt);
+    debt = debt.add(userTrove.collateral);
+  });
 
   const handleClick = () => {
     if (view === "ADJUSTING") {
@@ -33,10 +45,27 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
         boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
         borderRadius: "20px",
         maxWidth: 450,
-        maxHeight: "380px"
+        maxHeight: "380px",
+        position: "relative"
       }}
       onClick={() => handleClick()}
     >
+      {!account && (
+        <Flex
+          sx={{
+            position: "absolute",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%",
+            width: "100%",
+            mt: 30,
+          }}
+          onClick={e => e.stopPropagation()}
+        >
+          <Box sx={{ fontWeight: 600 }}>Please Connect the Wallet to Proceed</Box>
+        </Flex>
+      )}
       <Heading
         sx={{
           height: "120px",
@@ -99,14 +128,14 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            {total?.collateral.prettify(2)}{" "}
+            {collateral.prettify(2)}{" "}
             {(collateralType === "bct" && "BCT") || (collateralType === "mco2" && "MCO2")}
           </Heading>
         </Flex>
         <Box sx={{ padding: "0 1.5rem 10px 1.5rem" }}>
           <Progress
             max={10000}
-            value={total?.collateral}
+            value={collateral.toString()}
             sx={{ height: "12px", color: "green" }}
           ></Progress>
         </Box>
@@ -133,7 +162,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
               padding: "0 1.5rem 10px 1.5rem"
             }}
           >
-            {total?.debt.prettify(2)} KUSD
+            {debt.prettify(2)} KUSD
           </Heading>
         </Flex>
         {/* <Flex sx={{ padding: "1.5rem" }}> */}
