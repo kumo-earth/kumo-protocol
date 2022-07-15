@@ -6,6 +6,7 @@ pragma solidity 0.8.11;
 
 import "./BaseMath.sol";
 import "./KumoMath.sol";
+import "./Ownable.sol";
 import "../Interfaces/IActivePool.sol";
 import "../Interfaces/IDefaultPool.sol";
 import "../Interfaces/IPriceFeed.sol";
@@ -15,7 +16,7 @@ import "../Interfaces/IKumoBase.sol";
 * Base contract for TroveManager, BorrowerOperations and StabilityPool. Contains global system constants and
 * common functions. 
 */
-contract KumoBase is BaseMath, IKumoBase {
+contract KumoBase is BaseMath, Ownable, IKumoBase {
     using SafeMath for uint;
 
     // IKumoParameters public override kumoParams;

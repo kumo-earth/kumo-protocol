@@ -12,7 +12,6 @@ import "./Interfaces/ICommunityIssuance.sol";
 import "./Dependencies/KumoBase.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/KumoSafeMath128.sol";
-import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 
@@ -145,7 +144,7 @@ import "./Dependencies/console.sol";
  * The product P (and snapshot P_t) is re-used, as the ratio P/P_t tracks a deposit's depletion due to liquidations.
  *
  */
-contract StabilityPool is KumoBase, Ownable, CheckContract, IStabilityPool {
+contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     using KumoSafeMath128 for uint128;
     using SafeMath for uint256;
 
