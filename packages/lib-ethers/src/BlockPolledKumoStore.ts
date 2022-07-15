@@ -59,6 +59,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
 
   private readonly _readable: ReadableEthersKumo;
   private readonly _provider: EthersProvider;
+  private _isError: boolean;
 
   constructor(readable: ReadableEthersKumo) {
     super();
@@ -66,6 +67,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
     this.connection = readable.connection;
     this._readable = readable;
     this._provider = _getProvider(readable.connection);
+    this._isError = false;
   }
 
   private async _getRiskiestTroveBeforeRedistribution(
@@ -88,79 +90,77 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
   ): Promise<[baseState: KumoStoreBaseState, extraState: BlockPolledKumoStoreExtraState]> {
     const { userAddress, frontendTag } = this.connection;
 
-    const {
-      blockTimestamp,
-      _feesFactory,
-      calculateRemainingKUMO,
-      ...baseState
-    } = await promiseAllValues({
-      blockTimestamp: this._readable._getBlockTimestamp(blockTag),
-      _feesFactory: this._readable._getFeesFactory({ blockTag }),
-      calculateRemainingKUMO: this._readable._getRemainingLiquidityMiningKUMORewardCalculator({
-        blockTag
-      }),
+    const { blockTimestamp, _feesFactory, calculateRemainingKUMO, ...baseState } =
+      await promiseAllValues({
+        blockTimestamp: this._readable._getBlockTimestamp(blockTag),
+        _feesFactory: this._readable._getFeesFactory({ blockTag }),
+        calculateRemainingKUMO: this._readable._getRemainingLiquidityMiningKUMORewardCalculator({
+          blockTag
+        }),
 
-      price: this._readable.getPrice({ blockTag }),
-      numberOfTroves: this._readable.getNumberOfTroves({ blockTag }),
-      totalRedistributed: this._readable.getTotalRedistributed({ blockTag }),
-      total: this._readable.getTotal({ blockTag }),
-      kusdInStabilityPool: this._readable.getKUSDInStabilityPool({ blockTag }),
-      totalStakedKUMO: this._readable.getTotalStakedKUMO({ blockTag }),
-      _riskiestTroveBeforeRedistribution: this._getRiskiestTroveBeforeRedistribution({ blockTag }),
-      totalStakedUniTokens: this._readable.getTotalStakedUniTokens({ blockTag }),
-      remainingStabilityPoolKUMOReward: this._readable.getRemainingStabilityPoolKUMOReward({
-        blockTag
-      }),
+        price: this._readable.getPrice({ blockTag }),
+        numberOfTroves: this._readable.getNumberOfTroves({ blockTag }),
+        totalRedistributed: this._readable.getTotalRedistributed({ blockTag }),
+        total: this._readable.getTotal({ blockTag }),
+        kusdInStabilityPool: this._readable.getKUSDInStabilityPool({ blockTag }),
+        totalStakedKUMO: this._readable.getTotalStakedKUMO({ blockTag }),
+        _riskiestTroveBeforeRedistribution: this._getRiskiestTroveBeforeRedistribution({ blockTag }),
+        totalStakedUniTokens: this._readable.getTotalStakedUniTokens({ blockTag }),
+        remainingStabilityPoolKUMOReward: this._readable.getRemainingStabilityPoolKUMOReward({
+          blockTag
+        }),
 
-      frontend: frontendTag
-        ? this._readable.getFrontendStatus(frontendTag, { blockTag })
-        : { status: "unregistered" as const },
+        frontend: frontendTag
+          ? this._readable.getFrontendStatus(frontendTag, { blockTag })
+          : { status: "unregistered" as const },
 
-      ...(userAddress
-        ? {
-            accountBalance: this._provider.getBalance(userAddress, blockTag).then(decimalify),
-            kusdBalance: this._readable.getKUSDBalance(userAddress, { blockTag }),
-            kumoBalance: this._readable.getKUMOBalance(userAddress, { blockTag }),
-            uniTokenBalance: this._readable.getUniTokenBalance(userAddress, { blockTag }),
-            uniTokenAllowance: this._readable.getUniTokenAllowance(userAddress, { blockTag }),
-            liquidityMiningStake: this._readable.getLiquidityMiningStake(userAddress, { blockTag }),
-            liquidityMiningKUMOReward: this._readable.getLiquidityMiningKUMOReward(userAddress, {
-              blockTag
-            }),
-            collateralSurplusBalance: this._readable.getCollateralSurplusBalance(userAddress, {
-              blockTag
-            }),
-            troveBeforeRedistribution: this._readable.getTroveBeforeRedistribution(userAddress, {
-              blockTag
-            }),
-            stabilityDeposit: this._readable.getStabilityDeposit(userAddress, { blockTag }),
-            kumoStake: this._readable.getKUMOStake(userAddress, { blockTag }),
-            ownFrontend: this._readable.getFrontendStatus(userAddress, { blockTag })
-          }
-        : {
-            accountBalance: Decimal.ZERO,
-            kusdBalance: Decimal.ZERO,
-            kumoBalance: Decimal.ZERO,
-            uniTokenBalance: Decimal.ZERO,
-            uniTokenAllowance: Decimal.ZERO,
-            liquidityMiningStake: Decimal.ZERO,
-            liquidityMiningKUMOReward: Decimal.ZERO,
-            collateralSurplusBalance: Decimal.ZERO,
-            troveBeforeRedistribution: new TroveWithPendingRedistribution(
-              AddressZero,
-              "nonExistent"
-            ),
-            stabilityDeposit: new StabilityDeposit(
-              Decimal.ZERO,
-              Decimal.ZERO,
-              Decimal.ZERO,
-              Decimal.ZERO,
-              AddressZero
-            ),
-            kumoStake: new KUMOStake(),
-            ownFrontend: { status: "unregistered" as const }
-          })
-    });
+        ...(userAddress
+          ? {
+              accountBalance: this._provider.getBalance(userAddress, blockTag).then(decimalify),
+              kusdBalance: this._readable.getKUSDBalance(userAddress, { blockTag }),
+              kumoBalance: this._readable.getKUMOBalance(userAddress, { blockTag }),
+              uniTokenBalance: this._readable.getUniTokenBalance(userAddress, { blockTag }),
+              uniTokenAllowance: this._readable.getUniTokenAllowance(userAddress, { blockTag }),
+              liquidityMiningStake: this._readable.getLiquidityMiningStake(userAddress, {
+                blockTag
+              }),
+              liquidityMiningKUMOReward: this._readable.getLiquidityMiningKUMOReward(userAddress, {
+                blockTag
+              }),
+              collateralSurplusBalance: this._readable.getCollateralSurplusBalance(userAddress, {
+                blockTag
+              }),
+              troveBeforeRedistribution: this._readable.getTroveBeforeRedistribution(userAddress, {
+                blockTag
+              }),
+              stabilityDeposit: this._readable.getStabilityDeposit(userAddress, { blockTag }),
+              kumoStake: this._readable.getKUMOStake(userAddress, { blockTag }),
+              ownFrontend: this._readable.getFrontendStatus(userAddress, { blockTag })
+            }
+          : {
+              accountBalance: Decimal.ZERO,
+              kusdBalance: Decimal.ZERO,
+              kumoBalance: Decimal.ZERO,
+              uniTokenBalance: Decimal.ZERO,
+              uniTokenAllowance: Decimal.ZERO,
+              liquidityMiningStake: Decimal.ZERO,
+              liquidityMiningKUMOReward: Decimal.ZERO,
+              collateralSurplusBalance: Decimal.ZERO,
+              troveBeforeRedistribution: new TroveWithPendingRedistribution(
+                AddressZero,
+                "nonExistent"
+              ),
+              stabilityDeposit: new StabilityDeposit(
+                Decimal.ZERO,
+                Decimal.ZERO,
+                Decimal.ZERO,
+                Decimal.ZERO,
+                AddressZero
+              ),
+              kumoStake: new KUMOStake(),
+              ownFrontend: { status: "unregistered" as const }
+            })
+      });
 
     return [
       {
@@ -178,19 +178,33 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
 
   /** @internal @override */
   protected _doStart(): () => void {
-    this._get().then(state => {
-      if (!this._loaded) {
-        this._load(...state);
-      }
-    });
+    this._get()
+      .then(state => {
+        if (!this._loaded) {
+          this._load(...state);
+        }
+      })
+      .catch(error => {
+        if (!this._isError) {
+          this._isError = true;
+        }
+        console.log(error?.message);
+      });
 
     const blockListener = async (blockTag: number) => {
-      const state = await this._get(blockTag);
-
-      if (this._loaded) {
-        this._update(...state);
-      } else {
-        this._load(...state);
+      if (this.connection.signer || this._isError) {
+        this._isError = false;
+        this._get(blockTag)
+          .then(state => {
+            if (this._loaded) {
+              this._update(...state);
+            } else {
+              this._load(...state);
+            }
+          })
+          .catch(error => {
+            console.log(error?.message);
+          });
       }
     };
 

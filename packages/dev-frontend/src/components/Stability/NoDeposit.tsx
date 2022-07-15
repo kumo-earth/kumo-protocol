@@ -1,6 +1,13 @@
 import React, { useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
+import {
+  Decimal,
+  UserTrove
+} from "@kumodao/lib-base";
+import { Web3Provider } from "@ethersproject/providers";
+import { useWeb3React } from "@web3-react/core";
+
 import { InfoMessage } from "../InfoMessage";
 import { useStabilityView } from "./context/StabilityViewContext";
 import { useDashboard } from "../../hooks/DashboardContext";
@@ -13,10 +20,13 @@ const getPathName = (location: any) => {
 
 export const NoDeposit: React.FC = props => {
   const { dispatchEvent } = useStabilityView();
-
+  const { account } = useWeb3React<Web3Provider>();
   const location = useLocation();
   const { vaults } = useDashboard();
-  const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
+  const vaultType = vaults.find(vault => vault.type === getPathName(location)) || vaults[0];
+  const trove =
+    vaultType.usersTroves.find(userT => userT.ownerAddress === account) ||
+    new UserTrove(account || "0x0", "nonExistent", Decimal.ZERO, Decimal.ZERO);
   const handleOpenTrove = useCallback(() => {
     dispatchEvent("DEPOSIT_PRESSED");
   }, [dispatchEvent]);
@@ -63,7 +73,7 @@ export const NoDeposit: React.FC = props => {
               border: "none",
               color: "white"
             }}
-            disabled={vaultType.troveStatus === "nonExistent"}
+            disabled={trove.status === "nonExistent"}
           >
             Deposit
           </Button>

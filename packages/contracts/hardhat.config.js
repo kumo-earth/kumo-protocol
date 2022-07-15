@@ -26,6 +26,10 @@ const alchemyUrlRinkeby = () => {
     return `https://eth-rinkeby.alchemyapi.io/v2/${getSecret('alchemyAPIKeyRinkeby')}`
 }
 
+const alchemyUrlMumbai = () => {
+    return `https://polygon-mumbai.g.alchemy.com/v2/${getSecret('alchemyAPIKeyMumbai')}`
+}
+
 module.exports = {
     paths: {
         // contracts: "./contracts",
@@ -100,6 +104,11 @@ module.exports = {
             url: alchemyUrlRinkeby(),
             gas: 10000000,  // tx gas limit
             accounts: [getSecret('RINKEBY_DEPLOYER_PRIVATEKEY', '0x60ddfe7f579ab6867cbe7a2dc03853dc141d7a4ab6dbefc0dae2d2b1bd4e487f')]
+        },
+        mumbai: {
+            url: alchemyUrlMumbai(),
+            accounts: [getSecret('MUMBAI_DEPLOYER_PRIVATEKEY', '0x60ddfe7f579ab6867cbe7a2dc03853dc141d7a4ab6dbefc0dae2d2b1bd4e487f')],
+            gas: 2100000
         },
     },
     etherscan: {

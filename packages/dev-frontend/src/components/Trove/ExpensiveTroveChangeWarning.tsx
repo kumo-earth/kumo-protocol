@@ -25,7 +25,7 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
   gasEstimationState,
   setGasEstimationState
 }) => {
-  const { liquity } = useKumo();
+  const { kumo } = useKumo();
 
   useEffect(() => {
     if (troveChange && troveChange.type !== "closure") {
@@ -35,11 +35,11 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
 
       const timeoutId = setTimeout(async () => {
         const populatedTx = await (troveChange.type === "creation"
-          ? liquity.populate.openTrove(troveChange.params, {
+          ? kumo.populate.openTrove(troveChange.params, {
               maxBorrowingRate,
               borrowingFeeDecayToleranceMinutes
             })
-          : liquity.populate.adjustTrove(troveChange.params, {
+          : kumo.populate.adjustTrove(troveChange.params, {
               maxBorrowingRate,
               borrowingFeeDecayToleranceMinutes
             }));

@@ -7,9 +7,12 @@ import {
   Trove,
   KUSD_LIQUIDATION_RESERVE,
   KUSD_MINIMUM_NET_DEBT,
-  Percent
+  Percent, 
+  UserTrove
 } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
+import { Web3Provider } from "@ethersproject/providers";
+import { useWeb3React } from "@web3-react/core";
 
 import { useStableTroveChange } from "../../hooks/useStableTroveChange";
 import { ActionDescription } from "../ActionDescription";
@@ -49,12 +52,15 @@ const getPathName = (location: any) => {
 
 export const Opening: React.FC = () => {
   const { dispatchEvent } = useTroveView();
-  const { fees, price, accountBalance, validationContext } = useKumoSelector(selector);
+  const { fees, accountBalance, validationContext } = useKumoSelector(selector);
 
   const location = useLocation();
   const { vaults, openTroveT, bctPrice, mco2Price } = useDashboard();
+  // const vault = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
+  // const userTrove = vault.usersTroves.find(userT => userT.ownerAddress === account) ||
+  //   new UserTrove(account || "0x0", "nonExistent", Decimal.ZERO, Decimal.ZERO);
 
-  const vaultType = vaults.some(vault => vault.troveStatus === "open");
+  const vaultType = vaults.some(vault => vault.usersTroves.some(userT => userT.status === "open"));
   const borrowingRate = fees.borrowingRate();
   const editingState = useState<string>();
 
@@ -131,7 +137,6 @@ export const Opening: React.FC = () => {
     }
   }, [collateral, borrowAmount]);
 
-  console.log("OpeningTrove12", collateral, borrowAmount, totalDebt, fee.prettify(0));
 
   return (
     <Card

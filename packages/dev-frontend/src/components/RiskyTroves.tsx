@@ -73,7 +73,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
     kusdInStabilityPool,
     price
   } = useKumoSelector(select);
-  const { liquity } = useKumo();
+  const { kumo } = useKumo();
 
   const [loading, setLoading] = useState(true);
   const [troves, setTroves] = useState<UserTrove[]>();
@@ -108,7 +108,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
 
     setLoading(true);
 
-    liquity
+    kumo
       .getTroves(
         {
           first: pageSize,
@@ -129,7 +129,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
     };
     // Omit blockTag from deps on purpose
     // eslint-disable-next-line
-  }, [liquity, clampedPage, pageSize, reload]);
+  }, [kumo, clampedPage, pageSize, reload]);
 
   useEffect(() => {
     forceReload();
@@ -329,7 +329,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
                                 )
                               : liquidatableInNormalMode(trove, price)
                           ]}
-                          send={liquity.send.liquidate.bind(liquity.send, trove.ownerAddress)}
+                          send={kumo.send.liquidate.bind(kumo.send, trove.ownerAddress)}
                         >
                           <Button variant="dangerIcon">
                             <Icon name="trash" />

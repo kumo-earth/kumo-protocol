@@ -375,13 +375,11 @@ interface ITellor {
     ) external view returns (address[5] memory);
 
     /**
-     * @dev Counts the number of values that have been submited for the request
-     * if called for the currentRequest being mined it can tell you how many miners have submitted a value for that
-     * request so far
-     * @param _requestId the requestId to look up
-     * @return uint count of the number of values received for the requestId
+     * @dev Counts the number of values that have been submitted for the queryId
+     * @param _queryId the id to look up
+     * @return uint256 count of the number of values received for the queryId
      */
-    function getNewValueCountbyRequestId(uint256 _requestId)
+    function getNewValueCountbyQueryId(bytes32 _queryId)
         external
         view
         returns (uint256);
@@ -482,14 +480,14 @@ interface ITellor {
 
     /**
      * @dev Gets the timestamp for the value based on their index
-     * @param _requestID is the requestId to look up
+     * @param _queryId is the id to look up
      * @param _index is the value index to look up
-     * @return uint timestamp
+     * @return uint256 timestamp
      */
-    function getTimestampbyRequestIDandIndex(uint256 _requestID, uint256 _index)
+    function getTimestampbyQueryIdandIndex(bytes32 _queryId, uint256 _index) 
         external
         view
-        returns (uint256);
+        returns(uint256);
 
     /**
      * @dev Getter for the variables saved under the TellorStorageStruct uintVars variable
@@ -527,15 +525,15 @@ interface ITellor {
         returns (bool);
 
     /**
-     * @dev Retreive value from oracle based on timestamp
-     * @param _requestId being requested
-     * @param _timestamp to retreive data/value from
-     * @return value for timestamp submitted
+     * @dev Retrieve value from oracle based on queryId/timestamp
+     * @param _queryId being requested
+     * @param _timestamp to retrieve data/value from
+     * @return bytes value for query/timestamp submitted
      */
-    function retrieveData(uint256 _requestId, uint256 _timestamp)
+    function retrieveData(bytes32 _queryId, uint256 _timestamp)
         external
         view
-        returns (uint256);
+        returns(bytes memory);
 
     /**
      * @dev Getter for the total_supply of oracle tokens

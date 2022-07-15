@@ -15,7 +15,7 @@ const transactionId = "farm-approve";
 export const Approve: React.FC<ApproveProps> = ({ amount }) => {
   const { dispatchEvent } = useFarmView();
   const {
-    liquity: { send: liquity }
+    kumo: { send: kumo }
   } = useKumo();
 
   const { hasApproved } = useValidationState(amount);
@@ -34,7 +34,7 @@ export const Approve: React.FC<ApproveProps> = ({ amount }) => {
   return (
     <Transaction
       id={transactionId}
-      send={liquity.approveUniTokens.bind(liquity, undefined)}
+      send={kumo.approveUniTokens.bind(kumo, undefined)}
       showFailure="asTooltip"
       tooltipPlacement="bottom"
     >

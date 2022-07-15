@@ -1,13 +1,18 @@
 import React, { useCallback, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import {
+  Decimal,
+  UserTrove
+} from "@kumodao/lib-base";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 
 import { KumoStoreState } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
+import { Web3Provider } from "@ethersproject/providers";
+import { useWeb3React } from "@web3-react/core";
 
 import { useDashboard } from "../../hooks/DashboardContext";
 
-import { useDashboard } from "../../hooks/DashboardContext";
 
 import { COIN, GT } from "../../strings";
 import { Icon } from "../Icon";
@@ -33,11 +38,15 @@ const getPathName = (location: any) => {
 
 export const ActiveDeposit: React.FC = () => {
   const { dispatchEvent } = useStabilityView();
+  const { account } = useWeb3React<Web3Provider>();
   const location = useLocation();
   const { vaults } = useDashboard();
   const vaultType = vaults.find(vault => vault.type === getPathName(location)) || vaults[0];
+  const trove =
+    vaultType.usersTroves.find(userT => userT.ownerAddress === account) ||
+    new UserTrove(account || "0x0", "nonExistent", Decimal.ZERO, Decimal.ZERO);
   const { kusdInStabilityPool } = useKumoSelector(selector);
-  const { stabilityDeposit, trove } = vaultType;
+  const { stabilityDeposit } = vaultType;
 
   const poolShare = stabilityDeposit.currentKUSD.mulDiv(100, kusdInStabilityPool);
 

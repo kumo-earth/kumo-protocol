@@ -8,7 +8,7 @@ import { Transaction } from "./Transaction";
 
 export const LiquidationManager: React.FC = () => {
   const {
-    liquity: { send: liquity }
+    kumo: { send: kumo }
   } = useKumo();
   const [numberOfTrovesToLiquidate, setNumberOfTrovesToLiquidate] = useState("90");
 
@@ -39,7 +39,7 @@ export const LiquidationManager: React.FC = () => {
                 if (!numberOfTrovesToLiquidate) {
                   throw new Error("Invalid number");
                 }
-                return liquity.liquidateUpTo(parseInt(numberOfTrovesToLiquidate, 10), overrides);
+                return kumo.liquidateUpTo(parseInt(numberOfTrovesToLiquidate, 10), overrides);
               }}
             >
               <Button variant="dangerIcon">

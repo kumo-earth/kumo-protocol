@@ -7,9 +7,12 @@ import {
   Trove,
   KUSD_LIQUIDATION_RESERVE,
   Percent,
-  Difference
+  Difference,
+  UserTrove
 } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
+import { Web3Provider } from "@ethersproject/providers";
+import { useWeb3React } from "@web3-react/core";
 
 import { useStableTroveChange } from "../../hooks/useStableTroveChange";
 import { ActionDescription } from "../ActionDescription";
@@ -89,12 +92,16 @@ const getPathName = (location: any) => {
 
 export const Adjusting: React.FC = () => {
   const { dispatchEvent } = useTroveView();
-  const { fees, price, accountBalance, validationContext } = useKumoSelector(selector);
+  const { account } = useWeb3React<Web3Provider>();
+  const { fees, accountBalance, validationContext } = useKumoSelector(selector);
   const location = useLocation();
   const { vaults, adjustTroveT, bctPrice, mco2Price } = useDashboard();
+ 
 
   const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
-  const { trove } = vaultType;
+  const trove =
+    vaultType.usersTroves.find(userT => userT.ownerAddress === account) ||
+    new UserTrove(account || "0x0", "nonExistent", Decimal.ZERO, Decimal.ZERO);
   const editingState = useState<string>();
   const previousTrove = useRef<Trove>(trove);
   const [collateral, setCollateral] = useState<Decimal>(trove.collateral);
@@ -105,7 +112,7 @@ export const Adjusting: React.FC = () => {
 
   useEffect(() => {
     if (transactionState.type === "confirmedOneShot") {
-      collateralRatio && adjustTroveT(getPathName(location), collateral, totalDebt, netDebt);
+      collateralRatio && adjustTroveT(getPathName(location), trove.ownerAddress, collateral, totalDebt, netDebt);
       dispatchEvent("TROVE_ADJUSTED");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

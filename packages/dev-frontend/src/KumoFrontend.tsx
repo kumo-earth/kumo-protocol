@@ -7,6 +7,8 @@ import { Decimal, Difference, Trove } from "@kumodao/lib-base";
 import { KumoStoreProvider } from "@kumodao/lib-react";
 
 import { useKumo } from "./hooks/KumoContext";
+import { useWalletView } from "./components/WalletConnect/context/WalletViewContext"
+import { useSwitchNetworkView } from "./components/SwitchNetwork/context/SwitchNetworkViewContext";
 import { TransactionMonitor } from "./components/Transaction";
 import { UserAccount } from "./components/UserAccount";
 import { SystemStatsPopup } from "./components/SystemStatsPopup";
@@ -22,22 +24,28 @@ import { StabilityViewProvider } from "./components/Stability/context/StabilityV
 import { StakingViewProvider } from "./components/Staking/context/StakingViewProvider";
 import { FarmViewProvider } from "./components/Farm/context/FarmViewProvider";
 import { Sidebar } from "./components/Sidebar/Siderbar";
+import { WalletModal } from "./components/WalletConnect/WalletModal"
 import { Collateral } from "./pages/Collateral";
 import { StabilityPoolStaking } from "./pages/StabilityPoolStaking";
 import { StakingType } from "./pages/StakingType";
 import { DashboardProvider } from "./hooks/DashboardContext";
+import { useWeb3React } from "@web3-react/core";
+import { SwitchNetworkModal } from "./components/SwitchNetwork/SwitchNetwork";
 
 type KumoFrontendProps = {
   loader?: React.ReactNode;
 };
 export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
-  const { account, provider, liquity } = useKumo();
+  const { account } = useWeb3React();
+  const { provider, kumo } = useKumo();
+  const { view  } = useWalletView();
+  const { view : switchNetworkView } = useSwitchNetworkView()
 
   // For console tinkering ;-)
   Object.assign(window, {
     account,
     provider,
-    liquity,
+    kumo,
     Trove,
     Decimal,
     Difference,
@@ -45,7 +53,7 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
   });
 
   return (
-    <KumoStoreProvider {...{ loader }} store={liquity.store}>
+    <KumoStoreProvider {...{ loader }} store={kumo.store}>
       <Router>
         <DashboardProvider>
           <TroveViewProvider>
@@ -99,6 +107,8 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                           overflow: "auto"
                         }}
                       >
+                         { view === 'OPEN' &&  <WalletModal /> }
+                         { switchNetworkView === "OPEN" && <SwitchNetworkModal /> }
                         {" "}
                         <Switch>
                           <Route path="/" exact>
@@ -126,6 +136,7 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                             <RedemptionPage />
                           </Route>
                         </Switch>
+                        
                       </Container>
                     </Flex>
                   </Flex>

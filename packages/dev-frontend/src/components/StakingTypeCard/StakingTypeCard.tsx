@@ -1,5 +1,5 @@
 import React from "react";
-import { Decimal, UserTroveStatus, UserTrove, StabilityDeposit, Percent } from "@kumodao/lib-base";
+import { Decimal, UserTrove, StabilityDeposit, Percent } from "@kumodao/lib-base";
 
 import { Flex, Box, Card, Heading, Divider } from "theme-ui";
 
@@ -7,9 +7,8 @@ type StakingTypeCardProps = {
   vault?: {
     type: string;
     collateralRatio: Decimal;
-    troveStatus: UserTroveStatus;
     stabilityStatus: Boolean;
-    trove: UserTrove;
+    usersTroves: UserTrove[];
     stabilityDeposit: StabilityDeposit;
   };
   handleViewStakeDeposit: () => void;

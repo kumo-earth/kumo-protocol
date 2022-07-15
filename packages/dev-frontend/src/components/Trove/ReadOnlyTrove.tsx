@@ -1,12 +1,15 @@
 import React, { useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
+import { Decimal } from "@kumodao/lib-base";
 import { DisabledEditableRow } from "./Editor";
 import { useTroveView } from "./context/TroveViewContext";
 import { Icon } from "../Icon";
 import { COIN } from "../../strings";
 import { CollateralRatio } from "./CollateralRatio";
 import { useDashboard } from "../../hooks/DashboardContext";
+import { Web3Provider } from "@ethersproject/providers";
+import { useWeb3React } from "@web3-react/core";
 
 const getPathName = (location: any) => {
   return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
@@ -21,10 +24,18 @@ export const ReadOnlyTrove: React.FC = () => {
     dispatchEvent("CLOSE_TROVE_PRESSED");
   }, [dispatchEvent]);
 
+  const { account } = useWeb3React<Web3Provider>();
+
   const location = useLocation();
-  const { vaults } = useDashboard();
+  const { vaults, bctPrice, mco2Price } = useDashboard();
   const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
-  const { trove } = vaultType;
+  const trove = vaultType.usersTroves.find(userT => userT.ownerAddress === account);
+  let collateralRatio: Decimal | undefined = undefined;
+  if (getPathName(location) === "bct") {
+    collateralRatio = trove?.collateralRatio(bctPrice) || undefined;
+  } else if (getPathName(location) === "mco2") {
+    collateralRatio = trove?.collateralRatio(mco2Price) || undefined;
+  }
   // console.log("READONLY TROVE", trove.collateral.prettify(4));
   return (
     <Card
@@ -55,18 +66,18 @@ export const ReadOnlyTrove: React.FC = () => {
           <DisabledEditableRow
             label="Collateral"
             inputId="trove-collateral"
-            amount={trove.collateral.prettify(4)}
+            amount={trove?.collateral.prettify(4) || "0"}
             unit={getPathName(location).toUpperCase()}
           />
 
           <DisabledEditableRow
             label="Debt"
             inputId="trove-debt"
-            amount={trove.debt.prettify()}
+            amount={trove?.debt.prettify() || "0"}
             unit={COIN}
           />
 
-          <CollateralRatio value={vaultType.collateralRatio} />
+          <CollateralRatio value={collateralRatio} />
         </Box>
 
         <Flex variant="layout.actions">

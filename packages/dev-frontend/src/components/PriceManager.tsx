@@ -13,8 +13,8 @@ const selectPrice = ({ price }: KumoStoreState) => price;
 
 export const PriceManager: React.FC = () => {
   const {
-    liquity: {
-      send: liquity,
+    kumo: {
+      send: kumo,
       connection: { _priceFeedIsTestnet: canSetPrice }
     }
   } = useKumo();
@@ -72,7 +72,7 @@ export const PriceManager: React.FC = () => {
                   if (!editedPrice) {
                     throw new Error("Invalid price");
                   }
-                  return liquity.setPrice(Decimal.from(editedPrice), overrides);
+                  return kumo.setPrice(Decimal.from(editedPrice), overrides);
                 }}
               >
                 <Button
