@@ -6,11 +6,11 @@ env:
 
 on:
   push:
-    paths:
-      - "packages/contracts/**"
+    # paths:
+    #   - "packages/contracts/**"
   pull_request:
-    paths:
-      - "packages/contracts/**"
+    # paths:
+    #   - "packages/contracts/**"
 
 jobs:
   test:
@@ -70,8 +70,14 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=4096
 
-      - name: Coveralls
-        uses: coverallsapp/github-action@master
+      - uses: codecov/codecov-action@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./packages/contracts/coverage/lcov.info
+          # files: ./coverage1.xml,./coverage2.xml # optional
+          files: ./packages/contracts/coverage
+          flags: contract-tests
+
+      # - name: Coveralls
+      #   uses: coverallsapp/github-action@master
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     path-to-lcov: ./packages/contracts/coverage/lcov.info
