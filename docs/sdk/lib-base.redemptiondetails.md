@@ -14,10 +14,10 @@ export interface RedemptionDetails
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [actualKUSDAmount](./lib-base.redemptiondetails.actualkusdamount.md) | [Decimal](./lib-base.decimal.md) | Amount of KUSD that was actually redeemed by the transaction. |
-|  [attemptedKUSDAmount](./lib-base.redemptiondetails.attemptedkusdamount.md) | [Decimal](./lib-base.decimal.md) | Amount of KUSD the redeemer tried to redeem. |
-|  [collateralTaken](./lib-base.redemptiondetails.collateraltaken.md) | [Decimal](./lib-base.decimal.md) | Amount of collateral (e.g. Ether) taken from Troves by the transaction. |
-|  [fee](./lib-base.redemptiondetails.fee.md) | [Decimal](./lib-base.decimal.md) | Amount of native currency (e.g. Ether) deducted as fee from collateral taken. |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [actualKUSDAmount](./lib-base.redemptiondetails.actualkusdamount.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUSD that was actually redeemed by the transaction. |
+|  [attemptedKUSDAmount](./lib-base.redemptiondetails.attemptedkusdamount.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUSD the redeemer tried to redeem. |
+|  [collateralTaken](./lib-base.redemptiondetails.collateraltaken.md) |  | [Decimal](./lib-base.decimal.md) | Amount of collateral (e.g. Ether) taken from Troves by the transaction. |
+|  [fee](./lib-base.redemptiondetails.fee.md) |  | [Decimal](./lib-base.decimal.md) | Amount of native currency (e.g. Ether) deducted as fee from collateral taken. |
 
