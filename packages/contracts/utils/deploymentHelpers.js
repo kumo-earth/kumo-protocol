@@ -27,8 +27,8 @@ const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.s
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
 const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol")
 
-const { ethers, ugrades } = require('hardhat')
-const SortedTroves = getFactory("./SortedTroves.sol")
+const { ethers, upgrades } = require('hardhat')
+
 // Upgradable Contracts
 
 async function getFactory(contract) {
@@ -111,8 +111,9 @@ class DeploymentHelper {
     )
 
     // Upgradable Contracts
-    const sortedTroves = await upgrades.deployProxy(SortedTroves, {kind: "uups", initializer: "initialize"})
-    await sortedTroves.deployed()
+
+    const SortedTroves = await ethers.getContractFactory("SortedTroves")
+    const sortedTroves = await upgrades.deployProxy(SortedTroves, [], { kind: "uups" })
 
     KUSDToken.setAsDeployed(kusdToken)
     DefaultPool.setAsDeployed(defaultPool)
