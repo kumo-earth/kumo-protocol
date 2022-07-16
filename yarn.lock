@@ -2,6 +2,7 @@
 # yarn lockfile v1
 
 
+
 "@apollo/client@^3.3.12":
   version "3.3.12"
   resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.3.12.tgz#e723161617c479812ac425803a2b6a7c1b2466dd"
