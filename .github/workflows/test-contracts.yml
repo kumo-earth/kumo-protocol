@@ -8,6 +8,7 @@ on:
   push:
     paths:
       - "packages/contracts/**"
+      - "yarn.lock"
   pull_request:
     paths:
       - "packages/contracts/**"
