@@ -7,9 +7,11 @@ env:
 on:
   push:
     paths:
+      - ".github/**"
       - "packages/contracts/**"
   pull_request:
     paths:
+      - ".github/**"
       - "packages/contracts/**"
 
 jobs:
@@ -41,7 +43,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 12.x
+          node-version: 16.16.0
           cache: 'yarn'
 
       - run: yarn install --frozen-lockfile
@@ -52,8 +54,8 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=4096
 
-      - name: Coveralls
-        uses: coverallsapp/github-action@master
+      - name: Publish code coverage report
+        uses: codecov/codecov-action@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./packages/contracts/coverage/lcov.info
+          files: ./packages/contracts/coverage/coverage-final.json 
+          flags: smart-contract-tests
