@@ -21,13 +21,13 @@
   "dependencies": {
     "decimal.js": "^10.3.1",
     "eth-mutants": "^0.1.1",
-    "ethereumjs-util": "^7.1.4",
+    "ethereumjs-util": "^7.1.5",
     "ethers": "~5.4.7",
     "solc": "^0.8.13",
     "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.5",
+    "@nomiclabs/hardhat-ethers": "^2.0.6",
     "@nomiclabs/hardhat-etherscan": "^3.0.1",
     "@nomiclabs/hardhat-truffle5": "^2.0.4",
     "@nomiclabs/hardhat-web3": "^2.0.0",
