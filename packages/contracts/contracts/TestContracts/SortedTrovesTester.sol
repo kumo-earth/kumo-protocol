@@ -12,23 +12,23 @@ contract SortedTrovesTester {
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
     }
 
-    function insert(address _id, uint256 _NICR, address _prevId, address _nextId) external {
-        sortedTroves.insert(_id, _NICR, _prevId, _nextId);
+    function insert(address _asset, address _id, uint256 _NICR, address _prevId, address _nextId) external {
+        sortedTroves.insert(_asset, _id, _NICR, _prevId, _nextId);
     }
 
-    function remove(address _id) external {
-        sortedTroves.remove(_id);
+    function remove(address _asset, address _id) external {
+        sortedTroves.remove(_asset, _id);
     }
 
-    function reInsert(address _id, uint256 _newNICR, address _prevId, address _nextId) external {
-        sortedTroves.reInsert(_id, _newNICR, _prevId, _nextId);
+    function reInsert(address _asset, address _id, uint256 _newNICR, address _prevId, address _nextId) external {
+        sortedTroves.reInsert(_asset, _id, _newNICR, _prevId, _nextId);
     }
 
-    function getNominalICR(address) external pure returns (uint) {
+    function getNominalICR(address) external pure returns (uint256) {
         return 1;
     }
 
-    function getCurrentICR(address, uint) external pure returns (uint) {
+    function getCurrentICR(address, uint256) external pure returns (uint256) {
         return 1;
     }
 }

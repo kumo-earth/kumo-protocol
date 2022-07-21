@@ -15,8 +15,8 @@ interface IKumoParameters {
 		uint256 maxValue
 	);
 
-	// event MCRChanged(uint256 oldMCR, uint256 newMCR);
-	// event CCRChanged(uint256 oldCCR, uint256 newCCR);
+	event MCRChanged(uint256 oldMCR, uint256 newMCR);
+	event CCRChanged(uint256 oldCCR, uint256 newCCR);
 	event GasCompensationChanged(uint256 oldGasComp, uint256 newGasComp);
 	event MinNetDebtChanged(uint256 oldMinNet, uint256 newMinNet);
 	event PercentDivisorChanged(uint256 oldPercentDiv, uint256 newPercentDiv);
@@ -34,24 +34,24 @@ interface IKumoParameters {
 	function _100pct() external view returns (uint256);
 
 	// Minimum collateral ratio for individual troves
-	function MCR() external view returns (uint256);
+	function MCR(address _collateral) external view returns (uint256);
 
 	// Critical system collateral ratio. If the system's total collateral ratio (TCR) falls below the CCR, Recovery Mode is triggered.
-	function CCR() external view returns (uint256);
+	function CCR(address _collateral) external view returns (uint256);
 
-	function KUSD_GAS_COMPENSATION() external view returns (uint256);
+	function KUSD_GAS_COMPENSATION(address _collateral) external view returns (uint256);
 
-	function MIN_NET_DEBT() external view returns (uint256);
+	function MIN_NET_DEBT(address _collateral) external view returns (uint256);
 
-	function PERCENT_DIVISOR() external view returns (uint256);
+	function PERCENT_DIVISOR(address _collateral) external view returns (uint256);
 
-	function BORROWING_FEE_FLOOR() external view returns (uint256);
+	function BORROWING_FEE_FLOOR(address _collateral) external view returns (uint256);
 
-	// function REDEMPTION_FEE_FLOOR() external view returns (uint256);
+	function REDEMPTION_FEE_FLOOR(address _collateral) external view returns (uint256);
 
-	// function MAX_BORROWING_FEE() external view returns (uint256);
+	function MAX_BORROWING_FEE(address _collateral) external view returns (uint256);
 
-	// function redemptionBlock() external view returns (uint256);
+	function redemptionBlock(address _collateral) external view returns (uint256);
 
 	function activePool() external view returns (IActivePool);
 
@@ -68,27 +68,27 @@ interface IKumoParameters {
 
 	function setPriceFeed(address _priceFeed) external;
 
-	// function setMCR(address _asset, uint256 newMCR) external;
+	function setMCR(address _asset, uint256 newMCR) external;
 
-	// function setCCR(address _asset, uint256 newCCR) external;
+	function setCCR(address _asset, uint256 newCCR) external;
 
-	// function sanitizeParameters(address _asset) external;
+	function sanitizeParameters(address _asset) external;
 
-	// function setAsDefault(address _asset) external;
+	function setAsDefault(address _asset) external;
 
 	// function setAsDefaultWithRemptionBlock(address _asset, uint256 blockInDays) external;
 
-	// function setKUMOGasCompensation(uint256 gasCompensation) external;
+	function setKUMOGasCompensation(address _asset, uint256 gasCompensation) external;
 
-	// function setMinNetDebt(address _asset, uint256 minNetDebt) external;
+	function setMinNetDebt(address _asset, uint256 minNetDebt) external;
 
-	// function setPercentDivisor(address _asset, uint256 precentDivisor) external;
+	function setPercentDivisor(address _asset, uint256 precentDivisor) external;
 
-	// function setBorrowingFeeFloor(address _asset, uint256 borrowingFeeFloor) external;
+	function setBorrowingFeeFloor(address _asset, uint256 borrowingFeeFloor) external;
 
-	// function setMaxBorrowingFee(address _asset, uint256 maxBorrowingFee) external;
+	function setMaxBorrowingFee(address _asset, uint256 maxBorrowingFee) external;
 
-	// function setRedemptionFeeFloor(address _asset, uint256 redemptionFeeFloor) external;
+	function setRedemptionFeeFloor(address _asset, uint256 redemptionFeeFloor) external;
 
-	// function removeRedemptionBlock(address _asset) external;
+	function removeRedemptionBlock(address _asset) external;
 }

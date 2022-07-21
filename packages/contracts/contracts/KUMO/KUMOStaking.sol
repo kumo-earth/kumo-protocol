@@ -13,34 +13,45 @@ import "../Interfaces/IKUMOToken.sol";
 import "../Interfaces/IKUMOStaking.sol";
 import "../Dependencies/KumoMath.sol";
 import "../Interfaces/IKUSDToken.sol";
+import "../Interfaces/IDeposit.sol";
+import "../Dependencies/SafetyTransfer.sol";
 
 contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
-    using SafeMath for uint;
+    using SafeMath for uint256;
+    using SafeERC20Upgradeable for IERC20Upgradeable;
 
     // bool public isInitialized;
     // --- Data ---
     string constant public NAME = "KUMOStaking";
+    address constant ETH_REF_ADDRESS = address(0);
 
-    mapping( address => uint) public stakes;
-    uint public totalKUMOStaked;
+    mapping( address => uint256) public stakes;
+    uint256 public totalKUMOStaked;
 
-    uint public F_ETH;  // Running sum of ETH fees per-KUMO-staked
-    uint public F_KUSD; // Running sum of KUMO fees per-KUMO-staked
+    mapping(address => uint256) public F_ASSETS; // Running sum of ETH fees per-KUMO-staked
+	uint256 public F_KUSD; // Running sum of KUMO fees per-KUMO-staked
 
-    // User snapshots of F_ETH and F_KUSD, taken at the point at which their latest deposit was made
+
+
+    // User snapshots of F_ASSETS and F_KUSD, taken at the point at which their latest deposit was made
     mapping (address => Snapshot) public snapshots; 
 
     struct Snapshot {
-        uint F_ETH_Snapshot;
-        uint F_KUSD_Snapshot;
+        mapping(address => uint256) F_ASSET_Snapshot;
+        uint256 F_KUSD_Snapshot;
     }
-    
-    IKUMOToken public kumoToken;
+
+    address[] ASSET_TYPE;
+	mapping(address => bool) isAssetTracked;
+	mapping(address => uint256) public sentToTreasuryTracker;
+
+    IERC20Upgradeable public kumoToken;
     IKUSDToken public kusdToken;
 
     address public troveManagerAddress;
     address public borrowerOperationsAddress;
     address public activePoolAddress;
+    address public treasury;
 
     // --- Events ---
 
@@ -50,13 +61,13 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
     // event BorrowerOperationsAddressSet(address _borrowerOperationsAddress);
     // event ActivePoolAddressSet(address _activePoolAddress);
 
-    // event StakeChanged(address indexed staker, uint newStake);
-    // event StakingGainsWithdrawn(address indexed staker, uint KUSDGain, uint ETHGain);
-    // event F_ETHUpdated(uint _F_ETH);
-    // event F_KUSDUpdated(uint _F_KUSD);
-    // event TotalKUMOStakedUpdated(uint _totalKUMOStaked);
-    // event EtherSent(address _account, uint _amount);
-    // event StakerSnapshotsUpdated(address _staker, uint _F_ETH, uint _F_KUSD);
+    // event StakeChanged(address indexed staker, uint256 newStake);
+    // event StakingGainsWithdrawn(address indexed staker, uint256 KUSDGain, uint256 ETHGain);
+    // event F_ASSETSUpdated(uint256 _F_ASSETS);
+    // event F_KUSDUpdated(uint256 _F_KUSD);
+    // event TotalKUMOStakedUpdated(uint256 _totalKUMOStaked);
+    // event AssetSent(address _account, uint256 _amount);
+    // event StakerSnapshotsUpdated(address _staker, uint256 _F_ASSETS, uint256 _F_KUSD);
 
     // --- Functions ---
 
@@ -66,13 +77,15 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
         address _kusdTokenAddress,
         address _troveManagerAddress, 
         address _borrowerOperationsAddress,
-        address _activePoolAddress
+        address _activePoolAddress,
+        address _treasury
     ) 
         external 
         onlyOwner
         override 
     {
         // require(!isInitialized, "Already Initialized");
+        require(_treasury != address(0), "Invalid Treausry Address");
         checkContract(_kumoTokenAddress);
         checkContract(_kusdTokenAddress);
         checkContract(_troveManagerAddress);
@@ -81,12 +94,17 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
         // isInitialized = true;
 
         // __Ownable_init();
+        // _pause();
 
-        kumoToken = IKUMOToken(_kumoTokenAddress);
+        kumoToken = IERC20Upgradeable(_kumoTokenAddress);
         kusdToken = IKUSDToken(_kusdTokenAddress);
         troveManagerAddress = _troveManagerAddress;
         borrowerOperationsAddress = _borrowerOperationsAddress;
         activePoolAddress = _activePoolAddress;
+        treasury = _treasury;
+
+		isAssetTracked[ETH_REF_ADDRESS] = true;
+		ASSET_TYPE.push(ETH_REF_ADDRESS);
 
         emit KUMOTokenAddressSet(_kumoTokenAddress);
         emit KUMOTokenAddressSet(_kusdTokenAddress);
@@ -98,91 +116,128 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
     }
 
     // If caller has a pre-existing stake, send any accumulated ETH and KUSD gains to them. 
-    function stake(uint _KUMOamount) external override {
+    function stake(uint256 _KUMOamount) external override {
         _requireNonZeroAmount(_KUMOamount);
+        uint256 currentStake = stakes[msg.sender];
 
-        uint currentStake = stakes[msg.sender];
+		uint256 assetLength = ASSET_TYPE.length;
+		uint256 AssetGain;
+		address asset;
 
-        uint ETHGain;
-        uint KUSDGain;
-        // Grab any accumulated ETH and KUSD gains from the current stake
-        if (currentStake != 0) {
-            ETHGain = _getPendingETHGain(msg.sender);
-            KUSDGain = _getPendingKUSDGain(msg.sender);
-        }
-    
-       _updateUserSnapshots(msg.sender);
+		for (uint256 i = 0; i < assetLength; i++) {
+			asset = ASSET_TYPE[i];
 
-        uint newStake = currentStake.add(_KUMOamount);
+			if (currentStake != 0) {
+				AssetGain = _getPendingAssetGain(asset, msg.sender);
 
-        // Increase user’s stake and total KUMO staked
-        stakes[msg.sender] = newStake;
-        totalKUMOStaked = totalKUMOStaked.add(_KUMOamount);
-        emit TotalKUMOStakedUpdated(totalKUMOStaked);
+				if (i == 0) {
+					uint256 KUSDGain = _getPendingKUSDGain(msg.sender);
+					kusdToken.transfer(msg.sender, KUSDGain);
 
-        // Transfer KUMO from caller to this contract
-        kumoToken.sendToKUMOStaking(msg.sender, _KUMOamount);
+					emit StakingGainsKUSDWithdrawn(msg.sender, KUSDGain);
+				}
 
-        emit StakeChanged(msg.sender, newStake);
-        emit StakingGainsWithdrawn(msg.sender, KUSDGain, ETHGain);
+				_sendAssetGainToUser(asset, AssetGain);
+				emit StakingGainsAssetWithdrawn(msg.sender, asset, AssetGain);
+			}
 
-         // Send accumulated KUSD and ETH gains to the caller
-        if (currentStake != 0) {
-            kusdToken.transfer(msg.sender, KUSDGain);
-            _sendETHGainToUser(ETHGain);
-        }
+			_updateUserSnapshots(asset, msg.sender);
+		}
+
+		uint256 newStake = currentStake.add(_KUMOamount);
+
+		// Increase user’s stake and total KUMO staked
+		stakes[msg.sender] = newStake;
+		totalKUMOStaked = totalKUMOStaked.add(_KUMOamount);
+		emit TotalKUMOStakedUpdated(totalKUMOStaked);
+
+		// Transfer KUMO from caller to this contract
+		kumoToken.transferFrom(msg.sender, address(this), _KUMOamount);
+
+		emit StakeChanged(msg.sender, newStake);
     }
 
     // Unstake the KUMO and send the it back to the caller, along with their accumulated KUSD & ETH gains. 
     // If requested amount > stake, send their entire stake.
-    function unstake(uint _KUMOamount) external override {
-        uint currentStake = stakes[msg.sender];
+    function unstake(uint256 _KUMOamount) external override {
+        uint256 currentStake = stakes[msg.sender];
         _requireUserHasStake(currentStake);
 
-        // Grab any accumulated ETH and KUSD gains from the current stake
-        uint ETHGain = _getPendingETHGain(msg.sender);
-        uint KUSDGain = _getPendingKUSDGain(msg.sender);
-        
-        _updateUserSnapshots(msg.sender);
+        uint256 assetLength = ASSET_TYPE.length;
+		uint256 AssetGain;
+		address asset;
 
-        if (_KUMOamount > 0) {
-            uint KUMOToWithdraw = KumoMath._min(_KUMOamount, currentStake);
+		for (uint256 i = 0; i < assetLength; i++) {
+			asset = ASSET_TYPE[i];
 
-            uint newStake = currentStake.sub(KUMOToWithdraw);
+			// Grab any accumulated ETH and KUSD gains from the current stake
+			AssetGain = _getPendingAssetGain(asset, msg.sender);
 
-            // Decrease user's stake and total KUMO staked
-            stakes[msg.sender] = newStake;
-            totalKUMOStaked = totalKUMOStaked.sub(KUMOToWithdraw);
-            emit TotalKUMOStakedUpdated(totalKUMOStaked);
+			if (i == 0) {
+				uint256 KUSDGain = _getPendingKUSDGain(msg.sender);
+				kusdToken.transfer(msg.sender, KUSDGain);
+				emit StakingGainsKUSDWithdrawn(msg.sender, KUSDGain);
+			}
 
-            // Transfer unstaked KUMO to user
-            kumoToken.transfer(msg.sender, KUMOToWithdraw);
+			_updateUserSnapshots(asset, msg.sender);
+			emit StakingGainsAssetWithdrawn(msg.sender, asset, AssetGain);
 
-            emit StakeChanged(msg.sender, newStake);
+			_sendAssetGainToUser(asset, AssetGain);
         }
+        if (_KUMOamount > 0) {
+			uint256 KUMOToWithdraw = KumoMath._min(_KUMOamount, currentStake);
 
-        emit StakingGainsWithdrawn(msg.sender, KUSDGain, ETHGain);
+			uint256 newStake = currentStake.sub(KUMOToWithdraw);
 
-        // Send accumulated KUSD and ETH gains to the caller
-        kusdToken.transfer(msg.sender, KUSDGain);
-        _sendETHGainToUser(ETHGain);
+			// Decrease user's stake and total KUMO staked
+			stakes[msg.sender] = newStake;
+			totalKUMOStaked = totalKUMOStaked.sub(KUMOToWithdraw);
+			emit TotalKUMOStakedUpdated(totalKUMOStaked);
+
+			// Transfer unstaked KUMO to user
+			kumoToken.transfer(msg.sender, KUMOToWithdraw);
+
+			emit StakeChanged(msg.sender, newStake);
+		}
     }
 
+	// function pause() public onlyOwner {
+	// 	_pause();
+	// }
+
+	// function unpause() public onlyOwner {
+	// 	_unpause();
+	// }
+
+	// function changeTreasuryAddress(address _treasury) public onlyOwner {
+	// 	treasury = _treasury;
+    //     emit TreasuryAddressChanged(_treasury);
+    // }
+		
     // --- Reward-per-unit-staked increase functions. Called by Kumo core contracts ---
 
-    function increaseF_ETH(uint _ETHFee) external override {
+    function increaseF_Asset(address _asset, uint256 _AssetFee) external override {
         _requireCallerIsTroveManager();
-        uint ETHFeePerKUMOStaked;
-     
-        if (totalKUMOStaked > 0) {ETHFeePerKUMOStaked = _ETHFee.mul(DECIMAL_PRECISION).div(totalKUMOStaked);}
 
-        F_ETH = F_ETH.add(ETHFeePerKUMOStaked); 
-        emit F_ETHUpdated(F_ETH);
-    }
+		if (!isAssetTracked[_asset]) {
+			isAssetTracked[_asset] = true;
+			ASSET_TYPE.push(_asset);
+		}
 
-    function increaseF_KUSD(uint _KUSDFee) external override {
+		uint256 AssetFeePerKUMOStaked;
+
+		if (totalKUMOStaked > 0) {
+			AssetFeePerKUMOStaked = _AssetFee.mul(DECIMAL_PRECISION).div(totalKUMOStaked);
+		}
+
+		F_ASSETS[_asset] = F_ASSETS[_asset].add(AssetFeePerKUMOStaked);
+		emit F_AssetUpdated(_asset, F_ASSETS[_asset]);
+	}
+
+
+    function increaseF_KUSD(uint256 _KUSDFee) external override {
         _requireCallerIsBorrowerOperations();
-        uint KUSDFeePerKUMOStaked;
+        uint256 KUSDFeePerKUMOStaked;
         
         if (totalKUMOStaked > 0) {KUSDFeePerKUMOStaked = _KUSDFee.mul(DECIMAL_PRECISION).div(totalKUMOStaked);}
         
@@ -192,39 +247,53 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
 
     // --- Pending reward functions ---
 
-    function getPendingETHGain(address _user) external view override returns (uint) {
-        return _getPendingETHGain(_user);
+    function getPendingAssetGain(address _asset, address _user) external view override returns (uint256) {
+        return _getPendingAssetGain(_asset, _user);
     }
 
-    function _getPendingETHGain(address _user) internal view returns (uint) {
-        uint F_ETH_Snapshot = snapshots[_user].F_ETH_Snapshot;
-        uint ETHGain = stakes[_user].mul(F_ETH.sub(F_ETH_Snapshot)).div(DECIMAL_PRECISION);
-        return ETHGain;
+    function _getPendingAssetGain(address _asset, address _user) internal view returns (uint256) {
+		uint256 F_ASSET_Snapshot = snapshots[_user].F_ASSET_Snapshot[_asset];
+		uint256 AssetGain = stakes[_user].mul(F_ASSETS[_asset].sub(F_ASSET_Snapshot)).div(DECIMAL_PRECISION);
+        return AssetGain;
     }
 
-    function getPendingKUSDGain(address _user) external view override returns (uint) {
+    function getPendingKUSDGain(address _user) external view override returns (uint256) {
         return _getPendingKUSDGain(_user);
     }
 
-    function _getPendingKUSDGain(address _user) internal view returns (uint) {
-        uint F_KUSD_Snapshot = snapshots[_user].F_KUSD_Snapshot;
-        uint KUSDGain = stakes[_user].mul(F_KUSD.sub(F_KUSD_Snapshot)).div(DECIMAL_PRECISION);
+    function _getPendingKUSDGain(address _user) internal view returns (uint256) {
+        uint256 F_KUSD_Snapshot = snapshots[_user].F_KUSD_Snapshot;
+        uint256 KUSDGain = stakes[_user].mul(F_KUSD.sub(F_KUSD_Snapshot)).div(DECIMAL_PRECISION);
         return KUSDGain;
     }
 
     // --- Internal helper functions ---
 
-    function _updateUserSnapshots(address _user) internal {
-        snapshots[_user].F_ETH_Snapshot = F_ETH;
-        snapshots[_user].F_KUSD_Snapshot = F_KUSD;
-        emit StakerSnapshotsUpdated(_user, F_ETH, F_KUSD);
-    }
+	function _updateUserSnapshots(address _asset, address _user) internal {
+		snapshots[_user].F_ASSET_Snapshot[_asset] = F_ASSETS[_asset];
+		snapshots[_user].F_KUSD_Snapshot = F_KUSD;
+		emit StakerSnapshotsUpdated(_user, F_ASSETS[_asset], F_KUSD);
+	}
 
-    function _sendETHGainToUser(uint ETHGain) internal {
-        emit EtherSent(msg.sender, ETHGain);
-        (bool success, ) = msg.sender.call{value: ETHGain}("");
-        require(success, "KUMOStaking: Failed to send accumulated ETHGain");
-    }
+	function _sendAssetGainToUser(address _asset, uint256 _assetGain) internal {
+		_sendAsset(msg.sender, _asset, _assetGain);
+	}
+
+	function _sendAsset(
+		address _sendTo,
+		address _asset,
+		uint256 _amount
+	) internal {
+		if (_asset == ETH_REF_ADDRESS) {
+			(bool success, ) = _sendTo.call{ value: _amount }("");
+			require(success, "KUMOStaking: Failed to send accumulated AssetGain");
+		} else {
+			_amount = SafetyTransfer.decimalsCorrection(_asset, _amount);
+			IERC20Upgradeable(_asset).safeTransfer(_sendTo, _amount);
+		}
+
+		emit AssetSent(_asset, _sendTo, _amount);
+	}
 
     // --- 'require' functions ---
 
@@ -240,13 +309,35 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
         require(msg.sender == activePoolAddress, "KUMOStaking: caller is not ActivePool");
     }
 
-    function _requireUserHasStake(uint currentStake) internal pure {  
+    function _requireUserHasStake(uint256 currentStake) internal pure {  
         require(currentStake > 0, 'KUMOStaking: User must have a non-zero stake');  
     }
 
-    function _requireNonZeroAmount(uint _amount) internal pure {
+    function _requireNonZeroAmount(uint256 _amount) internal pure {
         require(_amount > 0, 'KUMOStaking: Amount must be non-zero');
     }
+
+
+    // --- 'require' functions ---
+
+	// modifier callerIsTroveManager() {
+	// 	require(msg.sender == troveManagerAddress, "KUSDStaking: caller is not TroveM");
+	// 	_;
+	// }
+
+	// modifier callerIsBorrowerOperations() {
+	// 	require(msg.sender == borrowerOperationsAddress, "KUSDStaking: caller is not BorrowerOps");
+	// 	_;
+	// }
+
+	// modifier callerIsActivePool() {
+	// 	require(msg.sender == activePoolAddress, "KUSDStaking: caller is not ActivePool");
+	// 	_;
+	// }
+
+	// function _requireUserHasStake(uint256 currentStake) internal pure {
+	// 	require(currentStake > 0, "KUSDStaking: User must have a non-zero stake");
+	// }
 
     receive() external payable {
         _requireCallerIsActivePool();

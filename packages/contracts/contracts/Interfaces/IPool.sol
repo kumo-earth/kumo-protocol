@@ -2,25 +2,29 @@
 
 pragma solidity 0.8.11;
 
+import "./IDeposit.sol";
+
 // Common interface for the Pools.
-interface IPool {
+interface IPool is IDeposit{
     
     // --- Events ---
     
-    event ETHBalanceUpdated(uint _newBalance);
-    event KUSDBalanceUpdated(uint _newBalance);
+    event ETHBalanceUpdated(uint256 _newBalance);
+    event KUSDBalanceUpdated(uint256 _newBalance);
     event ActivePoolAddressChanged(address _newActivePoolAddress);
     event DefaultPoolAddressChanged(address _newDefaultPoolAddress);
     event StabilityPoolAddressChanged(address _newStabilityPoolAddress);
-    event EtherSent(address _to, uint _amount);
+    // event sendAsset(address _to, uint256 _amount);
+    event AssetSent(address _to, address indexed _asset, uint256 _amount);
 
     // --- Functions ---
-    
-    function getETH() external view returns (uint);
+    function getAssetBalance(address _asset) external view returns (uint256);
 
-    function getKUSDDebt() external view returns (uint);
+    // function getETH() external view returns (uint256);
 
-    function increaseKUSDDebt(uint _amount) external;
+    function getKUSDDebt(address _asset) external view returns (uint256);
 
-    function decreaseKUSDDebt(uint _amount) external;
+    function increaseKUSDDebt(address _asset, uint256 _amount) external;
+
+    function decreaseKUSDDebt(address _asset, uint256 _amount) external;
 }

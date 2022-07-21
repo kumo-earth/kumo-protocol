@@ -5,6 +5,7 @@ const KUSDToken = artifacts.require("./KUSDToken.sol")
 const ActivePool = artifacts.require("./ActivePool.sol");
 const DefaultPool = artifacts.require("./DefaultPool.sol");
 const StabilityPool = artifacts.require("./StabilityPool.sol")
+const StabilityPoolManager = artifacts.require("./StabilityPoolManager.sol")
 const GasPool = artifacts.require("./GasPool.sol")
 const CollSurplusPool = artifacts.require("./CollSurplusPool.sol")
 const FunctionCaller = artifacts.require("./TestContracts/FunctionCaller.sol")
@@ -93,6 +94,7 @@ class DeploymentHelper {
     const troveManager = await TroveManager.new()
     const activePool = await ActivePool.new()
     const stabilityPool = await StabilityPool.new()
+    const stabilityPoolManager = await StabilityPoolManager.new()
     const gasPool = await GasPool.new()
     const defaultPool = await DefaultPool.new()
     const collSurplusPool = await CollSurplusPool.new()
@@ -101,7 +103,7 @@ class DeploymentHelper {
     const hintHelpers = await HintHelpers.new()
     const kusdToken = await KUSDToken.new(
       troveManager.address,
-      stabilityPool.address,
+      stabilityPoolManager.address,
       borrowerOperations.address
     )
     const kumoParameters = await KumoParameters.new()
@@ -127,6 +129,7 @@ class DeploymentHelper {
       troveManager,
       activePool,
       stabilityPool,
+      stabilityPoolManager,
       gasPool,
       defaultPool,
       collSurplusPool,
@@ -159,7 +162,7 @@ class DeploymentHelper {
     testerContracts.kumoParameters = await KumoParameters.new()
     testerContracts.kusdToken =  await KUSDTokenTester.new(
       testerContracts.troveManager.address,
-      testerContracts.stabilityPool.address,
+      testerContracts.stabilityPoolManager.address,
       testerContracts.borrowerOperations.address
     )
     return testerContracts
@@ -354,7 +357,7 @@ class DeploymentHelper {
     // set contracts in the Trove Manager
     await contracts.troveManager.setAddresses(
       contracts.borrowerOperations.address,
-      contracts.stabilityPool.address,
+      contracts.stabilityPoolManager.address,
       contracts.gasPool.address,
       contracts.collSurplusPool.address,
       contracts.kusdToken.address,
@@ -367,7 +370,7 @@ class DeploymentHelper {
     // set contracts in BorrowerOperations
     await contracts.borrowerOperations.setAddresses(
       contracts.troveManager.address,
-      contracts.stabilityPool.address,
+      contracts.stabilityPoolManager.address,
       contracts.gasPool.address,
       contracts.collSurplusPool.address,
       contracts.sortedTroves.address,
@@ -377,19 +380,19 @@ class DeploymentHelper {
     )
 
     // set contracts in the Pools
-    await contracts.stabilityPool.setAddresses(
-      contracts.borrowerOperations.address,
-      contracts.troveManager.address,
-      contracts.kusdToken.address,
-      contracts.sortedTroves.address,
-      KUMOContracts.communityIssuance.address,
-      contracts.kumoParameters.address
-    )
+    // await contracts.stabilityPool.setAddresses(
+    //   contracts.borrowerOperations.address,
+    //   contracts.troveManager.address,
+    //   contracts.kusdToken.address,
+    //   contracts.sortedTroves.address,
+    //   KUMOContracts.communityIssuance.address,
+    //   contracts.kumoParameters.address
+    // )
 
     await contracts.activePool.setAddresses(
       contracts.borrowerOperations.address,
       contracts.troveManager.address,
-      contracts.stabilityPool.address,
+      contracts.stabilityPoolManager.address,
       contracts.defaultPool.address
     )
 
@@ -418,17 +421,19 @@ class DeploymentHelper {
   }
 
   static async connectKUMOContractsToCore(KUMOContracts, coreContracts) {
+    // const treasurySig = await KUMOContracts.kumoToken.treasury();
     await KUMOContracts.kumoStaking.setAddresses(
       KUMOContracts.kumoToken.address,
       coreContracts.kusdToken.address,
       coreContracts.troveManager.address, 
       coreContracts.borrowerOperations.address,
       coreContracts.activePool.address
+      // treasurySig
     )
   
     await KUMOContracts.communityIssuance.setAddresses(
       KUMOContracts.kumoToken.address,
-      coreContracts.stabilityPool.address
+      coreContracts.stabilityPoolManager.address
     )
   }
 
