@@ -15,7 +15,6 @@ import {
   EthersKumoWithStore,
   _connectByChainId
 } from "@kumodao/lib-ethers";
-import { ethers } from "ethers";
 
 import { KumoFrontendConfig, getConfig } from "../config";
 
@@ -34,16 +33,11 @@ type KumoContextValue =
 
 const KumoContext = createContext<KumoContextValue | undefined>(undefined);
 
-
 type KumoProviderProps = {
   loader?: React.ReactNode;
   unsupportedNetworkFallback?: (chainId: number) => React.ReactNode;
   unsupportedMainnetFallback?: React.ReactNode;
 };
-
-const wsParams = (network: string, alchemyApiKey: string): [string] => [
-  `wss://${network === "maticmum" && "polygon-mumbai"}.g.alchemy.com/v2/${alchemyApiKey}`
-];
 
 const supportedNetworks = ["homestead", "maticmum"];
 
@@ -66,6 +60,7 @@ export const KumoProvider: React.FC<KumoProviderProps> = ({
   const connection = useMemo(() => {
     if (config && provider && account && chainId) {
       sessionStorage.setItem("account", account);
+      console.log("connection1", chainId);
       return _connectByChainId(
         provider,
         chainId,
@@ -77,6 +72,7 @@ export const KumoProvider: React.FC<KumoProviderProps> = ({
         provider.getSigner(account)
       );
     } else if (config && readprovider?.provider && readprovider?.chainId) {
+      console.log("connection2", chainId, readprovider?.chainId);
       return _connectByChainId(readprovider.provider, readprovider.chainId, {
         // userAddress: account,
         frontendTag: config.frontendTag,
@@ -104,10 +100,10 @@ export const KumoProvider: React.FC<KumoProviderProps> = ({
   };
 
   useEffect(() => {
-    console.log(networkSwitched, triedAuthorizedConnection)
+    console.log(networkSwitched, triedAuthorizedConnection);
     getConfig().then(setConfig);
   }, []);
- 
+
   useEffect(() => {
     if (!account) {
       handleReadConnector();
@@ -135,9 +131,9 @@ export const KumoProvider: React.FC<KumoProviderProps> = ({
           config.alchemyApiKey &&
           account
         ) {
-          provider.openWebSocket(...wsParams(network.name, config.alchemyApiKey), chainId);
+          provider.openWebSocket(`${process.env.REACT_APP_WSS_URL}`, chainId);
         } else if (connection._isDev) {
-          provider.openWebSocket(`ws://${window.location.hostname}:8546`, chainId);
+          provider.openWebSocket(`${process.env.REACT_APP_WSS_URL}`, chainId);
         }
         return () => {
           provider.closeWebSocket();
