@@ -16,7 +16,8 @@ export function useSwitchNetwork(): {
   } = useWeb3React<any>();
   const { dispatchEvent } = useSwitchNetworkView();
   const [networkSwitched, setNetworkSwitched] = useState(false);
-
+  
+  const chainId: number = Number(process.env.REACT_APP_CHAIN_ID);
   const toHex = (num: number) => {
     const val = Number(num);
     return "0x" + val.toString(16);
@@ -27,7 +28,7 @@ export function useSwitchNetwork(): {
       try {
         await provider.request({
           method: "wallet_switchEthereumChain",
-          params: [{ chainId: toHex(80001) }]
+          params: [{ chainId: toHex(chainId) }]
         });
         if (walletConnector) {
           activate(walletConnector).catch(error => {
@@ -41,11 +42,11 @@ export function useSwitchNetwork(): {
               method: "wallet_addEthereumChain",
               params: [
                 {
-                  chainName: "Alchemy - Polygon Mumbai",
-                  chainId: toHex(80001),
-                  nativeCurrency: { name: "MATIC", decimals: 18, symbol: "MATIC" },
+                  chainName: `${process.env.REACT_APP_CHAIN_NAME}` ,
+                  chainId: toHex(chainId),
+                  nativeCurrency: { name: `${process.env.REACT_APP_CURRENCY_NAME}`, decimals: 18, symbol: `${process.env.REACT_APP_CURRENCY_SYMBOL}` },
                   rpcUrls: [
-                    `https://polygon-mumbai.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_API}`
+                    `${process.env.REACT_APP_RPC_URL}`
                   ]
                 }
               ]

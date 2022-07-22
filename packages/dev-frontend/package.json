@@ -30,6 +30,7 @@
     "@web3-react/types": "6.0.7",
     "@web3-react/walletconnect-connector": "^6.2.13",
     "cross-env": "7.0.3",
+    "env-cmd": "^10.1.0",
     "ethers": "5.4.7",
     "npm-run-all": "4.1.5",
     "react": "17.0.1",
@@ -48,7 +49,8 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "react-scripts start",
+    "start": "env-cmd -f .env react-scripts start",
+    "start:local": "env-cmd -f .env.local react-scripts start",
     "start-demo": "cross-env REACT_APP_DEMO_MODE=true run-s start",
     "build": "run-s build:*",
     "build:set-version": "node scripts/set-version.js",
