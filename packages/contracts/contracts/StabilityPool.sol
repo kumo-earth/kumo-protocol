@@ -153,9 +153,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     using SafeMath for uint256;
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
-
-
-
     // bool public isInitialized;
 
     string constant public NAME = "StabilityPool";

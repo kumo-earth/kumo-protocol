@@ -20,13 +20,7 @@ import "../Interfaces/IKumoBase.sol";
 */
 contract KumoBase is BaseMath, Ownable, IKumoBase {
     using SafeMath for uint;
-
-	// function setKumoParameters(address _vaultParams) public onlyOwner {
-	// 	kumoParams = IKumoParameters(_vaultParams);
-	// 	emit VaultParametersBaseChanged(_vaultParams);
-	// }
-
-
+    address public constant ETH_REF_ADDRESS = address(0);
     IKumoParameters public override kumoParams;
 
 	function setKumoParameters(address _vaultParams) public onlyOwner {
