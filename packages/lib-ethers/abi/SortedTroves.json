@@ -16,6 +16,12 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
         "indexed": false,
         "internalType": "address",
         "name": "_id",
@@ -34,6 +40,12 @@
   {
     "anonymous": false,
     "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
       {
         "indexed": false,
         "internalType": "address",
@@ -119,6 +131,11 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "_id",
         "type": "address"
       }
@@ -135,7 +152,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "data",
     "outputs": [
       {
@@ -164,6 +187,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
       {
         "internalType": "uint256",
         "name": "_NICR",
@@ -197,7 +225,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      }
+    ],
     "name": "getFirst",
     "outputs": [
       {
@@ -210,7 +244,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      }
+    ],
     "name": "getLast",
     "outputs": [
       {
@@ -223,7 +263,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      }
+    ],
     "name": "getMaxSize",
     "outputs": [
       {
@@ -237,6 +283,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
       {
         "internalType": "address",
         "name": "_id",
@@ -258,6 +309,11 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "_id",
         "type": "address"
       }
@@ -274,7 +330,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      }
+    ],
     "name": "getSize",
     "outputs": [
       {
@@ -288,6 +350,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
       {
         "internalType": "address",
         "name": "_id",
@@ -315,7 +382,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      }
+    ],
     "name": "isEmpty",
     "outputs": [
       {
@@ -328,7 +401,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      }
+    ],
     "name": "isFull",
     "outputs": [
       {
@@ -370,6 +449,11 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "_id",
         "type": "address"
       },
@@ -396,6 +480,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
       {
         "internalType": "address",
         "name": "_id",
@@ -445,6 +534,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
       {
         "internalType": "uint256",
         "name": "_NICR",

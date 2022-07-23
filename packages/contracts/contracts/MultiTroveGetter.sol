@@ -1,120 +1,127 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.11;
-// pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.10;
+pragma experimental ABIEncoderV2;
 
 import "./TroveManager.sol";
 import "./SortedTroves.sol";
 
-/*  Helper contract for grabbing Trove data for the front end. Not part of the core Kumo system. */
+/*  Helper contract for grabbing Trove data for the front end. Not part of the core Vesta system. */
 contract MultiTroveGetter {
-    struct CombinedTroveData {
-        address owner;
+	struct CombinedTroveData {
+		address owner;
+		address asset;
+		uint256 debt;
+		uint256 coll;
+		uint256 stake;
+		uint256 snapshotAsset;
+		uint256 snapshotKUSDDebt;
+	}
 
-        uint debt;
-        uint coll;
-        uint stake;
+	TroveManager public troveManager; // XXX Troves missing from ITroveManager?
+	ISortedTroves public sortedTroves;
 
-        uint snapshotETH;
-        uint snapshotKUSDDebt;
-    }
+	constructor(TroveManager _troveManager, ISortedTroves _sortedTroves) {
+		troveManager = _troveManager;
+		sortedTroves = _sortedTroves;
+	}
 
-    TroveManager public troveManager; // XXX Troves missing from ITroveManager?
-    ISortedTroves public sortedTroves;
+	function getMultipleSortedTroves(
+		address _asset,
+		int256 _startIdx,
+		uint256 _count
+	) external view returns (CombinedTroveData[] memory _troves) {
+		uint256 startIdx;
+		bool descend;
 
-    constructor (TroveManager _troveManager, ISortedTroves _sortedTroves) {
-        troveManager = _troveManager;
-        sortedTroves = _sortedTroves;
-    }
+		if (_startIdx >= 0) {
+			startIdx = uint256(_startIdx);
+			descend = true;
+		} else {
+			startIdx = uint256(-(_startIdx + 1));
+			descend = false;
+		}
 
-    function getMultipleSortedTroves(int _startIdx, uint _count)
-        external view returns (CombinedTroveData[] memory _troves)
-    {
-        uint startIdx;
-        bool descend;
+		uint256 sortedTrovesSize = sortedTroves.getSize(_asset);
 
-        if (_startIdx >= 0) {
-            startIdx = uint(_startIdx);
-            descend = true;
-        } else {
-            startIdx = uint(-(_startIdx + 1));
-            descend = false;
-        }
+		if (startIdx >= sortedTrovesSize) {
+			_troves = new CombinedTroveData[](0);
+		} else {
+			uint256 maxCount = sortedTrovesSize - startIdx;
 
-        uint sortedTrovesSize = sortedTroves.getSize();
+			if (_count > maxCount) {
+				_count = maxCount;
+			}
 
-        if (startIdx >= sortedTrovesSize) {
-            _troves = new CombinedTroveData[](0);
-        } else {
-            uint maxCount = sortedTrovesSize - startIdx;
+			if (descend) {
+				_troves = _getMultipleSortedTrovesFromHead(_asset, startIdx, _count);
+			} else {
+				_troves = _getMultipleSortedTrovesFromTail(_asset, startIdx, _count);
+			}
+		}
+	}
 
-            if (_count > maxCount) {
-                _count = maxCount;
-            }
+	function _getMultipleSortedTrovesFromHead(
+		address _asset,
+		uint256 _startIdx,
+		uint256 _count
+	) internal view returns (CombinedTroveData[] memory _troves) {
+		address currentTroveowner = sortedTroves.getFirst(_asset);
 
-            if (descend) {
-                _troves = _getMultipleSortedTrovesFromHead(startIdx, _count);
-            } else {
-                _troves = _getMultipleSortedTrovesFromTail(startIdx, _count);
-            }
-        }
-    }
+		for (uint256 idx = 0; idx < _startIdx; ++idx) {
+			currentTroveowner = sortedTroves.getNext(_asset, currentTroveowner);
+		}
 
-    function _getMultipleSortedTrovesFromHead(uint _startIdx, uint _count)
-        internal view returns (CombinedTroveData[] memory _troves)
-    {
-        address currentTroveowner = sortedTroves.getFirst();
+		_troves = new CombinedTroveData[](_count);
 
-        for (uint idx = 0; idx < _startIdx; ++idx) {
-            currentTroveowner = sortedTroves.getNext(currentTroveowner);
-        }
+		for (uint256 idx = 0; idx < _count; ++idx) {
+			_troves[idx].owner = currentTroveowner;
+			(
+				_troves[idx].asset,
+				_troves[idx].debt,
+				_troves[idx].coll,
+				_troves[idx].stake,
+				/* status */
+				/* arrayIndex */
+				,
 
-        _troves = new CombinedTroveData[](_count);
+			) = troveManager.Troves(_asset, currentTroveowner);
+			(_troves[idx].snapshotAsset, _troves[idx].snapshotKUSDDebt) = troveManager
+				.rewardSnapshots(_asset, currentTroveowner);
 
-        for (uint idx = 0; idx < _count; ++idx) {
-            _troves[idx].owner = currentTroveowner;
-            (
-                _troves[idx].debt,
-                _troves[idx].coll,
-                _troves[idx].stake,
-                /* status */,
-                /* arrayIndex */
-            ) = troveManager.Troves(currentTroveowner);
-            (
-                _troves[idx].snapshotETH,
-                _troves[idx].snapshotKUSDDebt
-            ) = troveManager.rewardSnapshots(currentTroveowner);
+			currentTroveowner = sortedTroves.getNext(_asset, currentTroveowner);
+		}
+	}
 
-            currentTroveowner = sortedTroves.getNext(currentTroveowner);
-        }
-    }
+	function _getMultipleSortedTrovesFromTail(
+		address _asset,
+		uint256 _startIdx,
+		uint256 _count
+	) internal view returns (CombinedTroveData[] memory _troves) {
+		address currentTroveowner = sortedTroves.getLast(_asset);
 
-    function _getMultipleSortedTrovesFromTail(uint _startIdx, uint _count)
-        internal view returns (CombinedTroveData[] memory _troves)
-    {
-        address currentTroveowner = sortedTroves.getLast();
+		for (uint256 idx = 0; idx < _startIdx; ++idx) {
+			currentTroveowner = sortedTroves.getPrev(_asset, currentTroveowner);
+		}
 
-        for (uint idx = 0; idx < _startIdx; ++idx) {
-            currentTroveowner = sortedTroves.getPrev(currentTroveowner);
-        }
+		_troves = new CombinedTroveData[](_count);
 
-        _troves = new CombinedTroveData[](_count);
+		for (uint256 idx = 0; idx < _count; ++idx) {
+			_troves[idx].owner = currentTroveowner;
+			(
+				_troves[idx].asset,
+				_troves[idx].debt,
+				_troves[idx].coll,
+				_troves[idx].stake,
+				/* status */
+				/* arrayIndex */
+				,
 
-        for (uint idx = 0; idx < _count; ++idx) {
-            _troves[idx].owner = currentTroveowner;
-            (
-                _troves[idx].debt,
-                _troves[idx].coll,
-                _troves[idx].stake,
-                /* status */,
-                /* arrayIndex */
-            ) = troveManager.Troves(currentTroveowner);
-            (
-                _troves[idx].snapshotETH,
-                _troves[idx].snapshotKUSDDebt
-            ) = troveManager.rewardSnapshots(currentTroveowner);
+			) = troveManager.Troves(_asset, currentTroveowner);
+			(_troves[idx].snapshotAsset, _troves[idx].snapshotKUSDDebt) = troveManager
+				.rewardSnapshots(_asset, currentTroveowner);
 
-            currentTroveowner = sortedTroves.getPrev(currentTroveowner);
-        }
-    }
+			currentTroveowner = sortedTroves.getPrev(_asset, currentTroveowner);
+		}
+	}
 }

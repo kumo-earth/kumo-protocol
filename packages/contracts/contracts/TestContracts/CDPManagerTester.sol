@@ -13,48 +13,48 @@ contract TroveManagerTester is TroveManager {
         return KumoMath._computeCR(_coll, _debt, _price);
     }
 
-    function getCollGasCompensation(uint256 _coll) external view returns (uint256) {
-        return _getCollGasCompensation(_coll);
+    function getCollGasCompensation(address _asset, uint256 _coll) external view returns (uint256) {
+        return _getCollGasCompensation(_asset, _coll);
     }
 
-    function getkusdGasCompensation() external view returns (uint256) {
-        return kumoParams.KUSD_GAS_COMPENSATION();
+    function getkusdGasCompensation(address _asset) external view returns (uint256) {
+        return kumoParams.KUSD_GAS_COMPENSATION(_asset);
     }
 
-    function getCompositeDebt(uint256 _debt) external view returns (uint256) {
-        return _getCompositeDebt(_debt);
+    function getCompositeDebt(address _asset, uint256 _debt) external view returns (uint256) {
+        return _getCompositeDebt(_asset, _debt);
     }
 
-    function unprotectedDecayBaseRateFromBorrowing() external returns (uint256) {
-        baseRate = _calcDecayedBaseRate();
-        assert(baseRate >= 0 && baseRate <= DECIMAL_PRECISION);
+    function unprotectedDecayBaseRateFromBorrowing(address _asset) external returns (uint256) {
+        baseRate[_asset] = _calcDecayedBaseRate(_asset);
+        assert(baseRate[_asset] >= 0 && baseRate[_asset] <= DECIMAL_PRECISION);
         
-        _updateLastFeeOpTime();
-        return baseRate;
+        _updateLastFeeOpTime(_asset);
+        return baseRate[_asset];
     }
 
-    function minutesPassedSinceLastFeeOp() external view returns (uint256) {
-        return _minutesPassedSinceLastFeeOp();
+    function minutesPassedSinceLastFeeOp(address _asset) external view returns (uint256) {
+        return _minutesPassedSinceLastFeeOp(_asset);
     }
 
-    function setLastFeeOpTimeToNow() external {
-        lastFeeOperationTime = block.timestamp;
+    function setLastFeeOpTimeToNow(address _asset) external {
+        lastFeeOperationTime[_asset] = block.timestamp;
     }
 
-    function setBaseRate(uint256 _baseRate) external {
-        baseRate = _baseRate;
+    function setBaseRate(address _asset, uint256 _baseRate) external {
+        baseRate[_asset] = _baseRate;
     }
 
-    function callGetRedemptionFee(uint256 _ETHDrawn) external view returns (uint256) {
-        return _getRedemptionFee(_ETHDrawn);
+    function callGetRedemptionFee(address _asset, uint256 _ETHDrawn) external view returns (uint256) {
+        return _getRedemptionFee(_asset, _ETHDrawn);
     }  
 
-    function getActualDebtFromComposite(uint256 _debtVal) external view returns (uint256) {
-        return _getNetDebt(_debtVal);
+    function getActualDebtFromComposite(address _asset, uint256 _debtVal) external view returns (uint256) {
+        return _getNetDebt(_asset, _debtVal);
     }
 
-    function callInternalRemoveTroveOwner(address _troveOwner) external {
-        uint256 troveOwnersArrayLength = TroveOwners.length;
-        _removeTroveOwner(_troveOwner, troveOwnersArrayLength);
+    function callInternalRemoveTroveOwner(address _asset, address _troveOwner) external {
+        uint256 troveOwnersArrayLength = TroveOwners[_asset].length;
+        _removeTroveOwner(_asset, _troveOwner, troveOwnersArrayLength);
     }
 }

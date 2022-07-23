@@ -14,28 +14,28 @@ export interface KumoStoreBaseState
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [accountBalance](./lib-base.kumostorebasestate.accountbalance.md) | [Decimal](./lib-base.decimal.md) | User's native currency balance (e.g. Ether). |
-|  [collateralSurplusBalance](./lib-base.kumostorebasestate.collateralsurplusbalance.md) | [Decimal](./lib-base.decimal.md) | Amount of leftover collateral available for withdrawal to the user. |
-|  [frontend](./lib-base.kumostorebasestate.frontend.md) | [FrontendStatus](./lib-base.frontendstatus.md) | Status of currently used frontend. |
-|  [kumoBalance](./lib-base.kumostorebasestate.kumobalance.md) | [Decimal](./lib-base.decimal.md) | User's KUMO token balance. |
-|  [kumoStake](./lib-base.kumostorebasestate.kumostake.md) | [KUMOStake](./lib-base.kumostake.md) | User's KUMO stake. |
-|  [kusdBalance](./lib-base.kumostorebasestate.kusdbalance.md) | [Decimal](./lib-base.decimal.md) | User's KUSD token balance. |
-|  [kusdInStabilityPool](./lib-base.kumostorebasestate.kusdinstabilitypool.md) | [Decimal](./lib-base.decimal.md) | Total amount of KUSD currently deposited in the Stability Pool. |
-|  [liquidityMiningKUMOReward](./lib-base.kumostorebasestate.liquidityminingkumoreward.md) | [Decimal](./lib-base.decimal.md) | Amount of KUMO the user has earned through mining liquidity. |
-|  [liquidityMiningStake](./lib-base.kumostorebasestate.liquidityminingstake.md) | [Decimal](./lib-base.decimal.md) | Amount of Uniswap ETH/KUSD LP tokens the user has staked in liquidity mining. |
-|  [numberOfTroves](./lib-base.kumostorebasestate.numberoftroves.md) | number | Number of Troves that are currently open. |
-|  [ownFrontend](./lib-base.kumostorebasestate.ownfrontend.md) | [FrontendStatus](./lib-base.frontendstatus.md) | Status of user's own frontend. |
-|  [price](./lib-base.kumostorebasestate.price.md) | [Decimal](./lib-base.decimal.md) | Current price of the native currency (e.g. Ether) in USD. |
-|  [remainingLiquidityMiningKUMOReward](./lib-base.kumostorebasestate.remainingliquidityminingkumoreward.md) | [Decimal](./lib-base.decimal.md) | Remaining KUMO that will be collectively rewarded to liquidity miners. |
-|  [remainingStabilityPoolKUMOReward](./lib-base.kumostorebasestate.remainingstabilitypoolkumoreward.md) | [Decimal](./lib-base.decimal.md) | Remaining KUMO that will be collectively rewarded to stability depositors. |
-|  [stabilityDeposit](./lib-base.kumostorebasestate.stabilitydeposit.md) | [StabilityDeposit](./lib-base.stabilitydeposit.md) | User's stability deposit. |
-|  [total](./lib-base.kumostorebasestate.total.md) | [Trove](./lib-base.trove.md) | Total collateral and debt in the Kumo system. |
-|  [totalRedistributed](./lib-base.kumostorebasestate.totalredistributed.md) | [Trove](./lib-base.trove.md) | Total collateral and debt per stake that has been liquidated through redistribution. |
-|  [totalStakedKUMO](./lib-base.kumostorebasestate.totalstakedkumo.md) | [Decimal](./lib-base.decimal.md) | Total amount of KUMO currently staked. |
-|  [totalStakedUniTokens](./lib-base.kumostorebasestate.totalstakedunitokens.md) | [Decimal](./lib-base.decimal.md) | Total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining. |
-|  [troveBeforeRedistribution](./lib-base.kumostorebasestate.trovebeforeredistribution.md) | [TroveWithPendingRedistribution](./lib-base.trovewithpendingredistribution.md) | User's Trove in its state after the last direct modification. |
-|  [uniTokenAllowance](./lib-base.kumostorebasestate.unitokenallowance.md) | [Decimal](./lib-base.decimal.md) | The liquidity mining contract's allowance of user's Uniswap ETH/KUSD LP tokens. |
-|  [uniTokenBalance](./lib-base.kumostorebasestate.unitokenbalance.md) | [Decimal](./lib-base.decimal.md) | User's Uniswap ETH/KUSD LP token balance. |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [accountBalance](./lib-base.kumostorebasestate.accountbalance.md) |  | [Decimal](./lib-base.decimal.md) | User's native currency balance (e.g. Ether). |
+|  [collateralSurplusBalance](./lib-base.kumostorebasestate.collateralsurplusbalance.md) |  | [Decimal](./lib-base.decimal.md) | Amount of leftover collateral available for withdrawal to the user. |
+|  [frontend](./lib-base.kumostorebasestate.frontend.md) |  | [FrontendStatus](./lib-base.frontendstatus.md) | Status of currently used frontend. |
+|  [kumoBalance](./lib-base.kumostorebasestate.kumobalance.md) |  | [Decimal](./lib-base.decimal.md) | User's KUMO token balance. |
+|  [kumoStake](./lib-base.kumostorebasestate.kumostake.md) |  | [KUMOStake](./lib-base.kumostake.md) | User's KUMO stake. |
+|  [kusdBalance](./lib-base.kumostorebasestate.kusdbalance.md) |  | [Decimal](./lib-base.decimal.md) | User's KUSD token balance. |
+|  [kusdInStabilityPool](./lib-base.kumostorebasestate.kusdinstabilitypool.md) |  | [Decimal](./lib-base.decimal.md) | Total amount of KUSD currently deposited in the Stability Pool. |
+|  [liquidityMiningKUMOReward](./lib-base.kumostorebasestate.liquidityminingkumoreward.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUMO the user has earned through mining liquidity. |
+|  [liquidityMiningStake](./lib-base.kumostorebasestate.liquidityminingstake.md) |  | [Decimal](./lib-base.decimal.md) | Amount of Uniswap ETH/KUSD LP tokens the user has staked in liquidity mining. |
+|  [numberOfTroves](./lib-base.kumostorebasestate.numberoftroves.md) |  | number | Number of Troves that are currently open. |
+|  [ownFrontend](./lib-base.kumostorebasestate.ownfrontend.md) |  | [FrontendStatus](./lib-base.frontendstatus.md) | Status of user's own frontend. |
+|  [price](./lib-base.kumostorebasestate.price.md) |  | [Decimal](./lib-base.decimal.md) | Current price of the native currency (e.g. Ether) in USD. |
+|  [remainingLiquidityMiningKUMOReward](./lib-base.kumostorebasestate.remainingliquidityminingkumoreward.md) |  | [Decimal](./lib-base.decimal.md) | Remaining KUMO that will be collectively rewarded to liquidity miners. |
+|  [remainingStabilityPoolKUMOReward](./lib-base.kumostorebasestate.remainingstabilitypoolkumoreward.md) |  | [Decimal](./lib-base.decimal.md) | Remaining KUMO that will be collectively rewarded to stability depositors. |
+|  [stabilityDeposit](./lib-base.kumostorebasestate.stabilitydeposit.md) |  | [StabilityDeposit](./lib-base.stabilitydeposit.md) | User's stability deposit. |
+|  [total](./lib-base.kumostorebasestate.total.md) |  | [Trove](./lib-base.trove.md) | Total collateral and debt in the Kumo system. |
+|  [totalRedistributed](./lib-base.kumostorebasestate.totalredistributed.md) |  | [Trove](./lib-base.trove.md) | Total collateral and debt per stake that has been liquidated through redistribution. |
+|  [totalStakedKUMO](./lib-base.kumostorebasestate.totalstakedkumo.md) |  | [Decimal](./lib-base.decimal.md) | Total amount of KUMO currently staked. |
+|  [totalStakedUniTokens](./lib-base.kumostorebasestate.totalstakedunitokens.md) |  | [Decimal](./lib-base.decimal.md) | Total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining. |
+|  [troveBeforeRedistribution](./lib-base.kumostorebasestate.trovebeforeredistribution.md) |  | [TroveWithPendingRedistribution](./lib-base.trovewithpendingredistribution.md) | User's Trove in its state after the last direct modification. |
+|  [uniTokenAllowance](./lib-base.kumostorebasestate.unitokenallowance.md) |  | [Decimal](./lib-base.decimal.md) | The liquidity mining contract's allowance of user's Uniswap ETH/KUSD LP tokens. |
+|  [uniTokenBalance](./lib-base.kumostorebasestate.unitokenbalance.md) |  | [Decimal](./lib-base.decimal.md) | User's Uniswap ETH/KUSD LP token balance. |
 

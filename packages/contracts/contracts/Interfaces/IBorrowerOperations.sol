@@ -18,9 +18,9 @@ interface IBorrowerOperations {
     event KUSDTokenAddressChanged(address _kusdTokenAddress);
     event KUMOStakingAddressChanged(address _kumoStakingAddress);
 
-    event TroveCreated(address indexed _borrower, uint arrayIndex);
-    // event TroveUpdated(address indexed _borrower, uint _debt, uint _coll, uint stake, uint8 operation);
-    event KUSDBorrowingFeePaid(address indexed _borrower, uint _KUSDFee);
+    event TroveCreated(address indexed _asset, address indexed _borrower, uint256 arrayIndex);
+    event TroveUpdated(address indexed _asset, address indexed _borrower, uint256 _debt, uint256 _coll, uint256 stake, uint8 operation);
+    event KUSDBorrowingFeePaid(address indexed _asset, address indexed _borrower, uint256 _KUSDFee);
 
     // --- Functions ---
 
@@ -35,23 +35,23 @@ interface IBorrowerOperations {
         address _kumoParamsAddress
     ) external;
 
-    function openTrove(uint _maxFee, uint _KUSDAmount, address _upperHint, address _lowerHint) external payable;
+    function openTrove(address _asset, uint256 _maxFee, uint256 _KUSDAmount, address _upperHint, address _lowerHint) external payable;
 
-    function addColl(address _upperHint, address _lowerHint) external payable;
+    function addColl(address _asset, uint256 _assetSent, address _upperHint, address _lowerHint) external payable;
 
-    function moveETHGainToTrove(address _user, address _upperHint, address _lowerHint) external payable;
+    function moveETHGainToTrove(address _asset, uint256 amountMoved, address _user, address _upperHint, address _lowerHint) external payable;
 
-    function withdrawColl(uint _amount, address _upperHint, address _lowerHint) external;
+    function withdrawColl(address _asset, uint256 _collWithdrawal, address _upperHint, address _lowerHint) external;
 
-    function withdrawKUSD(uint _maxFee, uint _amount, address _upperHint, address _lowerHint) external;
+    function withdrawKUSD(address _asset, uint256 _maxFee, uint256 _amount, address _upperHint, address _lowerHint) external;
 
-    function repayKUSD(uint _amount, address _upperHint, address _lowerHint) external;
+    function repayKUSD(address _asset, uint256 _amount, address _upperHint, address _lowerHint) external;
 
-    function closeTrove() external;
+    function closeTrove(address _asset) external;
 
-    function adjustTrove(uint _maxFee, uint _collWithdrawal, uint _debtChange, bool isDebtIncrease, address _upperHint, address _lowerHint) external payable;
+    function adjustTrove(address _asset, uint256 _assetSent, uint256 _maxFee, uint256 _collWithdrawal, uint256 _debtChange, bool isDebtIncrease, address _upperHint, address _lowerHint) external payable;
 
-    function claimCollateral() external;
+    function claimCollateral(address _asset) external;
 
-    function getCompositeDebt(uint _debt) external view returns (uint);
+    function getCompositeDebt(address _asset, uint256 _debt) external view returns (uint256);
 }

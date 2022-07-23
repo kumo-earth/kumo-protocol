@@ -11,11 +11,11 @@ contract KUSDTokenCaller {
         KUSD = _KUSD;
     }
 
-    function KUSDMint(address _account, uint _amount) external {
-        KUSD.mint(_account, _amount);
+    function KUSDMint(address _asset, address _account, uint256 _amount) external {
+        KUSD.mint(_asset, _account, _amount);
     }
 
-    function KUSDBurn(address _account, uint _amount) external {
+    function KUSDBurn(address _account, uint256 _amount) external {
         KUSD.burn(_account, _amount);
     }
 

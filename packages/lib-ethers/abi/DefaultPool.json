@@ -18,6 +18,31 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "AssetSent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "_newDefaultPoolAddress",
         "type": "address"
       }
@@ -30,17 +55,29 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
-        "name": "_ETH",
+        "name": "_balance",
         "type": "uint256"
       }
     ],
-    "name": "DefaultPoolETHBalanceUpdated",
+    "name": "DefaultPoolAssetBalanceUpdated",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
       {
         "indexed": false,
         "internalType": "uint256",
@@ -62,25 +99,6 @@
       }
     ],
     "name": "ETHBalanceUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "EtherSent",
     "type": "event"
   },
   {
@@ -170,6 +188,11 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
@@ -181,8 +204,14 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getETH",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      }
+    ],
+    "name": "getAssetBalance",
     "outputs": [
       {
         "internalType": "uint256",
@@ -194,7 +223,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      }
+    ],
     "name": "getKUSDDebt",
     "outputs": [
       {
@@ -208,6 +243,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
       {
         "internalType": "uint256",
         "name": "_amount",
@@ -248,12 +288,35 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
       }
     ],
-    "name": "sendETHToActivePool",
+    "name": "receivedERC20",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "sendAssetToActivePool",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

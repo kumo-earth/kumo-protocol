@@ -18,9 +18,9 @@ Implemented by [PopulatedEthersKumoTransaction](./lib-ethers.populatedetherskumo
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [rawPopulatedTransaction](./lib-base.populatedkumotransaction.rawpopulatedtransaction.md) | P | Implementation-specific populated transaction object. |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [rawPopulatedTransaction](./lib-base.populatedkumotransaction.rawpopulatedtransaction.md) |  | P | Implementation-specific populated transaction object. |
 
 ## Methods
 

@@ -14,7 +14,7 @@ contract KUMOStakingScript is CheckContract {
         KUMOStaking = IKUMOStaking(_kumoStakingAddress);
     }
 
-    function stake(uint _KUMOamount) external {
+    function stake(uint256 _KUMOamount) external {
         KUMOStaking.stake(_KUMOamount);
     }
 }

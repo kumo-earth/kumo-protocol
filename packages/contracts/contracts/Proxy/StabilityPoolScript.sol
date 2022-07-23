@@ -15,12 +15,12 @@ contract StabilityPoolScript is CheckContract {
         checkContract(address(_stabilityPool));
         stabilityPool = _stabilityPool;
     }
+    
+	function provideToSP(uint256 _amount) external {
+		stabilityPool.provideToSP(_amount);
+	}
 
-    function provideToSP(uint _amount, address _frontEndTag) external {
-        stabilityPool.provideToSP(_amount, _frontEndTag);
-    }
-
-    function withdrawFromSP(uint _amount) external {
+    function withdrawFromSP(uint256 _amount) external {
         stabilityPool.withdrawFromSP(_amount);
     }
 
