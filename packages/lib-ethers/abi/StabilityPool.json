@@ -727,8 +727,13 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "initialValue",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "frontEndTag",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -1196,6 +1201,11 @@
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_frontEndTag",
+        "type": "address"
       }
     ],
     "name": "provideToSP",

@@ -667,7 +667,7 @@ interface StabilityPoolCalls {
   currentEpoch(_overrides?: CallOverrides): Promise<BigNumber>;
   currentScale(_overrides?: CallOverrides): Promise<BigNumber>;
   depositSnapshots(arg0: string, _overrides?: CallOverrides): Promise<{ S: BigNumber; P: BigNumber; G: BigNumber; scale: BigNumber; epoch: BigNumber }>;
-  deposits(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  deposits(arg0: string, _overrides?: CallOverrides): Promise<{ initialValue: BigNumber; frontEndTag: string }>;
   epochToScaleToG(arg0: BigNumberish, arg1: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
   epochToScaleToSum(arg0: BigNumberish, arg1: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
   frontEndSnapshots(arg0: string, _overrides?: CallOverrides): Promise<{ S: BigNumber; P: BigNumber; G: BigNumber; scale: BigNumber; epoch: BigNumber }>;
@@ -701,7 +701,7 @@ interface StabilityPoolCalls {
 
 interface StabilityPoolTransactions {
   offset(_debtToOffset: BigNumberish, _collToAdd: BigNumberish, _overrides?: Overrides): Promise<void>;
-  provideToSP(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
+  provideToSP(_amount: BigNumberish, _frontEndTag: string, _overrides?: Overrides): Promise<void>;
   receivedERC20(_asset: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   registerFrontEnd(_kickbackRate: BigNumberish, _overrides?: Overrides): Promise<void>;
   setAddresses(_assetAddress: string, _borrowerOperationsAddress: string, _troveManagerAddress: string, _kusdTokenAddress: string, _sortedTrovesAddress: string, _communityIssuanceAddress: string, _kumoParamsAddress: string, _overrides?: Overrides): Promise<void>;

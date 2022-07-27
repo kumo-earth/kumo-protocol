@@ -242,7 +242,7 @@ contract EchidnaTester {
 
     function provideToSPExt(uint256 _i, uint256 _amount, address _frontEndTag) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
-        echidnaProxies[actor].provideToSPPrx(_amount);
+        echidnaProxies[actor].provideToSPPrx(_amount,  _frontEndTag);
     }
 
     function withdrawFromSPExt(uint256 _i, uint256 _amount) external {

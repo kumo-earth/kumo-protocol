@@ -263,7 +263,7 @@ export class ReadableEthersKumo implements ReadableKumo {
     ] = await Promise.all([
       stabilityPool.deposits(address, { ...overrides }),
       stabilityPool.getCompoundedKUSDDeposit(address, { ...overrides }),
-      stabilityPool.getDepositorETHGain(address, { ...overrides }),
+      stabilityPool.getDepositorAssetGain(address, { ...overrides }),
       stabilityPool.getDepositorKUMOGain(address, { ...overrides })
     ]);
 

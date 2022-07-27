@@ -105,7 +105,7 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
             borrowerOperations.adjustTrove{value: vars._asset == address(0) ? claimedCollateral : 0}(vars._asset, claimedCollateral, vars._maxFee,  0, vars.netKUSDAmount, true, vars._upperHint, vars._lowerHint);
             // Provide withdrawn KUSD to Stability Pool
             if (vars.netKUSDAmount > 0) {
-                stabilityPoolManager.getAssetStabilityPool(_asset).provideToSP(vars.netKUSDAmount);
+                stabilityPoolManager.getAssetStabilityPool(_asset).provideToSP(vars.netKUSDAmount, address(0));
             }
         }
 
@@ -149,7 +149,7 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
 
         uint256 totalKUSD = gainedKUSD.add(vars.netKUSDAmount);
         if (totalKUSD > 0) {
-                stabilityPoolManager.getAssetStabilityPool(_asset).provideToSP(totalKUSD);
+                stabilityPoolManager.getAssetStabilityPool(_asset).provideToSP(totalKUSD, address(0));
 
 
             // Providing to Stability Pool also triggers KUMO claim, so stake it if any
