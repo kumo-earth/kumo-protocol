@@ -58,8 +58,8 @@ interface ITroveManager is IKumoBase {
     event KUMOTokenAddressChanged(address _kumoTokenAddress);
     event KUMOStakingAddressChanged(address _kumoStakingAddress);
 
-    event Liquidation( address indexed _asset, uint256 _liquidatedDebt, uint256 _liquidatedColl, uint256 _collGasCompensation, uint256 _VSTGasCompensation);
-    event Redemption( address indexed _asset, uint256 _attemptedVSTAmount, uint256 _actualVSTAmount, uint256 _AssetSent, uint256 _AssetFee);
+    event Liquidation( address indexed _asset, uint256 _liquidatedDebt, uint256 _liquidatedColl, uint256 _collGasCompensation, uint256 _kusdGasCompensation);
+    event Redemption( address indexed _asset, uint256 _attemptedKUSDAmount, uint256 _actualKUSDAmount, uint256 _AssetSent, uint256 _AssetFee);
     // event TroveUpdated(address indexed _borrower, uint256 _debt, uint256 _coll, uint256 stake, uint8 operation);
     // event TroveLiquidated(address indexed _borrower, uint256 _debt, uint256 _coll, uint8 operation);
     event BaseRateUpdated(uint256 _baseRate);

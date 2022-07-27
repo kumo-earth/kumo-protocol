@@ -158,26 +158,27 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTotalRedistributed} */
-  getTotalRedistributed(overrides?: EthersCallOverrides): Promise<Trove> {
-    return this._readable.getTotalRedistributed(overrides);
+  getTotalRedistributed(asset: string, overrides?: EthersCallOverrides): Promise<Trove> {
+    return this._readable.getTotalRedistributed(asset, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTroveBeforeRedistribution} */
   getTroveBeforeRedistribution(
+    asset: string,
     address?: string,
     overrides?: EthersCallOverrides
   ): Promise<TroveWithPendingRedistribution> {
-    return this._readable.getTroveBeforeRedistribution(address, overrides);
+    return this._readable.getTroveBeforeRedistribution(asset, address, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTrove} */
-  getTrove(address?: string, overrides?: EthersCallOverrides): Promise<UserTrove> {
-    return this._readable.getTrove(address, overrides);
+  getTrove(asset: string, address?: string, overrides?: EthersCallOverrides): Promise<UserTrove> {
+    return this._readable.getTrove(asset, address, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getNumberOfTroves} */
-  getNumberOfTroves(overrides?: EthersCallOverrides): Promise<number> {
-    return this._readable.getNumberOfTroves(overrides);
+  getNumberOfTroves(asset: string, overrides?: EthersCallOverrides): Promise<number> {
+    return this._readable.getNumberOfTroves(asset, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getPrice} */
@@ -186,18 +187,18 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /** @internal */
-  _getActivePool(overrides?: EthersCallOverrides): Promise<Trove> {
-    return this._readable._getActivePool(overrides);
+  _getActivePool(asset: string, overrides?: EthersCallOverrides): Promise<Trove> {
+    return this._readable._getActivePool(asset, overrides);
   }
 
   /** @internal */
-  _getDefaultPool(overrides?: EthersCallOverrides): Promise<Trove> {
-    return this._readable._getDefaultPool(overrides);
+  _getDefaultPool(asset: string, overrides?: EthersCallOverrides): Promise<Trove> {
+    return this._readable._getDefaultPool(asset, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTotal} */
-  getTotal(overrides?: EthersCallOverrides): Promise<Trove> {
-    return this._readable.getTotal(overrides);
+  getTotal(asset: string, overrides?: EthersCallOverrides): Promise<Trove> {
+    return this._readable.getTotal(asset, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getStabilityDeposit} */
@@ -263,21 +264,34 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getCollateralSurplusBalance} */
-  getCollateralSurplusBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._readable.getCollateralSurplusBalance(address, overrides);
+  getCollateralSurplusBalance(
+    asset: string,
+    address?: string,
+    overrides?: EthersCallOverrides
+  ): Promise<Decimal> {
+    return this._readable.getCollateralSurplusBalance(asset, address, overrides);
   }
 
   /** @internal */
   getTroves(
+    asset: string,
     params: TroveListingParams & { beforeRedistribution: true },
     overrides?: EthersCallOverrides
   ): Promise<TroveWithPendingRedistribution[]>;
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.(getTroves:2)} */
-  getTroves(params: TroveListingParams, overrides?: EthersCallOverrides): Promise<UserTrove[]>;
+  getTroves(
+    asset: string,
+    params: TroveListingParams,
+    overrides?: EthersCallOverrides
+  ): Promise<UserTrove[]>;
 
-  getTroves(params: TroveListingParams, overrides?: EthersCallOverrides): Promise<UserTrove[]> {
-    return this._readable.getTroves(params, overrides);
+  getTroves(
+    asset: string,
+    params: TroveListingParams,
+    overrides?: EthersCallOverrides
+  ): Promise<UserTrove[]> {
+    return this._readable.getTroves(asset, params, overrides);
   }
 
   /** @internal */
@@ -287,19 +301,24 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
 
   /** @internal */
   _getFeesFactory(
+    asset: string,
     overrides?: EthersCallOverrides
   ): Promise<(blockTimestamp: number, recoveryMode: boolean) => Fees> {
-    return this._readable._getFeesFactory(overrides);
+    return this._readable._getFeesFactory(asset, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getFees} */
-  getFees(overrides?: EthersCallOverrides): Promise<Fees> {
-    return this._readable.getFees(overrides);
+  getFees(asset: string, overrides?: EthersCallOverrides): Promise<Fees> {
+    return this._readable.getFees(asset, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUMOStake} */
-  getKUMOStake(address?: string, overrides?: EthersCallOverrides): Promise<KUMOStake> {
-    return this._readable.getKUMOStake(address, overrides);
+  getKUMOStake(
+    asset: string,
+    address?: string,
+    overrides?: EthersCallOverrides
+  ): Promise<KUMOStake> {
+    return this._readable.getKUMOStake(asset, address, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTotalStakedKUMO} */
@@ -321,11 +340,12 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    */
   openTrove(
     params: TroveCreationParams<Decimalish>,
+    asset: string,
     maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams,
     overrides?: EthersTransactionOverrides
   ): Promise<TroveCreationDetails> {
     return this.send
-      .openTrove(params, maxBorrowingRateOrOptionalParams, overrides)
+      .openTrove(params, asset, maxBorrowingRateOrOptionalParams, overrides)
       .then(waitForSuccess);
   }
 
@@ -336,8 +356,8 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
-  closeTrove(overrides?: EthersTransactionOverrides): Promise<TroveClosureDetails> {
-    return this.send.closeTrove(overrides).then(waitForSuccess);
+  closeTrove(asset: string, overrides?: EthersTransactionOverrides): Promise<TroveClosureDetails> {
+    return this.send.closeTrove(asset, overrides).then(waitForSuccess);
   }
 
   /**
@@ -349,11 +369,12 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    */
   adjustTrove(
     params: TroveAdjustmentParams<Decimalish>,
+    asset: string,
     maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams,
     overrides?: EthersTransactionOverrides
   ): Promise<TroveAdjustmentDetails> {
     return this.send
-      .adjustTrove(params, maxBorrowingRateOrOptionalParams, overrides)
+      .adjustTrove(params, asset, maxBorrowingRateOrOptionalParams, overrides)
       .then(waitForSuccess);
   }
 
@@ -365,10 +386,11 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
   depositCollateral(
+    asset: string,
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<TroveAdjustmentDetails> {
-    return this.send.depositCollateral(amount, overrides).then(waitForSuccess);
+    return this.send.depositCollateral(asset, amount, overrides).then(waitForSuccess);
   }
 
   /**
@@ -379,10 +401,11 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
   withdrawCollateral(
+    asset: string,
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<TroveAdjustmentDetails> {
-    return this.send.withdrawCollateral(amount, overrides).then(waitForSuccess);
+    return this.send.withdrawCollateral(asset, amount, overrides).then(waitForSuccess);
   }
 
   /**
@@ -393,11 +416,12 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
   borrowKUSD(
+    asset: string,
     amount: Decimalish,
     maxBorrowingRate?: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<TroveAdjustmentDetails> {
-    return this.send.borrowKUSD(amount, maxBorrowingRate, overrides).then(waitForSuccess);
+    return this.send.borrowKUSD(asset, amount, maxBorrowingRate, overrides).then(waitForSuccess);
   }
 
   /**
@@ -408,10 +432,11 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
   repayKUSD(
+    asset: string,
     amount: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<TroveAdjustmentDetails> {
-    return this.send.repayKUSD(amount, overrides).then(waitForSuccess);
+    return this.send.repayKUSD(asset, amount, overrides).then(waitForSuccess);
   }
 
   /** @internal */
@@ -427,10 +452,11 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
   liquidate(
+    asset: string,
     address: string | string[],
     overrides?: EthersTransactionOverrides
   ): Promise<LiquidationDetails> {
-    return this.send.liquidate(address, overrides).then(waitForSuccess);
+    return this.send.liquidate(asset, address, overrides).then(waitForSuccess);
   }
 
   /**
@@ -441,10 +467,13 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
   liquidateUpTo(
+    asset: string,
     maximumNumberOfTrovesToLiquidate: number,
     overrides?: EthersTransactionOverrides
   ): Promise<LiquidationDetails> {
-    return this.send.liquidateUpTo(maximumNumberOfTrovesToLiquidate, overrides).then(waitForSuccess);
+    return this.send
+      .liquidateUpTo(asset, maximumNumberOfTrovesToLiquidate, overrides)
+      .then(waitForSuccess);
   }
 
   /**
@@ -456,10 +485,9 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    */
   depositKUSDInStabilityPool(
     amount: Decimalish,
-    frontendTag?: string,
     overrides?: EthersTransactionOverrides
   ): Promise<StabilityDepositChangeDetails> {
-    return this.send.depositKUSDInStabilityPool(amount, frontendTag, overrides).then(waitForSuccess);
+    return this.send.depositKUSDInStabilityPool(amount, overrides).then(waitForSuccess);
   }
 
   /**
@@ -497,9 +525,10 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
   transferCollateralGainToTrove(
+    asset: string,
     overrides?: EthersTransactionOverrides
   ): Promise<CollateralGainTransferDetails> {
-    return this.send.transferCollateralGainToTrove(overrides).then(waitForSuccess);
+    return this.send.transferCollateralGainToTrove(asset, overrides).then(waitForSuccess);
   }
 
   /**
@@ -540,11 +569,12 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
   redeemKUSD(
+    asset: string,
     amount: Decimalish,
     maxRedemptionRate?: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<RedemptionDetails> {
-    return this.send.redeemKUSD(amount, maxRedemptionRate, overrides).then(waitForSuccess);
+    return this.send.redeemKUSD(asset, amount, maxRedemptionRate, overrides).then(waitForSuccess);
   }
 
   /**
@@ -554,8 +584,8 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    * Throws {@link EthersTransactionFailedError} in case of transaction failure.
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
-  claimCollateralSurplus(overrides?: EthersTransactionOverrides): Promise<void> {
-    return this.send.claimCollateralSurplus(overrides).then(waitForSuccess);
+  claimCollateralSurplus(asset: string, overrides?: EthersTransactionOverrides): Promise<void> {
+    return this.send.claimCollateralSurplus(asset, overrides).then(waitForSuccess);
   }
 
   /**
@@ -672,15 +702,15 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
  *
  * @public
  */
-export interface EthersKumoWithStore<T extends KumoStore = KumoStore>
-  extends EthersKumo {
+export interface EthersKumoWithStore<T extends KumoStore = KumoStore> extends EthersKumo {
   /** An object that implements KumoStore. */
   readonly store: T;
 }
 
 class _EthersKumoWithStore<T extends KumoStore = KumoStore>
   extends EthersKumo
-  implements EthersKumoWithStore<T> {
+  implements EthersKumoWithStore<T>
+{
   readonly store: T;
 
   constructor(readable: ReadableEthersKumoWithStore<T>) {

@@ -871,10 +871,10 @@ export interface TroveManager
     LTermsUpdated(_L_ETH?: null, _L_KUSDDebt?: null): EventFilter;
     LastFeeOpTimeUpdated(_lastFeeOpTime?: null): EventFilter;
     LastFeeOpTimeUpdated(_asset?: string | null, _lastFeeOpTime?: null): EventFilter;
-    Liquidation(_asset?: string | null, _liquidatedDebt?: null, _liquidatedColl?: null, _collGasCompensation?: null, _VSTGasCompensation?: null): EventFilter;
+    Liquidation(_asset?: string | null, _liquidatedDebt?: null, _liquidatedColl?: null, _collGasCompensation?: null, _kusdGasCompensation?: null): EventFilter;
     OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
     PriceFeedAddressChanged(_newPriceFeedAddress?: null): EventFilter;
-    Redemption(_asset?: string | null, _attemptedVSTAmount?: null, _actualVSTAmount?: null, _AssetSent?: null, _AssetFee?: null): EventFilter;
+    Redemption(_asset?: string | null, _attemptedKUSDAmount?: null, _actualKUSDAmount?: null, _AssetSent?: null, _AssetFee?: null): EventFilter;
     SortedTrovesAddressChanged(_sortedTrovesAddress?: null): EventFilter;
     StabilityPoolAddressChanged(_stabilityPoolAddress?: null): EventFilter;
     SystemSnapshotsUpdated(_totalStakesSnapshot?: null, _totalCollateralSnapshot?: null): EventFilter;
@@ -901,10 +901,10 @@ export interface TroveManager
   extractEvents(logs: Log[], name: "LTermsUpdated"): _TypedLogDescription<{ _L_ETH: BigNumber; _L_KUSDDebt: BigNumber }>[];
   extractEvents(logs: Log[], name: "LastFeeOpTimeUpdated"): _TypedLogDescription<{ _lastFeeOpTime: BigNumber }>[];
   extractEvents(logs: Log[], name: "LastFeeOpTimeUpdated"): _TypedLogDescription<{ _asset: string; _lastFeeOpTime: BigNumber }>[];
-  extractEvents(logs: Log[], name: "Liquidation"): _TypedLogDescription<{ _asset: string; _liquidatedDebt: BigNumber; _liquidatedColl: BigNumber; _collGasCompensation: BigNumber; _VSTGasCompensation: BigNumber }>[];
+  extractEvents(logs: Log[], name: "Liquidation"): _TypedLogDescription<{ _asset: string; _liquidatedDebt: BigNumber; _liquidatedColl: BigNumber; _collGasCompensation: BigNumber; _kusdGasCompensation: BigNumber }>[];
   extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
   extractEvents(logs: Log[], name: "PriceFeedAddressChanged"): _TypedLogDescription<{ _newPriceFeedAddress: string }>[];
-  extractEvents(logs: Log[], name: "Redemption"): _TypedLogDescription<{ _asset: string; _attemptedVSTAmount: BigNumber; _actualVSTAmount: BigNumber; _AssetSent: BigNumber; _AssetFee: BigNumber }>[];
+  extractEvents(logs: Log[], name: "Redemption"): _TypedLogDescription<{ _asset: string; _attemptedKUSDAmount: BigNumber; _actualKUSDAmount: BigNumber; _AssetSent: BigNumber; _AssetFee: BigNumber }>[];
   extractEvents(logs: Log[], name: "SortedTrovesAddressChanged"): _TypedLogDescription<{ _sortedTrovesAddress: string }>[];
   extractEvents(logs: Log[], name: "StabilityPoolAddressChanged"): _TypedLogDescription<{ _stabilityPoolAddress: string }>[];
   extractEvents(logs: Log[], name: "SystemSnapshotsUpdated"): _TypedLogDescription<{ _totalStakesSnapshot: BigNumber; _totalCollateralSnapshot: BigNumber }>[];
@@ -965,4 +965,79 @@ export interface Unipool
   extractEvents(logs: Log[], name: "Staked"): _TypedLogDescription<{ user: string; amount: BigNumber }>[];
   extractEvents(logs: Log[], name: "UniTokenAddressChanged"): _TypedLogDescription<{ _uniTokenAddress: string }>[];
   extractEvents(logs: Log[], name: "Withdrawn"): _TypedLogDescription<{ user: string; amount: BigNumber }>[];
+}
+
+interface KumoParametersCalls {
+  BORROWING_FEE_FLOOR(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  BORROWING_FEE_FLOOR_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
+  CCR(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  CCR_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
+  DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
+  KUSD_GAS_COMPENSATION(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  KUSD_GAS_COMPENSATION_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
+  MAX_BORROWING_FEE(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  MAX_BORROWING_FEE_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
+  MCR(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  MCR_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
+  MIN_NET_DEBT(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  MIN_NET_DEBT_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
+  NAME(_overrides?: CallOverrides): Promise<string>;
+  PERCENT_DIVISOR(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  PERCENT_DIVISOR_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
+  REDEMPTION_BLOCK_DAY(_overrides?: CallOverrides): Promise<BigNumber>;
+  REDEMPTION_FEE_FLOOR(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  REDEMPTION_FEE_FLOOR_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
+  _100pct(_overrides?: CallOverrides): Promise<BigNumber>;
+  activePool(_overrides?: CallOverrides): Promise<string>;
+  defaultPool(_overrides?: CallOverrides): Promise<string>;
+  isInitialized(_overrides?: CallOverrides): Promise<boolean>;
+  isOwner(_overrides?: CallOverrides): Promise<boolean>;
+  owner(_overrides?: CallOverrides): Promise<string>;
+  priceFeed(_overrides?: CallOverrides): Promise<string>;
+  redemptionBlock(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
+}
+
+interface KumoParametersTransactions {
+  removeRedemptionBlock(_asset: string, _overrides?: Overrides): Promise<void>;
+  sanitizeParameters(_asset: string, _overrides?: Overrides): Promise<void>;
+  setAddresses(_activePool: string, _defaultPool: string, _priceFeed: string, _overrides?: Overrides): Promise<void>;
+  setAsDefault(_asset: string, _overrides?: Overrides): Promise<void>;
+  setBorrowingFeeFloor(_asset: string, borrowingFeeFloor: BigNumberish, _overrides?: Overrides): Promise<void>;
+  setCCR(_asset: string, newCCR: BigNumberish, _overrides?: Overrides): Promise<void>;
+  setCollateralParameters(_asset: string, newMCR: BigNumberish, newCCR: BigNumberish, gasCompensation: BigNumberish, minNetDebt: BigNumberish, precentDivisor: BigNumberish, borrowingFeeFloor: BigNumberish, maxBorrowingFee: BigNumberish, redemptionFeeFloor: BigNumberish, _overrides?: Overrides): Promise<void>;
+  setKUMOGasCompensation(_asset: string, gasCompensation: BigNumberish, _overrides?: Overrides): Promise<void>;
+  setMCR(_asset: string, newMCR: BigNumberish, _overrides?: Overrides): Promise<void>;
+  setMaxBorrowingFee(_asset: string, maxBorrowingFee: BigNumberish, _overrides?: Overrides): Promise<void>;
+  setMinNetDebt(_asset: string, minNetDebt: BigNumberish, _overrides?: Overrides): Promise<void>;
+  setPercentDivisor(_asset: string, precentDivisor: BigNumberish, _overrides?: Overrides): Promise<void>;
+  setPriceFeed(_priceFeed: string, _overrides?: Overrides): Promise<void>;
+  setRedemptionFeeFloor(_asset: string, redemptionFeeFloor: BigNumberish, _overrides?: Overrides): Promise<void>;
+}
+
+export interface KumoParameters
+  extends _TypedKumoContract<KumoParametersCalls, KumoParametersTransactions> {
+  readonly filters: {
+    BorrowingFeeFloorChanged(oldBorrowingFloorFee?: null, newBorrowingFloorFee?: null): EventFilter;
+    CCRChanged(oldCCR?: null, newCCR?: null): EventFilter;
+    GasCompensationChanged(oldGasComp?: null, newGasComp?: null): EventFilter;
+    MCRChanged(oldMCR?: null, newMCR?: null): EventFilter;
+    MaxBorrowingFeeChanged(oldMaxBorrowingFee?: null, newMaxBorrowingFee?: null): EventFilter;
+    MinNetDebtChanged(oldMinNet?: null, newMinNet?: null): EventFilter;
+    OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
+    PercentDivisorChanged(oldPercentDiv?: null, newPercentDiv?: null): EventFilter;
+    PriceFeedChanged(addr?: string | null): EventFilter;
+    RedemptionBlockRemoved(_asset?: null): EventFilter;
+    RedemptionFeeFloorChanged(oldRedemptionFeeFloor?: null, newRedemptionFeeFloor?: null): EventFilter;
+  };
+  extractEvents(logs: Log[], name: "BorrowingFeeFloorChanged"): _TypedLogDescription<{ oldBorrowingFloorFee: BigNumber; newBorrowingFloorFee: BigNumber }>[];
+  extractEvents(logs: Log[], name: "CCRChanged"): _TypedLogDescription<{ oldCCR: BigNumber; newCCR: BigNumber }>[];
+  extractEvents(logs: Log[], name: "GasCompensationChanged"): _TypedLogDescription<{ oldGasComp: BigNumber; newGasComp: BigNumber }>[];
+  extractEvents(logs: Log[], name: "MCRChanged"): _TypedLogDescription<{ oldMCR: BigNumber; newMCR: BigNumber }>[];
+  extractEvents(logs: Log[], name: "MaxBorrowingFeeChanged"): _TypedLogDescription<{ oldMaxBorrowingFee: BigNumber; newMaxBorrowingFee: BigNumber }>[];
+  extractEvents(logs: Log[], name: "MinNetDebtChanged"): _TypedLogDescription<{ oldMinNet: BigNumber; newMinNet: BigNumber }>[];
+  extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
+  extractEvents(logs: Log[], name: "PercentDivisorChanged"): _TypedLogDescription<{ oldPercentDiv: BigNumber; newPercentDiv: BigNumber }>[];
+  extractEvents(logs: Log[], name: "PriceFeedChanged"): _TypedLogDescription<{ addr: string }>[];
+  extractEvents(logs: Log[], name: "RedemptionBlockRemoved"): _TypedLogDescription<{ _asset: string }>[];
+  extractEvents(logs: Log[], name: "RedemptionFeeFloorChanged"): _TypedLogDescription<{ oldRedemptionFeeFloor: BigNumber; newRedemptionFeeFloor: BigNumber }>[];
 }
