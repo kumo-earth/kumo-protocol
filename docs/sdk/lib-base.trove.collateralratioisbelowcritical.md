@@ -33,6 +33,5 @@ const price = await liquity.getPrice();
 if (total.collateralRatioIsBelowCritical(price)) {
   // Recovery mode is active
 }
-
 ```
 

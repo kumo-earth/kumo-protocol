@@ -3713,8 +3713,9 @@ contract('BorrowerOperations', async accounts => {
         .add(await troveManager.getBorrowingFee(KUSDRequest))
         .add(KUSD_GAS_COMPENSATION)
 
-      const debt_After = await getTroveEntireDebt(alice)
+      
       const coll_After = await getTroveEntireColl(alice)
+      const debt_After = await getTroveEntireDebt(alice)
       const status_After = await troveManager.getTroveStatus(alice)
 
       // check coll and debt after

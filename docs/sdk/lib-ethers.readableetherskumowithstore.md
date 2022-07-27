@@ -15,7 +15,7 @@ export interface ReadableEthersKumoWithStore<T extends KumoStore = KumoStore> ex
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [store](./lib-ethers.readableetherskumowithstore.store.md) | T | An object that implements KumoStore. |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [store](./lib-ethers.readableetherskumowithstore.store.md) |  | T | An object that implements KumoStore. |
 

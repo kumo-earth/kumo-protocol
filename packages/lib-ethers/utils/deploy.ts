@@ -291,10 +291,20 @@ const connectContracts = async (
       })
   ];
 
-  const txs = await Promise.all(connections.map((connect, i) => connect(txCount + i)));
+  let delay = 0; 
+  const delayIncrement = 1000;
+
+  const promisedConnections = connections.map((connect, i) => {
+    delay += delayIncrement;
+    return new Promise(resolve => setTimeout(resolve, delay)).then(() => {
+      return connect(txCount + i)
+    })
+  })
+
+  let results = await Promise.all(promisedConnections);
 
   let i = 0;
-  await Promise.all(txs.map(tx => tx.wait().then(() => log(`Connected ${++i}`))));
+  await Promise.all(results.map(tx => tx.wait().then(() => log(`Connected ${++i}`))));
 };
 
 const deployMockUniToken = (

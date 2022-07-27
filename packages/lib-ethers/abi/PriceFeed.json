@@ -62,9 +62,9 @@
     "name": "ETHUSD_TELLOR_REQ_ID",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "bytes32",
         "name": "",
-        "type": "uint256"
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
