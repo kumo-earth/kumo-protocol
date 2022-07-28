@@ -287,12 +287,12 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
   }
 
   getTroves(
-    params: TroveListingParams & { beforeRedistribution: true }
+    asset: string, params: TroveListingParams & { beforeRedistribution: true }
   ): Promise<TroveWithPendingRedistribution[]>;
 
-  getTroves(params: TroveListingParams): Promise<UserTrove[]>;
+  getTroves(asset: string, params: TroveListingParams): Promise<UserTrove[]>;
 
-  async getTroves(params: TroveListingParams) {
+  async getTroves(asset: string, params: TroveListingParams) {
     const { first, sortedBy, startingAt = 0, beforeRedistribution } = params;
 
     const [totalRedistributed, _troves] = await Promise.all([

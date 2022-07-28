@@ -43,13 +43,13 @@ dataSources:
         - name: TroveManager
           file: ../lib-ethers/abi/TroveManager.json
       eventHandlers:
-        - event: TroveUpdated(indexed address,uint256,uint256,uint256,uint8)
+        - event: TroveUpdated(indexed address,indexed address,uint256,uint256,uint256,uint8)
           handler: handleTroveUpdated
-        - event: TroveLiquidated(indexed address,uint256,uint256,uint8)
+        - event: TroveLiquidated(indexed address,indexed address,uint256,uint256,uint8)
           handler: handleTroveLiquidated
-        - event: Liquidation(uint256,uint256,uint256,uint256)
+        - event: Liquidation(indexed address,uint256,uint256,uint256,uint256)
           handler: handleLiquidation
-        - event: Redemption(uint256,uint256,uint256,uint256)
+        - event: Redemption(indexed address,uint256,uint256,uint256,uint256)
           handler: handleRedemption
         - event: LTermsUpdated(uint256,uint256)
           handler: handleLTermsUpdated
@@ -76,9 +76,9 @@ dataSources:
         - name: BorrowerOperations
           file: ../lib-ethers/abi/BorrowerOperations.json
       eventHandlers:
-        - event: TroveUpdated(indexed address,uint256,uint256,uint256,uint8)
+        - event: TroveUpdated(indexed address,indexed address,uint256,uint256,uint256,uint8)
           handler: handleTroveUpdated
-        - event: KUSDBorrowingFeePaid(indexed address,uint256)
+        - event: KUSDBorrowingFeePaid(indexed address,indexed address,uint256)
           handler: handleKUSDBorrowingFeePaid
   - name: PriceFeed
     kind: ethereum/contract
