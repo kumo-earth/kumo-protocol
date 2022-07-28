@@ -56,23 +56,24 @@ interface IStabilityPool is IDeposit{
     event G_Updated(uint256 _G, uint128 _epoch, uint128 _scale);
     event EpochUpdated(uint128 _currentEpoch);
     event ScaleUpdated(uint128 _currentScale);
+    
+    //  FrontEnd
 
-    event FrontEndRegistered(address indexed _frontEnd, uint256 _kickbackRate);
+    event FrontEndRegistered(address indexed _frontEnd, uint _kickbackRate);
     event FrontEndTagSet(address indexed _depositor, address indexed _frontEnd);
+    event FrontEndSnapshotUpdated(address indexed _frontEnd, uint _P, uint _G);
+    event FrontEndStakeChanged(address indexed _frontEnd, uint _newFrontEndStake, address _depositor);
+    event KUMOPaidToFrontEnd(address indexed _frontEnd, uint _KUMO);
 
     event DepositSnapshotUpdated(address indexed _depositor, uint256 _P, uint256 _S, uint256 _G);
-    event FrontEndSnapshotUpdated(address indexed _frontEnd, uint256 _P, uint256 _G);
     event UserDepositChanged(address indexed _depositor, uint256 _newDeposit);
-    event FrontEndStakeChanged(address indexed _frontEnd, uint256 _newFrontEndStake, address _depositor);
 
     event StakeChanged(uint256 _newSystemStake, address _depositor);
     event AssetGainWithdrawn(address indexed _depositor, uint256 _Asset, uint256 _kusdLoss);
     event SystemSnapshotUpdated(uint256 _P, uint256 _G);
 
-
     event ETHGainWithdrawn(address indexed _depositor, uint256 _ETH, uint256 _kusdLoss);
     event KUMOPaidToDepositor(address indexed _depositor, uint256 _KUMO);
-    event KUMOPaidToFrontEnd(address indexed _frontEnd, uint256 _KUMO);
     event AssetSent(address _to, uint256 _amount);
 
     // --- Functions ---
@@ -104,7 +105,7 @@ interface IStabilityPool is IDeposit{
      * - Sends the tagged front end's accumulated KUMO gains to the tagged front end
      * - Increases deposit and tagged front end's stake, and takes new snapshots for each.
      */
-    function provideToSP(uint256 _amount) external;
+    function provideToSP(uint256 _amount, address _frontEndTag) external;
 
     /*
      * Initial checks:

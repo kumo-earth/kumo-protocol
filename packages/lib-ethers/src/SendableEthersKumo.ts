@@ -144,9 +144,10 @@ export class SendableEthersKumo
   /** {@inheritDoc @kumodao/lib-base#SendableKumo.depositKUSDInStabilityPool} */
   depositKUSDInStabilityPool(
     amount: Decimalish,
+    frontendTag?: string,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersKumoTransaction<StabilityDepositChangeDetails>> {
-    return this._populate.depositKUSDInStabilityPool(amount, overrides).then(sendTransaction);
+    return this._populate.depositKUSDInStabilityPool(amount, frontendTag, overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @kumodao/lib-base#SendableKumo.withdrawKUSDFromStabilityPool} */

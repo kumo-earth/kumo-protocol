@@ -1119,6 +1119,7 @@ export class PopulatableEthersKumo
   /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.depositKUSDInStabilityPool} */
   async depositKUSDInStabilityPool(
     amount: Decimalish,
+    frontendTag?: string,
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>> {
     const { stabilityPool } = _getContracts(this._readable.connection);
@@ -1129,7 +1130,8 @@ export class PopulatableEthersKumo
       await stabilityPool.estimateAndPopulate.provideToSP(
         { ...overrides },
         addGasForKUMOIssuance,
-        depositKUSD.hex
+        depositKUSD.hex,
+        frontendTag ?? this._readable.connection.frontendTag ?? AddressZero
       )
     );
   }

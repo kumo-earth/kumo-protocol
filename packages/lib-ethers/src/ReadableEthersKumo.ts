@@ -258,6 +258,7 @@ export class ReadableEthersKumo implements ReadableKumo {
     address ??= _requireAddress(this.connection);
     const { stabilityPool } = _getContracts(this.connection);
 
+
     const [{ frontEndTag, initialValue }, currentKUSD, collateralGain, kumoReward] =
       await Promise.all([
         stabilityPool.deposits(address, { ...overrides }),
