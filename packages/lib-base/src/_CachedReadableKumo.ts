@@ -3,7 +3,7 @@ import { Fees } from "./Fees";
 import { KUMOStake } from "./KUMOStake";
 import { StabilityDeposit } from "./StabilityDeposit";
 import { Trove, TroveWithPendingRedistribution, UserTrove } from "./Trove";
-import { FrontendStatus, ReadableKumo, TroveListingParams } from "./ReadableKumo"
+import { FrontendStatus, ReadableKumo, TroveListingParams } from "./ReadableKumo";
 
 /** @internal */
 export type _ReadableKumoWithExtraParamsBase<T extends unknown[]> = {
@@ -25,26 +25,27 @@ export type _KumoReadCacheBase<T extends unknown[]> = {
 export interface _ReadableKumoWithExtraParams<T extends unknown[]>
   extends _ReadableKumoWithExtraParamsBase<T> {
   getTroves(
+    asset: string,
     params: TroveListingParams & { beforeRedistribution: true },
     ...extraParams: T
   ): Promise<TroveWithPendingRedistribution[]>;
 
-  getTroves(params: TroveListingParams, ...extraParams: T): Promise<UserTrove[]>;
+  getTroves(asset: string, params: TroveListingParams, ...extraParams: T): Promise<UserTrove[]>;
 }
 
 /** @internal */
 export interface _KumoReadCache<T extends unknown[]> extends _KumoReadCacheBase<T> {
   getTroves(
+    asset: string,
     params: TroveListingParams & { beforeRedistribution: true },
     ...extraParams: T
   ): TroveWithPendingRedistribution[] | undefined;
 
-  getTroves(params: TroveListingParams, ...extraParams: T): UserTrove[] | undefined;
+  getTroves(asset: string, params: TroveListingParams, ...extraParams: T): UserTrove[] | undefined;
 }
 
 /** @internal */
-export class _CachedReadableKumo<T extends unknown[]>
-  implements _ReadableKumoWithExtraParams<T> {
+export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWithExtraParams<T> {
   private _readable: _ReadableKumoWithExtraParams<T>;
   private _cache: _KumoReadCache<T>;
 
@@ -53,10 +54,10 @@ export class _CachedReadableKumo<T extends unknown[]>
     this._cache = cache;
   }
 
-  async getTotalRedistributed(...extraParams: T): Promise<Trove> {
+  async getTotalRedistributed(asset: string, ...extraParams: T): Promise<Trove> {
     return (
-      this._cache.getTotalRedistributed(...extraParams) ??
-      this._readable.getTotalRedistributed(...extraParams)
+      this._cache.getTotalRedistributed(asset, ...extraParams) ??
+      this._readable.getTotalRedistributed(asset, ...extraParams)
     );
   }
 
@@ -70,19 +71,19 @@ export class _CachedReadableKumo<T extends unknown[]>
     );
   }
 
-  async getTrove(address?: string, ...extraParams: T): Promise<UserTrove> {
+  async getTrove(asset: string, address?: string, ...extraParams: T): Promise<UserTrove> {
     const [troveBeforeRedistribution, totalRedistributed] = await Promise.all([
       this.getTroveBeforeRedistribution(address, ...extraParams),
-      this.getTotalRedistributed(...extraParams)
+      this.getTotalRedistributed(asset, ...extraParams)
     ]);
 
     return troveBeforeRedistribution.applyRedistribution(totalRedistributed);
   }
 
-  async getNumberOfTroves(...extraParams: T): Promise<number> {
+  async getNumberOfTroves(asset: string, ...extraParams: T): Promise<number> {
     return (
-      this._cache.getNumberOfTroves(...extraParams) ??
-      this._readable.getNumberOfTroves(...extraParams)
+      this._cache.getNumberOfTroves(asset, ...extraParams) ??
+      this._readable.getNumberOfTroves(asset, ...extraParams)
     );
   }
 
@@ -90,11 +91,16 @@ export class _CachedReadableKumo<T extends unknown[]>
     return this._cache.getPrice(...extraParams) ?? this._readable.getPrice(...extraParams);
   }
 
-  async getTotal(...extraParams: T): Promise<Trove> {
-    return this._cache.getTotal(...extraParams) ?? this._readable.getTotal(...extraParams);
+  async getTotal(asset: string, ...extraParams: T): Promise<Trove> {
+    return (
+      this._cache.getTotal(asset, ...extraParams) ?? this._readable.getTotal(asset, ...extraParams)
+    );
   }
 
-  async getStabilityDeposit(address?: string, ...extraParams: T): Promise<StabilityDeposit> {
+  async getStabilityDeposit(
+    address?: string,
+    ...extraParams: T
+  ): Promise<StabilityDeposit> {
     return (
       this._cache.getStabilityDeposit(address, ...extraParams) ??
       this._readable.getStabilityDeposit(address, ...extraParams)
@@ -179,19 +185,32 @@ export class _CachedReadableKumo<T extends unknown[]>
   }
 
   getTroves(
+    asset: string,
     params: TroveListingParams & { beforeRedistribution: true },
     ...extraParams: T
   ): Promise<TroveWithPendingRedistribution[]>;
 
-  getTroves(params: TroveListingParams, ...extraParams: T): Promise<UserTrove[]>;
+  getTroves(asset: string, params: TroveListingParams, ...extraParams: T): Promise<UserTrove[]>;
 
-  async getTroves(params: TroveListingParams, ...extraParams: T): Promise<UserTrove[]> {
+  async getTroves(
+    asset: string,
+    params: TroveListingParams,
+    ...extraParams: T
+  ): Promise<UserTrove[]> {
     const { beforeRedistribution, ...restOfParams } = params;
 
     const [totalRedistributed, troves] = await Promise.all([
-      beforeRedistribution ? undefined : this.getTotalRedistributed(...extraParams),
-      this._cache.getTroves({ beforeRedistribution: true, ...restOfParams }, ...extraParams) ??
-        this._readable.getTroves({ beforeRedistribution: true, ...restOfParams }, ...extraParams)
+      beforeRedistribution ? undefined : this.getTotalRedistributed(asset, ...extraParams),
+      this._cache.getTroves(
+        asset,
+        { beforeRedistribution: true, ...restOfParams },
+        ...extraParams
+      ) ??
+        this._readable.getTroves(
+          asset,
+          { beforeRedistribution: true, ...restOfParams },
+          ...extraParams
+        )
     ]);
 
     if (totalRedistributed) {
@@ -201,8 +220,10 @@ export class _CachedReadableKumo<T extends unknown[]>
     }
   }
 
-  async getFees(...extraParams: T): Promise<Fees> {
-    return this._cache.getFees(...extraParams) ?? this._readable.getFees(...extraParams);
+  async getFees(asset: string, ...extraParams: T): Promise<Fees> {
+    return (
+      this._cache.getFees(asset, ...extraParams) ?? this._readable.getFees(asset, ...extraParams)
+    );
   }
 
   async getKUMOStake(address?: string, ...extraParams: T): Promise<KUMOStake> {

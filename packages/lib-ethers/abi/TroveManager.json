@@ -216,7 +216,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_VSTGasCompensation",
+        "name": "_kusdGasCompensation",
         "type": "uint256"
       }
     ],
@@ -267,13 +267,13 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_attemptedVSTAmount",
+        "name": "_attemptedKUSDAmount",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_actualVSTAmount",
+        "name": "_actualKUSDAmount",
         "type": "uint256"
       },
       {
