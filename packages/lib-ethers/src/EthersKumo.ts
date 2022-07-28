@@ -485,9 +485,10 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    */
   depositKUSDInStabilityPool(
     amount: Decimalish,
+    frontendTag?: string,
     overrides?: EthersTransactionOverrides
   ): Promise<StabilityDepositChangeDetails> {
-    return this.send.depositKUSDInStabilityPool(amount, overrides).then(waitForSuccess);
+    return this.send.depositKUSDInStabilityPool(amount, frontendTag, overrides).then(waitForSuccess);
   }
 
   /**

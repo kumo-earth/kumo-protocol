@@ -114,7 +114,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     // (undocumented)
     depositCollateral(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<TroveAdjustmentDetails>;
     // (undocumented)
-    depositKUSDInStabilityPool(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<StabilityDepositChangeDetails>;
+    depositKUSDInStabilityPool(amount: Decimalish, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<StabilityDepositChangeDetails>;
     // (undocumented)
     exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<void>;
     // @internal (undocumented)
@@ -343,7 +343,7 @@ export class PopulatableEthersKumo implements PopulatableKumo<EthersTransactionR
     // (undocumented)
     depositCollateral(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    depositKUSDInStabilityPool(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>>;
+    depositKUSDInStabilityPool(amount: Decimalish, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>>;
     // (undocumented)
     exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
@@ -546,7 +546,7 @@ export class SendableEthersKumo implements SendableKumo<EthersTransactionReceipt
     // (undocumented)
     depositCollateral(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    depositKUSDInStabilityPool(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<StabilityDepositChangeDetails>>;
+    depositKUSDInStabilityPool(amount: Decimalish, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<StabilityDepositChangeDetails>>;
     // (undocumented)
     exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)
