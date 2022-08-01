@@ -152,6 +152,7 @@ class DeploymentHelper {
     testerContracts.activePool = await ActivePoolTester.new()
     testerContracts.defaultPool = await DefaultPoolTester.new()
     testerContracts.stabilityPool = await StabilityPoolTester.new()
+    testerContracts.stabilityPoolManager = await StabilityPoolManager.new()
     testerContracts.gasPool = await GasPool.new()
     testerContracts.collSurplusPool = await CollSurplusPool.new()
     testerContracts.math = await KumoMathTester.new()
@@ -297,7 +298,7 @@ class DeploymentHelper {
   static async deployKUSDTokenTester(contracts) {
     contracts.kusdToken = await KUSDTokenTester.new(
       contracts.troveManager.address,
-      contracts.stabilityPool.address,
+      contracts.stabilityPoolManager.address,
       contracts.borrowerOperations.address
     )
     return contracts

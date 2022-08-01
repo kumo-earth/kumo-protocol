@@ -77,15 +77,15 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
         address _kusdTokenAddress,
         address _troveManagerAddress, 
         address _borrowerOperationsAddress,
-        address _activePoolAddress,
-        address _treasury
+        address _activePoolAddress
+        // address _treasury
     ) 
         external 
         onlyOwner
         override 
     {
         // require(!isInitialized, "Already Initialized");
-        require(_treasury != address(0), "Invalid Treausry Address");
+        // require(_treasury != address(0), "Invalid Treausry Address");
         checkContract(_kumoTokenAddress);
         checkContract(_kusdTokenAddress);
         checkContract(_troveManagerAddress);
@@ -101,7 +101,7 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
         troveManagerAddress = _troveManagerAddress;
         borrowerOperationsAddress = _borrowerOperationsAddress;
         activePoolAddress = _activePoolAddress;
-        treasury = _treasury;
+        // treasury = _treasury;
 
 		isAssetTracked[ETH_REF_ADDRESS] = true;
 		ASSET_TYPE.push(ETH_REF_ADDRESS);
