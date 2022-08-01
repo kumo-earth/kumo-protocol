@@ -307,14 +307,20 @@ class TestHelper {
 
   // Given a composite debt, returns the actual debt  - i.e. subtracts the virtual debt.
   // Virtual debt = 50 KUSD.
-  static async getActualDebtFromComposite(compositeDebt, contracts) {
-    const issuedDebt = await contracts.troveManager.getActualDebtFromComposite(compositeDebt)
+  static async getActualDebtFromComposite(compositeDebt, contracts, asset) {
+    if (!asset)
+      asset = this.ZERO_ADDRESS;
+
+    const issuedDebt = await contracts.troveManager.getActualDebtFromComposite(asset, compositeDebt)
     return issuedDebt
   }
 
   // Adds the gas compensation (50 KUSD)
-  static async getCompositeDebt(contracts, debt) {
-    const compositeDebt = contracts.borrowerOperations.getCompositeDebt(debt)
+  static async getCompositeDebt(contracts, debt, asset) {
+    if (!asset)
+      asset = this.ZERO_ADDRESS;
+
+    const compositeDebt = contracts.borrowerOperations.getCompositeDebt(asset, debt)
     return compositeDebt
   }
 
@@ -334,9 +340,12 @@ class TestHelper {
    * given the requested KUSD amomunt in openTrove, returns the total debt
    * So, it adds the gas compensation and the borrowing fee
    */
-  static async getOpenTroveTotalDebt(contracts, kusdAmount) {
-    const fee = await contracts.troveManager.getBorrowingFee(kusdAmount)
-    const compositeDebt = await this.getCompositeDebt(contracts, kusdAmount)
+  static async getOpenTroveTotalDebt(contracts, kusdAmount, asset) {
+    if (!asset)
+      asset = this.ZERO_ADDRESS;
+
+    const fee = await contracts.troveManager.getBorrowingFee(asset, kusdAmount)
+    const compositeDebt = await this.getCompositeDebt(contracts, kusdAmount, asset)
     return compositeDebt.add(fee)
   }
 
@@ -350,8 +359,11 @@ class TestHelper {
   }
 
   // Subtracts the borrowing fee
-  static async getNetBorrowingAmount(contracts, debtWithFee) {
-    const borrowingRate = await contracts.troveManager.getBorrowingRateWithDecay()
+  static async getNetBorrowingAmount(contracts, debtWithFee, asset) {
+    if (!asset)
+      asset = this.ZERO_ADDRESS;
+
+    const borrowingRate = await contracts.troveManager.getBorrowingRateWithDecay(asset)
     return this.toBN(debtWithFee).mul(MoneyValues._1e18BN).div(MoneyValues._1e18BN.add(borrowingRate))
   }
 
@@ -674,6 +686,8 @@ class TestHelper {
   }
 
   static async openTrove(contracts, {
+    asset,
+    assetSent,
     maxFeePercentage,
     extraKUSDAmount,
     upperHint,
@@ -681,6 +695,7 @@ class TestHelper {
     ICR,
     extraParams
   }) {
+    if (!asset) asset = this.ZERO_ADDRESS
     if (!maxFeePercentage) maxFeePercentage = this._100pct
     if (!extraKUSDAmount) extraKUSDAmount = this.toBN(0)
     else if (typeof extraKUSDAmount == 'string') extraKUSDAmount = this.toBN(extraKUSDAmount)
@@ -697,13 +712,21 @@ class TestHelper {
 
     const totalDebt = await this.getOpenTroveTotalDebt(contracts, kusdAmount)
     const netDebt = await this.getActualDebtFromComposite(totalDebt, contracts)
+    
+    if (extraParams.value) {
+      assetSent = extraParams.value;
+    }
 
     if (ICR) {
       const price = await contracts.priceFeedTestnet.getPrice()
-      extraParams.value = ICR.mul(totalDebt).div(price)
+      assetSent = ICR.mul(totalDebt).div(price)
+
+      if (asset == this.ZERO_ADDRESS) {
+        extraParams.value = assetSent
+      }
     }
 
-    const tx = await contracts.borrowerOperations.openTrove(maxFeePercentage, kusdAmount, upperHint, lowerHint, extraParams)
+    const tx = await contracts.borrowerOperations.openTrove(asset, assetSent, maxFeePercentage, kusdAmount, upperHint, lowerHint, extraParams)
 
     return {
       kusdAmount,

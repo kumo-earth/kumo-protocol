@@ -35,7 +35,7 @@ interface IBorrowerOperations {
         address _kumoParamsAddress
     ) external;
 
-    function openTrove(address _asset, uint256 _maxFee, uint256 _KUSDAmount, address _upperHint, address _lowerHint) external payable;
+    function openTrove(address _asset, uint256 _tokenAmount, uint256 _maxFee, uint256 _KUSDAmount, address _upperHint, address _lowerHint) external payable;
 
     function addColl(address _asset, uint256 _assetSent, address _upperHint, address _lowerHint) external payable;
 
