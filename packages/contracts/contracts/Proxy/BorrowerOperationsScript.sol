@@ -15,7 +15,7 @@ contract BorrowerOperationsScript is CheckContract {
     }
 
     function openTrove(address _asset, uint256 _assetAmountSent, uint256 _maxFee, uint256 _KUSDAmount, address _upperHint, address _lowerHint) external payable {
-        borrowerOperations.openTrove{ value: getValueOrArg(_asset, _assetAmountSent)}(_asset, _maxFee, _KUSDAmount, _upperHint, _lowerHint);
+        borrowerOperations.openTrove{ value: getValueOrArg(_asset, _assetAmountSent)}(_asset, _assetAmountSent, _maxFee, _KUSDAmount, _upperHint, _lowerHint);
     }
 
     function addColl(address _asset, uint256 _assetAmountSent, address _upperHint, address _lowerHint) external payable {

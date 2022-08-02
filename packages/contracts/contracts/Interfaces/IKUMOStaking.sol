@@ -35,8 +35,8 @@ interface IKUMOStaking {
         address _kusdTokenAddress,
         address _troveManagerAddress, 
         address _borrowerOperationsAddress,
-        address _activePoolAddress,
-        address _treasuy
+        address _activePoolAddress
+        // address _treasuy
     )  external;
 
     function stake(uint256 _KUMOamount) external;

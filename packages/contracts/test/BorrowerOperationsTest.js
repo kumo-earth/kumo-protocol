@@ -100,9 +100,9 @@ contract('BorrowerOperations', async accounts => {
       communityIssuance = KUMOContracts.communityIssuance
       lockupContractFactory = KUMOContracts.lockupContractFactory
 
-      KUSD_GAS_COMPENSATION = await kumoParams.KUSD_GAS_COMPENSATION()
-      MIN_NET_DEBT = await kumoParams.MIN_NET_DEBT()
-      BORROWING_FEE_FLOOR = await kumoParams.BORROWING_FEE_FLOOR()
+      KUSD_GAS_COMPENSATION = await kumoParams.KUSD_GAS_COMPENSATION(ZERO_ADDRESS)
+      MIN_NET_DEBT = await kumoParams.MIN_NET_DEBT(ZERO_ADDRESS)
+      BORROWING_FEE_FLOOR = await kumoParams.BORROWING_FEE_FLOOR(ZERO_ADDRESS)
     })
 
     it("addColl(): reverts when top-up would leave trove with ICR < MCR", async () => {

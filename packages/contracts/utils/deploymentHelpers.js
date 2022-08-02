@@ -30,6 +30,7 @@ const KumoMathTester = artifacts.require("./KumoMathTester.sol")
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
 const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol")
+const ERC20Test = artifacts.require("./ERC20Test.sol")
 
 // Proxy scripts
 const BorrowerOperationsScript = artifacts.require('BorrowerOperationsScript')
@@ -152,6 +153,7 @@ class DeploymentHelper {
     testerContracts.activePool = await ActivePoolTester.new()
     testerContracts.defaultPool = await DefaultPoolTester.new()
     testerContracts.stabilityPool = await StabilityPoolTester.new()
+    testerContracts.stabilityPoolManager = await StabilityPoolManager.new()
     testerContracts.gasPool = await GasPool.new()
     testerContracts.collSurplusPool = await CollSurplusPool.new()
     testerContracts.math = await KumoMathTester.new()
@@ -160,6 +162,8 @@ class DeploymentHelper {
     testerContracts.functionCaller = await FunctionCaller.new()
     testerContracts.hintHelpers = await HintHelpers.new()
     testerContracts.kumoParameters = await KumoParameters.new()
+    testerContracts.erc20 = await ERC20Test.new()
+    // ERC20Test.setAsDeployed(testerContracts.erc20);
     testerContracts.kusdToken =  await KUSDTokenTester.new(
       testerContracts.troveManager.address,
       testerContracts.stabilityPoolManager.address,
@@ -297,7 +301,7 @@ class DeploymentHelper {
   static async deployKUSDTokenTester(contracts) {
     contracts.kusdToken = await KUSDTokenTester.new(
       contracts.troveManager.address,
-      contracts.stabilityPool.address,
+      contracts.stabilityPoolManager.address,
       contracts.borrowerOperations.address
     )
     return contracts

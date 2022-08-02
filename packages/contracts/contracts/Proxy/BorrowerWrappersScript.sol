@@ -83,7 +83,7 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
         uint256 totalCollateral = balanceAfter.sub(balanceBefore).add(msg.value);
 
         // Open trove with obtained collateral, plus collateral sent by user
-        borrowerOperations.openTrove{ value: totalCollateral }(_asset, _maxFee, _KUSDAmount, _upperHint, _lowerHint);
+        borrowerOperations.openTrove{ value: _asset == address(0) ? totalCollateral : 0  }(_asset, totalCollateral, _maxFee, _KUSDAmount, _upperHint, _lowerHint);
     }
 
     function claimSPRewardsAndRecycle(address _asset, uint256 _maxFee, address _upperHint, address _lowerHint) external {

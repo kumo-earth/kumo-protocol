@@ -1,3 +1,4 @@
+const { connectKUMOContractsToCore } = require("../utils/deploymentHelpers.js")
 const deploymentHelper = require("../utils/deploymentHelpers.js")
 const testHelpers = require("../utils/testHelpers.js")
 const TroveManagerTester = artifacts.require("TroveManagerTester")
@@ -31,6 +32,9 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
   let defaultPool
   let functionCaller
   let borrowerOperations
+  let KUMOContracts
+  let hardhatTester
+  let erc20
 
   let kumoStaking
   let kumoToken
@@ -41,7 +45,8 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     coreContracts = await deploymentHelper.deployKumoCore()
     coreContracts.troveManager = await TroveManagerTester.new()
     coreContracts = await deploymentHelper.deployKUSDTokenTester(coreContracts)
-    const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
+    KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
+    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
     
     priceFeed = coreContracts.priceFeed
     kusdToken = coreContracts.kusdToken
@@ -58,6 +63,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     kumoToken = KUMOContracts.kumoToken
     communityIssuance = KUMOContracts.communityIssuance
     lockupContractFactory = KUMOContracts.lockupContractFactory
+    erc20 = hardhatTester.erc20
 
     await deploymentHelper.connectKUMOContracts(KUMOContracts)
     await deploymentHelper.connectCoreContracts(coreContracts, KUMOContracts)
@@ -78,7 +84,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("moveETHGainToTrove(): reverts when called by an account that is not StabilityPool", async () => {
       // Attempt call from alice
       try {
-        const tx1= await borrowerOperations.moveETHGainToTrove(bob, bob, bob, { from: bob })
+        const tx1= await borrowerOperations.moveETHGainToTrove(erc20.address, 0, bob, bob, bob, { from: bob })
       } catch (err) {
          assert.include(err.message, "revert")
         // assert.include(err.message, "BorrowerOps: Caller is not Stability Pool")
@@ -91,7 +97,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("applyPendingRewards(): reverts when called by an account that is not BorrowerOperations", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await troveManager.applyPendingRewards(bob, { from: alice })
+        const txAlice = await troveManager.applyPendingRewards(erc20.address, bob, { from: alice })
         
       } catch (err) {
          assert.include(err.message, "revert")
@@ -103,7 +109,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("updateRewardSnapshots(): reverts when called by an account that is not BorrowerOperations", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await troveManager.updateTroveRewardSnapshots(bob, { from: alice })
+        const txAlice = await troveManager.updateTroveRewardSnapshots(erc20.address, bob, { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert" )
@@ -115,7 +121,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("removeStake(): reverts when called by an account that is not BorrowerOperations", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await troveManager.removeStake(bob, { from: alice })
+        const txAlice = await troveManager.removeStake(erc20.address, bob, { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert")
@@ -127,7 +133,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("updateStakeAndTotalStakes(): reverts when called by an account that is not BorrowerOperations", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await troveManager.updateStakeAndTotalStakes(bob, { from: alice })
+        const txAlice = await troveManager.updateStakeAndTotalStakes(erc20.address, bob, { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert")
@@ -139,7 +145,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("closeTrove(): reverts when called by an account that is not BorrowerOperations", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await troveManager.closeTrove(bob, { from: alice })
+        const txAlice = await troveManager.closeTrove(erc20.address, bob, { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert")
@@ -151,7 +157,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("addTroveOwnerToArray(): reverts when called by an account that is not BorrowerOperations", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await troveManager.addTroveOwnerToArray(bob, { from: alice })
+        const txAlice = await troveManager.addTroveOwnerToArray(erc20.address, bob, { from: alice })
         
       } catch (err) {
          assert.include(err.message, "revert")
@@ -163,7 +169,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("setTroveStatus(): reverts when called by an account that is not BorrowerOperations", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await troveManager.setTroveStatus(bob, 1, { from: alice })
+        const txAlice = await troveManager.setTroveStatus(erc20.address, bob, 1, { from: alice })
         
       } catch (err) {
          assert.include(err.message, "revert")
@@ -175,7 +181,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("increaseTroveColl(): reverts when called by an account that is not BorrowerOperations", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await troveManager.increaseTroveColl(bob, 100, { from: alice })
+        const txAlice = await troveManager.increaseTroveColl(erc20.address, bob, 100, { from: alice })
         
       } catch (err) {
          assert.include(err.message, "revert")
@@ -187,7 +193,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("decreaseTroveColl(): reverts when called by an account that is not BorrowerOperations", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await troveManager.decreaseTroveColl(bob, 100, { from: alice })
+        const txAlice = await troveManager.decreaseTroveColl(erc20.address, bob, 100, { from: alice })
         
       } catch (err) {
          assert.include(err.message, "revert")
@@ -199,7 +205,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("increaseTroveDebt(): reverts when called by an account that is not BorrowerOperations", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await troveManager.increaseTroveDebt(bob, 100, { from: alice })
+        const txAlice = await troveManager.increaseTroveDebt(erc20.address, bob, 100, { from: alice })
         
       } catch (err) {
          assert.include(err.message, "revert")
@@ -211,7 +217,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("decreaseTroveDebt(): reverts when called by an account that is not BorrowerOperations", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await troveManager.decreaseTroveDebt(bob, 100, { from: alice })
+        const txAlice = await troveManager.decreaseTroveDebt( erc20.address, bob, 100, { from: alice })
         
       } catch (err) {
          assert.include(err.message, "revert")
@@ -225,7 +231,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("sendETH(): reverts when called by an account that is not BO nor TroveM nor SP", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await activePool.sendETH(alice, 100, { from: alice })
+        const txAlice = await activePool.sendETH(erc20.address, alice, 100, { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert")
@@ -237,7 +243,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("increaseKUSDDebt(): reverts when called by an account that is not BO nor TroveM", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await activePool.increaseKUSDDebt(100, { from: alice })
+        const txAlice = await activePool.increaseKUSDDebt(erc20.address, 100, { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert")
@@ -249,7 +255,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("decreaseKUSDDebt(): reverts when called by an account that is not BO nor TroveM nor SP", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await activePool.decreaseKUSDDebt(100, { from: alice })
+        const txAlice = await activePool.decreaseKUSDDebt(erc20.address, 100, { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert")
@@ -287,7 +293,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("increaseKUSDDebt(): reverts when called by an account that is not TroveManager", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await defaultPool.increaseKUSDDebt(100, { from: alice })
+        const txAlice = await defaultPool.increaseKUSDDebt(erc20.address, 100, { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert")
@@ -299,7 +305,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("decreaseKUSD(): reverts when called by an account that is not TroveManager", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await defaultPool.decreaseKUSDDebt(100, { from: alice })
+        const txAlice = await defaultPool.decreaseKUSDDebt(erc20.address, 100, { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert")
@@ -355,7 +361,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     //    mint
     it("mint(): reverts when called by an account that is not BorrowerOperations", async () => {
       // Attempt call from alice
-      const txAlice = kusdToken.mint(bob, 100, { from: alice })
+      const txAlice = kusdToken.mint(erc20.address, bob, 100, { from: alice })
       await th.assertRevert(txAlice, "Caller is not BorrowerOperations")
     })
 
@@ -402,7 +408,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("insert(): reverts when called by an account that is not BorrowerOps or TroveM", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await sortedTroves.insert(bob, '150000000000000000000', bob, bob, { from: alice })
+        const txAlice = await sortedTroves.insert(erc20.address, bob, '150000000000000000000', bob, bob, { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert")
@@ -415,7 +421,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("remove(): reverts when called by an account that is not TroveManager", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await sortedTroves.remove(bob, { from: alice })
+        const txAlice = await sortedTroves.remove(erc20.address, bob, { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert")
@@ -428,7 +434,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("reinsert(): reverts when called by an account that is neither BorrowerOps nor TroveManager", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await sortedTroves.reInsert(bob, '150000000000000000000', bob, bob, { from: alice })
+        const txAlice = await sortedTroves.reInsert(erc20.address, bob, '150000000000000000000', bob, bob, { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert")

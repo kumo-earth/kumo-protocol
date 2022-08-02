@@ -161,12 +161,13 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
 
     // --- Borrower Trove Operations ---
 
-    function openTrove(address _asset, uint256 _maxFeePercentage, uint256 _KUSDAmount, address _upperHint, address _lowerHint) external payable override {
+    function openTrove(address _asset, uint256 _tokenAmount,  uint256 _maxFeePercentage, uint256 _KUSDAmount, address _upperHint, address _lowerHint) external payable override {
         kumoParams.sanitizeParameters(_asset);
         ContractsCache memory contractsCache = ContractsCache(troveManager, kumoParams.activePool(), kusdToken);
         LocalVariables_openTrove memory vars;
         vars.asset = _asset;
 
+        _tokenAmount = getMethodValue(vars.asset, _tokenAmount, false);
         vars.price = kumoParams.priceFeed().fetchPrice();
         bool isRecoveryMode = _checkRecoveryMode(vars.asset, vars.price);
 
@@ -186,20 +187,20 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         vars.compositeDebt = _getCompositeDebt(vars.asset, vars.netDebt);
         assert(vars.compositeDebt > 0);
         
-        vars.ICR = KumoMath._computeCR(msg.value, vars.compositeDebt, vars.price);
-        vars.NICR = KumoMath._computeNominalCR(msg.value, vars.compositeDebt);
+        vars.ICR = KumoMath._computeCR(_tokenAmount, vars.compositeDebt, vars.price);
+        vars.NICR = KumoMath._computeNominalCR(_tokenAmount, vars.compositeDebt);
 
         if (isRecoveryMode) {
             _requireICRisAboveCCR(vars.asset, vars.ICR);
         } else {
             _requireICRisAboveMCR(vars.asset, vars.ICR);
-            uint256 newTCR = _getNewTCRFromTroveChange(vars.asset, msg.value, true, vars.compositeDebt, true, vars.price);  // bools: coll increase, debt increase
+            uint256 newTCR = _getNewTCRFromTroveChange(vars.asset, _tokenAmount, true, vars.compositeDebt, true, vars.price);  // bools: coll increase, debt increase
             _requireNewTCRisAboveCCR(vars.asset, newTCR); 
         }
 
         // Set the trove struct's properties
         contractsCache.troveManager.setTroveStatus(vars.asset, msg.sender, 1);
-        contractsCache.troveManager.increaseTroveColl(vars.asset, msg.sender, msg.value);
+        contractsCache.troveManager.increaseTroveColl(vars.asset, msg.sender, _tokenAmount);
         contractsCache.troveManager.increaseTroveDebt(vars.asset, msg.sender, vars.compositeDebt);
 
         contractsCache.troveManager.updateTroveRewardSnapshots(vars.asset, msg.sender);
@@ -210,12 +211,12 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         emit TroveCreated(vars.asset, msg.sender, vars.arrayIndex);
 
         // Move the ether to the Active Pool, and mint the KUSDAmount to the borrower
-        _activePoolAddColl(vars.asset, contractsCache.activePool, msg.value);
+        _activePoolAddColl(vars.asset, contractsCache.activePool, _tokenAmount);
         _withdrawKUSD(vars.asset, contractsCache.activePool, contractsCache.kusdToken, msg.sender, _KUSDAmount, vars.netDebt);
         // Move the KUSD gas compensation to the Gas Pool
         _withdrawKUSD(vars.asset, contractsCache.activePool, contractsCache.kusdToken, gasPoolAddress, kumoParams.KUSD_GAS_COMPENSATION(vars.asset), kumoParams.KUSD_GAS_COMPENSATION(vars.asset));
 
-        emit TroveUpdated(vars.asset, msg.sender, vars.compositeDebt, msg.value, vars.stake, BorrowerOperation.openTrove);
+        emit TroveUpdated(vars.asset, msg.sender, vars.compositeDebt, _tokenAmount, vars.stake, BorrowerOperation.openTrove);
         emit KUSDBorrowingFeePaid(vars.asset, msg.sender, vars.KUSDFee);
     }
 
