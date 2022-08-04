@@ -112,6 +112,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
   openTrove(
     params: TroveCreationParams<Decimalish>,
     asset: string,
+    tokenAmount: Decimalish,
     maxBorrowingRate?: Decimalish
   ): Promise<
     PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveCreationDetails>>>

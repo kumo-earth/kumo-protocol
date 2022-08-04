@@ -9,8 +9,15 @@ Get number of Troves that are currently open.
 <b>Signature:</b>
 
 ```typescript
-getNumberOfTroves(): Promise<number>;
+getNumberOfTroves(asset: string): Promise<number>;
 ```
+
+## Parameters
+
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  asset | string |  |
+
 <b>Returns:</b>
 
 Promise&lt;number&gt;

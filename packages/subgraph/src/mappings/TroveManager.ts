@@ -45,8 +45,8 @@ export function handleRedemption(event: Redemption): void {
     event,
     event.params._attemptedKUSDAmount,
     event.params._actualKUSDAmount,
-    event.params._ETHSent,
-    event.params._ETHFee
+    event.params._AssetSent,
+    event.params._AssetFee
   );
 }
 

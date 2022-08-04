@@ -11,6 +11,8 @@ export type GasEstimationState =
   | { type: "complete"; populatedTx: PopulatedEthersKumoTransaction };
 
 type ExpensiveTroveChangeWarningParams = {
+  asset?: string;
+  tokenAmount?: Decimal;
   troveChange?: Exclude<TroveChange<Decimal>, { type: "invalidCreation" }>;
   maxBorrowingRate: Decimal;
   borrowingFeeDecayToleranceMinutes: number;
@@ -19,6 +21,8 @@ type ExpensiveTroveChangeWarningParams = {
 };
 
 export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningParams> = ({
+  asset = "",
+  tokenAmount = Decimal.from(0),
   troveChange,
   maxBorrowingRate,
   borrowingFeeDecayToleranceMinutes,
@@ -35,11 +39,11 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
 
       const timeoutId = setTimeout(async () => {
         const populatedTx = await (troveChange.type === "creation"
-          ? liquity.populate.openTrove(troveChange.params, {
+          ? liquity.populate.openTrove(troveChange.params, asset, tokenAmount, {
               maxBorrowingRate,
               borrowingFeeDecayToleranceMinutes
             })
-          : liquity.populate.adjustTrove(troveChange.params, {
+          : liquity.populate.adjustTrove(troveChange.params, asset, {
               maxBorrowingRate,
               borrowingFeeDecayToleranceMinutes
             }));

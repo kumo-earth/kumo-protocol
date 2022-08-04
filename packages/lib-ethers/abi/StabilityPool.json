@@ -1291,7 +1291,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_vaultParams",
+        "name": "_kumoParamsAddress",
         "type": "address"
       }
     ],
