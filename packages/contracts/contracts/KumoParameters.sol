@@ -11,6 +11,9 @@ import "./Interfaces/IKumoParameters.sol";
 contract KumoParameters is IKumoParameters, Ownable, CheckContract {
 	string public constant NAME = "KumoParameters";
 
+	// During bootsrap period redemptions are not allowed
+    uint256 constant public BOOTSTRAP_PERIOD = 14 days;
+
 	uint256 public constant override DECIMAL_PRECISION = 1 ether;
 	uint256 public constant override _100pct = 1 ether; // 1e18 == 100%
 

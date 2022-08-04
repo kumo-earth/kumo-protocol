@@ -966,7 +966,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         RedemptionTotals memory totals;
 
         _requireValidMaxFeePercentage(_asset, _maxFeePercentage);
-        // _requireAfterBootstrapPeriod();
+        _requireAfterBootstrapPeriod();
         totals.price = kumoParams.priceFeed().fetchPrice();
         _requireTCRoverMCR(_asset, totals.price);
         _requireAmountGreaterThanZero(_KUSDamount);
@@ -1529,10 +1529,10 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         require(_getTCR(_asset, _price) >= kumoParams.MCR(_asset), "TroveManager: Cannot redeem when TCR < MCR");
     }
 
-    // function _requireAfterBootstrapPeriod() internal view {
-    //     uint256 systemDeploymentTime = kumoToken.getDeploymentStartTime();
-    //     require(block.timestamp >= systemDeploymentTime.add(BOOTSTRAP_PERIOD), "TroveManager: Redemptions are not allowed during bootstrap phase");
-    // }
+    function _requireAfterBootstrapPeriod() internal view {
+        uint256 systemDeploymentTime = kumoToken.getDeploymentStartTime();
+        require(block.timestamp >= systemDeploymentTime.add(kumoParams.BOOTSTRAP_PERIOD()), "TroveManager: Redemptions are not allowed during bootstrap phase");
+    }
 
     function _requireValidMaxFeePercentage(address _asset, uint256 _maxFeePercentage) internal view {
         require(_maxFeePercentage >= kumoParams.REDEMPTION_FEE_FLOOR(_asset)  && _maxFeePercentage <= DECIMAL_PRECISION,
