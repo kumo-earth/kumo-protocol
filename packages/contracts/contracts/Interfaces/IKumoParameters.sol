@@ -29,6 +29,8 @@ interface IKumoParameters {
 	event RedemptionBlockRemoved(address _asset);
 	event PriceFeedChanged(address indexed addr);
 
+	function BOOTSTRAP_PERIOD() external view returns  (uint256);
+
 	function DECIMAL_PRECISION() external view returns (uint256);
 
 	function _100pct() external view returns (uint256);
