@@ -73,7 +73,7 @@ const oracleAddresses = {
   "polygon-mumbai": {
     chainlink: "0x0715A7794a1dc8e42615F059dD6e406A6594651A",
     tellor: "0x41b66dd93b03e89D29114a7613A6f9f0d4F40178"
-  },
+  }
 };
 
 const hasOracles = (network: string): network is keyof typeof oracleAddresses =>
@@ -81,7 +81,7 @@ const hasOracles = (network: string): network is keyof typeof oracleAddresses =>
 
 const wethAddresses = {
   mainnet: "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
-  "polygon-mumbai": "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
+  "polygon-mumbai": "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa"
 };
 
 const hasWETH = (network: string): network is keyof typeof wethAddresses => network in wethAddresses;
@@ -98,14 +98,16 @@ const config: HardhatUserConfig = {
       // This is closer to what will happen in production
       throwOnCallFailures: false,
       throwOnTransactionFailures: false,
+      allowUnlimitedContractSize: true
     },
 
     dev: {
       url: "http://localhost:8545",
-      accounts: [deployerAccount, devChainRichAccount, ...generateRandomAccounts(numAccounts - 2)]
+      accounts: [deployerAccount, devChainRichAccount],
+      allowUnlimitedContractSize: true
     },
 
-    ...alchemyNetwork("polygon-mumbai"),
+    ...alchemyNetwork("polygon-mumbai")
   },
 
   paths: {

@@ -968,6 +968,7 @@ export interface Unipool
 }
 
 interface KumoParametersCalls {
+  BOOTSTRAP_PERIOD(_overrides?: CallOverrides): Promise<BigNumber>;
   BORROWING_FEE_FLOOR(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
   BORROWING_FEE_FLOOR_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
   CCR(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
