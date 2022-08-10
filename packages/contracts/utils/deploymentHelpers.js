@@ -355,7 +355,8 @@ class DeploymentHelper {
     await contracts.kumoParameters.setAddresses(
       contracts.activePool.address,
       contracts.defaultPool.address,
-      contracts.priceFeedTestnet.address
+      contracts.priceFeedTestnet.address,
+      contracts.stabilityPool.address
     )
 
     // set contracts in the Trove Manager

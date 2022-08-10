@@ -21,7 +21,8 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     // --- Connected contract declarations ---
 
     ITroveManager public troveManager;
-	IStabilityPoolManager stabilityPoolManager;
+    IStabilityPoolManager stabilityPoolManager;
+	IStabilityPool stabilityPool;
 
     address stabilityPoolAddress;
 

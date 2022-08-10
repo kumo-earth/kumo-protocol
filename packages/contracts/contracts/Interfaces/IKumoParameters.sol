@@ -6,6 +6,7 @@ import "./IActivePool.sol";
 import "./IDefaultPool.sol";
 import "./IPriceFeed.sol";
 import "./IKumoBase.sol";
+import "./IStabilityPool.sol";
 
 interface IKumoParameters {
 	error SafeCheckError(
@@ -61,10 +62,13 @@ interface IKumoParameters {
 
 	function priceFeed() external view returns (IPriceFeed);
 
+	function stabilityPool() external view returns (IStabilityPool);
+
 	function setAddresses(
 		address _activePool,
 		address _defaultPool,
-		address _priceFeed //,
+		address _priceFeed,
+		address _stabilityPool //,
 		// address _adminContract
 	) external;
 

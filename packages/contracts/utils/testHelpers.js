@@ -39,6 +39,8 @@ const TimeValues = {
   MINUTES_IN_ONE_YEAR:    60 * 24 * 365
 }
 
+const EMPTY_ADDRESS = '0x' + '0'.repeat(40);
+
 class TestHelper {
 
   static dec(val, scale) {
@@ -293,14 +295,17 @@ class TestHelper {
   // stored in Kumo, or the current Chainlink ETHUSD price, etc.
 
 
-  static async checkRecoveryMode(contracts) {
+  static async checkRecoveryMode(contracts, asset) {
+    if (!asset)
+      asset = this.EMPTY_ADDRESS;
     const price = await contracts.priceFeedTestnet.getPrice()
-    return contracts.troveManager.checkRecoveryMode(price)
+    return contracts.troveManager.checkRecoveryMode(asset, price)
   }
 
-  static async getTCR(contracts) {
+  static async getTCR(contracts, asset) {
+    if (!asset)  asset = this.ZERO_ADDRESS;
     const price = await contracts.priceFeedTestnet.getPrice()
-    return contracts.troveManager.getTCR(price)
+    return contracts.troveManager.getTCR(asset, price)
   }
 
   // --- Gas compensation calculation functions ---
@@ -324,16 +329,19 @@ class TestHelper {
     return compositeDebt
   }
 
-  static async getTroveEntireColl(contracts, trove) {
-    return this.toBN((await contracts.troveManager.getEntireDebtAndColl(trove))[1])
+  static async getTroveEntireColl(contracts, trove, asset) {
+    if (!asset) asset = this.ZERO_ADDRESS
+    return this.toBN((await contracts.troveManager.getEntireDebtAndColl(asset, trove))[1])
   }
 
-  static async getTroveEntireDebt(contracts, trove) {
-    return this.toBN((await contracts.troveManager.getEntireDebtAndColl(trove))[0])
+  static async getTroveEntireDebt(contracts, trove, asset) {
+    if (!asset) asset = this.ZERO_ADDRESS
+    return this.toBN((await contracts.troveManager.getEntireDebtAndColl(asset, trove))[0])
   }
 
-  static async getTroveStake(contracts, trove) {
-    return (contracts.troveManager.getTroveStake(trove))
+  static async getTroveStake(contracts, trove, asset) {
+    if (!asset) asset = this.ZERO_ADDRESS
+    return (contracts.troveManager.getTroveStake(asset, trove))
   }
 
   /*
@@ -353,23 +361,23 @@ class TestHelper {
    * given the desired total debt, returns the KUSD amount that needs to be requested in openTrove
    * So, it subtracts the gas compensation and then the borrowing fee
    */
-  static async getOpenTroveKUSDAmount(contracts, totalDebt) {
-    const actualDebt = await this.getActualDebtFromComposite(totalDebt, contracts)
-    return this.getNetBorrowingAmount(contracts, actualDebt)
+  static async getOpenTroveKUSDAmount(contracts, totalDebt, asset) {
+    if (!asset) asset = this.ZERO_ADDRESS
+    const actualDebt = await this.getActualDebtFromComposite(totalDebt, contracts, asset)
+    return this.getNetBorrowingAmount(contracts, actualDebt, asset)
   }
 
   // Subtracts the borrowing fee
   static async getNetBorrowingAmount(contracts, debtWithFee, asset) {
-    if (!asset)
-      asset = this.ZERO_ADDRESS;
-
+    if (!asset) asset = this.ZERO_ADDRESS
     const borrowingRate = await contracts.troveManager.getBorrowingRateWithDecay(asset)
     return this.toBN(debtWithFee).mul(MoneyValues._1e18BN).div(MoneyValues._1e18BN.add(borrowingRate))
   }
 
   // Adds the borrowing fee
-  static async getAmountWithBorrowingFee(contracts, kusdAmount) {
-    const fee = await contracts.troveManager.getBorrowingFee(kusdAmount)
+  static async getAmountWithBorrowingFee(contracts, kusdAmount, asset) {
+    if (!asset) asset = this.ZERO_ADDRESS
+    const fee = await contracts.troveManager.getBorrowingFee(asset, kusdAmount)
     return kusdAmount.add(fee)
   }
 
@@ -739,6 +747,7 @@ class TestHelper {
   }
 
   static async withdrawKUSD(contracts, {
+    asset,
     maxFeePercentage,
     kusdAmount,
     ICR,
@@ -746,6 +755,7 @@ class TestHelper {
     lowerHint,
     extraParams
   }) {
+    if (!asset) asset = this.ZERO_ADDRESS
     if (!maxFeePercentage) maxFeePercentage = this._100pct
     if (!upperHint) upperHint = this.ZERO_ADDRESS
     if (!lowerHint) lowerHint = this.ZERO_ADDRESS
@@ -755,7 +765,7 @@ class TestHelper {
     let increasedTotalDebt
     if (ICR) {
       assert(extraParams.from, "A from account is needed")
-      const { debt, coll } = await contracts.troveManager.getEntireDebtAndColl(extraParams.from)
+      const { debt, coll } = await contracts.troveManager.getEntireDebtAndColl(asset, extraParams.from)
       const price = await contracts.priceFeedTestnet.getPrice()
       const targetDebt = coll.mul(price).div(ICR)
       assert(targetDebt > debt, "ICR is already greater than or equal to target")
@@ -765,7 +775,7 @@ class TestHelper {
       increasedTotalDebt = await this.getAmountWithBorrowingFee(contracts, kusdAmount)
     }
 
-    await contracts.borrowerOperations.withdrawKUSD(maxFeePercentage, kusdAmount, upperHint, lowerHint, extraParams)
+    await contracts.borrowerOperations.withdrawKUSD(asset, maxFeePercentage, kusdAmount, upperHint, lowerHint, extraParams)
 
     return {
       kusdAmount,
