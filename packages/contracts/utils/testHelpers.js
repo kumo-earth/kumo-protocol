@@ -330,16 +330,19 @@ class TestHelper {
     return compositeDebt
   }
 
-  static async getTroveEntireColl(contracts, trove) {
-    return this.toBN((await contracts.troveManager.getEntireDebtAndColl(trove))[1])
+  static async getTroveEntireColl(contracts, trove, asset) {
+    if (!asset) asset = this.ZERO_ADDRESS
+    return this.toBN((await contracts.troveManager.getEntireDebtAndColl(asset, trove))[1])
   }
 
-  static async getTroveEntireDebt(contracts, trove) {
-    return this.toBN((await contracts.troveManager.getEntireDebtAndColl(trove))[0])
+  static async getTroveEntireDebt(contracts, trove, asset) {
+    if (!asset) asset = this.ZERO_ADDRESS
+    return this.toBN((await contracts.troveManager.getEntireDebtAndColl(asset, trove))[0])
   }
 
-  static async getTroveStake(contracts, trove) {
-    return (contracts.troveManager.getTroveStake(trove))
+  static async getTroveStake(contracts, trove, asset) {
+    if (!asset) asset = this.ZERO_ADDRESS
+    return (contracts.troveManager.getTroveStake(asset, trove))
   }
 
   /*
@@ -368,8 +371,9 @@ class TestHelper {
   }
 
   // Adds the borrowing fee
-  static async getAmountWithBorrowingFee(contracts, kusdAmount) {
-    const fee = await contracts.troveManager.getBorrowingFee(kusdAmount)
+  static async getAmountWithBorrowingFee(contracts, kusdAmount, asset) {
+    if (!asset) asset = this.ZERO_ADDRESS
+    const fee = await contracts.troveManager.getBorrowingFee(asset, kusdAmount)
     return kusdAmount.add(fee)
   }
 
