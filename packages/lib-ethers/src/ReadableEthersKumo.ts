@@ -214,10 +214,9 @@ export class ReadableEthersKumo implements ReadableKumo {
     const { activePool } = _getContracts(this.connection);
 
     const [activeCollateral, activeDebt] = await Promise.all(
-      [
-        activePool.getETH({ ...overrides }),
-        activePool.getKUSDDebt({ ...overrides })
-      ].map(getBigNumber => getBigNumber.then(decimalify))
+      [activePool.getETH({ ...overrides }), activePool.getKUSDDebt({ ...overrides })].map(
+        getBigNumber => getBigNumber.then(decimalify)
+      )
     );
 
     return new Trove(activeCollateral, activeDebt);
@@ -228,10 +227,9 @@ export class ReadableEthersKumo implements ReadableKumo {
     const { defaultPool } = _getContracts(this.connection);
 
     const [liquidatedCollateral, closedDebt] = await Promise.all(
-      [
-        defaultPool.getETH({ ...overrides }),
-        defaultPool.getKUSDDebt({ ...overrides })
-      ].map(getBigNumber => getBigNumber.then(decimalify))
+      [defaultPool.getETH({ ...overrides }), defaultPool.getKUSDDebt({ ...overrides })].map(
+        getBigNumber => getBigNumber.then(decimalify)
+      )
     );
 
     return new Trove(liquidatedCollateral, closedDebt);
@@ -255,17 +253,13 @@ export class ReadableEthersKumo implements ReadableKumo {
     address ??= _requireAddress(this.connection);
     const { stabilityPool } = _getContracts(this.connection);
 
-    const [
-      { frontEndTag, initialValue },
-      currentKUSD,
-      collateralGain,
-      kumoReward
-    ] = await Promise.all([
-      stabilityPool.deposits(address, { ...overrides }),
-      stabilityPool.getCompoundedKUSDDeposit(address, { ...overrides }),
-      stabilityPool.getDepositorETHGain(address, { ...overrides }),
-      stabilityPool.getDepositorKUMOGain(address, { ...overrides })
-    ]);
+    const [{ frontEndTag, initialValue }, currentKUSD, collateralGain, kumoReward] =
+      await Promise.all([
+        stabilityPool.deposits(address, { ...overrides }),
+        stabilityPool.getCompoundedKUSDDeposit(address, { ...overrides }),
+        stabilityPool.getDepositorETHGain(address, { ...overrides }),
+        stabilityPool.getDepositorKUMOGain(address, { ...overrides })
+      ]);
 
     return new StabilityDeposit(
       decimalify(initialValue),
@@ -321,7 +315,7 @@ export class ReadableEthersKumo implements ReadableKumo {
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getUniTokenAllowance} */
   getUniTokenAllowance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     address ??= _requireAddress(this.connection);
-    const { uniToken, unipool } = _getContracts(this.connection);
+    const { uniToken, unipool }: any = _getContracts(this.connection);
 
     return uniToken.allowance(address, unipool.address, { ...overrides }).then(decimalify);
   }
@@ -535,8 +529,7 @@ export interface ReadableEthersKumoWithStore<T extends KumoStore = KumoStore>
   readonly store: T;
 }
 
-class _BlockPolledReadableEthersKumo
-  implements ReadableEthersKumoWithStore<BlockPolledKumoStore> {
+class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<BlockPolledKumoStore> {
   readonly connection: EthersKumoConnection;
   readonly store: BlockPolledKumoStore;
 

@@ -67,14 +67,19 @@ const defaultBorrowingFeeDecayToleranceMinutes = 10;
 
 const noDetails = () => undefined;
 
-const compose = <T, U, V>(f: (_: U) => V, g: (_: T) => U) => (_: T) => f(g(_));
+const compose =
+  <T, U, V>(f: (_: U) => V, g: (_: T) => U) =>
+  (_: T) =>
+    f(g(_));
 
 const id = <T>(t: T) => t;
 
 // Takes ~6-7K (use 10K to be safe) to update lastFeeOperationTime, but the cost of calculating the
 // decayed baseRate increases logarithmically with time elapsed since the last update.
-const addGasForBaseRateUpdate = (maxMinutesSinceLastUpdate = 10) => (gas: BigNumber) =>
-  gas.add(10000 + 1414 * Math.ceil(Math.log2(maxMinutesSinceLastUpdate + 1)));
+const addGasForBaseRateUpdate =
+  (maxMinutesSinceLastUpdate = 10) =>
+  (gas: BigNumber) =>
+    gas.add(10000 + 1414 * Math.ceil(Math.log2(maxMinutesSinceLastUpdate + 1)));
 
 // First traversal in ascending direction takes ~50K, then ~13.5K per extra step.
 // 80K should be enough for 3 steps, plus some extra to be safe.
@@ -197,7 +202,8 @@ export class EthersTransactionCancelledError extends Error {
  */
 export class SentEthersKumoTransaction<T = unknown>
   implements
-    SentKumoTransaction<EthersTransactionResponse, KumoReceipt<EthersTransactionReceipt, T>> {
+    SentKumoTransaction<EthersTransactionResponse, KumoReceipt<EthersTransactionReceipt, T>>
+{
   /** Ethers' representation of a sent transaction. */
   readonly rawSentTransaction: EthersTransactionResponse;
 
@@ -344,8 +350,8 @@ const normalizeBorrowingOperationOptionalParams = (
  * @public
  */
 export class PopulatedEthersKumoTransaction<T = unknown>
-  implements
-    PopulatedKumoTransaction<EthersPopulatedTransaction, SentEthersKumoTransaction<T>> {
+  implements PopulatedKumoTransaction<EthersPopulatedTransaction, SentEthersKumoTransaction<T>>
+{
   /** Unsigned transaction object populated by Ethers. */
   readonly rawPopulatedTransaction: EthersPopulatedTransaction;
 
@@ -406,7 +412,8 @@ export class PopulatedEthersRedemption
       EthersPopulatedTransaction,
       EthersTransactionResponse,
       EthersTransactionReceipt
-    > {
+    >
+{
   /** {@inheritDoc @kumodao/lib-base#PopulatedRedemption.attemptedKUSDAmount} */
   readonly attemptedKUSDAmount: Decimal;
 
@@ -482,11 +489,8 @@ export interface _TroveChangeWithFees<T> {
  */
 export class PopulatableEthersKumo
   implements
-    PopulatableKumo<
-      EthersTransactionReceipt,
-      EthersTransactionResponse,
-      EthersPopulatedTransaction
-    > {
+    PopulatableKumo<EthersTransactionReceipt, EthersTransactionResponse, EthersPopulatedTransaction>
+{
   private readonly _readable: ReadableEthersKumo;
 
   constructor(readable: ReadableEthersKumo) {
@@ -648,7 +652,7 @@ export class PopulatableEthersKumo
   private async _wrapStabilityDepositWithdrawal(
     rawPopulatedTransaction: EthersPopulatedTransaction
   ): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>> {
-    const { stabilityPool, kusdToken } = _getContracts(this._readable.connection);
+    const { stabilityPool, kusdToken }: any = _getContracts(this._readable.connection);
 
     return new PopulatedEthersKumoTransaction(
       rawPopulatedTransaction,
@@ -659,8 +663,10 @@ export class PopulatableEthersKumo
 
         const [withdrawKUSD] = kusdToken
           .extractEvents(logs, "Transfer")
-          .filter(({ args: { from, to } }) => from === stabilityPool.address && to === userAddress)
-          .map(({ args: { value } }) => decimalify(value));
+          .filter(
+            ({ args: { from, to } }: any) => from === stabilityPool.address && to === userAddress
+          )
+          .map(({ args: { value } }: any) => decimalify(value));
 
         return {
           ...gainsWithdrawalDetails,
@@ -784,21 +790,16 @@ export class PopulatableEthersKumo
     const { hintHelpers } = _getContracts(this._readable.connection);
     const price = await this._readable.getPrice();
 
-    const {
-      firstRedemptionHint,
-      partialRedemptionHintNICR,
-      truncatedKUSDamount
-    } = await hintHelpers.getRedemptionHints(amount.hex, price.hex, _redeemMaxIterations);
+    const { firstRedemptionHint, partialRedemptionHintNICR, truncatedKUSDamount } =
+      await hintHelpers.getRedemptionHints(amount.hex, price.hex, _redeemMaxIterations);
 
-    const [
-      partialRedemptionUpperHint,
-      partialRedemptionLowerHint
-    ] = partialRedemptionHintNICR.isZero()
-      ? [AddressZero, AddressZero]
-      : await this._findHintsForNominalCollateralRatio(
-          decimalify(partialRedemptionHintNICR)
-          // XXX: if we knew the partially redeemed Trove's address, we'd pass it here
-        );
+    const [partialRedemptionUpperHint, partialRedemptionLowerHint] =
+      partialRedemptionHintNICR.isZero()
+        ? [AddressZero, AddressZero]
+        : await this._findHintsForNominalCollateralRatio(
+            decimalify(partialRedemptionHintNICR)
+            // XXX: if we knew the partially redeemed Trove's address, we'd pass it here
+          );
 
     return [
       decimalify(truncatedKUSDamount),
@@ -836,13 +837,11 @@ export class PopulatableEthersKumo
     const newTrove = Trove.create(normalizedParams, currentBorrowingRate);
     const hints = await this._findHints(newTrove);
 
-    const {
-      maxBorrowingRate,
-      borrowingFeeDecayToleranceMinutes
-    } = normalizeBorrowingOperationOptionalParams(
-      maxBorrowingRateOrOptionalParams,
-      currentBorrowingRate
-    );
+    const { maxBorrowingRate, borrowingFeeDecayToleranceMinutes } =
+      normalizeBorrowingOperationOptionalParams(
+        maxBorrowingRateOrOptionalParams,
+        currentBorrowingRate
+      );
 
     const txParams = (borrowKUSD: Decimal): Parameters<typeof borrowerOperations.openTrove> => [
       maxBorrowingRate.hex,
@@ -967,13 +966,11 @@ export class PopulatableEthersKumo
     const adjustedTrove = trove.adjust(normalizedParams, currentBorrowingRate);
     const hints = await this._findHints(adjustedTrove, address);
 
-    const {
-      maxBorrowingRate,
-      borrowingFeeDecayToleranceMinutes
-    } = normalizeBorrowingOperationOptionalParams(
-      maxBorrowingRateOrOptionalParams,
-      currentBorrowingRate
-    );
+    const { maxBorrowingRate, borrowingFeeDecayToleranceMinutes } =
+      normalizeBorrowingOperationOptionalParams(
+        maxBorrowingRateOrOptionalParams,
+        currentBorrowingRate
+      );
 
     const txParams = (borrowKUSD?: Decimal): Parameters<typeof borrowerOperations.adjustTrove> => [
       maxBorrowingRate.hex,
@@ -1212,15 +1209,13 @@ export class PopulatableEthersKumo
     const { troveManager } = _getContracts(this._readable.connection);
     const attemptedKUSDAmount = Decimal.from(amount);
 
-    const [
-      fees,
-      total,
-      [truncatedAmount, firstRedemptionHint, ...partialHints]
-    ] = await Promise.all([
-      this._readable.getFees(),
-      this._readable.getTotal(),
-      this._findRedemptionHints(attemptedKUSDAmount)
-    ]);
+    const [fees, total, [truncatedAmount, firstRedemptionHint, ...partialHints]] = await Promise.all(
+      [
+        this._readable.getFees(),
+        this._readable.getTotal(),
+        this._findRedemptionHints(attemptedKUSDAmount)
+      ]
+    );
 
     if (truncatedAmount.isZero) {
       throw new Error(
@@ -1348,7 +1343,7 @@ export class PopulatableEthersKumo
     allowance?: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<void>> {
-    const { uniToken, unipool } = _getContracts(this._readable.connection);
+    const { uniToken, unipool }: any = _getContracts(this._readable.connection);
 
     return this._wrapSimpleTransaction(
       await uniToken.estimateAndPopulate.approve(

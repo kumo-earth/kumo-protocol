@@ -21,13 +21,13 @@ type NameLookup = {
 
 const interfaceLookupFrom = (contractLookup: ContractLookup): InterfaceLookup => {
   return Object.fromEntries(
-    Object.entries(contractLookup).map(([, contract]) => [contract.address, contract.interface])
+    Object.entries(contractLookup).map(([, contract]: any) => [contract.address, contract.interface])
   );
 };
 
 const nameLookupFrom = (contractLookup: ContractLookup): NameLookup => {
   return Object.fromEntries(
-    Object.entries(contractLookup).map(([name, contract]) => [contract.address, name])
+    Object.entries(contractLookup).map(([name, contract]: any) => [contract.address, name])
   );
 };
 
@@ -100,7 +100,7 @@ const logDescriptionToString = (logDescription: LogDescription, nameLookup: Name
 };
 
 export const logsToString = (receipt: TransactionReceipt, contracts: _KumoContracts): string => {
-  const contractLookup = (contracts as unknown) as ContractLookup;
+  const contractLookup = contracts as unknown as ContractLookup;
   const interfaceLookup = interfaceLookupFrom(contractLookup);
   const contractNameLookup = nameLookupFrom(contractLookup);
 
