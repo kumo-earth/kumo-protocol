@@ -12,6 +12,7 @@ const toBN = th.toBN
 const getDifference = th.getDifference
 
 contract('Fee arithmetic tests', async accounts => {
+  let ZERO_ADDRESS = th.ZERO_ADDRESS
   let contracts
   let troveManagerTester
   let mathTester
@@ -348,85 +349,85 @@ contract('Fee arithmetic tests', async accounts => {
   })
 
   it("minutesPassedSinceLastFeeOp(): returns minutes passed for no time increase", async () => {
-    await troveManagerTester.setLastFeeOpTimeToNow()
-    const minutesPassed = await troveManagerTester.minutesPassedSinceLastFeeOp()
+    await troveManagerTester.setLastFeeOpTimeToNow(ZERO_ADDRESS)
+    const minutesPassed = await troveManagerTester.minutesPassedSinceLastFeeOp(ZERO_ADDRESS)
 
     assert.equal(minutesPassed, '0')
   })
 
   it("minutesPassedSinceLastFeeOp(): returns minutes passed between time of last fee operation and current block.timestamp, rounded down to nearest minutes", async () => {
     for (testPair of secondsToMinutesRoundedDown) {
-      await troveManagerTester.setLastFeeOpTimeToNow()
+      await troveManagerTester.setLastFeeOpTimeToNow(ZERO_ADDRESS)
 
       const seconds = testPair[0]
       const expectedHoursPassed = testPair[1]
 
       await th.fastForwardTime(seconds, web3.currentProvider)
 
-      const minutesPassed = await troveManagerTester.minutesPassedSinceLastFeeOp()
+      const minutesPassed = await troveManagerTester.minutesPassedSinceLastFeeOp(ZERO_ADDRESS)
 
       assert.equal(expectedHoursPassed.toString(), minutesPassed.toString())
     }
   })
 
   it("decayBaseRateFromBorrowing(): returns the initial base rate for no time increase", async () => {
-    await troveManagerTester.setBaseRate(dec(5, 17))
-    await troveManagerTester.setLastFeeOpTimeToNow()
+    await troveManagerTester.setBaseRate(ZERO_ADDRESS, dec(5, 17))
+    await troveManagerTester.setLastFeeOpTimeToNow(ZERO_ADDRESS)
 
-    const baseRateBefore = await troveManagerTester.baseRate()
+    const baseRateBefore = await troveManagerTester.baseRate(ZERO_ADDRESS)
     assert.equal(baseRateBefore, dec(5, 17))
 
-    await troveManagerTester.unprotectedDecayBaseRateFromBorrowing()
-    const baseRateAfter = await troveManagerTester.baseRate()
+    await troveManagerTester.unprotectedDecayBaseRateFromBorrowing(ZERO_ADDRESS)
+    const baseRateAfter = await troveManagerTester.baseRate(ZERO_ADDRESS)
 
     assert.isTrue(baseRateBefore.eq(baseRateAfter))
   })
 
   it("decayBaseRateFromBorrowing(): returns the initial base rate for less than one minute passed ", async () => {
-    await troveManagerTester.setBaseRate(dec(5, 17))
-    await troveManagerTester.setLastFeeOpTimeToNow()
+    await troveManagerTester.setBaseRate(ZERO_ADDRESS, dec(5, 17))
+    await troveManagerTester.setLastFeeOpTimeToNow(ZERO_ADDRESS)
 
     // 1 second
-    const baseRateBefore_1 = await troveManagerTester.baseRate()
+    const baseRateBefore_1 = await troveManagerTester.baseRate(ZERO_ADDRESS)
     assert.equal(baseRateBefore_1, dec(5, 17))
 
     await th.fastForwardTime(1, web3.currentProvider)
 
-    await troveManagerTester.unprotectedDecayBaseRateFromBorrowing()
-    const baseRateAfter_1 = await troveManagerTester.baseRate()
+    await troveManagerTester.unprotectedDecayBaseRateFromBorrowing(ZERO_ADDRESS)
+    const baseRateAfter_1 = await troveManagerTester.baseRate(ZERO_ADDRESS)
 
     assert.isTrue(baseRateBefore_1.eq(baseRateAfter_1))
 
     // 17 seconds
-    await troveManagerTester.setLastFeeOpTimeToNow()
+    await troveManagerTester.setLastFeeOpTimeToNow(ZERO_ADDRESS)
 
-    const baseRateBefore_2 = await troveManagerTester.baseRate()
+    const baseRateBefore_2 = await troveManagerTester.baseRate(ZERO_ADDRESS)
     await th.fastForwardTime(17, web3.currentProvider)
 
-    await troveManagerTester.unprotectedDecayBaseRateFromBorrowing()
-    const baseRateAfter_2 = await troveManagerTester.baseRate()
+    await troveManagerTester.unprotectedDecayBaseRateFromBorrowing(ZERO_ADDRESS)
+    const baseRateAfter_2 = await troveManagerTester.baseRate(ZERO_ADDRESS)
 
     assert.isTrue(baseRateBefore_2.eq(baseRateAfter_2))
 
     // 29 seconds
-    await troveManagerTester.setLastFeeOpTimeToNow()
+    await troveManagerTester.setLastFeeOpTimeToNow(ZERO_ADDRESS)
 
-    const baseRateBefore_3 = await troveManagerTester.baseRate()
+    const baseRateBefore_3 = await troveManagerTester.baseRate(ZERO_ADDRESS)
     await th.fastForwardTime(29, web3.currentProvider)
 
-    await troveManagerTester.unprotectedDecayBaseRateFromBorrowing()
-    const baseRateAfter_3 = await troveManagerTester.baseRate()
+    await troveManagerTester.unprotectedDecayBaseRateFromBorrowing(ZERO_ADDRESS)
+    const baseRateAfter_3 = await troveManagerTester.baseRate(ZERO_ADDRESS)
 
     assert.isTrue(baseRateBefore_3.eq(baseRateAfter_3))
 
     // 50 seconds
-    await troveManagerTester.setLastFeeOpTimeToNow()
+    await troveManagerTester.setLastFeeOpTimeToNow(ZERO_ADDRESS)
 
-    const baseRateBefore_4 = await troveManagerTester.baseRate()
+    const baseRateBefore_4 = await troveManagerTester.baseRate(ZERO_ADDRESS)
     await th.fastForwardTime(50, web3.currentProvider)
 
-    await troveManagerTester.unprotectedDecayBaseRateFromBorrowing()
-    const baseRateAfter_4 = await troveManagerTester.baseRate()
+    await troveManagerTester.unprotectedDecayBaseRateFromBorrowing(ZERO_ADDRESS)
+    const baseRateAfter_4 = await troveManagerTester.baseRate(ZERO_ADDRESS)
 
     assert.isTrue(baseRateBefore_4.eq(baseRateAfter_4))
 
@@ -437,21 +438,21 @@ contract('Fee arithmetic tests', async accounts => {
     // baseRate = 0.01
     for (i = 0; i < decayBaseRateResults.seconds.length; i++) {
       // Set base rate to 0.01 in TroveManager
-      await troveManagerTester.setBaseRate(dec(1, 16))
-      const contractBaseRate = await troveManagerTester.baseRate()
+      await troveManagerTester.setBaseRate(ZERO_ADDRESS, dec(1, 16))
+      const contractBaseRate = await troveManagerTester.baseRate(ZERO_ADDRESS)
       assert.equal(contractBaseRate, dec(1, 16))
 
       const startBaseRate = '0.01'
 
       const secondsPassed = decayBaseRateResults.seconds[i]
       const expectedDecayedBaseRate = decayBaseRateResults[startBaseRate][i]
-      await troveManagerTester.setLastFeeOpTimeToNow()
+      await troveManagerTester.setLastFeeOpTimeToNow(ZERO_ADDRESS)
 
       // Progress time 
       await th.fastForwardTime(secondsPassed, web3.currentProvider)
 
-      await troveManagerTester.unprotectedDecayBaseRateFromBorrowing()
-      const decayedBaseRate = await troveManagerTester.baseRate()
+      await troveManagerTester.unprotectedDecayBaseRateFromBorrowing(ZERO_ADDRESS)
+      const decayedBaseRate = await troveManagerTester.baseRate(ZERO_ADDRESS)
 
       const minutesPassed = secondsPassed / 60
 
@@ -471,21 +472,21 @@ contract('Fee arithmetic tests', async accounts => {
     // baseRate = 0.1
     for (i = 0; i < decayBaseRateResults.seconds.length; i++) {
       // Set base rate to 0.1 in TroveManager
-      await troveManagerTester.setBaseRate(dec(1, 17))
-      const contractBaseRate = await troveManagerTester.baseRate()
+      await troveManagerTester.setBaseRate(ZERO_ADDRESS, dec(1, 17))
+      const contractBaseRate = await troveManagerTester.baseRate(ZERO_ADDRESS)
       assert.equal(contractBaseRate, dec(1, 17))
 
       const startBaseRate = '0.1'
 
       const secondsPassed = decayBaseRateResults.seconds[i]
       const expectedDecayedBaseRate = decayBaseRateResults['0.1'][i]
-      await troveManagerTester.setLastFeeOpTimeToNow()
+      await troveManagerTester.setLastFeeOpTimeToNow(ZERO_ADDRESS)
 
       // Progress time 
       await th.fastForwardTime(secondsPassed, web3.currentProvider)
 
-      await troveManagerTester.unprotectedDecayBaseRateFromBorrowing()
-      const decayedBaseRate = await troveManagerTester.baseRate()
+      await troveManagerTester.unprotectedDecayBaseRateFromBorrowing(ZERO_ADDRESS)
+      const decayedBaseRate = await troveManagerTester.baseRate(ZERO_ADDRESS)
 
       const minutesPassed = secondsPassed / 60
 
@@ -505,21 +506,21 @@ contract('Fee arithmetic tests', async accounts => {
     // baseRate = 0.34539284
     for (i = 0; i < decayBaseRateResults.seconds.length; i++) {
       // Set base rate to 0.1 in TroveManager
-      await troveManagerTester.setBaseRate('345392840000000000')
-      const contractBaseRate = await troveManagerTester.baseRate()
-      await troveManagerTester.setBaseRate('345392840000000000')
+      await troveManagerTester.setBaseRate(ZERO_ADDRESS, '345392840000000000')
+      const contractBaseRate = await troveManagerTester.baseRate(ZERO_ADDRESS)
+      await troveManagerTester.setBaseRate(ZERO_ADDRESS, '345392840000000000')
 
       const startBaseRate = '0.34539284'
 
       const secondsPassed = decayBaseRateResults.seconds[i]
       const expectedDecayedBaseRate = decayBaseRateResults[startBaseRate][i]
-      await troveManagerTester.setLastFeeOpTimeToNow()
+      await troveManagerTester.setLastFeeOpTimeToNow(ZERO_ADDRESS)
 
       // Progress time 
       await th.fastForwardTime(secondsPassed, web3.currentProvider)
 
-      await troveManagerTester.unprotectedDecayBaseRateFromBorrowing()
-      const decayedBaseRate = await troveManagerTester.baseRate()
+      await troveManagerTester.unprotectedDecayBaseRateFromBorrowing(ZERO_ADDRESS)
+      const decayedBaseRate = await troveManagerTester.baseRate(ZERO_ADDRESS)
 
       const minutesPassed = secondsPassed / 60
 
@@ -540,20 +541,20 @@ contract('Fee arithmetic tests', async accounts => {
     // baseRate = 0.9976
     for (i = 0; i < decayBaseRateResults.seconds.length; i++) {
       // Set base rate to 0.9976 in TroveManager
-      await troveManagerTester.setBaseRate('997600000000000000')
-      await troveManagerTester.setBaseRate('997600000000000000')
+      await troveManagerTester.setBaseRate(ZERO_ADDRESS, '997600000000000000')
+      await troveManagerTester.setBaseRate(ZERO_ADDRESS, '997600000000000000')
 
       const startBaseRate = '0.9976'
 
       const secondsPassed = decayBaseRateResults.seconds[i]
       const expectedDecayedBaseRate = decayBaseRateResults[startBaseRate][i]
-      await troveManagerTester.setLastFeeOpTimeToNow()
+      await troveManagerTester.setLastFeeOpTimeToNow(ZERO_ADDRESS)
 
       // progress time 
       await th.fastForwardTime(secondsPassed, web3.currentProvider)
 
-      await troveManagerTester.unprotectedDecayBaseRateFromBorrowing()
-      const decayedBaseRate = await troveManagerTester.baseRate()
+      await troveManagerTester.unprotectedDecayBaseRateFromBorrowing(ZERO_ADDRESS)
+      const decayedBaseRate = await troveManagerTester.baseRate(ZERO_ADDRESS)
 
       const minutesPassed = secondsPassed / 60
 
