@@ -1,5 +1,5 @@
 const TroveManager = artifacts.require("./TroveManager.sol")
-// const SortedTroves = artifacts.require("./SortedTroves.sol")
+const SortedTroves = artifacts.require("./SortedTroves.sol")
 const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol")
 const KUSDToken = artifacts.require("./KUSDToken.sol")
 const ActivePool = artifacts.require("./ActivePool.sol");
@@ -115,9 +115,12 @@ class DeploymentHelper {
     // SortedTroves.setAsDeployed(sortedTroves)
     // Upgradable Contracts
 
-    const SortedTroves = await ethers.getContractFactory("SortedTroves")
-    const sortedTroves = await upgrades.deployProxy(SortedTroves, [], { kind: "uups" })
+    const SortedTrovesEthers = await ethers.getContractFactory("SortedTroves")
+    const sortedTrovesEthers = await upgrades.deployProxy(SortedTrovesEthers, [], { kind: "uups" })
 
+    const sortedTroves = await SortedTroves.at(sortedTrovesEthers.address);
+
+    SortedTroves.setAsDeployed(sortedTroves)
     KUSDToken.setAsDeployed(kusdToken)
     DefaultPool.setAsDeployed(defaultPool)
     PriceFeedTestnet.setAsDeployed(priceFeedTestnet)

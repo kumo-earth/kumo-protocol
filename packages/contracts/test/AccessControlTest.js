@@ -19,8 +19,6 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
   const [owner, alice, bob, carol] = accounts;
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
 
-  let aliceSigner
-
   let coreContracts
 
   let priceFeed
@@ -74,8 +72,6 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     // Check CI has been properly funded
     const bal = await kumoToken.balanceOf(communityIssuance.address)
     assert.equal(bal, expectedCISupplyCap)
-
-    aliceSigner = await hre.ethers.getImpersonatedSigner(alice)
   })
 
   describe('BorrowerOperations', async accounts => { 
@@ -406,7 +402,8 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("insert(): reverts when called by an account that is not BorrowerOps or TroveM", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await sortedTroves.connect(aliceSigner).insert(bob, '150000000000000000000', bob, bob)
+        const txAlice = await sortedTroves.insert(bob, '150000000000000000000', bob, bob, { from: alice })
+        
       } catch (err) {
         assert.include(err.message, "revert")
         assert.include(err.message, " Caller is neither BO nor TroveM")
@@ -418,7 +415,8 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("remove(): reverts when called by an account that is not TroveManager", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await sortedTroves.connect(aliceSigner).remove(bob)
+        const txAlice = await sortedTroves.remove(bob, { from: alice })
+        
       } catch (err) {
         assert.include(err.message, "revert")
         assert.include(err.message, " Caller is not the TroveManager")
@@ -430,7 +428,8 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("reinsert(): reverts when called by an account that is neither BorrowerOps nor TroveManager", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await sortedTroves.connect(aliceSigner).reInsert(bob, '150000000000000000000', bob, bob)
+        const txAlice = await sortedTroves.reInsert(bob, '150000000000000000000', bob, bob, { from: alice })
+        
       } catch (err) {
         assert.include(err.message, "revert")
         assert.include(err.message, "Caller is neither BO nor TroveM")
@@ -528,5 +527,3 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
 
   
 })
-
-
