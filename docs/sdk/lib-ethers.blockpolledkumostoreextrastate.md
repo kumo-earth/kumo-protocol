@@ -14,8 +14,8 @@ export interface BlockPolledKumoStoreExtraState
 
 ## Properties
 
-|  Property | Type | Description |
-|  --- | --- | --- |
-|  [blockTag?](./lib-ethers.blockpolledkumostoreextrastate.blocktag.md) | number | <i>(Optional)</i> Number of block that the store state was fetched from. |
-|  [blockTimestamp](./lib-ethers.blockpolledkumostoreextrastate.blocktimestamp.md) | number | Timestamp of latest block (number of seconds since epoch). |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [blockTag?](./lib-ethers.blockpolledkumostoreextrastate.blocktag.md) |  | number | <i>(Optional)</i> Number of block that the store state was fetched from. |
+|  [blockTimestamp](./lib-ethers.blockpolledkumostoreextrastate.blocktimestamp.md) |  | number | Timestamp of latest block (number of seconds since epoch). |
 
