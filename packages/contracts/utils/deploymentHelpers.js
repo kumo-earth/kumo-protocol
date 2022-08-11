@@ -111,8 +111,6 @@ class DeploymentHelper {
       borrowerOperations.address
     )
 
-    // const sortedTroves = await deployProxy(SortedTroves, {kind: "uups"} )
-    // SortedTroves.setAsDeployed(sortedTroves)
     // Upgradable Contracts
 
     const SortedTrovesEthers = await ethers.getContractFactory("SortedTroves")
@@ -155,8 +153,9 @@ class DeploymentHelper {
 
     // Contract without testers (yet)
     testerContracts.priceFeedTestnet = await PriceFeedTestnet.new()
-    testerContracts.sortedTroves = await upgrades.deployProxy(SortedTroves, {kind: "uups"})
-    // testerContracts.sortedTroves = await SortedTroves.new()
+
+    const SortedTrovesEthers = await ethers.getContractFactory("SortedTroves")
+    testerContracts.sortedTroves = await SortedTroves.at((await upgrades.deployProxy(SortedTrovesEthers, {kind: "uups"})).address)
     // Actual tester contracts
     testerContracts.communityIssuance = await CommunityIssuanceTester.new()
     testerContracts.activePool = await ActivePoolTester.new()

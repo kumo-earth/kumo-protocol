@@ -82,6 +82,8 @@ contract SortedTroves is Initializable, UUPSUpgradeable, OwnableUpgradeable, Che
 
     Data public data;
 
+    bool private paramsSet;
+
     // --- Dependency setters ---
 
     function initialize() initializer public {
@@ -91,6 +93,7 @@ contract SortedTroves is Initializable, UUPSUpgradeable, OwnableUpgradeable, Che
 
     function setParams(uint256 _size, address _troveManagerAddress, address _borrowerOperationsAddress) external onlyOwner {
         require(_size > 0, "SortedTroves: Size can't be zero");
+        require(!paramsSet, "Params are already set");
 
 		checkContract(_troveManagerAddress);
 		checkContract(_borrowerOperationsAddress);
@@ -102,6 +105,8 @@ contract SortedTroves is Initializable, UUPSUpgradeable, OwnableUpgradeable, Che
 
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
+
+        paramsSet = true;
     }
 
     function _authorizeUpgrade(address) internal override onlyOwner {}

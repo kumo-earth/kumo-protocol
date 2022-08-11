@@ -278,7 +278,12 @@ contract('SortedTroves', async accounts => {
     let sortedTrovesTester
 
     beforeEach(async () => {
-      sortedTroves = await SortedTroves.new()
+      const SortedTrovesEthers = await ethers.getContractFactory("SortedTroves")
+      const sortedTrovesEthers = await upgrades.deployProxy(SortedTrovesEthers, [], { kind: "uups" })
+      
+      sortedTroves = await SortedTroves.at(sortedTrovesEthers.address);
+      SortedTroves.setAsDeployed(sortedTroves)
+
       sortedTrovesTester = await SortedTrovesTester.new()
 
       await sortedTrovesTester.setSortedTroves(sortedTroves.address)
