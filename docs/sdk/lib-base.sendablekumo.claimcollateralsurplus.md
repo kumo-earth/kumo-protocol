@@ -9,8 +9,15 @@ Claim leftover collateral after a liquidation or redemption.
 <b>Signature:</b>
 
 ```typescript
-claimCollateralSurplus(): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
+claimCollateralSurplus(asset: string): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
 ```
+
+## Parameters
+
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  asset | string |  |
+
 <b>Returns:</b>
 
 Promise&lt;[SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, void&gt;&gt;&gt;

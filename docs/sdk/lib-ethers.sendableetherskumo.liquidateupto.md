@@ -9,13 +9,14 @@ Liquidate the least collateralized Troves up to a maximum number.
 <b>Signature:</b>
 
 ```typescript
-liquidateUpTo(maximumNumberOfTrovesToLiquidate: number, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<LiquidationDetails>>;
+liquidateUpTo(asset: string, maximumNumberOfTrovesToLiquidate: number, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<LiquidationDetails>>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  asset | string |  |
 |  maximumNumberOfTrovesToLiquidate | number | Stop after liquidating this many Troves. |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 

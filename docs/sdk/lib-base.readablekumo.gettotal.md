@@ -9,8 +9,15 @@ Get the total amount of collateral and debt in the Kumo system.
 <b>Signature:</b>
 
 ```typescript
-getTotal(): Promise<Trove>;
+getTotal(asset: string): Promise<Trove>;
 ```
+
+## Parameters
+
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  asset | string |  |
+
 <b>Returns:</b>
 
 Promise&lt;[Trove](./lib-base.trove.md)<!-- -->&gt;

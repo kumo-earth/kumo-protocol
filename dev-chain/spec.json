@@ -18,7 +18,7 @@
     "eip161dTransition": "0x0",
     "eip155Transition": "0x0",
     "eip98Transition": "0x7fffffffffffff",
-    "maxCodeSize": 24576,
+    "maxCodeSize": 50000,
     "maxCodeSizeTransition": "0x0",
     "eip140Transition": "0x0",
     "eip211Transition": "0x0",

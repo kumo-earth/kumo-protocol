@@ -23,9 +23,9 @@ contract KumoBase is BaseMath, Ownable, IKumoBase {
     address public constant ETH_REF_ADDRESS = address(0);
     IKumoParameters public override kumoParams;
 
-	function setKumoParameters(address _vaultParams) public onlyOwner {
-		kumoParams = IKumoParameters(_vaultParams);
-		emit VaultParametersBaseChanged(_vaultParams);
+	function setKumoParameters(address _kumoParamsAddress ) public onlyOwner {
+		kumoParams = IKumoParameters(_kumoParamsAddress );
+		emit VaultParametersBaseChanged(_kumoParamsAddress );
 	}
 
     // Minimum amount of net KUSD debt a trove must have

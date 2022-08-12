@@ -9,13 +9,14 @@ Close existing Trove by repaying all debt and withdrawing all collateral.
 <b>Signature:</b>
 
 ```typescript
-closeTrove(overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<TroveClosureDetails>>;
+closeTrove(asset: string, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<TroveClosureDetails>>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  asset | string |  |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 
 <b>Returns:</b>

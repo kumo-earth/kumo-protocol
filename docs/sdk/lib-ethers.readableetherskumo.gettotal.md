@@ -9,13 +9,14 @@ Get the total amount of collateral and debt in the Kumo system.
 <b>Signature:</b>
 
 ```typescript
-getTotal(overrides?: EthersCallOverrides): Promise<Trove>;
+getTotal(asset: string, overrides?: EthersCallOverrides): Promise<Trove>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  asset | string |  |
 |  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
 
 <b>Returns:</b>

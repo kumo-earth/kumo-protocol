@@ -183,6 +183,7 @@ export interface TransactableKumo {
   openTrove(
     params: TroveCreationParams<Decimalish>,
     asset: string,
+    tokenAmount: Decimalish,
     maxBorrowingRate?: Decimalish
   ): Promise<TroveCreationDetails>;
 

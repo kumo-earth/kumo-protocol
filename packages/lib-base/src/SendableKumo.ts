@@ -148,6 +148,7 @@ export interface SendableKumo<R = unknown, S = unknown>
   openTrove(
     params: TroveCreationParams<Decimalish>,
     asset: string,
+    tokenAmount: Decimalish,
     maxBorrowingRate?: Decimalish
   ): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveCreationDetails>>>;
 

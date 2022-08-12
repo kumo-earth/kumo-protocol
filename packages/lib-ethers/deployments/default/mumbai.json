@@ -19,6 +19,7 @@
     "hintHelpers": "0xEC3D0D65d6b90f96a617128087F74D97FBe0E7D5",
     "lockupContractFactory": "0xAb3cf445217EdEe09399069574dE2E1b6E4df844",
     "kumoStaking": "0xb6f1E57d095AA872FfDa06ac6c4EaC9D42d92906",
+    "kumoParameters": "0",
     "priceFeed": "0x19bd2F308Fc5eC65E7C6A14bE2c4E6578D6fdBc4",
     "sortedTroves": "0xea7B8be44297d2747fBD33502Bd5020270caffF5",
     "stabilityPool": "0xb9c03677ae08352120370ebca0dadF8c92eCe1B1",

@@ -46,11 +46,12 @@ export class SendableEthersKumo
   async openTrove(
     params: TroveCreationParams<Decimalish>,
     asset: string,
+    tokenAmount: Decimalish,
     maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersKumoTransaction<TroveCreationDetails>> {
     return this._populate
-      .openTrove(params, asset, maxBorrowingRateOrOptionalParams, overrides)
+      .openTrove(params, asset, tokenAmount, maxBorrowingRateOrOptionalParams, overrides)
       .then(sendTransaction);
   }
 
@@ -147,7 +148,9 @@ export class SendableEthersKumo
     frontendTag?: string,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersKumoTransaction<StabilityDepositChangeDetails>> {
-    return this._populate.depositKUSDInStabilityPool(amount, frontendTag, overrides).then(sendTransaction);
+    return this._populate
+      .depositKUSDInStabilityPool(amount, frontendTag, overrides)
+      .then(sendTransaction);
   }
 
   /** {@inheritDoc @kumodao/lib-base#SendableKumo.withdrawKUSDFromStabilityPool} */
@@ -205,7 +208,7 @@ export class SendableEthersKumo
 
   /** {@inheritDoc @kumodao/lib-base#SendableKumo.claimCollateralSurplus} */
   claimCollateralSurplus(
-    asset:string,
+    asset: string,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersKumoTransaction<void>> {
     return this._populate.claimCollateralSurplus(asset, overrides).then(sendTransaction);

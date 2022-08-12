@@ -192,7 +192,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     // @internal (undocumented)
     _mintUniToken(amount: Decimalish, address?: string, overrides?: EthersTransactionOverrides): Promise<void>;
     // (undocumented)
-    openTrove(params: TroveCreationParams<Decimalish>, asset: string, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<TroveCreationDetails>;
+    openTrove(params: TroveCreationParams<Decimalish>, asset: string, tokenAmount: Decimalish, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<TroveCreationDetails>;
     readonly populate: PopulatableEthersKumo;
     // (undocumented)
     redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<RedemptionDetails>;
@@ -353,7 +353,7 @@ export class PopulatableEthersKumo implements PopulatableKumo<EthersTransactionR
     // @internal (undocumented)
     _mintUniToken(amount: Decimalish, address?: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
-    openTrove(params: TroveCreationParams<Decimalish>, asset: string, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveCreationDetails>>;
+    openTrove(params: TroveCreationParams<Decimalish>, asset: string, tokenAmount: Decimalish, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveCreationDetails>>;
     // (undocumented)
     redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersRedemption>;
     // (undocumented)
@@ -556,7 +556,7 @@ export class SendableEthersKumo implements SendableKumo<EthersTransactionReceipt
     // @internal (undocumented)
     _mintUniToken(amount: Decimalish, address?: string, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)
-    openTrove(params: TroveCreationParams<Decimalish>, asset: string, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<TroveCreationDetails>>;
+    openTrove(params: TroveCreationParams<Decimalish>, asset: string, tokenAmount: Decimalish, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<TroveCreationDetails>>;
     // (undocumented)
     redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<RedemptionDetails>>;
     // (undocumented)
