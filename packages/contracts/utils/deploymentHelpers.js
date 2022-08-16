@@ -63,6 +63,8 @@ KUMO contracts consist of only those contracts related to the KUMO Token:
 const ZERO_ADDRESS = '0x' + '0'.repeat(40)
 const maxBytes32 = '0x' + 'f'.repeat(64)
 
+let erc20TestAddress
+
 class DeploymentHelper {
 
   static async deployKumoCore() {
@@ -164,6 +166,7 @@ class DeploymentHelper {
     testerContracts.kumoParameters = await KumoParameters.new()
     testerContracts.erc20 = await ERC20Test.new()
     // ERC20Test.setAsDeployed(testerContracts.erc20);
+    erc20TestAddress = testerContracts.erc20.address
     testerContracts.kusdToken =  await KUSDTokenTester.new(
       testerContracts.troveManager.address,
       testerContracts.stabilityPoolManager.address,
@@ -385,14 +388,15 @@ class DeploymentHelper {
     )
 
     // set contracts in the Pools
-    // await contracts.stabilityPool.setAddresses(
-    //   contracts.borrowerOperations.address,
-    //   contracts.troveManager.address,
-    //   contracts.kusdToken.address,
-    //   contracts.sortedTroves.address,
-    //   KUMOContracts.communityIssuance.address,
-    //   contracts.kumoParameters.address
-    // )
+    await contracts.stabilityPool.setAddresses(
+      erc20TestAddress,
+      contracts.borrowerOperations.address,
+      contracts.troveManager.address,
+      contracts.kusdToken.address,
+      contracts.sortedTroves.address,
+      KUMOContracts.communityIssuance.address,
+      contracts.kumoParameters.address
+    )
 
     await contracts.activePool.setAddresses(
       contracts.borrowerOperations.address,

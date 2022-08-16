@@ -82,23 +82,31 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
 
     function sendAssetToActivePool(address _asset, uint256 _amount) external override {
         _requireCallerIsTroveManager();
-		address activePool = activePoolAddress; // cache to save an SLOAD
+        address activePool = activePoolAddress; // cache to save an SLOAD
+        assetsBalance[_asset] -= _amount;
+        emit DefaultPoolAssetBalanceUpdated(_asset, assetsBalance[_asset]);
+        emit AssetSent(msg.sender, _asset, _amount);
 
-		uint256 safetyTransferAmount = SafetyTransfer.decimalsCorrection(_asset, _amount);
-		if (safetyTransferAmount == 0) return;
+        (bool success, ) = activePool.call{ value: _amount }("");
+        require(success, "DefaultPool: sending Asset failed");
+        // _requireCallerIsTroveManager();
+		// address activePool = activePoolAddress; // cache to save an SLOAD
 
-		assetsBalance[_asset] = assetsBalance[_asset].sub(_amount);
+		// uint256 safetyTransferAmount = SafetyTransfer.decimalsCorrection(_asset, _amount);
+		// if (safetyTransferAmount == 0) return;
 
-		if (_asset != ETH_REF_ADDRESS) {
-			IERC20Upgradeable(_asset).safeTransfer(activePool, safetyTransferAmount);
-			IDeposit(activePool).receivedERC20(_asset, _amount);
-		} else {
-			(bool success, ) = activePool.call{ value: _amount }("");
-			require(success, "DefaultPool: sending ETH failed");
-		}
+		// assetsBalance[_asset] = assetsBalance[_asset].sub(_amount);
 
-		emit DefaultPoolAssetBalanceUpdated(_asset, assetsBalance[_asset]);
-		emit AssetSent(activePool, _asset, safetyTransferAmount);
+		// if (_asset != ETH_REF_ADDRESS) {
+		// 	IERC20Upgradeable(_asset).safeTransfer(activePool, safetyTransferAmount);
+		// 	IDeposit(activePool).receivedERC20(_asset, _amount);
+		// } else {
+		// 	(bool success, ) = activePool.call{ value: _amount }("");
+		// 	require(success, "DefaultPool: sending ETH failed");
+		// }
+
+		// emit DefaultPoolAssetBalanceUpdated(_asset, assetsBalance[_asset]);
+		// emit AssetSent(activePool, _asset, safetyTransferAmount);
     }
 
     function increaseKUSDDebt(address _asset, uint256 _amount) external override {

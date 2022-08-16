@@ -35,7 +35,6 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     address public troveManagerAddress;
     address public stabilityPoolAddress;
     address public defaultPoolAddress;
-    uint256 internal ETH;  // deposited ether tracker
     IDefaultPool public defaultPool;
     // uint256 internal KUSDDebt;
     ICollSurplusPool public collSurplusPool;
@@ -64,7 +63,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     function setAddresses(
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
-        address _stabilityPoolAddress,
+        address _stabilityPoolManagerAddress,
         address _defaultPoolAddress
     )
         external
@@ -72,20 +71,20 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     {
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
-        checkContract(_stabilityPoolAddress);
+        checkContract(_stabilityPoolManagerAddress);
         checkContract(_defaultPoolAddress);
 
         // __Ownable_init();
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;
-        // stabilityPoolManager = IStabilityPoolManager(_stabilityManagerAddress);
-        stabilityPoolAddress = _stabilityPoolAddress;
+        stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);
+        // stabilityPoolAddress = _stabilityPoolAddress;
         defaultPoolAddress = _defaultPoolAddress;
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
-        emit StabilityPoolAddressChanged(_stabilityPoolAddress);
+        emit StabilityPoolAddressChanged(_stabilityPoolManagerAddress);
         emit DefaultPoolAddressChanged(_defaultPoolAddress);
 
         _renounceOwnership();
@@ -121,39 +120,16 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     // }
 
     // --- Pool functionality ---
-    function sendAsset(
-		address _asset,
-		address _account,
-		uint256 _amount
-	) external override {
-		if (stabilityPoolManager.isStabilityPool(msg.sender)) {
-			assert(address(stabilityPoolManager.getAssetStabilityPool(_asset)) == msg.sender);
-		}
+function sendAsset(address _asset, address _account, uint256 _amount) external override {
+        _requireCallerIsBOorTroveMorSP();
+        // ETH = ETH.sub(_amount);
+        assetsBalance[_asset] -= _amount;
+        emit ActivePoolAssetBalanceUpdated(_asset, assetsBalance[_asset]);
+        emit AssetSent(_account, _asset, _amount);
 
-		uint256 safetyTransferAmount = SafetyTransfer.decimalsCorrection(_asset, _amount);
-		if (safetyTransferAmount == 0) return;
-
-		uint256 totalBalance = assetsBalance[_asset] -= _amount;
-		uint256 stakedBalance = assetsStaked[_asset];
-
-		if (stakedBalance > totalBalance) {
-			_unstakeCollateral(_asset, stakedBalance - totalBalance);
-		}
-
-		if (_asset != ETH_REF_ADDRESS) {
-			IERC20Upgradeable(_asset).safeTransfer(_account, safetyTransferAmount);
-
-			if (isERC20DepositContract(_account)) {
-				IDeposit(_account).receivedERC20(_asset, _amount);
-			}
-		} else {
-			(bool success, ) = _account.call{ value: _amount }("");
-			require(success, "ActivePool: sending ETH failed");
-		}
-
-		emit ActivePoolAssetBalanceUpdated(_asset, assetsBalance[_asset]);
-		emit AssetSent(_account, _asset, safetyTransferAmount);
-	}
+        (bool success, ) = _account.call{ value: _amount }("");
+        require(success, "ActivePool: sending ETH failed");
+    }
 
 	function isERC20DepositContract(address _account) private view returns (bool) {
 		return (_account == address(defaultPool) ||

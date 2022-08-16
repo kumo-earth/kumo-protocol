@@ -231,9 +231,10 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("sendETH(): reverts when called by an account that is not BO nor TroveM nor SP", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await activePool.sendETH(erc20.address, alice, 100, { from: alice })
+        const txAlice = await activePool.sendAsset(erc20.address, alice, 100, { from: alice })
         
       } catch (err) {
+        console.log(err.message)
         assert.include(err.message, "revert")
         assert.include(err.message, "Caller is neither BorrowerOperations nor TroveManager nor StabilityPool")
       }
@@ -281,7 +282,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("sendETHToActivePool(): reverts when called by an account that is not TroveManager", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await defaultPool.sendETHToActivePool(100, { from: alice })
+        const txAlice = await defaultPool.sendAssetToActivePool(erc20.address, 100, { from: alice })
         
       } catch (err) {
         assert.include(err.message, "revert")
@@ -347,9 +348,10 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("fallback(): reverts when called by an account that is not the Active Pool", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await web3.eth.sendTransaction({ from: alice, to: stabilityPool.address, value: 100 })
+        const txAlice = await web3.eth.sendTransaction({from: alice, to: stabilityPool.address, value: 100 })
         
       } catch (err) {
+        console.log(err.message)
         assert.include(err.message, "revert")
         assert.include(err.message, "StabilityPool: Caller is not ActivePool")
       }
