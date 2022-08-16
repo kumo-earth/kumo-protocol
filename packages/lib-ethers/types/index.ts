@@ -91,10 +91,10 @@ interface BorrowerOperationsTransactions {
   claimCollateral(_asset: string, _overrides?: Overrides): Promise<void>;
   closeTrove(_asset: string, _overrides?: Overrides): Promise<void>;
   moveETHGainToTrove(_asset: string, _amountMoved: BigNumberish, _borrower: string, _upperHint: string, _lowerHint: string, _overrides?: PayableOverrides): Promise<void>;
-  openTrove(_asset: string, _maxFeePercentage: BigNumberish, _KUSDAmount: BigNumberish, _upperHint: string, _lowerHint: string, _overrides?: PayableOverrides): Promise<void>;
+  openTrove(_asset: string, _tokenAmount: BigNumberish, _maxFeePercentage: BigNumberish, _KUSDAmount: BigNumberish, _upperHint: string, _lowerHint: string, _overrides?: PayableOverrides): Promise<void>;
   repayKUSD(_asset: string, _KUSDAmount: BigNumberish, _upperHint: string, _lowerHint: string, _overrides?: Overrides): Promise<void>;
   setAddresses(_troveManagerAddress: string, _stabilityPoolManagerAddress: string, _gasPoolAddress: string, _collSurplusPoolAddress: string, _sortedTrovesAddress: string, _kusdTokenAddress: string, _kumoStakingAddress: string, _kumoParamsAddress: string, _overrides?: Overrides): Promise<void>;
-  setKumoParameters(_vaultParams: string, _overrides?: Overrides): Promise<void>;
+  setKumoParameters(_kumoParamsAddress: string, _overrides?: Overrides): Promise<void>;
   withdrawColl(_asset: string, _collWithdrawal: BigNumberish, _upperHint: string, _lowerHint: string, _overrides?: Overrides): Promise<void>;
   withdrawKUSD(_asset: string, _maxFeePercentage: BigNumberish, _KUSDAmount: BigNumberish, _upperHint: string, _lowerHint: string, _overrides?: Overrides): Promise<void>;
 }
@@ -314,8 +314,8 @@ interface HintHelpersCalls {
 }
 
 interface HintHelpersTransactions {
-  setAddresses(_sortedTrovesAddress: string, _troveManagerAddress: string, _vaultParametersAddress: string, _overrides?: Overrides): Promise<void>;
-  setKumoParameters(_vaultParams: string, _overrides?: Overrides): Promise<void>;
+  setAddresses(_sortedTrovesAddress: string, _troveManagerAddress: string, _kumoParamsAddress: string, _overrides?: Overrides): Promise<void>;
+  setKumoParameters(_kumoParamsAddress: string, _overrides?: Overrides): Promise<void>;
 }
 
 export interface HintHelpers
@@ -456,7 +456,7 @@ interface KUMOStakingCalls {
 interface KUMOStakingTransactions {
   increaseF_Asset(_asset: string, _AssetFee: BigNumberish, _overrides?: Overrides): Promise<void>;
   increaseF_KUSD(_KUSDFee: BigNumberish, _overrides?: Overrides): Promise<void>;
-  setAddresses(_kumoTokenAddress: string, _kusdTokenAddress: string, _troveManagerAddress: string, _borrowerOperationsAddress: string, _activePoolAddress: string, _treasury: string, _overrides?: Overrides): Promise<void>;
+  setAddresses(_kumoTokenAddress: string, _kusdTokenAddress: string, _troveManagerAddress: string, _borrowerOperationsAddress: string, _activePoolAddress: string, _overrides?: Overrides): Promise<void>;
   stake(_KUMOamount: BigNumberish, _overrides?: Overrides): Promise<void>;
   unstake(_KUMOamount: BigNumberish, _overrides?: Overrides): Promise<void>;
 }
@@ -705,7 +705,7 @@ interface StabilityPoolTransactions {
   receivedERC20(_asset: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   registerFrontEnd(_kickbackRate: BigNumberish, _overrides?: Overrides): Promise<void>;
   setAddresses(_assetAddress: string, _borrowerOperationsAddress: string, _troveManagerAddress: string, _kusdTokenAddress: string, _sortedTrovesAddress: string, _communityIssuanceAddress: string, _kumoParamsAddress: string, _overrides?: Overrides): Promise<void>;
-  setKumoParameters(_vaultParams: string, _overrides?: Overrides): Promise<void>;
+  setKumoParameters(_kumoParamsAddress: string, _overrides?: Overrides): Promise<void>;
   withdrawETHGainToTrove(_upperHint: string, _lowerHint: string, _overrides?: Overrides): Promise<void>;
   withdrawFromSP(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
 }
@@ -849,7 +849,7 @@ interface TroveManagerTransactions {
   redeemCollateral(_asset: string, _KUSDamount: BigNumberish, _firstRedemptionHint: string, _upperPartialRedemptionHint: string, _lowerPartialRedemptionHint: string, _partialRedemptionHintNICR: BigNumberish, _maxIterations: BigNumberish, _maxFeePercentage: BigNumberish, _overrides?: Overrides): Promise<void>;
   removeStake(_asset: string, _borrower: string, _overrides?: Overrides): Promise<void>;
   setAddresses(_borrowerOperationsAddress: string, _stabilityPoolManagerAddress: string, _gasPoolAddress: string, _collSurplusPoolAddress: string, _kusdTokenAddress: string, _sortedTrovesAddress: string, _kumoTokenAddress: string, _kumoStakingAddress: string, _kumoParamsAddress: string, _overrides?: Overrides): Promise<void>;
-  setKumoParameters(_vaultParams: string, _overrides?: Overrides): Promise<void>;
+  setKumoParameters(_kumoParamsAddress: string, _overrides?: Overrides): Promise<void>;
   setTroveStatus(_asset: string, _borrower: string, _num: BigNumberish, _overrides?: Overrides): Promise<void>;
   updateStakeAndTotalStakes(_asset: string, _borrower: string, _overrides?: Overrides): Promise<BigNumber>;
   updateTroveRewardSnapshots(_asset: string, _borrower: string, _overrides?: Overrides): Promise<void>;
@@ -968,6 +968,7 @@ export interface Unipool
 }
 
 interface KumoParametersCalls {
+  BOOTSTRAP_PERIOD(_overrides?: CallOverrides): Promise<BigNumber>;
   BORROWING_FEE_FLOOR(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
   BORROWING_FEE_FLOOR_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
   CCR(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;

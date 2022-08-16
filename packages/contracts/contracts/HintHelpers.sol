@@ -30,7 +30,7 @@ contract HintHelpers is KumoBase, CheckContract {
     function setAddresses(
         address _sortedTrovesAddress,
         address _troveManagerAddress,
-        address _vaultParametersAddress
+        address _kumoParamsAddress
     )
         external
         onlyOwner 
@@ -38,7 +38,7 @@ contract HintHelpers is KumoBase, CheckContract {
 		// require(!isInitialized, "Already initialized");
 		checkContract(_sortedTrovesAddress);
 		checkContract(_troveManagerAddress);
-		checkContract(_vaultParametersAddress);
+		checkContract(_kumoParamsAddress);
 		// isInitialized = true;
 
 		// __Ownable_init();
@@ -49,7 +49,7 @@ contract HintHelpers is KumoBase, CheckContract {
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
 
-        setKumoParameters(_vaultParametersAddress);
+        setKumoParameters(_kumoParamsAddress);
 
         _renounceOwnership();
     }

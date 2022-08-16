@@ -341,11 +341,12 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   openTrove(
     params: TroveCreationParams<Decimalish>,
     asset: string,
+    tokenAmount: Decimalish,
     maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams,
     overrides?: EthersTransactionOverrides
   ): Promise<TroveCreationDetails> {
     return this.send
-      .openTrove(params, asset, maxBorrowingRateOrOptionalParams, overrides)
+      .openTrove(params, asset, tokenAmount, maxBorrowingRateOrOptionalParams, overrides)
       .then(waitForSuccess);
   }
 

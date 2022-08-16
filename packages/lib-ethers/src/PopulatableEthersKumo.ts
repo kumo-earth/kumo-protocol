@@ -824,6 +824,7 @@ export class PopulatableEthersKumo
   async openTrove(
     params: TroveCreationParams<Decimalish>,
     asset: string,
+    tokenAmount: Decimalish,
     maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams,
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<TroveCreationDetails>> {
@@ -856,6 +857,7 @@ export class PopulatableEthersKumo
 
     const txParams = (borrowKUSD: Decimal): Parameters<typeof borrowerOperations.openTrove> => [
       asset,
+      Decimal.from(tokenAmount).hex,
       maxBorrowingRate.hex,
       borrowKUSD.hex,
       ...hints,

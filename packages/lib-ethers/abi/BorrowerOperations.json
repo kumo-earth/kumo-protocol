@@ -577,6 +577,11 @@
       },
       {
         "internalType": "uint256",
+        "name": "_tokenAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
         "name": "_maxFeePercentage",
         "type": "uint256"
       },
@@ -694,7 +699,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_vaultParams",
+        "name": "_kumoParamsAddress",
         "type": "address"
       }
     ],

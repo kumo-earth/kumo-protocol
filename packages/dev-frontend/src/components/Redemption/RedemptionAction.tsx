@@ -7,6 +7,7 @@ import { useTransactionFunction } from "../Transaction";
 
 type RedemptionActionProps = {
   transactionId: string;
+  asset?: string;
   disabled?: boolean;
   kusdAmount: Decimal;
   maxRedemptionRate: Decimal;
@@ -14,6 +15,7 @@ type RedemptionActionProps = {
 
 export const RedemptionAction: React.FC<RedemptionActionProps> = ({
   transactionId,
+  asset = "",
   disabled,
   kusdAmount,
   maxRedemptionRate
@@ -24,7 +26,7 @@ export const RedemptionAction: React.FC<RedemptionActionProps> = ({
 
   const [sendTransaction] = useTransactionFunction(
     transactionId,
-    liquity.redeemKUSD.bind(liquity, kusdAmount, maxRedemptionRate)
+    liquity.redeemKUSD.bind(liquity, asset, kusdAmount, maxRedemptionRate)
   );
 
   return (

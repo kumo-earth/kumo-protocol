@@ -9,13 +9,14 @@ Claim leftover collateral after a liquidation or redemption.
 <b>Signature:</b>
 
 ```typescript
-claimCollateralSurplus(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
+claimCollateralSurplus(asset: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  asset | string |  |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 
 <b>Returns:</b>
