@@ -180,4 +180,6 @@ interface ITroveManager is IKumoBase {
     function getTCR(address _asset, uint256 _price) external view returns (uint256);
 
     function checkRecoveryMode(address _asset, uint256 _price) external view returns (bool);
+
+    function addNewAsset(address _asset) external;
 }

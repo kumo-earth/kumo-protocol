@@ -47,11 +47,12 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
 	mapping(address => uint256) public override MAX_BORROWING_FEE;
 	mapping(address => uint256) public override redemptionBlock;
 
-	mapping(address => bool) internal hasCollateralConfigured;
+	mapping(address => bool) public override hasCollateralConfigured;
 
 	IActivePool public override activePool;
 	IDefaultPool public override defaultPool;
 	IPriceFeed public override priceFeed;
+	IStabilityPool public override stabilityPool;
 	// address public adminContract;
 
 	bool public isInitialized;
@@ -64,13 +65,15 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
 	function setAddresses(
 		address _activePool,
 		address _defaultPool,
-		address _priceFeed //,
+		address _priceFeed,
+		address _stabilityPool
 		// address _adminContract
 	) external override onlyOwner {
 		require(!isInitialized, "Already initalized");
 		checkContract(_activePool);
 		checkContract(_defaultPool);
 		checkContract(_priceFeed);
+		CheckContract(_stabilityPool);
 		// checkContract(_adminContract);
 		isInitialized = true;
 
@@ -80,6 +83,7 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
 		activePool = IActivePool(_activePool);
 		defaultPool = IDefaultPool(_defaultPool);
 		priceFeed = IPriceFeed(_priceFeed);
+		stabilityPool = IStabilityPool(_stabilityPool);
 	}
 
 	// function setAdminContract(address _admin) external onlyOwner {
@@ -100,7 +104,7 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
 		}
 	}
 
-	function setAsDefault(address _asset) external onlyOwner {
+	function setAsDefault(address _asset) external {
 		_setAsDefault(_asset);
 	}
 
@@ -260,6 +264,10 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
 
 		emit RedemptionBlockRemoved(_asset);
 	}
+
+	// function assetIsInitialzed(address _asset) external {
+	// 	return hasCollateralConfigured[_asset];
+	// }
 
 	modifier safeCheck(
 		string memory parameter,

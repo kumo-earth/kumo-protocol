@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.11;
 
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol"; 
+
 import "./Interfaces/IBorrowerOperations.sol";
 import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/IKUSDToken.sol";
@@ -13,9 +15,11 @@ import "./Dependencies/KumoBase.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 import "./Dependencies/SafeMath.sol";
+import "./Dependencies/SafetyTransfer.sol";
 
 contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     using SafeMath for uint256;
+    using SafeERC20Upgradeable for IERC20Upgradeable;
     string constant public NAME = "BorrowerOperations";
     // bool public isInitialized;
     // --- Connected contract declarations ---
@@ -108,6 +112,12 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     
     // --- Dependency setters ---
 
+    modifier assetIsInitialized(address _asset) {
+		require(kumoParams.hasCollateralConfigured(_asset) == true, "BorrowerOp: asset is not initialized");
+		_;
+	}
+
+
     function setAddresses(
         address _troveManagerAddress,
         address _stabilityPoolManagerAddress,
@@ -161,8 +171,8 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
 
     // --- Borrower Trove Operations ---
 
-    function openTrove(address _asset, uint256 _tokenAmount,  uint256 _maxFeePercentage, uint256 _KUSDAmount, address _upperHint, address _lowerHint) external payable override {
-        kumoParams.sanitizeParameters(_asset);
+    function openTrove(address _asset, uint256 _tokenAmount,  uint256 _maxFeePercentage, uint256 _KUSDAmount, address _upperHint, address _lowerHint) external payable override assetIsInitialized(_asset) {
+        // kumoParams.sanitizeParameters(_asset);
         ContractsCache memory contractsCache = ContractsCache(troveManager, kumoParams.activePool(), kusdToken);
         LocalVariables_openTrove memory vars;
         vars.asset = _asset;
@@ -437,8 +447,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         return (newColl, newDebt);
     }
 
-    function _moveTokensAndETHfromAdjustment
-    (
+    function _moveTokensAndETHfromAdjustment(
         address _asset,
         IActivePool _activePool,
         IKUSDToken _kusdToken,
@@ -460,14 +469,17 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         if (_isCollIncrease) {
             _activePoolAddColl(_asset, _activePool, _collChange);
         } else {
-            _activePool.sendAsset(_asset,_borrower, _collChange);
+            _activePool.sendAsset(_asset, _borrower, _collChange);
         }
     }
 
     // Send ETH to Active Pool and increase its recorded ETH balance
     function _activePoolAddColl(address _asset, IActivePool _activePool, uint256 _amount) internal {
-        (bool success, ) = address(_activePool).call{value: _amount}("");
-        require(success, "BorrowerOps: Sending ETH to ActivePool failed");
+        // (bool success, ) = address(_activePool).call{value: _amount}("");
+        // require(success, "BorrowerOps: Sending ETH to ActivePool failed");
+        IERC20Upgradeable(_asset).safeTransferFrom(msg.sender, address(_activePool), SafetyTransfer.decimalsCorrection(_asset, _amount)
+			);
+        _activePool.receivedERC20(_asset, _amount);
     }
 
     // Issue the specified amount of KUSD to _account and increases the total active debt (_netDebtIncrease potentially includes a KUSDFee)
@@ -502,7 +514,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     }
 
     function _requireTroveisNotActive(address _asset, ITroveManager _troveManager, address _borrower) internal view {
-        uint256 status = _troveManager.getTroveStatus(_asset,_borrower);
+        uint256 status = _troveManager.getTroveStatus(_asset, _borrower);
         require(status != 1, "BorrowerOps: Trove is active");
     }
 
