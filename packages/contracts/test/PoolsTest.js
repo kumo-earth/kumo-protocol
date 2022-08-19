@@ -134,17 +134,17 @@ contract('DefaultPool', async accounts => {
   })
 
   it('getETH(): gets the recorded KUSD balance', async () => {
-    const recordedETHBalance = await defaultPool.getETH()
+    const recordedETHBalance = await defaultPool.getAssetBalance(ZERO_ADDRESS)
     assert.equal(recordedETHBalance, 0)
   })
 
   it('getKUSDDebt(): gets the recorded KUSD balance', async () => {
-    const recordedETHBalance = await defaultPool.getKUSDDebt()
+    const recordedETHBalance = await defaultPool.getKUSDDebt(ZERO_ADDRESS)
     assert.equal(recordedETHBalance, 0)
   })
  
   it('increaseKUSD(): increases the recorded KUSD balance by the correct amount', async () => {
-    const recordedKUSD_balanceBefore = await defaultPool.getKUSDDebt()
+    const recordedKUSD_balanceBefore = await defaultPool.getKUSDDebt(ZERO_ADDRESS)
     assert.equal(recordedKUSD_balanceBefore, 0)
 
     // await defaultPool.increaseKUSDDebt(100, { from: mockTroveManagerAddress })
@@ -152,7 +152,7 @@ contract('DefaultPool', async accounts => {
     const tx = await mockTroveManager.forward(defaultPool.address, increaseKUSDDebtData)
     assert.isTrue(tx.receipt.status)
 
-    const recordedKUSD_balanceAfter = await defaultPool.getKUSDDebt()
+    const recordedKUSD_balanceAfter = await defaultPool.getKUSDDebt(ZERO_ADDRESS)
     assert.equal(recordedKUSD_balanceAfter, 100)
   })
   
@@ -163,7 +163,7 @@ contract('DefaultPool', async accounts => {
     const tx1 = await mockTroveManager.forward(defaultPool.address, increaseKUSDDebtData)
     assert.isTrue(tx1.receipt.status)
 
-    const recordedKUSD_balanceBefore = await defaultPool.getKUSDDebt()
+    const recordedKUSD_balanceBefore = await defaultPool.getKUSDDebt(ZERO_ADDRESS)
     assert.equal(recordedKUSD_balanceBefore, 100)
 
     // await defaultPool.decreaseKUSDDebt(100, { from: mockTroveManagerAddress })
@@ -171,7 +171,7 @@ contract('DefaultPool', async accounts => {
     const tx2 = await mockTroveManager.forward(defaultPool.address, decreaseKUSDDebtData)
     assert.isTrue(tx2.receipt.status)
 
-    const recordedKUSD_balanceAfter = await defaultPool.getKUSDDebt()
+    const recordedKUSD_balanceAfter = await defaultPool.getKUSDDebt(ZERO_ADDRESS)
     assert.equal(recordedKUSD_balanceAfter, 0)
   })
 
