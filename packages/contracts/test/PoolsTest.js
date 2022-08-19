@@ -3,7 +3,7 @@ const ActivePool = artifacts.require("./ActivePool.sol")
 const DefaultPool = artifacts.require("./DefaultPool.sol")
 const NonPayable = artifacts.require("./NonPayable.sol")
 // const KumoParameters = artifacts.require("./KumoParameters.sol")
-
+const { ZERO_ADDRESS } = require("@openzeppelin/test-helpers/src/constants")
 const testHelpers = require("../utils/testHelpers.js")
 
 const th = testHelpers.TestHelper
@@ -51,24 +51,24 @@ contract('ActivePool', async accounts => {
   })
 
   it('getETH(): gets the recorded ETH balance', async () => {
-    const recordedETHBalance = await activePool.getETH()
+    const recordedETHBalance = await activePool.getAssetBalance(ZERO_ADDRESS)
     assert.equal(recordedETHBalance, 0)
   })
 
   it('getKUSDDebt(): gets the recorded KUSD balance', async () => {
-    const recordedETHBalance = await activePool.getKUSDDebt()
+    const recordedETHBalance = await activePool.getKUSDDebt(ZERO_ADDRESS)
     assert.equal(recordedETHBalance, 0)
   })
  
   it('increaseKUSD(): increases the recorded KUSD balance by the correct amount', async () => {
-    const recordedKUSD_balanceBefore = await activePool.getKUSDDebt()
+    const recordedKUSD_balanceBefore = await activePool.getKUSDDebt(ZERO_ADDRESS)
     assert.equal(recordedKUSD_balanceBefore, 0)
 
     // await activePool.increaseKUSDDebt(100, { from: mockBorrowerOperationsAddress })
     const increaseKUSDDebtData = th.getTransactionData('increaseKUSDDebt(uint256)', ['0x64'])
     const tx = await mockBorrowerOperations.forward(activePool.address, increaseKUSDDebtData)
     assert.isTrue(tx.receipt.status)
-    const recordedKUSD_balanceAfter = await activePool.getKUSDDebt()
+    const recordedKUSD_balanceAfter = await activePool.getKUSDDebt(ZERO_ADDRESS)
     assert.equal(recordedKUSD_balanceAfter, 100)
   })
   // Decrease
