@@ -65,7 +65,7 @@ contract('ActivePool', async accounts => {
     assert.equal(recordedKUSD_balanceBefore, 0)
 
     // await activePool.increaseKUSDDebt(100, { from: mockBorrowerOperationsAddress })
-    const increaseKUSDDebtData = th.getTransactionData('increaseKUSDDebt(uint256)', ['0x64'])
+    const increaseKUSDDebtData = th.getTransactionData('increaseKUSDDebt(address, uint256)', [ZERO_ADDRESS, '0x64'])
     const tx = await mockBorrowerOperations.forward(activePool.address, increaseKUSDDebtData)
     assert.isTrue(tx.receipt.status)
     const recordedKUSD_balanceAfter = await activePool.getKUSDDebt(ZERO_ADDRESS)
@@ -75,18 +75,18 @@ contract('ActivePool', async accounts => {
   it('decreaseKUSD(): decreases the recorded KUSD balance by the correct amount', async () => {
     // start the pool on 100 wei
     //await activePool.increaseKUSDDebt(100, { from: mockBorrowerOperationsAddress })
-    const increaseKUSDDebtData = th.getTransactionData('increaseKUSDDebt(uint256)', ['0x64'])
+    const increaseKUSDDebtData = th.getTransactionData('increaseKUSDDebt(address, uint256)', [ZERO_ADDRESS, '0x64'])
     const tx1 = await mockBorrowerOperations.forward(activePool.address, increaseKUSDDebtData)
     assert.isTrue(tx1.receipt.status)
 
-    const recordedKUSD_balanceBefore = await activePool.getKUSDDebt()
+    const recordedKUSD_balanceBefore = await activePool.getKUSDDebt(ZERO_ADDRESS)
     assert.equal(recordedKUSD_balanceBefore, 100)
 
     //await activePool.decreaseKUSDDebt(100, { from: mockBorrowerOperationsAddress })
-    const decreaseKUSDDebtData = th.getTransactionData('decreaseKUSDDebt(uint256)', ['0x64'])
+    const decreaseKUSDDebtData = th.getTransactionData('decreaseKUSDDebt(address, uint256)', [ZERO_ADDRESS,  '0x64'])
     const tx2 = await mockBorrowerOperations.forward(activePool.address, decreaseKUSDDebtData)
     assert.isTrue(tx2.receipt.status)
-    const recordedKUSD_balanceAfter = await activePool.getKUSDDebt()
+    const recordedKUSD_balanceAfter = await activePool.getKUSDDebt(ZERO_ADDRESS)
     assert.equal(recordedKUSD_balanceAfter, 0)
   })
 
@@ -107,7 +107,7 @@ contract('ActivePool', async accounts => {
 
     // send ether from pool to alice
     //await activePool.sendETH(alice, dec(1, 'ether'), { from: mockBorrowerOperationsAddress })
-    const sendETHData = th.getTransactionData('sendETH(address,uint256)', [alice, web3.utils.toHex(dec(1, 'ether'))])
+    const sendETHData = th.getTransactionData('sendAsset(address,address,uint256)', [ZERO_ADDRESS, alice, web3.utils.toHex(dec(1, 'ether'))])
     const tx2 = await mockBorrowerOperations.forward(activePool.address, sendETHData, { from: owner })
     assert.isTrue(tx2.receipt.status)
 
@@ -193,7 +193,7 @@ contract('DefaultPool', async accounts => {
 
     // send ether from pool to alice
     //await defaultPool.sendETHToActivePool(dec(1, 'ether'), { from: mockTroveManagerAddress })
-    const sendETHData = th.getTransactionData('sendETHToActivePool(uint256)', [web3.utils.toHex(dec(1, 'ether'))])
+    const sendETHData = th.getTransactionData('sendAssetToActivePool(address,uint256)', [ZERO_ADDRESS, web3.utils.toHex(dec(1, 'ether'))])
     await mockActivePool.setPayable(true)
     const tx2 = await mockTroveManager.forward(defaultPool.address, sendETHData, { from: owner })
     assert.isTrue(tx2.receipt.status)
