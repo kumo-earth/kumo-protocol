@@ -210,8 +210,8 @@ class TestHelper {
     return gas
   }
 
-  static applyLiquidationFee(ethAmount) {
-    return ethAmount.mul(this.toBN(this.dec(995, 15))).div(MoneyValues._1e18BN)
+  static applyLiquidationFee(assetAmount) {
+    return assetAmount.mul(this.toBN(this.dec(995, 15))).div(MoneyValues._1e18BN)
   }
   // --- Logging functions ---
 
