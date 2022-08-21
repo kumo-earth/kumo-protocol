@@ -86,7 +86,7 @@ contract SortedTroves is Initializable, UUPSUpgradeable, OwnableUpgradeable, Che
         __UUPSUpgradeable_init();
     }
 
-    function setParams(uint256 _size, address _troveManagerAddress, address _borrowerOperationsAddress) external virtual onlyOwner {
+    function setParams(uint256 _size, address _troveManagerAddress, address _borrowerOperationsAddress) external onlyOwner {
         require(_size > 0, "SortedTroves: Size can't be zero");
 
 		checkContract(_troveManagerAddress);

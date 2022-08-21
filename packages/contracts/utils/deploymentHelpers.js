@@ -30,13 +30,6 @@ const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol")
 
 const { ethers, upgrades } = require('hardhat')
 
-// Upgradable Contracts
-
-async function getFactory(contract) {z
-  const contractFactory = await ethers.getContractFactory(contract)
-  return contractFactory
-}
-
 // Proxy scripts
 const BorrowerOperationsScript = artifacts.require('BorrowerOperationsScript')
 const BorrowerWrappersScript = artifacts.require('BorrowerWrappersScript')
@@ -95,12 +88,12 @@ class DeploymentHelper {
   }
 
   static async deployKUMOCoreUpgradeableEthers() {
-    const SortedTrovesEthers = await ethers.getContractFactory("SortedTroves")
-    const sortedTrovesEthers = await upgrades.deployProxy(SortedTrovesEthers, [], { kind: "uups" })
+    let contracts = {}
 
-    return {
-      sortedTrovesEthers
-    }
+    const SortedTrovesEthers = await ethers.getContractFactory("SortedTroves")
+    contracts.sortedTrovesEthers = await upgrades.deployProxy(SortedTrovesEthers, [], { kind: "uups" })
+
+    return contracts
   }
 
   static async deployKumoCoreHardhat() {
