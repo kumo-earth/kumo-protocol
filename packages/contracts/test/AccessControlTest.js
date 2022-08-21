@@ -527,5 +527,3 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
 
   
 })
-
-

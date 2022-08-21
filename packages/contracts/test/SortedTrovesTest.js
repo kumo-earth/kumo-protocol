@@ -1,5 +1,6 @@
 const deploymentHelper = require("../utils/deploymentHelpers.js")
 const testHelpers = require("../utils/testHelpers.js")
+const { upgrades } = require('hardhat')
 
 const SortedTroves = artifacts.require("SortedTroves")
 const SortedTrovesTester = artifacts.require("SortedTrovesTester")
@@ -278,9 +279,10 @@ contract('SortedTroves', async accounts => {
     let sortedTrovesTester
 
     beforeEach(async () => {
-      sortedTroves = await SortedTroves.new()
+      const { sortedTrovesEthers } = await deploymentHelper.deployKUMOCoreUpgradeableEthers();
+      sortedTroves = sortedTrovesEthers;
+      
       sortedTrovesTester = await SortedTrovesTester.new()
-
       await sortedTrovesTester.setSortedTroves(sortedTroves.address)
     })
 
@@ -335,6 +337,25 @@ contract('SortedTroves', async accounts => {
         assert.equal(pos[0], alice, 'prevId result should be nextId param')
         assert.equal(pos[1], th.ZERO_ADDRESS, 'nextId result should be zero')
       })
+    })
+  })
+
+  describe('SortedTroves with upgrades', () => {
+    let SortedTrovesV2;
+    let sortedTrovesV2;
+    let arg;
+
+    beforeEach(async () => {
+      SortedTrovesV2 = await ethers.getContractFactory("SortedTrovesV2");
+      contracts = await deploymentHelper.deployKUMOCoreUpgradeableEthers();
+      arg = 42;
+    })
+
+    it("successfully upgrades", async () => {
+      sortedTrovesV2 = await upgrades.upgradeProxy(contracts.sortedTrovesEthers.address, SortedTrovesV2, { call: { fn: "initializeV2", args: [arg] }, kinds: "uups"});
+    })
+    it("reinitialized correctly", async () => {
+      assert.equal(await sortedTrovesV2.testFunction(), arg, 'newVar should be equal value from initializer')
     })
   })
 })

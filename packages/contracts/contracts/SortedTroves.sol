@@ -2,15 +2,16 @@
 
 pragma solidity 0.8.11;
 
-// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-
 import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/IBorrowerOperations.sol";
 import "./Dependencies/SafeMath.sol";
-import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
+
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /*
 * A sorted doubly linked list with nodes sorted in descending order.
@@ -45,10 +46,8 @@ import "./Dependencies/console.sol";
 *
 * - Public functions with parameters have been made internal to save gas, and given an external wrapper function for external access
 */
-contract SortedTroves is Ownable, CheckContract, ISortedTroves {
+contract SortedTroves is Initializable, UUPSUpgradeable, OwnableUpgradeable, CheckContract, ISortedTroves {
     using SafeMath for uint256;
-
-	// bool public isInitialized;
 
     string constant public NAME = "SortedTroves";
 
@@ -82,14 +81,16 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
 
     // --- Dependency setters ---
 
-    function setParams(uint256 _size, address _troveManagerAddress, address _borrowerOperationsAddress) external override onlyOwner {
+    function initialize() initializer public {
+        __Ownable_init();
+        __UUPSUpgradeable_init();
+    }
+
+    function setParams(uint256 _size, address _troveManagerAddress, address _borrowerOperationsAddress) external onlyOwner {
         require(_size > 0, "SortedTroves: Size can't be zero");
-		// require(!isInitialized, "Already initialized");
+
 		checkContract(_troveManagerAddress);
 		checkContract(_borrowerOperationsAddress);
-		// isInitialized = true;
-
-		// __Ownable_init();
 
         data.maxSize = _size;
 
@@ -98,9 +99,9 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
 
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
-
-        _renounceOwnership();
     }
+
+    function _authorizeUpgrade(address) internal override onlyOwner {}
 
     /*
      * @dev Add a node to the list
