@@ -94,9 +94,18 @@ class DeploymentHelper {
     }
   }
 
+  static async deployKUMOCoreUpgradeableEthers() {
+    const SortedTrovesEthers = await ethers.getContractFactory("SortedTroves")
+    const sortedTrovesEthers = await upgrades.deployProxy(SortedTrovesEthers, [], { kind: "uups" })
+
+    return {
+      sortedTrovesEthers
+    }
+  }
+
   static async deployKumoCoreHardhat() {
     const priceFeedTestnet = await PriceFeedTestnet.new()
-        const troveManager = await TroveManager.new()
+    const troveManager = await TroveManager.new()
     const activePool = await ActivePool.new()
     const stabilityPool = await StabilityPool.new()
     const gasPool = await GasPool.new()
@@ -112,10 +121,7 @@ class DeploymentHelper {
     )
 
     // Upgradable Contracts
-
-    const SortedTrovesEthers = await ethers.getContractFactory("SortedTroves")
-    const sortedTrovesEthers = await upgrades.deployProxy(SortedTrovesEthers, [], { kind: "uups" })
-
+    const { sortedTrovesEthers } = await this.deployKUMOCoreUpgradeableEthers();
     const sortedTroves = await SortedTroves.at(sortedTrovesEthers.address);
 
     SortedTroves.setAsDeployed(sortedTroves)
