@@ -9,6 +9,7 @@ on:
     paths:
       - ".github/**"
       - "packages/contracts/**"
+      - "yarn.lock"
   pull_request:
     paths:
       - ".github/**"
