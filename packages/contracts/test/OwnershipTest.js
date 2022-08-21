@@ -123,10 +123,6 @@ contract('All Kumo functions with onlyOwner modifier', async accounts => {
       // Owner can successfully set params
       const txOwner = await sortedTroves.setParams(...params, { from: owner })
       assert.isTrue(txOwner.receipt.status)
-
-      // fails if called twice
-      // TODOKUMO: do we need to block setting params second time? 
-      await th.assertRevert(sortedTroves.setParams(...params, { from: owner }))
     })
   })
 
