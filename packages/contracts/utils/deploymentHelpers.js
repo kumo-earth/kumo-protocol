@@ -156,12 +156,11 @@ class DeploymentHelper {
 
   static async deployTesterContractsHardhat() {
     const testerContracts = {}
+    const { sortedTrovesEthers } = await this.deployKUMOCoreUpgradeableEthers();
 
     // Contract without testers (yet)
     testerContracts.priceFeedTestnet = await PriceFeedTestnet.new()
-
-    const SortedTrovesEthers = await ethers.getContractFactory("SortedTroves")
-    testerContracts.sortedTroves = await SortedTroves.at((await upgrades.deployProxy(SortedTrovesEthers, {kind: "uups"})).address)
+    testerContracts.sortedTroves = await SortedTroves.at(sortedTrovesEthers.address)
     // Actual tester contracts
     testerContracts.communityIssuance = await CommunityIssuanceTester.new()
     testerContracts.activePool = await ActivePoolTester.new()
