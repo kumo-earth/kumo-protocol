@@ -91,16 +91,23 @@ class DeploymentHelper {
     let contracts = {}
 
     const SortedTrovesEthers = await ethers.getContractFactory("SortedTroves")
+    const StabilityPoolEthers = await ethers.getContractFactory("StabilityPool")
+
     contracts.sortedTrovesEthers = await upgrades.deployProxy(SortedTrovesEthers, [], { kind: "uups" })
+    contracts.stabilityPoolEthers = await upgrades.deployProxy(StabilityPoolEthers, [], { kind: "uups" })
 
     return contracts
   }
 
   static async deployKumoCoreHardhat() {
+    // Upgradable Contracts
+    const { sortedTrovesEthers, stabilityPoolEthers } = await this.deployKUMOCoreUpgradeableEthers();
+    const sortedTroves = await SortedTroves.at(sortedTrovesEthers.address);
+    const stabilityPool = await StabilityPool.at(stabilityPoolEthers.address);
+
     const priceFeedTestnet = await PriceFeedTestnet.new()
     const troveManager = await TroveManager.new()
     const activePool = await ActivePool.new()
-    const stabilityPool = await StabilityPool.new()
     const gasPool = await GasPool.new()
     const defaultPool = await DefaultPool.new()
     const collSurplusPool = await CollSurplusPool.new()
@@ -112,10 +119,6 @@ class DeploymentHelper {
       stabilityPool.address,
       borrowerOperations.address
     )
-
-    // Upgradable Contracts
-    const { sortedTrovesEthers } = await this.deployKUMOCoreUpgradeableEthers();
-    const sortedTroves = await SortedTroves.at(sortedTrovesEthers.address);
 
     SortedTroves.setAsDeployed(sortedTroves)
     KUSDToken.setAsDeployed(kusdToken)

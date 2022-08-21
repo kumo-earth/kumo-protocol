@@ -9,7 +9,7 @@ import './Interfaces/ITroveManager.sol';
 import './Interfaces/IKUSDToken.sol';
 import './Interfaces/ISortedTroves.sol';
 import "./Interfaces/ICommunityIssuance.sol";
-import "./Dependencies/KumoBase.sol";
+import "./Dependencies/KumoBaseUpgradeable.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/KumoSafeMath128.sol";
 import "./Dependencies/CheckContract.sol";
@@ -144,7 +144,7 @@ import "./Dependencies/console.sol";
  * The product P (and snapshot P_t) is re-used, as the ratio P/P_t tracks a deposit's depletion due to liquidations.
  *
  */
-contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
+contract StabilityPool is KumoBaseUpgradeable, CheckContract, IStabilityPool {
     using KumoSafeMath128 for uint128;
     using SafeMath for uint256;
 
@@ -201,7 +201,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     * During its lifetime, a deposit's value evolves from d_t to d_t * P / P_t , where P_t
     * is the snapshot of P taken at the instant the deposit was made. 18-digit decimal.
     */
-    uint public P = DECIMAL_PRECISION;
+    uint public P;
 
     uint public constant SCALE_FACTOR = 1e9;
 
@@ -271,6 +271,13 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
     // --- Contract setters ---
 
+    function initialize() external initializer {
+        __Ownable_init();
+        __UUPSUpgradeable_init();
+
+        P = DECIMAL_PRECISION;
+    }
+
     function setAddresses(
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
@@ -284,7 +291,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         override
         onlyOwner
     {
-        // require(!isInitialized, "Already initialized");
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
         checkContract(_activePoolAddress);
@@ -292,9 +298,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         checkContract(_sortedTrovesAddress);
         checkContract(_priceFeedAddress);
         checkContract(_communityIssuanceAddress);
-
-		// isInitialized = true;
-		// __Ownable_init();
 
         borrowerOperations = IBorrowerOperations(_borrowerOperationsAddress);
         troveManager = ITroveManager(_troveManagerAddress);
@@ -311,9 +314,9 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit PriceFeedAddressChanged(_priceFeedAddress);
         emit CommunityIssuanceAddressChanged(_communityIssuanceAddress);
-
-        _renounceOwnership();
     }
+
+    function _authorizeUpgrade(address) internal override onlyOwner {}
 
     // --- Getters for public variables. Required by IPool interface ---
 
