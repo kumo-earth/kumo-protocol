@@ -63,25 +63,25 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     function setAddresses(
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
-        address _stabilityPoolManagerAddress,
+        address _stabilityPoolAddress,
         address _defaultPoolAddress
     ) external onlyOwner {
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
-        checkContract(_stabilityPoolManagerAddress);
+        checkContract(_stabilityPoolAddress);
         checkContract(_defaultPoolAddress);
 
         // __Ownable_init();
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;
-        stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);
-        // stabilityPoolAddress = _stabilityPoolAddress;
+        // stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);
+        stabilityPoolAddress = _stabilityPoolAddress;
         defaultPoolAddress = _defaultPoolAddress;
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
-        emit StabilityPoolAddressChanged(_stabilityPoolManagerAddress);
+        emit StabilityPoolAddressChanged(_stabilityPoolAddress);
         emit DefaultPoolAddressChanged(_defaultPoolAddress);
 
         _renounceOwnership();
