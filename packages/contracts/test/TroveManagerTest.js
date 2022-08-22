@@ -25,7 +25,6 @@ const GAS_PRICE = 10000000
 contract('TroveManager', async accounts => {
 
   const _18_zeros = '000000000000000000'
-  const ZERO_ADDRESS = th.ZERO_ADDRESS
 
   const [
     owner,
@@ -575,6 +574,86 @@ contract('TroveManager', async accounts => {
     assert.equal(TCR_Before, TCR_After)
   })
 
+<<<<<<< HEAD
+  const TCR_Before = (await th.getTCR(contracts, assetAddress1)).toString()
+
+  // Confirm A, B, C ICRs are below 110%
+  const alice_ICR = await troveManager.getCurrentICR(assetAddress1, alice, price)
+  const bob_ICR = await troveManager.getCurrentICR(assetAddress1, bob, price)
+  const carol_ICR = await troveManager.getCurrentICR(assetAddress1, carol, price)
+  assert.isTrue(alice_ICR.lte(mv._MCR))
+  assert.isTrue(bob_ICR.lte(mv._MCR))
+  assert.isTrue(carol_ICR.lte(mv._MCR))
+
+  // Confirm system is not in Recovery Mode
+  assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
+
+  // Liquidation with n = 0
+  await assertRevert(troveManager.liquidateTroves(assetAddress1, 0), "TroveManager: nothing to liquidate")
+
+  // Check all troves are still in the system
+  assert.isTrue(await sortedTroves.contains(assetAddress1, whale))
+  assert.isTrue(await sortedTroves.contains(assetAddress1, alice))
+  assert.isTrue(await sortedTroves.contains(assetAddress1, bob))
+  assert.isTrue(await sortedTroves.contains(assetAddress1, carol))
+
+  const TCR_After = (await th.getTCR(contracts, assetAddress1)).toString()
+=======
+  //   // Liquidation with n = 0
+  //   await assertRevert(troveManager.liquidateTroves(0), "TroveManager: nothing to liquidate")
+
+  //   // Check all troves are still in the system
+  //   assert.isTrue(await sortedTroves.contains(assetAddress1, whale))
+  //   assert.isTrue(await sortedTroves.contains(assetAddress1, alice))
+  //   assert.isTrue(await sortedTroves.contains(assetAddress1, bob))
+  //   assert.isTrue(await sortedTroves.contains(assetAddress1, carol))
+
+  //   const TCR_After = (await th.getTCR(contracts)).toString()
+
+  //   // Check TCR has not changed after liquidation
+  //   assert.equal(TCR_Before, TCR_After)
+  // })
+
+  // it("liquidateTroves():  liquidates troves with ICR < MCR", async () => {
+  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
+
+  //   // A, B, C open troves that will remain active when price drops to 100
+  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(220, 16)), extraParams: { from: alice } })
+  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(230, 16)), extraParams: { from: bob } })
+  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(240, 16)), extraParams: { from: carol } })
+
+  //   // D, E, F open troves that will fall below MCR when price drops to 100
+  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(218, 16)), extraParams: { from: dennis } })
+  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(216, 16)), extraParams: { from: erin } })
+  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(210, 16)), extraParams: { from: flyn } })
+
+  //   // Check list size is 7
+  //   assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), '7')
+
+  //   // Price drops
+  //   await priceFeed.setPrice(dec(100, 18))
+  //   const price = await priceFeed.getPrice()
+
+  //   const alice_ICR = await troveManager.getCurrentICR(assetAddress1, alice, price)
+  //   const bob_ICR = await troveManager.getCurrentICR(assetAddress1, bob, price)
+  //   const carol_ICR = await troveManager.getCurrentICR(assetAddress1, carol, price)
+  //   const dennis_ICR = await troveManager.getCurrentICR(assetAddress1, dennis, price)
+  //   const erin_ICR = await troveManager.getCurrentICR(assetAddress1, erin, price)
+  //   const flyn_ICR = await troveManager.getCurrentICR(assetAddress1, flyn, price)
+
+  //   // Check A, B, C have ICR above MCR
+  //   assert.isTrue(alice_ICR.gte(mv._MCR))
+  //   assert.isTrue(bob_ICR.gte(mv._MCR))
+  //   assert.isTrue(carol_ICR.gte(mv._MCR))
+
+  //   // Check D, E, F have ICR below MCR
+  //   assert.isTrue(dennis_ICR.lte(mv._MCR))
+  //   assert.isTrue(erin_ICR.lte(mv._MCR))
+  //   assert.isTrue(flyn_ICR.lte(mv._MCR))
+
+  //   // Confirm system is not in Recovery Mode
+  //   assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1), );
+>>>>>>> Merge  'fix-TrovManager-Test' of https://github.com/udosson/kumo-protocol into KumoParameters-asset
 
   it("liquidate(): Pool offsets increase the TCR", async () => {
     // Whale provides KUSD to SP
@@ -702,6 +781,8 @@ contract('TroveManager', async accounts => {
 
     assert.isTrue(expectedTCR_3.eq(TCR_3))
 
+    //   // B provides to SP
+    //   await stabilityPool.provideToSP(dec(100, 18), assetAddress1, { from: B })
 
     const liquidationTx_4 = await troveManager.liquidate(assetAddress1, defaulter_4)
     const [liquidatedDebt_4, liquidatedColl_4, gasComp_4] = th.getEmittedLiquidationValues(liquidationTx_4)
@@ -953,6 +1034,14 @@ contract('TroveManager', async accounts => {
 
     Check Alice is above MCR, Bob below, Carol below. */
 
+    // it("redeemCollateral(): finds the last Trove with ICR == 110% even if there is more than one", async () => {
+    //   // --- SETUP ---
+    //   const amount1 = toBN(dec(100, 18))
+    //   const { totalDebt: A_totalDebt_Asset1 } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: amount1, extraParams: { from: alice } })
+    //   const { totalDebt: B_totalDebt_Asset1 } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: amount1, extraParams: { from: bob } })
+    //   const { totalDebt: C_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: amount1, extraParams: { from: carol } })
+    //   const redemptionAmount = C_totalDebt.add(B_totalDebt_Asset1).add(A_totalDebt_Asset1)
+    //   const { totalDebt: D_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(195, 16)), extraKUSDAmount: redemptionAmount, extraParams: { from: dennis } })
 
     assert.isTrue(alice_ICR_After.gte(mv._MCR))
     assert.isTrue(bob_ICR_After.lte(mv._MCR))
@@ -1800,6 +1889,10 @@ contract('TroveManager', async accounts => {
     assert.isTrue(G_After.eq(G_Before))
   })
 
+  //   const price = await priceFeed.getPrice()
+  //   const A_surplus = A_collBefore.sub(A_netDebt.mul(mv._1e18BN).div(price))
+  //   const B_surplus = B_collBefore.sub(B_netDebt.mul(mv._1e18BN).div(price))
+  //   const C_surplus = C_collBefore.sub(C_netDebt.mul(mv._1e18BN).div(price))
 
   // --- batchliquidateTroves() ---
 

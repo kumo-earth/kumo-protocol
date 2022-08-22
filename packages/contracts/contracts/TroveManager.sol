@@ -231,13 +231,10 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         redeemCollateral
     }
 
-	modifier troveIsActive(address _asset, address _borrower) {
-		require(
-			isTroveActive(_asset, _borrower),
-			"TroveManager: Trove does not exist or is closed"
-		);
-		_;
-	}
+    modifier troveIsActive(address _asset, address _borrower) {
+        require(isTroveActive(_asset, _borrower), "TroveManager: Trove does not exist or is closed");
+        _;
+    }
 
     // --- Dependency setter ---
 
@@ -312,8 +309,11 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     // --- Trove Liquidation functions ---
 
     // Single liquidation function. Closes the trove if its ICR is lower than the minimum collateral ratio.
-    function liquidate(address _asset, address _borrower) external override troveIsActive(_asset, _borrower){
-
+    function liquidate(address _asset, address _borrower)
+        external
+        override
+        troveIsActive(_asset, _borrower)
+    {
         address[] memory borrowers = new address[](1);
         borrowers[0] = _borrower;
         batchLiquidateTroves(_asset, borrowers);
@@ -833,6 +833,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
         IActivePool activePoolCached = kumoParams.activePool();
         IDefaultPool defaultPoolCached = kumoParams.defaultPool();
+        // IStabilityPool stabilityPoolCached = stabilityPoolManager.getAssetStabilityPool(_asset);
         IStabilityPool stabilityPoolCached = kumoParams.stabilityPool();
 
         LocalVariables_OuterLiquidationFunction memory vars;
