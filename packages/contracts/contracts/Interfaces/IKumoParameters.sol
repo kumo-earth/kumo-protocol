@@ -97,4 +97,6 @@ interface IKumoParameters {
 	function setRedemptionFeeFloor(address _asset, uint256 redemptionFeeFloor) external;
 
 	function removeRedemptionBlock(address _asset) external;
+
+	function hasCollateralConfigured(address _asset) external view returns (bool);
 }

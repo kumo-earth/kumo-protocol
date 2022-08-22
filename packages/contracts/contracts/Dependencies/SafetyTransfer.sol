@@ -13,9 +13,6 @@ library SafetyTransfer {
 		view
 		returns (uint256)
 	{
-		if (_token == address(0)) return _amount;
-		if (_amount == 0) return 0;
-
 		uint8 decimals = IERC20(_token).decimals();
 		if (decimals < 18) {
 			return _amount.div(10**(18 - decimals));

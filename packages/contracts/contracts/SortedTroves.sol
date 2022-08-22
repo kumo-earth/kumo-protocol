@@ -51,7 +51,6 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
 	// bool public isInitialized;
 
     string constant public NAME = "SortedTroves";
-    address constant ETH_REF_ADDRESS = address(0);
     uint256 constant MAX_UINT256 = type(uint256).max;
 
     event TroveManagerAddressChanged(address _troveManagerAddress);
@@ -93,15 +92,18 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
 
 		// __Ownable_init();
 
-        data[ETH_REF_ADDRESS].maxSize = MAX_UINT256;
-
         troveManager = ITroveManager(_troveManagerAddress);
         borrowerOperationsAddress = _borrowerOperationsAddress;
 
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
 
-        _renounceOwnership();
+        // _renounceOwnership();
+    }
+
+     function addNewAsset( address _asset) external onlyOwner {
+         data[_asset].maxSize = MAX_UINT256;
+		
     }
 
     /*
