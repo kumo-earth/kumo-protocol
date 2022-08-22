@@ -62,7 +62,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     ) external onlyOwner {
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
-        checkContract(_stabilityPoolManagerAddress);
+        checkContract(_stabilityPoolAddress);
         checkContract(_defaultPoolAddress);
         checkContract(_collSurplusPoolAddress);
 
@@ -70,14 +70,14 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;
-        stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);
-        // stabilityPoolAddress = _stabilityPoolAddress;
+        // stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);
+        stabilityPoolAddress = _stabilityPoolAddress;
         defaultPoolAddress = _defaultPoolAddress;
         collSurplusPoolAddress = _collSurplusPoolAddress;
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
-        emit StabilityPoolAddressChanged(_stabilityPoolManagerAddress);
+        emit StabilityPoolAddressChanged(_stabilityPoolAddress);
         emit DefaultPoolAddressChanged(_defaultPoolAddress);
         emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
 
