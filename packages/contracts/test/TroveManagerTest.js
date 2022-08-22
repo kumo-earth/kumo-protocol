@@ -131,7 +131,7 @@ contract('TroveManager', async accounts => {
     // --- TEST ---
 
     // check ActivePool ETH and KUSD debt before
-    const activePool_ETH_Before = (await activePool.getETH()).toString()
+    const activePool_ETH_Before = (await activePool.getAssetBalance()).toString()
     const activePool_RawEther_Before = (await web3.eth.getBalance(activePool.address)).toString()
     const activePool_KUSDDebt_Before = (await activePool.getKUSDDebt()).toString()
 
