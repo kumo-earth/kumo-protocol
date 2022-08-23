@@ -393,13 +393,13 @@ class TestHelper {
   static getEmittedRedemptionValues(redemptionTx) {
     for (let i = 0; i < redemptionTx.logs.length; i++) {
       if (redemptionTx.logs[i].event === "Redemption") {
+        const redeemedAsset = redemptionTx.logs[i].args[0]
+        const KUSDAmount = redemptionTx.logs[i].args[1]
+        const totalKUSDRedeemed = redemptionTx.logs[i].args[2]
+        const totalETHDrawn = redemptionTx.logs[i].args[3]
+        const ETHFee = redemptionTx.logs[i].args[4]
 
-        const KUSDAmount = redemptionTx.logs[i].args[0]
-        const totalKUSDRedeemed = redemptionTx.logs[i].args[1]
-        const totalETHDrawn = redemptionTx.logs[i].args[2]
-        const ETHFee = redemptionTx.logs[i].args[3]
-
-        return [KUSDAmount, totalKUSDRedeemed, totalETHDrawn, ETHFee]
+        return [KUSDAmount, totalKUSDRedeemed, totalETHDrawn, ETHFee, redeemedAsset]
       }
     }
     throw ("The transaction logs do not contain a redemption event")
@@ -408,27 +408,32 @@ class TestHelper {
   static getEmittedLiquidationValues(liquidationTx) {
     for (let i = 0; i < liquidationTx.logs.length; i++) {
       if (liquidationTx.logs[i].event === "Liquidation") {
-        const liquidatedDebt = liquidationTx.logs[i].args[0]
-        const liquidatedColl = liquidationTx.logs[i].args[1]
-        const collGasComp = liquidationTx.logs[i].args[2]
-        const kusdGasComp = liquidationTx.logs[i].args[3]
+        const liquidatedAsset = liquidationTx.logs[i].args[0]
+        const liquidatedDebt = liquidationTx.logs[i].args[1]
+        const liquidatedColl = liquidationTx.logs[i].args[2]
+        const collGasComp = liquidationTx.logs[i].args[3]
+        const kusdGasComp = liquidationTx.logs[i].args[4]
 
-        return [liquidatedDebt, liquidatedColl, collGasComp, kusdGasComp]
+        return [liquidatedDebt, liquidatedColl, collGasComp, kusdGasComp, liquidatedAsset]
       }
     }
     throw ("The transaction logs do not contain a liquidation event")
   }
 
+  static getEmittedLiquidatedAsset(liquidationTx) {
+    return this.getLiquidationEventArg(liquidationTx, 0)  // liquidatedAsset is position 0 in the Liquidation event
+  }
+
   static getEmittedLiquidatedDebt(liquidationTx) {
-    return this.getLiquidationEventArg(liquidationTx, 0)  // LiquidatedDebt is position 0 in the Liquidation event
+    return this.getLiquidationEventArg(liquidationTx, 1)  // LiquidatedDebt is position 1 in the Liquidation event
   }
 
   static getEmittedLiquidatedColl(liquidationTx) {
-    return this.getLiquidationEventArg(liquidationTx, 1) // LiquidatedColl is position 1 in the Liquidation event
+    return this.getLiquidationEventArg(liquidationTx, 2) // LiquidatedColl is position 2 in the Liquidation event
   }
 
   static getEmittedGasComp(liquidationTx) {
-    return this.getLiquidationEventArg(liquidationTx, 2) // GasComp is position 2 in the Liquidation event
+    return this.getLiquidationEventArg(liquidationTx, 3) // GasComp is position 3 in the Liquidation event
   }
 
   static getLiquidationEventArg(liquidationTx, arg) {
