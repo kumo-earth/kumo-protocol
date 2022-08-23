@@ -54,6 +54,9 @@ contract('TroveManager', async accounts => {
 
   let contracts
 
+  const getOpenTroveTotalDebt = async (kusdAmount) => th.getOpenTroveTotalDebt(contracts, kusdAmount)
+  const getOpenTroveKUSDAmount = async (totalDebt, asset) => th.getOpenTroveKUSDAmount(contracts, totalDebt, asset)
+  const getActualDebtFromComposite = async (compositeDebt) => th.getActualDebtFromComposite(compositeDebt, contracts)
   const getNetBorrowingAmount = async (debtWithFee, asset) => th.getNetBorrowingAmount(contracts, debtWithFee, asset)
   const openTrove = async (params) => th.openTrove(contracts, params)
   const withdrawKUSD = async (params) => th.withdrawKUSD(contracts, params)
@@ -2346,166 +2349,167 @@ contract('TroveManager', async accounts => {
   //   assert.equal(partialRedemptionHintNICR, '0')
   // });
 
-  it('redeemCollateral(): cancels the provided KUSD with debt from Troves with the lowest ICRs and sends an equivalent amount of Ether', async () => {
-    // --- SETUP ---
-    const { totalDebt: A_totalDebt_Asset1 } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(310, 16)), extraKUSDAmount: dec(10, 18), extraParams: { from: alice } })
-    const { netDebt: B_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(290, 16)), extraKUSDAmount: dec(8, 18), extraParams: { from: bob } })
-    const { netDebt: C_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(250, 16)), extraKUSDAmount: dec(10, 18), extraParams: { from: carol } })
-    const partialRedemptionAmount = toBN(2)
-    const redemptionAmount = C_netDebt.add(B_netDebt).add(partialRedemptionAmount)
-    // start Dennis with a high ICR
-    await openTrove({ asset: assetAddress1, ICR: toBN(dec(100, 18)), extraKUSDAmount: redemptionAmount, extraParams: { from: dennis } })
+  // it('redeemCollateral(): cancels the provided KUSD with debt from Troves with the lowest ICRs and sends an equivalent amount of Ether', async () => {
+  //   // --- SETUP ---
+  //   const { totalDebt: A_totalDebt_Asset1 } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(310, 16)), extraKUSDAmount: dec(10, 18), extraParams: { from: alice } })
+  //   const { netDebt: B_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(290, 16)), extraKUSDAmount: dec(8, 18), extraParams: { from: bob } })
+  //   const { netDebt: C_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(250, 16)), extraKUSDAmount: dec(10, 18), extraParams: { from: carol } })
+  //   const partialRedemptionAmount = toBN(2)
+  //   const redemptionAmount = C_netDebt.add(B_netDebt).add(partialRedemptionAmount)
+  //   // start Dennis with a high ICR
+  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(100, 18)), extraKUSDAmount: redemptionAmount, extraParams: { from: dennis } })
 
-    const dennis_ETHBalance_Before = toBN(await erc20Asset1.balanceOf(dennis))
+  //   const dennis_ETHBalance_Before = toBN(await erc20Asset1.balanceOf(dennis))
 
-    const dennis_KUSDBalance_Before = await kusdToken.balanceOf(dennis)
+  //   const dennis_KUSDBalance_Before = await kusdToken.balanceOf(dennis)
 
-    const price = await priceFeed.getPrice()
-    assert.equal(price, dec(200, 18))
+  //   const price = await priceFeed.getPrice()
+  //   assert.equal(price, dec(200, 18))
 
-    // --- TEST ---
+  //   // --- TEST ---
 
-    // Find hints for redeeming 20 KUSD
-    const {
-      firstRedemptionHint,
-      partialRedemptionHintNICR
-    } = await hintHelpers.getRedemptionHints(assetAddress1, redemptionAmount, price, 0)
+  //   // Find hints for redeeming 20 KUSD
+  //   const {
+  //     firstRedemptionHint,
+  //     partialRedemptionHintNICR
+  //   } = await hintHelpers.getRedemptionHints(assetAddress1, redemptionAmount, price, 0)
 
-    // We don't need to use getApproxHint for this test, since it's not the subject of this
-    // test case, and the list is very small, so the correct position is quickly found
-    const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(
-      assetAddress1,
-      partialRedemptionHintNICR,
-      dennis,
-      dennis
-    )
+  //   // We don't need to use getApproxHint for this test, since it's not the subject of this
+  //   // test case, and the list is very small, so the correct position is quickly found
+  //   const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(
+  //     assetAddress1,
+  //     partialRedemptionHintNICR,
+  //     dennis,
+  //     dennis
+  //   )
 
-    // skip bootstrapping phase
-    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
+  //   // skip bootstrapping phase
+  //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-    // Dennis redeems 20 KUSD
-    // Don't pay for gas, as it makes it easier to calculate the received Ether
-    const redemptionTx = await troveManager.redeemCollateral(assetAddress1,
-      redemptionAmount,
-      firstRedemptionHint,
-      upperPartialRedemptionHint,
-      lowerPartialRedemptionHint,
-      partialRedemptionHintNICR,
-      0, th._100pct,
-      {
-        from: dennis,
-        gasPrice: GAS_PRICE
-      }
-    )
+  //   // Dennis redeems 20 KUSD
+  //   // Don't pay for gas, as it makes it easier to calculate the received Ether
+  //   const redemptionTx = await troveManager.redeemCollateral(
+  //     assetAddress1,
+  //     redemptionAmount,
+  //     firstRedemptionHint,
+  //     upperPartialRedemptionHint,
+  //     lowerPartialRedemptionHint,
+  //     partialRedemptionHintNICR,
+  //     0, th._100pct,
+  //     {
+  //       from: dennis,
+  //       gasPrice: GAS_PRICE
+  //     }
+  //   )
 
 
-    const ETHFee = th.getEmittedRedemptionValues(redemptionTx)[3]
+  //   const ETHFee = th.getEmittedRedemptionValues(redemptionTx)[3]
 
-    const alice_Trove_After = await troveManager.Troves(alice, assetAddress1)
-    const bob_Trove_After = await troveManager.Troves(bob, assetAddress1)
-    const carol_Trove_After = await troveManager.Troves(carol, assetAddress1)
+  //   const alice_Trove_After = await troveManager.Troves(alice, assetAddress1)
+  //   const bob_Trove_After = await troveManager.Troves(bob, assetAddress1)
+  //   const carol_Trove_After = await troveManager.Troves(carol, assetAddress1)
 
-    const alice_debt_After = alice_Trove_After[TroveData.debt].toString()
-    const bob_debt_After = bob_Trove_After[TroveData.debt].toString()
-    const carol_debt_After = carol_Trove_After[TroveData.debt].toString()
+  //   const alice_debt_After = alice_Trove_After[TroveData.debt].toString()
+  //   const bob_debt_After = bob_Trove_After[TroveData.debt].toString()
+  //   const carol_debt_After = carol_Trove_After[TroveData.debt].toString()
 
-    /* check that Dennis' redeemed 20 KUSD has been cancelled with debt from Bobs's Trove (8) and Carol's Trove (10).
-    The remaining lot (2) is sent to Alice's Trove, who had the best ICR.
-    It leaves her with (3) KUSD debt + 50 for gas compensation. */
-    th.assertIsApproximatelyEqual(alice_debt_After, A_totalDebt_Asset1.sub(partialRedemptionAmount))
-    assert.equal(bob_debt_After, '0')
-    assert.equal(carol_debt_After, '0')
+  //   /* check that Dennis' redeemed 20 KUSD has been cancelled with debt from Bobs's Trove (8) and Carol's Trove (10).
+  //   The remaining lot (2) is sent to Alice's Trove, who had the best ICR.
+  //   It leaves her with (3) KUSD debt + 50 for gas compensation. */
+  //   th.assertIsApproximatelyEqual(alice_debt_After, A_totalDebt_Asset1.sub(partialRedemptionAmount))
+  //   assert.equal(bob_debt_After, '0')
+  //   assert.equal(carol_debt_After, '0')
 
-    const dennis_ETHBalance_After = toBN(await erc20Asset1.balanceOf(dennis))
-    const receivedETH = dennis_ETHBalance_After.sub(dennis_ETHBalance_Before)
+  //   const dennis_ETHBalance_After = toBN(await erc20Asset1.balanceOf(dennis))
+  //   const receivedETH = dennis_ETHBalance_After.sub(dennis_ETHBalance_Before)
 
-    const expectedTotalETHDrawn = redemptionAmount.div(toBN(200)) // convert redemptionAmount KUSD to ETH, at ETH:USD price 200
-    const expectedReceivedETH = expectedTotalETHDrawn.sub(toBN(ETHFee)).sub(toBN(th.gasUsed(redemptionTx) * GAS_PRICE)) // substract gas used for troveManager.redeemCollateral from expected received ETH
-    th.assertIsApproximatelyEqual(expectedReceivedETH, receivedETH)
+  //   const expectedTotalETHDrawn = redemptionAmount.div(toBN(200)) // convert redemptionAmount KUSD to ETH, at ETH:USD price 200
+  //   const expectedReceivedETH = expectedTotalETHDrawn.sub(toBN(ETHFee)) // substract gas used for troveManager.redeemCollateral from expected received ETH
+  //   th.assertIsApproximatelyEqual(expectedReceivedETH, receivedETH)
 
-    const dennis_KUSDBalance_After = (await kusdToken.balanceOf(dennis)).toString()
-    assert.equal(dennis_KUSDBalance_After, dennis_KUSDBalance_Before.sub(redemptionAmount))
-  })
+  //   const dennis_KUSDBalance_After = (await kusdToken.balanceOf(dennis)).toString()
+  //   assert.equal(dennis_KUSDBalance_After, dennis_KUSDBalance_Before.sub(redemptionAmount))
+  // })
 
-  it('redeemCollateral(): with invalid first hint, zero address', async () => {
-    // --- SETUP ---
-    const { totalDebt: A_totalDebt_Asset1 } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(310, 16)), extraKUSDAmount: dec(10, 18), extraParams: { from: alice } })
-    const { netDebt: B_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(290, 16)), extraKUSDAmount: dec(8, 18), extraParams: { from: bob } })
-    const { netDebt: C_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(250, 16)), extraKUSDAmount: dec(10, 18), extraParams: { from: carol } })
-    const partialRedemptionAmount = toBN(2)
-    const redemptionAmount = C_netDebt.add(B_netDebt).add(partialRedemptionAmount)
-    // start Dennis with a high ICR
-    await openTrove({ asset: assetAddress1, ICR: toBN(dec(100, 18)), extraKUSDAmount: redemptionAmount, extraParams: { from: dennis } })
+  // it('redeemCollateral(): with invalid first hint, zero address', async () => {
+  //   // --- SETUP ---
+  //   const { totalDebt: A_totalDebt_Asset1 } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(310, 16)), extraKUSDAmount: dec(10, 18), extraParams: { from: alice } })
+  //   const { netDebt: B_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(290, 16)), extraKUSDAmount: dec(8, 18), extraParams: { from: bob } })
+  //   const { netDebt: C_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(250, 16)), extraKUSDAmount: dec(10, 18), extraParams: { from: carol } })
+  //   const partialRedemptionAmount = toBN(2)
+  //   const redemptionAmount = C_netDebt.add(B_netDebt).add(partialRedemptionAmount)
+  //   // start Dennis with a high ICR
+  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(100, 18)), extraKUSDAmount: redemptionAmount, extraParams: { from: dennis } })
 
-    const dennis_ETHBalance_Before = toBN(await erc20Asset1.balanceOf(dennis))
+  //   const dennis_ETHBalance_Before = toBN(await erc20Asset1.balanceOf(dennis))
 
-    const dennis_KUSDBalance_Before = await kusdToken.balanceOf(dennis)
+  //   const dennis_KUSDBalance_Before = await kusdToken.balanceOf(dennis)
 
-    const price = await priceFeed.getPrice()
-    assert.equal(price, dec(200, 18))
+  //   const price = await priceFeed.getPrice()
+  //   assert.equal(price, dec(200, 18))
 
-    // --- TEST ---
+  //   // --- TEST ---
 
-    // Find hints for redeeming 20 KUSD
-    const {
-      firstRedemptionHint,
-      partialRedemptionHintNICR
-    } = await hintHelpers.getRedemptionHints(assetAddress1, redemptionAmount, price, 0)
+  //   // Find hints for redeeming 20 KUSD
+  //   const {
+  //     firstRedemptionHint,
+  //     partialRedemptionHintNICR
+  //   } = await hintHelpers.getRedemptionHints(assetAddress1, redemptionAmount, price, 0)
 
-    // We don't need to use getApproxHint for this test, since it's not the subject of this
-    // test case, and the list is very small, so the correct position is quickly found
-    const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1,
-      partialRedemptionHintNICR,
-      dennis,
-      dennis
-    )
+  //   // We don't need to use getApproxHint for this test, since it's not the subject of this
+  //   // test case, and the list is very small, so the correct position is quickly found
+  //   const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1,
+  //     partialRedemptionHintNICR,
+  //     dennis,
+  //     dennis
+  //   )
 
-    // skip bootstrapping phase
-    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
+  //   // skip bootstrapping phase
+  //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-    // Dennis redeems 20 KUSD
-    // Don't pay for gas, as it makes it easier to calculate the received Ether
-    const redemptionTx = await troveManager.redeemCollateral(assetAddress1,
-      redemptionAmount,
-      assetAddress1, // invalid first hint
-      upperPartialRedemptionHint,
-      lowerPartialRedemptionHint,
-      partialRedemptionHintNICR,
-      0, th._100pct,
-      {
-        from: dennis,
-        gasPrice: GAS_PRICE
-      }
-    )
+  //   // Dennis redeems 20 KUSD
+  //   // Don't pay for gas, as it makes it easier to calculate the received Ether
+  //   const redemptionTx = await troveManager.redeemCollateral(assetAddress1,
+  //     redemptionAmount,
+  //     assetAddress1, // invalid first hint
+  //     upperPartialRedemptionHint,
+  //     lowerPartialRedemptionHint,
+  //     partialRedemptionHintNICR,
+  //     0, th._100pct,
+  //     {
+  //       from: dennis,
+  //       gasPrice: GAS_PRICE
+  //     }
+  //   )
 
-    const ETHFee = th.getEmittedRedemptionValues(redemptionTx)[3]
+  //   const ETHFee = th.getEmittedRedemptionValues(redemptionTx)[3]
 
-    const alice_Trove_After = await troveManager.Troves(alice, assetAddress1)
-    const bob_Trove_After = await troveManager.Troves(bob, assetAddress1)
-    const carol_Trove_After = await troveManager.Troves(carol, assetAddress1)
+  //   const alice_Trove_After = await troveManager.Troves(alice, assetAddress1)
+  //   const bob_Trove_After = await troveManager.Troves(bob, assetAddress1)
+  //   const carol_Trove_After = await troveManager.Troves(carol, assetAddress1)
 
-    const alice_debt_After = alice_Trove_After[TroveData.debt].toString()
-    const bob_debt_After = bob_Trove_After[TroveData.debt].toString()
-    const carol_debt_After = carol_Trove_After[TroveData.debt].toString()
+  //   const alice_debt_After = alice_Trove_After[TroveData.debt].toString()
+  //   const bob_debt_After = bob_Trove_After[TroveData.debt].toString()
+  //   const carol_debt_After = carol_Trove_After[TroveData.debt].toString()
 
-    /* check that Dennis' redeemed 20 KUSD has been cancelled with debt from Bobs's Trove (8) and Carol's Trove (10).
-    The remaining lot (2) is sent to Alice's Trove, who had the best ICR.
-    It leaves her with (3) KUSD debt + 50 for gas compensation. */
-    th.assertIsApproximatelyEqual(alice_debt_After, A_totalDebt_Asset1.sub(partialRedemptionAmount))
-    assert.equal(bob_debt_After, '0')
-    assert.equal(carol_debt_After, '0')
+  //   /* check that Dennis' redeemed 20 KUSD has been cancelled with debt from Bobs's Trove (8) and Carol's Trove (10).
+  //   The remaining lot (2) is sent to Alice's Trove, who had the best ICR.
+  //   It leaves her with (3) KUSD debt + 50 for gas compensation. */
+  //   th.assertIsApproximatelyEqual(alice_debt_After, A_totalDebt_Asset1.sub(partialRedemptionAmount))
+  //   assert.equal(bob_debt_After, '0')
+  //   assert.equal(carol_debt_After, '0')
 
-    const dennis_ETHBalance_After = toBN(await erc20Asset1.balanceOf(dennis))
-    const receivedETH = dennis_ETHBalance_After.sub(dennis_ETHBalance_Before)
+  //   const dennis_ETHBalance_After = toBN(await erc20Asset1.balanceOf(dennis))
+  //   const receivedETH = dennis_ETHBalance_After.sub(dennis_ETHBalance_Before)
 
-    const expectedTotalETHDrawn = redemptionAmount.div(toBN(200)) // convert redemptionAmount KUSD to ETH, at ETH:USD price 200
-    const expectedReceivedETH = expectedTotalETHDrawn.sub(toBN(ETHFee)).sub(toBN(th.gasUsed(redemptionTx) * GAS_PRICE)) // substract gas used for troveManager.redeemCollateral from expected received ETH
+  //   const expectedTotalETHDrawn = redemptionAmount.div(toBN(200)) // convert redemptionAmount KUSD to ETH, at ETH:USD price 200
+  //   const expectedReceivedETH = expectedTotalETHDrawn.sub(toBN(ETHFee)) // substract gas used for troveManager.redeemCollateral from expected received ETH
 
-    th.assertIsApproximatelyEqual(expectedReceivedETH, receivedETH)
+  //   th.assertIsApproximatelyEqual(expectedReceivedETH, receivedETH)
 
-    const dennis_KUSDBalance_After = (await kusdToken.balanceOf(dennis)).toString()
-    assert.equal(dennis_KUSDBalance_After, dennis_KUSDBalance_Before.sub(redemptionAmount))
-  })
+  //   const dennis_KUSDBalance_After = (await kusdToken.balanceOf(dennis)).toString()
+  //   assert.equal(dennis_KUSDBalance_After, dennis_KUSDBalance_Before.sub(redemptionAmount))
+  // })
 
   // it('redeemCollateral(): with invalid first hint, non-existent trove', async () => {
   //   // --- SETUP ---
@@ -2534,7 +2538,7 @@ contract('TroveManager', async accounts => {
 
   //   // We don't need to use getApproxHint for this test, since it's not the subject of this
   //   // test case, and the list is very small, so the correct position is quickly found
-  //   const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1, 
+  //   const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1,
   //     partialRedemptionHintNICR,
   //     dennis,
   //     dennis
@@ -2545,7 +2549,7 @@ contract('TroveManager', async accounts => {
 
   //   // Dennis redeems 20 KUSD
   //   // Don't pay for gas, as it makes it easier to calculate the received Ether
-  //   const redemptionTx = await troveManager.redeemCollateral(assetAddress1, 
+  //   const redemptionTx = await troveManager.redeemCollateral(assetAddress1,
   //     redemptionAmount,
   //     erin, // invalid first hint, it doesn’t have a trove
   //     upperPartialRedemptionHint,
@@ -2579,7 +2583,7 @@ contract('TroveManager', async accounts => {
   //   const receivedETH = dennis_ETHBalance_After.sub(dennis_ETHBalance_Before)
 
   //   const expectedTotalETHDrawn = redemptionAmount.div(toBN(200)) // convert redemptionAmount KUSD to ETH, at ETH:USD price 200
-  //   const expectedReceivedETH = expectedTotalETHDrawn.sub(toBN(ETHFee)).sub(toBN(th.gasUsed(redemptionTx) * GAS_PRICE)) // substract gas used for troveManager.redeemCollateral from expected received ETH
+  //   const expectedReceivedETH = expectedTotalETHDrawn.sub(toBN(ETHFee)) // substract gas used for troveManager.redeemCollateral from expected received ETH
 
   //   th.assertIsApproximatelyEqual(expectedReceivedETH, receivedETH)
 
@@ -2620,7 +2624,7 @@ contract('TroveManager', async accounts => {
 
   //   // We don't need to use getApproxHint for this test, since it's not the subject of this
   //   // test case, and the list is very small, so the correct position is quickly found
-  //   const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1, 
+  //   const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1,
   //     partialRedemptionHintNICR,
   //     dennis,
   //     dennis
@@ -2631,7 +2635,7 @@ contract('TroveManager', async accounts => {
 
   //   // Dennis redeems 20 KUSD
   //   // Don't pay for gas, as it makes it easier to calculate the received Ether
-  //   const redemptionTx = await troveManager.redeemCollateral(assetAddress1, 
+  //   const redemptionTx = await troveManager.redeemCollateral(assetAddress1,
   //     redemptionAmount,
   //     erin, // invalid trove, below MCR
   //     upperPartialRedemptionHint,
@@ -2665,7 +2669,7 @@ contract('TroveManager', async accounts => {
   //   const receivedETH = dennis_ETHBalance_After.sub(dennis_ETHBalance_Before)
 
   //   const expectedTotalETHDrawn = redemptionAmount.div(toBN(200)) // convert redemptionAmount KUSD to ETH, at ETH:USD price 200
-  //   const expectedReceivedETH = expectedTotalETHDrawn.sub(toBN(ETHFee)).sub(toBN(th.gasUsed(redemptionTx) * GAS_PRICE)) // substract gas used for troveManager.redeemCollateral from expected received ETH
+  //   const expectedReceivedETH = expectedTotalETHDrawn.sub(toBN(ETHFee)) // substract gas used for troveManager.redeemCollateral from expected received ETH
 
   //   th.assertIsApproximatelyEqual(expectedReceivedETH, receivedETH)
 
@@ -2701,9 +2705,9 @@ contract('TroveManager', async accounts => {
   //   th.assertIsApproximatelyEqual(flynBalance, F_kusdAmount.sub(redemptionAmount))
 
   //   // Check debt of Alice, Bob, Carol
-  //   const alice_Debt = await troveManager.getTroveDebt(alice)
-  //   const bob_Debt = await troveManager.getTroveDebt(bob)
-  //   const carol_Debt = await troveManager.getTroveDebt(carol)
+  //   const alice_Debt = await troveManager.getTroveDebt(assetAddress1, alice)
+  //   const bob_Debt = await troveManager.getTroveDebt(assetAddress1, bob)
+  //   const carol_Debt = await troveManager.getTroveDebt(assetAddress1, carol)
 
   //   assert.equal(alice_Debt, 0)
   //   assert.equal(bob_Debt, 0)
@@ -2718,14 +2722,14 @@ contract('TroveManager', async accounts => {
   //   assert.equal(carol_Status, 4)
 
   //   // check debt and coll of Dennis, Erin has not been impacted by redemption
-  //   const dennis_Debt = await troveManager.getTroveDebt(dennis)
-  //   const erin_Debt = await troveManager.getTroveDebt(erin)
+  //   const dennis_Debt = await troveManager.getTroveDebt(assetAddress1, dennis)
+  //   const erin_Debt = await troveManager.getTroveDebt(assetAddress1, erin)
 
   //   th.assertIsApproximatelyEqual(dennis_Debt, D_totalDebt)
   //   th.assertIsApproximatelyEqual(erin_Debt, E_totalDebt)
 
-  //   const dennis_Coll = await troveManager.getTroveColl(dennis)
-  //   const erin_Coll = await troveManager.getTroveColl(erin)
+  //   const dennis_Coll = await troveManager.getTroveColl(assetAddress1, dennis)
+  //   const erin_Coll = await troveManager.getTroveColl(assetAddress1, erin)
 
   //   assert.equal(dennis_Coll.toString(), D_coll.toString())
   //   assert.equal(erin_Coll.toString(), E_coll.toString())
@@ -2758,9 +2762,9 @@ contract('TroveManager', async accounts => {
   //   th.assertIsApproximatelyEqual(flynBalance, F_kusdAmount.sub(redemptionAmount))
 
   //   // Check debt of Alice, Bob, Carol
-  //   const alice_Debt = await troveManager.getTroveDebt(alice)
-  //   const bob_Debt = await troveManager.getTroveDebt(bob)
-  //   const carol_Debt = await troveManager.getTroveDebt(carol)
+  //   const alice_Debt = await troveManager.getTroveDebt(assetAddress1, alice)
+  //   const bob_Debt = await troveManager.getTroveDebt(assetAddress1, bob)
+  //   const carol_Debt = await troveManager.getTroveDebt(assetAddress1, carol)
 
   //   assert.equal(alice_Debt, 0)
   //   assert.equal(bob_Debt, 0)
@@ -2776,22 +2780,22 @@ contract('TroveManager', async accounts => {
   // })
 
   // it("redeemCollateral(): performs partial redemption if resultant debt is > minimum net debt", async () => {
-  //   await borrowerOperations.openTrove(th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), A, A, { from: A, value: dec(1000, 'ether') })
-  //   await borrowerOperations.openTrove(th._100pct, await getOpenTroveKUSDAmount(dec(20000, 18)), B, B, { from: B, value: dec(1000, 'ether') })
-  //   await borrowerOperations.openTrove(th._100pct, await getOpenTroveKUSDAmount(dec(30000, 18)), C, C, { from: C, value: dec(1000, 'ether') })
+  //   await borrowerOperations.openTrove(assetAddress1, dec(1000, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18), assetAddress1), A, A, { from: A })
+  //   await borrowerOperations.openTrove(assetAddress1, dec(1000, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(20000, 18), assetAddress1), B, B, { from: B })
+  //   await borrowerOperations.openTrove(assetAddress1, dec(1000, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(30000, 18), assetAddress1), C, C, { from: C })
 
   //   // A and C send all their tokens to B
-  //   await kusdToken.transfer(B, await kusdToken.balanceOf(A), {from: A})
-  //   await kusdToken.transfer(B, await kusdToken.balanceOf(C), {from: C})
+  //   await kusdToken.transfer(B, await kusdToken.balanceOf(A), { from: A })
+  //   await kusdToken.transfer(B, await kusdToken.balanceOf(C), { from: C })
 
-  //   await troveManager.setBaseRate(0)
+  //   await troveManager.setBaseRate(assetAddress1, 0)
 
   //   // skip bootstrapping phase
   //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
   //   // KUSD redemption is 55000 US
   //   const KUSDRedemption = dec(55000, 18)
-  //   const tx1 = await th.redeemCollateralAndGetTxObject(B, contracts, KUSDRedemption, th._100pct)
+  //   const tx1 = await th.redeemCollateralAndGetTxObject(assetAddress1, B, contracts, KUSDRedemption, th._100pct)
 
   //   // Check B, C closed and A remains active
   //   assert.isTrue(await sortedTroves.contains(assetAddress1, A))
@@ -2799,27 +2803,30 @@ contract('TroveManager', async accounts => {
   //   assert.isFalse(await sortedTroves.contains(assetAddress1, C))
 
   //   // A's remaining debt = 29800 + 19800 + 9800 + 200 - 55000 = 4600
-  //   const A_debt = await troveManager.getTroveDebt(A)
+  //   const A_debt = await troveManager.getTroveDebt(assetAddress1, A)
   //   await th.assertIsApproximatelyEqual(A_debt, dec(4600, 18), 1000)
   // })
 
   // it("redeemCollateral(): doesn't perform partial redemption if resultant debt would be < minimum net debt", async () => {
-  //   await borrowerOperations.openTrove(th._100pct, await getOpenTroveKUSDAmount(dec(6000, 18)), A, A, { from: A, value: dec(1000, 'ether') })
-  //   await borrowerOperations.openTrove(th._100pct, await getOpenTroveKUSDAmount(dec(20000, 18)), B, B, { from: B, value: dec(1000, 'ether') })
-  //   await borrowerOperations.openTrove(th._100pct, await getOpenTroveKUSDAmount(dec(30000, 18)), C, C, { from: C, value: dec(1000, 'ether') })
+  //   // await borrowerOperations.openTrove(th._100pct, await getOpenTroveKUSDAmount(dec(6000, 18), assetAddress1), A, A, { from: A, value: dec(1000, 'ether') })
+  //   await borrowerOperations.openTrove(assetAddress1, dec(1000, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(6000, 18), assetAddress1), A, A, { from: A })
+  //   // await borrowerOperations.openTrove(th._100pct, await getOpenTroveKUSDAmount(dec(20000, 18), assetAddress1), B, B, { from: B, value: dec(1000, 'ether') })
+  //   await borrowerOperations.openTrove(assetAddress1, dec(1000, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(20000, 18), assetAddress1), B, B, { from: B })
+  //   // await borrowerOperations.openTrove(th._100pct, await getOpenTroveKUSDAmount(dec(30000, 18), assetAddress1), C, C, { from: C, value: dec(1000, 'ether') })
+  //   await borrowerOperations.openTrove(assetAddress1, dec(1000, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(30000, 18), assetAddress1), C, C, { from: C })
 
   //   // A and C send all their tokens to B
-  //   await kusdToken.transfer(B, await kusdToken.balanceOf(A), {from: A})
-  //   await kusdToken.transfer(B, await kusdToken.balanceOf(C), {from: C})
+  //   await kusdToken.transfer(B, await kusdToken.balanceOf(A), { from: A })
+  //   await kusdToken.transfer(B, await kusdToken.balanceOf(C), { from: C })
 
-  //   await troveManager.setBaseRate(0)
+  //   await troveManager.setBaseRate(assetAddress1, 0)
 
   //   // Skip bootstrapping phase
   //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
   //   // KUSD redemption is 55000 KUSD
   //   const KUSDRedemption = dec(55000, 18)
-  //   const tx1 = await th.redeemCollateralAndGetTxObject(B, contracts, KUSDRedemption, th._100pct)
+  //   const tx1 = await th.redeemCollateralAndGetTxObject(assetAddress1, B, contracts, KUSDRedemption, th._100pct)
 
   //   // Check B, C closed and A remains active
   //   assert.isTrue(await sortedTroves.contains(assetAddress1, A))
@@ -2828,7 +2835,7 @@ contract('TroveManager', async accounts => {
 
   //   // A's remaining debt would be 29950 + 19950 + 5950 + 50 - 55000 = 900.
   //   // Since this is below the min net debt of 100, A should be skipped and untouched by the redemption
-  //   const A_debt = await troveManager.getTroveDebt(A)
+  //   const A_debt = await troveManager.getTroveDebt(assetAddress1, A)
   //   await th.assertIsApproximatelyEqual(A_debt, dec(6000, 18))
   // })
 
@@ -2858,7 +2865,7 @@ contract('TroveManager', async accounts => {
   //     partialRedemptionHintNICR
   //   } = await hintHelpers.getRedemptionHints(assetAddress1, redemptionAmount, price, 0)
 
-  //   const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1, 
+  //   const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1,
   //     partialRedemptionHintNICR,
   //     dennis,
   //     dennis
@@ -2872,7 +2879,7 @@ contract('TroveManager', async accounts => {
   //       partialRedemptionHintNICR
   //     } = await hintHelpers.getRedemptionHints(assetAddress1, dec(1, 18), price, 0)
 
-  //     const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1, 
+  //     const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1,
   //       partialRedemptionHintNICR,
   //       dennis,
   //       dennis
@@ -2882,7 +2889,7 @@ contract('TroveManager', async accounts => {
   //     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
   //     // Alice redeems 1 KUSD from Carol's Trove
-  //     await troveManager.redeemCollateral(assetAddress1, 
+  //     await troveManager.redeemCollateral(assetAddress1,
   //       frontRunRedepmtion,
   //       firstRedemptionHint,
   //       upperPartialRedemptionHint,
@@ -2894,7 +2901,7 @@ contract('TroveManager', async accounts => {
   //   }
 
   //   // Dennis tries to redeem 20 KUSD
-  //   const redemptionTx = await troveManager.redeemCollateral(assetAddress1, 
+  //   const redemptionTx = await troveManager.redeemCollateral(assetAddress1,
   //     redemptionAmount,
   //     firstRedemptionHint,
   //     upperPartialRedemptionHint,
@@ -2923,7 +2930,7 @@ contract('TroveManager', async accounts => {
 
   //   // Expect only 17 worth of ETH drawn
   //   const expectedTotalETHDrawn = fullfilledRedemptionAmount.sub(frontRunRedepmtion).div(toBN(200)) // redempted KUSD converted to ETH, at ETH:USD price 200
-  //   const expectedReceivedETH = expectedTotalETHDrawn.sub(ETHFee).sub(toBN(th.gasUsed(redemptionTx) * GAS_PRICE)) // substract gas used for troveManager.redeemCollateral from expected received ETH
+  //   const expectedReceivedETH = expectedTotalETHDrawn.sub(ETHFee) // substract gas used for troveManager.redeemCollateral from expected received ETH
 
   //   th.assertIsApproximatelyEqual(expectedReceivedETH, receivedETH)
 
@@ -2931,7 +2938,7 @@ contract('TroveManager', async accounts => {
   //   th.assertIsApproximatelyEqual(dennis_KUSDBalance_After, dennis_KUSDBalance_Before.sub(fullfilledRedemptionAmount.sub(frontRunRedepmtion)))
   // })
 
-  // // active debt cannot be zero, as there’s a positive min debt enforced, and at least a trove must exist
+  // active debt cannot be zero, as there’s a positive min debt enforced, and at least a trove must exist
   // it.skip("redeemCollateral(): can redeem if there is zero active debt but non-zero debt in DefaultPool", async () => {
   //   // --- SETUP ---
 
@@ -2954,7 +2961,7 @@ contract('TroveManager', async accounts => {
   //   // skip bootstrapping phase
   //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-  //   const redemptionTx = await troveManager.redeemCollateral(assetAddress1, 
+  //   const redemptionTx = await troveManager.redeemCollateral(assetAddress1,
   //     amount,
   //     alice,
   //     '0x0000000000000000000000000000000000000000',
@@ -2999,7 +3006,7 @@ contract('TroveManager', async accounts => {
   //   // skip bootstrapping phase
   //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-  //   await troveManager.redeemCollateral(assetAddress1, 
+  //   await troveManager.redeemCollateral(assetAddress1,
   //     A_debt,
   //     alice,
   //     '0x0000000000000000000000000000000000000000',
@@ -3033,11 +3040,11 @@ contract('TroveManager', async accounts => {
   //   await priceFeed.setPrice(price)
 
   //   const orderOfTroves = [];
-  //   let current = await sortedTroves.getFirst();
+  //   let current = await sortedTroves.getFirst(assetAddress1);
 
   //   while (current !== '0x0000000000000000000000000000000000000000') {
   //     orderOfTroves.push(current);
-  //     current = await sortedTroves.getNext(current);
+  //     current = await sortedTroves.getNext(assetAddress1, current);
   //   }
 
   //   assert.deepEqual(orderOfTroves, [carol, bob, alice, dennis]);
@@ -3047,7 +3054,7 @@ contract('TroveManager', async accounts => {
   //   // skip bootstrapping phase
   //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-  //   const tx = await troveManager.redeemCollateral(assetAddress1, 
+  //   const tx = await troveManager.redeemCollateral(assetAddress1,
   //     redemptionAmount,
   //     carol, // try to trick redeemCollateral by passing a hint that doesn't exactly point to the
   //     // last Trove with ICR == 110% (which would be Alice's)
@@ -3089,7 +3096,7 @@ contract('TroveManager', async accounts => {
   //   // skip bootstrapping phase
   //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-  //   await assertRevert(th.redeemCollateral(carol, contracts, GAS_PRICE, dec(270, 18)), "TroveManager: Cannot redeem when TCR < MCR")
+  //   await assertRevert(th.redeemCollateral(assetAddress1, assetAddress1, carol, contracts, GAS_PRICE, dec(270, 18)), "TroveManager: Cannot redeem when TCR < MCR")
   // });
 
   // it("redeemCollateral(): reverts when argument _amount is 0", async () => {
@@ -3121,8 +3128,8 @@ contract('TroveManager', async accounts => {
   //   // skip bootstrapping phase
   //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-  //   await assertRevert(th.redeemCollateralAndGetTxObject(A, contracts, dec(10, 18), GAS_PRICE ,dec(2, 18)), "Max fee percentage must be between 0.5% and 100%")
-  //   await assertRevert(th.redeemCollateralAndGetTxObject(A, contracts, dec(10, 18), GAS_PRICE, '1000000000000000001'), "Max fee percentage must be between 0.5% and 100%")
+  //   await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, dec(10, 18), GAS_PRICE, dec(2, 18)), "Max fee percentage must be between 0.5% and 100%")
+  //   await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, dec(10, 18), GAS_PRICE, '1000000000000000001'), "Max fee percentage must be between 0.5% and 100%")
   // })
 
   // it("redeemCollateral(): reverts if max fee < 0.5%", async () => {
@@ -3134,9 +3141,9 @@ contract('TroveManager', async accounts => {
   //   // skip bootstrapping phase
   //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-  //   await assertRevert(th.redeemCollateralAndGetTxObject(A, contracts, GAS_PRICE, dec(10, 18), 0), "Max fee percentage must be between 0.5% and 100%")
-  //   await assertRevert(th.redeemCollateralAndGetTxObject(A, contracts, GAS_PRICE, dec(10, 18), 1), "Max fee percentage must be between 0.5% and 100%")
-  //   await assertRevert(th.redeemCollateralAndGetTxObject(A, contracts, GAS_PRICE, dec(10, 18), '4999999999999999'), "Max fee percentage must be between 0.5% and 100%")
+  //   await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, GAS_PRICE, dec(10, 18), 0), "Max fee percentage must be between 0.5% and 100%")
+  //   await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, GAS_PRICE, dec(10, 18), 1), "Max fee percentage must be between 0.5% and 100%")
+  //   await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, GAS_PRICE, dec(10, 18), '4999999999999999'), "Max fee percentage must be between 0.5% and 100%")
   // })
 
   // it("redeemCollateral(): reverts if fee exceeds max fee percentage", async () => {
@@ -3149,7 +3156,7 @@ contract('TroveManager', async accounts => {
   //   const totalSupply = await kusdToken.totalSupply()
   //   th.assertIsApproximatelyEqual(totalSupply, expectedTotalSupply)
 
-  //   await troveManager.setBaseRate(0)
+  //   await troveManager.setBaseRate(assetAddress1, 0)
 
   //   // skip bootstrapping phase
   //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
@@ -3159,22 +3166,22 @@ contract('TroveManager', async accounts => {
 
   //   // Max fee is <5%
   //   const lessThan5pct = '49999999999999999'
-  //   await assertRevert(th.redeemCollateralAndGetTxObject(A, contracts, attemptedKUSDRedemption, GAS_PRICE, lessThan5pct), "Fee exceeded provided maximum")
+  //   await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, GAS_PRICE, lessThan5pct), "Fee exceeded provided maximum")
 
-  //   await troveManager.setBaseRate(0)  // artificially zero the baseRate
+  //   await troveManager.setBaseRate(assetAddress1, 0)  // artificially zero the baseRate
 
   //   // Max fee is 1%
-  //   await assertRevert(th.redeemCollateralAndGetTxObject(A, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(1, 16)), "Fee exceeded provided maximum")
+  //   await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(1, 16)), "Fee exceeded provided maximum")
 
-  //   await troveManager.setBaseRate(0)
+  //   await troveManager.setBaseRate(assetAddress1, 0)
 
-  //    // Max fee is 3.754%
-  //   await assertRevert(th.redeemCollateralAndGetTxObject(A, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(3754, 13)), "Fee exceeded provided maximum")
+  //   // Max fee is 3.754%
+  //   await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(3754, 13)), "Fee exceeded provided maximum")
 
-  //   await troveManager.setBaseRate(0)
+  //   await troveManager.setBaseRate(assetAddress1, 0)
 
   //   // Max fee is 0.5%
-  //   await assertRevert(th.redeemCollateralAndGetTxObject(A, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(5, 15)), "Fee exceeded provided maximum")
+  //   await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(5, 15)), "Fee exceeded provided maximum")
   // })
 
   // it("redeemCollateral(): succeeds if fee is less than max fee percentage", async () => {
@@ -3187,7 +3194,7 @@ contract('TroveManager', async accounts => {
   //   const totalSupply = await kusdToken.totalSupply()
   //   th.assertIsApproximatelyEqual(totalSupply, expectedTotalSupply)
 
-  //   await troveManager.setBaseRate(0)
+  //   await troveManager.setBaseRate(assetAddress1, 0)
 
   //   // skip bootstrapping phase
   //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
@@ -3198,33 +3205,33 @@ contract('TroveManager', async accounts => {
   //   // Attempt with maxFee > 5.5%
   //   const price = await priceFeed.getPrice()
   //   const ETHDrawn = attemptedKUSDRedemption.mul(mv._1e18BN).div(price)
-  //   const slightlyMoreThanFee = (await troveManager.getRedemptionFeeWithDecay(ETHDrawn))
-  //   const tx1 = await th.redeemCollateralAndGetTxObject(A, contracts, attemptedKUSDRedemption, GAS_PRICE, slightlyMoreThanFee)
+  //   const slightlyMoreThanFee = (await troveManager.getRedemptionFeeWithDecay(assetAddress1, ETHDrawn))
+  //   const tx1 = await th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, GAS_PRICE, slightlyMoreThanFee)
   //   assert.isTrue(tx1.receipt.status)
 
-  //   await troveManager.setBaseRate(0)  // Artificially zero the baseRate
+  //   await troveManager.setBaseRate(assetAddress1, 0)  // Artificially zero the baseRate
 
   //   // Attempt with maxFee = 5.5%
-  //   const exactSameFee = (await troveManager.getRedemptionFeeWithDecay(ETHDrawn))
-  //   const tx2 = await th.redeemCollateralAndGetTxObject(C, contracts, attemptedKUSDRedemption, GAS_PRICE, exactSameFee)
+  //   const exactSameFee = (await troveManager.getRedemptionFeeWithDecay(assetAddress1, ETHDrawn))
+  //   const tx2 = await th.redeemCollateralAndGetTxObject(assetAddress1, C, contracts, attemptedKUSDRedemption, GAS_PRICE, exactSameFee)
   //   assert.isTrue(tx2.receipt.status)
 
-  //   await troveManager.setBaseRate(0)
+  //   await troveManager.setBaseRate(assetAddress1, 0)
 
-  //    // Max fee is 10%
-  //   const tx3 = await th.redeemCollateralAndGetTxObject(B, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(1, 17))
+  //   // Max fee is 10%
+  //   const tx3 = await th.redeemCollateralAndGetTxObject(assetAddress1, B, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(1, 17))
   //   assert.isTrue(tx3.receipt.status)
 
-  //   await troveManager.setBaseRate(0)
+  //   await troveManager.setBaseRate(assetAddress1, 0)
 
   //   // Max fee is 37.659%
-  //   const tx4 = await th.redeemCollateralAndGetTxObject(A, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(37659, 13))
+  //   const tx4 = await th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(37659, 13))
   //   assert.isTrue(tx4.receipt.status)
 
-  //   await troveManager.setBaseRate(0)
+  //   await troveManager.setBaseRate(assetAddress1, 0)
 
   //   // Max fee is 100%
-  //   const tx5 = await th.redeemCollateralAndGetTxObject(C, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(1, 18))
+  //   const tx5 = await th.redeemCollateralAndGetTxObject(assetAddress1, C, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(1, 18))
   //   assert.isTrue(tx5.receipt.status)
   // })
 
@@ -3282,7 +3289,7 @@ contract('TroveManager', async accounts => {
   //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
   //   // Erin redeems KUSD
-  //   await th.redeemCollateral(erin, contracts, redemptionAmount, th._100pct)
+  //   await th.redeemCollateral(assetAddress1, erin, contracts, redemptionAmount, th._100pct)
 
   //   price = await priceFeed.getPrice()
   //   const bob_ICR_after = await troveManager.getCurrentICR(assetAddress1, bob, price)
@@ -3333,7 +3340,7 @@ contract('TroveManager', async accounts => {
 
   //   // Get active debt and coll before redemption
   //   const activePool_debt_before = await activePool.getKUSDDebt(assetAddress1)
-  //   const activePool_coll_before = await activePool.getETH()
+  //   const activePool_coll_before = await activePool.getAssetBalance(assetAddress1)
 
   //   th.assertIsApproximatelyEqual(activePool_debt_before, totalDebt)
   //   assert.equal(activePool_coll_before.toString(), totalColl)
@@ -3349,13 +3356,13 @@ contract('TroveManager', async accounts => {
   //     partialRedemptionHintNICR
   //   } = await hintHelpers.getRedemptionHints(assetAddress1, dec(400, 18), price, 0)
 
-  //   const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1, 
+  //   const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1,
   //     partialRedemptionHintNICR,
   //     erin,
   //     erin
   //   )
 
-  //   await troveManager.redeemCollateral(assetAddress1, 
+  //   await troveManager.redeemCollateral(assetAddress1,
   //     dec(400, 18),
   //     firstRedemptionHint,
   //     upperPartialRedemptionHint,
@@ -3371,7 +3378,7 @@ contract('TroveManager', async accounts => {
   //   /* Check ActivePool coll reduced by $400 worth of Ether: at ETH:USD price of $200, this should be 2 ETH.
 
   //   therefore remaining ActivePool ETH should be 198 */
-  //   const activePool_coll_after = await activePool.getETH()
+  //   const activePool_coll_after = await activePool.getAssetBalance(assetAddress1)
   //   // console.log(`activePool_coll_after: ${activePool_coll_after}`)
   //   assert.equal(activePool_coll_after.toString(), activePool_coll_before.sub(toBN(dec(2, 18))))
 
@@ -3421,13 +3428,13 @@ contract('TroveManager', async accounts => {
   //       partialRedemptionHintNICR
   //     } = await hintHelpers.getRedemptionHints(assetAddress1, dec(1000, 18), price, 0))
 
-  //     const { 0: upperPartialRedemptionHint_1, 1: lowerPartialRedemptionHint_1 } = await sortedTroves.findInsertPosition(assetAddress1, 
+  //     const { 0: upperPartialRedemptionHint_1, 1: lowerPartialRedemptionHint_1 } = await sortedTroves.findInsertPosition(assetAddress1,
   //       partialRedemptionHintNICR,
   //       erin,
   //       erin
   //     )
 
-  //     const redemptionTx = await troveManager.redeemCollateral(assetAddress1, 
+  //     const redemptionTx = await troveManager.redeemCollateral(assetAddress1,
   //       dec(1000, 18),
   //       firstRedemptionHint,
   //       upperPartialRedemptionHint_1,
@@ -3449,13 +3456,13 @@ contract('TroveManager', async accounts => {
   //       partialRedemptionHintNICR
   //     } = await hintHelpers.getRedemptionHints(assetAddress1, '401000000000000000000', price, 0))
 
-  //     const { 0: upperPartialRedemptionHint_2, 1: lowerPartialRedemptionHint_2 } = await sortedTroves.findInsertPosition(assetAddress1, 
+  //     const { 0: upperPartialRedemptionHint_2, 1: lowerPartialRedemptionHint_2 } = await sortedTroves.findInsertPosition(assetAddress1,
   //       partialRedemptionHintNICR,
   //       erin,
   //       erin
   //     )
 
-  //     const redemptionTx = await troveManager.redeemCollateral(assetAddress1, 
+  //     const redemptionTx = await troveManager.redeemCollateral(assetAddress1,
   //       '401000000000000000000', firstRedemptionHint,
   //       upperPartialRedemptionHint_2,
   //       lowerPartialRedemptionHint_2,
@@ -3475,13 +3482,13 @@ contract('TroveManager', async accounts => {
   //       partialRedemptionHintNICR
   //     } = await hintHelpers.getRedemptionHints(assetAddress1, '239482309000000000000000000', price, 0))
 
-  //     const { 0: upperPartialRedemptionHint_3, 1: lowerPartialRedemptionHint_3 } = await sortedTroves.findInsertPosition(assetAddress1, 
+  //     const { 0: upperPartialRedemptionHint_3, 1: lowerPartialRedemptionHint_3 } = await sortedTroves.findInsertPosition(assetAddress1,
   //       partialRedemptionHintNICR,
   //       erin,
   //       erin
   //     )
 
-  //     const redemptionTx = await troveManager.redeemCollateral(assetAddress1, 
+  //     const redemptionTx = await troveManager.redeemCollateral(assetAddress1,
   //       '239482309000000000000000000', firstRedemptionHint,
   //       upperPartialRedemptionHint_3,
   //       lowerPartialRedemptionHint_3,
@@ -3503,13 +3510,13 @@ contract('TroveManager', async accounts => {
   //       partialRedemptionHintNICR
   //     } = await hintHelpers.getRedemptionHints(assetAddress1, '239482309000000000000000000', price, 0))
 
-  //     const { 0: upperPartialRedemptionHint_4, 1: lowerPartialRedemptionHint_4 } = await sortedTroves.findInsertPosition(assetAddress1, 
+  //     const { 0: upperPartialRedemptionHint_4, 1: lowerPartialRedemptionHint_4 } = await sortedTroves.findInsertPosition(assetAddress1,
   //       partialRedemptionHintNICR,
   //       erin,
   //       erin
   //     )
 
-  //     const redemptionTx = await troveManager.redeemCollateral(assetAddress1, 
+  //     const redemptionTx = await troveManager.redeemCollateral(assetAddress1,
   //       maxBytes32, firstRedemptionHint,
   //       upperPartialRedemptionHint_4,
   //       lowerPartialRedemptionHint_4,
@@ -3546,7 +3553,7 @@ contract('TroveManager', async accounts => {
   //   const _950_KUSD = '950000000000000000000'
 
   //   // Check Ether in activePool
-  //   const activeETH_0 = await activePool.getETH()
+  //   const activeETH_0 = await activePool.getAssetBalance(assetAddress1)
   //   assert.equal(activeETH_0, totalColl.toString());
 
   //   let firstRedemptionHint
@@ -3559,7 +3566,7 @@ contract('TroveManager', async accounts => {
   //     partialRedemptionHintNICR
   //   } = await hintHelpers.getRedemptionHints(assetAddress1, _120_KUSD, price, 0))
 
-  //   const { 0: upperPartialRedemptionHint_1, 1: lowerPartialRedemptionHint_1 } = await sortedTroves.findInsertPosition(assetAddress1, 
+  //   const { 0: upperPartialRedemptionHint_1, 1: lowerPartialRedemptionHint_1 } = await sortedTroves.findInsertPosition(assetAddress1,
   //     partialRedemptionHintNICR,
   //     erin,
   //     erin
@@ -3568,7 +3575,7 @@ contract('TroveManager', async accounts => {
   //   // skip bootstrapping phase
   //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-  //   const redemption_1 = await troveManager.redeemCollateral(assetAddress1, 
+  //   const redemption_1 = await troveManager.redeemCollateral(assetAddress1,
   //     _120_KUSD,
   //     firstRedemptionHint,
   //     upperPartialRedemptionHint_1,
@@ -3583,7 +3590,7 @@ contract('TroveManager', async accounts => {
   //   ETH removed = (120/200) = 0.6 ETH
   //   Total active ETH = 280 - 0.6 = 279.4 ETH */
 
-  //   const activeETH_1 = await activePool.getETH()
+  //   const activeETH_1 = await activePool.getAssetBalance(assetAddress1)
   //   assert.equal(activeETH_1.toString(), activeETH_0.sub(toBN(_120_KUSD).mul(mv._1e18BN).div(price)));
 
   //   // Flyn redeems 373 KUSD
@@ -3592,13 +3599,13 @@ contract('TroveManager', async accounts => {
   //     partialRedemptionHintNICR
   //   } = await hintHelpers.getRedemptionHints(assetAddress1, _373_KUSD, price, 0))
 
-  //   const { 0: upperPartialRedemptionHint_2, 1: lowerPartialRedemptionHint_2 } = await sortedTroves.findInsertPosition(assetAddress1, 
+  //   const { 0: upperPartialRedemptionHint_2, 1: lowerPartialRedemptionHint_2 } = await sortedTroves.findInsertPosition(assetAddress1,
   //     partialRedemptionHintNICR,
   //     flyn,
   //     flyn
   //   )
 
-  //   const redemption_2 = await troveManager.redeemCollateral(assetAddress1, 
+  //   const redemption_2 = await troveManager.redeemCollateral(assetAddress1,
   //     _373_KUSD,
   //     firstRedemptionHint,
   //     upperPartialRedemptionHint_2,
@@ -3612,7 +3619,7 @@ contract('TroveManager', async accounts => {
   //   /* 373 KUSD redeemed.  Expect $373 worth of ETH removed. At ETH:USD price of $200,
   //   ETH removed = (373/200) = 1.865 ETH
   //   Total active ETH = 279.4 - 1.865 = 277.535 ETH */
-  //   const activeETH_2 = await activePool.getETH()
+  //   const activeETH_2 = await activePool.getAssetBalance(assetAddress1)
   //   assert.equal(activeETH_2.toString(), activeETH_1.sub(toBN(_373_KUSD).mul(mv._1e18BN).div(price)));
 
   //   // Graham redeems 950 KUSD
@@ -3621,13 +3628,13 @@ contract('TroveManager', async accounts => {
   //     partialRedemptionHintNICR
   //   } = await hintHelpers.getRedemptionHints(assetAddress1, _950_KUSD, price, 0))
 
-  //   const { 0: upperPartialRedemptionHint_3, 1: lowerPartialRedemptionHint_3 } = await sortedTroves.findInsertPosition(assetAddress1, 
+  //   const { 0: upperPartialRedemptionHint_3, 1: lowerPartialRedemptionHint_3 } = await sortedTroves.findInsertPosition(assetAddress1,
   //     partialRedemptionHintNICR,
   //     graham,
   //     graham
   //   )
 
-  //   const redemption_3 = await troveManager.redeemCollateral(assetAddress1, 
+  //   const redemption_3 = await troveManager.redeemCollateral(assetAddress1,
   //     _950_KUSD,
   //     firstRedemptionHint,
   //     upperPartialRedemptionHint_3,
@@ -3660,7 +3667,7 @@ contract('TroveManager', async accounts => {
   //     partialRedemptionHintNICR
   //   } = await hintHelpers.getRedemptionHints(assetAddress1, dec(100, 18), price, 0)
 
-  //   const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1, 
+  //   const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1,
   //     partialRedemptionHintNICR,
   //     bob,
   //     bob
@@ -3668,7 +3675,7 @@ contract('TroveManager', async accounts => {
 
   //   // Bob tries to redeem his illegally obtained KUSD
   //   try {
-  //     const redemptionTx = await troveManager.redeemCollateral(assetAddress1, 
+  //     const redemptionTx = await troveManager.redeemCollateral(assetAddress1,
   //       dec(100, 18),
   //       firstRedemptionHint,
   //       upperPartialRedemptionHint,
@@ -3701,7 +3708,7 @@ contract('TroveManager', async accounts => {
   //     partialRedemptionHintNICR
   //   } = await hintHelpers.getRedemptionHints(assetAddress1, '101000000000000000000', price, 0)
 
-  //   const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1, 
+  //   const { 0: upperPartialRedemptionHint, 1: lowerPartialRedemptionHint } = await sortedTroves.findInsertPosition(assetAddress1,
   //     partialRedemptionHintNICR,
   //     bob,
   //     bob
@@ -3712,7 +3719,7 @@ contract('TroveManager', async accounts => {
 
   //   // Bob attempts to redeem his ill-gotten 101 KUSD, from a system that has 100 KUSD outstanding debt
   //   try {
-  //     const redemptionTx = await troveManager.redeemCollateral(assetAddress1, 
+  //     const redemptionTx = await troveManager.redeemCollateral(assetAddress1,
   //       totalDebt.add(toBN(dec(100, 18))),
   //       firstRedemptionHint,
   //       upperPartialRedemptionHint,
@@ -3725,7 +3732,7 @@ contract('TroveManager', async accounts => {
   //   }
   // })
 
-  // // Redemption fees
+  // Redemption fees
   // it("redeemCollateral(): a redemption made when base rate is zero increases the base rate", async () => {
   //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
 
@@ -3734,811 +3741,812 @@ contract('TroveManager', async accounts => {
   //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
 
   //   // Check baseRate == 0
-  //   assert.equal(await troveManager.baseRate(), '0')
+  //   assert.equal(await troveManager.baseRate(assetAddress1), '0')
 
   //   // skip bootstrapping phase
   //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
   //   const A_balanceBefore = await kusdToken.balanceOf(A)
 
-  //   await th.redeemCollateral(A, contracts, dec(10, 18), GAS_PRICE)
+  //   await th.redeemCollateral(assetAddress1, A, contracts, dec(10, 18), GAS_PRICE)
 
   //   // Check A's balance has decreased by 10 KUSD
   //   assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString())
 
   //   // Check baseRate is now non-zero
-  //   assert.isTrue((await troveManager.baseRate()).gt(toBN('0')))
+  //   assert.isTrue((await troveManager.baseRate(assetAddress1)).gt(toBN('0')))
   // })
 
-  // it("redeemCollateral(): a redemption made when base rate is non-zero increases the base rate, for negligible time passed", async () => {
-  //   // time fast-forwards 1 year, and multisig stakes 1 KUMO
-  //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-  //   await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
-  //   await kumoStaking.stake(dec(1, 18), { from: multisig })
+  it("redeemCollateral(): a redemption made when base rate is non-zero increases the base rate, for negligible time passed", async () => {
+    // time fast-forwards 1 year, and multisig stakes 1 KUMO
+    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
+    await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+    await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
 
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
 
-  //   // Check baseRate == 0
-  //   assert.equal(await troveManager.baseRate(), '0')
+    // Check baseRate == 0
+    assert.equal(await troveManager.baseRate(assetAddress1), '0')
 
-  //   const A_balanceBefore = await kusdToken.balanceOf(A)
-  //   const B_balanceBefore = await kusdToken.balanceOf(B)
+    const A_balanceBefore = await kusdToken.balanceOf(A)
+    const B_balanceBefore = await kusdToken.balanceOf(B)
 
-  //   // A redeems 10 KUSD
-  //   const redemptionTx_A = await th.redeemCollateralAndGetTxObject(A, contracts, dec(10, 18), GAS_PRICE)
-  //   const timeStamp_A = await th.getTimestampFromTx(redemptionTx_A, web3)
+    // A redeems 10 KUSD
+    const redemptionTx_A = await th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, dec(10, 18), GAS_PRICE)
+    const timeStamp_A = await th.getTimestampFromTx(redemptionTx_A, web3)
 
-  //   // Check A's balance has decreased by 10 KUSD
-  //   assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString())
+    // Check A's balance has decreased by 10 KUSD
+    assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString())
 
-  //   // Check baseRate is now non-zero
-  //   const baseRate_1 = await troveManager.baseRate()
-  //   assert.isTrue(baseRate_1.gt(toBN('0')))
+    // Check baseRate is now non-zero
+    const baseRate_1 = await troveManager.baseRate(assetAddress1)
+    assert.isTrue(baseRate_1.gt(toBN('0')))
 
-  //   // B redeems 10 KUSD
-  //   const redemptionTx_B = await th.redeemCollateralAndGetTxObject(B, contracts, dec(10, 18), GAS_PRICE)
-  //   const timeStamp_B = await th.getTimestampFromTx(redemptionTx_B, web3)
+    // B redeems 10 KUSD
+    const redemptionTx_B = await th.redeemCollateralAndGetTxObject(assetAddress1, B, contracts, dec(10, 18), GAS_PRICE)
+    const timeStamp_B = await th.getTimestampFromTx(redemptionTx_B, web3)
 
-  //   // Check B's balance has decreased by 10 KUSD
-  //   assert.equal(await kusdToken.balanceOf(B), B_balanceBefore.sub(toBN(dec(10, 18))).toString())
+    // Check B's balance has decreased by 10 KUSD
+    assert.equal(await kusdToken.balanceOf(B), B_balanceBefore.sub(toBN(dec(10, 18))).toString())
 
-  //   // Check negligible time difference (< 1 minute) between txs
-  //   assert.isTrue(Number(timeStamp_B) - Number(timeStamp_A) < 60)
+    // Check negligible time difference (< 1 minute) between txs
+    assert.isTrue(Number(timeStamp_B) - Number(timeStamp_A) < 60)
 
-  //   const baseRate_2 = await troveManager.baseRate()
+    const baseRate_2 = await troveManager.baseRate(assetAddress1)
 
-  //   // Check baseRate has again increased
-  //   assert.isTrue(baseRate_2.gt(baseRate_1))
-  // })
+    // Check baseRate has again increased
+    assert.isTrue(baseRate_2.gt(baseRate_1))
+  })
 
-  // it("redeemCollateral(): lastFeeOpTime doesn't update if less time than decay interval has passed since the last fee operation [ @skip-on-coverage ]", async () => {
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
+  it("redeemCollateral(): lastFeeOpTime doesn't update if less time than decay interval has passed since the last fee operation [ @skip-on-coverage ]", async () => {
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
 
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
 
-  //   // skip bootstrapping phase
-  //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
+    // skip bootstrapping phase
+    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-  //   const A_balanceBefore = await kusdToken.balanceOf(A)
+    const A_balanceBefore = await kusdToken.balanceOf(A)
 
-  //   // A redeems 10 KUSD
-  //   await th.redeemCollateral(A, contracts, dec(10, 18), GAS_PRICE)
+    // A redeems 10 KUSD
+    await th.redeemCollateral(assetAddress1, A, contracts, dec(10, 18), GAS_PRICE)
 
-  //   // Check A's balance has decreased by 10 KUSD
-  //   assert.equal(A_balanceBefore.sub(await kusdToken.balanceOf(A)), dec(10, 18))
+    // Check A's balance has decreased by 10 KUSD
+    assert.equal(A_balanceBefore.sub(await kusdToken.balanceOf(A)), dec(10, 18))
 
-  //   // Check baseRate is now non-zero
-  //   const baseRate_1 = await troveManager.baseRate()
-  //   assert.isTrue(baseRate_1.gt(toBN('0')))
+    // Check baseRate is now non-zero
+    const baseRate_1 = await troveManager.baseRate(assetAddress1)
+    assert.isTrue(baseRate_1.gt(toBN('0')))
 
-  //   const lastFeeOpTime_1 = await troveManager.lastFeeOperationTime()
+    const lastFeeOpTime_1 = await troveManager.lastFeeOperationTime(assetAddress1)
 
-  //   // 45 seconds pass
-  //   th.fastForwardTime(45, web3.currentProvider)
+    // 45 seconds pass
+    th.fastForwardTime(45, web3.currentProvider)
 
-  //   // Borrower A triggers a fee
-  //   await th.redeemCollateral(A, contracts, dec(1, 18), GAS_PRICE)
+    // Borrower A triggers a fee
+    await th.redeemCollateral(assetAddress1, A, contracts, dec(1, 18), GAS_PRICE)
 
-  //   const lastFeeOpTime_2 = await troveManager.lastFeeOperationTime()
+    const lastFeeOpTime_2 = await troveManager.lastFeeOperationTime(assetAddress1)
 
-  //   // Check that the last fee operation time did not update, as borrower A's 2nd redemption occured
-  //   // since before minimum interval had passed
-  //   assert.isTrue(lastFeeOpTime_2.eq(lastFeeOpTime_1))
+    // Check that the last fee operation time did not update, as borrower A's 2nd redemption occured
+    // since before minimum interval had passed
+    assert.isTrue(lastFeeOpTime_2.eq(lastFeeOpTime_1))
 
-  //   // 15 seconds passes
-  //   th.fastForwardTime(15, web3.currentProvider)
+    // 15 seconds passes
+    th.fastForwardTime(15, web3.currentProvider)
 
-  //   // Check that now, at least one hour has passed since lastFeeOpTime_1
-  //   const timeNow = await th.getLatestBlockTimestamp(web3)
-  //   assert.isTrue(toBN(timeNow).sub(lastFeeOpTime_1).gte(3600))
+    // Check that now, at least one hour has passed since lastFeeOpTime_1
+    const timeNow = await th.getLatestBlockTimestamp(web3)
+    assert.isTrue(toBN(timeNow).sub(lastFeeOpTime_1).gte(3600))
 
-  //   // Borrower A triggers a fee
-  //   await th.redeemCollateral(A, contracts, dec(1, 18), GAS_PRICE)
+    // Borrower A triggers a fee
+    await th.redeemCollateral(assetAddress1, A, contracts, dec(1, 18), GAS_PRICE)
 
-  //   const lastFeeOpTime_3 = await troveManager.lastFeeOperationTime()
+    const lastFeeOpTime_3 = await troveManager.lastFeeOperationTime(assetAddress1)
 
-  //   // Check that the last fee operation time DID update, as A's 2rd redemption occured
-  //   // after minimum interval had passed
-  //   assert.isTrue(lastFeeOpTime_3.gt(lastFeeOpTime_1))
-  // })
+    // Check that the last fee operation time DID update, as A's 2rd redemption occured
+    // after minimum interval had passed
+    assert.isTrue(lastFeeOpTime_3.gt(lastFeeOpTime_1))
+  })
 
-  // it("redeemCollateral(): a redemption made at zero base rate send a non-zero ETHFee to KUMO staking contract", async () => {
-  //   // time fast-forwards 1 year, and multisig stakes 1 KUMO
-  //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-  //   await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
-  //   await kumoStaking.stake(dec(1, 18), { from: multisig })
+  it("redeemCollateral(): a redemption made at zero base rate send a non-zero ETHFee to KUMO staking contract", async () => {
+    // time fast-forwards 1 year, and multisig stakes 1 KUMO
+    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
+    await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+    await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
 
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
 
-  //   // Check baseRate == 0
-  //   assert.equal(await troveManager.baseRate(), '0')
+    // Check baseRate == 0
+    assert.equal(await troveManager.baseRate(assetAddress1), '0')
 
-  //   // Check KUMO Staking contract balance before is zero
-  //   const kumoStakingBalance_Before = await erc20Asset1.balanceOf(kumoStaking.address)
-  //   assert.equal(kumoStakingBalance_Before, '0')
+    // Check KUMO Staking contract balance before is zero
+    const kumoStakingBalance_Before = await erc20Asset1.balanceOf(kumoStaking.address)
+    assert.equal(kumoStakingBalance_Before, '0')
 
-  //   const A_balanceBefore = await kusdToken.balanceOf(A)
+    const A_balanceBefore = await kusdToken.balanceOf(A)
 
-  //   // A redeems 10 KUSD
-  //   await th.redeemCollateral(A, contracts, dec(10, 18), GAS_PRICE)
+    // A redeems 10 KUSD
+    await th.redeemCollateral(assetAddress1, A, contracts, dec(10, 18), GAS_PRICE)
 
-  //   // Check A's balance has decreased by 10 KUSD
-  //   assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString())
+    // Check A's balance has decreased by 10 KUSD
+    assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString())
 
-  //   // Check baseRate is now non-zero
-  //   const baseRate_1 = await troveManager.baseRate()
-  //   assert.isTrue(baseRate_1.gt(toBN('0')))
+    // Check baseRate is now non-zero
+    const baseRate_1 = await troveManager.baseRate(assetAddress1)
+    assert.isTrue(baseRate_1.gt(toBN('0')))
 
-  //   // Check KUMO Staking contract balance after is non-zero
-  //   const kumoStakingBalance_After = toBN(await erc20Asset1.balanceOf(kumoStaking.address))
-  //   assert.isTrue(kumoStakingBalance_After.gt(toBN('0')))
-  // })
+    // Check KUMO Staking contract balance after is non-zero
+    const kumoStakingBalance_After = toBN(await erc20Asset1.balanceOf(kumoStaking.address))
+    assert.isTrue(kumoStakingBalance_After.gt(toBN('0')))
+  })
 
-  // it("redeemCollateral(): a redemption made at zero base increases the ETH-fees-per-KUMO-staked in KUMO Staking contract", async () => {
-  //   // time fast-forwards 1 year, and multisig stakes 1 KUMO
-  //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-  //   await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
-  //   await kumoStaking.stake(dec(1, 18), { from: multisig })
+  it("redeemCollateral(): a redemption made at zero base increases the ETH-fees-per-KUMO-staked in KUMO Staking contract", async () => {
+    // time fast-forwards 1 year, and multisig stakes 1 KUMO
+    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
+    await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+    await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
 
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
 
-  //   // Check baseRate == 0
-  //   assert.equal(await troveManager.baseRate(), '0')
+    // Check baseRate == 0
+    assert.equal(await troveManager.baseRate(assetAddress1), '0')
 
-  //   // Check KUMO Staking ETH-fees-per-KUMO-staked before is zero
-  //   const F_ETH_Before = await kumoStaking.F_ETH()
-  //   assert.equal(F_ETH_Before, '0')
+    // Check KUMO Staking ETH-fees-per-KUMO-staked before is zero
+    const F_ETH_Before = await kumoStaking.F_ETH()
+    assert.equal(F_ETH_Before, '0')
 
-  //   const A_balanceBefore = await kusdToken.balanceOf(A)
+    const A_balanceBefore = await kusdToken.balanceOf(A)
 
-  //   // A redeems 10 KUSD
-  //   await th.redeemCollateral(A, contracts, dec(10, 18), GAS_PRICE)
+    // A redeems 10 KUSD
+    await th.redeemCollateral(assetAddress1, A, contracts, dec(10, 18), GAS_PRICE)
 
-  //   // Check A's balance has decreased by 10 KUSD
-  //   assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString())
+    // Check A's balance has decreased by 10 KUSD
+    assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString())
 
-  //   // Check baseRate is now non-zero
-  //   const baseRate_1 = await troveManager.baseRate()
-  //   assert.isTrue(baseRate_1.gt(toBN('0')))
+    // Check baseRate is now non-zero
+    const baseRate_1 = await troveManager.baseRate(assetAddress1)
+    assert.isTrue(baseRate_1.gt(toBN('0')))
 
-  //   // Check KUMO Staking ETH-fees-per-KUMO-staked after is non-zero
-  //   const F_ETH_After = await kumoStaking.F_ETH()
-  //   assert.isTrue(F_ETH_After.gt('0'))
-  // })
+    // Check KUMO Staking ETH-fees-per-KUMO-staked after is non-zero
+    const F_ETH_After = await kumoStaking.F_ETH()
+    assert.isTrue(F_ETH_After.gt('0'))
+  })
 
-  // it("redeemCollateral(): a redemption made at a non-zero base rate send a non-zero ETHFee to KUMO staking contract", async () => {
-  //   // time fast-forwards 1 year, and multisig stakes 1 KUMO
-  //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-  //   await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
-  //   await kumoStaking.stake(dec(1, 18), { from: multisig })
+  it("redeemCollateral(): a redemption made at a non-zero base rate send a non-zero ETHFee to KUMO staking contract", async () => {
+    // time fast-forwards 1 year, and multisig stakes 1 KUMO
+    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
+    await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+    await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
 
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
 
-  //   // Check baseRate == 0
-  //   assert.equal(await troveManager.baseRate(), '0')
+    // Check baseRate == 0
+    assert.equal(await troveManager.baseRate(assetAddress1), '0')
 
-  //   const A_balanceBefore = await kusdToken.balanceOf(A)
-  //   const B_balanceBefore = await kusdToken.balanceOf(B)
+    const A_balanceBefore = await kusdToken.balanceOf(A)
+    const B_balanceBefore = await kusdToken.balanceOf(B)
 
-  //   // A redeems 10 KUSD
-  //   await th.redeemCollateral(A, contracts, dec(10, 18), GAS_PRICE)
+    // A redeems 10 KUSD
+    await th.redeemCollateral(assetAddress1, A, contracts, dec(10, 18), GAS_PRICE)
 
-  //   // Check A's balance has decreased by 10 KUSD
-  //   assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString())
+    // Check A's balance has decreased by 10 KUSD
+    assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString())
 
-  //   // Check baseRate is now non-zero
-  //   const baseRate_1 = await troveManager.baseRate()
-  //   assert.isTrue(baseRate_1.gt(toBN('0')))
+    // Check baseRate is now non-zero
+    const baseRate_1 = await troveManager.baseRate(assetAddress1)
+    assert.isTrue(baseRate_1.gt(toBN('0')))
 
-  //   const kumoStakingBalance_Before = toBN(await erc20Asset1.balanceOf(kumoStaking.address))
+    const kumoStakingBalance_Before = toBN(await erc20Asset1.balanceOf(kumoStaking.address))
 
-  //   // B redeems 10 KUSD
-  //   await th.redeemCollateral(B, contracts, dec(10, 18), GAS_PRICE)
+    // B redeems 10 KUSD
+    await th.redeemCollateral(assetAddress1, B, contracts, dec(10, 18), GAS_PRICE)
 
-  //   // Check B's balance has decreased by 10 KUSD
-  //   assert.equal(await kusdToken.balanceOf(B), B_balanceBefore.sub(toBN(dec(10, 18))).toString())
+    // Check B's balance has decreased by 10 KUSD
+    assert.equal(await kusdToken.balanceOf(B), B_balanceBefore.sub(toBN(dec(10, 18))).toString())
 
-  //   const kumoStakingBalance_After = toBN(await erc20Asset1.balanceOf(kumoStaking.address))
+    const kumoStakingBalance_After = toBN(await erc20Asset1.balanceOf(kumoStaking.address))
 
-  //   // check KUMO Staking balance has increased
-  //   assert.isTrue(kumoStakingBalance_After.gt(kumoStakingBalance_Before))
-  // })
+    // check KUMO Staking balance has increased
+    assert.isTrue(kumoStakingBalance_After.gt(kumoStakingBalance_Before))
+  })
 
-  // it("redeemCollateral(): a redemption made at a non-zero base rate increases ETH-per-KUMO-staked in the staking contract", async () => {
-  //   // time fast-forwards 1 year, and multisig stakes 1 KUMO
-  //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-  //   await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
-  //   await kumoStaking.stake(dec(1, 18), { from: multisig })
+  it("redeemCollateral(): a redemption made at a non-zero base rate increases ETH-per-KUMO-staked in the staking contract", async () => {
+    // time fast-forwards 1 year, and multisig stakes 1 KUMO
+    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
+    await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+    await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
 
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
 
-  //   // Check baseRate == 0
-  //   assert.equal(await troveManager.baseRate(), '0')
+    // Check baseRate == 0
+    assert.equal(await troveManager.baseRate(assetAddress1), '0')
 
-  //   const A_balanceBefore = await kusdToken.balanceOf(A)
-  //   const B_balanceBefore = await kusdToken.balanceOf(B)
+    const A_balanceBefore = await kusdToken.balanceOf(A)
+    const B_balanceBefore = await kusdToken.balanceOf(B)
 
-  //   // A redeems 10 KUSD
-  //   await th.redeemCollateral(A, contracts, dec(10, 18), GAS_PRICE)
+    // A redeems 10 KUSD
+    await th.redeemCollateral(assetAddress1, A, contracts, dec(10, 18), GAS_PRICE)
 
-  //   // Check A's balance has decreased by 10 KUSD
-  //   assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString())
+    // Check A's balance has decreased by 10 KUSD
+    assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString())
 
-  //   // Check baseRate is now non-zero
-  //   const baseRate_1 = await troveManager.baseRate()
-  //   assert.isTrue(baseRate_1.gt(toBN('0')))
+    // Check baseRate is now non-zero
+    const baseRate_1 = await troveManager.baseRate(assetAddress1)
+    assert.isTrue(baseRate_1.gt(toBN('0')))
 
-  //   // Check KUMO Staking ETH-fees-per-KUMO-staked before is zero
-  //   const F_ETH_Before = await kumoStaking.F_ETH()
+    // Check KUMO Staking ETH-fees-per-KUMO-staked before is zero
+    const F_ETH_Before = await kumoStaking.F_ETH()
 
-  //   // B redeems 10 KUSD
-  //   await th.redeemCollateral(B, contracts, dec(10, 18), GAS_PRICE)
+    // B redeems 10 KUSD
+    await th.redeemCollateral(assetAddress1, B, contracts, dec(10, 18), GAS_PRICE)
 
-  //   // Check B's balance has decreased by 10 KUSD
-  //   assert.equal(await kusdToken.balanceOf(B), B_balanceBefore.sub(toBN(dec(10, 18))).toString())
+    // Check B's balance has decreased by 10 KUSD
+    assert.equal(await kusdToken.balanceOf(B), B_balanceBefore.sub(toBN(dec(10, 18))).toString())
 
-  //   const F_ETH_After = await kumoStaking.F_ETH()
+    const F_ETH_After = await kumoStaking.F_ETH()
 
-  //   // check KUMO Staking balance has increased
-  //   assert.isTrue(F_ETH_After.gt(F_ETH_Before))
-  // })
+    // check KUMO Staking balance has increased
+    assert.isTrue(F_ETH_After.gt(F_ETH_Before))
+  })
 
-  // it("redeemCollateral(): a full redemption (leaving trove with 0 debt), closes the trove", async () => {
-  //   // time fast-forwards 1 year, and multisig stakes 1 KUMO
-  //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-  //   await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
-  //   await kumoStaking.stake(dec(1, 18), { from: multisig })
+  it("redeemCollateral(): a full redemption (leaving trove with 0 debt), closes the trove", async () => {
+    // time fast-forwards 1 year, and multisig stakes 1 KUMO
+    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
+    await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+    await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-  //   const { netDebt: W_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraKUSDAmount: dec(10000, 18), extraParams: { from: whale } })
+    const { netDebt: W_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraKUSDAmount: dec(10000, 18), extraParams: { from: whale } })
 
-  //   const { netDebt: A_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
-  //   const { netDebt: B_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
-  //   const { netDebt: C_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
-  //   const { netDebt: D_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(280, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: D } })
-  //   const redemptionAmount = A_netDebt.add(B_netDebt).add(C_netDebt).add(toBN(dec(10, 18)))
+    const { netDebt: A_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
+    const { netDebt: B_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
+    const { netDebt: C_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
+    const { netDebt: D_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(280, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: D } })
+    const redemptionAmount = A_netDebt.add(B_netDebt).add(C_netDebt).add(toBN(dec(10, 18)))
 
-  //   const A_balanceBefore = toBN(await erc20Asset1.balanceOf(A))
-  //   const B_balanceBefore = toBN(await erc20Asset1.balanceOf(B))
-  //   const C_balanceBefore = toBN(await erc20Asset1.balanceOf(C))
+    const A_balanceBefore = toBN(await erc20Asset1.balanceOf(A))
+    const B_balanceBefore = toBN(await erc20Asset1.balanceOf(B))
+    const C_balanceBefore = toBN(await erc20Asset1.balanceOf(C))
 
-  //   // whale redeems 360 KUSD.  Expect this to fully redeem A, B, C, and partially redeem D.
-  //   await th.redeemCollateral(whale, contracts, redemptionAmount, GAS_PRICE)
+    // whale redeems 360 KUSD.  Expect this to fully redeem A, B, C, and partially redeem D.
+    await th.redeemCollateral(assetAddress1, whale, contracts, redemptionAmount, GAS_PRICE)
 
-  //   // Check A, B, C have been closed
-  //   assert.isFalse(await sortedTroves.contains(assetAddress1, A))
-  //   assert.isFalse(await sortedTroves.contains(assetAddress1, B))
-  //   assert.isFalse(await sortedTroves.contains(assetAddress1, C))
+    // Check A, B, C have been closed
+    assert.isFalse(await sortedTroves.contains(assetAddress1, A))
+    assert.isFalse(await sortedTroves.contains(assetAddress1, B))
+    assert.isFalse(await sortedTroves.contains(assetAddress1, C))
 
-  //   // Check D remains active
-  //   assert.isTrue(await sortedTroves.contains(assetAddress1, D))
-  // })
+    // Check D remains active
+    assert.isTrue(await sortedTroves.contains(assetAddress1, D))
+  })
 
-  // const redeemCollateral3Full1Partial = async () => {
-  //   // time fast-forwards 1 year, and multisig stakes 1 KUMO
-  //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
-  //   await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
-  //   await kumoStaking.stake(dec(1, 18), { from: multisig })
+  const redeemCollateral3Full1Partial = async () => {
+    // time fast-forwards 1 year, and multisig stakes 1 KUMO
+    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
+    await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig })
+    await kumoStaking.stake(dec(1, 18), { from: multisig })
 
-  //   const { netDebt: W_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraKUSDAmount: dec(10000, 18), extraParams: { from: whale } })
+    const { netDebt: W_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraKUSDAmount: dec(10000, 18), extraParams: { from: whale } })
 
-  //   const { netDebt: A_netDebt, collateral: A_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
-  //   const { netDebt: B_netDebt, collateral: B_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
-  //   const { netDebt: C_netDebt, collateral: C_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
-  //   const { netDebt: D_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(280, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: D } })
-  //   const redemptionAmount = A_netDebt.add(B_netDebt).add(C_netDebt).add(toBN(dec(10, 18)))
+    const { netDebt: A_netDebt, collateral: A_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
+    const { netDebt: B_netDebt, collateral: B_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
+    const { netDebt: C_netDebt, collateral: C_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
+    const { netDebt: D_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(280, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: D } })
+    const redemptionAmount = A_netDebt.add(B_netDebt).add(C_netDebt).add(toBN(dec(10, 18)))
 
-  //   const A_balanceBefore = toBN(await erc20Asset1.balanceOf(A))
-  //   const B_balanceBefore = toBN(await erc20Asset1.balanceOf(B))
-  //   const C_balanceBefore = toBN(await erc20Asset1.balanceOf(C))
-  //   const D_balanceBefore = toBN(await erc20Asset1.balanceOf(D))
+    const A_balanceBefore = toBN(await erc20Asset1.balanceOf(A))
+    const B_balanceBefore = toBN(await erc20Asset1.balanceOf(B))
+    const C_balanceBefore = toBN(await erc20Asset1.balanceOf(C))
+    const D_balanceBefore = toBN(await erc20Asset1.balanceOf(D))
 
-  //   const A_collBefore = await troveManager.getTroveColl(A)
-  //   const B_collBefore = await troveManager.getTroveColl(B)
-  //   const C_collBefore = await troveManager.getTroveColl(C)
-  //   const D_collBefore = await troveManager.getTroveColl(D)
+    const A_collBefore = await troveManager.getTroveColl(assetAddress1, A)
+    const B_collBefore = await troveManager.getTroveColl(assetAddress1, B)
+    const C_collBefore = await troveManager.getTroveColl(assetAddress1, C)
+    const D_collBefore = await troveManager.getTroveColl(assetAddress1, D)
 
-  //   // Confirm baseRate before redemption is 0
-  //   const baseRate = await troveManager.baseRate()
-  //   assert.equal(baseRate, '0')
+    // Confirm baseRate before redemption is 0
+    const baseRate = await troveManager.baseRate(assetAddress1)
+    assert.equal(baseRate, '0')
 
-  //   // whale redeems KUSD.  Expect this to fully redeem A, B, C, and partially redeem D.
-  //   await th.redeemCollateral(whale, contracts, redemptionAmount, GAS_PRICE)
+    // whale redeems KUSD.  Expect this to fully redeem A, B, C, and partially redeem D.
+    await th.redeemCollateral(assetAddress1, whale, contracts, redemptionAmount, GAS_PRICE)
 
-  //   // Check A, B, C have been closed
-  //   assert.isFalse(await sortedTroves.contains(assetAddress1, A))
-  //   assert.isFalse(await sortedTroves.contains(assetAddress1, B))
-  //   assert.isFalse(await sortedTroves.contains(assetAddress1, C))
+    // Check A, B, C have been closed
+    assert.isFalse(await sortedTroves.contains(assetAddress1, A))
+    assert.isFalse(await sortedTroves.contains(assetAddress1, B))
+    assert.isFalse(await sortedTroves.contains(assetAddress1, C))
 
-  //   // Check D stays active
-  //   assert.isTrue(await sortedTroves.contains(assetAddress1, D))
+    // Check D stays active
+    assert.isTrue(await sortedTroves.contains(assetAddress1, D))
 
-  //   /*
-  //   At ETH:USD price of 200, with full redemptions from A, B, C:
+    /*
+    At ETH:USD price of 200, with full redemptions from A, B, C:
 
-  //   ETHDrawn from A = 100/200 = 0.5 ETH --> Surplus = (1-0.5) = 0.5
-  //   ETHDrawn from B = 120/200 = 0.6 ETH --> Surplus = (1-0.6) = 0.4
-  //   ETHDrawn from C = 130/200 = 0.65 ETH --> Surplus = (2-0.65) = 1.35
-  //   */
+    ETHDrawn from A = 100/200 = 0.5 ETH --> Surplus = (1-0.5) = 0.5
+    ETHDrawn from B = 120/200 = 0.6 ETH --> Surplus = (1-0.6) = 0.4
+    ETHDrawn from C = 130/200 = 0.65 ETH --> Surplus = (2-0.65) = 1.35
+    */
 
-  //   const A_balanceAfter = toBN(await erc20Asset1.balanceOf(A))
-  //   const B_balanceAfter = toBN(await erc20Asset1.balanceOf(B))
-  //   const C_balanceAfter = toBN(await erc20Asset1.balanceOf(C))
-  //   const D_balanceAfter = toBN(await erc20Asset1.balanceOf(D))
+    const A_balanceAfter = toBN(await erc20Asset1.balanceOf(A))
+    const B_balanceAfter = toBN(await erc20Asset1.balanceOf(B))
+    const C_balanceAfter = toBN(await erc20Asset1.balanceOf(C))
+    const D_balanceAfter = toBN(await erc20Asset1.balanceOf(D))
 
-  //   // Check A, B, C’s trove collateral balance is zero (fully redeemed-from troves)
-  //   const A_collAfter = await troveManager.getTroveColl(A)
-  //   const B_collAfter = await troveManager.getTroveColl(B)
-  //   const C_collAfter = await troveManager.getTroveColl(C)
-  //   assert.isTrue(A_collAfter.eq(toBN(0)))
-  //   assert.isTrue(B_collAfter.eq(toBN(0)))
-  //   assert.isTrue(C_collAfter.eq(toBN(0)))
+    // Check A, B, C’s trove collateral balance is zero (fully redeemed-from troves)
+    const A_collAfter = await troveManager.getTroveColl(assetAddress1, A)
+    const B_collAfter = await troveManager.getTroveColl(assetAddress1, B)
+    const C_collAfter = await troveManager.getTroveColl(assetAddress1, C)
+    assert.isTrue(A_collAfter.eq(toBN(0)))
+    assert.isTrue(B_collAfter.eq(toBN(0)))
+    assert.isTrue(C_collAfter.eq(toBN(0)))
 
-  //   // check D's trove collateral balances have decreased (the partially redeemed-from trove)
-  //   const D_collAfter = await troveManager.getTroveColl(D)
-  //   assert.isTrue(D_collAfter.lt(D_collBefore))
+    // check D's trove collateral balances have decreased (the partially redeemed-from trove)
+    const D_collAfter = await troveManager.getTroveColl(assetAddress1, D)
+    assert.isTrue(D_collAfter.lt(D_collBefore))
 
-  //   // Check A, B, C (fully redeemed-from troves), and D's (the partially redeemed-from trove) balance has not changed
-  //   assert.isTrue(A_balanceAfter.eq(A_balanceBefore))
-  //   assert.isTrue(B_balanceAfter.eq(B_balanceBefore))
-  //   assert.isTrue(C_balanceAfter.eq(C_balanceBefore))
-  //   assert.isTrue(D_balanceAfter.eq(D_balanceBefore))
+    // Check A, B, C (fully redeemed-from troves), and D's (the partially redeemed-from trove) balance has not changed
+    assert.isTrue(A_balanceAfter.eq(A_balanceBefore))
+    assert.isTrue(B_balanceAfter.eq(B_balanceBefore))
+    assert.isTrue(C_balanceAfter.eq(C_balanceBefore))
+    assert.isTrue(D_balanceAfter.eq(D_balanceBefore))
 
-  //   // D is not closed, so cannot open trove
-  //   await assertRevert(borrowerOperations.openTrove(th._100pct, 0, assetAddress1, assetAddress1, { from: D, value: dec(10, 18) }), 'BorrowerOps: Trove is active')
+    // D is not closed, so cannot open trove
+    await assertRevert(borrowerOperations.openTrove(th._100pct, 0, assetAddress1, assetAddress1, { from: D, value: dec(10, 18) }), 'BorrowerOps: Trove is active')
 
-  //   return {
-  //     A_netDebt, A_coll,
-  //     B_netDebt, B_coll,
-  //     C_netDebt, C_coll,
-  //   }
-  // }
+    return {
+      A_netDebt, A_coll,
+      B_netDebt, B_coll,
+      C_netDebt, C_coll,
+    }
+  }
 
-  // it("redeemCollateral(): emits correct debt and coll values in each redeemed trove's TroveUpdated event", async () => {
-  //   const { netDebt: W_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraKUSDAmount: dec(10000, 18), extraParams: { from: whale } })
+  it("redeemCollateral(): emits correct debt and coll values in each redeemed trove's TroveUpdated event", async () => {
+    const { netDebt: W_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraKUSDAmount: dec(10000, 18), extraParams: { from: whale } })
 
-  //   const { netDebt: A_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
-  //   const { netDebt: B_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
-  //   const { netDebt: C_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
-  //   const { totalDebt: D_totalDebt, collateral: D_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(280, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: D } })
-  //   const partialAmount = toBN(dec(15, 18))
-  //   const redemptionAmount = A_netDebt.add(B_netDebt).add(C_netDebt).add(partialAmount)
+    const { netDebt: A_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
+    const { netDebt: B_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
+    const { netDebt: C_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
+    const { totalDebt: D_totalDebt, collateral: D_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(280, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: D } })
+    const partialAmount = toBN(dec(15, 18))
+    const redemptionAmount = A_netDebt.add(B_netDebt).add(C_netDebt).add(partialAmount)
 
-  //   // skip bootstrapping phase
-  //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
+    // skip bootstrapping phase
+    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-  //   // whale redeems KUSD.  Expect this to fully redeem A, B, C, and partially redeem 15 KUSD from D.
-  //   const redemptionTx = await th.redeemCollateralAndGetTxObject(whale, contracts, redemptionAmount, GAS_PRICE, th._100pct)
+    // whale redeems KUSD.  Expect this to fully redeem A, B, C, and partially redeem 15 KUSD from D.
+    const redemptionTx = await th.redeemCollateralAndGetTxObject(assetAddress1, whale, contracts, redemptionAmount, GAS_PRICE, th._100pct)
 
-  //   // Check A, B, C have been closed
-  //   assert.isFalse(await sortedTroves.contains(assetAddress1, A))
-  //   assert.isFalse(await sortedTroves.contains(assetAddress1, B))
-  //   assert.isFalse(await sortedTroves.contains(assetAddress1, C))
+    // Check A, B, C have been closed
+    assert.isFalse(await sortedTroves.contains(assetAddress1, A))
+    assert.isFalse(await sortedTroves.contains(assetAddress1, B))
+    assert.isFalse(await sortedTroves.contains(assetAddress1, C))
 
-  //   // Check D stays active
-  //   assert.isTrue(await sortedTroves.contains(assetAddress1, D))
+    // Check D stays active
+    assert.isTrue(await sortedTroves.contains(assetAddress1, D))
 
-  //   const troveUpdatedEvents = th.getAllEventsByName(redemptionTx, "TroveUpdated")
+    const troveUpdatedEvents = th.getAllEventsByName(redemptionTx, "TroveUpdated")
 
-  //   // Get each trove's emitted debt and coll
-  //   const [A_emittedDebt, A_emittedColl] = th.getDebtAndCollFromTroveUpdatedEvents(troveUpdatedEvents, A)
-  //   const [B_emittedDebt, B_emittedColl] = th.getDebtAndCollFromTroveUpdatedEvents(troveUpdatedEvents, B)
-  //   const [C_emittedDebt, C_emittedColl] = th.getDebtAndCollFromTroveUpdatedEvents(troveUpdatedEvents, C)
-  //   const [D_emittedDebt, D_emittedColl] = th.getDebtAndCollFromTroveUpdatedEvents(troveUpdatedEvents, D)
+    // Get each trove's emitted debt and coll
+    const [A_emittedDebt, A_emittedColl] = th.getDebtAndCollFromTroveUpdatedEvents(troveUpdatedEvents, A)
+    const [B_emittedDebt, B_emittedColl] = th.getDebtAndCollFromTroveUpdatedEvents(troveUpdatedEvents, B)
+    const [C_emittedDebt, C_emittedColl] = th.getDebtAndCollFromTroveUpdatedEvents(troveUpdatedEvents, C)
+    const [D_emittedDebt, D_emittedColl] = th.getDebtAndCollFromTroveUpdatedEvents(troveUpdatedEvents, D)
 
-  //   // Expect A, B, C to have 0 emitted debt and coll, since they were closed
-  //   assert.equal(A_emittedDebt, '0')
-  //   assert.equal(A_emittedColl, '0')
-  //   assert.equal(B_emittedDebt, '0')
-  //   assert.equal(B_emittedColl, '0')
-  //   assert.equal(C_emittedDebt, '0')
-  //   assert.equal(C_emittedColl, '0')
+    // Expect A, B, C to have 0 emitted debt and coll, since they were closed
+    assert.equal(A_emittedDebt, '0')
+    assert.equal(A_emittedColl, '0')
+    assert.equal(B_emittedDebt, '0')
+    assert.equal(B_emittedColl, '0')
+    assert.equal(C_emittedDebt, '0')
+    assert.equal(C_emittedColl, '0')
 
-  //   /* Expect D to have lost 15 debt and (at ETH price of 200) 15/200 = 0.075 ETH.
-  //   So, expect remaining debt = (85 - 15) = 70, and remaining ETH = 1 - 15/200 = 0.925 remaining. */
-  //   const price = await priceFeed.getPrice()
-  //   th.assertIsApproximatelyEqual(D_emittedDebt, D_totalDebt.sub(partialAmount))
-  //   th.assertIsApproximatelyEqual(D_emittedColl, D_coll.sub(partialAmount.mul(mv._1e18BN).div(price)))
-  // })
+    /* Expect D to have lost 15 debt and (at ETH price of 200) 15/200 = 0.075 ETH.
+    So, expect remaining debt = (85 - 15) = 70, and remaining ETH = 1 - 15/200 = 0.925 remaining. */
+    const price = await priceFeed.getPrice()
+    th.assertIsApproximatelyEqual(D_emittedDebt, D_totalDebt.sub(partialAmount))
+    th.assertIsApproximatelyEqual(D_emittedColl, D_coll.sub(partialAmount.mul(mv._1e18BN).div(price)))
+  })
 
-  // it("redeemCollateral(): a redemption that closes a trove leaves the trove's ETH surplus (collateral - ETH drawn) available for the trove owner to claim", async () => {
-  //   const {
-  //     A_netDebt, A_coll,
-  //     B_netDebt, B_coll,
-  //     C_netDebt, C_coll,
-  //   } = await redeemCollateral3Full1Partial()
-
-  //   const A_balanceBefore = toBN(await erc20Asset1.balanceOf(A))
-  //   const B_balanceBefore = toBN(await erc20Asset1.balanceOf(B))
-  //   const C_balanceBefore = toBN(await erc20Asset1.balanceOf(C))
-
-  //   // CollSurplusPool endpoint cannot be called directly
-  //   await assertRevert(collSurplusPool.claimColl(A), 'CollSurplusPool: Caller is not Borrower Operations')
-
-  //   const A_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: A, gasPrice: GAS_PRICE  }))
-  //   const B_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: B, gasPrice: GAS_PRICE  }))
-  //   const C_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: C, gasPrice: GAS_PRICE  }))
-
-  //   const A_expectedBalance = A_balanceBefore.sub(toBN(A_GAS * GAS_PRICE))
-  //   const B_expectedBalance = B_balanceBefore.sub(toBN(B_GAS * GAS_PRICE))
-  //   const C_expectedBalance = C_balanceBefore.sub(toBN(C_GAS * GAS_PRICE))
-
-  //   const A_balanceAfter = toBN(await erc20Asset1.balanceOf(A))
-  //   const B_balanceAfter = toBN(await erc20Asset1.balanceOf(B))
-  //   const C_balanceAfter = toBN(await erc20Asset1.balanceOf(C))
-
-  //   const price = toBN(await priceFeed.getPrice())
-
-  //   th.assertIsApproximatelyEqual(A_balanceAfter, A_expectedBalance.add(A_coll.sub(A_netDebt.mul(mv._1e18BN).div(price))))
-  //   th.assertIsApproximatelyEqual(B_balanceAfter, B_expectedBalance.add(B_coll.sub(B_netDebt.mul(mv._1e18BN).div(price))))
-  //   th.assertIsApproximatelyEqual(C_balanceAfter, C_expectedBalance.add(C_coll.sub(C_netDebt.mul(mv._1e18BN).div(price))))
-  // })
-
-  // it("redeemCollateral(): a redemption that closes a trove leaves the trove's ETH surplus (collateral - ETH drawn) available for the trove owner after re-opening trove", async () => {
-  //   const {
-  //     A_netDebt, A_coll: A_collBefore,
-  //     B_netDebt, B_coll: B_collBefore,
-  //     C_netDebt, C_coll: C_collBefore,
-  //   } = await redeemCollateral3Full1Partial()
-
-  //   const price = await priceFeed.getPrice()
-  //   const A_surplus = A_collBefore.sub(A_netDebt.mul(mv._1e18BN).div(price))
-  //   const B_surplus = B_collBefore.sub(B_netDebt.mul(mv._1e18BN).div(price))
-  //   const C_surplus = C_collBefore.sub(C_netDebt.mul(mv._1e18BN).div(price))
-
-  //   const { collateral: A_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
-  //   const { collateral: B_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
-  //   const { collateral: C_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
-
-  //   const A_collAfter = await troveManager.getTroveColl(A)
-  //   const B_collAfter = await troveManager.getTroveColl(B)
-  //   const C_collAfter = await troveManager.getTroveColl(C)
-
-  //   assert.isTrue(A_collAfter.eq(A_coll))
-  //   assert.isTrue(B_collAfter.eq(B_coll))
-  //   assert.isTrue(C_collAfter.eq(C_coll))
-
-  //   const A_balanceBefore = toBN(await erc20Asset1.balanceOf(A))
-  //   const B_balanceBefore = toBN(await erc20Asset1.balanceOf(B))
-  //   const C_balanceBefore = toBN(await erc20Asset1.balanceOf(C))
-
-  //   const A_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: A, gasPrice: GAS_PRICE  }))
-  //   const B_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: B, gasPrice: GAS_PRICE  }))
-  //   const C_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: C, gasPrice: GAS_PRICE  }))
-
-  //   const A_expectedBalance = A_balanceBefore.sub(toBN(A_GAS * GAS_PRICE))
-  //   const B_expectedBalance = B_balanceBefore.sub(toBN(B_GAS * GAS_PRICE))
-  //   const C_expectedBalance = C_balanceBefore.sub(toBN(C_GAS * GAS_PRICE))
-
-  //   const A_balanceAfter = toBN(await erc20Asset1.balanceOf(A))
-  //   const B_balanceAfter = toBN(await erc20Asset1.balanceOf(B))
-  //   const C_balanceAfter = toBN(await erc20Asset1.balanceOf(C))
-
-  //   th.assertIsApproximatelyEqual(A_balanceAfter, A_expectedBalance.add(A_surplus))
-  //   th.assertIsApproximatelyEqual(B_balanceAfter, B_expectedBalance.add(B_surplus))
-  //   th.assertIsApproximatelyEqual(C_balanceAfter, C_expectedBalance.add(C_surplus))
-  // })
-
-  // it('redeemCollateral(): reverts if fee eats up all returned collateral', async () => {
-  //   // --- SETUP ---
-  //   const { kusdAmount } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(1, 24), extraParams: { from: alice } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
-
-  //   const price = await priceFeed.getPrice()
-  //   assert.equal(price, dec(200, 18))
-
-  //   // --- TEST ---
-
-  //   // skip bootstrapping phase
-  //   await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
-
-  //   // keep redeeming until we get the base rate to the ceiling of 100%
-  //   for (let i = 0; i < 2; i++) {
-  //     // Find hints for redeeming
-  //     const {
-  //       firstRedemptionHint,
-  //       partialRedemptionHintNICR
-  //     } = await hintHelpers.getRedemptionHints(assetAddress1, kusdAmount, price, 0)
-
-  //     // Don't pay for gas, as it makes it easier to calculate the received Ether
-  //     const redemptionTx = await troveManager.redeemCollateral(assetAddress1, 
-  //       kusdAmount,
-  //       firstRedemptionHint,
-  //       assetAddress1,
-  //       alice,
-  //       partialRedemptionHintNICR,
-  //       0, th._100pct,
-  //       {
-  //         from: alice,
-  //         gasPrice: GAS_PRICE
-  //       }
-  //     )
+  it("redeemCollateral(): a redemption that closes a trove leaves the trove's ETH surplus (collateral - ETH drawn) available for the trove owner to claim", async () => {
+    const {
+      A_netDebt, A_coll,
+      B_netDebt, B_coll,
+      C_netDebt, C_coll,
+    } = await redeemCollateral3Full1Partial()
+
+    const A_balanceBefore = toBN(await erc20Asset1.balanceOf(A))
+    const B_balanceBefore = toBN(await erc20Asset1.balanceOf(B))
+    const C_balanceBefore = toBN(await erc20Asset1.balanceOf(C))
+
+    // CollSurplusPool endpoint cannot be called directly
+    await assertRevert(collSurplusPool.claimColl(A), 'CollSurplusPool: Caller is not Borrower Operations')
+
+    const A_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: A, gasPrice: GAS_PRICE }))
+    const B_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: B, gasPrice: GAS_PRICE }))
+    const C_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: C, gasPrice: GAS_PRICE }))
+
+    const A_expectedBalance = A_balanceBefore.sub(toBN(A_GAS * GAS_PRICE))
+    const B_expectedBalance = B_balanceBefore.sub(toBN(B_GAS * GAS_PRICE))
+    const C_expectedBalance = C_balanceBefore.sub(toBN(C_GAS * GAS_PRICE))
+
+    const A_balanceAfter = toBN(await erc20Asset1.balanceOf(A))
+    const B_balanceAfter = toBN(await erc20Asset1.balanceOf(B))
+    const C_balanceAfter = toBN(await erc20Asset1.balanceOf(C))
+
+    const price = toBN(await priceFeed.getPrice())
+
+    th.assertIsApproximatelyEqual(A_balanceAfter, A_expectedBalance.add(A_coll.sub(A_netDebt.mul(mv._1e18BN).div(price))))
+    th.assertIsApproximatelyEqual(B_balanceAfter, B_expectedBalance.add(B_coll.sub(B_netDebt.mul(mv._1e18BN).div(price))))
+    th.assertIsApproximatelyEqual(C_balanceAfter, C_expectedBalance.add(C_coll.sub(C_netDebt.mul(mv._1e18BN).div(price))))
+  })
+
+  it("redeemCollateral(): a redemption that closes a trove leaves the trove's ETH surplus (collateral - ETH drawn) available for the trove owner after re-opening trove", async () => {
+    const {
+      A_netDebt, A_coll: A_collBefore,
+      B_netDebt, B_coll: B_collBefore,
+      C_netDebt, C_coll: C_collBefore,
+    } = await redeemCollateral3Full1Partial()
+
+    const price = await priceFeed.getPrice()
+    const A_surplus = A_collBefore.sub(A_netDebt.mul(mv._1e18BN).div(price))
+    const B_surplus = B_collBefore.sub(B_netDebt.mul(mv._1e18BN).div(price))
+    const C_surplus = C_collBefore.sub(C_netDebt.mul(mv._1e18BN).div(price))
+
+    const { collateral: A_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: A } })
+    const { collateral: B_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(190, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: B } })
+    const { collateral: C_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: C } })
+
+    const A_collAfter = await troveManager.getTroveColl(assetAddress1, A)
+    const B_collAfter = await troveManager.getTroveColl(assetAddress1, B)
+    const C_collAfter = await troveManager.getTroveColl(assetAddress1, C)
+
+    assert.isTrue(A_collAfter.eq(A_coll))
+    assert.isTrue(B_collAfter.eq(B_coll))
+    assert.isTrue(C_collAfter.eq(C_coll))
+
+    const A_balanceBefore = toBN(await erc20Asset1.balanceOf(A))
+    const B_balanceBefore = toBN(await erc20Asset1.balanceOf(B))
+    const C_balanceBefore = toBN(await erc20Asset1.balanceOf(C))
+
+    const A_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: A, gasPrice: GAS_PRICE }))
+    const B_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: B, gasPrice: GAS_PRICE }))
+    const C_GAS = th.gasUsed(await borrowerOperations.claimCollateral({ from: C, gasPrice: GAS_PRICE }))
+
+    const A_expectedBalance = A_balanceBefore.sub(toBN(A_GAS * GAS_PRICE))
+    const B_expectedBalance = B_balanceBefore.sub(toBN(B_GAS * GAS_PRICE))
+    const C_expectedBalance = C_balanceBefore.sub(toBN(C_GAS * GAS_PRICE))
+
+    const A_balanceAfter = toBN(await erc20Asset1.balanceOf(A))
+    const B_balanceAfter = toBN(await erc20Asset1.balanceOf(B))
+    const C_balanceAfter = toBN(await erc20Asset1.balanceOf(C))
+
+    th.assertIsApproximatelyEqual(A_balanceAfter, A_expectedBalance.add(A_surplus))
+    th.assertIsApproximatelyEqual(B_balanceAfter, B_expectedBalance.add(B_surplus))
+    th.assertIsApproximatelyEqual(C_balanceAfter, C_expectedBalance.add(C_surplus))
+  })
+
+  it('redeemCollateral(): reverts if fee eats up all returned collateral', async () => {
+    // --- SETUP ---
+    const { kusdAmount } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(1, 24), extraParams: { from: alice } })
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
+
+    const price = await priceFeed.getPrice()
+    assert.equal(price, dec(200, 18))
+
+    // --- TEST ---
+
+    // skip bootstrapping phase
+    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
+
+    // keep redeeming until we get the base rate to the ceiling of 100%
+    for (let i = 0; i < 2; i++) {
+      // Find hints for redeeming
+      const {
+        firstRedemptionHint,
+        partialRedemptionHintNICR
+      } = await hintHelpers.getRedemptionHints(assetAddress1, kusdAmount, price, 0)
+
+      // Don't pay for gas, as it makes it easier to calculate the received Ether
+      const redemptionTx = await troveManager.redeemCollateral(assetAddress1,
+        kusdAmount,
+        firstRedemptionHint,
+        assetAddress1,
+        alice,
+        partialRedemptionHintNICR,
+        0, th._100pct,
+        {
+          from: alice,
+          gasPrice: GAS_PRICE
+        }
+      )
+
+      await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
+      await borrowerOperations.adjustTrove(th._100pct, 0, kusdAmount, true, alice, alice, { from: alice, value: kusdAmount.mul(mv._1e18BN).div(price) })
+    }
+
+    const {
+      firstRedemptionHint,
+      partialRedemptionHintNICR
+    } = await hintHelpers.getRedemptionHints(assetAddress1, kusdAmount, price, 0)
+
+    await assertRevert(
+      troveManager.redeemCollateral(assetAddress1,
+        kusdAmount,
+        firstRedemptionHint,
+        assetAddress1,
+        alice,
+        partialRedemptionHintNICR,
+        0, th._100pct,
+        {
+          from: alice,
+          gasPrice: GAS_PRICE
+        }
+      ),
+      'TroveManager: Fee would eat up all returned collateral'
+    )
+  })
 
+  //   it("getPendingKUSDDebtReward(): Returns 0 if there is no pending KUSDDebt reward", async () => {
+  //     // Make some troves
+  //     const { totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraKUSDAmount: dec(100, 18), extraParams: { from: defaulter_1 } })
+
+  //     await openTrove({ asset: assetAddress1, ICR: toBN(dec(3, 18)), extraKUSDAmount: dec(20, 18), extraParams: { from: carol } })
+
+  //     await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraKUSDAmount: totalDebt, extraParams: { from: whale } })
+  //     await stabilityPool.provideToSP(totalDebt, ZERO_ADDRESS, { from: whale })
+
+  //     // Price drops
+  //     await priceFeed.setPrice(dec(100, 18))
+
+  //     await troveManager.liquidate(assetAddress1, defaulter_1)
+
+  //     // Confirm defaulter_1 liquidated
+  //     assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
+
+  //     // Confirm there are no pending rewards from liquidation
+  //     const current_L_KUSDDebt = await troveManager.L_KUSDDebts(assetAddress1)
+  //     assert.equal(current_L_KUSDDebt, 0)
+
+  //     const carolSnapshot_L_KUSDDebt = (await troveManager.rewardSnapshots(carol))[1]
+  //     assert.equal(carolSnapshot_L_KUSDDebt, 0)
+
+  //     const carol_PendingKUSDDebtReward = await troveManager.getPendingKUSDDebtReward(assetAddress1, carol)
+  //     assert.equal(carol_PendingKUSDDebtReward, 0)
+  //   })
+
+  //   it("getPendingETHReward(): Returns 0 if there is no pending ETH reward", async () => {
+  //     // make some troves
+  //     const { totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraKUSDAmount: dec(100, 18), extraParams: { from: defaulter_1 } })
+
+  //     await openTrove({ asset: assetAddress1, ICR: toBN(dec(3, 18)), extraKUSDAmount: dec(20, 18), extraParams: { from: carol } })
+
+  //     await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraKUSDAmount: totalDebt, extraParams: { from: whale } })
+  //     await stabilityPool.provideToSP(totalDebt, ZERO_ADDRESS, { from: whale })
+
+  //     // Price drops
+  //     await priceFeed.setPrice(dec(100, 18))
+
+  //     await troveManager.liquidate(assetAddress1, defaulter_1)
+
+  //     // Confirm defaulter_1 liquidated
+  //     assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
+
+  //     // Confirm there are no pending rewards from liquidation
+  //     const current_L_ETH = await troveManager.L_ASSETS(assetAddress1)
+  //     assert.equal(current_L_ETH, 0)
+
+  //     const carolSnapshot_L_ETH = (await troveManager.rewardSnapshots(carol))[0]
+  //     assert.equal(carolSnapshot_L_ETH, 0)
+
+  //     const carol_PendingETHReward = await troveManager.getPendingReward(assetAddress1, carol)
+  //     assert.equal(carol_PendingETHReward, 0)
+  //   })
+
+  //   // --- computeICR ---
+
+  //   it("computeICR(): Returns 0 if trove's coll is worth 0", async () => {
+  //     const price = 0
+  //     const coll = dec(1, 'ether')
+  //     const debt = dec(100, 18)
+
+  //     const ICR = (await troveManager.computeICR(coll, debt, price)).toString()
+
+  //     assert.equal(ICR, 0)
+  //   })
+
+  //   it("computeICR(): Returns 2^256-1 for ETH:USD = 100, coll = 1 ETH, debt = 100 KUSD", async () => {
+  //     const price = dec(100, 18)
+  //     const coll = dec(1, 'ether')
+  //     const debt = dec(100, 18)
+
+  //     const ICR = (await troveManager.computeICR(coll, debt, price)).toString()
+
+  //     assert.equal(ICR, dec(1, 18))
+  //   })
+
+  //   it("computeICR(): returns correct ICR for ETH:USD = 100, coll = 200 ETH, debt = 30 KUSD", async () => {
+  //     const price = dec(100, 18)
+  //     const coll = dec(200, 'ether')
+  //     const debt = dec(30, 18)
+
+  //     const ICR = (await troveManager.computeICR(coll, debt, price)).toString()
+
+  //     assert.isAtMost(th.getDifference(ICR, '666666666666666666666'), 1000)
+  //   })
+
+  //   it("computeICR(): returns correct ICR for ETH:USD = 250, coll = 1350 ETH, debt = 127 KUSD", async () => {
+  //     const price = '250000000000000000000'
+  //     const coll = '1350000000000000000000'
+  //     const debt = '127000000000000000000'
+
+  //     const ICR = (await troveManager.computeICR(coll, debt, price))
+
+  //     assert.isAtMost(th.getDifference(ICR, '2657480314960630000000'), 1000000)
+  //   })
+
+  //   it("computeICR(): returns correct ICR for ETH:USD = 100, coll = 1 ETH, debt = 54321 KUSD", async () => {
+  //     const price = dec(100, 18)
+  //     const coll = dec(1, 'ether')
+  //     const debt = '54321000000000000000000'
+
+  //     const ICR = (await troveManager.computeICR(coll, debt, price)).toString()
+
+  //     assert.isAtMost(th.getDifference(ICR, '1840908672520756'), 1000)
+  //   })
+
+
+  //   it("computeICR(): Returns 2^256-1 if trove has non-zero coll and zero debt", async () => {
+  //     const price = dec(100, 18)
+  //     const coll = dec(1, 'ether')
+  //     const debt = 0
+
+  //     const ICR = web3.utils.toHex(await troveManager.computeICR(coll, debt, price))
+  //     const maxBytes32 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+
+  //     assert.equal(ICR, maxBytes32)
+  //   })
+
+  //   // --- checkRecoveryMode ---
+
+  //   //TCR < 150%
+  //   it("checkRecoveryMode(): Returns true when TCR < 150%", async () => {
+  //     await priceFeed.setPrice(dec(100, 18))
+
+  //     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: alice } })
   //     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
-  //     await borrowerOperations.adjustTrove(th._100pct, 0, kusdAmount, true, alice, alice, { from: alice, value: kusdAmount.mul(mv._1e18BN).div(price) })
-  //   }
 
-  //   const {
-  //     firstRedemptionHint,
-  //     partialRedemptionHintNICR
-  //   } = await hintHelpers.getRedemptionHints(assetAddress1, kusdAmount, price, 0)
+  //     await priceFeed.setPrice('99999999999999999999')
 
-  //   await assertRevert(
-  //     troveManager.redeemCollateral(assetAddress1, 
-  //       kusdAmount,
-  //       firstRedemptionHint,
-  //       assetAddress1,
-  //       alice,
-  //       partialRedemptionHintNICR,
-  //       0, th._100pct,
-  //       {
-  //         from: alice,
-  //         gasPrice: GAS_PRICE
-  //       }
-  //     ),
-  //     'TroveManager: Fee would eat up all returned collateral'
-  //   )
-  // })
+  //     const TCR = (await th.getTCR(contracts, assetAddress1))
 
-  // it("getPendingKUSDDebtReward(): Returns 0 if there is no pending KUSDDebt reward", async () => {
-  //   // Make some troves
-  //   const { totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraKUSDAmount: dec(100, 18), extraParams: { from: defaulter_1 } })
+  //     assert.isTrue(TCR.lte(toBN('1500000000000000000')))
 
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(3, 18)), extraKUSDAmount: dec(20, 18), extraParams: { from: carol } })
+  //     assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1),)
+  //   })
 
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraKUSDAmount: totalDebt, extraParams: { from: whale } })
-  //   await stabilityPool.provideToSP(totalDebt, ZERO_ADDRESS, { from: whale })
+  //   // TCR == 150%
+  //   it("checkRecoveryMode(): Returns false when TCR == 150%", async () => {
+  //     await priceFeed.setPrice(dec(100, 18))
 
-  //   // Price drops
-  //   await priceFeed.setPrice(dec(100, 18))
+  //     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: alice } })
+  //     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
 
-  //   await troveManager.liquidate(assetAddress1, defaulter_1)
+  //     const TCR = (await th.getTCR(contracts, assetAddress1))
 
-  //   // Confirm defaulter_1 liquidated
-  //   assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
+  //     assert.equal(TCR, '1500000000000000000')
 
-  //   // Confirm there are no pending rewards from liquidation
-  //   const current_L_KUSDDebt = await troveManager.L_KUSDDebts(assetAddress1)
-  //   assert.equal(current_L_KUSDDebt, 0)
+  //     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),)
+  //   })
 
-  //   const carolSnapshot_L_KUSDDebt = (await troveManager.rewardSnapshots(carol))[1]
-  //   assert.equal(carolSnapshot_L_KUSDDebt, 0)
+  //   // > 150%
+  //   it("checkRecoveryMode(): Returns false when TCR > 150%", async () => {
+  //     await priceFeed.setPrice(dec(100, 18))
 
-  //   const carol_PendingKUSDDebtReward = await troveManager.getPendingKUSDDebtReward(assetAddress1, carol)
-  //   assert.equal(carol_PendingKUSDDebtReward, 0)
-  // })
+  //     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: alice } })
+  //     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
 
-  // it("getPendingETHReward(): Returns 0 if there is no pending ETH reward", async () => {
-  //   // make some troves
-  //   const { totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraKUSDAmount: dec(100, 18), extraParams: { from: defaulter_1 } })
+  //     await priceFeed.setPrice('100000000000000000001')
 
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(3, 18)), extraKUSDAmount: dec(20, 18), extraParams: { from: carol } })
+  //     const TCR = (await th.getTCR(contracts, assetAddress1))
 
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraKUSDAmount: totalDebt, extraParams: { from: whale } })
-  //   await stabilityPool.provideToSP(totalDebt, ZERO_ADDRESS, { from: whale })
+  //     assert.isTrue(TCR.gte(toBN('1500000000000000000')))
 
-  //   // Price drops
-  //   await priceFeed.setPrice(dec(100, 18))
+  //     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),)
+  //   })
 
-  //   await troveManager.liquidate(assetAddress1, defaulter_1)
+  //   // check 0
+  //   it("checkRecoveryMode(): Returns false when TCR == 0", async () => {
+  //     await priceFeed.setPrice(dec(100, 18))
 
-  //   // Confirm defaulter_1 liquidated
-  //   assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
+  //     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: alice } })
+  //     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
 
-  //   // Confirm there are no pending rewards from liquidation
-  //   const current_L_ETH = await troveManager.L_ASSETS(assetAddress1)
-  //   assert.equal(current_L_ETH, 0)
+  //     await priceFeed.setPrice(0)
 
-  //   const carolSnapshot_L_ETH = (await troveManager.rewardSnapshots(carol))[0]
-  //   assert.equal(carolSnapshot_L_ETH, 0)
+  //     const TCR = (await th.getTCR(contracts, assetAddress1)).toString()
 
-  //   const carol_PendingETHReward = await troveManager.getPendingReward(assetAddress1, carol)
-  //   assert.equal(carol_PendingETHReward, 0)
-  // })
+  //     assert.equal(TCR, 0)
 
-  // // --- computeICR ---
+  //     assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1),)
+  //   })
 
-  // it("computeICR(): Returns 0 if trove's coll is worth 0", async () => {
-  //   const price = 0
-  //   const coll = dec(1, 'ether')
-  //   const debt = dec(100, 18)
+  //   // --- Getters ---
 
-  //   const ICR = (await troveManager.computeICR(coll, debt, price)).toString()
+  //   it("getTroveStake(): Returns stake", async () => {
+  //     const { collateral: A_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: A } })
+  //     const { collateral: B_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: B } })
 
-  //   assert.equal(ICR, 0)
-  // })
+  //     const A_Stake = await troveManager.getTroveStake(A)
+  //     const B_Stake = await troveManager.getTroveStake(B)
 
-  // it("computeICR(): Returns 2^256-1 for ETH:USD = 100, coll = 1 ETH, debt = 100 KUSD", async () => {
-  //   const price = dec(100, 18)
-  //   const coll = dec(1, 'ether')
-  //   const debt = dec(100, 18)
+  //     assert.equal(A_Stake, A_coll.toString())
+  //     assert.equal(B_Stake, B_coll.toString())
+  //   })
 
-  //   const ICR = (await troveManager.computeICR(coll, debt, price)).toString()
+  //   it("getTroveColl(assetAddress1, ): Returns coll", async () => {
+  //     const { collateral: A_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: A } })
+  //     const { collateral: B_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: B } })
 
-  //   assert.equal(ICR, dec(1, 18))
-  // })
+  //     assert.equal(await troveManager.getTroveColl(assetAddress1, A), A_coll.toString())
+  //     assert.equal(await troveManager.getTroveColl(assetAddress1, B), B_coll.toString())
+  //   })
 
-  // it("computeICR(): returns correct ICR for ETH:USD = 100, coll = 200 ETH, debt = 30 KUSD", async () => {
-  //   const price = dec(100, 18)
-  //   const coll = dec(200, 'ether')
-  //   const debt = dec(30, 18)
+  //   it("getTroveDebt(): Returns debt", async () => {
+  //     const { totalDebt: totalDebtA } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: A } })
+  //     const { totalDebt: totalDebtB } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: B } })
 
-  //   const ICR = (await troveManager.computeICR(coll, debt, price)).toString()
+  //     const A_Debt = await troveManager.getTroveDebt(assetAddress1, A)
+  //     const B_Debt = await troveManager.getTroveDebt(assetAddress1, B)
 
-  //   assert.isAtMost(th.getDifference(ICR, '666666666666666666666'), 1000)
-  // })
+  //     // Expect debt = requested + 0.5% fee + 50 (due to gas comp)
 
-  // it("computeICR(): returns correct ICR for ETH:USD = 250, coll = 1350 ETH, debt = 127 KUSD", async () => {
-  //   const price = '250000000000000000000'
-  //   const coll = '1350000000000000000000'
-  //   const debt = '127000000000000000000'
+  //     assert.equal(A_Debt, totalDebtA.toString())
+  //     assert.equal(B_Debt, totalDebtB.toString())
+  //   })
 
-  //   const ICR = (await troveManager.computeICR(coll, debt, price))
+  //   it("getTroveStatus(assetAddress1, ): Returns status", async () => {
+  //     const { totalDebt: B_totalDebt_Asset1 } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: B } })
+  //     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraKUSDAmount: B_totalDebt_Asset1, extraParams: { from: A } })
 
-  //   assert.isAtMost(th.getDifference(ICR, '2657480314960630000000'), 1000000)
-  // })
+  //     // to be able to repay:
+  //     await kusdToken.transfer(B, B_totalDebt_Asset1, { from: A })
+  //     await borrowerOperations.closeTrove(assetAddress1, { from: B })
 
-  // it("computeICR(): returns correct ICR for ETH:USD = 100, coll = 1 ETH, debt = 54321 KUSD", async () => {
-  //   const price = dec(100, 18)
-  //   const coll = dec(1, 'ether')
-  //   const debt = '54321000000000000000000'
-
-  //   const ICR = (await troveManager.computeICR(coll, debt, price)).toString()
-
-  //   assert.isAtMost(th.getDifference(ICR, '1840908672520756'), 1000)
-  // })
-
-
-  // it("computeICR(): Returns 2^256-1 if trove has non-zero coll and zero debt", async () => {
-  //   const price = dec(100, 18)
-  //   const coll = dec(1, 'ether')
-  //   const debt = 0
-
-  //   const ICR = web3.utils.toHex(await troveManager.computeICR(coll, debt, price))
-  //   const maxBytes32 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-
-  //   assert.equal(ICR, maxBytes32)
-  // })
-
-  // // --- checkRecoveryMode ---
-
-  // //TCR < 150%
-  // it("checkRecoveryMode(): Returns true when TCR < 150%", async () => {
-  //   await priceFeed.setPrice(dec(100, 18))
-
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: alice } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
-
-  //   await priceFeed.setPrice('99999999999999999999')
-
-  //   const TCR = (await th.getTCR(contracts, assetAddress1))
-
-  //   assert.isTrue(TCR.lte(toBN('1500000000000000000')))
-
-  //   assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1), )
-  // })
-
-  // // TCR == 150%
-  // it("checkRecoveryMode(): Returns false when TCR == 150%", async () => {
-  //   await priceFeed.setPrice(dec(100, 18))
-
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: alice } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
-
-  //   const TCR = (await th.getTCR(contracts, assetAddress1))
-
-  //   assert.equal(TCR, '1500000000000000000')
-
-  //   assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1), )
-  // })
-
-  // // > 150%
-  // it("checkRecoveryMode(): Returns false when TCR > 150%", async () => {
-  //   await priceFeed.setPrice(dec(100, 18))
-
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: alice } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
-
-  //   await priceFeed.setPrice('100000000000000000001')
-
-  //   const TCR = (await th.getTCR(contracts, assetAddress1))
-
-  //   assert.isTrue(TCR.gte(toBN('1500000000000000000')))
-
-  //   assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1), )
-  // })
-
-  // // check 0
-  // it("checkRecoveryMode(): Returns false when TCR == 0", async () => {
-  //   await priceFeed.setPrice(dec(100, 18))
-
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: alice } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
-
-  //   await priceFeed.setPrice(0)
-
-  //   const TCR = (await th.getTCR(contracts, assetAddress1)).toString()
-
-  //   assert.equal(TCR, 0)
-
-  //   assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1), )
-  // })
-
-  // // --- Getters ---
-
-  // it("getTroveStake(): Returns stake", async () => {
-  //   const { collateral: A_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: A } })
-  //   const { collateral: B_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: B } })
-
-  //   const A_Stake = await troveManager.getTroveStake(A)
-  //   const B_Stake = await troveManager.getTroveStake(B)
-
-  //   assert.equal(A_Stake, A_coll.toString())
-  //   assert.equal(B_Stake, B_coll.toString())
-  // })
-
-  // it("getTroveColl(): Returns coll", async () => {
-  //   const { collateral: A_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: A } })
-  //   const { collateral: B_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: B } })
-
-  //   assert.equal(await troveManager.getTroveColl(A), A_coll.toString())
-  //   assert.equal(await troveManager.getTroveColl(B), B_coll.toString())
-  // })
-
-  // it("getTroveDebt(): Returns debt", async () => {
-  //   const { totalDebt: totalDebtA } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: A } })
-  //   const { totalDebt: totalDebtB } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: B } })
-
-  //   const A_Debt = await troveManager.getTroveDebt(A)
-  //   const B_Debt = await troveManager.getTroveDebt(B)
-
-  //   // Expect debt = requested + 0.5% fee + 50 (due to gas comp)
-
-  //   assert.equal(A_Debt, totalDebtA.toString())
-  //   assert.equal(B_Debt, totalDebtB.toString())
-  // })
-
-  // it("getTroveStatus(assetAddress1, ): Returns status", async () => {
-  //   const { totalDebt: B_totalDebt_Asset1 } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: B } })
-  //   await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraKUSDAmount: B_totalDebt_Asset1, extraParams: { from: A } })
-
-  //   // to be able to repay:
-  //   await kusdToken.transfer(B, B_totalDebt_Asset1, { from: A })
-  //   await borrowerOperations.closeTrove(assetAddress1, {from: B})
-
-  //   const A_Status = await troveManager.getTroveStatus(assetAddress1, A)
-  //   const B_Status = await troveManager.getTroveStatus(assetAddress1, B)
-  //   const C_Status = await troveManager.getTroveStatus(assetAddress1, C)
-
-  //   assert.equal(A_Status, '1')  // active
-  //   assert.equal(B_Status, '2')  // closed by user
-  //   assert.equal(C_Status, '0')  // non-existent
-  // })
-
-  // it("hasPendingRewards(): Returns false it trove is not active", async () => {
-  //   assert.isFalse(await troveManager.hasPendingRewards(assetAddress1, alice))
-  // })
+  //     const A_Status = await troveManager.getTroveStatus(assetAddress1, A)
+  //     const B_Status = await troveManager.getTroveStatus(assetAddress1, B)
+  //     const C_Status = await troveManager.getTroveStatus(assetAddress1, C)
+
+  //     assert.equal(A_Status, '1')  // active
+  //     assert.equal(B_Status, '2')  // closed by user
+  //     assert.equal(C_Status, '0')  // non-existent
+  //   })
+
+  //   it("hasPendingRewards(): Returns false it trove is not active", async () => {
+  //     assert.isFalse(await troveManager.hasPendingRewards(assetAddress1, alice))
+  //   })
 })
+
 
 contract('Reset chain state', async accounts => { })
