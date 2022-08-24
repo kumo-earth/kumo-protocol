@@ -186,7 +186,6 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         LocalVariables_openTrove memory vars;
         vars.asset = _asset;
 
-        // _tokenAmount = getMethodValue(vars.asset, _tokenAmount, false);
         vars.price = kumoParams.priceFeed().fetchPrice();
         bool isRecoveryMode = _checkRecoveryMode(vars.asset, vars.price);
 
@@ -280,17 +279,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         address _upperHint,
         address _lowerHint
     ) external payable override {
-        _adjustTrove(
-            _asset,
-            getMethodValue(_asset, _assetSent, false),
-            msg.sender,
-            0,
-            0,
-            false,
-            _upperHint,
-            _lowerHint,
-            0
-        );
+        _adjustTrove(_asset, _assetSent, msg.sender, 0, 0, false, _upperHint, _lowerHint, 0);
     }
 
     // Send ETH as collateral to a trove. Called by only the Stability Pool.
@@ -302,17 +291,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         address _lowerHint
     ) external payable override {
         _requireCallerIsStabilityPool();
-        _adjustTrove(
-            _asset,
-            getMethodValue(_asset, _amountMoved, false),
-            _borrower,
-            0,
-            0,
-            false,
-            _upperHint,
-            _lowerHint,
-            0
-        );
+        _adjustTrove(_asset, _amountMoved, _borrower, 0, 0, false, _upperHint, _lowerHint, 0);
     }
 
     // Withdraw ETH collateral from a trove
@@ -368,7 +347,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     ) external payable override {
         _adjustTrove(
             _asset,
-            getMethodValue(_asset, _assetSent, true),
+            _assetSent,
             msg.sender,
             _collWithdrawal,
             _KUSDChange,
@@ -412,10 +391,6 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
             _requireValidMaxFeePercentage(vars.asset, _maxFeePercentage, isRecoveryMode);
             _requireNonZeroDebtChange(_KUSDChange);
         }
-        require(
-            msg.value == 0 || msg.value == _assetSent,
-            "BorrowerOp: _AssetSent and Msg.value aren't the same!"
-        );
 
         _requireSingularCollChange(_collWithdrawal, _assetSent);
         _requireNonZeroAdjustment(_collWithdrawal, _KUSDChange, _assetSent);
@@ -984,24 +959,5 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         returns (uint256)
     {
         return _getCompositeDebt(_asset, _debt);
-    }
-
-    function getMethodValue(
-        address _asset,
-        uint256 _amount,
-        bool canBeZero
-    ) private view returns (uint256) {
-        bool isEth = _asset == address(0);
-
-        require(
-            (canBeZero || (isEth && msg.value != 0)) || (!isEth && msg.value == 0),
-            "BorrowerOp: Invalid Input. Override msg.value only if using ETH asset, otherwise use _tokenAmount"
-        );
-
-        if (_asset == address(0)) {
-            _amount = msg.value;
-        }
-
-        return _amount;
     }
 }

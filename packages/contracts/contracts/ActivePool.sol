@@ -37,7 +37,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     uint256 internal ETH; // deposited ether tracker
     // IDefaultPool public defaultPool;
     // uint256 internal KUSDDebt;
-    // ICollSurplusPool public collSurplusPool;
+    address public collSurplusPoolAddress;
     // IStabilityPoolManager public stabilityPoolManager;
     // --- Events ---
 
@@ -63,12 +63,14 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
         address _stabilityPoolAddress,
-        address _defaultPoolAddress
+        address _defaultPoolAddress,
+        address _collSurplusPoolAddress
     ) external onlyOwner {
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
         checkContract(_stabilityPoolAddress);
         checkContract(_defaultPoolAddress);
+        checkContract(_collSurplusPoolAddress);
 
         // __Ownable_init();
 
@@ -77,13 +79,15 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         // stabilityPoolManager = IStabilityPoolManager(_stabilityManagerAddress);
         stabilityPoolAddress = _stabilityPoolAddress;
         defaultPoolAddress = _defaultPoolAddress;
+        collSurplusPoolAddress = _collSurplusPoolAddress;
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit StabilityPoolAddressChanged(_stabilityPoolAddress);
         emit DefaultPoolAddressChanged(_defaultPoolAddress);
+        emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
 
-        _renounceOwnership();
+        // _renounceOwnership();
     }
 
     function setCollStakingManagerAddress(address _collStakingManagerAddress)
@@ -146,10 +150,10 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     }
 
     function isERC20DepositContract(address _account) private view returns (bool) {
-        // return (_account == defaultPoolAddress ||
-        //     _account == collSurplusPoolAddress ||
-        //     _account == stabilityPoolAddress);
-        return (_account == defaultPoolAddress || _account == stabilityPoolAddress);
+        return (_account == defaultPoolAddress ||
+            _account == collSurplusPoolAddress ||
+            _account == stabilityPoolAddress);
+        // return (_account == defaultPoolAddress || _account == stabilityPoolAddress);
     }
 
     // function sendAsset(address _asset, address _account, uint256 _amount) external override {

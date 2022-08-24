@@ -402,7 +402,8 @@ class DeploymentHelper {
       contracts.borrowerOperations.address,
       contracts.troveManager.address,
       contracts.stabilityPool.address,
-      contracts.defaultPool.address
+      contracts.defaultPool.address,
+      contracts.collSurplusPool.address
     )
 
     await contracts.defaultPool.setAddresses(

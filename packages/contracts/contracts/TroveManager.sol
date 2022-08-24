@@ -869,7 +869,6 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
             totals.totalCollToRedistribute
         );
         if (totals.totalCollSurplus > 0) {
-            console.log("++++++++++++++++++++++++++++collSurplusPool");
             activePoolCached.sendAsset(_asset, address(collSurplusPool), totals.totalCollSurplus);
         }
 

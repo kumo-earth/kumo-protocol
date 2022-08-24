@@ -501,8 +501,8 @@ class TestHelper {
   }
 
   static getDebtAndCollFromTroveUpdatedEvents(troveUpdatedEvents, address) {
-    const event = troveUpdatedEvents.filter(event => event.args[0] === address)[0]
-    return [event.args[1], event.args[2]]
+    const event = troveUpdatedEvents.filter(event => event.args[1] === address)[0]
+    return [event.args[2], event.args[3]]
   }
 
   static async getBorrowerOpsListHint(contracts, newColl, newDebt) {
