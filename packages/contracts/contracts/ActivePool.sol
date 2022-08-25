@@ -17,9 +17,9 @@ import "./Dependencies/console.sol";
 import "./Dependencies/SafetyTransfer.sol";
 
 /*
- * The Active Pool holds the ETH collateral and KUSD debt (but not KUSD tokens) for all active troves.
+ * The Active Pool holds the collateral of all Assets and KUSD debt (but not KUSD tokens) for all active troves.
  *
- * When a trove is liquidated, it's ETH and KUSD debt are transferred from the Active Pool, to either the
+ * When a trove is liquidated, it's asset and KUSD debt are transferred from the Active Pool, to either the
  * Stability Pool, the Default Pool, or both, depending on the liquidation conditions.
  *
  */
@@ -34,7 +34,6 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     address public troveManagerAddress;
     address public stabilityPoolAddress;
     address public defaultPoolAddress;
-    uint256 internal ETH; // deposited ether tracker
     // IDefaultPool public defaultPool;
     // uint256 internal KUSDDebt;
     address public collSurplusPoolAddress;
@@ -51,11 +50,6 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         require(msg.sender == stakingAdmin, "ActivePool: not a staking admin");
         _;
     }
-
-    // event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
-    // event TroveManagerAddressChanged(address _newTroveManagerAddress);
-    // event ActivePoolKUSDDebtUpdated(uint256 _KUSDDebt);
-    // event IERC20ActivePoolAssetBalanceUpdated(uint256 _ETH);
 
     // --- Contract setters ---
 
@@ -102,9 +96,9 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     // --- Getters for public variables. Required by IPool interface ---
 
     /*
-     * Returns the ETH state variable.
+     * Returns the Asset state variable.
      *
-     *Not necessarily equal to the the contract's raw ETH balance - ether can be forcibly sent to contracts.
+     *Not necessarily equal to the the contract's raw Asset balance - assets can be forcibly sent to contracts.
      */
     function getAssetBalance(address _asset) external view override returns (uint256) {
         return assetsBalance[_asset];
@@ -117,10 +111,6 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     function getKUSDDebt(address _asset) external view override returns (uint256) {
         return KUSDDebts[_asset];
     }
-
-    // function getETH() external view override returns (uint256) {
-    //     return ETH;
-    // }
 
     // --- Pool functionality ---
     function sendAsset(
@@ -155,17 +145,6 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
             _account == stabilityPoolAddress);
         // return (_account == defaultPoolAddress || _account == stabilityPoolAddress);
     }
-
-    // function sendAsset(address _asset, address _account, uint256 _amount) external override {
-    //     _requireCallerIsBOorTroveMorSP();
-    //     // ETH = ETH.sub(_amount);
-    //     assetsBalance[_asset] -= _amount;
-    //     emit ActivePoolAssetBalanceUpdated(_asset, assetsBalance[_asset]);
-    //     emit AssetSent(_account, _asset, _amount);
-
-    //     (bool success, ) = _account.call{ value: _amount }("");
-    //     require(success, "ActivePool: sending ETH failed");
-    // }
 
     function increaseKUSDDebt(address _asset, uint256 _amount) external override {
         _requireCallerIsBOorTroveM();
