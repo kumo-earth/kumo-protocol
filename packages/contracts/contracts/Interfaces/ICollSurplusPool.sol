@@ -11,7 +11,7 @@ interface ICollSurplusPool is IDeposit {
     event TroveManagerAddressChanged(address _newTroveManagerAddress);
     event ActivePoolAddressChanged(address _newActivePoolAddress);
 
-    event CollBalanceUpdated(address indexed _account, address _asset, uint256 _newBalance);
+    event CollBalanceUpdated(address indexed _account, address indexed _asset, uint256 _newBalance);
     event AssetSent(address _to, address _asset, uint256 _amount);
 
     // --- Contract setters ---
