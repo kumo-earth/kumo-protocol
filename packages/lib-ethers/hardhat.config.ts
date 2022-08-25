@@ -12,6 +12,7 @@ import { ContractFactory, Overrides } from "@ethersproject/contracts";
 import { task, HardhatUserConfig, types, extendEnvironment } from "hardhat/config";
 import { HardhatRuntimeEnvironment, NetworkUserConfig } from "hardhat/types";
 import "@nomiclabs/hardhat-ethers";
+import "@openzeppelin/hardhat-upgrades"
 
 import { Decimal } from "@kumodao/lib-base";
 

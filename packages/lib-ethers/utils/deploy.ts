@@ -3,6 +3,7 @@ import { ContractTransaction, ContractFactory, Overrides } from "@ethersproject/
 import { Wallet } from "@ethersproject/wallet";
 
 import { Decimal } from "@kumodao/lib-base";
+import { upgrades } from "hardhat";
 
 import {
   _KumoContractAddresses,
@@ -48,9 +49,36 @@ const deployContractAndGetBlockNumber = async (
   return [contract.address, receipt.blockNumber];
 };
 
+const deployUpgradeableContractAndGetBlockNumber = async (
+  deployer: Signer,
+  getContractFactory: (name: string, signer: Signer) => Promise<ContractFactory>,
+  contractName: string,
+  ...args: unknown[]
+): Promise<[address: string, blockNumber: number]> => {
+  log(`Deploying upgradeable ${contractName} ...`);
+  const contract = await upgrades.deployProxy(await getContractFactory(contractName, deployer), args, { kind: "uups" });
+
+  log(`Waiting for transaction ${contract.deployTransaction.hash} ...`);
+  const receipt = await contract.deployTransaction.wait();
+
+  log({
+    contractAddress: contract.address,
+    blockNumber: receipt.blockNumber,
+    gasUsed: receipt.gasUsed.toNumber()
+  });
+
+  log();
+
+  return [contract.address, receipt.blockNumber];
+}; 
+
 const deployContract: (
   ...p: Parameters<typeof deployContractAndGetBlockNumber>
 ) => Promise<string> = (...p) => deployContractAndGetBlockNumber(...p).then(([a]) => a);
+
+const deployUpgradeableContract: (
+  ...p: Parameters<typeof deployUpgradeableContractAndGetBlockNumber>
+) => Promise<string> = (...p) => deployUpgradeableContractAndGetBlockNumber(...p).then(([a]) => a);
 
 const deployContracts = async (
   deployer: Signer,
@@ -94,10 +122,10 @@ const deployContracts = async (
       priceFeedIsTestnet ? "PriceFeedTestnet" : "PriceFeed",
       { ...overrides }
     ),
-    sortedTroves: await deployContract(deployer, getContractFactory, "SortedTroves", {
+    sortedTroves: await deployUpgradeableContract(deployer, getContractFactory, "SortedTroves", {
       ...overrides
     }),
-    stabilityPool: await deployContract(deployer, getContractFactory, "StabilityPool", {
+    stabilityPool: await deployUpgradeableContract(deployer, getContractFactory, "StabilityPool", {
       ...overrides
     }),
     gasPool: await deployContract(deployer, getContractFactory, "GasPool", {
