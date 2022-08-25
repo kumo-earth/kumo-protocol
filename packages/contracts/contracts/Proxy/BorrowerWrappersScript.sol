@@ -15,28 +15,27 @@ import "./ETHTransferScript.sol";
 import "./KUMOStakingScript.sol";
 import "../Dependencies/console.sol";
 
-
 contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, KUMOStakingScript {
     using SafeMath for uint256;
 
     struct Local_var {
-		address _asset;
-		uint256 _maxFee;
-		address _upperHint;
-		address _lowerHint;
-		uint256 netKUSDAmount;
-	}
+        address _asset;
+        uint256 _maxFee;
+        address _upperHint;
+        address _lowerHint;
+        uint256 netKUSDAmount;
+    }
 
-    string constant public NAME = "BorrowerWrappersScript";
+    string public constant NAME = "BorrowerWrappersScript";
 
     ITroveManager immutable troveManager;
-    IStabilityPoolManager immutable stabilityPoolManager;
+    IStabilityPool immutable stabilityPool;
     IPriceFeed immutable priceFeed;
     IERC20 immutable kusdToken;
     IERC20 immutable kumoToken;
     IKUMOStaking immutable kumoStaking;
 
-    constructor (
+    constructor(
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
         address _kumoStakingAddress
@@ -48,9 +47,9 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
         ITroveManager troveManagerCached = ITroveManager(_troveManagerAddress);
         troveManager = troveManagerCached;
 
-        IStabilityPoolManager stabilityPoolCached = troveManagerCached.stabilityPoolManager();
+        IStabilityPool stabilityPoolCached = troveManagerCached.stabilityPool();
         checkContract(address(stabilityPoolCached));
-        stabilityPoolManager = stabilityPoolCached;
+        stabilityPool = stabilityPoolCached;
 
         IPriceFeed priceFeedCached = troveManagerCached.kumoParams().priceFeed();
         checkContract(address(priceFeedCached));
@@ -65,11 +64,20 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
         kumoToken = IERC20(kumoTokenCached);
 
         IKUMOStaking kumoStakingCached = troveManagerCached.kumoStaking();
-        require(_kumoStakingAddress == address(kumoStakingCached), "BorrowerWrappersScript: Wrong KUMOStaking address");
+        require(
+            _kumoStakingAddress == address(kumoStakingCached),
+            "BorrowerWrappersScript: Wrong KUMOStaking address"
+        );
         kumoStaking = kumoStakingCached;
     }
 
-    function claimCollateralAndOpenTrove(address _asset, uint256 _maxFee, uint256 _KUSDAmount, address _upperHint, address _lowerHint) external payable {
+    function claimCollateralAndOpenTrove(
+        address _asset,
+        uint256 _maxFee,
+        uint256 _KUSDAmount,
+        address _upperHint,
+        address _lowerHint
+    ) external payable {
         uint256 balanceBefore = address(this).balance;
 
         // Claim collateral
@@ -83,16 +91,28 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
         uint256 totalCollateral = balanceAfter.sub(balanceBefore).add(msg.value);
 
         // Open trove with obtained collateral, plus collateral sent by user
-        borrowerOperations.openTrove{ value: _asset == address(0) ? totalCollateral : 0  }(_asset, totalCollateral, _maxFee, _KUSDAmount, _upperHint, _lowerHint);
+        borrowerOperations.openTrove{value: _asset == address(0) ? totalCollateral : 0}(
+            _asset,
+            totalCollateral,
+            _maxFee,
+            _KUSDAmount,
+            _upperHint,
+            _lowerHint
+        );
     }
 
-    function claimSPRewardsAndRecycle(address _asset, uint256 _maxFee, address _upperHint, address _lowerHint) external {
+    function claimSPRewardsAndRecycle(
+        address _asset,
+        uint256 _maxFee,
+        address _upperHint,
+        address _lowerHint
+    ) external {
         Local_var memory vars = Local_var(_asset, _maxFee, _upperHint, _lowerHint, 0);
         uint256 collBalanceBefore = address(this).balance;
         uint256 kumoBalanceBefore = kumoToken.balanceOf(address(this));
 
         // Claim rewards
-		stabilityPoolManager.getAssetStabilityPool(vars._asset).withdrawFromSP(0);
+        stabilityPool.withdrawFromSP(0);
 
         uint256 collBalanceAfter = address(this).balance;
         uint256 kumoBalanceAfter = kumoToken.balanceOf(address(this));
@@ -102,10 +122,19 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
         if (claimedCollateral > 0) {
             _requireUserHasTrove(vars._asset, address(this));
             vars.netKUSDAmount = _getNetKUSDAmount(vars._asset, claimedCollateral);
-            borrowerOperations.adjustTrove{value: vars._asset == address(0) ? claimedCollateral : 0}(vars._asset, claimedCollateral, vars._maxFee,  0, vars.netKUSDAmount, true, vars._upperHint, vars._lowerHint);
+            borrowerOperations.adjustTrove{value: vars._asset == address(0) ? claimedCollateral : 0}(
+                vars._asset,
+                claimedCollateral,
+                vars._maxFee,
+                0,
+                vars.netKUSDAmount,
+                true,
+                vars._upperHint,
+                vars._lowerHint
+            );
             // Provide withdrawn KUSD to Stability Pool
             if (vars.netKUSDAmount > 0) {
-                stabilityPoolManager.getAssetStabilityPool(_asset).provideToSP(vars.netKUSDAmount, address(0));
+                stabilityPool.provideToSP(vars.netKUSDAmount, address(0));
             }
         }
 
@@ -116,7 +145,12 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
         }
     }
 
-    function claimStakingGainsAndRecycle(address _asset, uint256 _maxFee, address _upperHint, address _lowerHint) external {
+    function claimStakingGainsAndRecycle(
+        address _asset,
+        uint256 _maxFee,
+        address _upperHint,
+        address _lowerHint
+    ) external {
         Local_var memory vars = Local_var(_asset, _maxFee, _upperHint, _lowerHint, 0);
         uint256 collBalanceBefore = address(this).balance;
         uint256 kusdBalanceBefore = kusdToken.balanceOf(address(this));
@@ -133,24 +167,21 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
         if (gainedCollateral > 0) {
             _requireUserHasTrove(vars._asset, address(this));
             vars.netKUSDAmount = _getNetKUSDAmount(vars._asset, gainedCollateral);
-			borrowerOperations.adjustTrove{
-				value: vars._asset == address(0) ? gainedCollateral : 0
-			}(
-				vars._asset,
-				gainedCollateral,
-				vars._maxFee,
-				0,
-				vars.netKUSDAmount,
-				true,
-				vars._upperHint,
-				vars._lowerHint
-			); 
+            borrowerOperations.adjustTrove{value: vars._asset == address(0) ? gainedCollateral : 0}(
+                vars._asset,
+                gainedCollateral,
+                vars._maxFee,
+                0,
+                vars.netKUSDAmount,
+                true,
+                vars._upperHint,
+                vars._lowerHint
+            );
         }
 
         uint256 totalKUSD = gainedKUSD.add(vars.netKUSDAmount);
         if (totalKUSD > 0) {
-                stabilityPoolManager.getAssetStabilityPool(_asset).provideToSP(totalKUSD, address(0));
-
+            stabilityPool.provideToSP(totalKUSD, address(0));
 
             // Providing to Stability Pool also triggers KUMO claim, so stake it if any
             uint256 kumoBalanceAfter = kumoToken.balanceOf(address(this));
@@ -159,7 +190,6 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
                 kumoStaking.stake(claimedKUMO);
             }
         }
-
     }
 
     function _getNetKUSDAmount(address _asset, uint256 _collateral) internal returns (uint256) {
@@ -168,12 +198,17 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
 
         uint256 KUSDAmount = _collateral.mul(price).div(ICR);
         uint256 borrowingRate = troveManager.getBorrowingRateWithDecay(_asset);
-        uint256 netDebt = KUSDAmount.mul(KumoMath.DECIMAL_PRECISION).div(KumoMath.DECIMAL_PRECISION.add(borrowingRate));
+        uint256 netDebt = KUSDAmount.mul(KumoMath.DECIMAL_PRECISION).div(
+            KumoMath.DECIMAL_PRECISION.add(borrowingRate)
+        );
 
         return netDebt;
     }
 
     function _requireUserHasTrove(address _asset, address _depositor) internal view {
-        require(troveManager.getTroveStatus(_asset, _depositor) == 1, "BorrowerWrappersScript: caller must have an active trove");
+        require(
+            troveManager.getTroveStatus(_asset, _depositor) == 1,
+            "BorrowerWrappersScript: caller must have an active trove"
+        );
     }
 }

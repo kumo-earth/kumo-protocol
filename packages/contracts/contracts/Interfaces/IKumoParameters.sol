@@ -6,6 +6,7 @@ import "./IActivePool.sol";
 import "./IDefaultPool.sol";
 import "./IPriceFeed.sol";
 import "./IKumoBase.sol";
+import "./IStabilityPool.sol";
 
 interface IKumoParameters {
 	error SafeCheckError(
@@ -61,10 +62,13 @@ interface IKumoParameters {
 
 	function priceFeed() external view returns (IPriceFeed);
 
+	function stabilityPool() external view returns (IStabilityPool);
+
 	function setAddresses(
 		address _activePool,
 		address _defaultPool,
-		address _priceFeed //,
+		address _priceFeed,
+		address _stabilityPool //,
 		// address _adminContract
 	) external;
 
@@ -93,4 +97,6 @@ interface IKumoParameters {
 	function setRedemptionFeeFloor(address _asset, uint256 redemptionFeeFloor) external;
 
 	function removeRedemptionBlock(address _asset) external;
+
+	function hasCollateralConfigured(address _asset) external view returns (bool);
 }

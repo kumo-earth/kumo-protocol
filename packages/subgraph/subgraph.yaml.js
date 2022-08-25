@@ -158,7 +158,7 @@ dataSources:
         - name: CollSurplusPool
           file: ../lib-ethers/abi/CollSurplusPool.json
       eventHandlers:
-        - event: CollBalanceUpdated(indexed address,uint256)
+        - event: CollBalanceUpdated(indexed address,indexed address,uint256)
           handler: handleCollSurplusBalanceUpdated
   - name: KUMOStaking
     kind: ethereum/contract
@@ -187,10 +187,10 @@ dataSources:
         - event: StakingGainsWithdrawn(indexed address,uint256,uint256)
           handler: handleStakeGainsWithdrawn
 ${[
-  ["KUSDToken", addresses.kusdToken],
-  ["KUMOToken", addresses.kumoToken]
-].map(
-  ([name, address]) => yaml`
+    ["KUSDToken", addresses.kusdToken],
+    ["KUMOToken", addresses.kumoToken]
+  ].map(
+    ([name, address]) => yaml`
   - name: ${name}
     kind: ethereum/contract
     network: mainnet
@@ -217,6 +217,6 @@ ${[
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleTokenApproval
 `
-)}`;
+  )}`;
 
 fs.writeFileSync("subgraph.yaml", manifest);

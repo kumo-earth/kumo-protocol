@@ -764,6 +764,19 @@
         "internalType": "address",
         "name": "_asset",
         "type": "address"
+      }
+    ],
+    "name": "addNewAsset",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
       },
       {
         "internalType": "address",
@@ -1854,7 +1867,7 @@
       },
       {
         "internalType": "address",
-        "name": "_stabilityPoolManagerAddress",
+        "name": "_stabilityPoolAddress",
         "type": "address"
       },
       {
@@ -1953,19 +1966,6 @@
     "outputs": [
       {
         "internalType": "contract IStabilityPool",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "stabilityPoolManager",
-    "outputs": [
-      {
-        "internalType": "contract IStabilityPoolManager",
         "name": "",
         "type": "address"
       }

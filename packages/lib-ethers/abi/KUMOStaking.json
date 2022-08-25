@@ -208,7 +208,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "VSTGain",
+        "name": "KUSDGain",
         "type": "uint256"
       }
     ],
@@ -442,7 +442,7 @@
     "name": "kumoToken",
     "outputs": [
       {
-        "internalType": "contract IERC20Upgradeable",
+        "internalType": "contract IKUMOToken",
         "name": "",
         "type": "address"
       }
