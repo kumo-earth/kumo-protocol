@@ -24,7 +24,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_ETH",
+        "name": "_assetBalance",
         "type": "uint256"
       }
     ],
@@ -492,19 +492,6 @@
   },
   {
     "inputs": [],
-    "name": "stabilityPoolManager",
-    "outputs": [
-      {
-        "internalType": "contract IStabilityPoolManager",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "troveManagerAddress",
     "outputs": [
       {
@@ -515,9 +502,5 @@
     ],
     "stateMutability": "view",
     "type": "function"
-  },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
   }
 ]

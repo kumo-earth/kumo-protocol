@@ -59,6 +59,8 @@ contract('KUSDToken', async accounts => {
   let stabilityPool
   let troveManager
   let borrowerOperations
+  let hardhatTester
+  let erc2
 
   let tokenName
   let tokenVersion
@@ -70,6 +72,8 @@ contract('KUSDToken', async accounts => {
 
 
       const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
+      hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
+      erc20 = hardhatTester.erc20
 
       await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
       await deploymentHelper.connectKUMOContracts(KUMOContracts)
@@ -157,12 +161,12 @@ contract('KUSDToken', async accounts => {
 
     if (!withProxy) {
       it("approve(): reverts when spender param is address(0)", async () => {
-        const txPromise = kusdTokenTester.approve(ZERO_ADDRESS, 100, {from: bob})
+        const txPromise = kusdTokenTester.approve(erc20.address, 100, {from: bob})
         await assertAssert(txPromise)
       })
 
       it("approve(): reverts when owner param is address(0)", async () => {
-        const txPromise = kusdTokenTester.callInternalApprove(ZERO_ADDRESS, alice, dec(1000, 18), {from: bob})
+        const txPromise = kusdTokenTester.callInternalApprove(erc20.address, alice, dec(1000, 18), {from: bob})
         await assertAssert(txPromise)
       })
     }
@@ -213,7 +217,7 @@ contract('KUSDToken', async accounts => {
 
     it('transfer(): transferring to a blacklisted address reverts', async () => {
       await assertRevert(kusdTokenTester.transfer(kusdTokenTester.address, 1, { from: alice }))
-      await assertRevert(kusdTokenTester.transfer(ZERO_ADDRESS, 1, { from: alice }))
+      await assertRevert(kusdTokenTester.transfer(erc20.address, 1, { from: alice }))
       await assertRevert(kusdTokenTester.transfer(troveManager.address, 1, { from: alice }))
       await assertRevert(kusdTokenTester.transfer(stabilityPool.address, 1, { from: alice }))
       await assertRevert(kusdTokenTester.transfer(borrowerOperations.address, 1, { from: alice }))
@@ -286,7 +290,7 @@ contract('KUSDToken', async accounts => {
 
     it('transfer(): transferring to a blacklisted address reverts', async () => {
       await assertRevert(kusdTokenTester.transfer(kusdTokenTester.address, 1, { from: alice }))
-      await assertRevert(kusdTokenTester.transfer(ZERO_ADDRESS, 1, { from: alice }))
+      await assertRevert(kusdTokenTester.transfer(erc20.address, 1, { from: alice }))
       await assertRevert(kusdTokenTester.transfer(troveManager.address, 1, { from: alice }))
       await assertRevert(kusdTokenTester.transfer(stabilityPool.address, 1, { from: alice }))
       await assertRevert(kusdTokenTester.transfer(borrowerOperations.address, 1, { from: alice }))

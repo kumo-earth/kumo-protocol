@@ -11,7 +11,6 @@ const KUSDToken = artifacts.require("KUSDToken")
 const NonPayable = artifacts.require('NonPayable.sol')
 
 const ZERO = toBN('0')
-const ZERO_ADDRESS = th.ZERO_ADDRESS
 const maxBytes32 = th.maxBytes32
 
 const GAS_PRICE = 10000000
@@ -44,6 +43,8 @@ contract('StabilityPool', async accounts => {
   let borrowerOperations
   let kumoToken
   let communityIssuance
+  let hardhatTester
+  let erc20
 
   let gasPriceInWei
 
@@ -66,6 +67,8 @@ contract('StabilityPool', async accounts => {
         contracts.borrowerOperations.address
       )
       const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
+      hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
+      erc20 = hardhatTester.erc20
 
       priceFeed = contracts.priceFeedTestnet
       kusdToken = contracts.kusdToken
@@ -97,7 +100,7 @@ contract('StabilityPool', async accounts => {
       // --- TEST ---
 
       // provideToSP()
-      await stabilityPool.provideToSP(200, ZERO_ADDRESS, { from: alice })
+      await stabilityPool.provideToSP(200, erc20.address, { from: alice })
 
       // check KUSD balances after
       const stabilityPool_KUSD_After = await stabilityPool.getTotalKUSDDeposits()
@@ -692,16 +695,16 @@ contract('StabilityPool', async accounts => {
       const C_tagBefore = await getFrontEndTag(stabilityPool, C)
       const D_tagBefore = await getFrontEndTag(stabilityPool, D)
 
-      assert.equal(A_tagBefore, ZERO_ADDRESS)
-      assert.equal(B_tagBefore, ZERO_ADDRESS)
-      assert.equal(C_tagBefore, ZERO_ADDRESS)
-      assert.equal(D_tagBefore, ZERO_ADDRESS)
+      assert.equal(A_tagBefore, erc20.address)
+      assert.equal(B_tagBefore, erc20.address)
+      assert.equal(C_tagBefore, erc20.address)
+      assert.equal(D_tagBefore, erc20.address)
 
       // A, B, C, D provides to SP
       await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
       await stabilityPool.provideToSP(dec(2000, 18), frontEnd_2, { from: B })
       await stabilityPool.provideToSP(dec(3000, 18), frontEnd_3, { from: C })
-      await stabilityPool.provideToSP(dec(4000, 18), ZERO_ADDRESS, { from: D })  // transacts directly, no front end
+      await stabilityPool.provideToSP(dec(4000, 18), erc20.address, { from: D })  // transacts directly, no front end
 
       // Check A, B, C D have no front end tags
       const A_tagAfter = await getFrontEndTag(stabilityPool, A)
@@ -713,7 +716,7 @@ contract('StabilityPool', async accounts => {
       assert.equal(A_tagAfter, frontEnd_1)
       assert.equal(B_tagAfter, frontEnd_2)
       assert.equal(C_tagAfter, frontEnd_3)
-      assert.equal(D_tagAfter, ZERO_ADDRESS)
+      assert.equal(D_tagAfter, erc20.address)
     })
 
     it("provideToSP(), new deposit: depositor does not receive any KUMO rewards", async () => {
@@ -734,7 +737,7 @@ contract('StabilityPool', async accounts => {
 
       // A, B provide to SP
       await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(2000, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPool.provideToSP(dec(2000, 18), erc20.address, { from: B })
 
       // Get A, B, C KUMO balances after, and confirm they're still zero
       const A_KUMOBalance_After = await kumoToken.balanceOf(A)
@@ -767,7 +770,7 @@ contract('StabilityPool', async accounts => {
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // C deposits. A, and B earn KUMO
-      await stabilityPool.provideToSP(dec(5, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPool.provideToSP(dec(5, 18), erc20.address, { from: C })
 
       // Price drops, defaulter is liquidated, A, B and C earn ETH
       await priceFeed.setPrice(dec(105, 18))
@@ -794,7 +797,7 @@ contract('StabilityPool', async accounts => {
 
       // A, B provide to SP
       await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(200, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPool.provideToSP(dec(200, 18), erc20.address, { from: B })
 
       // Get A, B, C KUMO balances after, and confirm they have not changed
       const A_KUMOBalance_After = await kumoToken.balanceOf(A)
@@ -906,11 +909,11 @@ contract('StabilityPool', async accounts => {
 
       // --- SETUP ---
 
-      await stabilityPool.provideToSP(dec(2000, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPool.provideToSP(dec(2000, 18), erc20.address, { from: D })
 
       // fastforward time then  make an SP deposit, to make G > 0
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
-      await stabilityPool.provideToSP(dec(2000, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPool.provideToSP(dec(2000, 18), erc20.address, { from: D })
 
       // Perform a liquidation to make 0 < P < 1, and S > 0
       await priceFeed.setPrice(dec(105, 18))
@@ -998,9 +1001,9 @@ contract('StabilityPool', async accounts => {
 
       // A, B, C, D provide to SP
       const A_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: A, gasPrice: GAS_PRICE }))
-      const B_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(200, 18), ZERO_ADDRESS, { from: B, gasPrice: GAS_PRICE }))
+      const B_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(200, 18), erc20.address, { from: B, gasPrice: GAS_PRICE }))
       const C_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(300, 18), frontEnd_2, { from: C, gasPrice: GAS_PRICE }))
-      const D_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(400, 18), ZERO_ADDRESS, { from: D, gasPrice: GAS_PRICE }))
+      const D_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(400, 18), erc20.address, { from: D, gasPrice: GAS_PRICE }))
 
 
       // ETH balances before minus gas used
@@ -1039,15 +1042,15 @@ contract('StabilityPool', async accounts => {
       // --- SETUP ---
       // A, B, C, D provide to SP
       await stabilityPool.provideToSP(dec(105, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(105, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPool.provideToSP(dec(105, 18), erc20.address, { from: B })
       await stabilityPool.provideToSP(dec(105, 18), frontEnd_1, { from: C })
-      await stabilityPool.provideToSP(dec(105, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPool.provideToSP(dec(105, 18), erc20.address, { from: D })
 
       // time passes
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // B deposits. A,B,C,D earn KUMO
-      await stabilityPool.provideToSP(dec(5, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPool.provideToSP(dec(5, 18), erc20.address, { from: B })
 
       // Price drops, defaulter is liquidated, A, B, C, D earn ETH
       await priceFeed.setPrice(dec(105, 18))
@@ -1074,9 +1077,9 @@ contract('StabilityPool', async accounts => {
 
       // A, B, C, D provide to SP
       const A_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: A, gasPrice: GAS_PRICE, gasPrice: GAS_PRICE }))
-      const B_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(200, 18), ZERO_ADDRESS, { from: B, gasPrice: GAS_PRICE, gasPrice: GAS_PRICE  }))
+      const B_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(200, 18), erc20.address, { from: B, gasPrice: GAS_PRICE, gasPrice: GAS_PRICE  }))
       const C_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(300, 18), frontEnd_2, { from: C, gasPrice: GAS_PRICE, gasPrice: GAS_PRICE  }))
-      const D_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(400, 18), ZERO_ADDRESS, { from: D, gasPrice: GAS_PRICE, gasPrice: GAS_PRICE  }))
+      const D_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(400, 18), erc20.address, { from: D, gasPrice: GAS_PRICE, gasPrice: GAS_PRICE  }))
 
       // ETH balances before minus gas used
       const A_expectedBalance = A_ETHBalance_Before - A_GAS_Used;
@@ -1141,9 +1144,9 @@ contract('StabilityPool', async accounts => {
       // A, B, C, D, E provide to SP
       await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
       await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPool.provideToSP(dec(30, 18), erc20.address, { from: C })
       await stabilityPool.provideToSP(dec(40, 18), frontEnd_1, { from: D })
-      await stabilityPool.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: E })
+      await stabilityPool.provideToSP(dec(50, 18), erc20.address, { from: E })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -1163,9 +1166,9 @@ contract('StabilityPool', async accounts => {
       // Check deposits are still tagged with their original front end
       assert.equal(frontEndTag_A, frontEnd_1)
       assert.equal(frontEndTag_B, frontEnd_2)
-      assert.equal(frontEndTag_C, ZERO_ADDRESS)
+      assert.equal(frontEndTag_C, erc20.address)
       assert.equal(frontEndTag_D, frontEnd_1)
-      assert.equal(frontEndTag_E, ZERO_ADDRESS)
+      assert.equal(frontEndTag_E, erc20.address)
     })
 
     it("provideToSP(), topup: depositor receives KUMO rewards", async () => {
@@ -1179,7 +1182,7 @@ contract('StabilityPool', async accounts => {
       // A, B, C, provide to SP
       await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
       await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPool.provideToSP(dec(30, 18), erc20.address, { from: C })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -1191,7 +1194,7 @@ contract('StabilityPool', async accounts => {
       // A, B, C top up
       await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
       await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPool.provideToSP(dec(30, 18), erc20.address, { from: C })
 
       // Get KUMO balance after
       const A_KUMOBalance_After = await kumoToken.balanceOf(A)
@@ -1225,7 +1228,7 @@ contract('StabilityPool', async accounts => {
       const F3_KUMOBalance_Before = await kumoToken.balanceOf(frontEnd_3)
 
       // A, B, C top up  (front end param passed here is irrelevant)
-      await stabilityPool.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: A })  // provides no front end param
+      await stabilityPool.provideToSP(dec(10, 18), erc20.address, { from: A })  // provides no front end param
       await stabilityPool.provideToSP(dec(20, 18), frontEnd_1, { from: B })  // provides front end that doesn't match his tag
       await stabilityPool.provideToSP(dec(30, 18), frontEnd_3, { from: C }) // provides front end that matches his tag
 
@@ -1267,7 +1270,7 @@ contract('StabilityPool', async accounts => {
       const F3_Stake_Before = await stabilityPool.frontEndStakes(frontEnd_3)
 
       // A, B, C top up  (front end param passed here is irrelevant)
-      await stabilityPool.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: A })  // provides no front end param
+      await stabilityPool.provideToSP(dec(10, 18), erc20.address, { from: A })  // provides no front end param
       await stabilityPool.provideToSP(dec(20, 18), frontEnd_1, { from: B })  // provides front end that doesn't match his tag
       await stabilityPool.provideToSP(dec(30, 18), frontEnd_3, { from: C }) // provides front end that matches his tag
 
@@ -1309,7 +1312,7 @@ contract('StabilityPool', async accounts => {
       // fastforward time then make an SP deposit, to make G > 0
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-      await stabilityPool.provideToSP(await kusdToken.balanceOf(D), ZERO_ADDRESS, { from: D })
+      await stabilityPool.provideToSP(await kusdToken.balanceOf(D), erc20.address, { from: D })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
       await priceFeed.setPrice(dec(100, 18))
@@ -1384,9 +1387,9 @@ contract('StabilityPool', async accounts => {
       await kusdToken.transfer(D, dec(100, 18), { from: whale })
 
       txPromise_A = stabilityPool.provideToSP(0, frontEnd_1, { from: A })
-      txPromise_B = stabilityPool.provideToSP(0, ZERO_ADDRESS, { from: B })
+      txPromise_B = stabilityPool.provideToSP(0, erc20.address, { from: B })
       txPromise_C = stabilityPool.provideToSP(0, frontEnd_2, { from: C })
-      txPromise_D = stabilityPool.provideToSP(0, ZERO_ADDRESS, { from: D })
+      txPromise_D = stabilityPool.provideToSP(0, erc20.address, { from: D })
 
       await th.assertRevert(txPromise_A, 'StabilityPool: Amount must be non-zero')
       await th.assertRevert(txPromise_B, 'StabilityPool: Amount must be non-zero')
@@ -1406,7 +1409,7 @@ contract('StabilityPool', async accounts => {
       await stabilityPool.registerFrontEnd(dec(1, 18), { from: E })
       await stabilityPool.registerFrontEnd(dec(1, 18), { from: F })
 
-      const txPromise_C = stabilityPool.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: C })
+      const txPromise_C = stabilityPool.provideToSP(dec(10, 18), erc20.address, { from: C })
       const txPromise_E = stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: E })
       const txPromise_F = stabilityPool.provideToSP(dec(10, 18), F, { from: F })
       await th.assertRevert(txPromise_C, "StabilityPool: must not already be a registered front end")
@@ -2450,7 +2453,7 @@ contract('StabilityPool', async accounts => {
 
       // A and B provide to SP
       await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPool.provideToSP(dec(10000, 18), erc20.address, { from: B })
 
       const G_Before = await stabilityPool.epochToScaleToG(0, 0)
 
@@ -2490,9 +2493,9 @@ contract('StabilityPool', async accounts => {
       // A, B, C, D, E provide to SP
       await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
       await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPool.provideToSP(dec(30, 18), erc20.address, { from: C })
       await stabilityPool.provideToSP(dec(40, 18), frontEnd_1, { from: D })
-      await stabilityPool.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: E })
+      await stabilityPool.provideToSP(dec(50, 18), erc20.address, { from: E })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -2512,9 +2515,9 @@ contract('StabilityPool', async accounts => {
       // Check deposits are still tagged with their original front end
       assert.equal(frontEndTag_A, frontEnd_1)
       assert.equal(frontEndTag_B, frontEnd_2)
-      assert.equal(frontEndTag_C, ZERO_ADDRESS)
+      assert.equal(frontEndTag_C, erc20.address)
       assert.equal(frontEndTag_D, frontEnd_1)
-      assert.equal(frontEndTag_E, ZERO_ADDRESS)
+      assert.equal(frontEndTag_E, erc20.address)
     })
 
     it("withdrawFromSP(), partial withdrawal: depositor receives KUMO rewards", async () => {
@@ -2528,7 +2531,7 @@ contract('StabilityPool', async accounts => {
       // A, B, C, provide to SP
       await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
       await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPool.provideToSP(dec(30, 18), erc20.address, { from: C })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -2658,7 +2661,7 @@ contract('StabilityPool', async accounts => {
       // fastforward time then make an SP deposit, to make G > 0
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-      await stabilityPool.provideToSP(dec(1000, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPool.provideToSP(dec(1000, 18), erc20.address, { from: D })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
       await priceFeed.setPrice(dec(105, 18))
@@ -2737,9 +2740,9 @@ contract('StabilityPool', async accounts => {
 
       // A, B, C, D make their initial deposits
       await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20000, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPool.provideToSP(dec(20000, 18), erc20.address, { from: B })
       await stabilityPool.provideToSP(dec(30000, 18), frontEnd_2, { from: C })
-      await stabilityPool.provideToSP(dec(40000, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPool.provideToSP(dec(40000, 18), erc20.address, { from: D })
 
       // Check deposits are tagged with correct front end 
       const A_tagBefore = await getFrontEndTag(stabilityPool, A)
@@ -2748,9 +2751,9 @@ contract('StabilityPool', async accounts => {
       const D_tagBefore = await getFrontEndTag(stabilityPool, D)
 
       assert.equal(A_tagBefore, frontEnd_1)
-      assert.equal(B_tagBefore, ZERO_ADDRESS)
+      assert.equal(B_tagBefore, erc20.address)
       assert.equal(C_tagBefore, frontEnd_2)
-      assert.equal(D_tagBefore, ZERO_ADDRESS)
+      assert.equal(D_tagBefore, erc20.address)
 
       // All depositors make full withdrawal
       await stabilityPool.withdrawFromSP(dec(10000, 18), { from: A })
@@ -2764,10 +2767,10 @@ contract('StabilityPool', async accounts => {
       const C_tagAfter = await getFrontEndTag(stabilityPool, C)
       const D_tagAfter = await getFrontEndTag(stabilityPool, D)
 
-      assert.equal(A_tagAfter, ZERO_ADDRESS)
-      assert.equal(B_tagAfter, ZERO_ADDRESS)
-      assert.equal(C_tagAfter, ZERO_ADDRESS)
-      assert.equal(D_tagAfter, ZERO_ADDRESS)
+      assert.equal(A_tagAfter, erc20.address)
+      assert.equal(B_tagAfter, erc20.address)
+      assert.equal(C_tagAfter, erc20.address)
+      assert.equal(D_tagAfter, erc20.address)
     })
 
     it("withdrawFromSP(), full withdrawal: zero's depositor's snapshots", async () => {
@@ -2818,9 +2821,9 @@ contract('StabilityPool', async accounts => {
 
       // A, B, C, D make their initial deposits
       await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20000, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPool.provideToSP(dec(20000, 18), erc20.address, { from: B })
       await stabilityPool.provideToSP(dec(30000, 18), frontEnd_2, { from: C })
-      await stabilityPool.provideToSP(dec(40000, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPool.provideToSP(dec(40000, 18), erc20.address, { from: D })
 
       // Check deposits snapshots are non-zero
 
@@ -3384,7 +3387,7 @@ contract('StabilityPool', async accounts => {
       
       // A and B provide to SP
       await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPool.provideToSP(dec(10000, 18), erc20.address, { from: B })
 
       // Defaulter opens a trove, price drops, defaulter gets liquidated
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -3432,7 +3435,7 @@ contract('StabilityPool', async accounts => {
       // A, B, C, D, E provide to SP
       await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
       await stabilityPool.provideToSP(dec(20000, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30000, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPool.provideToSP(dec(30000, 18), erc20.address, { from: C })
 
       // Defaulter opens a trove, price drops, defaulter gets liquidated
       await openTrove({  ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -3462,7 +3465,7 @@ contract('StabilityPool', async accounts => {
       // Check deposits are still tagged with their original front end
       assert.equal(frontEndTag_A, frontEnd_1)
       assert.equal(frontEndTag_B, frontEnd_2)
-      assert.equal(frontEndTag_C, ZERO_ADDRESS)
+      assert.equal(frontEndTag_C, erc20.address)
     })
 
     it("withdrawETHGainToTrove(), eligible deposit: depositor receives KUMO rewards", async () => {
@@ -3476,7 +3479,7 @@ contract('StabilityPool', async accounts => {
       // A, B, C, provide to SP
       await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
       await stabilityPool.provideToSP(dec(2000, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(3000, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPool.provideToSP(dec(3000, 18), erc20.address, { from: C })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -3648,7 +3651,7 @@ contract('StabilityPool', async accounts => {
       // fastforward time then make an SP deposit, to make G > 0
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-      await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPool.provideToSP(dec(10000, 18), erc20.address, { from: D })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
       await priceFeed.setPrice(dec(105, 18))
@@ -3732,14 +3735,14 @@ contract('StabilityPool', async accounts => {
       
       // A, B, C, D provide to SP
       await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPool.provideToSP(dec(20, 18), erc20.address, { from: B })
       await stabilityPool.provideToSP(dec(30, 18), frontEnd_2, { from: C })
-      await stabilityPool.provideToSP(dec(40, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPool.provideToSP(dec(40, 18), erc20.address, { from: D })
 
       // fastforward time, and E makes a deposit, creating KUMO rewards for all
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
       await openTrove({ extraKUSDAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
-      await stabilityPool.provideToSP(dec(3000, 18), ZERO_ADDRESS, { from: E })
+      await stabilityPool.provideToSP(dec(3000, 18), erc20.address, { from: E })
 
       // Confirm A, B, C have zero ETH gain
       assert.equal(await stabilityPool.getDepositorETHGain(A), '0')
@@ -3825,7 +3828,7 @@ contract('StabilityPool', async accounts => {
       
       // C, E provides to SP
       await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: C })
-      await stabilityPool.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: E })
+      await stabilityPool.provideToSP(dec(10, 18), erc20.address, { from: E })
 
       const txPromise_C = stabilityPool.registerFrontEnd(dec(1, 18), { from: C })
       const txPromise_E = stabilityPool.registerFrontEnd(dec(1, 18), { from: E })

@@ -29,16 +29,15 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     using SafeMath for uint256;
 
     string public constant NAME = "ActivePool";
-    address constant ETH_REF_ADDRESS = address(0);
 
     address public borrowerOperationsAddress;
     address public troveManagerAddress;
     address public stabilityPoolAddress;
     address public defaultPoolAddress;
     uint256 internal ETH; // deposited ether tracker
-    IDefaultPool public defaultPool;
+    // IDefaultPool public defaultPool;
     // uint256 internal KUSDDebt;
-    ICollSurplusPool public collSurplusPool;
+    // ICollSurplusPool public collSurplusPool;
     // IStabilityPoolManager public stabilityPoolManager;
     // --- Events ---
 
@@ -75,7 +74,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;
-        // stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);
+        // stabilityPoolManager = IStabilityPoolManager(_stabilityManagerAddress);
         stabilityPoolAddress = _stabilityPoolAddress;
         defaultPoolAddress = _defaultPoolAddress;
 
@@ -138,7 +137,6 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         }
 
         IERC20Upgradeable(_asset).safeTransfer(_account, safetyTransferAmount);
-
         if (isERC20DepositContract(_account)) {
             IDeposit(_account).receivedERC20(_asset, _amount);
         }
@@ -148,9 +146,10 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     }
 
     function isERC20DepositContract(address _account) private view returns (bool) {
-        return (_account == address(defaultPool) ||
-            _account == address(collSurplusPool) ||
-            _account == address(stabilityPoolAddress));
+        // return (_account == defaultPoolAddress ||
+        //     _account == collSurplusPoolAddress ||
+        //     _account == stabilityPoolAddress);
+        return (_account == defaultPoolAddress || _account == stabilityPoolAddress);
     }
 
     // function sendAsset(address _asset, address _account, uint256 _amount) external override {
@@ -187,7 +186,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
 
     modifier callerIsBorrowerOperationOrDefaultPool() {
         require(
-            msg.sender == borrowerOperationsAddress || msg.sender == address(defaultPool),
+            msg.sender == borrowerOperationsAddress || msg.sender == defaultPoolAddress,
             "ActivePool: Caller is neither BO nor Default Pool"
         );
 
@@ -254,4 +253,12 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
             collStakingManager.unstakeCollaterals(_asset, _amount);
         }
     }
+
+    // --- Fallback function ---
+
+	// receive(address _asset, uint256 _amount) external payable callerIsBorrowerOperationOrDefaultPool {
+	// 	assetsBalance[_asset] += _amount;
+    //     _stakeCollateral(_asset, _amount);
+    //     emit ActivePoolAssetBalanceUpdated(_asset, assetsBalance[_asset]);
+	// }
 }

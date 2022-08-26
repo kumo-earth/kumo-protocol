@@ -307,7 +307,7 @@ contract('SortedTroves', async accounts => {
       })
 
       it('insert(): fails if id is zero', async () => {
-        await th.assertRevert(sortedTrovesTester.insert(th.ZERO_ADDRESS, 1, alice, alice), 'SortedTroves: Id cannot be zero')
+        await th.assertRevert(sortedTrovesTester.insert(th.erc20.address, 1, alice, alice), 'SortedTroves: Id cannot be zero')
       })
 
       it('insert(): fails if NICR is zero', async () => {
@@ -331,9 +331,9 @@ contract('SortedTroves', async accounts => {
 
       it('findInsertPosition(): No prevId for hint - ascend list starting from nextId, result is after the tail', async () => {
         await sortedTrovesTester.insert(alice, 1, alice, alice)
-        const pos = await sortedTroves.findInsertPosition(1, th.ZERO_ADDRESS, alice)
+        const pos = await sortedTroves.findInsertPosition(1, th.erc20.address, alice)
         assert.equal(pos[0], alice, 'prevId result should be nextId param')
-        assert.equal(pos[1], th.ZERO_ADDRESS, 'nextId result should be zero')
+        assert.equal(pos[1], th.erc20.address, 'nextId result should be zero')
       })
     })
   })

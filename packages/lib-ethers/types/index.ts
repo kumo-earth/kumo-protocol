@@ -24,7 +24,6 @@ interface ActivePoolCalls {
   isOwner(_overrides?: CallOverrides): Promise<boolean>;
   owner(_overrides?: CallOverrides): Promise<string>;
   stabilityPoolAddress(_overrides?: CallOverrides): Promise<string>;
-  stabilityPoolManager(_overrides?: CallOverrides): Promise<string>;
   troveManagerAddress(_overrides?: CallOverrides): Promise<string>;
 }
 
@@ -43,7 +42,7 @@ export interface ActivePool
   extends _TypedKumoContract<ActivePoolCalls, ActivePoolTransactions> {
   readonly filters: {
     ActivePoolAddressChanged(_newActivePoolAddress?: null): EventFilter;
-    ActivePoolAssetBalanceUpdated(_asset?: null, _ETH?: null): EventFilter;
+    ActivePoolAssetBalanceUpdated(_asset?: null, _assetBalance?: null): EventFilter;
     ActivePoolKUSDDebtUpdated(_asset?: null, _KUSDDebt?: null): EventFilter;
     AssetSent(_to?: null, _asset?: string | null, _amount?: null): EventFilter;
     BorrowerOperationsAddressChanged(_newBorrowerOperationsAddress?: null): EventFilter;
@@ -55,7 +54,7 @@ export interface ActivePool
     TroveManagerAddressChanged(_newTroveManagerAddress?: null): EventFilter;
   };
   extractEvents(logs: Log[], name: "ActivePoolAddressChanged"): _TypedLogDescription<{ _newActivePoolAddress: string }>[];
-  extractEvents(logs: Log[], name: "ActivePoolAssetBalanceUpdated"): _TypedLogDescription<{ _asset: string; _ETH: BigNumber }>[];
+  extractEvents(logs: Log[], name: "ActivePoolAssetBalanceUpdated"): _TypedLogDescription<{ _asset: string; _assetBalance: BigNumber }>[];
   extractEvents(logs: Log[], name: "ActivePoolKUSDDebtUpdated"): _TypedLogDescription<{ _asset: string; _KUSDDebt: BigNumber }>[];
   extractEvents(logs: Log[], name: "AssetSent"): _TypedLogDescription<{ _to: string; _asset: string; _amount: BigNumber }>[];
   extractEvents(logs: Log[], name: "BorrowerOperationsAddressChanged"): _TypedLogDescription<{ _newBorrowerOperationsAddress: string }>[];
@@ -630,6 +629,7 @@ interface SortedTrovesCalls {
 }
 
 interface SortedTrovesTransactions {
+  addNewAsset(_asset: string, _overrides?: Overrides): Promise<void>;
   insert(_asset: string, _id: string, _NICR: BigNumberish, _prevId: string, _nextId: string, _overrides?: Overrides): Promise<void>;
   reInsert(_asset: string, _id: string, _newNICR: BigNumberish, _prevId: string, _nextId: string, _overrides?: Overrides): Promise<void>;
   remove(_asset: string, _id: string, _overrides?: Overrides): Promise<void>;
@@ -835,6 +835,7 @@ interface TroveManagerCalls {
 }
 
 interface TroveManagerTransactions {
+  addNewAsset(_asset: string, _overrides?: Overrides): Promise<void>;
   addTroveOwnerToArray(_asset: string, _borrower: string, _overrides?: Overrides): Promise<BigNumber>;
   applyPendingRewards(_asset: string, _borrower: string, _overrides?: Overrides): Promise<void>;
   batchLiquidateTroves(_asset: string, _troveArray: string[], _overrides?: Overrides): Promise<void>;
@@ -991,17 +992,19 @@ interface KumoParametersCalls {
   _100pct(_overrides?: CallOverrides): Promise<BigNumber>;
   activePool(_overrides?: CallOverrides): Promise<string>;
   defaultPool(_overrides?: CallOverrides): Promise<string>;
+  hasCollateralConfigured(arg0: string, _overrides?: CallOverrides): Promise<boolean>;
   isInitialized(_overrides?: CallOverrides): Promise<boolean>;
   isOwner(_overrides?: CallOverrides): Promise<boolean>;
   owner(_overrides?: CallOverrides): Promise<string>;
   priceFeed(_overrides?: CallOverrides): Promise<string>;
   redemptionBlock(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  stabilityPool(_overrides?: CallOverrides): Promise<string>;
 }
 
 interface KumoParametersTransactions {
   removeRedemptionBlock(_asset: string, _overrides?: Overrides): Promise<void>;
   sanitizeParameters(_asset: string, _overrides?: Overrides): Promise<void>;
-  setAddresses(_activePool: string, _defaultPool: string, _priceFeed: string, _overrides?: Overrides): Promise<void>;
+  setAddresses(_activePool: string, _defaultPool: string, _priceFeed: string, _stabilityPool: string, _overrides?: Overrides): Promise<void>;
   setAsDefault(_asset: string, _overrides?: Overrides): Promise<void>;
   setBorrowingFeeFloor(_asset: string, borrowingFeeFloor: BigNumberish, _overrides?: Overrides): Promise<void>;
   setCCR(_asset: string, newCCR: BigNumberish, _overrides?: Overrides): Promise<void>;
