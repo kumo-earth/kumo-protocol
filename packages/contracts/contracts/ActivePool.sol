@@ -70,7 +70,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;
-        // stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);
+        // stabilityPoolManager = IStabilityPoolManager(_stabilityManagerAddress);
         stabilityPoolAddress = _stabilityPoolAddress;
         defaultPoolAddress = _defaultPoolAddress;
         collSurplusPoolAddress = _collSurplusPoolAddress;
@@ -236,4 +236,12 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
             collStakingManager.unstakeCollaterals(_asset, _amount);
         }
     }
+
+    // --- Fallback function ---
+
+    // receive(address _asset, uint256 _amount) external payable callerIsBorrowerOperationOrDefaultPool {
+    // 	assetsBalance[_asset] += _amount;
+    //     _stakeCollateral(_asset, _amount);
+    //     emit ActivePoolAssetBalanceUpdated(_asset, assetsBalance[_asset]);
+    // }
 }

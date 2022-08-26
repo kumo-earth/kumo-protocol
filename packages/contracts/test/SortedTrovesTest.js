@@ -351,7 +351,7 @@ contract('SortedTroves - TEST', async accounts => {
         await sortedTrovesTester.insert(assetAddress1, alice, 1, alice, alice)
         const pos = await sortedTroves.findInsertPosition(assetAddress1, 1, th.ZERO_ADDRESS, alice)
         assert.equal(pos[0], alice, 'prevId result should be nextId param')
-        assert.equal(pos[1], th.ZERO_ADDRESS, 'nextId result should be zero')
+        assert.equal(pos[1], th.erc20.address, 'nextId result should be zero')
       })
     })
   })

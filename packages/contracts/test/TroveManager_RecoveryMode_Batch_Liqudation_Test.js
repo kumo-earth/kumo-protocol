@@ -66,13 +66,13 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
 
   context('Batch liquidations', () => {
     const setup = async () => {
-      const { collateral: A_coll, totalDebt: A_totalDebt } = await openTrove({ asset: assetAddress1,  ICR: toBN(dec(296, 16)), extraParams: { from: alice } })
-      const { collateral: B_coll, totalDebt: B_totalDebt } = await openTrove({ asset: assetAddress1,  ICR: toBN(dec(280, 16)), extraParams: { from: bob } })
-      const { collateral: C_coll, totalDebt: C_totalDebt } = await openTrove({ asset: assetAddress1,  ICR: toBN(dec(150, 16)), extraParams: { from: carol } })
+      const { collateral: A_coll, totalDebt: A_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(296, 16)), extraParams: { from: alice } })
+      const { collateral: B_coll, totalDebt: B_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(280, 16)), extraParams: { from: bob } })
+      const { collateral: C_coll, totalDebt: C_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: carol } })
 
       const totalLiquidatedDebt = A_totalDebt.add(B_totalDebt).add(C_totalDebt)
 
-      await openTrove({ asset: assetAddress1,  ICR: toBN(dec(340, 16)), extraKUSDAmount: totalLiquidatedDebt, extraParams: { from: whale } })
+      await openTrove({ asset: assetAddress1, ICR: toBN(dec(340, 16)), extraKUSDAmount: totalLiquidatedDebt, extraParams: { from: whale } })
       await stabilityPool.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale })
 
       // Price drops
@@ -117,9 +117,9 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       assert.equal(liquidationEvents.length, 3, 'Not enough liquidations')
 
       // Confirm all troves removed
-      assert.isFalse(await sortedTroves.contains(assetAddress1,alice))
-      assert.isFalse(await sortedTroves.contains(assetAddress1,bob))
-      assert.isFalse(await sortedTroves.contains(assetAddress1,carol))
+      assert.isFalse(await sortedTroves.contains(assetAddress1, alice))
+      assert.isFalse(await sortedTroves.contains(assetAddress1, bob))
+      assert.isFalse(await sortedTroves.contains(assetAddress1, carol))
 
       // Confirm troves have status 'closed by liquidation' (Status enum element idx 3)
       assert.equal((await troveManager.Troves(alice, assetAddress1))[TroveData.status], '3')
@@ -141,8 +141,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       const tx = await troveManager.batchLiquidateTroves(assetAddress1, [alice, carol])
 
       // Confirm all troves removed
-      assert.isFalse(await sortedTroves.contains(assetAddress1,alice))
-      assert.isFalse(await sortedTroves.contains(assetAddress1,carol))
+      assert.isFalse(await sortedTroves.contains(assetAddress1, alice))
+      assert.isFalse(await sortedTroves.contains(assetAddress1, carol))
 
       // Confirm troves have status 'closed by liquidation' (Status enum element idx 3)
       assert.equal((await troveManager.Troves(alice, assetAddress1))[TroveData.status], '3')
@@ -164,13 +164,13 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
     })
 
     it('A trove over TCR is not liquidated', async () => {
-      const { collateral: A_coll, totalDebt: A_totalDebt } = await openTrove({ asset: assetAddress1,  ICR: toBN(dec(280, 16)), extraParams: { from: alice } })
-      const { collateral: B_coll, totalDebt: B_totalDebt } = await openTrove({ asset: assetAddress1,  ICR: toBN(dec(276, 16)), extraParams: { from: bob } })
-      const { collateral: C_coll, totalDebt: C_totalDebt } = await openTrove({ asset: assetAddress1,  ICR: toBN(dec(150, 16)), extraParams: { from: carol } })
+      const { collateral: A_coll, totalDebt: A_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(280, 16)), extraParams: { from: alice } })
+      const { collateral: B_coll, totalDebt: B_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(276, 16)), extraParams: { from: bob } })
+      const { collateral: C_coll, totalDebt: C_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: carol } })
 
       const totalLiquidatedDebt = A_totalDebt.add(B_totalDebt).add(C_totalDebt)
 
-      await openTrove({ asset: assetAddress1,  ICR: toBN(dec(310, 16)), extraKUSDAmount: totalLiquidatedDebt, extraParams: { from: whale } })
+      await openTrove({ asset: assetAddress1, ICR: toBN(dec(310, 16)), extraKUSDAmount: totalLiquidatedDebt, extraParams: { from: whale } })
       await stabilityPool.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale })
 
       // Price drops
@@ -196,9 +196,9 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       assert.equal(liquidationEvents.length, 1, 'Not enough liquidations')
 
       // Confirm only Bob’s trove removed
-      assert.isTrue(await sortedTroves.contains(assetAddress1,alice))
-      assert.isFalse(await sortedTroves.contains(assetAddress1,bob))
-      assert.isTrue(await sortedTroves.contains(assetAddress1,carol))
+      assert.isTrue(await sortedTroves.contains(assetAddress1, alice))
+      assert.isFalse(await sortedTroves.contains(assetAddress1, bob))
+      assert.isTrue(await sortedTroves.contains(assetAddress1, carol))
 
       // Confirm troves have status 'closed by liquidation' (Status enum element idx 3)
       assert.equal((await troveManager.Troves(bob, assetAddress1))[TroveData.status], '3')
@@ -210,12 +210,12 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
 
   context('Sequential liquidations', () => {
     const setup = async () => {
-      const { collateral: A_coll, totalDebt: A_totalDebt } = await openTrove({ asset: assetAddress1,  ICR: toBN(dec(299, 16)), extraParams: { from: alice } })
-      const { collateral: B_coll, totalDebt: B_totalDebt } = await openTrove({ asset: assetAddress1,  ICR: toBN(dec(298, 16)), extraParams: { from: bob } })
+      const { collateral: A_coll, totalDebt: A_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(299, 16)), extraParams: { from: alice } })
+      const { collateral: B_coll, totalDebt: B_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(298, 16)), extraParams: { from: bob } })
 
       const totalLiquidatedDebt = A_totalDebt.add(B_totalDebt)
 
-      await openTrove({ asset: assetAddress1,  ICR: toBN(dec(300, 16)), extraKUSDAmount: totalLiquidatedDebt, extraParams: { from: whale } })
+      await openTrove({ asset: assetAddress1, ICR: toBN(dec(300, 16)), extraKUSDAmount: totalLiquidatedDebt, extraParams: { from: whale } })
       await stabilityPool.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale })
 
       // Price drops
@@ -257,8 +257,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       assert.equal(liquidationEvents.length, 2, 'Not enough liquidations')
 
       // Confirm all troves removed
-      assert.isFalse(await sortedTroves.contains(assetAddress1,alice))
-      assert.isFalse(await sortedTroves.contains(assetAddress1,bob))
+      assert.isFalse(await sortedTroves.contains(assetAddress1, alice))
+      assert.isFalse(await sortedTroves.contains(assetAddress1, bob))
 
       // Confirm troves have status 'closed by liquidation' (Status enum element idx 3)
       assert.equal((await troveManager.Troves(alice, assetAddress1))[TroveData.status], '3')

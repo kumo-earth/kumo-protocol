@@ -59,11 +59,15 @@ contract('During the initial lockup period', async accounts => {
 
   let oneYearFromSystemDeployment
   let twoYearsFromSystemDeployment
+  let hardhatTester
+  let erc20 
 
   beforeEach(async () => {
     // Deploy all contracts from the first account
     coreContracts = await deploymentHelper.deployKumoCore()
     KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
+    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
+    erc20 = hardhatTester.erc20
 
     kumoStaking = KUMOContracts.kumoStaking
     kumoToken = KUMOContracts.kumoToken
@@ -422,7 +426,7 @@ contract('During the initial lockup period', async accounts => {
 
       // Check KUMOToken address not registered
       const registeredKUMOTokenAddr = await LCFNew.kumoTokenAddress()
-      assert.equal(registeredKUMOTokenAddr, ZERO_ADDRESS)
+      assert.equal(registeredKUMOTokenAddr, erc20.address)
 
       const tx = LCFNew.deployLockupContract(A, oneYearFromSystemDeployment, { from: F })
       await assertRevert(tx)

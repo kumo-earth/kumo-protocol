@@ -35,6 +35,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
   let KUMOContracts
   let hardhatTester
   let erc20
+  let assetAddress1
 
   let kumoStaking
   let kumoToken
@@ -64,13 +65,27 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     communityIssuance = KUMOContracts.communityIssuance
     lockupContractFactory = KUMOContracts.lockupContractFactory
     erc20 = hardhatTester.erc20
+    assetAddress1 = erc20.address
 
     await deploymentHelper.connectKUMOContracts(KUMOContracts)
     await deploymentHelper.connectCoreContracts(coreContracts, KUMOContracts)
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, coreContracts)
 
+    await deploymentHelper.addNewAssetToSystem(coreContracts, KUMOContracts, assetAddress1)
+
+    // Mint token to each acccount
+    let index = 0;
+    for (const acc of accounts) {
+    // await vstaToken.approve(vstaStaking.address, await erc20Asset1.balanceOf(acc), { from: acc })
+      await erc20.mint(acc, await web3.eth.getBalance(acc))
+      index++;
+    
+    if (index >= 20)
+      break;
+    }
+
     for (account of accounts.slice(0, 10)) {
-      await th.openTrove(coreContracts, { extraKUSDAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
+      await th.openTrove(coreContracts, { asset: assetAddress1, extraKUSDAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
     }
 
     const expectedCISupplyCap = '32000000000000000000000000' // 32mil
@@ -268,9 +283,10 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("fallback(): reverts when called by an account that is not Borrower Operations nor Default Pool", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await web3.eth.sendTransaction({ from: alice, to: activePool.address, value: 100 })
+        const txAlice = await web3.eth.sendTransaction({from: alice, to: activePool.address, value: 100 })
         
       } catch (err) {
+        console.log("ERROR: ", err.message)
         assert.include(err.message, "revert")
         assert.include(err.message, "ActivePool: Caller is neither BO nor Default Pool")
       }
@@ -321,6 +337,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
         const txAlice = await web3.eth.sendTransaction({ from: alice, to: defaultPool.address, value: 100 })
         
       } catch (err) {
+        console.log(err.message)
         assert.include(err.message, "revert")
         assert.include(err.message, "DefaultPool: Caller is not the ActivePool")
       }

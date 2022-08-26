@@ -46,7 +46,7 @@ contract('All Kumo functions with onlyOwner modifier', async accounts => {
   })
 
   const testZeroAddress = async (contract, params, method = 'setAddresses', skip = 0) => {
-    await testWrongAddress(contract, params, th.ZERO_ADDRESS, method, skip, 'Account cannot be zero address')
+    await testWrongAddress(contract, params, th.erc20.address, method, skip, 'Account cannot be zero address')
   }
   const testNonContractAddress = async (contract, params, method = 'setAddresses', skip = 0) => {
     await testWrongAddress(contract, params, bob, method, skip, 'Account code size cannot be zero')
