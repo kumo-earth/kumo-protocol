@@ -407,7 +407,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         contractsCache.troveManager.applyPendingRewards(vars.asset, _borrower);
 
         // Get the collChange based on whether or not ETH was sent in the transaction
-        (vars.collChange, vars.isCollIncrease) = _getCollChange(msg.value, _collWithdrawal);
+        (vars.collChange, vars.isCollIncrease) = _getCollChange(_assetSent, _collWithdrawal);
 
         vars.netDebtChange = _KUSDChange;
 
@@ -707,7 +707,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         uint256 _amountSent
     ) internal view {
         require(
-            msg.value != 0 || _collWithdrawal != 0 || _KUSDChange != 0 || _amountSent != 0,
+             _collWithdrawal != 0 || _KUSDChange != 0 || _amountSent != 0,
             "BorrowerOps: There must be either a collateral change or a debt change"
         );
     }
