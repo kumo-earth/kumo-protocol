@@ -517,15 +517,14 @@ class TestHelper {
     return { upperHint, lowerHint }
   }
 
-  static async getEntireCollAndDebt(contracts, account) {
+  static async getEntireCollAndDebt(contracts, asset, account) {
     // console.log(`account: ${account}`)
-    const rawColl = (await contracts.troveManager.Troves(account))[1]
-    const rawDebt = (await contracts.troveManager.Troves(account))[0]
-    const pendingETHReward = await contracts.troveManager.getPendingETHReward(account)
-    const pendingKUSDDebtReward = await contracts.troveManager.getPendingKUSDDebtReward(account)
-    const entireColl = rawColl.add(pendingETHReward)
+    const rawColl = (await contracts.troveManager.Troves(account, asset))[TroveData.coll]
+    const rawDebt = (await contracts.troveManager.Troves(account, asset))[TroveData.debt]
+    const pendingReward = await contracts.troveManager.getPendingReward(asset, account)
+    const pendingKUSDDebtReward = await contracts.troveManager.getPendingKUSDDebtReward(asset, account)
+    const entireColl = rawColl.add(pendingReward)
     const entireDebt = rawDebt.add(pendingKUSDDebtReward)
-
     return { entireColl, entireDebt }
   }
 

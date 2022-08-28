@@ -140,7 +140,7 @@ contract('TroveManager', async accounts => {
     await troveManager.liquidate(assetAddress1, alice, { from: owner });
 
     // check the Trove is successfully closed, and removed from sortedList
-    const status = (await troveManager.Troves(alice, assetAddress1))[4]
+    const status = (await troveManager.Troves(alice, assetAddress1))[TroveData.status]
     assert.equal(status, 3)  // status enum 3 corresponds to "Closed by liquidation"
     const alice_Trove_isInSortedList_Asset1 = await sortedTroves.contains(assetAddress1, alice)
     assert.isFalse(alice_Trove_isInSortedList_Asset1)
@@ -4273,9 +4273,6 @@ contract('TroveManager', async accounts => {
       )
 
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
-      // await borrowerOperations.adjustTrove(th._100pct, 0, kusdAmount, true, alice, alice, { from: alice, value: kusdAmount.mul(mv._1e18BN).div(price) })
-      console.log("kusdAmount: ", kusdAmount.toString())
-      console.log("value:      ", kusdAmount.mul(mv._1e18BN).div(price).toString())
       await borrowerOperations.adjustTrove(assetAddress1, kusdAmount.mul(mv._1e18BN).div(price), th._100pct, 0, kusdAmount, true, alice, alice, { from: alice })
 
     }
