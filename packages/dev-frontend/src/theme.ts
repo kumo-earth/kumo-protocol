@@ -7,11 +7,12 @@ const baseColors = {
   green: "#28c081",
   yellow: "#fd9d28",
   red: "#dc2c10",
-  lightRed: "#ff755f"
+  lightRed: "#ff755f",
+  magenta: "#da357a"
 };
 
 const colors = {
-  primary: baseColors.blue,
+  primary: baseColors.magenta,
   secondary: baseColors.purple,
   accent: baseColors.cyan,
 
@@ -24,7 +25,7 @@ const colors = {
 
   text: "#293147",
   background: "white",
-  muted: "#eaebed"
+  muted: "#e6e6e6"
 };
 
 const buttonBase: ThemeUIStyleObject = {
@@ -85,7 +86,7 @@ const cardGapY = [3, 3, 4];
 
 const card: ThemeUIStyleObject = {
   position: "relative",
-  mt: ['0 !important'],
+  mt: ["0 !important"],
   border: 1,
   boxShadow: [1, null, 2]
 };
@@ -171,7 +172,7 @@ const theme: Theme = {
 
     light: 200,
     medium: 500,
-    bold: 600
+    bold: 700
   },
 
   lineHeights: {
@@ -261,17 +262,17 @@ const theme: Theme = {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-
         height: "56px",
+        borderRadius: "20px 20px 0 0",
 
-        pl: 3,
+        pl: 4,
         py: 2,
         pr: 2,
 
-        bg: "muted",
-
-        fontSize: cardHeadingFontSize
-      }
+        fontSize: 3,
+        fontWeight: "bold"
+      },
+      
     },
 
     info: {
@@ -290,6 +291,20 @@ const theme: Theme = {
       mt: "72px",
       height: "80%",
       overflowY: "scroll"
+    },
+    base: {
+      variant: 'cards.primary',
+      bg: "transparent",
+      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
+      borderRadius: "20px",
+      maxWidth: 450,
+      maxHeight: "380px",
+      position: "relative",
+
+      "> h2": {
+        variant: 'cards.primary.> h2',
+        borderBottom: "1px solid #E6E6E6"
+      }
     },
 
     tooltip: {
@@ -335,14 +350,10 @@ const theme: Theme = {
       justifyContent: "space-between",
       alignItems: "stretch",
 
-      position: ["fixed", "relative"],
-      // width: "100vw",
-      top: 0,
-      zIndex: 1,
-
-      px: [2, "12px", "12px", 5],
-      py: [2, "12px", "12px"],
-
+      pt: 4,
+      pl: 4,
+      
+      height: "110px",
       // ...headerGradient,
       boxShadow: [1, "none"]
     },
@@ -360,12 +371,10 @@ const theme: Theme = {
     },
 
     main: {
+      height: "calc(100vh - 110px)",
       width: "100%",
-      maxWidth: "912px",
-      mx: "auto",
-      mt: ["40px", 0],
-      mb: ["40px", "40px"],
-      px: cardGapX
+      overflow: "auto",
+      px: 5
     },
 
     columns: {
@@ -429,6 +438,27 @@ const theme: Theme = {
       minWidth: "128px"
     },
 
+    sideBarOverlay: {
+      display: ["none", "flex"],
+      border: 1,
+      borderColor: "muted",
+      height: "100%",
+      width: "20vw"
+    },
+    sideBar: {
+      display: "flex",
+      flexDirection: "column"
+    },
+    sideBarLogo: {
+      pl: 4,
+      pt: 4,
+      height: "110px"
+    },
+    sideBarNav: {
+      display: "flex",
+      flexDirection: "column",
+      pl: 4
+    },
     sidenav: {
       display: ["flex", "none"],
       flexDirection: "column",
@@ -438,6 +468,15 @@ const theme: Theme = {
       mr: "25vw",
       height: "100%",
       ...headerGradient
+    },
+
+    dashboard: {
+      flexDirection: "column",
+      height: "100%"
+    },
+
+    DashboadHeader: {
+      height: "170px"
     },
 
     badge: {
@@ -466,8 +505,8 @@ const theme: Theme = {
     },
 
     a: {
-      color: "primary",
-      ":hover": { color: "accent" },
+      color: "magenta",
+      ":hover": { color: "magenta" },
       textDecoration: "none",
       fontWeight: "bold"
     }
@@ -475,8 +514,7 @@ const theme: Theme = {
 
   links: {
     nav: {
-      px: 2,
-      py: 1,
+      py: 2,
       fontWeight: "medium",
       fontSize: 2,
       textTransform: "uppercase",

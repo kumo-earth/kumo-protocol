@@ -20,24 +20,16 @@ export const Header: React.FC = ({ children }) => {
 
   return (
     <Container variant="header">
-      <Flex sx={{ alignItems: "center", flex: 1, width: 'fit-content', padding: "0 30px", height: "128px", zIndex: "100000", }}>
+      <Flex sx={{ alignItems: "center", flex: 1, width: "fit-content", zIndex: "100000" }}>
         <Box
           sx={{
-            mx: [2, 3],
             width: "0px",
             height: "100%",
-            // borderLeft: ["none", "1px solid lightgrey"]
+            color: "black"
           }}
         />
-        {isFrontendRegistered && (
-          // <>
-          //   <SideNav />
-          //   <Nav />
-          // </>
-          <SideNav />
-        )}
+        <SideNav />
       </Flex>
-
       {children}
     </Container>
   );

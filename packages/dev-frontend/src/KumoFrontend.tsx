@@ -7,7 +7,7 @@ import { Decimal, Difference, Trove } from "@kumodao/lib-base";
 import { KumoStoreProvider } from "@kumodao/lib-react";
 
 import { useKumo } from "./hooks/KumoContext";
-import { useWalletView } from "./components/WalletConnect/context/WalletViewContext"
+import { useWalletView } from "./components/WalletConnect/context/WalletViewContext";
 import { useSwitchNetworkView } from "./components/SwitchNetwork/context/SwitchNetworkViewContext";
 import { TransactionMonitor } from "./components/Transaction";
 import { UserAccount } from "./components/UserAccount";
@@ -24,7 +24,7 @@ import { StabilityViewProvider } from "./components/Stability/context/StabilityV
 import { StakingViewProvider } from "./components/Staking/context/StakingViewProvider";
 import { FarmViewProvider } from "./components/Farm/context/FarmViewProvider";
 import { Sidebar } from "./components/Sidebar/Siderbar";
-import { WalletModal } from "./components/WalletConnect/WalletModal"
+import { WalletModal } from "./components/WalletConnect/WalletModal";
 import { Collateral } from "./pages/Collateral";
 import { StabilityPoolStaking } from "./pages/StabilityPoolStaking";
 import { StakingType } from "./pages/StakingType";
@@ -32,14 +32,16 @@ import { DashboardProvider } from "./hooks/DashboardContext";
 import { useWeb3React } from "@web3-react/core";
 import { SwitchNetworkModal } from "./components/SwitchNetwork/SwitchNetwork";
 
+import appBackground from "./asset/images/appBackground.svg";
+
 type KumoFrontendProps = {
   loader?: React.ReactNode;
 };
 export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
   const { account } = useWeb3React();
   const { provider, kumo } = useKumo();
-  const { view  } = useWalletView();
-  const { view : switchNetworkView } = useSwitchNetworkView()
+  const { view } = useWalletView();
+  const { view: switchNetworkView } = useSwitchNetworkView();
 
   // For console tinkering ;-)
   Object.assign(window, {
@@ -60,32 +62,24 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
             <StabilityViewProvider>
               <StakingViewProvider>
                 <FarmViewProvider>
-                  <Flex sx={{ flexWrap: "wrap", height: "100vh", overflow: "hidden" }}>
-                    <Flex
-                      sx={{
-                        p: 0,
-                        flexGrow: 1,
-                        flexBasis: 240,
-                        flexDirection: "column"
-                      }}
-                    >
-                      <Sidebar />
-                    </Flex>
-
+                  <Flex
+                    sx={{
+                      flexWrap: "wrap",
+                      height: "100vh",
+                      overflow: "hidden",
+                      backgroundImage: `url(${appBackground})`,
+                      backgroundSize: "cover",
+                      backgroundRepeat: "no-repeat"
+                    }}
+                  >
+                    <Sidebar />
                     <Flex
                       sx={{
                         flexDirection: "column",
                         p: 0,
-                        flexGrow: 99999,
-                        flexBasis: 0,
-                        minWidth: 320,
-                        backgroundImage: `url(https://vestafinance.xyz/img/backgrounds/products-bg.png)`,
-                        // backgroundImage: `url(https://vestafinance.xyz/img/backgrounds/createvault-bg.png)`,
-                        backgroundColor: "#091325",
-                        backgroundRepeat: "no-repeat",
-                        backgroundSize: "cover",
-                        color: "white",
-                        height: "100%"
+                        flexGrow: 1,
+                        height: "100%",
+                        width: "calc(100vw - 20vw)"
                       }}
                     >
                       <Header>
@@ -93,23 +87,9 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                         <SystemStatsPopup />
                       </Header>
 
-                      <Container
-                        variant="main"
-                        sx={{
-                          display: "flex",
-                          flexGrow: 1,
-                          width: "100%",
-                          maxWidth: "100%",
-                          margin: "0 !important",
-
-                          // flexDirection: "column",
-                          alignItems: "center",
-                          overflow: "auto"
-                        }}
-                      >
-                         { view === 'OPEN' &&  <WalletModal /> }
-                         { switchNetworkView === "OPEN" && <SwitchNetworkModal /> }
-                        {" "}
+                      <Container variant="main">
+                        {view === "OPEN" && <WalletModal />}
+                        {switchNetworkView === "OPEN" && <SwitchNetworkModal />}{" "}
                         <Switch>
                           <Route path="/" exact>
                             <PageSwitcher />
@@ -136,7 +116,6 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                             <RedemptionPage />
                           </Route>
                         </Switch>
-                        
                       </Container>
                     </Flex>
                   </Flex>
