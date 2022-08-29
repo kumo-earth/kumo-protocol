@@ -346,7 +346,6 @@ class DeploymentHelper {
 
     // set TroveManager addr in SortedTroves
     await contracts.sortedTroves.setParams(
-      maxBytes32,
       contracts.troveManager.address,
       contracts.borrowerOperations.address
     )

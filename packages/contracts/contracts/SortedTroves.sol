@@ -83,8 +83,7 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
 
     // --- Dependency setters ---
 
-    function setParams(uint256 _size, address _troveManagerAddress, address _borrowerOperationsAddress) external override onlyOwner {
-        require(_size > 0, "SortedTroves: Size can't be zero");
+    function setParams(address _troveManagerAddress, address _borrowerOperationsAddress) external override onlyOwner {
 		// require(!isInitialized, "Already initialized");
 		checkContract(_troveManagerAddress);
 		checkContract(_borrowerOperationsAddress);
