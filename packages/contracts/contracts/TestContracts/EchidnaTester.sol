@@ -114,7 +114,7 @@ contract EchidnaTester {
             address(activePool)
         );
 
-        sortedTroves.setParams(1e18, address(troveManager), address(borrowerOperations));
+        sortedTroves.setParams(address(troveManager), address(borrowerOperations));
 
         for (uint256 i = 0; i < NUMBER_OF_ACTORS; i++) {
             echidnaProxies[i] = new EchidnaProxy(
