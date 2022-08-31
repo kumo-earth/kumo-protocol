@@ -20,6 +20,7 @@ import { deployAndSetupContracts, deployTellorCaller, setSilent } from "./utils/
 import { _connectToContracts, _KumoDeploymentJSON, _priceFeedIsTestnet } from "./src/contracts";
 
 import accounts from "./accounts.json";
+import { Contract } from "ethers";
 
 dotenv.config();
 
@@ -138,6 +139,13 @@ const getContractFactory: (
     }
   : env => env.ethers.getContractFactory;
 
+
+const deployProxy: (
+  env: HardhatRuntimeEnvironment
+) => (Contract: ContractFactory, args: unknown[], opts?: object) => Promise<Contract> = (env) => {
+  return env.upgrades.deployProxy;
+}
+
 extendEnvironment(env => {
   env.deployKumo = async (
     deployer,
@@ -148,6 +156,7 @@ extendEnvironment(env => {
     const deployment = await deployAndSetupContracts(
       deployer,
       getContractFactory(env),
+      deployProxy(env),
       !useRealPriceFeed,
       env.network.name === "dev",
       wethAddress,
