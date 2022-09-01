@@ -26,7 +26,6 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     address public borrowerOperationsAddress;
 
     IStabilityPool public override stabilityPool;
-    IStabilityPoolManager public stabilityPoolManager;
 
     address gasPoolAddress;
 
@@ -244,7 +243,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
     function setAddresses(
         address _borrowerOperationsAddress,
-        address _stabilityPoolManagerAddress,
+        address _stabilityPoolAddress,
         address _gasPoolAddress,
         address _collSurplusPoolAddress,
         address _kusdTokenAddress,
@@ -255,7 +254,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     ) external override onlyOwner {
         // require(!isInitialized, "Already initialized");
         checkContract(_borrowerOperationsAddress);
-        checkContract(_stabilityPoolManagerAddress);
+        checkContract(_stabilityPoolAddress);
         checkContract(_gasPoolAddress);
         checkContract(_collSurplusPoolAddress);
         checkContract(_kusdTokenAddress);
@@ -268,8 +267,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         // __Ownable_init();
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
-        //stabilityPool = IStabilityPool(_stabilityPoolAddress);
-        stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);
+        stabilityPool = IStabilityPool(_stabilityPoolAddress);
         gasPoolAddress = _gasPoolAddress;
         collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
         kusdToken = IKUSDToken(_kusdTokenAddress);
@@ -280,7 +278,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         setKumoParameters(_kumoParamsAddress);
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
-        emit StabilityPoolAddressChanged(_stabilityPoolManagerAddress);
+        emit StabilityPoolAddressChanged(_stabilityPoolAddress);
         emit GasPoolAddressChanged(_gasPoolAddress);
         emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
         emit KUSDTokenAddressChanged(_kusdTokenAddress);
@@ -619,7 +617,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
             ICollSurplusPool(address(0)),
             address(0)
         );
-        IStabilityPool stabilityPoolCached = stabilityPoolManager.getAssetStabilityPool(_asset);
+        IStabilityPool stabilityPoolCached = stabilityPool;
 
         LocalVariables_OuterLiquidationFunction memory vars;
 
@@ -835,7 +833,6 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
         IActivePool activePoolCached = kumoParams.activePool();
         IDefaultPool defaultPoolCached = kumoParams.defaultPool();
-        // IStabilityPool stabilityPoolCached = stabilityPoolManager.getAssetStabilityPool(_asset);
         IStabilityPool stabilityPoolCached = kumoParams.stabilityPool();
 
         LocalVariables_OuterLiquidationFunction memory vars;
