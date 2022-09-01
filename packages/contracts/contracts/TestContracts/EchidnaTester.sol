@@ -24,8 +24,8 @@ import "../KumoParameters.sol";
 contract EchidnaTester {
     using SafeMath for uint256;
 
-    uint256 constant private NUMBER_OF_ACTORS = 100;
-    uint256 constant private INITIAL_BALANCE = 1e24;
+    uint256 private constant NUMBER_OF_ACTORS = 100;
+    uint256 private constant INITIAL_BALANCE = 1e24;
     uint256 private MCR;
     uint256 private CCR;
     uint256 private KUSD_GAS_COMPENSATION;
@@ -66,31 +66,63 @@ contract EchidnaTester {
 
         sortedTroves = new SortedTroves();
 
-        troveManager.setAddresses(address(borrowerOperations), 
-            address(stabilityPool), address(gasPool), address(collSurplusPool),
-            address(kusdToken), 
-            address(sortedTroves), address(0), address(0), address(kumoParams));
-       
-        borrowerOperations.setAddresses(address(troveManager), 
-            address(stabilityPool), address(gasPool), address(collSurplusPool),
-            address(sortedTroves), 
-            address(kusdToken), address(0), address(kumoParams));
+        troveManager.setAddresses(
+            address(borrowerOperations),
+            address(stabilityPool),
+            address(gasPool),
+            address(collSurplusPool),
+            address(kusdToken),
+            address(sortedTroves),
+            address(0),
+            address(0),
+            address(kumoParams)
+        );
 
-        activePool.setAddresses(address(borrowerOperations), 
-            address(troveManager), address(stabilityPool), address(defaultPool));
-            defaultPool.setAddresses(address(troveManager), address(activePool));
-        
-        stabilityPool.setAddresses(address(kumoParams), address(borrowerOperations), 
-            address(troveManager), address(kusdToken), 
-            address(sortedTroves), address(0), address(kumoParams));
+        borrowerOperations.setAddresses(
+            address(troveManager),
+            address(stabilityPool),
+            address(gasPool),
+            address(collSurplusPool),
+            address(sortedTroves),
+            address(kusdToken),
+            address(0),
+            address(kumoParams)
+        );
 
-        collSurplusPool.setAddresses(address(borrowerOperations), 
-             address(troveManager), address(activePool));
-    
-        sortedTroves.setParams(1e18, address(troveManager), address(borrowerOperations));
+        activePool.setAddresses(
+            address(borrowerOperations),
+            address(troveManager),
+            address(stabilityPool),
+            address(defaultPool),
+            address(collSurplusPool)
+        );
+        defaultPool.setAddresses(address(troveManager), address(activePool));
+
+        stabilityPool.setAddresses(
+            address(kumoParams),
+            address(borrowerOperations),
+            address(troveManager),
+            address(kusdToken),
+            address(sortedTroves),
+            address(0),
+            address(kumoParams)
+        );
+
+        collSurplusPool.setAddresses(
+            address(borrowerOperations),
+            address(troveManager),
+            address(activePool)
+        );
+
+        sortedTroves.setParams(address(troveManager), address(borrowerOperations));
 
         for (uint256 i = 0; i < NUMBER_OF_ACTORS; i++) {
-            echidnaProxies[i] = new EchidnaProxy(troveManager, borrowerOperations, stabilityPool, kusdToken);
+            echidnaProxies[i] = new EchidnaProxy(
+                troveManager,
+                borrowerOperations,
+                stabilityPool,
+                kusdToken
+            );
             (bool success, ) = address(echidnaProxies[i]).call{value: INITIAL_BALANCE}("");
             require(success);
         }
@@ -107,17 +139,29 @@ contract EchidnaTester {
 
     // TroveManager
 
-    function liquidateExt(address _asset, uint256 _i, address _user) external {
+    function liquidateExt(
+        address _asset,
+        uint256 _i,
+        address _user
+    ) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].liquidatePrx(_asset, _user);
     }
 
-    function liquidateTrovesExt(address _asset, uint256 _i, uint256 _n) external {
+    function liquidateTrovesExt(
+        address _asset,
+        uint256 _i,
+        uint256 _n
+    ) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].liquidateTrovesPrx(_asset, _n);
     }
 
-    function batchLiquidateTrovesExt(address _asset, uint256 _i, address[] calldata _troveArray) external {
+    function batchLiquidateTrovesExt(
+        address _asset,
+        uint256 _i,
+        address[] calldata _troveArray
+    ) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].batchLiquidateTrovesPrx(_asset, _troveArray);
     }
@@ -132,21 +176,40 @@ contract EchidnaTester {
         uint256 _partialRedemptionHintNICR
     ) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
-        echidnaProxies[actor].redeemCollateralPrx(_asset, _KUSDAmount, _firstRedemptionHint, _upperPartialRedemptionHint, _lowerPartialRedemptionHint, _partialRedemptionHintNICR, 0, 0);
+        echidnaProxies[actor].redeemCollateralPrx(
+            _asset,
+            _KUSDAmount,
+            _firstRedemptionHint,
+            _upperPartialRedemptionHint,
+            _lowerPartialRedemptionHint,
+            _partialRedemptionHintNICR,
+            0,
+            0
+        );
     }
 
     // Borrower Operations
 
-    function getAdjustedASSET(address _asset, uint256 actorBalance, uint256 _ASSET, uint256 ratio) internal view returns (uint256) {
+    function getAdjustedASSET(
+        address _asset,
+        uint256 actorBalance,
+        uint256 _ASSET,
+        uint256 ratio
+    ) internal view returns (uint256) {
         uint256 price = priceFeedTestnet.getPrice();
         require(price > 0);
         uint256 minASSET = ratio.mul(kumoParams.KUSD_GAS_COMPENSATION(_asset)).div(price);
         require(actorBalance > minASSET);
-        uint256 ASSET = minASSET + _ASSET % (actorBalance - minASSET);
+        uint256 ASSET = minASSET + (_ASSET % (actorBalance - minASSET));
         return ASSET;
     }
 
-    function getAdjustedKUSD(address _asset, uint256 ASSET, uint256 _KUSDAmount, uint256 ratio) internal view returns (uint256) {
+    function getAdjustedKUSD(
+        address _asset,
+        uint256 ASSET,
+        uint256 _KUSDAmount,
+        uint256 ratio
+    ) internal view returns (uint256) {
         uint256 price = priceFeedTestnet.getPrice();
         uint256 KUSDAmount = _KUSDAmount;
         uint256 compositeDebt = KUSDAmount.add(kumoParams.KUSD_GAS_COMPENSATION(_asset));
@@ -158,7 +221,12 @@ contract EchidnaTester {
         return KUSDAmount;
     }
 
-    function openTroveExt(address _asset, uint256 _i, uint256 _ASSET, uint256 _KUSDAmount) public payable {
+    function openTroveExt(
+        address _asset,
+        uint256 _i,
+        uint256 _ASSET,
+        uint256 _KUSDAmount
+    ) public payable {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         EchidnaProxy echidnaProxy = echidnaProxies[actor];
         uint256 actorBalance = address(echidnaProxy).balance;
@@ -178,12 +246,31 @@ contract EchidnaTester {
         //assert(numberOfTroves == 0);
     }
 
-    function openTroveRawExt(address _asset, uint256 _i, uint256 _ASSET, uint256 _KUSDAmount, address _upperHint, address _lowerHint, uint256 _maxFee) public payable {
+    function openTroveRawExt(
+        address _asset,
+        uint256 _i,
+        uint256 _ASSET,
+        uint256 _KUSDAmount,
+        address _upperHint,
+        address _lowerHint,
+        uint256 _maxFee
+    ) public payable {
         uint256 actor = _i % NUMBER_OF_ACTORS;
-        echidnaProxies[actor].openTrovePrx(_asset, _ASSET, _KUSDAmount, _upperHint, _lowerHint, _maxFee);
+        echidnaProxies[actor].openTrovePrx(
+            _asset,
+            _ASSET,
+            _KUSDAmount,
+            _upperHint,
+            _lowerHint,
+            _maxFee
+        );
     }
 
-    function addCollExt(address _asset, uint256 _i, uint256 _ASSET) external payable {
+    function addCollExt(
+        address _asset,
+        uint256 _i,
+        uint256 _ASSET
+    ) external payable {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         EchidnaProxy echidnaProxy = echidnaProxies[actor];
         uint256 actorBalance = address(echidnaProxy).balance;
@@ -193,22 +280,47 @@ contract EchidnaTester {
         echidnaProxy.addCollPrx(_asset, ASSET, address(0), address(0));
     }
 
-    function addCollRawExt(address _asset, uint256 _i, uint256 _ASSET, address _upperHint, address _lowerHint) external payable {
+    function addCollRawExt(
+        address _asset,
+        uint256 _i,
+        uint256 _ASSET,
+        address _upperHint,
+        address _lowerHint
+    ) external payable {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].addCollPrx(_asset, _ASSET, _upperHint, _lowerHint);
     }
 
-    function withdrawCollExt(address _asset, uint256 _i, uint256 _amount, address _upperHint, address _lowerHint) external {
+    function withdrawCollExt(
+        address _asset,
+        uint256 _i,
+        uint256 _amount,
+        address _upperHint,
+        address _lowerHint
+    ) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].withdrawCollPrx(_asset, _amount, _upperHint, _lowerHint);
     }
 
-    function withdrawKUSDExt(address _asset, uint256 _i, uint256 _amount, address _upperHint, address _lowerHint, uint256 _maxFee) external {
+    function withdrawKUSDExt(
+        address _asset,
+        uint256 _i,
+        uint256 _amount,
+        address _upperHint,
+        address _lowerHint,
+        uint256 _maxFee
+    ) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].withdrawKUSDPrx(_asset, _amount, _upperHint, _lowerHint, _maxFee);
     }
 
-    function repayKUSDExt(address _asset, uint256 _i, uint256 _amount, address _upperHint, address _lowerHint) external {
+    function repayKUSDExt(
+        address _asset,
+        uint256 _i,
+        uint256 _amount,
+        address _upperHint,
+        address _lowerHint
+    ) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].repayKUSDPrx(_asset, _amount, _upperHint, _lowerHint);
     }
@@ -218,7 +330,14 @@ contract EchidnaTester {
         echidnaProxies[actor].closeTrovePrx(_asset);
     }
 
-    function adjustTroveExt(address _asset, uint256 _i, uint256 _ASSET, uint256 _collWithdrawal, uint256 _debtChange, bool _isDebtIncrease) external payable {
+    function adjustTroveExt(
+        address _asset,
+        uint256 _i,
+        uint256 _ASSET,
+        uint256 _collWithdrawal,
+        uint256 _debtChange,
+        bool _isDebtIncrease
+    ) external payable {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         EchidnaProxy echidnaProxy = echidnaProxies[actor];
         uint256 actorBalance = address(echidnaProxy).balance;
@@ -230,19 +349,51 @@ contract EchidnaTester {
             debtChange = getAdjustedKUSD(_asset, ASSET, uint256(_debtChange), MCR);
         }
         // TODO: collWithdrawal, debtChange
-        echidnaProxy.adjustTrovePrx(_asset, ASSET, _collWithdrawal, debtChange, _isDebtIncrease, address(0), address(0), 0);
+        echidnaProxy.adjustTrovePrx(
+            _asset,
+            ASSET,
+            _collWithdrawal,
+            debtChange,
+            _isDebtIncrease,
+            address(0),
+            address(0),
+            0
+        );
     }
 
-    function adjustTroveRawExt(address _asset, uint256 _i, uint256 _ASSET, uint256 _collWithdrawal, uint256 _debtChange, bool _isDebtIncrease, address _upperHint, address _lowerHint, uint256 _maxFee) external payable {
+    function adjustTroveRawExt(
+        address _asset,
+        uint256 _i,
+        uint256 _ASSET,
+        uint256 _collWithdrawal,
+        uint256 _debtChange,
+        bool _isDebtIncrease,
+        address _upperHint,
+        address _lowerHint,
+        uint256 _maxFee
+    ) external payable {
         uint256 actor = _i % NUMBER_OF_ACTORS;
-        echidnaProxies[actor].adjustTrovePrx(_asset, _ASSET, _collWithdrawal, _debtChange, _isDebtIncrease, _upperHint, _lowerHint, _maxFee);
+        echidnaProxies[actor].adjustTrovePrx(
+            _asset,
+            _ASSET,
+            _collWithdrawal,
+            _debtChange,
+            _isDebtIncrease,
+            _upperHint,
+            _lowerHint,
+            _maxFee
+        );
     }
 
     // Pool Manager
 
-    function provideToSPExt(uint256 _i, uint256 _amount, address _frontEndTag) external {
+    function provideToSPExt(
+        uint256 _i,
+        uint256 _amount,
+        address _frontEndTag
+    ) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
-        echidnaProxies[actor].provideToSPPrx(_amount,  _frontEndTag);
+        echidnaProxies[actor].provideToSPPrx(_amount, _frontEndTag);
     }
 
     function withdrawFromSPExt(uint256 _i, uint256 _amount) external {
@@ -252,27 +403,48 @@ contract EchidnaTester {
 
     // KUSD Token
 
-    function transferExt(uint256 _i, address recipient, uint256 amount) external returns (bool) {
+    function transferExt(
+        uint256 _i,
+        address recipient,
+        uint256 amount
+    ) external returns (bool) {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         return echidnaProxies[actor].transferPrx(recipient, amount);
     }
 
-    function approveExt(uint256 _i, address spender, uint256 amount) external returns (bool) {
+    function approveExt(
+        uint256 _i,
+        address spender,
+        uint256 amount
+    ) external returns (bool) {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         return echidnaProxies[actor].approvePrx(spender, amount);
     }
 
-    function transferFromExt(uint256 _i, address sender, address recipient, uint256 amount) external returns (bool) {
+    function transferFromExt(
+        uint256 _i,
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external returns (bool) {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         return echidnaProxies[actor].transferFromPrx(sender, recipient, amount);
     }
 
-    function increaseAllowanceExt(uint256 _i, address spender, uint256 addedValue) external returns (bool) {
+    function increaseAllowanceExt(
+        uint256 _i,
+        address spender,
+        uint256 addedValue
+    ) external returns (bool) {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         return echidnaProxies[actor].increaseAllowancePrx(spender, addedValue);
     }
 
-    function decreaseAllowanceExt(uint256 _i, address spender, uint256 subtractedValue) external returns (bool) {
+    function decreaseAllowanceExt(
+        uint256 _i,
+        address spender,
+        uint256 subtractedValue
+    ) external returns (bool) {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         return echidnaProxies[actor].decreaseAllowancePrx(spender, subtractedValue);
     }
@@ -288,7 +460,7 @@ contract EchidnaTester {
     // Invariants and properties
     // --------------------------
 
-    function echidna_canary_number_of_troves() public view returns(bool) {
+    function echidna_canary_number_of_troves() public view returns (bool) {
         if (numberOfTroves > 20) {
             return false;
         }
@@ -296,19 +468,22 @@ contract EchidnaTester {
         return true;
     }
 
-    function echidna_canary_active_pool_balance() public view returns(bool) {
+    function echidna_canary_active_pool_balance() public view returns (bool) {
         if (address(activePool).balance > 0) {
             return false;
         }
         return true;
     }
 
-    function echidna_troves_order(address _asset) external view returns(bool) {
+    function echidna_troves_order(address _asset) external view returns (bool) {
         address currentTrove = sortedTroves.getFirst(_asset);
         address nextTrove = sortedTroves.getNext(_asset, currentTrove);
 
         while (currentTrove != address(0) && nextTrove != address(0)) {
-            if (troveManager.getNominalICR(_asset, nextTrove) > troveManager.getNominalICR(_asset, currentTrove)) {
+            if (
+                troveManager.getNominalICR(_asset, nextTrove) >
+                troveManager.getNominalICR(_asset, currentTrove)
+            ) {
                 return false;
             }
             // Uncomment to check that the condition is meaningful
@@ -326,7 +501,7 @@ contract EchidnaTester {
      * Minimum debt (gas compensation)
      * Stake > 0
      */
-    function echidna_trove_properties(address _asset) public view returns(bool) {
+    function echidna_trove_properties(address _asset) public view returns (bool) {
         address currentTrove = sortedTroves.getFirst(_asset);
         while (currentTrove != address(0)) {
             // Status
@@ -337,7 +512,10 @@ contract EchidnaTester {
             //else return false;
 
             // Minimum debt (gas compensation)
-            if (troveManager.getTroveDebt(_asset, currentTrove) < kumoParams.KUSD_GAS_COMPENSATION(_asset)) {
+            if (
+                troveManager.getTroveDebt(_asset, currentTrove) <
+                kumoParams.KUSD_GAS_COMPENSATION(_asset)
+            ) {
                 return false;
             }
             // Uncomment to check that the condition is meaningful
@@ -355,7 +533,7 @@ contract EchidnaTester {
         return true;
     }
 
-    function echidna_ASSET_balances(address _asset) public view returns(bool) {
+    function echidna_ASSET_balances(address _asset) public view returns (bool) {
         if (address(troveManager).balance > 0) {
             return false;
         }
@@ -379,11 +557,11 @@ contract EchidnaTester {
         if (address(kusdToken).balance > 0) {
             return false;
         }
-    
+
         if (address(priceFeedTestnet).balance > 0) {
             return false;
         }
-        
+
         if (address(sortedTroves).balance > 0) {
             return false;
         }
@@ -392,9 +570,9 @@ contract EchidnaTester {
     }
 
     // TODO: What should we do with this? Should it be allowed? Should it be a canary?
-    function echidna_price() public view returns(bool) {
+    function echidna_price() public view returns (bool) {
         uint256 price = priceFeedTestnet.getPrice();
-        
+
         if (price == 0) {
             return false;
         }
@@ -405,7 +583,7 @@ contract EchidnaTester {
     }
 
     // Total KUSD matches
-    function echidna_KUSD_global_balances(address _asset) public view returns(bool) {
+    function echidna_KUSD_global_balances(address _asset) public view returns (bool) {
         uint256 totalSupply = kusdToken.totalSupply();
         uint256 gasPoolBalance = kusdToken.balanceOf(address(gasPool));
 

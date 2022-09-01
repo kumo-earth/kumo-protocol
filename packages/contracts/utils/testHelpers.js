@@ -191,8 +191,8 @@ class TestHelper {
     return ICR
   }
 
-  static async ICRbetween100and110(account, troveManager, price) {
-    const ICR = await troveManager.getCurrentICR(account, price)
+  static async ICRbetween100and110(asset, account, troveManager, price) {
+    const ICR = await troveManager.getCurrentICR(asset, account, price)
     return (ICR.gt(MoneyValues._ICR100)) && (ICR.lt(MoneyValues._MCR))
   }
 
@@ -395,42 +395,58 @@ class TestHelper {
   static getEmittedRedemptionValues(redemptionTx) {
     for (let i = 0; i < redemptionTx.logs.length; i++) {
       if (redemptionTx.logs[i].event === "Redemption") {
+        const redeemedAsset = redemptionTx.logs[i].args[0]
+        const KUSDAmount = redemptionTx.logs[i].args[1]
+        const totalKUSDRedeemed = redemptionTx.logs[i].args[2]
+        const totalETHDrawn = redemptionTx.logs[i].args[3]
+        const ETHFee = redemptionTx.logs[i].args[4]
 
-        const KUSDAmount = redemptionTx.logs[i].args[0]
-        const totalKUSDRedeemed = redemptionTx.logs[i].args[1]
-        const totalETHDrawn = redemptionTx.logs[i].args[2]
-        const ETHFee = redemptionTx.logs[i].args[3]
-
-        return [KUSDAmount, totalKUSDRedeemed, totalETHDrawn, ETHFee]
+        return [KUSDAmount, totalKUSDRedeemed, totalETHDrawn, ETHFee, redeemedAsset]
       }
     }
     throw ("The transaction logs do not contain a redemption event")
   }
 
+  static getRedemptionArg(redemptionTx, arg) {
+    for (let i = 0; i < liquidationTx.logs.length; i++) {
+      if (liquidationTx.logs[i].event === "Redemption") {
+        return liquidationTx.logs[i].args[arg]
+      }
+    }
+
+    throw ("The transaction logs do not contain a liquidation event")
+  }
+
+
   static getEmittedLiquidationValues(liquidationTx) {
     for (let i = 0; i < liquidationTx.logs.length; i++) {
       if (liquidationTx.logs[i].event === "Liquidation") {
-        const liquidatedDebt = liquidationTx.logs[i].args[0]
-        const liquidatedColl = liquidationTx.logs[i].args[1]
-        const collGasComp = liquidationTx.logs[i].args[2]
-        const kusdGasComp = liquidationTx.logs[i].args[3]
+        const liquidatedAsset = liquidationTx.logs[i].args[0]
+        const liquidatedDebt = liquidationTx.logs[i].args[1]
+        const liquidatedColl = liquidationTx.logs[i].args[2]
+        const collGasComp = liquidationTx.logs[i].args[3]
+        const kusdGasComp = liquidationTx.logs[i].args[4]
 
-        return [liquidatedDebt, liquidatedColl, collGasComp, kusdGasComp]
+        return [liquidatedDebt, liquidatedColl, collGasComp, kusdGasComp, liquidatedAsset]
       }
     }
     throw ("The transaction logs do not contain a liquidation event")
   }
 
+  static getEmittedLiquidatedAsset(liquidationTx) {
+    return this.getLiquidationEventArg(liquidationTx, 0)  // liquidatedAsset is position 0 in the Liquidation event
+  }
+
   static getEmittedLiquidatedDebt(liquidationTx) {
-    return this.getLiquidationEventArg(liquidationTx, 0)  // LiquidatedDebt is position 0 in the Liquidation event
+    return this.getLiquidationEventArg(liquidationTx, 1)  // LiquidatedDebt is position 1 in the Liquidation event
   }
 
   static getEmittedLiquidatedColl(liquidationTx) {
-    return this.getLiquidationEventArg(liquidationTx, 1) // LiquidatedColl is position 1 in the Liquidation event
+    return this.getLiquidationEventArg(liquidationTx, 2) // LiquidatedColl is position 2 in the Liquidation event
   }
 
   static getEmittedGasComp(liquidationTx) {
-    return this.getLiquidationEventArg(liquidationTx, 2) // GasComp is position 2 in the Liquidation event
+    return this.getLiquidationEventArg(liquidationTx, 3) // GasComp is position 3 in the Liquidation event
   }
 
   static getLiquidationEventArg(liquidationTx, arg) {
@@ -487,8 +503,8 @@ class TestHelper {
   }
 
   static getDebtAndCollFromTroveUpdatedEvents(troveUpdatedEvents, address) {
-    const event = troveUpdatedEvents.filter(event => event.args[0] === address)[0]
-    return [event.args[1], event.args[2]]
+    const event = troveUpdatedEvents.filter(event => event.args[1] === address)[0]
+    return [event.args[2], event.args[3]]
   }
 
   static async getBorrowerOpsListHint(contracts, newColl, newDebt) {
@@ -503,15 +519,14 @@ class TestHelper {
     return { upperHint, lowerHint }
   }
 
-  static async getEntireCollAndDebt(contracts, account) {
+  static async getEntireCollAndDebt(contracts, asset, account) {
     // console.log(`account: ${account}`)
-    const rawColl = (await contracts.troveManager.Troves(account))[1]
-    const rawDebt = (await contracts.troveManager.Troves(account))[0]
-    const pendingETHReward = await contracts.troveManager.getPendingETHReward(account)
-    const pendingKUSDDebtReward = await contracts.troveManager.getPendingKUSDDebtReward(account)
-    const entireColl = rawColl.add(pendingETHReward)
+    const rawColl = (await contracts.troveManager.Troves(account, asset))[TroveData.coll]
+    const rawDebt = (await contracts.troveManager.Troves(account, asset))[TroveData.debt]
+    const pendingReward = await contracts.troveManager.getPendingReward(asset, account)
+    const pendingKUSDDebtReward = await contracts.troveManager.getPendingKUSDDebtReward(asset, account)
+    const entireColl = rawColl.add(pendingReward)
     const entireDebt = rawDebt.add(pendingKUSDDebtReward)
-
     return { entireColl, entireDebt }
   }
 
@@ -969,20 +984,20 @@ class TestHelper {
 
   // --- Redemption functions ---
 
-  static async redeemCollateral(redeemer, contracts, KUSDAmount, gasPrice = 0, maxFee = this._100pct) {
+  static async redeemCollateral(asset, redeemer, contracts, KUSDAmount, gasPrice = 0, maxFee = this._100pct) {
     const price = await contracts.priceFeedTestnet.getPrice()
-    const tx = await this.performRedemptionTx(redeemer, price, contracts, KUSDAmount, maxFee, gasPrice)
+    const tx = await this.performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee, gasPrice)
     const gas = await this.gasUsed(tx)
     return gas
   }
 
-  static async redeemCollateralAndGetTxObject(redeemer, contracts, KUSDAmount, gasPrice, maxFee = this._100pct) {
+  static async redeemCollateralAndGetTxObject(asset, redeemer, contracts, KUSDAmount, gasPrice, maxFee = this._100pct) {
     // console.log("GAS PRICE:  " + gasPrice)
     if (gasPrice == undefined) {
       gasPrice = 0;
     }
     const price = await contracts.priceFeedTestnet.getPrice()
-    const tx = await this.performRedemptionTx(redeemer, price, contracts, KUSDAmount, maxFee, gasPrice)
+    const tx = await this.performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee, gasPrice)
     return tx
   }
 
@@ -1000,8 +1015,8 @@ class TestHelper {
     return this.getGasMetrics(gasCostList)
   }
 
-  static async performRedemptionTx(redeemer, price, contracts, KUSDAmount, maxFee = 0, gasPrice_toUse = 0) {
-    const redemptionhint = await contracts.hintHelpers.getRedemptionHints(KUSDAmount, price, gasPrice_toUse)
+  static async performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee = 0, gasPrice_toUse = 0) {
+    const redemptionhint = await contracts.hintHelpers.getRedemptionHints(asset, KUSDAmount, price, gasPrice_toUse)
 
     const firstRedemptionHint = redemptionhint[0]
     const partialRedemptionNewICR = redemptionhint[1]
@@ -1009,14 +1024,14 @@ class TestHelper {
     const {
       hintAddress: approxPartialRedemptionHint,
       latestRandomSeed
-    } = await contracts.hintHelpers.getApproxHint(partialRedemptionNewICR, 50, this.latestRandomSeed)
+    } = await contracts.hintHelpers.getApproxHint(asset, partialRedemptionNewICR, 50, this.latestRandomSeed)
     this.latestRandomSeed = latestRandomSeed
 
-    const exactPartialRedemptionHint = (await contracts.sortedTroves.findInsertPosition(partialRedemptionNewICR,
+    const exactPartialRedemptionHint = (await contracts.sortedTroves.findInsertPosition(asset, partialRedemptionNewICR,
       approxPartialRedemptionHint,
       approxPartialRedemptionHint))
 
-    const tx = await contracts.troveManager.redeemCollateral(KUSDAmount,
+    const tx = await contracts.troveManager.redeemCollateral(asset, KUSDAmount,
       firstRedemptionHint,
       exactPartialRedemptionHint[0],
       exactPartialRedemptionHint[1],

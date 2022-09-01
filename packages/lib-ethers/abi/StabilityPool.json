@@ -130,31 +130,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_depositor",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_ETH",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_kusdLoss",
-        "type": "uint256"
-      }
-    ],
-    "name": "ETHGainWithdrawn",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": false,
         "internalType": "uint128",
         "name": "_currentEpoch",
@@ -973,25 +948,6 @@
         "type": "address"
       }
     ],
-    "name": "getDepositorAssetGain1e18",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_depositor",
-        "type": "address"
-      }
-    ],
     "name": "getDepositorKUMOGain",
     "outputs": [
       {
@@ -1153,7 +1109,7 @@
   },
   {
     "inputs": [],
-    "name": "lastkusdLossError_Offset",
+    "name": "lastKUSDLossError_Offset",
     "outputs": [
       {
         "internalType": "uint256",

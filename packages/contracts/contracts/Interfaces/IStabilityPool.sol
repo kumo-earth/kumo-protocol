@@ -35,10 +35,9 @@ import "./IDeposit.sol";
  * Please see the system Readme for an overview:
  * https://github.com/liquity/dev/blob/main/README.md#kumo-issuance-to-stability-providers
  */
-interface IStabilityPool is IDeposit{
-
+interface IStabilityPool is IDeposit {
     // --- Events ---
-    
+
     event StabilityPoolAssetBalanceUpdated(uint256 _newBalance);
     event StabilityPoolKUSDBalanceUpdated(uint256 _newBalance);
 
@@ -56,14 +55,18 @@ interface IStabilityPool is IDeposit{
     event G_Updated(uint256 _G, uint128 _epoch, uint128 _scale);
     event EpochUpdated(uint128 _currentEpoch);
     event ScaleUpdated(uint128 _currentScale);
-    
+
     //  FrontEnd
 
-    event FrontEndRegistered(address indexed _frontEnd, uint _kickbackRate);
+    event FrontEndRegistered(address indexed _frontEnd, uint256 _kickbackRate);
     event FrontEndTagSet(address indexed _depositor, address indexed _frontEnd);
-    event FrontEndSnapshotUpdated(address indexed _frontEnd, uint _P, uint _G);
-    event FrontEndStakeChanged(address indexed _frontEnd, uint _newFrontEndStake, address _depositor);
-    event KUMOPaidToFrontEnd(address indexed _frontEnd, uint _KUMO);
+    event FrontEndSnapshotUpdated(address indexed _frontEnd, uint256 _P, uint256 _G);
+    event FrontEndStakeChanged(
+        address indexed _frontEnd,
+        uint256 _newFrontEndStake,
+        address _depositor
+    );
+    event KUMOPaidToFrontEnd(address indexed _frontEnd, uint256 _KUMO);
 
     event DepositSnapshotUpdated(address indexed _depositor, uint256 _P, uint256 _S, uint256 _G);
     event UserDepositChanged(address indexed _depositor, uint256 _newDeposit);
@@ -72,7 +75,6 @@ interface IStabilityPool is IDeposit{
     event AssetGainWithdrawn(address indexed _depositor, uint256 _Asset, uint256 _kusdLoss);
     event SystemSnapshotUpdated(uint256 _P, uint256 _G);
 
-    event ETHGainWithdrawn(address indexed _depositor, uint256 _ETH, uint256 _kusdLoss);
     event KUMOPaidToDepositor(address indexed _depositor, uint256 _KUMO);
     event AssetSent(address _to, uint256 _amount);
 
@@ -90,7 +92,6 @@ interface IStabilityPool is IDeposit{
         address _sortedTrovesAddress,
         address _communityIssuanceAddress,
         address _kumoParamsAddress
-
     ) external;
 
     /*
@@ -168,7 +169,6 @@ interface IStabilityPool is IDeposit{
      */
     function getTotalKUSDDeposits() external view returns (uint256);
 
-
     /*
      * Calculate the KUMO gain earned by a deposit since its last snapshots were taken.
      * If not tagged with a front end, the depositor gets a 100% cut of what their deposit earned.
@@ -194,21 +194,21 @@ interface IStabilityPool is IDeposit{
      */
     function getCompoundedFrontEndStake(address _frontEnd) external view returns (uint256);
 
-	/*
-	 * Calculates the ETH gain earned by the deposit since its last snapshots were taken.
-	 */
-	function getDepositorAssetGain(address _depositor) external view returns (uint256);
+    /*
+     * Calculates the ETH gain earned by the deposit since its last snapshots were taken.
+     */
+    function getDepositorAssetGain(address _depositor) external view returns (uint256);
 
-	/*
-	 * Return the front end's compounded stake.
-	 *
-	 * The front end's compounded stake is equal to the sum of its depositors' compounded deposits.
-	 */
-	function getCompoundedTotalStake() external view returns (uint256);
+    /*
+     * Return the front end's compounded stake.
+     *
+     * The front end's compounded stake is equal to the sum of its depositors' compounded deposits.
+     */
+    function getCompoundedTotalStake() external view returns (uint256);
 
-	function getNameBytes() external view returns (bytes32);
+    function getNameBytes() external view returns (bytes32);
 
-	function getAssetType() external view returns (address);
+    function getAssetType() external view returns (address);
 
     /*
      * Fallback function
