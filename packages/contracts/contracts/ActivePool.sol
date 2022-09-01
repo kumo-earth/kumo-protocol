@@ -34,10 +34,9 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     address public troveManagerAddress;
     address public stabilityPoolAddress;
     address public defaultPoolAddress;
-    uint256 internal ETH; // deposited ether tracker
-    IDefaultPool public defaultPool;
+    // IDefaultPool public defaultPool;
     // uint256 internal KUSDDebt;
-    ICollSurplusPool public collSurplusPool;
+    address public collSurplusPoolAddress;
     // IStabilityPoolManager public stabilityPoolManager;
     // --- Events ---
 
@@ -141,9 +140,10 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     }
 
     function isERC20DepositContract(address _account) private view returns (bool) {
-        return (_account == address(defaultPool) ||
-            _account == address(collSurplusPool) ||
-            _account == address(stabilityPoolAddress));
+        return (_account == defaultPoolAddress ||
+            _account == collSurplusPoolAddress ||
+            _account == stabilityPoolAddress);
+        // return (_account == defaultPoolAddress || _account == stabilityPoolAddress);
     }
 
     function increaseKUSDDebt(address _asset, uint256 _amount) external override {
@@ -236,12 +236,4 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
             collStakingManager.unstakeCollaterals(_asset, _amount);
         }
     }
-
-    // --- Fallback function ---
-
-	// receive(address _asset, uint256 _amount) external payable callerIsBorrowerOperationOrDefaultPool {
-	// 	assetsBalance[_asset] += _amount;
-    //     _stakeCollateral(_asset, _amount);
-    //     emit ActivePoolAssetBalanceUpdated(_asset, assetsBalance[_asset]);
-	// }
 }

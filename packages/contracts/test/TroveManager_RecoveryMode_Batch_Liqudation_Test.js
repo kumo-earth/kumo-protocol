@@ -1,4 +1,4 @@
-zconst deploymentHelper = require("../utils/deploymentHelpers.js")
+const deploymentHelper = require("../utils/deploymentHelpers.js")
 const { TestHelper: th, MoneyValues: mv, TroveData } = require("../utils/testHelpers.js")
 const { toBN, dec, ZERO_ADDRESS } = th
 

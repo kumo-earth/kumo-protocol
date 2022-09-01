@@ -512,11 +512,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_size",
-        "type": "uint256"
-      },
-      {
         "internalType": "address",
         "name": "_troveManagerAddress",
         "type": "address"
