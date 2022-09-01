@@ -236,12 +236,4 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
             collStakingManager.unstakeCollaterals(_asset, _amount);
         }
     }
-
-    // --- Fallback function ---
-
-    // receive(address _asset, uint256 _amount) external payable callerIsBorrowerOperationOrDefaultPool {
-    // 	assetsBalance[_asset] += _amount;
-    //     _stakeCollateral(_asset, _amount);
-    //     emit ActivePoolAssetBalanceUpdated(_asset, assetsBalance[_asset]);
-    // }
 }

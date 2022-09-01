@@ -10,9 +10,4 @@ contract ActivePoolTester is ActivePool {
     function unprotectedIncreaseKUSDDebt(address _asset, uint256 _amount) external {
         KUSDDebts[_asset] = KUSDDebts[_asset].add(_amount);
     }
-
-    function unprotectedPayable(address _asset, uint256 _amount) external payable {
-        assetsBalance[_asset] = assetsBalance[_asset].add(_amount);
-        // ETH = ETH.add(msg.value);
-    }
 }
