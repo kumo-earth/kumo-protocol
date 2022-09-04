@@ -8,7 +8,7 @@ type InfoMessageProps = {
 };
 
 export const InfoMessage: React.FC<InfoMessageProps> = ({ title, children, icon }) => (
-  <Box sx={{ mx: 1, mb: 3, color: 'white' }}>
+  <Box sx={{ mx: 1, mb: 3 }}>
     <Flex sx={{ alignItems: "center", mb: "10px" }}>
       <Box sx={{ mr: "12px", fontSize: "20px" }}>{icon || <Icon name="info-circle" />}</Box>
 

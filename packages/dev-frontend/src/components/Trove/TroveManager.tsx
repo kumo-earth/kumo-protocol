@@ -36,8 +36,10 @@ type TroveManagerAction =
   | { type: "startChange" | "finishChange" | "revert" | "addMinimumDebt" | "removeMinimumDebt" }
   | { type: "setCollateral" | "setDebt"; newValue: Decimalish };
 
-const reduceWith = (action: TroveManagerAction) => (state: TroveManagerState): TroveManagerState =>
-  reduce(state, action);
+const reduceWith =
+  (action: TroveManagerAction) =>
+  (state: TroveManagerState): TroveManagerState =>
+    reduce(state, action);
 
 const addMinimumDebt = reduceWith({ type: "addMinimumDebt" });
 const removeMinimumDebt = reduceWith({ type: "removeMinimumDebt" });
@@ -236,11 +238,7 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
       <Flex variant="layout.actions">
         <Button
           sx={{
-            backgroundColor: "rgb(152, 80, 90)",
-            boxShadow:
-              "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
-            border: "none",
-            color: "white"
+            border: "none"
           }}
           variant="cancel"
           onClick={handleCancel}
@@ -260,11 +258,7 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
         ) : (
           <Button
             sx={{
-              backgroundColor: "rgb(152, 80, 90)",
-              boxShadow:
-                "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
-              border: "none",
-              color: "white"
+              border: "none"
             }}
             disabled
           >

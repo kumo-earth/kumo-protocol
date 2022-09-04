@@ -9,7 +9,7 @@ export const Collateral: React.FC = () => {
       sx={{
         width: "100%",
         gridGap: 2,
-        height: "100%"
+        py: 5
       }}
     >
       <Flex sx={{ height: "max-content", width: "95%" }}>

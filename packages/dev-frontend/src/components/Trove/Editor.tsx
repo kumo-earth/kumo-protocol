@@ -130,9 +130,7 @@ export const StaticAmounts: React.FC<StaticAmountsProps & SxProp> = ({
         ...(onClick ? { cursor: "text" } : {}),
 
         ...staticStyle,
-        ...sx,
-        background: "rgba(249,248,249,.1) !important",
-        backgroundColor: "#303553 !important"
+        ...sx
       }}
     >
       <Flex sx={{ alignItems: "center" }}>
@@ -279,9 +277,6 @@ export const EditableRow: React.FC<EditableRowProps> = ({
         variant="editor"
         sx={{
           ...editableStyle,
-          background: "rgba(249,248,249,.1) !important",
-          backgroundColor: "#303553 !important",
-          color: "white",
           fontWeight: "medium",
           bg: invalid ? "invalid" : "background"
         }}
@@ -293,9 +288,6 @@ export const EditableRow: React.FC<EditableRowProps> = ({
       <StaticAmounts
         sx={{
           ...editableStyle,
-          background: "rgba(249,248,249,.1)",
-          backgroundColor: "#303553",
-          color: "white",
           bg: invalid ? "invalid" : "background"
         }}
         labelledBy={`${inputId}-label`}
@@ -307,12 +299,7 @@ export const EditableRow: React.FC<EditableRowProps> = ({
             sx={{
               fontSize: 1,
               p: 1,
-              px: 3,
-              backgroundColor: "rgb(152, 80, 90)",
-              boxShadow:
-                "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
-              border: "none",
-              color: "white"
+              px: 3
             }}
             onClick={event => {
               setEditedAmount(maxAmount);

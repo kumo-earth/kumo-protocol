@@ -36,7 +36,8 @@ export const StakingType: React.FC = () => {
         display: "grid",
         gridGap: 2,
         gridTemplateColumns: `repeat(auto-fill, minmax(400px, 1fr))`,
-        height: "100%"
+        height: "100%",
+        pt: 2
       }}
     >
       {vaults.map(vault => {

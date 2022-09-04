@@ -24,7 +24,7 @@ const colors = {
   invalid: "pink",
 
   text: "#293147",
-  background: "white",
+  background: "transparent",
   muted: "#e6e6e6"
 };
 
@@ -298,7 +298,6 @@ const theme: Theme = {
       boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
       borderRadius: "20px",
       maxWidth: 450,
-      maxHeight: "380px",
       position: "relative",
 
       "> h2": {
