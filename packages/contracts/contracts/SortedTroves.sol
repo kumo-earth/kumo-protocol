@@ -102,7 +102,6 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
 
      function addNewAsset( address _asset) external onlyOwner {
          data[_asset].maxSize = MAX_UINT256;
-		
     }
 
     /*
