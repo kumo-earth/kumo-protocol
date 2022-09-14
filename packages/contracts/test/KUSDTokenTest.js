@@ -6,7 +6,7 @@ const { defaultAbiCoder } = require('@ethersproject/abi');
 const { toUtf8Bytes } = require('@ethersproject/strings');
 const { pack } = require('@ethersproject/solidity');
 const { hexlify } = require("@ethersproject/bytes");
-const { ecsign } = require('ethereumjs-util');
+const { ecsign, zeroAddress } = require('ethereumjs-util');
 
 const { toBN, assertRevert, assertAssert, dec, ZERO_ADDRESS } = testHelpers.TestHelper
 
@@ -60,24 +60,28 @@ contract('KUSDToken', async accounts => {
   let troveManager
   let borrowerOperations
   let hardhatTester
-  let erc2
+  let erc20
+  let kumoParams
 
   let tokenName
   let tokenVersion
 
   const testCorpus = ({ withProxy = false }) => {
     beforeEach(async () => {
-
       const contracts = await deploymentHelper.deployTesterContractsHardhat()
-
-
       const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
-      hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-      erc20 = hardhatTester.erc20
 
       await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
       await deploymentHelper.connectKUMOContracts(KUMOContracts)
       await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
+
+      hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
+      erc20 = hardhatTester.erc20
+      assetAddress1 = erc20.address
+  
+      kumoParams = contracts.kumoParameters
+      await kumoParams.sanitizeParameters(assetAddress1);
+      await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
       kusdTokenOriginal = contracts.kusdToken
       if (withProxy) {
@@ -161,12 +165,12 @@ contract('KUSDToken', async accounts => {
 
     if (!withProxy) {
       it("approve(): reverts when spender param is address(0)", async () => {
-        const txPromise = kusdTokenTester.approve(erc20.address, 100, {from: bob})
+        const txPromise = kusdTokenTester.approve(ZERO_ADDRESS, 100, {from: bob})
         await assertAssert(txPromise)
       })
 
       it("approve(): reverts when owner param is address(0)", async () => {
-        const txPromise = kusdTokenTester.callInternalApprove(erc20.address, alice, dec(1000, 18), {from: bob})
+        const txPromise = kusdTokenTester.callInternalApprove(ZERO_ADDRESS, alice, dec(1000, 18), {from: bob})
         await assertAssert(txPromise)
       })
     }
@@ -217,7 +221,7 @@ contract('KUSDToken', async accounts => {
 
     it('transfer(): transferring to a blacklisted address reverts', async () => {
       await assertRevert(kusdTokenTester.transfer(kusdTokenTester.address, 1, { from: alice }))
-      await assertRevert(kusdTokenTester.transfer(erc20.address, 1, { from: alice }))
+      await assertRevert(kusdTokenTester.transfer(ZERO_ADDRESS, 1, { from: alice }))
       await assertRevert(kusdTokenTester.transfer(troveManager.address, 1, { from: alice }))
       await assertRevert(kusdTokenTester.transfer(stabilityPool.address, 1, { from: alice }))
       await assertRevert(kusdTokenTester.transfer(borrowerOperations.address, 1, { from: alice }))
@@ -290,7 +294,7 @@ contract('KUSDToken', async accounts => {
 
     it('transfer(): transferring to a blacklisted address reverts', async () => {
       await assertRevert(kusdTokenTester.transfer(kusdTokenTester.address, 1, { from: alice }))
-      await assertRevert(kusdTokenTester.transfer(erc20.address, 1, { from: alice }))
+      await assertRevert(kusdTokenTester.transfer(ZERO_ADDRESS, 1, { from: alice }))
       await assertRevert(kusdTokenTester.transfer(troveManager.address, 1, { from: alice }))
       await assertRevert(kusdTokenTester.transfer(stabilityPool.address, 1, { from: alice }))
       await assertRevert(kusdTokenTester.transfer(borrowerOperations.address, 1, { from: alice }))
