@@ -426,7 +426,7 @@ contract('During the initial lockup period', async accounts => {
 
       // Check KUMOToken address not registered
       const registeredKUMOTokenAddr = await LCFNew.kumoTokenAddress()
-      assert.equal(registeredKUMOTokenAddr, erc20.address)
+      assert.equal(registeredKUMOTokenAddr, ZERO_ADDRESS)
 
       const tx = LCFNew.deployLockupContract(A, oneYearFromSystemDeployment, { from: F })
       await assertRevert(tx)
