@@ -43,6 +43,11 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     await deploymentHelper.connectKUMOContracts(KUMOContracts)
     await deploymentHelper.connectCoreContracts(coreContracts, KUMOContracts)
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, coreContracts)
+    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
+    erc20 = hardhatTester.erc20
+    assetAddress1 = erc20.address
+
+    await deploymentHelper.addNewAssetToSystem(coreContracts, KUMOContracts, assetAddress1)
   })
 
   it('Check if correct Addresses in Vault Parameters', async () => {
