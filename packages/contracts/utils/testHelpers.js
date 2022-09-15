@@ -357,7 +357,9 @@ class TestHelper {
    * given the desired total debt, returns the KUSD amount that needs to be requested in openTrove
    * So, it subtracts the gas compensation and then the borrowing fee
    */
-  static async getOpenTroveKUSDAmount(contracts, totalDebt, asset) {
+  static async getOpenTroveKUSDAmount(contracts, totalDebt, asset) {   
+    if (!asset)
+      asset = this.ZERO_ADDRESS;
     const actualDebt = await this.getActualDebtFromComposite(totalDebt, contracts, asset)
     return this.getNetBorrowingAmount(contracts, actualDebt, asset)
   }
@@ -985,19 +987,17 @@ class TestHelper {
   // --- Redemption functions ---
 
   static async redeemCollateral(asset, redeemer, contracts, KUSDAmount, gasPrice = 0, maxFee = this._100pct) {
+    if (!asset)
+      asset = this.ZERO_ADDRESS
     const price = await contracts.priceFeedTestnet.getPrice()
     const tx = await this.performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee, gasPrice)
     const gas = await this.gasUsed(tx)
     return gas
   }
 
-  static async redeemCollateralAndGetTxObject(asset, redeemer, contracts, KUSDAmount, gasPrice, maxFee = this._100pct) {
-    // console.log("GAS PRICE:  " + gasPrice)
-    if (gasPrice == undefined) {
-      gasPrice = 0;
-    }
+  static async redeemCollateralAndGetTxObject(redeemer, contracts, KUSDAmount,  asset, maxFee = this._100pct) {
     const price = await contracts.priceFeedTestnet.getPrice()
-    const tx = await this.performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee, gasPrice)
+    const tx = await this.performRedemptionTx(redeemer, price, contracts, KUSDAmount, asset, maxFee)
     return tx
   }
 
@@ -1008,15 +1008,15 @@ class TestHelper {
     for (const redeemer of accounts) {
       const randKUSDAmount = this.randAmountInWei(min, max)
 
-      await this.performRedemptionTx(redeemer, price, contracts, randKUSDAmount)
+      await this.performRedemptionTx(redeemer, price, contracts, KUSDAmount, asset, maxFee)
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
     return this.getGasMetrics(gasCostList)
   }
 
-  static async performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee = 0, gasPrice_toUse = 0) {
-    const redemptionhint = await contracts.hintHelpers.getRedemptionHints(asset, KUSDAmount, price, gasPrice_toUse)
+  static async performRedemptionTx(redeemer, price, contracts, KUSDAmount, asset, maxFee = 0) {
+    const redemptionhint = await contracts.hintHelpers.getRedemptionHints(asset, KUSDAmount, price, 0)
 
     const firstRedemptionHint = redemptionhint[0]
     const partialRedemptionNewICR = redemptionhint[1]
@@ -1037,7 +1037,7 @@ class TestHelper {
       exactPartialRedemptionHint[1],
       partialRedemptionNewICR,
       0, maxFee,
-      { from: redeemer, gasPrice: gasPrice_toUse },
+      { from: redeemer, gasPrice: 0 },
     )
 
     return tx
