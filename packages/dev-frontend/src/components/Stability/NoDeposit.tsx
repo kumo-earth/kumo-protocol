@@ -28,17 +28,19 @@ export const NoDeposit: React.FC = props => {
     dispatchEvent("DEPOSIT_PRESSED");
   }, [dispatchEvent]);
 
+  let unit = ((getPathName(location) === "bct" && "Carbon Token X") || (getPathName(location) === "mco2" && "Biodiversity Token Y")) || ""
+
   return (
     <Card variant="base">
-      <Heading>
-        {getPathName(location).toUpperCase()} Stability Pool
+      <Heading as="h2">
+        {unit.toUpperCase()}  <span style={{ marginLeft: "22px" }}>Stability Pool</span> 
         {/* <Flex sx={{ justifyContent: "flex-end" }}>
           <RemainingKUMO />
         </Flex> */}
       </Heading>
       <Box sx={{ p: [2, 3] }}>
         <InfoMessage title="You have no KUSD in the Stability Pool.">
-          You can earn {getPathName(location).toUpperCase()} and KUMO rewards by depositing KUSD.
+          You can earn {unit.toUpperCase()} and KUMO rewards by depositing KUSD.
         </InfoMessage>
 
         <Flex variant="layout.actions">

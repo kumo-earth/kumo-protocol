@@ -96,7 +96,6 @@ export const Adjusting: React.FC = () => {
   const { fees, accountBalance, validationContext } = useKumoSelector(selector);
   const location = useLocation();
   const { vaults, adjustTroveT, bctPrice, mco2Price } = useDashboard();
- 
 
   const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
   const trove =
@@ -112,7 +111,8 @@ export const Adjusting: React.FC = () => {
 
   useEffect(() => {
     if (transactionState.type === "confirmedOneShot") {
-      collateralRatio && adjustTroveT(getPathName(location), trove.ownerAddress, collateral, totalDebt, netDebt);
+      collateralRatio &&
+        adjustTroveT(getPathName(location), trove.ownerAddress, collateral, totalDebt, netDebt);
       dispatchEvent("TROVE_ADJUSTED");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -187,26 +187,8 @@ export const Adjusting: React.FC = () => {
   }
 
   return (
-    <Card
-      sx={{
-        background: "rgba(249,248,249,.1)",
-        backgroundColor: "#303553",
-        // color: "rgba(0, 0, 0, 0.87)",
-        transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-        boxShadow:
-          "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
-        overflow: "hidden",
-        borderRadius: "20px",
-        width: "100%",
-        color: "white"
-      }}
-    >
-      <Heading
-        sx={{
-          background: "linear-gradient(103.69deg, #2b2b2b 18.43%, #525252 100%)",
-          color: "white"
-        }}
-      >
+    <Card variant="base">
+      <Heading as="h2">
         {vaultType.type.toUpperCase()} Trove
         {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
@@ -215,7 +197,7 @@ export const Adjusting: React.FC = () => {
         )}
       </Heading>
 
-      <Box sx={{ p: [2, 3] }}>
+      <Box sx={{ width: "100%" }}>
         <EditableRow
           label="Collateral"
           inputId="trove-collateral"

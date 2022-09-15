@@ -139,7 +139,7 @@ export const StaticAmounts: React.FC<StaticAmountsProps & SxProp> = ({
         {unit && (
           <>
             &nbsp;
-            <Text sx={{ fontWeight: "light", opacity: 0.8 }}>{unit}</Text>
+            <Text sx={{ fontWeight: "light", fontSize: 2, opacity: 0.8 }}>{unit}</Text>
           </>
         )}
 

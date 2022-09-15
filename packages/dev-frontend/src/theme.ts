@@ -260,7 +260,7 @@ const theme: Theme = {
 
       "> h2": {
         display: "flex",
-        justifyContent: "space-between",
+        // justifyContent: "space-between",
         alignItems: "center",
         height: "56px",
         borderRadius: "20px 20px 0 0",
@@ -297,7 +297,8 @@ const theme: Theme = {
       bg: "transparent",
       boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
       borderRadius: "20px",
-      maxWidth: 450,
+      width: "97%",
+      maxWidth: "100%",
       position: "relative",
 
       "> h2": {
@@ -514,7 +515,7 @@ const theme: Theme = {
   links: {
     nav: {
       py: 2,
-      fontWeight: "medium",
+      fontWeight: 700,
       fontSize: 2,
       textTransform: "uppercase",
       letterSpacing: "2px",

@@ -6,6 +6,7 @@ import { Wallet } from "@ethersproject/wallet";
 import { Decimal, Difference, Trove } from "@kumodao/lib-base";
 import { KumoStoreProvider } from "@kumodao/lib-react";
 
+import { useViewSafetyBanner } from "./hooks/viewSafetyBanner";
 import { useKumo } from "./hooks/KumoContext";
 import { useWalletView } from "./components/WalletConnect/context/WalletViewContext";
 import { useSwitchNetworkView } from "./components/SwitchNetwork/context/SwitchNetworkViewContext";
@@ -31,6 +32,7 @@ import { StakingType } from "./pages/StakingType";
 import { DashboardProvider } from "./hooks/DashboardContext";
 import { useWeb3React } from "@web3-react/core";
 import { SwitchNetworkModal } from "./components/SwitchNetwork/SwitchNetwork";
+import { DomainSafetyBanner } from "./components/DomainSafetyBanner";
 
 import appBackground from "./asset/images/appBackground.svg";
 
@@ -42,6 +44,7 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
   const { provider, kumo } = useKumo();
   const { view } = useWalletView();
   const { view: switchNetworkView } = useSwitchNetworkView();
+  const { isDomainSafetyCheck, changeInProgress } = useViewSafetyBanner();
 
   // For console tinkering ;-)
   Object.assign(window, {
@@ -62,6 +65,8 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
             <StabilityViewProvider>
               <StakingViewProvider>
                 <FarmViewProvider>
+                  {!isDomainSafetyCheck && <DomainSafetyBanner changeInProgress={changeInProgress} />}
+
                   <Flex
                     sx={{
                       flexWrap: "wrap",
@@ -69,7 +74,8 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                       overflow: "hidden",
                       backgroundImage: `url(${appBackground})`,
                       backgroundSize: "cover",
-                      backgroundRepeat: "no-repeat"
+                      backgroundRepeat: "no-repeat",
+                      flexDirection: "column"
                     }}
                   >
                     <Sidebar />

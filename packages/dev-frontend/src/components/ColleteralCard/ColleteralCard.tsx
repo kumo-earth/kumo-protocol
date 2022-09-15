@@ -55,7 +55,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
         </Flex>
       )} */}
       <Heading as="h2">
-        {(collateralType === "bct" && "BCT") || (collateralType === "mco2" && "MCO2")} Vault
+        {(collateralType === "bct" && "Carbon Token X") || (collateralType === "mco2" && "Biodiversity Token Y")} <span style={{ marginLeft: "22px" }}>Vault</span>
       </Heading>
 
       <Box sx={{ px: 4 }}>
@@ -70,13 +70,13 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
           <Heading as="h4">COLLATERAL</Heading>
           <Heading as="h4">
             {collateral.prettify(2)}{" "}
-            {(collateralType === "bct" && "BCT") || (collateralType === "mco2" && "MCO2")}
+            {(collateralType === "bct" && "Carbon Token X") || (collateralType === "mco2" && "Biodiversity Token Y")}
           </Heading>
         </Flex>
         <Box sx={{ my: 2 }}>
           <Progress
             max={10000}
-            value={collateralType === "bct" ? "3000" : "7000"}
+            value={collateral.toString()}
             sx={{ height: "12px", backgroundColor: "#F0CFDC" }}
           ></Progress>
         </Box>

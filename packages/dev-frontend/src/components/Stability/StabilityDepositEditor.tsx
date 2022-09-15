@@ -63,6 +63,9 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
     originalDeposit.currentKUSD.nonZero &&
     Difference.between(newPoolShare, originalPoolShare).nonZero;
 
+  let unit = ((getPathName(location) === "bct" && "Carbon Token X") || (getPathName(location) === "mco2" && "Biodiversity Token Y")) || ""
+
+
   return (
     <Card
       sx={{
@@ -71,7 +74,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
       variant="base"
     >
       <Heading as="h2">
-        {getPathName(location).toUpperCase()} Stability Pool
+        {unit.toUpperCase()}  <span style={{ marginLeft: "20px" }}>Stability Pool</span>
         {edited && !changePending && (
           <Button
             variant="titleIcon"

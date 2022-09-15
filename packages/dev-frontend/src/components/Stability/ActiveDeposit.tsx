@@ -65,6 +65,7 @@ export const ActiveDeposit: React.FC = () => {
       dispatchEvent("REWARDS_CLAIMED");
     }
   }, [transactionState.type, dispatchEvent]);
+  let unit = ((getPathName(location) === "bct" && "Carbon Token X") || (getPathName(location) === "mco2" && "Biodiversity Token Y")) || ""
 
   return (
     <Card
@@ -83,12 +84,12 @@ export const ActiveDeposit: React.FC = () => {
       variant="base"
     >
       <Heading as="h2">
-        {getPathName(location).toUpperCase()} Stability Pool
-        {!isWaitingForTransaction && (
+        {unit.toUpperCase()} <span style={{ marginLeft: "22px" }}>Stability Pool</span> 
+        {/* {!isWaitingForTransaction && (
           <Flex sx={{ justifyContent: "flex-end" }}>
             <RemainingKUMO />
           </Flex>
-        )}
+        )} */}
       </Heading>
       <Box sx={{ p: [2, 3] }}>
         <Box>
@@ -111,7 +112,7 @@ export const ActiveDeposit: React.FC = () => {
             inputId="deposit-gain"
             amount={stabilityDeposit.collateralGain.prettify(4)}
             color={stabilityDeposit.collateralGain.nonZero && "success"}
-            unit={getPathName(location).toUpperCase()}
+            unit={unit.toUpperCase()}
           />
 
           <Flex sx={{ alignItems: "center" }}>
@@ -140,19 +141,19 @@ export const ActiveDeposit: React.FC = () => {
         </Box>
 
         <Flex variant="layout.actions">
-          <Button variant="outline" onClick={handleAdjustDeposit}>
+          <Button onClick={handleAdjustDeposit}>
             <Icon name="pen" size="sm" />
             &nbsp;Adjust
           </Button>
 
           <ClaimRewards disabled={!hasGain && !hasReward}>
-            Claim {getPathName(location).toUpperCase()} and LQTY
+            Claim {unit.toUpperCase()} and KUMO
           </ClaimRewards>
         </Flex>
 
         {hasTrove && (
           <ClaimAndMove disabled={!hasGain}>
-            Claim KUMO and move {getPathName(location).toUpperCase()} to Trove
+            Claim KUMO and move {unit.toUpperCase()} to Trove
           </ClaimAndMove>
         )}
       </Box>
