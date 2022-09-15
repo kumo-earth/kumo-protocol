@@ -115,7 +115,7 @@ contract('BorrowerOperations', async accounts => {
       // Mint token to each acccount
       let index = 0;
       for (const acc of accounts) {
-        // await vstaToken.approve(vstaStaking.address, await erc20Asset1.balanceOf(acc), { from: acc })
+        await kumoToken.approve(kumoStaking.address, await web3.eth.getBalance(acc), { from: acc })
         await erc20.mint(acc, await web3.eth.getBalance(acc))
         index++;
 
@@ -522,7 +522,7 @@ contract('BorrowerOperations', async accounts => {
       await openTrove({ asset: assetAddress1,  ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       await openTrove({ asset: assetAddress1,  ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
-      const aliceColl = (await troveManager.getEntireDebtAndColl(alice, assetAddress1))[1]
+      const aliceColl = (await troveManager.getEntireDebtAndColl(alice, assetAddress1))[2]
 
       // Check Trove is active
       const alice_Trove_Before = await troveManager.Troves(alice,assetAddress1)
@@ -1056,7 +1056,7 @@ contract('BorrowerOperations', async accounts => {
         const emittedFee = toBN(th.getKUSDFeeFromKUSDBorrowingEvent(withdrawalTx))
         assert.isTrue(emittedFee.gt(toBN('0')))
 
-        const newDebt = (await troveManager.Troves(D,assetAddress1))[0]
+        const newDebt = (await troveManager.Troves(D,assetAddress1))[1]
 
         // Check debt on Trove struct equals initial debt + withdrawal + emitted fee
         th.assertIsApproximatelyEqual(newDebt, D_debtBefore.add(withdrawal_D).add(emittedFee), 10000)
@@ -1805,7 +1805,7 @@ contract('BorrowerOperations', async accounts => {
         const emittedFee = toBN(th.getKUSDFeeFromKUSDBorrowingEvent(adjustmentTx))
         assert.isTrue(emittedFee.gt(toBN('0')))
 
-        const D_newDebt = (await troveManager.Troves(D, assetAddress1))[0]
+        const D_newDebt = (await troveManager.Troves(D, assetAddress1))[1]
     
         // Check debt on Trove struct equals initila debt plus drawn debt plus emitted fee
         assert.isTrue(D_newDebt.eq(D_debtBefore.add(withdrawal_D).add(emittedFee)))
@@ -3468,7 +3468,7 @@ contract('BorrowerOperations', async accounts => {
         const emittedFee = toBN(th.getKUSDFeeFromKUSDBorrowingEvent(openTroveTx))
         assert.isTrue(toBN(emittedFee).gt(toBN('0')))
 
-        const newDebt = (await troveManager.Troves(D, assetAddress1))[0]
+        const newDebt = (await troveManager.Troves(D, assetAddress1))[1]
 
         // Check debt on Trove struct equals drawn debt plus emitted fee
         th.assertIsApproximatelyEqual(newDebt, D_KUSDRequest.add(emittedFee).add(KUSD_GAS_COMPENSATION), 100000)
