@@ -2,8 +2,6 @@
 
 pragma solidity 0.8.11;
 
-// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-
 import "./BaseMath.sol";
 import "./KumoMath.sol";
 import "../Interfaces/IActivePool.sol";
