@@ -7,6 +7,7 @@ const { toUtf8Bytes } = require('@ethersproject/strings');
 const { pack } = require('@ethersproject/solidity');
 const { hexlify } = require("@ethersproject/bytes");
 const { ecsign } = require('ethereumjs-util');
+const { ZERO_ADDRESS } = require("@openzeppelin/test-helpers/src/constants.js");
 
 
 // the second account our hardhatenv creates (for EOA A)
@@ -192,14 +193,14 @@ contract('KUMO Token', async accounts => {
   it("approve(): reverts when spender param is address(0)", async () => {
     await mintToABC()
 
-    const txPromise = kumoTokenTester.approve(erc20.address, dec(100, 18), { from: B })
+    const txPromise = kumoTokenTester.approve(ZERO_ADDRESS, dec(100, 18), { from: B })
     await assertRevert(txPromise)
   })
 
   it("approve(): reverts when owner param is address(0)", async () => {
     await mintToABC()
 
-    const txPromise = kumoTokenTester.callInternalApprove(erc20.address, A, dec(100, 18), { from: B })
+    const txPromise = kumoTokenTester.callInternalApprove(ZERO_ADDRESS, A, dec(100, 18), { from: B })
     await assertRevert(txPromise)
   })
 
@@ -256,7 +257,7 @@ contract('KUMO Token', async accounts => {
     await mintToABC()
 
     await assertRevert(kumoTokenTester.transfer(kumoTokenTester.address, 1, { from: A }))
-    await assertRevert(kumoTokenTester.transfer(erc20.address, 1, { from: A }))
+    await assertRevert(kumoTokenTester.transfer(ZERO_ADDRESS, 1, { from: A }))
     await assertRevert(kumoTokenTester.transfer(communityIssuance.address, 1, { from: A }))
     await assertRevert(kumoTokenTester.transfer(kumoStaking.address, 1, { from: A }))
   })
@@ -264,8 +265,8 @@ contract('KUMO Token', async accounts => {
   it('transfer(): transfer to or from the zero-address reverts', async () => {
     await mintToABC()
 
-    const txPromiseFromZero = kumoTokenTester.callInternalTransfer(erc20.address, A, dec(100, 18), { from: B })
-    const txPromiseToZero = kumoTokenTester.callInternalTransfer(A, erc20.address, dec(100, 18), { from: B })
+    const txPromiseFromZero = kumoTokenTester.callInternalTransfer(ZERO_ADDRESS, A, dec(100, 18), { from: B })
+    const txPromiseToZero = kumoTokenTester.callInternalTransfer(A, ZERO_ADDRESS, dec(100, 18), { from: B })
     await assertRevert(txPromiseFromZero)
     await assertRevert(txPromiseToZero)
   })
@@ -281,7 +282,7 @@ contract('KUMO Token', async accounts => {
   })
 
   it('mint(): reverts when beneficiary is address(0)', async () => {
-    const tx = kumoTokenTester.unprotectedMint(erc20.address, 100)
+    const tx = kumoTokenTester.unprotectedMint(ZERO_ADDRESS, 100)
     await assertRevert(tx)
   })
 
