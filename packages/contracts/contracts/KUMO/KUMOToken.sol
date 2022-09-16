@@ -216,14 +216,10 @@ contract KUMOToken is CheckContract, IKUMOToken {
         address recipient,
         uint256 amount
     ) external override returns (bool) {
-        console.log("---------------transferFrom");
         if (_isFirstYear()) {
             _requireSenderIsNotMultisig(sender);
         }
-        console.log("-----------------firstYearPassed");
-        console.log("------------------recipient: ", recipient);
         _requireValidRecipient(recipient);
-        console.log("------------------_requireValidRecipient");
 
         _transfer(sender, recipient, amount);
         _approve(
