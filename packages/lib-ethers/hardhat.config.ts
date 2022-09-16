@@ -12,6 +12,7 @@ import { ContractFactory, Overrides } from "@ethersproject/contracts";
 import { task, HardhatUserConfig, types, extendEnvironment } from "hardhat/config";
 import { HardhatRuntimeEnvironment, NetworkUserConfig } from "hardhat/types";
 import "@nomiclabs/hardhat-ethers";
+import "@openzeppelin/hardhat-upgrades"
 
 import { Decimal } from "@kumodao/lib-base";
 
@@ -19,6 +20,7 @@ import { deployAndSetupContracts, deployTellorCaller, setSilent } from "./utils/
 import { _connectToContracts, _KumoDeploymentJSON, _priceFeedIsTestnet } from "./src/contracts";
 
 import accounts from "./accounts.json";
+import { Contract } from "ethers";
 
 dotenv.config();
 
@@ -137,6 +139,13 @@ const getContractFactory: (
     }
   : env => env.ethers.getContractFactory;
 
+
+const deployProxy: (
+  env: HardhatRuntimeEnvironment
+) => (Contract: ContractFactory, args: unknown[], opts?: object) => Promise<Contract> = (env) => {
+  return env.upgrades.deployProxy;
+}
+
 extendEnvironment(env => {
   env.deployKumo = async (
     deployer,
@@ -147,6 +156,7 @@ extendEnvironment(env => {
     const deployment = await deployAndSetupContracts(
       deployer,
       getContractFactory(env),
+      deployProxy(env),
       !useRealPriceFeed,
       env.network.name === "dev",
       wethAddress,

@@ -3837,6 +3837,25 @@ contract('StabilityPool', async accounts => {
       assert.isTrue(txD.receipt.status)
     })
   })
+
+  describe('StabilityPool with upgrades', () => {
+    let StabilityPoolV2;
+    let stabilityPoolV2;
+    let arg;
+
+    beforeEach(async () => {
+      StabilityPoolV2 = await ethers.getContractFactory("StabilityPoolV2");
+      contracts = await deploymentHelper.deployKUMOCoreUpgradeableEthers();
+      arg = 42;
+    })
+
+    it("successfully upgrades", async () => {
+      stabilityPoolV2 = await upgrades.upgradeProxy(contracts.stabilityPoolEthers.address, StabilityPoolV2, { call: { fn: "initializeV2", args: [arg] }, kinds: "uups"});
+    })
+    it("reinitialized correctly", async () => {
+      assert.equal(await stabilityPoolV2.testFunction(), arg, 'newVar should be equal value from initializer')
+    })
+  })
 })
 
 contract('Reset chain state', async accounts => { })

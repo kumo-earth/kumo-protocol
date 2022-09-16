@@ -91,16 +91,25 @@ class DeploymentHelper {
     let contracts = {}
 
     const SortedTrovesEthers = await ethers.getContractFactory("SortedTroves")
+    const StabilityPoolEthers = await ethers.getContractFactory("StabilityPool")
+    const StabilityPoolTesterEthers = await ethers.getContractFactory("StabilityPoolTester")
+
     contracts.sortedTrovesEthers = await upgrades.deployProxy(SortedTrovesEthers, [], { kind: "uups" })
+    contracts.stabilityPoolEthers = await upgrades.deployProxy(StabilityPoolEthers, [], { kind: "uups" })
+    contracts.stabilityPoolTesterEthers = await upgrades.deployProxy(StabilityPoolTesterEthers, [], { kind: "uups" })
 
     return contracts
   }
 
   static async deployKumoCoreHardhat() {
+    // Upgradable Contracts
+    const { sortedTrovesEthers, stabilityPoolEthers } = await this.deployKUMOCoreUpgradeableEthers();
+    const sortedTroves = await SortedTroves.at(sortedTrovesEthers.address);
+    const stabilityPool = await StabilityPool.at(stabilityPoolEthers.address);
+
     const priceFeedTestnet = await PriceFeedTestnet.new()
     const troveManager = await TroveManager.new()
     const activePool = await ActivePool.new()
-    const stabilityPool = await StabilityPool.new()
     const gasPool = await GasPool.new()
     const defaultPool = await DefaultPool.new()
     const collSurplusPool = await CollSurplusPool.new()
@@ -112,10 +121,6 @@ class DeploymentHelper {
       stabilityPool.address,
       borrowerOperations.address
     )
-
-    // Upgradable Contracts
-    const { sortedTrovesEthers } = await this.deployKUMOCoreUpgradeableEthers();
-    const sortedTroves = await SortedTroves.at(sortedTrovesEthers.address);
 
     SortedTroves.setAsDeployed(sortedTroves)
     KUSDToken.setAsDeployed(kusdToken)
@@ -149,7 +154,7 @@ class DeploymentHelper {
 
   static async deployTesterContractsHardhat() {
     const testerContracts = {}
-    const { sortedTrovesEthers } = await this.deployKUMOCoreUpgradeableEthers();
+    const { sortedTrovesEthers, stabilityPoolTesterEthers } = await this.deployKUMOCoreUpgradeableEthers();
 
     // Contract without testers (yet)
     testerContracts.priceFeedTestnet = await PriceFeedTestnet.new()
@@ -158,7 +163,7 @@ class DeploymentHelper {
     testerContracts.communityIssuance = await CommunityIssuanceTester.new()
     testerContracts.activePool = await ActivePoolTester.new()
     testerContracts.defaultPool = await DefaultPoolTester.new()
-    testerContracts.stabilityPool = await StabilityPoolTester.new()
+    testerContracts.stabilityPool = await StabilityPoolTester.at(stabilityPoolTesterEthers.address)
     testerContracts.gasPool = await GasPool.new()
     testerContracts.collSurplusPool = await CollSurplusPool.new()
     testerContracts.math = await KumoMathTester.new()

@@ -58,7 +58,7 @@ contract('All Kumo functions with onlyOwner modifier', async accounts => {
     }
   }
 
-  const testSetAddresses = async (contract, numberOfAddresses) => {
+  const testSetAddresses = async (contract, numberOfAddresses, checkCalledTwice = true) => {
     const dumbContract = await GasPool.new()
     const params = Array(numberOfAddresses).fill(dumbContract.address)
 
@@ -74,7 +74,9 @@ contract('All Kumo functions with onlyOwner modifier', async accounts => {
     const txOwner = await contract.setAddresses(...params, { from: owner })
     assert.isTrue(txOwner.receipt.status)
     // fails if called twice
-    await th.assertRevert(contract.setAddresses(...params, { from: owner }))
+    if (checkCalledTwice) {
+      await th.assertRevert(contract.setAddresses(...params, { from: owner }))
+    }
   }
 
   describe('TroveManager', async accounts => {
@@ -97,7 +99,7 @@ contract('All Kumo functions with onlyOwner modifier', async accounts => {
 
   describe('StabilityPool', async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      await testSetAddresses(stabilityPool, 7)
+      await testSetAddresses(stabilityPool, 7, false)
     })
   })
 

@@ -51,7 +51,7 @@ contract('KUMO community issuance arithmetic tests', async accounts => {
   beforeEach(async () => {
     contracts = await deploymentHelper.deployKumoCore()
     const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
-    contracts.stabilityPool = await StabilityPool.new()
+    // contracts.stabilityPool = await StabilityPool.new()
     contracts = await deploymentHelper.deployKUSDToken(contracts)
 
     stabilityPool = contracts.stabilityPool
