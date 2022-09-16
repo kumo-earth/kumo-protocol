@@ -3,6 +3,7 @@ import { ContractTransaction, ContractFactory, Overrides } from "@ethersproject/
 import { Wallet } from "@ethersproject/wallet";
 
 import { Decimal } from "@kumodao/lib-base";
+import { Contract } from "ethers";
 
 import {
   _KumoContractAddresses,
@@ -48,13 +49,42 @@ const deployContractAndGetBlockNumber = async (
   return [contract.address, receipt.blockNumber];
 };
 
+const deployUpgradeableContractAndGetBlockNumber = async (
+  deployer: Signer,
+  getContractFactory: (name: string, signer: Signer) => Promise<ContractFactory>,
+  deployProxy: (Contract: ContractFactory, args: unknown[], opts?: object) => Promise<Contract>,
+  contractName: string,
+  ...args: unknown[]
+): Promise<[address: string, blockNumber: number]> => {
+  log(`Deploying upgradeable ${contractName} ...`);
+  const contract = await deployProxy(await getContractFactory(contractName, deployer), args, { kind: "uups" });
+
+  log(`Waiting for transaction ${contract.deployTransaction.hash} ...`);
+  const receipt = await contract.deployTransaction.wait();
+
+  log({
+    contractAddress: contract.address,
+    blockNumber: receipt.blockNumber,
+    gasUsed: receipt.gasUsed.toNumber()
+  });
+
+  log();
+
+  return [contract.address, receipt.blockNumber];
+}; 
+
 const deployContract: (
   ...p: Parameters<typeof deployContractAndGetBlockNumber>
 ) => Promise<string> = (...p) => deployContractAndGetBlockNumber(...p).then(([a]) => a);
 
+const deployUpgradeableContract: (
+  ...p: Parameters<typeof deployUpgradeableContractAndGetBlockNumber>
+) => Promise<string> = (...p) => deployUpgradeableContractAndGetBlockNumber(...p).then(([a]) => a);
+
 const deployContracts = async (
   deployer: Signer,
   getContractFactory: (name: string, signer: Signer) => Promise<ContractFactory>,
+  deployProxy: (Contract: ContractFactory, args: unknown[], opts?: object) => Promise<Contract>,
   priceFeedIsTestnet = true,
   overrides?: Overrides
 ): Promise<[addresses: Omit<_KumoContractAddresses, "uniToken">, startBlock: number]> => {
@@ -94,12 +124,9 @@ const deployContracts = async (
       priceFeedIsTestnet ? "PriceFeedTestnet" : "PriceFeed",
       { ...overrides }
     ),
-    sortedTroves: await deployContract(deployer, getContractFactory, "SortedTroves", {
-      ...overrides
-    }),
-    stabilityPool: await deployContract(deployer, getContractFactory, "StabilityPool", {
-      ...overrides
-    }),
+    // TODO: make sure that we don't need overrides for upgradeable contracts
+    sortedTroves: await deployUpgradeableContract(deployer, getContractFactory, deployProxy, "SortedTroves"),
+    stabilityPool: await deployUpgradeableContract(deployer, getContractFactory, deployProxy, "StabilityPool"),
     gasPool: await deployContract(deployer, getContractFactory, "GasPool", {
       ...overrides
     }),
@@ -326,6 +353,7 @@ const deployMockUniToken = (
 export const deployAndSetupContracts = async (
   deployer: Signer,
   getContractFactory: (name: string, signer: Signer) => Promise<ContractFactory>,
+  deployProxy: (Contract: ContractFactory, args: unknown[], opts?: object) => Promise<Contract>,
   _priceFeedIsTestnet = true,
   _isDev = true,
   wethAddress?: string,
@@ -349,7 +377,7 @@ export const deployAndSetupContracts = async (
     _uniTokenIsMock: !wethAddress,
     _isDev,
 
-    ...(await deployContracts(deployer, getContractFactory, _priceFeedIsTestnet, overrides).then(
+    ...(await deployContracts(deployer, getContractFactory, deployProxy, _priceFeedIsTestnet, overrides).then(
       async ([addresses, startBlock]) => ({
         startBlock,
 

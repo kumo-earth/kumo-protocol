@@ -3,6 +3,7 @@ const ActivePool = artifacts.require("./ActivePool.sol")
 const DefaultPool = artifacts.require("./DefaultPool.sol")
 const NonPayable = artifacts.require("./NonPayable.sol")
 
+const deploymentHelper = require("../utils/deploymentHelpers.js")
 const testHelpers = require("../utils/testHelpers.js")
 
 const th = testHelpers.TestHelper
@@ -19,7 +20,9 @@ contract('StabilityPool', async accounts => {
   const [owner, alice] = accounts;
 
   beforeEach(async () => {
-    stabilityPool = await StabilityPool.new()
+    const { stabilityPoolEthers } = await deploymentHelper.deployKUMOCoreUpgradeableEthers();
+
+    stabilityPool = await StabilityPool.at(stabilityPoolEthers.address)
     const mockActivePoolAddress = (await NonPayable.new()).address
     const dumbContractAddress = (await NonPayable.new()).address
     await stabilityPool.setAddresses(dumbContractAddress, dumbContractAddress, mockActivePoolAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress)

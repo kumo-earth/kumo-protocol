@@ -613,35 +613,48 @@ interface SortedTrovesCalls {
   getSize(_overrides?: CallOverrides): Promise<BigNumber>;
   isEmpty(_overrides?: CallOverrides): Promise<boolean>;
   isFull(_overrides?: CallOverrides): Promise<boolean>;
-  isOwner(_overrides?: CallOverrides): Promise<boolean>;
   owner(_overrides?: CallOverrides): Promise<string>;
+  proxiableUUID(_overrides?: CallOverrides): Promise<string>;
   troveManager(_overrides?: CallOverrides): Promise<string>;
   validInsertPosition(_NICR: BigNumberish, _prevId: string, _nextId: string, _overrides?: CallOverrides): Promise<boolean>;
 }
 
 interface SortedTrovesTransactions {
+  initialize(_overrides?: Overrides): Promise<void>;
   insert(_id: string, _NICR: BigNumberish, _prevId: string, _nextId: string, _overrides?: Overrides): Promise<void>;
   reInsert(_id: string, _newNICR: BigNumberish, _prevId: string, _nextId: string, _overrides?: Overrides): Promise<void>;
   remove(_id: string, _overrides?: Overrides): Promise<void>;
+  renounceOwnership(_overrides?: Overrides): Promise<void>;
   setParams(_size: BigNumberish, _troveManagerAddress: string, _borrowerOperationsAddress: string, _overrides?: Overrides): Promise<void>;
+  transferOwnership(newOwner: string, _overrides?: Overrides): Promise<void>;
+  upgradeTo(newImplementation: string, _overrides?: Overrides): Promise<void>;
+  upgradeToAndCall(newImplementation: string, data: BytesLike, _overrides?: PayableOverrides): Promise<void>;
 }
 
 export interface SortedTroves
   extends _TypedKumoContract<SortedTrovesCalls, SortedTrovesTransactions> {
   readonly filters: {
+    AdminChanged(previousAdmin?: null, newAdmin?: null): EventFilter;
+    BeaconUpgraded(beacon?: string | null): EventFilter;
     BorrowerOperationsAddressChanged(_borrowerOperationsAddress?: null): EventFilter;
+    Initialized(version?: null): EventFilter;
     NodeAdded(_id?: null, _NICR?: null): EventFilter;
     NodeRemoved(_id?: null): EventFilter;
     OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
     SortedTrovesAddressChanged(_sortedDoublyLLAddress?: null): EventFilter;
     TroveManagerAddressChanged(_troveManagerAddress?: null): EventFilter;
+    Upgraded(implementation?: string | null): EventFilter;
   };
+  extractEvents(logs: Log[], name: "AdminChanged"): _TypedLogDescription<{ previousAdmin: string; newAdmin: string }>[];
+  extractEvents(logs: Log[], name: "BeaconUpgraded"): _TypedLogDescription<{ beacon: string }>[];
   extractEvents(logs: Log[], name: "BorrowerOperationsAddressChanged"): _TypedLogDescription<{ _borrowerOperationsAddress: string }>[];
+  extractEvents(logs: Log[], name: "Initialized"): _TypedLogDescription<{ version: number }>[];
   extractEvents(logs: Log[], name: "NodeAdded"): _TypedLogDescription<{ _id: string; _NICR: BigNumber }>[];
   extractEvents(logs: Log[], name: "NodeRemoved"): _TypedLogDescription<{ _id: string }>[];
   extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
   extractEvents(logs: Log[], name: "SortedTrovesAddressChanged"): _TypedLogDescription<{ _sortedDoublyLLAddress: string }>[];
   extractEvents(logs: Log[], name: "TroveManagerAddressChanged"): _TypedLogDescription<{ _troveManagerAddress: string }>[];
+  extractEvents(logs: Log[], name: "Upgraded"): _TypedLogDescription<{ implementation: string }>[];
 }
 
 interface StabilityPoolCalls {
@@ -678,22 +691,27 @@ interface StabilityPoolCalls {
   getEntireSystemDebt(_overrides?: CallOverrides): Promise<BigNumber>;
   getFrontEndKUMOGain(_frontEnd: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getTotalKUSDDeposits(_overrides?: CallOverrides): Promise<BigNumber>;
-  isOwner(_overrides?: CallOverrides): Promise<boolean>;
   kusdToken(_overrides?: CallOverrides): Promise<string>;
   lastETHError_Offset(_overrides?: CallOverrides): Promise<BigNumber>;
   lastKUMOError(_overrides?: CallOverrides): Promise<BigNumber>;
   lastkusdLossError_Offset(_overrides?: CallOverrides): Promise<BigNumber>;
   owner(_overrides?: CallOverrides): Promise<string>;
   priceFeed(_overrides?: CallOverrides): Promise<string>;
+  proxiableUUID(_overrides?: CallOverrides): Promise<string>;
   sortedTroves(_overrides?: CallOverrides): Promise<string>;
   troveManager(_overrides?: CallOverrides): Promise<string>;
 }
 
 interface StabilityPoolTransactions {
+  initialize(_overrides?: Overrides): Promise<void>;
   offset(_debtToOffset: BigNumberish, _collToAdd: BigNumberish, _overrides?: Overrides): Promise<void>;
   provideToSP(_amount: BigNumberish, _frontEndTag: string, _overrides?: Overrides): Promise<void>;
   registerFrontEnd(_kickbackRate: BigNumberish, _overrides?: Overrides): Promise<void>;
+  renounceOwnership(_overrides?: Overrides): Promise<void>;
   setAddresses(_borrowerOperationsAddress: string, _troveManagerAddress: string, _activePoolAddress: string, _kusdTokenAddress: string, _sortedTrovesAddress: string, _priceFeedAddress: string, _communityIssuanceAddress: string, _overrides?: Overrides): Promise<void>;
+  transferOwnership(newOwner: string, _overrides?: Overrides): Promise<void>;
+  upgradeTo(newImplementation: string, _overrides?: Overrides): Promise<void>;
+  upgradeToAndCall(newImplementation: string, data: BytesLike, _overrides?: PayableOverrides): Promise<void>;
   withdrawETHGainToTrove(_upperHint: string, _lowerHint: string, _overrides?: Overrides): Promise<void>;
   withdrawFromSP(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
 }
@@ -702,6 +720,8 @@ export interface StabilityPool
   extends _TypedKumoContract<StabilityPoolCalls, StabilityPoolTransactions> {
   readonly filters: {
     ActivePoolAddressChanged(_newActivePoolAddress?: null): EventFilter;
+    AdminChanged(previousAdmin?: null, newAdmin?: null): EventFilter;
+    BeaconUpgraded(beacon?: string | null): EventFilter;
     BorrowerOperationsAddressChanged(_newBorrowerOperationsAddress?: null): EventFilter;
     CommunityIssuanceAddressChanged(_newCommunityIssuanceAddress?: null): EventFilter;
     DefaultPoolAddressChanged(_newDefaultPoolAddress?: null): EventFilter;
@@ -714,6 +734,7 @@ export interface StabilityPool
     FrontEndStakeChanged(_frontEnd?: string | null, _newFrontEndStake?: null, _depositor?: null): EventFilter;
     FrontEndTagSet(_depositor?: string | null, _frontEnd?: string | null): EventFilter;
     G_Updated(_G?: null, _epoch?: null, _scale?: null): EventFilter;
+    Initialized(version?: null): EventFilter;
     KUMOPaidToDepositor(_depositor?: string | null, _KUMO?: null): EventFilter;
     KUMOPaidToFrontEnd(_frontEnd?: string | null, _KUMO?: null): EventFilter;
     KUSDTokenAddressChanged(_newKUSDTokenAddress?: null): EventFilter;
@@ -726,10 +747,13 @@ export interface StabilityPool
     StabilityPoolETHBalanceUpdated(_newBalance?: null): EventFilter;
     StabilityPoolKUSDBalanceUpdated(_newBalance?: null): EventFilter;
     TroveManagerAddressChanged(_newTroveManagerAddress?: null): EventFilter;
+    Upgraded(implementation?: string | null): EventFilter;
     UserDepositChanged(_depositor?: string | null, _newDeposit?: null): EventFilter;
     VaultParametersBaseChanged(newAddress?: string | null): EventFilter;
   };
   extractEvents(logs: Log[], name: "ActivePoolAddressChanged"): _TypedLogDescription<{ _newActivePoolAddress: string }>[];
+  extractEvents(logs: Log[], name: "AdminChanged"): _TypedLogDescription<{ previousAdmin: string; newAdmin: string }>[];
+  extractEvents(logs: Log[], name: "BeaconUpgraded"): _TypedLogDescription<{ beacon: string }>[];
   extractEvents(logs: Log[], name: "BorrowerOperationsAddressChanged"): _TypedLogDescription<{ _newBorrowerOperationsAddress: string }>[];
   extractEvents(logs: Log[], name: "CommunityIssuanceAddressChanged"): _TypedLogDescription<{ _newCommunityIssuanceAddress: string }>[];
   extractEvents(logs: Log[], name: "DefaultPoolAddressChanged"): _TypedLogDescription<{ _newDefaultPoolAddress: string }>[];
@@ -742,6 +766,7 @@ export interface StabilityPool
   extractEvents(logs: Log[], name: "FrontEndStakeChanged"): _TypedLogDescription<{ _frontEnd: string; _newFrontEndStake: BigNumber; _depositor: string }>[];
   extractEvents(logs: Log[], name: "FrontEndTagSet"): _TypedLogDescription<{ _depositor: string; _frontEnd: string }>[];
   extractEvents(logs: Log[], name: "G_Updated"): _TypedLogDescription<{ _G: BigNumber; _epoch: BigNumber; _scale: BigNumber }>[];
+  extractEvents(logs: Log[], name: "Initialized"): _TypedLogDescription<{ version: number }>[];
   extractEvents(logs: Log[], name: "KUMOPaidToDepositor"): _TypedLogDescription<{ _depositor: string; _KUMO: BigNumber }>[];
   extractEvents(logs: Log[], name: "KUMOPaidToFrontEnd"): _TypedLogDescription<{ _frontEnd: string; _KUMO: BigNumber }>[];
   extractEvents(logs: Log[], name: "KUSDTokenAddressChanged"): _TypedLogDescription<{ _newKUSDTokenAddress: string }>[];
@@ -754,6 +779,7 @@ export interface StabilityPool
   extractEvents(logs: Log[], name: "StabilityPoolETHBalanceUpdated"): _TypedLogDescription<{ _newBalance: BigNumber }>[];
   extractEvents(logs: Log[], name: "StabilityPoolKUSDBalanceUpdated"): _TypedLogDescription<{ _newBalance: BigNumber }>[];
   extractEvents(logs: Log[], name: "TroveManagerAddressChanged"): _TypedLogDescription<{ _newTroveManagerAddress: string }>[];
+  extractEvents(logs: Log[], name: "Upgraded"): _TypedLogDescription<{ implementation: string }>[];
   extractEvents(logs: Log[], name: "UserDepositChanged"): _TypedLogDescription<{ _depositor: string; _newDeposit: BigNumber }>[];
   extractEvents(logs: Log[], name: "VaultParametersBaseChanged"): _TypedLogDescription<{ newAddress: string }>[];
 }
