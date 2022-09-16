@@ -4298,8 +4298,8 @@ contract('BorrowerOperations', async accounts => {
         const troveColl = toBN(dec(1000, 'ether'))
         const troveTotalDebt = toBN(dec(100000, 18))
         const troveKUSDAmount = await getOpenTroveKUSDAmount(troveTotalDebt, assetAddress1)
-        await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, alice, alice, { from: alice, value: troveColl })
-        await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, bob, bob, { from: bob, value: troveColl })
+        await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, alice, alice, { from: alice })
+        await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, bob, bob, { from: bob })
 
         await priceFeed.setPrice(dec(100, 18))
 
