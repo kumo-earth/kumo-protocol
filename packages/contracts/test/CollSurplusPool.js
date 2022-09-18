@@ -57,16 +57,16 @@ contract('CollSurplusPool', async accounts => {
 
     // Mint token to each acccount
     let index = 0;
-      for (const acc of accounts) {
-        
-        await erc20.mint(acc, await web3.eth.getBalance(acc))
-        index++;
-  
-        if (index >= 23)
-          break;
-        }
+    for (const acc of accounts) {
 
-    })
+      await erc20.mint(acc, await web3.eth.getBalance(acc))
+      index++;
+
+      if (index >= 23)
+        break;
+    }
+
+  })
 
   it("CollSurplusPool::getAssetBalance(): Returns the ETH balance of the CollSurplusPool after redemption", async () => {
     const ETH_1 = await collSurplusPool.getAssetBalance(assetAddress1)
@@ -76,15 +76,15 @@ contract('CollSurplusPool', async accounts => {
     await priceFeed.setPrice(price)
 
     const { collateral: B_coll, netDebt: B_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraParams: { from: B } })
-    await openTrove({ asset: assetAddress1, extraKUSDAmount: B_netDebt, extraParams: { from: A, value: dec(3000, 'ether') } })
+    await openTrove({ asset: assetAddress1, tokenmount: dec(3000, 'ether'), extraKUSDAmount: B_netDebt, extraParams: { from: A } })
 
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
     // At ETH:USD = 100, this redemption should leave 1 ether of coll surplus
-    await th.redeemCollateralAndGetTxObject(A, contracts, B_netDebt)
+    await th.redeemCollateralAndGetTxObject(A, contracts, B_netDebt, assetAddress1)
 
-    const ETH_2 = await collSurplusPool.getAssetBalance()
+    const ETH_2 = await collSurplusPool.getAssetBalance(assetAddress1)
     th.assertIsApproximatelyEqual(ETH_2, B_coll.sub(B_netDebt.mul(mv._1e18BN).div(price)))
   })
 
@@ -96,7 +96,7 @@ contract('CollSurplusPool', async accounts => {
     await th.assertRevert(borrowerOperations.claimCollateral(assetAddress1, { from: A }), 'CollSurplusPool: No collateral available to claim')
   })
 
-  it("CollSurplusPool: claimColl(): Reverts if owner cannot receive ETH surplus", async () => {
+  it.skip("CollSurplusPool: claimColl(): Reverts if owner cannot receive ETH surplus", async () => {
     const nonPayable = await NonPayable.new()
 
     const price = toBN(dec(100, 18))
