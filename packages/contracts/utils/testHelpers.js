@@ -359,7 +359,7 @@ class TestHelper {
    * given the desired total debt, returns the KUSD amount that needs to be requested in openTrove
    * So, it subtracts the gas compensation and then the borrowing fee
    */
-  static async getOpenTroveKUSDAmount(contracts, totalDebt, asset) {   
+  static async getOpenTroveKUSDAmount(contracts, totalDebt, asset) {
     if (!asset)
       asset = this.ZERO_ADDRESS;
     const actualDebt = await this.getActualDebtFromComposite(totalDebt, contracts, asset)
@@ -466,7 +466,7 @@ class TestHelper {
   static getKUSDFeeFromKUSDBorrowingEvent(tx) {
     for (let i = 0; i < tx.logs.length; i++) {
       if (tx.logs[i].event === "KUSDBorrowingFeePaid") {
-        return (tx.logs[i].args[1]).toString()
+        return (tx.logs[i].args[2]).toString()
       }
     }
     throw ("The transaction logs do not contain an KUSDBorrowingFeePaid event")
@@ -997,7 +997,7 @@ class TestHelper {
     return gas
   }
 
-  static async redeemCollateralAndGetTxObject(redeemer, contracts, KUSDAmount,  asset, maxFee = this._100pct) {
+  static async redeemCollateralAndGetTxObject(redeemer, contracts, KUSDAmount, asset, maxFee = this._100pct) {
     const price = await contracts.priceFeedTestnet.getPrice()
     const tx = await this.performRedemptionTx(redeemer, price, contracts, KUSDAmount, asset, maxFee)
     return tx
