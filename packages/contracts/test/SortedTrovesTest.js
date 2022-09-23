@@ -283,7 +283,7 @@ contract('SortedTroves', async accounts => {
 
       const price_1 = await priceFeed.getPrice()
       
-      // Check troves are ordered
+      // Check troves are ordereda
       await assertSortedListIsOrdered(contracts)
 
       await borrowerOperations.openTrove(th._100pct, dec(100, 18), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(1, 'ether') })
@@ -319,11 +319,12 @@ contract('SortedTroves', async accounts => {
       await sortedTrovesTester.setSortedTroves(sortedTroves.address)
     })
 
-    context('when params are wrongly set', () => {
-      it('setParams(): reverts if size is zero', async () => {
-        await th.assertRevert(sortedTroves.setParams(0, sortedTrovesTester.address, sortedTrovesTester.address), 'SortedTroves: Size can’t be zero')
-      })
-    })
+    // removed the test, because we dont have the size parameter in the SortedTroves    
+    // context('when params are wrongly set', () => {
+    //   it('setParams(): reverts if size is zero', async () => {
+    //     await th.assertRevert(sortedTroves.setParams(0, sortedTrovesTester.address, sortedTrovesTester.address), 'SortedTroves: Size can’t be zero')
+    //   })
+    // })
 
     context('when params are properly set', () => {
       beforeEach('set params', async() => {
