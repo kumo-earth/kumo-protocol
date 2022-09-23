@@ -6,7 +6,7 @@ const { defaultAbiCoder } = require('@ethersproject/abi');
 const { toUtf8Bytes } = require('@ethersproject/strings');
 const { pack } = require('@ethersproject/solidity');
 const { hexlify } = require("@ethersproject/bytes");
-const { ecsign } = require('ethereumjs-util');
+const { ecsign, zeroAddress } = require('ethereumjs-util');
 
 const { toBN, assertRevert, assertAssert, dec, ZERO_ADDRESS } = testHelpers.TestHelper
 
@@ -59,21 +59,29 @@ contract('KUSDToken', async accounts => {
   let stabilityPool
   let troveManager
   let borrowerOperations
+  let hardhatTester
+  let erc20
+  let kumoParams
 
   let tokenName
   let tokenVersion
 
   const testCorpus = ({ withProxy = false }) => {
     beforeEach(async () => {
-
       const contracts = await deploymentHelper.deployTesterContractsHardhat()
-
-
       const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
       await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
       await deploymentHelper.connectKUMOContracts(KUMOContracts)
       await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
+
+      hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
+      erc20 = hardhatTester.erc20
+      assetAddress1 = erc20.address
+  
+      kumoParams = contracts.kumoParameters
+      await kumoParams.sanitizeParameters(assetAddress1);
+      await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
       kusdTokenOriginal = contracts.kusdToken
       if (withProxy) {

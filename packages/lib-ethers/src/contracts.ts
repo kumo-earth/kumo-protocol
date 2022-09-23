@@ -23,6 +23,7 @@ import kumoTokenAbi from "../abi/KUMOToken.json";
 import hintHelpersAbi from "../abi/HintHelpers.json";
 import lockupContractFactoryAbi from "../abi/LockupContractFactory.json";
 import kumoStakingAbi from "../abi/KUMOStaking.json";
+import kumoParametersAbi from "../abi/KumoParameters.json";
 import multiTroveGetterAbi from "../abi/MultiTroveGetter.json";
 import priceFeedAbi from "../abi/PriceFeed.json";
 import priceFeedTestnetAbi from "../abi/PriceFeedTestnet.json";
@@ -53,7 +54,8 @@ import {
   GasPool,
   Unipool,
   ERC20Mock,
-  IERC20
+  IERC20,
+  KumoParameters
 } from "../types";
 
 import { EthersProvider, EthersSigner } from "./types";
@@ -176,6 +178,7 @@ export interface _KumoContracts {
   hintHelpers: HintHelpers;
   lockupContractFactory: LockupContractFactory;
   kumoStaking: KUMOStaking;
+  kumoParameters: KumoParameters;
   multiTroveGetter: MultiTroveGetter;
   priceFeed: PriceFeed | PriceFeedTestnet;
   sortedTroves: SortedTroves;
@@ -212,6 +215,7 @@ const getAbi = (priceFeedIsTestnet: boolean, uniTokenIsMock: boolean): KumoContr
   hintHelpers: hintHelpersAbi,
   lockupContractFactory: lockupContractFactoryAbi,
   kumoStaking: kumoStakingAbi,
+  kumoParameters: kumoParametersAbi,
   multiTroveGetter: multiTroveGetterAbi,
   priceFeed: priceFeedIsTestnet ? priceFeedTestnetAbi : priceFeedAbi,
   sortedTroves: sortedTrovesAbi,

@@ -7,11 +7,12 @@ import "../DefaultPool.sol";
 contract DefaultPoolTester is DefaultPool {
     using SafeMath for uint256;
     
-    function unprotectedIncreaseKUSDDebt(uint _amount) external {
-        KUSDDebt  = KUSDDebt.add(_amount);
+    function unprotectedIncreaseKUSDDebt(address _asset, uint256 _amount) external {
+        KUSDDebts[_asset]  = KUSDDebts[_asset].add(_amount);
     }
 
-    function unprotectedPayable() external payable {
-        ETH = ETH.add(msg.value);
+    function unprotectedPayable(address _asset, uint256 amount) external payable {
+        amount = _asset == address(0) ? msg.value : amount;
+		assetsBalance[_asset] = assetsBalance[_asset].add(msg.value);
     }
 }

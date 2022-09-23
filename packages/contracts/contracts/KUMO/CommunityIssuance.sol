@@ -14,14 +14,14 @@ import "../Dependencies/SafeMath.sol";
 
 
 contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMath {
-    using SafeMath for uint;
+    using SafeMath for uint256;
 
     bool public isInitialized;
     // --- Data ---
 
     string constant public NAME = "CommunityIssuance";
 
-    uint constant public SECONDS_IN_ONE_MINUTE = 60;
+    uint256 constant public SECONDS_IN_ONE_MINUTE = 60;
 
    /* The issuance factor F determines the curvature of the issuance curve.
     *
@@ -37,7 +37,7 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
     * F = 0.5 ** (1/525600)
     * F = 0.999998681227695000 
     */
-    uint constant public ISSUANCE_FACTOR = 999998681227695000;
+    uint256 constant public ISSUANCE_FACTOR = 999998681227695000;
 
     /* 
     * The community KUMO supply cap is the starting balance of the Community Issuance contract.
@@ -45,20 +45,20 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
     * 
     * Set to 32M (slightly less than 1/3) of total KUMO supply.
     */
-    uint constant public KUMOSupplyCap = 32e24; // 32 million
+    uint256 constant public KUMOSupplyCap = 32e24; // 32 million
 
     IKUMOToken public kumoToken;
 
     address public stabilityPoolAddress;
 
-    uint public totalKUMOIssued;
-    uint public immutable deploymentTime;
+    uint256 public totalKUMOIssued;
+    uint256 public immutable deploymentTime;
 
     // --- Events ---
 
     // event KUMOTokenAddressSet(address _kumoTokenAddress);
     // event StabilityPoolAddressSet(address _stabilityPoolAddress);
-    // event TotalKUMOIssuedUpdated(uint _totalKUMOIssued);
+    // event TotalKUMOIssuedUpdated(uint256 _totalKUMOIssued);
 
     // --- Functions ---
 
@@ -86,7 +86,7 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
         stabilityPoolAddress = _stabilityPoolAddress;
 
         // When KUMOToken deployed, it should have transferred CommunityIssuance's KUMO entitlement
-        uint KUMOBalance = kumoToken.balanceOf(address(this));
+        uint256 KUMOBalance = kumoToken.balanceOf(address(this));
         assert(KUMOBalance >= KUMOSupplyCap);
 
         emit KUMOTokenAddressSet(_kumoTokenAddress);
@@ -95,11 +95,11 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
         _renounceOwnership();
     }
 
-    function issueKUMO() external override returns (uint) {
+    function issueKUMO() external override returns (uint256) {
         _requireCallerIsStabilityPool();
 
-        uint latestTotalKUMOIssued = KUMOSupplyCap.mul(_getCumulativeIssuanceFraction()).div(DECIMAL_PRECISION);
-        uint issuance = latestTotalKUMOIssued.sub(totalKUMOIssued);
+        uint256 latestTotalKUMOIssued = KUMOSupplyCap.mul(_getCumulativeIssuanceFraction()).div(DECIMAL_PRECISION);
+        uint256 issuance = latestTotalKUMOIssued.sub(totalKUMOIssued);
 
         totalKUMOIssued = latestTotalKUMOIssued;
         emit TotalKUMOIssuedUpdated(latestTotalKUMOIssued);
@@ -111,21 +111,21 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
 
     f: issuance factor that determines the shape of the curve
     t:  time passed since last KUMO issuance event  */
-    function _getCumulativeIssuanceFraction() internal view returns (uint) {
+    function _getCumulativeIssuanceFraction() internal view returns (uint256) {
         // Get the time passed since deployment
-        uint timePassedInMinutes = block.timestamp.sub(deploymentTime).div(SECONDS_IN_ONE_MINUTE);
+        uint256 timePassedInMinutes = block.timestamp.sub(deploymentTime).div(SECONDS_IN_ONE_MINUTE);
 
         // f^t
-        uint power = KumoMath._decPow(ISSUANCE_FACTOR, timePassedInMinutes);
+        uint256 power = KumoMath._decPow(ISSUANCE_FACTOR, timePassedInMinutes);
 
         //  (1 - f^t)
-        uint cumulativeIssuanceFraction = (uint(DECIMAL_PRECISION).sub(power));
+        uint256 cumulativeIssuanceFraction = (uint256(DECIMAL_PRECISION).sub(power));
         assert(cumulativeIssuanceFraction <= DECIMAL_PRECISION); // must be in range [0,1]
 
         return cumulativeIssuanceFraction;
     }
 
-    function sendKUMO(address _account, uint _KUMOamount) external override {
+    function sendKUMO(address _account, uint256 _KUMOamount) external override {
         _requireCallerIsStabilityPool();
 
         kumoToken.transfer(_account, _KUMOamount);

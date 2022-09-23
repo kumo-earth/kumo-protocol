@@ -10,51 +10,54 @@ contract BorrowerOperationsTester is BorrowerOperations {
 
     function getNewICRFromTroveChange
     (
-        uint _coll, 
-        uint _debt, 
-        uint _collChange, 
+        uint256 _coll, 
+        uint256 _debt, 
+        uint256 _collChange, 
         bool isCollIncrease, 
-        uint _debtChange, 
+        uint256 _debtChange, 
         bool isDebtIncrease, 
-        uint _price
+        uint256 _price
     ) 
     external
     pure
-    returns (uint)
+    returns (uint256)
     {
         return _getNewICRFromTroveChange(_coll, _debt, _collChange, isCollIncrease, _debtChange, isDebtIncrease, _price);
     }
 
     function getNewTCRFromTroveChange
     (
-        uint _collChange, 
+        address _asset,
+        uint256 _collChange, 
         bool isCollIncrease,  
-        uint _debtChange, 
+        uint256 _debtChange, 
         bool isDebtIncrease, 
-        uint _price
+        uint256 _price
     ) 
     external 
     view
-    returns (uint) 
+    returns (uint256) 
     {
-        return _getNewTCRFromTroveChange(_collChange, isCollIncrease, _debtChange, isDebtIncrease, _price);
+        return _getNewTCRFromTroveChange(_asset, _collChange, isCollIncrease, _debtChange, isDebtIncrease, _price);
     }
 
-    function getUSDValue(uint _coll, uint _price) external pure returns (uint) {
+    function getUSDValue(uint256 _coll, uint256 _price) external pure returns (uint256) {
         return _getUSDValue(_coll, _price);
     }
 
     function callInternalAdjustLoan
     (
+        address _asset,
+        uint256 _amount,
         address _borrower, 
-        uint _collWithdrawal, 
-        uint _debtChange, 
+        uint256 _collWithdrawal, 
+        uint256 _debtChange, 
         bool _isDebtIncrease, 
         address _upperHint,
         address _lowerHint)
         external 
     {
-        _adjustTrove(_borrower, _collWithdrawal, _debtChange, _isDebtIncrease, _upperHint, _lowerHint, 0);
+        _adjustTrove(_asset, _amount, _borrower, _collWithdrawal, _debtChange, _isDebtIncrease, _upperHint, _lowerHint, 0);
     }
 
 

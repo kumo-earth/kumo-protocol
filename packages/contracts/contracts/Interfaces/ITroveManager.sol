@@ -8,10 +8,37 @@ import "./IKUSDToken.sol";
 import "./IKUMOToken.sol";
 import "./IKUMOStaking.sol";
 
-
 // Common interface for the Trove Manager.
 interface ITroveManager is IKumoBase {
-    
+    enum Status {
+        nonExistent,
+        active,
+        closedByOwner,
+        closedByLiquidation,
+        closedByRedemption
+    }
+
+    // Store the necessary data for a trove
+    struct Trove {
+        address asset;
+        uint256 debt;
+        uint256 coll;
+        uint256 stake;
+        Status status;
+        uint128 arrayIndex;
+    }
+
+    //  * --- Variable container structs for liquidations ---
+    //  *
+    //  * These structs are used to hold, return and assign variables inside the liquidation functions,
+    //  * in order to avoid the error: "CompilerError: Stack too deep".
+    //  **/
+
+    struct LocalVariables_AssetBorrowerPrice {
+        address _asset;
+        address _borrower;
+        uint256 _price;
+    }
     // --- Events ---
 
     event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
@@ -26,119 +53,189 @@ interface ITroveManager is IKumoBase {
     event KUMOTokenAddressChanged(address _kumoTokenAddress);
     event KUMOStakingAddressChanged(address _kumoStakingAddress);
 
-    event Liquidation(uint _liquidatedDebt, uint _liquidatedColl, uint _collGasCompensation, uint _kusdGasCompensation);
-    event Redemption(uint _attemptedKUSDAmount, uint _actualKUSDAmount, uint _ETHSent, uint _ETHFee);
-    // event TroveUpdated(address indexed _borrower, uint _debt, uint _coll, uint stake, uint8 operation);
-    // event TroveLiquidated(address indexed _borrower, uint _debt, uint _coll, uint8 operation);
-    event BaseRateUpdated(uint _baseRate);
-    event LastFeeOpTimeUpdated(uint _lastFeeOpTime);
-    event TotalStakesUpdated(uint _newTotalStakes);
-    event SystemSnapshotsUpdated(uint _totalStakesSnapshot, uint _totalCollateralSnapshot);
-    event LTermsUpdated(uint _L_ETH, uint _L_KUSDDebt);
-    event TroveSnapshotsUpdated(uint _L_ETH, uint _L_KUSDDebt);
-    event TroveIndexUpdated(address _borrower, uint _newIndex);
+    event Liquidation(
+        address indexed _asset,
+        uint256 _liquidatedDebt,
+        uint256 _liquidatedColl,
+        uint256 _collGasCompensation,
+        uint256 _kusdGasCompensation
+    );
+    event Redemption(
+        address indexed _asset,
+        uint256 _attemptedKUSDAmount,
+        uint256 _actualKUSDAmount,
+        uint256 _AssetSent,
+        uint256 _AssetFee
+    );
+    // event TroveUpdated(address indexed _borrower, uint256 _debt, uint256 _coll, uint256 stake, uint8 operation);
+    // event TroveLiquidated(address indexed _borrower, uint256 _debt, uint256 _coll, uint8 operation);
+    event BaseRateUpdated(uint256 _baseRate);
+    event LastFeeOpTimeUpdated(uint256 _lastFeeOpTime);
+    event TotalStakesUpdated(uint256 _newTotalStakes);
+    event SystemSnapshotsUpdated(uint256 _totalStakesSnapshot, uint256 _totalCollateralSnapshot);
+    event LTermsUpdated(uint256 _L_ETH, uint256 _L_KUSDDebt);
+    event TroveSnapshotsUpdated(address indexed _asset, uint256 _L_ETH, uint256 _L_KUSDDebt);
+    event TroveIndexUpdated(address _borrower, uint256 _newIndex);
+    event TotalStakesUpdated(address indexed _asset, uint256 _newTotalStakes);
+    event SystemSnapshotsUpdated(
+        address indexed _asset,
+        uint256 _totalStakesSnapshot,
+        uint256 _totalCollateralSnapshot
+    );
+    event BaseRateUpdated(address indexed _asset, uint256 _baseRate);
+    event LastFeeOpTimeUpdated(address indexed _asset, uint256 _lastFeeOpTime);
+    event TroveIndexUpdated(address indexed _asset, address _borrower, uint256 _newIndex);
 
     // --- Functions ---
 
     function setAddresses(
         address _borrowerOperationsAddress,
-        address _activePoolAddress,
-        address _defaultPoolAddress,
         address _stabilityPoolAddress,
         address _gasPoolAddress,
         address _collSurplusPoolAddress,
-        address _priceFeedAddress,
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
         address _kumoTokenAddress,
-        address _kumoStakingAddress
+        address _kumoStakingAddress,
+        address _kumoParamsAddress
     ) external;
 
     function stabilityPool() external view returns (IStabilityPool);
+
     function kusdToken() external view returns (IKUSDToken);
+
     function kumoToken() external view returns (IKUMOToken);
+
     function kumoStaking() external view returns (IKUMOStaking);
 
-    function getTroveOwnersCount() external view returns (uint);
+    function getTroveOwnersCount(address _asset) external view returns (uint256);
 
-    function getTroveFromTroveOwnersArray(uint _index) external view returns (address);
+    function getTroveFromTroveOwnersArray(address _asset, uint256 _index)
+        external
+        view
+        returns (address);
 
-    function getNominalICR(address _borrower) external view returns (uint);
-    function getCurrentICR(address _borrower, uint _price) external view returns (uint);
+    function getNominalICR(address _asset, address _borrower) external view returns (uint256);
 
-    function liquidate(address _borrower) external;
+    function getCurrentICR(
+        address _asset,
+        address _borrower,
+        uint256 _price
+    ) external view returns (uint256);
 
-    function liquidateTroves(uint _n) external;
+    function liquidate(address _asset, address _borrower) external;
 
-    function batchLiquidateTroves(address[] calldata _troveArray) external;
+    function liquidateTroves(address _asset, uint256 _n) external;
+
+    function batchLiquidateTroves(address _asset, address[] calldata _troveArray) external;
 
     function redeemCollateral(
-        uint _KUSDAmount,
+        address _asset,
+        uint256 _KUSDAmount,
         address _firstRedemptionHint,
         address _upperPartialRedemptionHint,
         address _lowerPartialRedemptionHint,
-        uint _partialRedemptionHintNICR,
-        uint _maxIterations,
-        uint _maxFee
-    ) external; 
+        uint256 _partialRedemptionHintNICR,
+        uint256 _maxIterations,
+        uint256 _maxFee
+    ) external;
 
-    function updateStakeAndTotalStakes(address _borrower) external returns (uint);
+    function updateStakeAndTotalStakes(address _asset, address _borrower) external returns (uint256);
 
-    function updateTroveRewardSnapshots(address _borrower) external;
+    function updateTroveRewardSnapshots(address _asset, address _borrower) external;
 
-    function addTroveOwnerToArray(address _borrower) external returns (uint index);
+    function addTroveOwnerToArray(address _asset, address _borrower)
+        external
+        returns (uint256 index);
 
-    function applyPendingRewards(address _borrower) external;
+    function applyPendingRewards(address _asset, address _borrower) external;
 
-    function getPendingETHReward(address _borrower) external view returns (uint);
+    function getPendingReward(address _asset, address _borrower) external view returns (uint256);
 
-    function getPendingKUSDDebtReward(address _borrower) external view returns (uint);
+    function getPendingKUSDDebtReward(address _asset, address _borrower)
+        external
+        view
+        returns (uint256);
 
-     function hasPendingRewards(address _borrower) external view returns (bool);
+    function hasPendingRewards(address _asset, address _borrower) external view returns (bool);
 
-    function getEntireDebtAndColl(address _borrower) external view returns (
-        uint debt, 
-        uint coll, 
-        uint pendingKUSDDebtReward, 
-        uint pendingETHReward
-    );
+    function getEntireDebtAndColl(address _asset, address _borrower)
+        external
+        view
+        returns (
+            uint256 debt,
+            uint256 coll,
+            uint256 pendingKUSDDebtReward,
+            uint256 pendingETHReward
+        );
 
-    function closeTrove(address _borrower) external;
+    function closeTrove(address _asset, address _borrower) external;
 
-    function removeStake(address _borrower) external;
+    function removeStake(address _asset, address _borrower) external;
 
-    function getRedemptionRate() external view returns (uint);
-    function getRedemptionRateWithDecay() external view returns (uint);
+    function getRedemptionRate(address _asset) external view returns (uint256);
 
-    function getRedemptionFeeWithDecay(uint _ETHDrawn) external view returns (uint);
+    function getRedemptionRateWithDecay(address _asset) external view returns (uint256);
 
-    function getBorrowingRate() external view returns (uint);
-    function getBorrowingRateWithDecay() external view returns (uint);
+    function getRedemptionFeeWithDecay(address _asset, uint256 _assetDraw)
+        external
+        view
+        returns (uint256);
 
-    function getBorrowingFee(uint KUSDDebt) external view returns (uint);
-    function getBorrowingFeeWithDecay(uint _KUSDDebt) external view returns (uint);
+    function getBorrowingRate(address _asset) external view returns (uint256);
 
-    function decayBaseRateFromBorrowing() external;
+    function getBorrowingRateWithDecay(address _asset) external view returns (uint256);
 
-    function getTroveStatus(address _borrower) external view returns (uint);
-    
-    function getTroveStake(address _borrower) external view returns (uint);
+    function getBorrowingFee(address _asset, uint256 KUSDDebt) external view returns (uint256);
 
-    function getTroveDebt(address _borrower) external view returns (uint);
+    function getBorrowingFeeWithDecay(address _asset, uint256 _KUSDDebt)
+        external
+        view
+        returns (uint256);
 
-    function getTroveColl(address _borrower) external view returns (uint);
+    function decayBaseRateFromBorrowing(address _asset) external;
 
-    function setTroveStatus(address _borrower, uint num) external;
+    function getTroveStatus(address _asset, address _borrower) external view returns (uint256);
 
-    function increaseTroveColl(address _borrower, uint _collIncrease) external returns (uint);
+    function getTroveStake(address _asset, address _borrower) external view returns (uint256);
 
-    function decreaseTroveColl(address _borrower, uint _collDecrease) external returns (uint); 
+    function getTroveDebt(address _asset, address _borrower) external view returns (uint256);
 
-    function increaseTroveDebt(address _borrower, uint _debtIncrease) external returns (uint); 
+    function getTroveColl(address _asset, address _borrower) external view returns (uint256);
 
-    function decreaseTroveDebt(address _borrower, uint _collDecrease) external returns (uint); 
+    function setTroveStatus(
+        address _asset,
+        address _borrower,
+        uint256 num
+    ) external;
 
-    function getTCR(uint _price) external view returns (uint);
+    function increaseTroveColl(
+        address _asset,
+        address _borrower,
+        uint256 _collIncrease
+    ) external returns (uint256);
 
-    function checkRecoveryMode(uint _price) external view returns (bool);
+    function decreaseTroveColl(
+        address _asset,
+        address _borrower,
+        uint256 _collDecrease
+    ) external returns (uint256);
+
+    function increaseTroveDebt(
+        address _asset,
+        address _borrower,
+        uint256 _debtIncrease
+    ) external returns (uint256);
+
+    function decreaseTroveDebt(
+        address _asset,
+        address _borrower,
+        uint256 _collDecrease
+    ) external returns (uint256);
+
+    function getTCR(address _asset, uint256 _price) external view returns (uint256);
+
+    function checkRecoveryMode(address _asset, uint256 _price) external view returns (bool);
+
+    function addNewAsset(address _asset) external;
 }

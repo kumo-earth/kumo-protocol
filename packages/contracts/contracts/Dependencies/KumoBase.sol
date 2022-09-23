@@ -11,6 +11,8 @@ import "../Interfaces/IActivePool.sol";
 import "../Interfaces/IDefaultPool.sol";
 import "../Interfaces/IPriceFeed.sol";
 import "../Interfaces/IKumoBase.sol";
+// import "hardhat/console.sol";
+
 
 /* 
 * Base contract for TroveManager, BorrowerOperations and StabilityPool. Contains global system constants and
@@ -18,86 +20,63 @@ import "../Interfaces/IKumoBase.sol";
 */
 contract KumoBase is BaseMath, Ownable, IKumoBase {
     using SafeMath for uint;
+    address public constant ETH_REF_ADDRESS = address(0);
+    IKumoParameters public override kumoParams;
 
-    // IKumoParameters public override kumoParams;
-
-	// function setKumoParameters(address _vaultParams) public onlyOwner {
-	// 	kumoParams = IKumoParameters(_vaultParams);
-	// 	emit VaultParametersBaseChanged(_vaultParams);
-	// }
-
-    uint constant public _100pct = 1000000000000000000; // 1e18 == 100%
-
-    // Minimum collateral ratio for individual troves
-    uint constant public MCR = 1100000000000000000; // 110%
-
-    // Critical system collateral ratio. If the system's total collateral ratio (TCR) falls below the CCR, Recovery Mode is triggered.
-    uint constant public CCR = 1500000000000000000; // 150%
-
-    // Amount of KUSD to be locked in gas pool on opening troves
-    uint constant public KUSD_GAS_COMPENSATION = 200e18;
+	function setKumoParameters(address _kumoParamsAddress ) public onlyOwner {
+		kumoParams = IKumoParameters(_kumoParamsAddress );
+		emit VaultParametersBaseChanged(_kumoParamsAddress );
+	}
 
     // Minimum amount of net KUSD debt a trove must have
-    uint constant public MIN_NET_DEBT = 1800e18;
-    // uint constant public MIN_NET_DEBT = 0; 
-
-    uint constant public PERCENT_DIVISOR = 200; // dividing by 200 yields 0.5%
-
-    uint constant public BORROWING_FEE_FLOOR = DECIMAL_PRECISION / 1000 * 5; // 0.5%
-
-    IActivePool public activePool;
-
-    IDefaultPool public defaultPool;
-
-    IPriceFeed public override priceFeed;
+    uint256 constant public MIN_NET_DEBT = 1800e18;
+    // uint256 constant public MIN_NET_DEBT = 0; 
 
     // --- Gas compensation functions ---
 
     // Returns the composite debt (drawn debt + gas compensation) of a trove, for the purpose of ICR calculation
-    function _getCompositeDebt(uint _debt) internal pure returns (uint) {
-        return _debt.add(KUSD_GAS_COMPENSATION);
+    function _getCompositeDebt(address _asset, uint256 _debt) internal view returns (uint256) {
+        return _debt.add(kumoParams.KUSD_GAS_COMPENSATION(_asset));
     }
 
-    function _getNetDebt(uint _debt) internal pure returns (uint) {
-        return _debt.sub(KUSD_GAS_COMPENSATION);
+    function _getNetDebt(address _asset, uint256 _debt) internal view returns (uint256) {
+        return _debt.sub(kumoParams.KUSD_GAS_COMPENSATION(_asset));
     }
 
     // Return the amount of ETH to be drawn from a trove's collateral and sent as gas compensation.
-    function _getCollGasCompensation(uint _entireColl) internal pure returns (uint) {
-        return _entireColl / PERCENT_DIVISOR;
+    function _getCollGasCompensation(address _asset, uint256 _entireColl) internal view returns (uint256) {
+        return _entireColl / kumoParams.PERCENT_DIVISOR(_asset);
     }
 
-    function getEntireSystemColl() public view returns (uint entireSystemColl) {
-        uint activeColl = activePool.getETH();
-        uint liquidatedColl = defaultPool.getETH();
-
+    function getEntireSystemColl(address _asset) public view returns (uint256 entireSystemColl) {
+        uint256 activeColl = kumoParams.activePool().getAssetBalance(_asset);
+        uint256 liquidatedColl = kumoParams.defaultPool().getAssetBalance(_asset);
         return activeColl.add(liquidatedColl);
     }
 
-    function getEntireSystemDebt() public view returns (uint entireSystemDebt) {
-        uint activeDebt = activePool.getKUSDDebt();
-        uint closedDebt = defaultPool.getKUSDDebt();
+    function getEntireSystemDebt(address _asset) public view returns (uint256 entireSystemDebt) {
+        uint256 activeDebt = kumoParams.activePool().getKUSDDebt(_asset);
+        uint256 closedDebt = kumoParams.defaultPool().getKUSDDebt(_asset);
 
         return activeDebt.add(closedDebt);
     }
 
-    function _getTCR(uint _price) internal view returns (uint TCR) {
-        uint entireSystemColl = getEntireSystemColl();
-        uint entireSystemDebt = getEntireSystemDebt();
+    function _getTCR(address _asset, uint256 _price) internal view returns (uint256 TCR) {
+        uint256 entireSystemColl = getEntireSystemColl(_asset);
+        uint256 entireSystemDebt = getEntireSystemDebt(_asset);
 
         TCR = KumoMath._computeCR(entireSystemColl, entireSystemDebt, _price);
 
         return TCR;
     }
 
-    function _checkRecoveryMode(uint _price) internal view returns (bool) {
-        uint TCR = _getTCR(_price);
-
-        return TCR < CCR;
+    function _checkRecoveryMode(address _asset, uint256 _price) internal view returns (bool) {
+        uint256 TCR = _getTCR(_asset, _price);
+        return TCR < kumoParams.CCR(_asset);
     }
 
-    function _requireUserAcceptsFee(uint _fee, uint _amount, uint _maxFeePercentage) internal pure {
-        uint feePercentage = _fee.mul(DECIMAL_PRECISION).div(_amount);
+    function _requireUserAcceptsFee(uint256 _fee, uint256 _amount, uint256 _maxFeePercentage) internal view {
+        uint256 feePercentage = _fee.mul(kumoParams.DECIMAL_PRECISION()).div(_amount);
         require(feePercentage <= _maxFeePercentage, "Fee exceeded provided maximum");
     }
 }

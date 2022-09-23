@@ -17,24 +17,24 @@ import "../Interfaces/IKUMOToken.sol";
 * enter circulating supply and cannot be staked to earn system revenue.
 */
 contract LockupContract {
-    using SafeMath for uint;
+    using SafeMath for uint256;
 	// bool public isInitialized;
     // --- Data ---
     string constant public NAME = "LockupContract";
 
-    uint constant public SECONDS_IN_ONE_YEAR = 31536000; 
+    uint256 constant public SECONDS_IN_ONE_YEAR = 31536000; 
 
     address public immutable beneficiary;
 
     IKUMOToken public kumoToken;
 
     // Unlock time is the Unix point in time at which the beneficiary can withdraw.
-    uint public unlockTime;
+    uint256 public unlockTime;
 
     // --- Events ---
 
-    event LockupContractCreated(address _beneficiary, uint _unlockTime);
-    event LockupContractEmptied(uint _KUMOwithdrawal);
+    event LockupContractCreated(address _beneficiary, uint256 _unlockTime);
+    event LockupContractEmptied(uint256 _KUMOwithdrawal);
 
     // --- Functions ---
 
@@ -42,7 +42,7 @@ contract LockupContract {
     (
         address _kumoTokenAddress, 
         address _beneficiary, 
-        uint _unlockTime
+        uint256 _unlockTime
     ) 
     {
         kumoToken = IKUMOToken(_kumoTokenAddress);
@@ -63,7 +63,7 @@ contract LockupContract {
         _requireLockupDurationHasPassed();
 
         IKUMOToken kumoTokenCached = kumoToken;
-        uint KUMOBalance = kumoTokenCached.balanceOf(address(this));
+        uint256 KUMOBalance = kumoTokenCached.balanceOf(address(this));
         kumoTokenCached.transfer(beneficiary, KUMOBalance);
         emit LockupContractEmptied(KUMOBalance);
     }
@@ -78,8 +78,8 @@ contract LockupContract {
         require(block.timestamp >= unlockTime, "LockupContract: The lockup duration must have passed");
     }
 
-    function _requireUnlockTimeIsAtLeastOneYearAfterSystemDeployment(uint _unlockTime) internal view {
-        uint systemDeploymentTime = kumoToken.getDeploymentStartTime();
+    function _requireUnlockTimeIsAtLeastOneYearAfterSystemDeployment(uint256 _unlockTime) internal view {
+        uint256 systemDeploymentTime = kumoToken.getDeploymentStartTime();
         require(_unlockTime >= systemDeploymentTime.add(SECONDS_IN_ONE_YEAR), "LockupContract: unlock time must be at least one year after system deployment");
     }
 }

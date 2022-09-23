@@ -3,9 +3,10 @@
 pragma solidity 0.8.11;
 
 import "../Dependencies/IERC20.sol";
+// import "../Dependencies/ERC20Permit.sol";
 import "../Dependencies/IERC2612.sol";
 
-interface IKUSDToken is IERC20, IERC2612 { 
+interface IKUSDToken is IERC20, IERC2612{ 
     
     // --- Events ---
 
@@ -13,11 +14,13 @@ interface IKUSDToken is IERC20, IERC2612 {
     event StabilityPoolAddressChanged(address _newStabilityPoolAddress);
     event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
 
-    event KUSDTokenBalanceUpdated(address _user, uint _amount);
+    event KUSDTokenBalanceUpdated(address _user, uint256 _amount);
+    
+    function emergencyStopMinting(address _asset, bool status) external virtual;
 
     // --- Functions ---
 
-    function mint(address _account, uint256 _amount) external;
+    function mint(address asset, address _account, uint256 _amount) external;
 
     function burn(address _account, uint256 _amount) external;
 

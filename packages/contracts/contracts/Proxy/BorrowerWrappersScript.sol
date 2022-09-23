@@ -15,11 +15,18 @@ import "./ETHTransferScript.sol";
 import "./KUMOStakingScript.sol";
 import "../Dependencies/console.sol";
 
-
 contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, KUMOStakingScript {
-    using SafeMath for uint;
+    using SafeMath for uint256;
 
-    string constant public NAME = "BorrowerWrappersScript";
+    struct Local_var {
+        address _asset;
+        uint256 _maxFee;
+        address _upperHint;
+        address _lowerHint;
+        uint256 netKUSDAmount;
+    }
+
+    string public constant NAME = "BorrowerWrappersScript";
 
     ITroveManager immutable troveManager;
     IStabilityPool immutable stabilityPool;
@@ -28,7 +35,7 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
     IERC20 immutable kumoToken;
     IKUMOStaking immutable kumoStaking;
 
-    constructor (
+    constructor(
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
         address _kumoStakingAddress
@@ -44,7 +51,7 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
         checkContract(address(stabilityPoolCached));
         stabilityPool = stabilityPoolCached;
 
-        IPriceFeed priceFeedCached = troveManagerCached.priceFeed();
+        IPriceFeed priceFeedCached = troveManagerCached.kumoParams().priceFeed();
         checkContract(address(priceFeedCached));
         priceFeed = priceFeedCached;
 
@@ -57,101 +64,151 @@ contract BorrowerWrappersScript is BorrowerOperationsScript, ETHTransferScript, 
         kumoToken = IERC20(kumoTokenCached);
 
         IKUMOStaking kumoStakingCached = troveManagerCached.kumoStaking();
-        require(_kumoStakingAddress == address(kumoStakingCached), "BorrowerWrappersScript: Wrong KUMOStaking address");
+        require(
+            _kumoStakingAddress == address(kumoStakingCached),
+            "BorrowerWrappersScript: Wrong KUMOStaking address"
+        );
         kumoStaking = kumoStakingCached;
     }
 
-    function claimCollateralAndOpenTrove(uint _maxFee, uint _KUSDAmount, address _upperHint, address _lowerHint) external payable {
-        uint balanceBefore = address(this).balance;
+    function claimCollateralAndOpenTrove(
+        address _asset,
+        uint256 _maxFee,
+        uint256 _KUSDAmount,
+        address _upperHint,
+        address _lowerHint
+    ) external payable {
+        uint256 balanceBefore = address(this).balance;
 
         // Claim collateral
-        borrowerOperations.claimCollateral();
+        borrowerOperations.claimCollateral(_asset);
 
-        uint balanceAfter = address(this).balance;
+        uint256 balanceAfter = address(this).balance;
 
         // already checked in CollSurplusPool
         assert(balanceAfter > balanceBefore);
 
-        uint totalCollateral = balanceAfter.sub(balanceBefore).add(msg.value);
+        uint256 totalCollateral = balanceAfter.sub(balanceBefore).add(msg.value);
 
         // Open trove with obtained collateral, plus collateral sent by user
-        borrowerOperations.openTrove{ value: totalCollateral }(_maxFee, _KUSDAmount, _upperHint, _lowerHint);
+        borrowerOperations.openTrove{value: _asset == address(0) ? totalCollateral : 0}(
+            _asset,
+            totalCollateral,
+            _maxFee,
+            _KUSDAmount,
+            _upperHint,
+            _lowerHint
+        );
     }
 
-    function claimSPRewardsAndRecycle(uint _maxFee, address _upperHint, address _lowerHint) external {
-        uint collBalanceBefore = address(this).balance;
-        uint kumoBalanceBefore = kumoToken.balanceOf(address(this));
+    function claimSPRewardsAndRecycle(
+        address _asset,
+        uint256 _maxFee,
+        address _upperHint,
+        address _lowerHint
+    ) external {
+        Local_var memory vars = Local_var(_asset, _maxFee, _upperHint, _lowerHint, 0);
+        uint256 collBalanceBefore = address(this).balance;
+        uint256 kumoBalanceBefore = kumoToken.balanceOf(address(this));
 
         // Claim rewards
         stabilityPool.withdrawFromSP(0);
 
-        uint collBalanceAfter = address(this).balance;
-        uint kumoBalanceAfter = kumoToken.balanceOf(address(this));
-        uint claimedCollateral = collBalanceAfter.sub(collBalanceBefore);
+        uint256 collBalanceAfter = address(this).balance;
+        uint256 kumoBalanceAfter = kumoToken.balanceOf(address(this));
+        uint256 claimedCollateral = collBalanceAfter.sub(collBalanceBefore);
 
         // Add claimed ETH to trove, get more KUSD and stake it into the Stability Pool
         if (claimedCollateral > 0) {
-            _requireUserHasTrove(address(this));
-            uint KUSDAmount = _getNetKUSDAmount(claimedCollateral);
-            borrowerOperations.adjustTrove{ value: claimedCollateral }(_maxFee, 0, KUSDAmount, true, _upperHint, _lowerHint);
+            _requireUserHasTrove(vars._asset, address(this));
+            vars.netKUSDAmount = _getNetKUSDAmount(vars._asset, claimedCollateral);
+            borrowerOperations.adjustTrove{value: vars._asset == address(0) ? claimedCollateral : 0}(
+                vars._asset,
+                claimedCollateral,
+                vars._maxFee,
+                0,
+                vars.netKUSDAmount,
+                true,
+                vars._upperHint,
+                vars._lowerHint
+            );
             // Provide withdrawn KUSD to Stability Pool
-            if (KUSDAmount > 0) {
-                stabilityPool.provideToSP(KUSDAmount, address(0));
+            if (vars.netKUSDAmount > 0) {
+                stabilityPool.provideToSP(vars.netKUSDAmount, address(0));
             }
         }
 
         // Stake claimed KUMO
-        uint claimedKUMO = kumoBalanceAfter.sub(kumoBalanceBefore);
+        uint256 claimedKUMO = kumoBalanceAfter.sub(kumoBalanceBefore);
         if (claimedKUMO > 0) {
             kumoStaking.stake(claimedKUMO);
         }
     }
 
-    function claimStakingGainsAndRecycle(uint _maxFee, address _upperHint, address _lowerHint) external {
-        uint collBalanceBefore = address(this).balance;
-        uint kusdBalanceBefore = kusdToken.balanceOf(address(this));
-        uint kumoBalanceBefore = kumoToken.balanceOf(address(this));
+    function claimStakingGainsAndRecycle(
+        address _asset,
+        uint256 _maxFee,
+        address _upperHint,
+        address _lowerHint
+    ) external {
+        Local_var memory vars = Local_var(_asset, _maxFee, _upperHint, _lowerHint, 0);
+        uint256 collBalanceBefore = address(this).balance;
+        uint256 kusdBalanceBefore = kusdToken.balanceOf(address(this));
+        uint256 kumoBalanceBefore = kumoToken.balanceOf(address(this));
 
         // Claim gains
         kumoStaking.unstake(0);
 
-        uint gainedCollateral = address(this).balance.sub(collBalanceBefore); // stack too deep issues :'(
-        uint gainedKUSD = kusdToken.balanceOf(address(this)).sub(kusdBalanceBefore);
+        uint256 gainedCollateral = address(this).balance.sub(collBalanceBefore); // stack too deep issues :'(
+        uint256 gainedKUSD = kusdToken.balanceOf(address(this)).sub(kusdBalanceBefore);
 
-        uint netKUSDAmount;
+        //  uint256 netKUSDAmount;
         // Top up trove and get more KUSD, keeping ICR constant
         if (gainedCollateral > 0) {
-            _requireUserHasTrove(address(this));
-            netKUSDAmount = _getNetKUSDAmount(gainedCollateral);
-            borrowerOperations.adjustTrove{ value: gainedCollateral }(_maxFee, 0, netKUSDAmount, true, _upperHint, _lowerHint);
+            _requireUserHasTrove(vars._asset, address(this));
+            vars.netKUSDAmount = _getNetKUSDAmount(vars._asset, gainedCollateral);
+            borrowerOperations.adjustTrove{value: vars._asset == address(0) ? gainedCollateral : 0}(
+                vars._asset,
+                gainedCollateral,
+                vars._maxFee,
+                0,
+                vars.netKUSDAmount,
+                true,
+                vars._upperHint,
+                vars._lowerHint
+            );
         }
 
-        uint totalKUSD = gainedKUSD.add(netKUSDAmount);
+        uint256 totalKUSD = gainedKUSD.add(vars.netKUSDAmount);
         if (totalKUSD > 0) {
             stabilityPool.provideToSP(totalKUSD, address(0));
 
             // Providing to Stability Pool also triggers KUMO claim, so stake it if any
-            uint kumoBalanceAfter = kumoToken.balanceOf(address(this));
-            uint claimedKUMO = kumoBalanceAfter.sub(kumoBalanceBefore);
+            uint256 kumoBalanceAfter = kumoToken.balanceOf(address(this));
+            uint256 claimedKUMO = kumoBalanceAfter.sub(kumoBalanceBefore);
             if (claimedKUMO > 0) {
                 kumoStaking.stake(claimedKUMO);
             }
         }
-
     }
 
-    function _getNetKUSDAmount(uint _collateral) internal returns (uint) {
-        uint price = priceFeed.fetchPrice();
-        uint ICR = troveManager.getCurrentICR(address(this), price);
+    function _getNetKUSDAmount(address _asset, uint256 _collateral) internal returns (uint256) {
+        uint256 price = priceFeed.fetchPrice();
+        uint256 ICR = troveManager.getCurrentICR(_asset, address(this), price);
 
-        uint KUSDAmount = _collateral.mul(price).div(ICR);
-        uint borrowingRate = troveManager.getBorrowingRateWithDecay();
-        uint netDebt = KUSDAmount.mul(KumoMath.DECIMAL_PRECISION).div(KumoMath.DECIMAL_PRECISION.add(borrowingRate));
+        uint256 KUSDAmount = _collateral.mul(price).div(ICR);
+        uint256 borrowingRate = troveManager.getBorrowingRateWithDecay(_asset);
+        uint256 netDebt = KUSDAmount.mul(KumoMath.DECIMAL_PRECISION).div(
+            KumoMath.DECIMAL_PRECISION.add(borrowingRate)
+        );
 
         return netDebt;
     }
 
-    function _requireUserHasTrove(address _depositor) internal view {
-        require(troveManager.getTroveStatus(_depositor) == 1, "BorrowerWrappersScript: caller must have an active trove");
+    function _requireUserHasTrove(address _asset, address _depositor) internal view {
+        require(
+            troveManager.getTroveStatus(_asset, _depositor) == 1,
+            "BorrowerWrappersScript: caller must have an active trove"
+        );
     }
 }

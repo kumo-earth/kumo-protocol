@@ -63,6 +63,8 @@ contract KUSDToken is CheckContract, IKUSDToken {
     // event TroveManagerAddressChanged(address _troveManagerAddress);
     // event StabilityPoolAddressChanged(address _newStabilityPoolAddress);
     // event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
+    mapping(address => bool) public emergencyStopMintingCollateral;
+    event EmergencyStopMintingCollateral(address _asset, bool state);   
 
     constructor
     ( 
@@ -95,10 +97,12 @@ contract KUSDToken is CheckContract, IKUSDToken {
 
     // --- Functions for intra-Kumo calls ---
 
-    function mint(address _account, uint256 _amount) external override {
-        _requireCallerIsBorrowerOperations();
-        _mint(_account, _amount);
-    }
+	function mint( address _asset, address _account, uint256 _amount) external override {
+		_requireCallerIsBorrowerOperations();
+		require(!emergencyStopMintingCollateral[_asset], "Mint is blocked on this collateral");
+
+		_mint(_account, _amount);
+	}
 
     function burn(address _account, uint256 _amount) external override {
         _requireCallerIsBOorTroveMorSP();
@@ -171,8 +175,8 @@ contract KUSDToken is CheckContract, IKUSDToken {
     (
         address owner, 
         address spender, 
-        uint amount, 
-        uint deadline, 
+        uint256 amount, 
+        uint256 deadline, 
         uint8 v, 
         bytes32 r, 
         bytes32 s
@@ -209,7 +213,7 @@ contract KUSDToken is CheckContract, IKUSDToken {
     // --- Internal operations ---
     // Warning: sanity checks (for sender and recipient) should have been done before calling these internal functions
 
-    function _transfer(address sender, address recipient, uint256 amount) internal {
+    function _transfer(address sender,address recipient, uint256 amount) internal {
         assert(sender != address(0));
         assert(recipient != address(0));
 
@@ -217,6 +221,11 @@ contract KUSDToken is CheckContract, IKUSDToken {
         _balances[recipient] = _balances[recipient].add(amount);
         emit Transfer(sender, recipient, amount);
     }
+
+    function emergencyStopMinting(address _asset, bool status) external override {
+		emergencyStopMintingCollateral[_asset] = status;
+		emit EmergencyStopMintingCollateral(_asset, status);
+	}
 
     function _mint(address account, uint256 amount) internal {
         assert(account != address(0));

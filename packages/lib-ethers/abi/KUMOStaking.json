@@ -16,18 +16,11 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
-        "name": "_borrowerOperationsAddress",
+        "name": "_asset",
         "type": "address"
-      }
-    ],
-    "name": "BorrowerOperationsAddressSet",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
+      },
       {
         "indexed": false,
         "internalType": "address",
@@ -41,7 +34,7 @@
         "type": "uint256"
       }
     ],
-    "name": "EtherSent",
+    "name": "AssetSent",
     "type": "event"
   },
   {
@@ -49,12 +42,31 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "_borrowerOperationsAddress",
+        "type": "address"
+      }
+    ],
+    "name": "BorrowerOperationsAddressSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
-        "name": "_F_ETH",
+        "name": "_F_ASSET",
         "type": "uint256"
       }
     ],
-    "name": "F_ETHUpdated",
+    "name": "F_AssetUpdated",
     "type": "event"
   },
   {
@@ -146,7 +158,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_F_ETH",
+        "name": "_F_Asset",
         "type": "uint256"
       },
       {
@@ -157,6 +169,50 @@
       }
     ],
     "name": "StakerSnapshotsUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "staker",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "AssetGain",
+        "type": "uint256"
+      }
+    ],
+    "name": "StakingGainsAssetWithdrawn",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "staker",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "KUSDGain",
+        "type": "uint256"
+      }
+    ],
+    "name": "StakingGainsKUSDWithdrawn",
     "type": "event"
   },
   {
@@ -224,8 +280,14 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "F_ETH",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "F_ASSETS",
     "outputs": [
       {
         "internalType": "uint256",
@@ -292,11 +354,16 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "_user",
         "type": "address"
       }
     ],
-    "name": "getPendingETHGain",
+    "name": "getPendingAssetGain",
     "outputs": [
       {
         "internalType": "uint256",
@@ -329,12 +396,17 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
-        "name": "_ETHFee",
+        "name": "_AssetFee",
         "type": "uint256"
       }
     ],
-    "name": "increaseF_ETH",
+    "name": "increaseF_Asset",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -408,6 +480,25 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "sentToTreasuryTracker",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_kumoTokenAddress",
         "type": "address"
       },
@@ -447,11 +538,6 @@
     ],
     "name": "snapshots",
     "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "F_ETH_Snapshot",
-        "type": "uint256"
-      },
       {
         "internalType": "uint256",
         "name": "F_KUSD_Snapshot",
@@ -501,6 +587,19 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "treasury",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
