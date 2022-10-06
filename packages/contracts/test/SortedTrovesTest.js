@@ -13,7 +13,7 @@ const toBN = th.toBN
 const mv = testHelpers.MoneyValues
 const TroveData = testHelpers.TroveData
 
-contract('SortedTroves', async accounts => {
+contract('SortedTroves - TEST', async accounts => {
 
   const assertSortedListIsOrdered = async (contracts, asset) => {
     const price = await contracts.priceFeedTestnet.getPrice()
@@ -352,7 +352,7 @@ contract('SortedTroves', async accounts => {
         await sortedTrovesTester.insert(assetAddress1, alice, 1, alice, alice)
         const pos = await sortedTroves.findInsertPosition(assetAddress1, 1, th.ZERO_ADDRESS, alice)
         assert.equal(pos[0], alice, 'prevId result should be nextId param')
-        assert.equal(pos[1], ZERO_ADDRESS, 'nextId result should be zero')
+        assert.equal(pos[1], th.ZERO_ADDRESS, 'nextId result should be zero')
       })
     })
   })

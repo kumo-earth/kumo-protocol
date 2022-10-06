@@ -11,7 +11,7 @@ const timeValues = testHelpers.TimeValues
 const TroveManagerTester = artifacts.require("TroveManagerTester")
 const KUSDToken = artifacts.require("KUSDToken")
 
-contract('CollSurplusPool', async accounts => {
+contract('CollSurplusPool -TEST', async accounts => {
   const [
     owner,
     A, B, C, D, E] = accounts;
@@ -76,13 +76,13 @@ contract('CollSurplusPool', async accounts => {
     await priceFeed.setPrice(price)
 
     const { collateral: B_coll, netDebt: B_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraParams: { from: B } })
-    await openTrove({ asset: assetAddress1, tokenmount: dec(3000, 'ether'), extraKUSDAmount: B_netDebt, extraParams: { from: A } })
+    await openTrove({ asset: assetAddress1, tokenAmount: dec(3000, 'ether'), extraKUSDAmount: B_netDebt, extraParams: { from: A } })
 
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
     // At ETH:USD = 100, this redemption should leave 1 ether of coll surplus
-    await th.redeemCollateralAndGetTxObject(A, contracts, B_netDebt, assetAddress1)
+    await th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, B_netDebt)
 
     const ETH_2 = await collSurplusPool.getAssetBalance(assetAddress1)
     th.assertIsApproximatelyEqual(ETH_2, B_coll.sub(B_netDebt.mul(mv._1e18BN).div(price)))
@@ -114,9 +114,9 @@ contract('CollSurplusPool', async accounts => {
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
     // At ETH:USD = 100, this redemption should leave 1 ether of coll surplus for B
-    await th.redeemCollateralAndGetTxObject(A, contracts, B_netDebt)
+    await th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, B_netDebt)
 
-    const ETH_2 = await collSurplusPool.getETH()
+    const ETH_2 = await collSurplusPool.getAssetBalance(assetAddress1)
     th.assertIsApproximatelyEqual(ETH_2, B_coll.sub(B_netDebt.mul(mv._1e18BN).div(price)))
 
     const claimCollateralData = th.getTransactionData('claimCollateral()', [assetAddress1])

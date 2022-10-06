@@ -25,6 +25,7 @@ const GAS_PRICE = 10000000
 contract('TroveManager', async accounts => {
 
   const _18_zeros = '000000000000000000'
+  const ZERO_ADDRESS = th.ZERO_ADDRESS
 
   const [
     owner,
@@ -573,30 +574,6 @@ contract('TroveManager', async accounts => {
     const TCR_After = (await th.getTCR(contracts, assetAddress1)).toString()
     assert.equal(TCR_Before, TCR_After)
   })
-
-  const TCR_Before = (await th.getTCR(contracts, assetAddress1)).toString()
-
-  // Confirm A, B, C ICRs are below 110%
-  const alice_ICR = await troveManager.getCurrentICR(assetAddress1, alice, price)
-  const bob_ICR = await troveManager.getCurrentICR(assetAddress1, bob, price)
-  const carol_ICR = await troveManager.getCurrentICR(assetAddress1, carol, price)
-  assert.isTrue(alice_ICR.lte(mv._MCR))
-  assert.isTrue(bob_ICR.lte(mv._MCR))
-  assert.isTrue(carol_ICR.lte(mv._MCR))
-
-  // Confirm system is not in Recovery Mode
-  assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
-
-  // Liquidation with n = 0
-  await assertRevert(troveManager.liquidateTroves(assetAddress1, 0), "TroveManager: nothing to liquidate")
-
-  // Check all troves are still in the system
-  assert.isTrue(await sortedTroves.contains(assetAddress1, whale))
-  assert.isTrue(await sortedTroves.contains(assetAddress1, alice))
-  assert.isTrue(await sortedTroves.contains(assetAddress1, bob))
-  assert.isTrue(await sortedTroves.contains(assetAddress1, carol))
-
-  const TCR_After = (await th.getTCR(contracts, assetAddress1)).toString()
 
   it("liquidate(): Pool offsets increase the TCR", async () => {
     // Whale provides KUSD to SP
@@ -3129,7 +3106,7 @@ contract('TroveManager', async accounts => {
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-    await assertRevert(th.redeemCollateral(assetAddress1, carol, contracts, GAS_PRICE, dec(270, 18)), "TroveManager: Cannot redeem when TCR < MCR")
+    await assertRevert(th.redeemCollateral(assetAddress1, carol, contracts, dec(270, 18), GAS_PRICE), "TroveManager: Cannot redeem when TCR < MCR")
   });
 
   it("redeemCollateral(): reverts when argument _amount is 0", async () => {
@@ -3161,8 +3138,8 @@ contract('TroveManager', async accounts => {
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, dec(10, 18), GAS_PRICE, dec(2, 18)), "Max fee percentage must be between 0.5% and 100%")
-    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, dec(10, 18), GAS_PRICE, '1000000000000000001'), "Max fee percentage must be between 0.5% and 100%")
+    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, dec(10, 18), dec(2, 18)), "Max fee percentage must be between 0.5% and 100%")
+    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, dec(10, 18), '1000000000000000001'), "Max fee percentage must be between 0.5% and 100%")
   })
 
   it("redeemCollateral(): reverts if max fee < 0.5%", async () => {
@@ -3174,9 +3151,9 @@ contract('TroveManager', async accounts => {
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, GAS_PRICE, dec(10, 18), 0), "Max fee percentage must be between 0.5% and 100%")
-    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, GAS_PRICE, dec(10, 18), 1), "Max fee percentage must be between 0.5% and 100%")
-    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, GAS_PRICE, dec(10, 18), '4999999999999999'), "Max fee percentage must be between 0.5% and 100%")
+    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, dec(10, 18), 0), "Max fee percentage must be between 0.5% and 100%")
+    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, dec(10, 18), 1), "Max fee percentage must be between 0.5% and 100%")
+    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, dec(10, 18), '4999999999999999'), "Max fee percentage must be between 0.5% and 100%")
   })
 
   it("redeemCollateral(): reverts if fee exceeds max fee percentage", async () => {
@@ -3199,22 +3176,22 @@ contract('TroveManager', async accounts => {
 
     // Max fee is <5%
     const lessThan5pct = '49999999999999999'
-    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, GAS_PRICE, lessThan5pct), "Fee exceeded provided maximum")
+    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, lessThan5pct), "Fee exceeded provided maximum")
 
     await troveManager.setBaseRate(assetAddress1, 0)  // artificially zero the baseRate
 
     // Max fee is 1%
-    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(1, 16)), "Fee exceeded provided maximum")
+    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, dec(1, 16)), "Fee exceeded provided maximum")
 
     await troveManager.setBaseRate(assetAddress1, 0)
 
     // Max fee is 3.754%
-    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(3754, 13)), "Fee exceeded provided maximum")
+    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, dec(3754, 13)), "Fee exceeded provided maximum")
 
     await troveManager.setBaseRate(assetAddress1, 0)
 
     // Max fee is 0.5%
-    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(5, 15)), "Fee exceeded provided maximum")
+    await assertRevert(th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, dec(5, 15)), "Fee exceeded provided maximum")
   })
 
   it("redeemCollateral(): succeeds if fee is less than max fee percentage", async () => {
@@ -3239,32 +3216,32 @@ contract('TroveManager', async accounts => {
     const price = await priceFeed.getPrice()
     const ETHDrawn = attemptedKUSDRedemption.mul(mv._1e18BN).div(price)
     const slightlyMoreThanFee = (await troveManager.getRedemptionFeeWithDecay(assetAddress1, ETHDrawn))
-    const tx1 = await th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, GAS_PRICE, slightlyMoreThanFee)
+    const tx1 = await th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, slightlyMoreThanFee)
     assert.isTrue(tx1.receipt.status)
 
     await troveManager.setBaseRate(assetAddress1, 0)  // Artificially zero the baseRate
 
     // Attempt with maxFee = 5.5%
     const exactSameFee = (await troveManager.getRedemptionFeeWithDecay(assetAddress1, ETHDrawn))
-    const tx2 = await th.redeemCollateralAndGetTxObject(assetAddress1, C, contracts, attemptedKUSDRedemption, GAS_PRICE, exactSameFee)
+    const tx2 = await th.redeemCollateralAndGetTxObject(assetAddress1, C, contracts, attemptedKUSDRedemption, exactSameFee)
     assert.isTrue(tx2.receipt.status)
 
     await troveManager.setBaseRate(assetAddress1, 0)
 
     // Max fee is 10%
-    const tx3 = await th.redeemCollateralAndGetTxObject(assetAddress1, B, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(1, 17))
+    const tx3 = await th.redeemCollateralAndGetTxObject(assetAddress1, B, contracts, attemptedKUSDRedemption, dec(1, 17))
     assert.isTrue(tx3.receipt.status)
 
     await troveManager.setBaseRate(assetAddress1, 0)
 
     // Max fee is 37.659%
-    const tx4 = await th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(37659, 13))
+    const tx4 = await th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, dec(37659, 13))
     assert.isTrue(tx4.receipt.status)
 
     await troveManager.setBaseRate(assetAddress1, 0)
 
     // Max fee is 100%
-    const tx5 = await th.redeemCollateralAndGetTxObject(assetAddress1, C, contracts, attemptedKUSDRedemption, GAS_PRICE, dec(1, 18))
+    const tx5 = await th.redeemCollateralAndGetTxObject(assetAddress1, C, contracts, attemptedKUSDRedemption, dec(1, 18))
     assert.isTrue(tx5.receipt.status)
   })
 
@@ -3809,7 +3786,7 @@ contract('TroveManager', async accounts => {
     const B_balanceBefore = await kusdToken.balanceOf(B)
 
     // A redeems 10 KUSD
-    const redemptionTx_A = await th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, dec(10, 18), GAS_PRICE)
+    const redemptionTx_A = await th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, dec(10, 18))
     const timeStamp_A = await th.getTimestampFromTx(redemptionTx_A, web3)
 
     // Check A's balance has decreased by 10 KUSD
@@ -3820,7 +3797,7 @@ contract('TroveManager', async accounts => {
     assert.isTrue(baseRate_1.gt(toBN('0')))
 
     // B redeems 10 KUSD
-    const redemptionTx_B = await th.redeemCollateralAndGetTxObject(assetAddress1, B, contracts, dec(10, 18), GAS_PRICE)
+    const redemptionTx_B = await th.redeemCollateralAndGetTxObject(assetAddress1, B, contracts, dec(10, 18))
     const timeStamp_B = await th.getTimestampFromTx(redemptionTx_B, web3)
 
     // Check B's balance has decreased by 10 KUSD
@@ -4170,7 +4147,7 @@ contract('TroveManager', async accounts => {
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
     // whale redeems KUSD.  Expect this to fully redeem A, B, C, and partially redeem 15 KUSD from D.
-    const redemptionTx = await th.redeemCollateralAndGetTxObject(assetAddress1, whale, contracts, redemptionAmount, GAS_PRICE, th._100pct)
+    const redemptionTx = await th.redeemCollateralAndGetTxObject(assetAddress1, whale, contracts, redemptionAmount, th._100pct)
 
     // Check A, B, C have been closed
     assert.isFalse(await sortedTroves.contains(assetAddress1, A))

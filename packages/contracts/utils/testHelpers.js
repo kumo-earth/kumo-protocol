@@ -989,17 +989,15 @@ class TestHelper {
   // --- Redemption functions ---
 
   static async redeemCollateral(asset, redeemer, contracts, KUSDAmount, gasPrice = 0, maxFee = this._100pct) {
-    if (!asset)
-      asset = this.ZERO_ADDRESS
     const price = await contracts.priceFeedTestnet.getPrice()
     const tx = await this.performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee, gasPrice)
     const gas = await this.gasUsed(tx)
     return gas
   }
 
-  static async redeemCollateralAndGetTxObject(redeemer, contracts, KUSDAmount, asset, maxFee = this._100pct) {
+  static async redeemCollateralAndGetTxObject(asset, redeemer, contracts, KUSDAmount, maxFee = this._100pct) {
     const price = await contracts.priceFeedTestnet.getPrice()
-    const tx = await this.performRedemptionTx(redeemer, price, contracts, KUSDAmount, asset, maxFee)
+    const tx = await this.performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee)
     return tx
   }
 
@@ -1010,16 +1008,15 @@ class TestHelper {
     for (const redeemer of accounts) {
       const randKUSDAmount = this.randAmountInWei(min, max)
 
-      await this.performRedemptionTx(redeemer, price, contracts, KUSDAmount, asset, maxFee)
+      await this.performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee)
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
     return this.getGasMetrics(gasCostList)
   }
 
-  static async performRedemptionTx(redeemer, price, contracts, KUSDAmount, asset, maxFee = 0) {
+  static async performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee = 0) {
     const redemptionhint = await contracts.hintHelpers.getRedemptionHints(asset, KUSDAmount, price, 0)
-
     const firstRedemptionHint = redemptionhint[0]
     const partialRedemptionNewICR = redemptionhint[1]
 
@@ -1039,7 +1036,7 @@ class TestHelper {
       exactPartialRedemptionHint[1],
       partialRedemptionNewICR,
       0, maxFee,
-      { from: redeemer, gasPrice: 0 },
+      { from: redeemer },
     )
 
     return tx
