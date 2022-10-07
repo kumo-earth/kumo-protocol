@@ -12,7 +12,6 @@ const toBN = th.toBN
 const mv = testHelpers.MoneyValues
 const timeValues = testHelpers.TimeValues
 
-const ZERO_ADDRESS = th.ZERO_ADDRESS
 const assertRevert = th.assertRevert
 
 const GAS_PRICE = 10000000
@@ -238,11 +237,11 @@ contract('BorrowerWrappers', async accounts => {
     // Whale opens Trove
     await openTrove({ extraKUSDAmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
     // Whale deposits 1850 KUSD in StabilityPool
-    await stabilityPool.provideToSP(dec(1850, 18), ZERO_ADDRESS, { from: whale })
+    await stabilityPool.provideToSP(dec(1850, 18), erc20.address, { from: whale })
 
     // alice opens trove and provides 150 KUSD to StabilityPool
     await openTrove({ extraKUSDAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
-    await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
+    await stabilityPool.provideToSP(dec(150, 18), erc20.address, { from: alice })
 
     // Defaulter Trove opened
     await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
@@ -267,12 +266,12 @@ contract('BorrowerWrappers', async accounts => {
     const whaleDeposit = toBN(dec(2350, 18))
     await openTrove({ extraKUSDAmount: whaleDeposit, ICR: toBN(dec(4, 18)), extraParams: { from: whale } })
     // Whale deposits 1850 KUSD in StabilityPool
-    await stabilityPool.provideToSP(whaleDeposit, ZERO_ADDRESS, { from: whale })
+    await stabilityPool.provideToSP(whaleDeposit, erc20.address, { from: whale })
 
     // alice opens trove and provides 150 KUSD to StabilityPool
     const aliceDeposit = toBN(dec(150, 18))
     await openTrove({ extraKUSDAmount: aliceDeposit, ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
-    await stabilityPool.provideToSP(aliceDeposit, ZERO_ADDRESS, { from: alice })
+    await stabilityPool.provideToSP(aliceDeposit, erc20.address, { from: alice })
 
     // Defaulter Trove opened
     const { kusdAmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
@@ -393,11 +392,11 @@ contract('BorrowerWrappers', async accounts => {
     // Whale opens Trove
     await openTrove({ extraKUSDAmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
     // Whale deposits 1850 KUSD in StabilityPool
-    await stabilityPool.provideToSP(dec(1850, 18), ZERO_ADDRESS, { from: whale })
+    await stabilityPool.provideToSP(dec(1850, 18), erc20.address, { from: whale })
 
     // alice opens trove and provides 150 KUSD to StabilityPool
     //await openTrove({ extraKUSDAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
-    //await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
+    //await stabilityPool.provideToSP(dec(150, 18), erc20.address, { from: alice })
 
     // mint some KUMO
     await kumoTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
@@ -474,7 +473,7 @@ contract('BorrowerWrappers', async accounts => {
 
     // alice opens trove and provides 150 KUSD to StabilityPool
     await openTrove({ extraKUSDAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
-    await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
+    await stabilityPool.provideToSP(dec(150, 18), erc20.address, { from: alice })
 
     // mint some KUMO
     await kumoTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
@@ -559,7 +558,7 @@ contract('BorrowerWrappers', async accounts => {
 
     // alice opens trove and provides 150 KUSD to StabilityPool
     await openTrove({ extraKUSDAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
-    await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
+    await stabilityPool.provideToSP(dec(150, 18), erc20.address, { from: alice })
 
     // mint some KUMO
     await kumoTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
@@ -628,7 +627,7 @@ contract('BorrowerWrappers', async accounts => {
 
     // alice opens trove and provides 150 KUSD to StabilityPool
     await openTrove({ extraKUSDAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
-    await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
+    await stabilityPool.provideToSP(dec(150, 18), erc20.address, { from: alice })
 
     // mint some KUMO
     await kumoTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))

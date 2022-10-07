@@ -633,7 +633,7 @@ interface SortedTrovesTransactions {
   insert(_asset: string, _id: string, _NICR: BigNumberish, _prevId: string, _nextId: string, _overrides?: Overrides): Promise<void>;
   reInsert(_asset: string, _id: string, _newNICR: BigNumberish, _prevId: string, _nextId: string, _overrides?: Overrides): Promise<void>;
   remove(_asset: string, _id: string, _overrides?: Overrides): Promise<void>;
-  setParams(_size: BigNumberish, _troveManagerAddress: string, _borrowerOperationsAddress: string, _overrides?: Overrides): Promise<void>;
+  setParams(_troveManagerAddress: string, _borrowerOperationsAddress: string, _overrides?: Overrides): Promise<void>;
 }
 
 export interface SortedTroves

@@ -177,7 +177,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         address _upperHint,
         address _lowerHint
     ) external payable override assetIsInitialized(_asset) {
-        // kumoParams.sanitizeParameters(_asset);
+        kumoParams.sanitizeParameters(_asset);
         ContractsCache memory contractsCache = ContractsCache(
             troveManager,
             kumoParams.activePool(),
@@ -707,7 +707,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         uint256 _amountSent
     ) internal view {
         require(
-             _collWithdrawal != 0 || _KUSDChange != 0 || _amountSent != 0,
+            _collWithdrawal != 0 || _KUSDChange != 0 || _amountSent != 0,
             "BorrowerOps: There must be either a collateral change or a debt change"
         );
     }

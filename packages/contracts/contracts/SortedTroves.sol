@@ -102,7 +102,6 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
 
      function addNewAsset( address _asset) external onlyOwner {
          data[_asset].maxSize = MAX_UINT256;
-		
     }
 
     /*
@@ -115,12 +114,14 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
 
     function insert (address _asset ,address _id, uint256 _NICR, address _prevId, address _nextId) external override {
         ITroveManager troveManagerCached = troveManager;
-
         _requireCallerIsBOorTroveM(troveManagerCached);
         _insert(_asset, troveManagerCached, _id, _NICR, _prevId, _nextId);
     }
 
     function _insert(address _asset, ITroveManager _troveManager, address _id, uint256 _NICR, address _prevId, address _nextId) internal {
+        if (data[_asset].maxSize == 0) {
+			data[_asset].maxSize = MAX_UINT256;
+		}
         // List must not be full
         require(!isFull(_asset), "SortedTroves: List is full");
         // List must not already contain node

@@ -1,3 +1,4 @@
+const { MAX_UINT256 } = require("@openzeppelin/test-helpers/src/constants.js")
 const deploymentHelper = require("../utils/deploymentHelpers.js")
 const testHelpers = require("../utils/testHelpers.js")
 

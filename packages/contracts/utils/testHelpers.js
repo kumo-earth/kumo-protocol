@@ -330,16 +330,19 @@ class TestHelper {
     return compositeDebt
   }
 
-  static async getTroveEntireColl(contracts, trove) {
-    return this.toBN((await contracts.troveManager.getEntireDebtAndColl(trove))[1])
+  static async getTroveEntireColl(contracts, trove, asset) {
+    if (!asset) asset = this.ZERO_ADDRESS
+    return this.toBN((await contracts.troveManager.getEntireDebtAndColl(asset, trove))[1])
   }
 
-  static async getTroveEntireDebt(contracts, trove) {
-    return this.toBN((await contracts.troveManager.getEntireDebtAndColl(trove))[0])
+  static async getTroveEntireDebt(contracts, trove, asset) {
+    if (!asset) asset = this.ZERO_ADDRESS
+    return this.toBN((await contracts.troveManager.getEntireDebtAndColl(asset, trove))[0])
   }
 
-  static async getTroveStake(contracts, trove) {
-    return (contracts.troveManager.getTroveStake(trove))
+  static async getTroveStake(contracts, trove, asset) {
+    if (!asset) asset = this.ZERO_ADDRESS
+    return (contracts.troveManager.getTroveStake(asset, trove))
   }
 
   /*
@@ -357,6 +360,8 @@ class TestHelper {
    * So, it subtracts the gas compensation and then the borrowing fee
    */
   static async getOpenTroveKUSDAmount(contracts, totalDebt, asset) {
+    if (!asset)
+      asset = this.ZERO_ADDRESS;
     const actualDebt = await this.getActualDebtFromComposite(totalDebt, contracts, asset)
     return this.getNetBorrowingAmount(contracts, actualDebt, asset)
   }
@@ -368,8 +373,9 @@ class TestHelper {
   }
 
   // Adds the borrowing fee
-  static async getAmountWithBorrowingFee(contracts, kusdAmount) {
-    const fee = await contracts.troveManager.getBorrowingFee(kusdAmount)
+  static async getAmountWithBorrowingFee(contracts, kusdAmount, asset) {
+    if (!asset) asset = this.ZERO_ADDRESS
+    const fee = await contracts.troveManager.getBorrowingFee(asset, kusdAmount)
     return kusdAmount.add(fee)
   }
 
@@ -460,7 +466,7 @@ class TestHelper {
   static getKUSDFeeFromKUSDBorrowingEvent(tx) {
     for (let i = 0; i < tx.logs.length; i++) {
       if (tx.logs[i].event === "KUSDBorrowingFeePaid") {
-        return (tx.logs[i].args[1]).toString()
+        return (tx.logs[i].args[2]).toString()
       }
     }
     throw ("The transaction logs do not contain an KUSDBorrowingFeePaid event")
@@ -989,13 +995,9 @@ class TestHelper {
     return gas
   }
 
-  static async redeemCollateralAndGetTxObject(asset, redeemer, contracts, KUSDAmount, gasPrice, maxFee = this._100pct) {
-    // console.log("GAS PRICE:  " + gasPrice)
-    if (gasPrice == undefined) {
-      gasPrice = 0;
-    }
+  static async redeemCollateralAndGetTxObject(asset, redeemer, contracts, KUSDAmount, maxFee = this._100pct) {
     const price = await contracts.priceFeedTestnet.getPrice()
-    const tx = await this.performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee, gasPrice)
+    const tx = await this.performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee)
     return tx
   }
 
@@ -1006,16 +1008,15 @@ class TestHelper {
     for (const redeemer of accounts) {
       const randKUSDAmount = this.randAmountInWei(min, max)
 
-      await this.performRedemptionTx(redeemer, price, contracts, randKUSDAmount)
+      await this.performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee)
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
     return this.getGasMetrics(gasCostList)
   }
 
-  static async performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee = 0, gasPrice_toUse = 0) {
-    const redemptionhint = await contracts.hintHelpers.getRedemptionHints(asset, KUSDAmount, price, gasPrice_toUse)
-
+  static async performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee = 0) {
+    const redemptionhint = await contracts.hintHelpers.getRedemptionHints(asset, KUSDAmount, price, 0)
     const firstRedemptionHint = redemptionhint[0]
     const partialRedemptionNewICR = redemptionhint[1]
 
@@ -1035,7 +1036,7 @@ class TestHelper {
       exactPartialRedemptionHint[1],
       partialRedemptionNewICR,
       0, maxFee,
-      { from: redeemer, gasPrice: gasPrice_toUse },
+      { from: redeemer },
     )
 
     return tx
