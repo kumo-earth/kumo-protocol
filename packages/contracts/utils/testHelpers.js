@@ -1100,7 +1100,7 @@ class TestHelper {
     return this.getGasMetrics(gasCostList)
   }
 
-  static async withdrawETHGainToTrove_allAccounts(accounts, contracts) {
+  static async withdrawAssetGainToTrove_allAccounts(accounts, contracts) {
     const gasCostList = []
     for (const account of accounts) {
 
@@ -1111,7 +1111,7 @@ class TestHelper {
       const newColl = entireColl.add(ETHGain)
       const { upperHint, lowerHint } = await this.getBorrowerOpsListHint(contracts, newColl, entireDebt)
 
-      const tx = await contracts.stabilityPool.withdrawETHGainToTrove(upperHint, lowerHint, { from: account })
+      const tx = await contracts.stabilityPool.withdrawAssetGainToTrove(upperHint, lowerHint, { from: account })
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }

@@ -409,9 +409,9 @@ export class PopulatedEthersRedemption
   extends PopulatedEthersKumoTransaction<RedemptionDetails>
   implements
   PopulatedRedemption<
-  EthersPopulatedTransaction,
-  EthersTransactionResponse,
-  EthersTransactionReceipt
+    EthersPopulatedTransaction,
+    EthersTransactionResponse,
+    EthersTransactionReceipt
   >
 {
   /** {@inheritDoc @kumodao/lib-base#PopulatedRedemption.attemptedKUSDAmount} */
@@ -1185,7 +1185,7 @@ export class PopulatableEthersKumo
     const finalTrove = initialTrove.addCollateral(stabilityDeposit.collateralGain);
 
     return this._wrapCollateralGainTransfer(
-      await stabilityPool.estimateAndPopulate.withdrawETHGainToTrove(
+      await stabilityPool.estimateAndPopulate.withdrawAssetGainToTrove(
         { ...overrides },
         compose(addGasForPotentialListTraversal, addGasForKUMOIssuance),
         ...(await this._findHints(asset, finalTrove, address))

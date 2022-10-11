@@ -431,25 +431,6 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_newSystemStake",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_depositor",
-        "type": "address"
-      }
-    ],
-    "name": "StakeChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
         "name": "_P",
         "type": "uint256"
       },
@@ -909,19 +890,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getCompoundedTotalStake",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -1271,52 +1239,6 @@
   },
   {
     "inputs": [],
-    "name": "systemSnapshots",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "S",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "P",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "G",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint128",
-        "name": "scale",
-        "type": "uint128"
-      },
-      {
-        "internalType": "uint128",
-        "name": "epoch",
-        "type": "uint128"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalStakes",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "troveManager",
     "outputs": [
       {
@@ -1341,7 +1263,7 @@
         "type": "address"
       }
     ],
-    "name": "withdrawETHGainToTrove",
+    "name": "withdrawAssetGainToTrove",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1358,9 +1280,5 @@
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
-  },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
   }
 ]

@@ -9,7 +9,6 @@ import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/IKUSDToken.sol";
 import "./Interfaces/ICollSurplusPool.sol";
 import "./Interfaces/ISortedTroves.sol";
-import "./Interfaces/IStabilityPoolManager.sol";
 import "./Interfaces/IKUMOStaking.sol";
 import "./Dependencies/KumoBase.sol";
 import "./Dependencies/CheckContract.sol";
@@ -25,7 +24,6 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     // --- Connected contract declarations ---
 
     ITroveManager public troveManager;
-    IStabilityPoolManager stabilityPoolManager;
 
     address stabilityPoolAddress;
 
@@ -122,7 +120,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
 
     function setAddresses(
         address _troveManagerAddress,
-        address _stabilityPoolManagerAddress,
+        address _stabilityPoolAddress,
         address _gasPoolAddress,
         address _collSurplusPoolAddress,
         address _sortedTrovesAddress,
@@ -134,7 +132,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         assert(MIN_NET_DEBT > 0);
         // require(!isInitialized, "Already initialized");
         checkContract(_troveManagerAddress);
-        checkContract(_stabilityPoolManagerAddress);
+        checkContract(_stabilityPoolAddress);
         checkContract(_gasPoolAddress);
         checkContract(_collSurplusPoolAddress);
         checkContract(_sortedTrovesAddress);
@@ -146,7 +144,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         // __Ownable_init();
 
         troveManager = ITroveManager(_troveManagerAddress);
-        stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);
+        stabilityPoolAddress = _stabilityPoolAddress;
         gasPoolAddress = _gasPoolAddress;
         collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
@@ -157,7 +155,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         setKumoParameters(_kumoParamsAddress);
 
         emit TroveManagerAddressChanged(_troveManagerAddress);
-        emit StabilityPoolAddressChanged(_stabilityPoolManagerAddress);
+        emit StabilityPoolAddressChanged(_stabilityPoolAddress);
         emit GasPoolAddressChanged(_gasPoolAddress);
         emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
@@ -272,7 +270,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         emit KUSDBorrowingFeePaid(vars.asset, msg.sender, vars.KUSDFee);
     }
 
-    // Send ETH as collateral to a trove
+    // Send Asset as collateral to a trove
     function addColl(
         address _asset,
         uint256 _assetSent,
@@ -282,8 +280,8 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         _adjustTrove(_asset, _assetSent, msg.sender, 0, 0, false, _upperHint, _lowerHint, 0);
     }
 
-    // Send ETH as collateral to a trove. Called by only the Stability Pool.
-    function moveETHGainToTrove(
+    // Send Asset as collateral to a trove. Called by only the Stability Pool.
+    function moveAssetGainToTrove(
         address _asset,
         uint256 _amountMoved,
         address _borrower,
@@ -399,9 +397,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         // Confirm the operation is either a borrower adjusting their own trove, or a pure ETH transfer from the Stability Pool to a trove
         assert(
             msg.sender == _borrower ||
-                (stabilityPoolManager.isStabilityPool(msg.sender) &&
-                    _assetSent > 0 &&
-                    _KUSDChange == 0)
+                (msg.sender == stabilityPoolAddress && _assetSent > 0 && _KUSDChange == 0)
         );
 
         contractsCache.troveManager.applyPendingRewards(vars.asset, _borrower);

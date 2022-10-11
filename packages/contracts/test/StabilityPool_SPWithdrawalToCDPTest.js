@@ -85,7 +85,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       erc20 = hardhatTester.erc20
       assetAddress1 = erc20.address
       kumoParams = contracts.kumoParameters
-  
+
       await kumoParams.sanitizeParameters(assetAddress1);
       await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
@@ -94,18 +94,18 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       for (const acc of accounts) {
         await erc20.mint(acc, await web3.eth.getBalance(acc))
         index++;
-        
+
         if (index >= 25)
           break;
-        }
-      })
+      }
+    })
 
     // --- Compounding tests ---
 
-    // --- withdrawETHGainToTrove() ---
+    // --- withdrawAssetGainToTrove() ---
 
     // --- Identical deposits, identical liquidation amounts---
-    it("withdrawETHGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after one liquidation", async () => {
+    it("withdrawAssetGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after one liquidation", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -131,9 +131,9 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner });
 
       // Check depositors' compounded deposit is 6666.66 KUSD and ETH Gain is 33.16 ETH
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
 
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -149,7 +149,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       assert.isAtMost(th.getDifference(carol_ETHWithdrawn, '33166666666666666667'), 10000)
     })
 
-    it("withdrawETHGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after two identical liquidations", async () => {
+    it("withdrawAssetGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after two identical liquidations", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -177,9 +177,9 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await troveManager.liquidate(assetAddress1, defaulter_2, { from: owner });
 
       // Check depositors' compounded deposit is 3333.33 KUSD and ETH Gain is 66.33 ETH
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
       const bob_ETHWithdrawn = th.getEventArgByName(txB, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -194,7 +194,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       assert.isAtMost(th.getDifference(carol_ETHWithdrawn, '66333333333333333333'), 10000)
     })
 
-    it("withdrawETHGainToTrove():  Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after three identical liquidations", async () => {
+    it("withdrawAssetGainToTrove():  Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after three identical liquidations", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -224,9 +224,9 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await troveManager.liquidate(assetAddress1, defaulter_3, { from: owner });
 
       // Check depositors' compounded deposit is 0 KUSD and ETH Gain is 99.5 ETH 
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
 
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -243,7 +243,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
     })
 
     // --- Identical deposits, increasing liquidation amounts ---
-    it("withdrawETHGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after two liquidations of increasing KUSD", async () => {
+    it("withdrawAssetGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after two liquidations of increasing KUSD", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -271,9 +271,9 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await troveManager.liquidate(assetAddress1, defaulter_2, { from: owner });
 
       // Check depositors' compounded deposit
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
 
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -290,7 +290,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       assert.isAtMost(th.getDifference(carol_ETHWithdrawn, dec(398, 17)), 10000)
     })
 
-    it("withdrawETHGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after three liquidations of increasing KUSD", async () => {
+    it("withdrawAssetGainToTrove(): Depositors with equal initial deposit withdraw correct compounded deposit and ETH Gain after three liquidations of increasing KUSD", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -320,9 +320,9 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await troveManager.liquidate(assetAddress1, defaulter_3, { from: owner });
 
       // Check depositors' compounded deposit
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
 
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -340,7 +340,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
     })
 
     // --- Increasing deposits, identical liquidation amounts ---
-    it("withdrawETHGainToTrove(): Depositors with varying deposits withdraw correct compounded deposit and ETH Gain after two identical liquidations", async () => {
+    it("withdrawAssetGainToTrove(): Depositors with varying deposits withdraw correct compounded deposit and ETH Gain after two identical liquidations", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -369,9 +369,9 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await troveManager.liquidate(assetAddress1, defaulter_2, { from: owner });
 
       // Depositors attempt to withdraw everything
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
 
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -387,7 +387,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       assert.isAtMost(th.getDifference(carol_ETHWithdrawn, dec(995, 17)), 100000)
     })
 
-    it("withdrawETHGainToTrove(): Depositors with varying deposits withdraw correct compounded deposit and ETH Gain after three identical liquidations", async () => {
+    it("withdrawAssetGainToTrove(): Depositors with varying deposits withdraw correct compounded deposit and ETH Gain after three identical liquidations", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -418,9 +418,9 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await troveManager.liquidate(assetAddress1, defaulter_3, { from: owner });
 
       // Depositors attempt to withdraw everything
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
 
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -437,7 +437,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
     })
 
     // --- Varied deposits and varied liquidation amount ---
-    it("withdrawETHGainToTrove(): Depositors with varying deposits withdraw correct compounded deposit and ETH Gain after three varying liquidations", async () => {
+    it("withdrawAssetGainToTrove(): Depositors with varying deposits withdraw correct compounded deposit and ETH Gain after three varying liquidations", async () => {
       // Whale opens Trove with 1m ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(1000000, 18)), whale, whale, { from: whale, value: dec(1000000, 'ether') })
 
@@ -477,9 +477,9 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await troveManager.liquidate(assetAddress1, defaulter_3, { from: owner });
 
       // Depositors attempt to withdraw everything
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
 
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -499,7 +499,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
 
     // --- Deposit enters at t > 0
 
-    it("withdrawETHGainToTrove(): A, B, C Deposit -> 2 liquidations -> D deposits -> 1 liquidation. All deposits and liquidations = 100 KUSD.  A, B, C, D withdraw correct KUSD deposit and ETH Gain", async () => {
+    it("withdrawAssetGainToTrove(): A, B, C Deposit -> 2 liquidations -> D deposits -> 1 liquidation. All deposits and liquidations = 100 KUSD.  A, B, C, D withdraw correct KUSD deposit and ETH Gain", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -535,10 +535,10 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       // Third defaulter liquidated
       await troveManager.liquidate(assetAddress1, defaulter_3, { from: owner });
 
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
-      const txD = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txD = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
 
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -560,7 +560,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       assert.isAtMost(th.getDifference(dennis_ETHWithdrawn, '49750000000000000000'), 100000)
     })
 
-    it("withdrawETHGainToTrove(): A, B, C Deposit -> 2 liquidations -> D deposits -> 2 liquidations. All deposits and liquidations = 100 KUSD.  A, B, C, D withdraw correct KUSD deposit and ETH Gain", async () => {
+    it("withdrawAssetGainToTrove(): A, B, C Deposit -> 2 liquidations -> D deposits -> 2 liquidations. All deposits and liquidations = 100 KUSD.  A, B, C, D withdraw correct KUSD deposit and ETH Gain", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -598,10 +598,10 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await troveManager.liquidate(assetAddress1, defaulter_3, { from: owner });
       await troveManager.liquidate(assetAddress1, defaulter_4, { from: owner });
 
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
-      const txD = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txD = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
 
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -620,7 +620,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       assert.isAtMost(th.getDifference(dennis_ETHWithdrawn, dec(995, 17)), 100000)
     })
 
-    it("withdrawETHGainToTrove(): A, B, C Deposit -> 2 liquidations -> D deposits -> 2 liquidations. Various deposit and liquidation vals.  A, B, C, D withdraw correct KUSD deposit and ETH Gain", async () => {
+    it("withdrawAssetGainToTrove(): A, B, C Deposit -> 2 liquidations -> D deposits -> 2 liquidations. Various deposit and liquidation vals.  A, B, C, D withdraw correct KUSD deposit and ETH Gain", async () => {
       // Whale opens Trove with 1m ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(1000000, 18)), whale, whale, { from: whale, value: dec(1000000, 'ether') })
 
@@ -670,10 +670,10 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await troveManager.liquidate(assetAddress1, defaulter_4, { from: owner });
 
       // Each depositor withdraws as much as possible
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
-      const txD = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txD = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
 
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -695,7 +695,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
 
     // --- Depositor leaves ---
 
-    it("withdrawETHGainToTrove(): A, B, C, D deposit -> 2 liquidations -> D withdraws -> 2 liquidations. All deposits and liquidations = 100 KUSD.  A, B, C, D withdraw correct KUSD deposit and ETH Gain", async () => {
+    it("withdrawAssetGainToTrove(): A, B, C, D deposit -> 2 liquidations -> D withdraws -> 2 liquidations. All deposits and liquidations = 100 KUSD.  A, B, C, D withdraw correct KUSD deposit and ETH Gain", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -728,7 +728,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       // Dennis withdraws his deposit and ETH gain
       // Increasing the price for a moment to avoid pending liquidations to block withdrawal
       await priceFeed.setPrice(dec(200, 18))
-      const txD = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
+      const txD = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
       await priceFeed.setPrice(dec(100, 18))
 
       const dennis_ETHWithdrawn = th.getEventArgByName(txD, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -739,9 +739,9 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await troveManager.liquidate(assetAddress1, defaulter_3, { from: owner });
       await troveManager.liquidate(assetAddress1, defaulter_4, { from: owner });
 
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
 
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -757,7 +757,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       assert.isAtMost(th.getDifference(carol_ETHWithdrawn, dec(995, 17)), 100000)
     })
 
-    it("withdrawETHGainToTrove(): A, B, C, D deposit -> 2 liquidations -> D withdraws -> 2 liquidations. Various deposit and liquidation vals. A, B, C, D withdraw correct KUSD deposit and ETH Gain", async () => {
+    it("withdrawAssetGainToTrove(): A, B, C, D deposit -> 2 liquidations -> D withdraws -> 2 liquidations. Various deposit and liquidation vals. A, B, C, D withdraw correct KUSD deposit and ETH Gain", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -765,7 +765,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: alice, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: bob, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: carol, value: dec(10000, 'ether') })
-     
+
       /* Initial deposits:
       Alice: 20000 KUSD
       Bob: 25000 KUSD
@@ -815,9 +815,9 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await troveManager.liquidate(assetAddress1, defaulter_3, { from: owner });
       await troveManager.liquidate(assetAddress1, defaulter_4, { from: owner });
 
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
 
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -835,7 +835,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
     })
 
     // --- One deposit enters at t > 0, and another leaves later ---
-    it("withdrawETHGainToTrove(): A, B, D deposit -> 2 liquidations -> C makes deposit -> 1 liquidation -> D withdraws -> 1 liquidation. All deposits: 100 KUSD. Liquidations: 100,100,100,50.  A, B, C, D withdraw correct KUSD deposit and ETH Gain", async () => {
+    it("withdrawAssetGainToTrove(): A, B, D deposit -> 2 liquidations -> C makes deposit -> 1 liquidation -> D withdraws -> 1 liquidation. All deposits: 100 KUSD. Liquidations: 100,100,100,50.  A, B, C, D withdraw correct KUSD deposit and ETH Gain", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -843,7 +843,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: alice, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: bob, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: carol, value: dec(10000, 'ether') })
-   
+
       // Whale transfers 10k KUSD to A, B and D who then deposit it to the SP
       const depositors = [alice, bob, dennis]
       for (account of depositors) {
@@ -882,9 +882,9 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
 
       await troveManager.liquidate(assetAddress1, defaulter_4, { from: owner });
 
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
 
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -909,7 +909,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
 
     // A, B withdraw 0KUSD & 100e
     // C, D withdraw 5000KUSD  & 500e
-    it("withdrawETHGainToTrove(): Depositor withdraws correct compounded deposit after liquidation empties the pool", async () => {
+    it("withdrawAssetGainToTrove(): Depositor withdraws correct compounded deposit after liquidation empties the pool", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -949,10 +949,10 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       // await borrowerOperations.openTrove(assetAddress1, th._100pct, dec(1, 18), account, account, { from: erin, value: dec(2, 'ether') })
       // await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: erin })
 
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
-      const txD = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txD = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
 
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
       const bob_ETHWithdrawn = th.getEventArgByName(txB, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -982,7 +982,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
     // C, D deposit 10000
     // L3 cancels 10000, 1 
     // L2 20000, 200 empties Pool
-    it("withdrawETHGainToTrove(): Pool-emptying liquidation increases epoch by one, resets scaleFactor to 0, and resets P to 1e18", async () => {
+    it("withdrawAssetGainToTrove(): Pool-emptying liquidation increases epoch by one, resets scaleFactor to 0, and resets P to 1e18", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -1080,7 +1080,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
 
     // A, B withdraw 0 KUSD & 100e
     // C, D withdraw 5000 KUSD  & 50e
-    it("withdrawETHGainToTrove(): Depositors withdraw correct compounded deposit after liquidation empties the pool", async () => {
+    it("withdrawAssetGainToTrove(): Depositors withdraw correct compounded deposit after liquidation empties the pool", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -1121,11 +1121,11 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       // Defaulter 2 liquidated. 10000 KUSD offset
       await troveManager.liquidate(assetAddress1, defaulter_2, { from: owner });
 
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
-      const txD = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
-      const txE = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: erin })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txD = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
+      const txE = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: erin })
 
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
       const bob_ETHWithdrawn = th.getEventArgByName(txB, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -1154,7 +1154,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
     // L1, L2, L3 liquidated with 10000 KUSD each
     // A withdraws all
     // Expect A to withdraw 0 deposit and ether only from reward L1
-    it("withdrawETHGainToTrove(): single deposit fully offset. After subsequent liquidations, depositor withdraws 0 deposit and *only* the ETH Gain from one liquidation", async () => {
+    it("withdrawAssetGainToTrove(): single deposit fully offset. After subsequent liquidations, depositor withdraws 0 deposit and *only* the ETH Gain from one liquidation", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -1180,7 +1180,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await troveManager.liquidate(assetAddress1, defaulter_2, { from: owner });
       await troveManager.liquidate(assetAddress1, defaulter_3, { from: owner });
 
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
 
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -1202,7 +1202,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
 
     // Expect all depositors withdraw 0 KUSD and 100 ETH
 
-    it("withdrawETHGainToTrove(): Depositor withdraws correct compounded deposit after liquidation empties the pool", async () => {
+    it("withdrawAssetGainToTrove(): Depositor withdraws correct compounded deposit after liquidation empties the pool", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -1265,14 +1265,14 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       // Defaulter 4 liquidated. 10k KUSD offset
       await troveManager.liquidate(assetAddress1, defaulter_4, { from: owner });
 
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
-      const txD = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
-      const txE = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: erin })
-      const txF = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: flyn })
-      const txG = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: graham })
-      const txH = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: harriet })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txD = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
+      const txE = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: erin })
+      const txF = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: flyn })
+      const txG = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: graham })
+      const txH = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: harriet })
 
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
       const bob_ETHWithdrawn = th.getEventArgByName(txB, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -1310,7 +1310,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
 
     // --- Scale factor tests ---
 
-     // A deposits 10000
+    // A deposits 10000
     // L1 brings P close to boundary, i.e. 9e-9: liquidate 9999.99991
     // A withdraws all
     // B deposits 10000
@@ -1318,7 +1318,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
 
     // expect d(B) = d0(B)/100
     // expect correct ETH gain, i.e. all of the reward
-    it("withdrawETHGainToTrove(): deposit spans one scale factor change: Single depositor withdraws correct compounded deposit and ETH Gain after one liquidation", async () => {
+    it("withdrawAssetGainToTrove(): deposit spans one scale factor change: Single depositor withdraws correct compounded deposit and ETH Gain after one liquidation", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -1359,13 +1359,13 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
 
       assert.equal(await stabilityPool.currentScale(), '1')
 
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
       const bob_ETHWithdrawn = await th.getEventArgByName(txB, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
 
       // Expect Bob to retain 1% of initial deposit (100 KUSD) and all the liquidated ETH (60 ether)
       assert.isAtMost(th.getDifference((await stabilityPool.getCompoundedKUSDDeposit(bob)).toString(), '100000000000000000000'), 100000)
       assert.isAtMost(th.getDifference(bob_ETHWithdrawn, '59700000000000000000'), 100000)
-      
+
     })
 
     // A deposits 10000
@@ -1376,7 +1376,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
 
     // expect d(B) = d0(B)/100
     // expect correct ETH gain, i.e. all of the reward
-    it("withdrawETHGainToTrove(): Several deposits of varying amounts span one scale factor change. Depositors withdraw correct compounded deposit and ETH Gain after one liquidation", async () => {
+    it("withdrawAssetGainToTrove(): Several deposits of varying amounts span one scale factor change. Depositors withdraw correct compounded deposit and ETH Gain after one liquidation", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -1384,7 +1384,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: bob, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: carol, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis, value: dec(10000, 'ether') })
-      
+
       await kusdToken.transfer(alice, dec(10000, 18), { from: whale })
       await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: alice })
 
@@ -1424,9 +1424,9 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
 
       assert.equal(await stabilityPool.currentScale(), '1')
 
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
-      const txD = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txD = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
 
       /* Expect depositors to retain 1% of their initial deposit, and an ETH gain 
       in proportion to their initial deposit:
@@ -1460,14 +1460,14 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
     // B withdraws
     // expect d(B) = d0(B) * 1e-5
     // expect B gets entire ETH gain from L2
-    it("withdrawETHGainToTrove(): deposit spans one scale factor change: Single depositor withdraws correct compounded deposit and ETH Gain after one liquidation", async () => {
+    it("withdrawAssetGainToTrove(): deposit spans one scale factor change: Single depositor withdraws correct compounded deposit and ETH Gain after one liquidation", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: alice, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: bob, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: carol, value: dec(10000, 'ether') })
-      
+
       await kusdToken.transfer(alice, dec(10000, 18), { from: whale })
       await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: alice })
 
@@ -1500,7 +1500,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       assert.equal(await stabilityPool.P(), dec(1, 17))  // Scale changes and P changes. P = 1e(13-5+9) = 1e17
       assert.equal(await stabilityPool.currentScale(), '1')
 
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
       const bob_ETHWithdrawn = await th.getEventArgByName(txB, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
 
       // Bob should withdraw 1e-5 of initial deposit: 0.1 KUSD and the full ETH gain of 100 ether
@@ -1516,7 +1516,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
     // B withdraws
     // expect d(B) = d0(B) * 1e-5
     // expect B gets entire ETH gain from L2
-    it("withdrawETHGainToTrove(): Several deposits of varying amounts span one scale factor change. Depositors withdraws correct compounded deposit and ETH Gain after one liquidation", async () => {
+    it("withdrawAssetGainToTrove(): Several deposits of varying amounts span one scale factor change. Depositors withdraws correct compounded deposit and ETH Gain after one liquidation", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -1524,7 +1524,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: bob, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: carol, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis, value: dec(10000, 'ether') })
-      
+
       await kusdToken.transfer(alice, dec(10000, 18), { from: whale })
       await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: alice })
 
@@ -1562,13 +1562,13 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       assert.equal(await stabilityPool.P(), dec(1, 17))  // P decreases. P = 1e(13-5+9) = 1e17
       assert.equal(await stabilityPool.currentScale(), '1')
 
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
       const bob_ETHWithdrawn = await th.getEventArgByName(txB, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
 
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
       const carol_ETHWithdrawn = await th.getEventArgByName(txC, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
 
-      const txD = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
+      const txD = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
       const dennis_ETHWithdrawn = await th.getEventArgByName(txD, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
 
       // {B, C, D} should have a compounded deposit of {0.1, 0.2, 0.3} KUSD
@@ -1584,7 +1584,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
     // A make deposit 10000 KUSD
     // L1 brings P to (~1e-10)*P. L1: 9999.9999999000000000 KUSD
     // Expect A to withdraw 0 deposit
-    it("withdrawETHGainToTrove(): Deposit that decreases to less than 1e-9 of it's original value is reduced to 0", async () => {
+    it("withdrawAssetGainToTrove(): Deposit that decreases to less than 1e-9 of it's original value is reduced to 0", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -1592,7 +1592,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: bob, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: carol, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis, value: dec(10000, 'ether') })
-      
+
       // Defaulters 1 withdraws 9999.9999999 KUSD
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount('9999999999900000000000'), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(100, 'ether') })
 
@@ -1623,7 +1623,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
     L4 decreases P by(~1e-5)P. L4:  9999.900000000000000000 KUSD, 1 ETH
     expect A, B, C, D each withdraw ~100 Ether
     */
-    it("withdrawETHGainToTrove(): Several deposits of 10000 KUSD span one scale factor change. Depositors withdraws correct compounded deposit and ETH Gain after one liquidation", async () => {
+    it("withdrawAssetGainToTrove(): Several deposits of 10000 KUSD span one scale factor change. Depositors withdraws correct compounded deposit and ETH Gain after one liquidation", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -1631,7 +1631,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: bob, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: carol, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis, value: dec(10000, 'ether') })
-      
+
       // Defaulters 1-4 each withdraw 9999.9 KUSD
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount('9999900000000000000000'), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(100, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount('9999900000000000000000'), defaulter_2, defaulter_2, { from: defaulter_2, value: dec(100, 'ether') })
@@ -1680,10 +1680,10 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       assert.equal(await stabilityPool.P(), dec(1, 16)) // Scale changes and P changes to 1e(12-5+9) = 1e16
       assert.equal(await stabilityPool.currentScale(), '2')
 
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
-      const txD = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: carol })
+      const txD = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: dennis })
 
       const alice_ETHWithdrawn = await th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
       const bob_ETHWithdrawn = await th.getEventArgByName(txB, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM).toString()
@@ -1705,7 +1705,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       assert.isTrue(toBN(dennis_ETHWithdrawn).sub(toBN(dec(995, 17))).abs().lte(toBN(dec(1, 17))))
     })
 
-    it("withdrawETHGainToTrove(): 2 depositors can withdraw after each receiving half of a pool-emptying liquidation", async () => {
+    it("withdrawAssetGainToTrove(): 2 depositors can withdraw after each receiving half of a pool-emptying liquidation", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -1715,7 +1715,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: D, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: E, value: dec(10000, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), ZERO_ADDRESS, ZERO_ADDRESS, { from: F, value: dec(10000, 'ether') })
-      
+
       // Defaulters 1-3 each withdraw 24100, 24300, 24500 KUSD (inc gas comp)
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(24100, 18)), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(200, 'ether') })
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(24300, 18)), defaulter_2, defaulter_2, { from: defaulter_2, value: dec(200, 'ether') })
@@ -1755,8 +1755,8 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       // Attempt withdrawals
       // Increasing the price for a moment to avoid pending liquidations to block withdrawal
       await priceFeed.setPrice(dec(200, 18))
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: A })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: B })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: A })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: B })
       await priceFeed.setPrice(dec(100, 18))
 
       assert.isTrue(txA.receipt.status)
@@ -1795,8 +1795,8 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       // Attempt withdrawals
       // Increasing the price for a moment to avoid pending liquidations to block withdrawal
       await priceFeed.setPrice(dec(200, 18))
-      const txC = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: C })
-      const txD = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: D })
+      const txC = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: C })
+      const txD = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: D })
       await priceFeed.setPrice(dec(100, 18))
 
       assert.isTrue(txC.receipt.status)
@@ -1832,15 +1832,15 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       assert.equal(SPKUSDBalance_3, '0')
 
       // Attempt withdrawals
-      const txE = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: E })
-      const txF = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: F })
+      const txE = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: E })
+      const txF = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: F })
       assert.isTrue(txE.receipt.status)
       assert.isTrue(txF.receipt.status)
     })
 
     // --- Extreme values, confirm no overflows ---
 
-    it("withdrawETHGainToTrove(): Large liquidated coll/debt, deposits and ETH price", async () => {
+    it("withdrawAssetGainToTrove(): Large liquidated coll/debt, deposits and ETH price", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -1862,8 +1862,8 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       // Defaulter liquidated
       await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner });
 
-      const txA = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txB = await stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txA = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txB = await stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
 
       // Grab the ETH gain from the emitted event in the tx log
       const alice_ETHWithdrawn = th.getEventArgByName(txA, EVENT_ASSET_GAIN_NAME, EVENT_ASSET_GAIN_PARAM)
@@ -1894,7 +1894,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       assert.isTrue(bobETHDiff.lte(toBN(dec(1, 18))))
     })
 
-    it("withdrawETHGainToTrove(): Small liquidated coll/debt, large deposits and ETH price", async () => {
+    it("withdrawAssetGainToTrove(): Small liquidated coll/debt, large deposits and ETH price", async () => {
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(100000, 18)), whale, whale, { from: whale, value: dec(100000, 'ether') })
 
@@ -1910,15 +1910,15 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
 
       // Defaulter opens trove with 50e-7 ETH and  5000 KUSD. 200% ICR
       await borrowerOperations.openTrove(assetAddress1, th._100pct, await getOpenTroveKUSDAmount(dec(5000, 18)), defaulter_1, defaulter_1, { from: defaulter_1, value: '5000000000000' })
-      
+
       // ETH:USD price drops to $1 billion per ETH
       await priceFeed.setPrice(dec(1, 27));
 
       // Defaulter liquidated
       await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner });
 
-      const txAPromise = stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
-      const txBPromise = stabilityPool.withdrawETHGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
+      const txAPromise = stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: alice })
+      const txBPromise = stabilityPool.withdrawAssetGainToTrove(ZERO_ADDRESS, ZERO_ADDRESS, { from: bob })
 
       // Expect ETH gain per depositor of ~1e11 wei to be rounded to 0 by the ETHGainedPerUnitStaked calculation (e / D), where D is ~1e36.
       await th.assertRevert(txAPromise, 'StabilityPool: caller must have non-zero ETH Gain')

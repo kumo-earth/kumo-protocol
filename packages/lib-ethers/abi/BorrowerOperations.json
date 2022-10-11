@@ -563,7 +563,7 @@
         "type": "address"
       }
     ],
-    "name": "moveETHGainToTrove",
+    "name": "moveAssetGainToTrove",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
@@ -656,7 +656,7 @@
       },
       {
         "internalType": "address",
-        "name": "_stabilityPoolManagerAddress",
+        "name": "_stabilityPoolAddress",
         "type": "address"
       },
       {
