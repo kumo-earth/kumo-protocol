@@ -221,6 +221,16 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     return this._readable.getKUSDBalance(address, overrides);
   }
 
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getBCTBalance} */
+  getAssetBalance(
+    address: string,
+    assetType: string,
+    provider: EthersProvider,
+    overrides?: EthersCallOverrides
+  ): Promise<Decimal> {
+    return this._readable.getAssetBalance(address, assetType, provider, overrides);
+  }
+
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUMOBalance} */
   getKUMOBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getKUMOBalance(address, overrides);

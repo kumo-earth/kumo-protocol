@@ -4,9 +4,13 @@
 
 ```ts
 
+import { Provider } from '@ethersproject/abstract-provider';
+
 // @internal (undocumented)
 export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWithExtraParams<T> {
     constructor(readable: _ReadableKumoWithExtraParams<T>, cache: _KumoReadCache<T>);
+    // (undocumented)
+    getAssetBalance(address: string, assetType: string, provider: Provider, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
     getCollateralSurplusBalance(address?: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
@@ -277,6 +281,7 @@ export abstract class KumoStore<T = unknown> {
 // @public
 export interface KumoStoreBaseState {
     accountBalance: Decimal;
+    bctBalance: Decimal;
     collateralSurplusBalance: Decimal;
     // @internal (undocumented)
     _feesInNormalMode: Fees;
@@ -287,6 +292,7 @@ export interface KumoStoreBaseState {
     kusdInStabilityPool: Decimal;
     liquidityMiningKUMOReward: Decimal;
     liquidityMiningStake: Decimal;
+    mco2Balance: Decimal;
     numberOfTroves: number;
     ownFrontend: FrontendStatus;
     price: Decimal;
@@ -490,6 +496,7 @@ export interface PopulatedRedemption<P = unknown, S = unknown, R = unknown> exte
 
 // @public
 export interface ReadableKumo {
+    getAssetBalance(address: string, assetType: string, provider: Provider): Promise<Decimal>;
     getCollateralSurplusBalance(address?: string): Promise<Decimal>;
     getFees(asset: string): Promise<Fees>;
     getFrontendStatus(address?: string): Promise<FrontendStatus>;

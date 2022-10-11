@@ -1,3 +1,4 @@
+import { Provider } from "@ethersproject/abstract-provider";
 import { Decimal } from "./Decimal";
 import { Fees } from "./Fees";
 import { KUMOStake } from "./KUMOStake";
@@ -125,6 +126,18 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     return (
       this._cache.getKUSDBalance(address, ...extraParams) ??
       this._readable.getKUSDBalance(address, ...extraParams)
+    );
+  }
+
+  async getAssetBalance(
+    address: string,
+    assetType: string,
+    provider: Provider,
+    ...extraParams: T
+  ): Promise<Decimal> {
+    return (
+      this._cache.getAssetBalance(address, assetType, provider, ...extraParams) ??
+      this._readable.getAssetBalance(address, assetType, provider, ...extraParams)
     );
   }
 

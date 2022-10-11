@@ -28,6 +28,12 @@ export interface KumoStoreBaseState {
   /** User's KUSD token balance. */
   kusdBalance: Decimal;
 
+  /** User's BCT token balance. */
+  bctBalance: Decimal;
+
+  /** User's BCT token balance. */
+  mco2Balance: Decimal;
+
   /** User's KUMO token balance. */
   kumoBalance: Decimal;
 
@@ -357,6 +363,19 @@ export abstract class KumoStore<T = unknown> {
         "kusdBalance",
         baseState.kusdBalance,
         baseStateUpdate.kusdBalance
+      ),
+      bctBalance: this._updateIfChanged(
+        eq,
+        "bctBalance",
+        baseState.bctBalance,
+        baseStateUpdate.bctBalance
+      ),
+
+      mco2Balance: this._updateIfChanged(
+        eq,
+        "mco2Balance",
+        baseState.mco2Balance,
+        baseStateUpdate.mco2Balance
       ),
 
       kumoBalance: this._updateIfChanged(

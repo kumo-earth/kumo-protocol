@@ -90,8 +90,8 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
   private async _get(
     blockTag?: number
   ): Promise<[baseState: KumoStoreBaseState, extraState: BlockPolledKumoStoreExtraState]> {
-    const { userAddress, frontendTag } = this.connection;
-    const asset = ""
+    const { userAddress, frontendTag, provider } = this.connection;
+
     const { blockTimestamp, _feesFactory, calculateRemainingKUMO, ...baseState } =
       await promiseAllValues({
         blockTimestamp: this._readable._getBlockTimestamp(blockTag),
@@ -123,6 +123,8 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
         ...(userAddress
           ? {
               accountBalance: this._provider.getBalance(userAddress, blockTag).then(decimalify),
+              bctBalance: this._readable.getAssetBalance(userAddress, 'BCT', provider, { blockTag }),
+              mco2Balance: this._readable.getAssetBalance(userAddress, 'MCO2', provider, { blockTag }),
               kusdBalance: this._readable.getKUSDBalance(userAddress, { blockTag }),
               kumoBalance: this._readable.getKUMOBalance(userAddress, { blockTag }),
               uniTokenBalance: this._readable.getUniTokenBalance(userAddress, { blockTag }),
@@ -153,6 +155,8 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
             }
           : {
               accountBalance: Decimal.ZERO,
+              bctBalance: Decimal.ZERO,
+              mco2Balance: Decimal.ZERO,
               kusdBalance: Decimal.ZERO,
               kumoBalance: Decimal.ZERO,
               uniTokenBalance: Decimal.ZERO,

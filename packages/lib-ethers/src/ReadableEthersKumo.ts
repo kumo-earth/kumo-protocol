@@ -1,3 +1,7 @@
+import { ethers } from "ethers";
+
+import iERC20Abi from "../abi/IERC20.json";
+
 import { BlockTag } from "@ethersproject/abstract-provider";
 
 import {
@@ -28,7 +32,8 @@ import {
   _getBlockTimestamp,
   _getContracts,
   _requireAddress,
-  _requireFrontendAddress
+  _requireFrontendAddress,
+  _requireSigner
 } from "./EthersKumoConnection";
 
 import { BlockPolledKumoStore } from "./BlockPolledKumoStore";
@@ -63,6 +68,11 @@ const userTroveStatusFrom = (backendStatus: BackendTroveStatus): UserTroveStatus
 const convertToDate = (timestamp: number) => new Date(timestamp * 1000);
 
 const validSortingOptions = ["ascendingCollateralRatio", "descendingCollateralRatio"];
+
+const assetTokens: { [index: string]: string } = {
+  BCT: "0xf2438A14f668b1bbA53408346288f3d7C71c10a1",
+  MCO2: "0x7beCBA11618Ca63Ead5605DE235f6dD3b25c530E"
+};
 
 const expectPositiveInt = <K extends string>(obj: { [P in K]?: number }, key: K) => {
   if (obj[key] !== undefined) {
@@ -258,7 +268,6 @@ export class ReadableEthersKumo implements ReadableKumo {
     address ??= _requireAddress(this.connection);
     const { stabilityPool } = _getContracts(this.connection);
 
-
     const [{ frontEndTag, initialValue }, currentKUSD, collateralGain, kumoReward] =
       await Promise.all([
         stabilityPool.deposits(address, { ...overrides }),
@@ -300,6 +309,20 @@ export class ReadableEthersKumo implements ReadableKumo {
     const { kusdToken } = _getContracts(this.connection);
 
     return kusdToken.balanceOf(address, { ...overrides }).then(decimalify);
+  }
+
+  getAssetBalance(
+    address: string,
+    assetType: string,
+    provider: EthersProvider,
+    overrides?: EthersCallOverrides
+  ) {
+    address ??= _requireAddress(this.connection);
+    const assetTokenAddress = assetTokens[assetType];
+    const assetTokenContract = new ethers.Contract(assetTokenAddress, iERC20Abi, provider);
+    const assetTokenBalance = assetTokenContract?.balanceOf(address);
+    console.log("assetTokenBalance", assetType,  assetTokenBalance);
+    return assetTokenContract.balanceOf(address, { ...overrides }).then(decimalify);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUMOBalance} */
@@ -658,6 +681,22 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
     return this._userHit(address, overrides)
       ? this.store.state.kusdBalance
       : this._readable.getKUSDBalance(address, overrides);
+  }
+  async getAssetBalance(
+    address: string,
+    assetType: string,
+    provider: EthersProvider,
+    overrides?: EthersCallOverrides
+  ) {
+    if (this._userHit(address, overrides)) {
+      if (assetType === "BCT") {
+        return this.store.state.bctBalance;
+      } else if (assetType === "MCO2") {
+        return this.store.state.mco2Balance;
+      }
+    } else {
+      this._readable.getAssetBalance(address, assetType, provider, overrides);
+    }
   }
 
   async getKUMOBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {

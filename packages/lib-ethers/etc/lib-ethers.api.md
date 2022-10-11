@@ -125,6 +125,8 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     static _from(connection: EthersKumoConnection): EthersKumo;
     // @internal (undocumented)
     _getActivePool(asset: string, overrides?: EthersCallOverrides): Promise<Trove>;
+    // (undocumented)
+    getAssetBalance(address: string, assetType: string, provider: EthersProvider, overrides?: EthersCallOverrides): Promise<Decimal>;
     // @internal (undocumented)
     _getBlockTimestamp(blockTag?: BlockTag): Promise<number>;
     // (undocumented)
@@ -460,6 +462,8 @@ export class ReadableEthersKumo implements ReadableKumo {
     static _from(connection: EthersKumoConnection): ReadableEthersKumo;
     // @internal (undocumented)
     _getActivePool(asset: string, overrides?: EthersCallOverrides): Promise<Trove>;
+    // (undocumented)
+    getAssetBalance(address: string, assetType: string, provider: EthersProvider, overrides?: EthersCallOverrides): any;
     // @internal (undocumented)
     _getBlockTimestamp(blockTag?: BlockTag): Promise<number>;
     // (undocumented)

@@ -1,3 +1,4 @@
+import { Provider } from "@ethersproject/abstract-provider";
 import { Decimal } from "./Decimal";
 import { Trove, TroveWithPendingRedistribution, UserTrove } from "./Trove";
 import { StabilityDeposit } from "./StabilityDeposit";
@@ -117,6 +118,13 @@ export interface ReadableKumo {
    * @param address - Address whose balance should be retrieved.
    */
   getKUSDBalance(address?: string): Promise<Decimal>;
+
+  /**
+   * Get the amount of BCT held by an address.
+   *
+   * @param address - Address whose balance should be retrieved.
+   */
+   getAssetBalance(address: string, assetType: string, provider: Provider): Promise<Decimal>;
 
   /**
    * Get the amount of KUMO held by an address.
