@@ -360,8 +360,6 @@ class TestHelper {
    * So, it subtracts the gas compensation and then the borrowing fee
    */
   static async getOpenTroveKUSDAmount(contracts, totalDebt, asset) {
-    if (!asset)
-      asset = this.ZERO_ADDRESS;
     const actualDebt = await this.getActualDebtFromComposite(totalDebt, contracts, asset)
     return this.getNetBorrowingAmount(contracts, actualDebt, asset)
   }
