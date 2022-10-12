@@ -71,7 +71,6 @@ interface IStabilityPool is IDeposit {
     event DepositSnapshotUpdated(address indexed _depositor, uint256 _P, uint256 _S, uint256 _G);
     event UserDepositChanged(address indexed _depositor, uint256 _newDeposit);
 
-    event StakeChanged(uint256 _newSystemStake, address _depositor);
     event AssetGainWithdrawn(address indexed _depositor, uint256 _Asset, uint256 _kusdLoss);
     event SystemSnapshotUpdated(uint256 _P, uint256 _G);
 
@@ -136,7 +135,7 @@ interface IStabilityPool is IDeposit {
      * - Leaves their compounded deposit in the Stability Pool
      * - Updates snapshots for deposit and tagged front end stake
      */
-    function withdrawETHGainToTrove(address _upperHint, address _lowerHint) external;
+    function withdrawAssetGainToTrove(address _upperHint, address _lowerHint) external;
 
     /*
      * Initial checks:
@@ -204,8 +203,6 @@ interface IStabilityPool is IDeposit {
      *
      * The front end's compounded stake is equal to the sum of its depositors' compounded deposits.
      */
-    function getCompoundedTotalStake() external view returns (uint256);
-
     function getNameBytes() external view returns (bytes32);
 
     function getAssetType() external view returns (address);
