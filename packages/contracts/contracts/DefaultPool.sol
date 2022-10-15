@@ -25,7 +25,6 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
     // bool public isInitialized;
 
     string public constant NAME = "DefaultPool";
-    address constant ETH_REF_ADDRESS = address(0);
 
     address public troveManagerAddress;
     address public activePoolAddress;
