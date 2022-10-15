@@ -5,7 +5,6 @@ const KUSDToken = artifacts.require("./KUSDToken.sol")
 const ActivePool = artifacts.require("./ActivePool.sol");
 const DefaultPool = artifacts.require("./DefaultPool.sol");
 const StabilityPool = artifacts.require("./StabilityPool.sol")
-const StabilityPoolManager = artifacts.require("./StabilityPoolManager.sol")
 const GasPool = artifacts.require("./GasPool.sol")
 const CollSurplusPool = artifacts.require("./CollSurplusPool.sol")
 const FunctionCaller = artifacts.require("./TestContracts/FunctionCaller.sol")
@@ -97,7 +96,6 @@ class DeploymentHelper {
     const troveManager = await TroveManager.new()
     const activePool = await ActivePool.new()
     const stabilityPool = await StabilityPool.new()
-    const stabilityPoolManager = await StabilityPoolManager.new()
     const gasPool = await GasPool.new()
     const defaultPool = await DefaultPool.new()
     const collSurplusPool = await CollSurplusPool.new()
@@ -132,7 +130,6 @@ class DeploymentHelper {
       troveManager,
       activePool,
       stabilityPool,
-      stabilityPoolManager,
       gasPool,
       defaultPool,
       collSurplusPool,
@@ -155,7 +152,6 @@ class DeploymentHelper {
     testerContracts.activePool = await ActivePoolTester.new()
     testerContracts.defaultPool = await DefaultPoolTester.new()
     testerContracts.stabilityPool = await StabilityPoolTester.new()
-    testerContracts.stabilityPoolManager = await StabilityPoolManager.new()
     testerContracts.gasPool = await GasPool.new()
     testerContracts.collSurplusPool = await CollSurplusPool.new()
     testerContracts.math = await KumoMathTester.new()
@@ -166,6 +162,8 @@ class DeploymentHelper {
     testerContracts.kumoParameters = await KumoParameters.new()
     testerContracts.erc20 = await ERC20Test.new()
     erc20TestAddress = testerContracts.erc20.address
+
+    // await testerContracts.erc20.setDecimals(18);
     // ERC20Test.setAsDeployed(testerContracts.erc20);
     testerContracts.kusdToken = await KUSDTokenTester.new(
       testerContracts.troveManager.address,

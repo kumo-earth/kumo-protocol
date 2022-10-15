@@ -1,13 +1,12 @@
-const { ZERO_ADDRESS } = require("@openzeppelin/test-helpers/src/constants.js")
 const deploymentHelper = require("../utils/deploymentHelpers.js")
 const testHelpers = require("../utils/testHelpers.js")
+
 
 const th = testHelpers.TestHelper
 const timeValues = testHelpers.TimeValues
 const dec = th.dec
 const toBN = th.toBN
 const getDifference = th.getDifference
-
 
 const TroveManagerTester = artifacts.require("TroveManagerTester")
 const KUSDToken = artifacts.require("KUSDToken")
@@ -28,9 +27,6 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
   const ZERO_ADDRESS = th.ZERO_ADDRESS
 
   let contracts
-  let kumoParameters
-  let hardhatTester
-  let erc20
 
   let priceFeed
   let kusdToken
@@ -40,6 +36,10 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
   let borrowerOperations
   let kumoToken
   let communityIssuanceTester
+  let kumoParams
+  let KUMOContracts
+  let hardhatTester
+  let erc20Asset1
 
   let communityKUMOSupply
   let issuance_M1
@@ -50,12 +50,30 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
   let issuance_M6
 
 
-  const getOpenTroveKUSDAmount = async (totalDebt, asset) => th.getOpenTroveKUSDAmount(contracts, totalDebt, asset)
+  const getOpenTroveKUSDAmount = async (asset, totalDebt) => th.getOpenTroveKUSDAmount(contracts, totalDebt, asset)
 
   const openTrove = async (params) => th.openTrove(contracts, params)
-  describe("KUMO Rewards", async () => {
+  describe("KUMO Rewards - TEST", async () => {
 
     beforeEach(async () => {
+
+      hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
+      erc20Asset1 = hardhatTester.erc20
+      assetAddress1 = erc20Asset1.address
+
+
+
+
+      // Mint token to each acccount
+      let index = 0;
+      for (const acc of accounts) {
+        await erc20Asset1.mint(acc, await web3.eth.getBalance(acc))
+        index++;
+
+        if (index >= 20)
+          break;
+      }
+
       contracts = await deploymentHelper.deployKumoCore()
       contracts.troveManager = await TroveManagerTester.new()
       contracts.kusdToken = await KUSDToken.new(
@@ -63,7 +81,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
         contracts.stabilityPool.address,
         contracts.borrowerOperations.address
       )
-      const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
+      KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
 
       priceFeed = contracts.priceFeedTestnet
       kusdToken = contracts.kusdToken
@@ -72,6 +90,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       troveManager = contracts.troveManager
       stabilityPool = contracts.stabilityPool
       borrowerOperations = contracts.borrowerOperations
+      kumoParams = contracts.kumoParameters
 
       kumoToken = KUMOContracts.kumoToken
       communityIssuanceTester = KUMOContracts.communityIssuance
@@ -79,25 +98,8 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await deploymentHelper.connectKUMOContracts(KUMOContracts)
       await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
       await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
-      hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-      erc20 = hardhatTester.erc20
-      assetAddress1 =erc20.address
-
-      kumoParams = contracts.kumoParameters
-
       await kumoParams.sanitizeParameters(assetAddress1);
       await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
-
-      // Mint token to each acccount
-      let index = 0;
-      for (const acc of accounts) {
-       // await vstaToken.approve(vstaStaking.address, await erc20Asset1.balanceOf(acc), { from: acc })
-        await erc20.mint(acc, await web3.eth.getBalance(acc))
-        index++;
-  
-        if (index >= 20)
-          break;
-      }
 
       // Check community issuance starts with 32 million KUMO
       communityKUMOSupply = toBN(await kumoToken.balanceOf(communityIssuanceTester.address))
@@ -125,8 +127,8 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
     })
 
     it("liquidation < 1 minute after a deposit does not change totalKUMOIssued", async () => {
-      await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: {from: A } })
-      await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: {from: B } })
+      await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
       // A, B provide to SP
       await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: A })
@@ -143,16 +145,13 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       // Check KUMO has been issued
       const totalKUMOIssued_1 = await communityIssuanceTester.totalKUMOIssued()
       assert.isTrue(totalKUMOIssued_1.gt(toBN('0')))
-      
+
       await troveManager.liquidate(assetAddress1, B)
       const blockTimestamp_2 = th.toBN(await th.getLatestBlockTimestamp(web3))
 
       assert.isFalse(await sortedTroves.contains(assetAddress1, B))
 
       const totalKUMOIssued_2 = await communityIssuanceTester.totalKUMOIssued()
-
-      //console.log(`totalKUMOIssued_1: ${totalKUMOIssued_1}`)
-      //console.log(`totalKUMOIssued_2: ${totalKUMOIssued_2}`)
 
       // check blockTimestamp diff < 60s
       const timestampDiff = blockTimestamp_2.sub(blockTimestamp_1)
@@ -179,7 +178,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(A_initialDeposit, dec(10000, 18))
 
       // defaulter opens trove
-      await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), defaulter_1, defaulter_1, { from: defaulter_1 })
+      await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(10000, 18)), defaulter_1, defaulter_1, { from: defaulter_1 })
 
       // ETH drops
       await priceFeed.setPrice(dec(100, 18))
@@ -217,10 +216,13 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
 
     // Simple case: 3 depositors, equal stake. No liquidations. No front-end.
     it("withdrawFromSP(): Depositors with equal initial deposit withdraw correct KUMO gain. No liquidations. No front end.", async () => {
+      const initialIssuance = await communityIssuanceTester.totalKUMOIssued()
+      assert.equal(initialIssuance, 0)
+
       // Whale opens Trove with 10k ETH
       await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, dec(10000, 18), whale, whale, { from: whale })
 
-      await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, dec(1, 22), A, A, { from: A  })
+      await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, dec(1, 22), A, A, { from: A })
       await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, dec(1, 22), B, B, { from: B })
       await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, dec(1, 22), C, C, { from: C })
       await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, dec(1, 22), D, D, { from: D })
@@ -236,6 +238,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await stabilityPool.provideToSP(dec(1, 22), ZERO_ADDRESS, { from: C })
 
       // One year passes
+
       await th.fastForwardTime(await getDuration(timeValues.SECONDS_IN_ONE_YEAR), web3.currentProvider)
 
       // D deposits, triggering KUMO gains for A,B,C. Withdraws immediately after
@@ -251,7 +254,6 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       const C_KUMOGain_1yr = await stabilityPool.getDepositorKUMOGain(C)
 
       // Check gains are correct, error tolerance = 1e-6 of a token
-
       assert.isAtMost(getDifference(A_KUMOGain_1yr, expectedKUMOGain_1yr), 1e12)
       assert.isAtMost(getDifference(B_KUMOGain_1yr, expectedKUMOGain_1yr), 1e12)
       assert.isAtMost(getDifference(C_KUMOGain_1yr, expectedKUMOGain_1yr), 1e12)
@@ -260,7 +262,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
 
       // D deposits, triggering KUMO gains for A,B,C. Withdraws immediately after
-      await stabilityPool.provideToSP(dec(1, 18),ZERO_ADDRESS, { from: D })
+      await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: D })
       await stabilityPool.withdrawFromSP(dec(1, 18), { from: D })
 
       // Expected gains for each depositor after 2 years (75% total issued).  Each deposit gets 1/3 of issuance.
@@ -293,7 +295,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(initialIssuance, 0)
 
       // Whale opens Trove with 10k ETH
-      await borrowerOperations.openTrove(assetAddress1,  dec(10000, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), whale, whale, { from: whale })
+      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(10000, 18)), whale, whale, { from: whale })
 
       await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, dec(10000, 18), A, A, { from: A })
       await borrowerOperations.openTrove(assetAddress1, dec(300, 'ether'), th._100pct, dec(20000, 18), B, B, { from: B })
@@ -306,15 +308,15 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(await kumoToken.balanceOf(C), 0)
 
       // A, B, C deposit
-      await stabilityPool.provideToSP(dec(10000, 18),ZERO_ADDRESS, { from: A })
-      await stabilityPool.provideToSP(dec(20000, 18),ZERO_ADDRESS, { from: B })
-      await stabilityPool.provideToSP(dec(30000, 18),ZERO_ADDRESS, { from: C })
+      await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: A })
+      await stabilityPool.provideToSP(dec(20000, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPool.provideToSP(dec(30000, 18), ZERO_ADDRESS, { from: C })
 
       // One year passes
       await th.fastForwardTime(await getDuration(timeValues.SECONDS_IN_ONE_YEAR), web3.currentProvider)
 
       // D deposits, triggering KUMO gains for A,B,C. Withdraws immediately after
-      await stabilityPool.provideToSP(dec(1, 18),ZERO_ADDRESS, { from: D })
+      await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: D })
       await stabilityPool.withdrawFromSP(dec(1, 18), { from: D })
 
       // Expected gains for each depositor after 1 year (50% total issued)
@@ -335,6 +337,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       const B_KUMOGain_1yr = await stabilityPool.getDepositorKUMOGain(B)
       const C_KUMOGain_1yr = await stabilityPool.getDepositorKUMOGain(C)
 
+
       // Check gains are correct, error tolerance = 1e-6 of a toke
       assert.isAtMost(getDifference(A_KUMOGain_1yr, A_expectedKUMOGain_1yr), 1e12)
       assert.isAtMost(getDifference(B_KUMOGain_1yr, B_expectedKUMOGain_1yr), 1e12)
@@ -344,7 +347,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
 
       // D deposits, triggering KUMO gains for A,B,C. Withdraws immediately after
-      await stabilityPool.provideToSP(dec(1, 18),ZERO_ADDRESS, { from: D })
+      await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: D })
       await stabilityPool.withdrawFromSP(dec(1, 18), { from: D })
 
       // Expected gains for each depositor after 2 years (75% total issued).
@@ -395,7 +398,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await borrowerOperations.openTrove(assetAddress1, dec(500, 'ether'), th._100pct, dec(40000, 18), D, D, { from: D })
       await borrowerOperations.openTrove(assetAddress1, dec(600, 'ether'), th._100pct, dec(40000, 18), E, E, { from: E })
 
-      await borrowerOperations.openTrove(assetAddress1, dec(300, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(30000, 18)), defaulter_1, defaulter_1, { from: defaulter_1 })
+      await borrowerOperations.openTrove(assetAddress1, dec(300, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(30000, 18)), defaulter_1, defaulter_1, { from: defaulter_1 })
 
       // Check all KUMO balances are initially 0
       assert.equal(await kumoToken.balanceOf(A), 0)
@@ -404,9 +407,9 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(await kumoToken.balanceOf(D), 0)
 
       // A, B, C deposit
-      await stabilityPool.provideToSP(dec(10000, 18),ZERO_ADDRESS, { from: A })
-      await stabilityPool.provideToSP(dec(20000, 18),ZERO_ADDRESS, { from: B })
-      await stabilityPool.provideToSP(dec(30000, 18),ZERO_ADDRESS, { from: C })
+      await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: A })
+      await stabilityPool.provideToSP(dec(20000, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPool.provideToSP(dec(30000, 18), ZERO_ADDRESS, { from: C })
 
       // Year 1 passes
       await th.fastForwardTime(await getDuration(timeValues.SECONDS_IN_ONE_YEAR), web3.currentProvider)
@@ -415,7 +418,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
 
       // Price Drops, defaulter1 liquidated. Stability Pool size drops by 50%
       await priceFeed.setPrice(dec(100, 18))
-      assert.isFalse(await th.checkRecoveryMode(assetAddress1, contracts))
+      assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
       await troveManager.liquidate(assetAddress1, defaulter_1)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
 
@@ -446,13 +449,13 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.isAtMost(getDifference(C_KUMOGain_Y1, C_expectedKUMOGain_Y1), 1e12)
 
       // D deposits 40k
-      await stabilityPool.provideToSP(dec(40000, 18),ZERO_ADDRESS, { from: D })
+      await stabilityPool.provideToSP(dec(40000, 18), ZERO_ADDRESS, { from: D })
 
       // Year 2 passes
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
 
       // E deposits and withdraws, creating KUMO issuance
-      await stabilityPool.provideToSP(dec(1, 18),ZERO_ADDRESS, { from: E })
+      await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: E })
       await stabilityPool.withdrawFromSP(dec(1, 18), { from: E })
 
       // Expected gains for each depositor during Y2:
@@ -512,21 +515,21 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
     L3 cancels 200C
     G,H deposits 100C
     L4 cancels 200C
-
+  
     Expect all depositors withdraw  1/2 of 1 month's KUMO issuance */
     it('withdrawFromSP(): Depositor withdraws correct KUMO gain after serial pool-emptying liquidations. No front-ends.', async () => {
       const initialIssuance = await communityIssuanceTester.totalKUMOIssued()
       assert.equal(initialIssuance, 0)
 
       // Whale opens Trove with 10k ETH
-      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), whale, whale, { from: whale })
+      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(10000, 18)), whale, whale, { from: whale })
 
       const allDepositors = [A, B, C, D, E, F, G, H]
       // 4 Defaulters open trove with 200KUSD debt, and 200% ICR
-      await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(20000, 18)), defaulter_1, defaulter_1, { from: defaulter_1 })
-      await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(20000, 18)), defaulter_2, defaulter_2, { from: defaulter_2 })
-      await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(20000, 18)), defaulter_3, defaulter_3, { from: defaulter_3 })
-      await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(20000, 18)), defaulter_4, defaulter_4, { from: defaulter_4 })
+      await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(20000, 18)), defaulter_1, defaulter_1, { from: defaulter_1 })
+      await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(20000, 18)), defaulter_2, defaulter_2, { from: defaulter_2 })
+      await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(20000, 18)), defaulter_3, defaulter_3, { from: defaulter_3 })
+      await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(20000, 18)), defaulter_4, defaulter_4, { from: defaulter_4 })
 
       // price drops by 50%: defaulter ICR falls to 100%
       await priceFeed.setPrice(dec(100, 18));
@@ -540,7 +543,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       const depositors_1 = [A, B]
       for (account of depositors_1) {
         await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, dec(10000, 18), account, account, { from: account })
-        await stabilityPool.provideToSP(dec(10000, 18),ZERO_ADDRESS, { from: account })
+        await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: account })
       }
 
       // 1 month passes
@@ -553,7 +556,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       const depositors_2 = [C, D]
       for (account of depositors_2) {
         await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, dec(10000, 18), account, account, { from: account })
-        await stabilityPool.provideToSP(dec(10000, 18),ZERO_ADDRESS, { from: account })
+        await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: account })
       }
 
       // 1 month passes
@@ -566,7 +569,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       const depositors_3 = [E, F]
       for (account of depositors_3) {
         await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, dec(10000, 18), account, account, { from: account })
-        await stabilityPool.provideToSP(dec(10000, 18),ZERO_ADDRESS, { from: account })
+        await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: account })
       }
 
       // 1 month passes
@@ -579,7 +582,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       const depositors_4 = [G, H]
       for (account of depositors_4) {
         await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, dec(10000, 18), account, account, { from: account })
-        await stabilityPool.provideToSP(dec(10000, 18),ZERO_ADDRESS, { from: account })
+        await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: account })
       }
 
       // 1 month passes
@@ -644,7 +647,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await th.fastForwardTime(await getDuration(timeValues.SECONDS_IN_ONE_MONTH), web3.currentProvider)
 
       // KUMO issuance event triggered: A deposits
-      await stabilityPool.provideToSP(dec(10000, 18),ZERO_ADDRESS, { from: A })
+      await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: A })
 
       // Check G is not updated, since SP was empty prior to A's deposit
       const G_1 = await stabilityPool.epochToScaleToG(0, 0)
@@ -672,7 +675,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_MONTH, web3.currentProvider)
 
       // KUMO issuance event triggered: C deposits
-      await stabilityPool.provideToSP(dec(10000, 18),ZERO_ADDRESS, { from: C })
+      await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: C })
 
       // Check G is not updated, since SP was empty prior to C's deposit
       const G_3 = await stabilityPool.epochToScaleToG(0, 0)
@@ -721,7 +724,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
     // --- Scale factor changes ---
 
     /* Serial scale changes
-
+  
     A make deposit 10k KUSD
     1 month passes. L1 decreases P: P = 1e-5 P. L1:   9999.9 KUSD, 100 ETH
     B makes deposit 9999.9
@@ -735,28 +738,28 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
     =========
     F makes deposit 100
     1 month passes. L6 empties the Pool. L6:  10000 KUSD, 100 ETH
-
+  
     expect A, B, C, D each withdraw ~1 month's worth of KUMO */
     it("withdrawFromSP(): Several deposits of 100 KUSD span one scale factor change. Depositors withdraw correct KUMO gains", async () => {
       // Whale opens Trove with 100 ETH
-      await borrowerOperations.openTrove(assetAddress1,dec(100, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), whale, whale, { from: whale })
+      await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(10000, 18)), whale, whale, { from: whale })
 
       const fiveDefaulters = [defaulter_1, defaulter_2, defaulter_3, defaulter_4, defaulter_5]
 
-      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, dec(10000, 18),ZERO_ADDRESS,ZERO_ADDRESS, { from: A })
-      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, dec(10000, 18),ZERO_ADDRESS,ZERO_ADDRESS, { from: B })
-      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, dec(10000, 18),ZERO_ADDRESS,ZERO_ADDRESS, { from: C })
-      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, dec(10000, 18),ZERO_ADDRESS,ZERO_ADDRESS, { from: D })
-      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, dec(10000, 18),ZERO_ADDRESS,ZERO_ADDRESS, { from: E })
-      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, dec(10000, 18),ZERO_ADDRESS,ZERO_ADDRESS, { from: F })
+      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, dec(10000, 18), ZERO_ADDRESS, ZERO_ADDRESS, { from: A })
+      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, dec(10000, 18), ZERO_ADDRESS, ZERO_ADDRESS, { from: B })
+      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, dec(10000, 18), ZERO_ADDRESS, ZERO_ADDRESS, { from: C })
+      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, dec(10000, 18), ZERO_ADDRESS, ZERO_ADDRESS, { from: D })
+      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, dec(10000, 18), ZERO_ADDRESS, ZERO_ADDRESS, { from: E })
+      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, dec(10000, 18), ZERO_ADDRESS, ZERO_ADDRESS, { from: F })
 
       for (const defaulter of fiveDefaulters) {
         // Defaulters 1-5 each withdraw to 9999.9 debt (including gas comp)
-        await borrowerOperations.openTrove(assetAddress1, 0, th._100pct, await getOpenTroveKUSDAmount('9999900000000000000000'), defaulter, defaulter, { from: defaulter, value: dec(100, 'ether')  })
+        await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, '9999900000000000000000'), defaulter, defaulter, { from: defaulter })
       }
 
       // Defaulter 6 withdraws to 10k debt (inc. gas comp)
-      await borrowerOperations.openTrove(assetAddress1, 0, th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), defaulter_6, defaulter_6, { from: defaulter_6, value: dec(100, 'ether') })
+      await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(10000, 18)), defaulter_6, defaulter_6, { from: defaulter_6 })
 
       // Confirm all depositors have 0 KUMO
       for (const depositor of [A, B, C, D, E, F]) {
@@ -769,7 +772,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       // assert.equal(await stabilityPool.currentScale(), '0')
 
       // A provides to SP
-      await stabilityPool.provideToSP(dec(10000, 18),ZERO_ADDRESS, { from: A })
+      await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: A })
 
       // 1 month passes
       await th.fastForwardTime(await getDuration(timeValues.SECONDS_IN_ONE_MONTH), web3.currentProvider)
@@ -784,7 +787,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(await stabilityPool.P(), dec(1, 13)) //P decreases: P = 1e(18-5) = 1e13
 
       // B provides to SP
-      await stabilityPool.provideToSP(dec(99999, 17),ZERO_ADDRESS, { from: B })
+      await stabilityPool.provideToSP(dec(99999, 17), ZERO_ADDRESS, { from: B })
 
       // 1 month passes
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_MONTH, web3.currentProvider)
@@ -799,7 +802,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(await stabilityPool.P(), dec(1, 17)) //Scale changes and P changes: P = 1e(13-5+9) = 1e17
 
       // C provides to SP
-      await stabilityPool.provideToSP(dec(99999, 17),ZERO_ADDRESS, { from: C })
+      await stabilityPool.provideToSP(dec(99999, 17), ZERO_ADDRESS, { from: C })
 
       // 1 month passes
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_MONTH, web3.currentProvider)
@@ -814,7 +817,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(await stabilityPool.P(), dec(1, 12)) //P decreases: P 1e(17-5) = 1e12
 
       // D provides to SP
-      await stabilityPool.provideToSP(dec(99999, 17),ZERO_ADDRESS, { from: D })
+      await stabilityPool.provideToSP(dec(99999, 17), ZERO_ADDRESS, { from: D })
 
       // 1 month passes
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_MONTH, web3.currentProvider)
@@ -829,7 +832,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(await stabilityPool.P(), dec(1, 16)) //Scale changes and P changes:: P = 1e(12-5+9) = 1e16
 
       // E provides to SP
-      await stabilityPool.provideToSP(dec(99999, 17),ZERO_ADDRESS, { from: E })
+      await stabilityPool.provideToSP(dec(99999, 17), ZERO_ADDRESS, { from: E })
 
       // 1 month passes
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_MONTH, web3.currentProvider)
@@ -844,7 +847,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(await stabilityPool.P(), dec(1, 11)) // P decreases: P = 1e(16-5) = 1e11
 
       // F provides to SP
-      await stabilityPool.provideToSP(dec(99999, 17),ZERO_ADDRESS, { from: F })
+      await stabilityPool.provideToSP(dec(99999, 17), ZERO_ADDRESS, { from: F })
 
       // 1 month passes
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_MONTH, web3.currentProvider)
@@ -911,7 +914,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(initialIssuance, 0)
 
       // Whale opens Trove with 10k ETH
-      await borrowerOperations.openTrove(assetAddress1,  dec(10000, 'ether'), th._100pct, dec(10000, 18), whale, whale, { from: whale })
+      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, dec(10000, 18), whale, whale, { from: whale })
 
       await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, dec(10000, 18), A, A, { from: A })
       await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, dec(10000, 18), B, B, { from: B })
@@ -931,7 +934,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
       await stabilityPool.provideToSP(dec(10000, 18), frontEnd_2, { from: B })
       await stabilityPool.provideToSP(dec(10000, 18), frontEnd_2, { from: C })
-      await stabilityPool.provideToSP(dec(10000, 18),ZERO_ADDRESS, { from: D })
+      await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: D })
 
       // Check initial frontEnd stakes are correct:
       F1_stake = await stabilityPool.frontEndStakes(frontEnd_1)
@@ -944,12 +947,12 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await th.fastForwardTime(await getDuration(timeValues.SECONDS_IN_ONE_YEAR), web3.currentProvider)
 
       // E deposits, triggering KUMO gains for A,B,C,D,F1,F2. Withdraws immediately after
-      await stabilityPool.provideToSP(dec(1, 18),ZERO_ADDRESS, { from: E })
+      await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: E })
       await stabilityPool.withdrawFromSP(dec(1, 18), { from: E })
 
       // Expected issuance for year 1 is 50% of total supply.
       const expectedIssuance_Y1 = communityKUMOSupply.div(toBN('2'))
-      
+
       // Get actual KUMO gains
       const A_KUMOGain_Y1 = await stabilityPool.getDepositorKUMOGain(A)
       const B_KUMOGain_Y1 = await stabilityPool.getDepositorKUMOGain(B)
@@ -985,7 +988,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
 
       // E deposits, triggering KUMO gains for A,B,CD,F1, F2. Withdraws immediately after
-      await stabilityPool.provideToSP(dec(1, 18),ZERO_ADDRESS, { from: E })
+      await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: E })
       await stabilityPool.withdrawFromSP(dec(1, 18), { from: E })
 
       // Expected gains for each depositor in Y2(25% total issued).  .
@@ -1063,9 +1066,9 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await borrowerOperations.openTrove(assetAddress1, dec(400, 'ether'), th._100pct, dec(30000, 18), E, E, { from: E })
 
       // D1, D2, D3 open troves with total debt 50k, 30k, 10k respectively (inc. gas comp)
-      await borrowerOperations.openTrove(assetAddress1, dec(500, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(50000, 18)), defaulter_1, defaulter_1, { from: defaulter_1 })
-      await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(20000, 18)), defaulter_2, defaulter_2, { from: defaulter_2 })
-      await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18)), defaulter_3, defaulter_3, { from: defaulter_3 })
+      await borrowerOperations.openTrove(assetAddress1, dec(500, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(50000, 18)), defaulter_1, defaulter_1, { from: defaulter_1 })
+      await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(20000, 18)), defaulter_2, defaulter_2, { from: defaulter_2 })
+      await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(10000, 18)), defaulter_3, defaulter_3, { from: defaulter_3 })
 
       // Check all KUMO balances are initially 0
       assert.equal(await kumoToken.balanceOf(A), 0)
@@ -1083,7 +1086,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
 
       // Price Drops, defaulters become undercollateralized
       await priceFeed.setPrice(dec(105, 18))
-      assert.isFalse(await th.checkRecoveryMode(assetAddress1, contracts))
+      assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
       // Check initial frontEnd stakes are correct:
       F1_stake = await stabilityPool.frontEndStakes(frontEnd_1)
@@ -1412,9 +1415,9 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
     })
 
     /* Serial scale changes, with one front end
-
+  
     F1 kickbackRate: 80%
-
+  
     A, B make deposit 5000 KUSD via F1
     1 month passes. L1 depletes P: P = 1e-5*P L1:  9999.9 KUSD, 1 ETH.  scale = 0
     C makes deposit 10000  via F1
@@ -1424,7 +1427,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
     E makes deposit 10000 via F1
     1 month passes. L3 depletes P: P = 1e-5*P L4:  9999.9 KUSD, 1 ETH scale = 2
     A, B, C, D, E withdraw
-
+  
     =========
     Expect front end withdraws ~3 month's worth of KUMO */
 
@@ -1433,13 +1436,13 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await stabilityPool.registerFrontEnd(kickbackRate, { from: frontEnd_1 })
 
       // Whale opens Trove with 10k ETH
-      await borrowerOperations.openTrove(assetAddress1, 0, th._100pct, dec(10000, 18), whale, whale, { from: whale, value: dec(10000, 'ether') })
+      await borrowerOperations.openTrove(assetAddress1, dec(10000, 'ether'), th._100pct, dec(10000, 18), whale, whale, { from: whale })
 
       const _4_Defaulters = [defaulter_1, defaulter_2, defaulter_3, defaulter_4]
 
       for (const defaulter of _4_Defaulters) {
         // Defaulters 1-4 each withdraw to 9999.9 debt (including gas comp)
-        await borrowerOperations.openTrove(assetAddress1, 0, th._100pct, await getOpenTroveKUSDAmount(dec(99999, 17)), defaulter, defaulter, { from: defaulter, value: dec(100, 'ether') })
+        await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(99999, 17)), defaulter, defaulter, { from: defaulter })
       }
 
       // Confirm all would-be depositors have 0 KUMO
@@ -1455,9 +1458,9 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(await stabilityPool.currentScale(), '0')
 
       // A, B provides 5000 KUSD to SP
-      await borrowerOperations.openTrove(assetAddress1, th._100pct, dec(5000, 18), A, A, { from: A, value: dec(200, 'ether') })
+      await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, dec(5000, 18), A, A, { from: A })
       await stabilityPool.provideToSP(dec(5000, 18), frontEnd_1, { from: A })
-      await borrowerOperations.openTrove(assetAddress1, th._100pct, dec(5000, 18), B, B, { from: B, value: dec(200, 'ether') })
+      await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, dec(5000, 18), B, B, { from: B })
       await stabilityPool.provideToSP(dec(5000, 18), frontEnd_1, { from: B })
 
       // 1 month passes (M1)
@@ -1472,7 +1475,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(await stabilityPool.currentScale(), '0')
 
       // C provides to SP
-      await borrowerOperations.openTrove(assetAddress1, th._100pct, dec(99999, 17), C, C, { from: C, value: dec(200, 'ether') })
+      await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, dec(99999, 17), C, C, { from: C })
       await stabilityPool.provideToSP(dec(99999, 17), frontEnd_1, { from: C })
 
       // 1 month passes (M2)
@@ -1487,7 +1490,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(await stabilityPool.currentScale(), '1')
 
       // D provides to SP
-      await borrowerOperations.openTrove(assetAddress1, th._100pct, dec(99999, 17), D, D, { from: D, value: dec(200, 'ether') })
+      await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, dec(99999, 17), D, D, { from: D })
       await stabilityPool.provideToSP(dec(99999, 17), frontEnd_1, { from: D })
 
       // 1 month passes (M3)
@@ -1502,7 +1505,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(await stabilityPool.currentScale(), '1')
 
       // E provides to SP
-      await borrowerOperations.openTrove(assetAddress1, th._100pct, dec(99999, 17), E, E, { from: E, value: dec(200, 'ether') })
+      await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, dec(99999, 17), E, E, { from: E })
       await stabilityPool.provideToSP(dec(99999, 17), frontEnd_1, { from: E })
 
       // 1 month passes (M4)
@@ -1535,11 +1538,11 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
      
      expectedKUMOGain_A:  (k * M1 / 2) + (k * M2 / 2) / 100000   
      expectedKUMOGain_B:  (k * M1 / 2) + (k * M2 / 2) / 100000                           
-
+  
      expectedKUMOGain_C:  ((k * M2)  + (k * M3) / 100000) * 9999.9/10000   
      expectedKUMOGain_D:  ((k * M3)  + (k * M4) / 100000) * 9999.9/10000 
      expectedKUMOGain_E:  (k * M4) * 9999.9/10000 
-
+  
      expectedKUMOGain_F1:  (1 - k) * (M1 + M2 + M3 + M4)
      */
 
@@ -1581,9 +1584,9 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
 
       const expectedKUMOGain_E =
         kickbackRate
-        .mul(issuance_M4)
-        .div(toBN(dec(1, 18))) // gain from L4
-        .mul(toBN('99999')).div(toBN('100000')) // Scale by 9999.9/10000
+          .mul(issuance_M4)
+          .div(toBN(dec(1, 18))) // gain from L4
+          .mul(toBN('99999')).div(toBN('100000')) // Scale by 9999.9/10000
 
       const issuance1st4Months = issuance_M1.add(issuance_M2).add(issuance_M3).add(issuance_M4)
       const expectedKUMOGain_F1 = (toBN(dec(1, 18)).sub(kickbackRate)).mul(issuance1st4Months).div(toBN(dec(1, 18)))

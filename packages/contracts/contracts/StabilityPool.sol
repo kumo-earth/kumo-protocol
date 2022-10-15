@@ -272,9 +272,9 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
         // isInitialized = true;
         // __Ownable_init();
-        if (_assetAddress != ETH_REF_ADDRESS) {
-            checkContract(_assetAddress);
-        }
+
+        checkContract(_assetAddress);
+
         assetAddress = _assetAddress;
 
         borrowerOperations = IBorrowerOperations(_borrowerOperationsAddress);
@@ -732,8 +732,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         if (initialDeposit == 0) {
             return 0;
         }
-        Snapshots memory snapshots = depositSnapshots[_depositor];
-        return _getKUMOGainFromSnapshots(initialDeposit, snapshots);
 
         address frontEndTag = deposits[_depositor].frontEndTag;
 
@@ -742,13 +740,17 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
          * Otherwise, their cut of the deposit's earnings is equal to the kickbackRate, set by the front end through
          * which they made their deposit.
          */
-        // uint256 kickbackRate = frontEndTag == address(0) ? DECIMAL_PRECISION : frontEnds[frontEndTag].kickbackRate;
+        uint256 kickbackRate = frontEndTag == address(0)
+            ? DECIMAL_PRECISION
+            : frontEnds[frontEndTag].kickbackRate;
 
-        // Snapshots memory snapshots = depositSnapshots[_depositor];
+        Snapshots memory snapshots = depositSnapshots[_depositor];
 
-        // uint256 KUMOGain = kickbackRate.mul(_getKUMOGainFromSnapshots(initialDeposit, snapshots)).div(DECIMAL_PRECISION);
+        uint256 KUMOGain = kickbackRate
+            .mul(_getKUMOGainFromSnapshots(initialDeposit, snapshots))
+            .div(DECIMAL_PRECISION);
 
-        // return KUMOGain;
+        return KUMOGain;
     }
 
     /*
@@ -1100,9 +1102,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
         require(_asset == assetAddress, "Receiving the wrong asset in StabilityPool");
 
-        if (assetAddress != ETH_REF_ADDRESS) {
-            assetBalance = assetBalance.add(_amount);
-            emit StabilityPoolAssetBalanceUpdated(assetBalance);
-        }
+        assetBalance = assetBalance.add(_amount);
+        emit StabilityPoolAssetBalanceUpdated(assetBalance);
     }
 }
