@@ -9,6 +9,7 @@ interface IActivePool is IPool {
     event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
     event TroveManagerAddressChanged(address _newTroveManagerAddress);
     event CollSurplusPoolAddressChanged(address _newCollSurplusPoolAddress);
+    event KumoStakingAddressChanged(address _newKumoStakingAddress);
     event ActivePoolKUSDDebtUpdated(address _asset, uint256 _KUSDDebt);
     event ActivePoolAssetBalanceUpdated(address _asset, uint256 _assetBalance);
 

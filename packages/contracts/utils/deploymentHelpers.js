@@ -400,7 +400,8 @@ class DeploymentHelper {
       contracts.troveManager.address,
       contracts.stabilityPool.address,
       contracts.defaultPool.address,
-      contracts.collSurplusPool.address
+      contracts.collSurplusPool.address,
+      KUMOContracts.kumoStaking.address
     )
 
     await contracts.defaultPool.setAddresses(

@@ -27,6 +27,8 @@ interface IKUMOStaking {
     event AssetSent(address indexed _asset, address _account, uint256 _amount);
     event StakerSnapshotsUpdated(address _staker, uint256 _F_Asset, uint256 _F_KUSD);
 
+    event KUMOStakingAssetBalanceUpdated(address _asset, uint256 _balance);
+
     // function kumoToken() external view returns (IERC20Upgradeable);
 
     // --- Functions ---
@@ -51,4 +53,6 @@ interface IKUMOStaking {
     function getPendingAssetGain(address _asset, address _user) external view returns (uint256);
 
     function getPendingKUSDGain(address _user) external view returns (uint256);
+
+    function getAssetBalance(address _asset) external view returns (uint256);
 }
