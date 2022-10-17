@@ -4,7 +4,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   const [owner] = accounts;
 
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
-  
+
   let priceFeed
   let kusdToken
   let sortedTroves
@@ -147,6 +147,14 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     assert.equal(kusdTokenAddress, recordedClvTokenAddress)
   })
 
+  it('Sets the correct KUMOStaking address in ActivePool', async () => {
+    const kumoStakingAddress = kumoStaking.address
+
+    const recordedkumoStakingAddress = await activePool.kumoStakingAddress()
+    assert.equal(kumoStakingAddress, kumoStakingAddress)
+  })
+
+
   it('Sets the correct TroveManager address in StabilityPool', async () => {
     const troveManagerAddress = troveManager.address
 
@@ -189,7 +197,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   it('Sets the correct KumoParameters address in BorrowerOperations', async () => {
     assert.equal(kumoParameters.address, await borrowerOperations.kumoParams())
   })
-  
+
   // TroveManager in BO
   it('Sets the correct TroveManager address in BorrowerOperations', async () => {
     const troveManagerAddress = troveManager.address
@@ -280,7 +288,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   it('Sets the correct KUMOStaking address in KUMOToken', async () => {
     const kumoStakingAddress = kumoStaking.address
 
-    const recordedKUMOStakingAddress =  await kumoToken.kumoStakingAddress()
+    const recordedKUMOStakingAddress = await kumoToken.kumoStakingAddress()
     assert.equal(kumoStakingAddress, recordedKUMOStakingAddress)
   })
 
@@ -288,7 +296,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   it('Sets the correct LockupContractFactory address in KUMOToken', async () => {
     const LCFAddress = lockupContractFactory.address
 
-    const recordedLCFAddress =  await kumoToken.lockupContractFactory()
+    const recordedLCFAddress = await kumoToken.lockupContractFactory()
     assert.equal(LCFAddress, recordedLCFAddress)
   })
 
