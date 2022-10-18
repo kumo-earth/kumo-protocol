@@ -144,6 +144,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_newKumoStakingAddress",
+        "type": "address"
+      }
+    ],
+    "name": "KumoStakingAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
@@ -384,6 +397,19 @@
   },
   {
     "inputs": [],
+    "name": "kumoStakingAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -461,6 +487,11 @@
       {
         "internalType": "address",
         "name": "_collSurplusPoolAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_kumoStakingAddress",
         "type": "address"
       }
     ],

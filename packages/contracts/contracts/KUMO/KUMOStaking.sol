@@ -33,6 +33,8 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
     // User snapshots of F_ASSETS and F_KUSD, taken at the point at which their latest deposit was made
     mapping(address => Snapshot) public snapshots;
 
+    mapping(address => uint256) internal assetsBalance;
+
     struct Snapshot {
         mapping(address => uint256) F_ASSET_Snapshot;
         uint256 F_KUSD_Snapshot;
@@ -301,16 +303,17 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
         require(msg.sender == borrowerOperationsAddress, "KUMOStaking: caller is not BorrowerOps");
     }
 
-    function _requireCallerIsActivePool() internal view {
-        require(msg.sender == activePoolAddress, "KUMOStaking: caller is not ActivePool");
-    }
-
     function _requireUserHasStake(uint256 currentStake) internal pure {
         require(currentStake > 0, "KUMOStaking: User must have a non-zero stake");
     }
 
     function _requireNonZeroAmount(uint256 _amount) internal pure {
         require(_amount > 0, "KUMOStaking: Amount must be non-zero");
+    }
+
+    modifier callerIsActivePool() {
+        require(msg.sender == activePoolAddress, "DefaultPool: Caller is not the ActivePool");
+        _;
     }
 
     // --- 'require' functions ---
@@ -325,16 +328,16 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
     // 	_;
     // }
 
-    // modifier callerIsActivePool() {
-    // 	require(msg.sender == activePoolAddress, "KUSDStaking: caller is not ActivePool");
-    // 	_;
-    // }
-
     // function _requireUserHasStake(uint256 currentStake) internal pure {
     // 	require(currentStake > 0, "KUSDStaking: User must have a non-zero stake");
     // }
 
-    receive() external payable {
-        _requireCallerIsActivePool();
+    function getAssetBalance(address _asset) external view override returns (uint256) {
+        return assetsBalance[_asset];
+    }
+
+    function receivedERC20(address _asset, uint256 _amount) external callerIsActivePool {
+        assetsBalance[_asset] = assetsBalance[_asset].add(_amount);
+        emit KUMOStakingAssetBalanceUpdated(_asset, assetsBalance[_asset]);
     }
 }

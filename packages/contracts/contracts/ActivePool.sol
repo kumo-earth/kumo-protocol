@@ -10,6 +10,7 @@ import "./Interfaces/IDefaultPool.sol";
 import "./Interfaces/ICollStakingManager.sol";
 import "./Interfaces/ICollSurplusPool.sol";
 import "./Interfaces/IDeposit.sol";
+import "./Interfaces/IKUMOStaking.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
@@ -34,6 +35,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     address public troveManagerAddress;
     address public stabilityPoolAddress;
     address public defaultPoolAddress;
+    address public kumoStakingAddress;
     // IDefaultPool public defaultPool;
     // uint256 internal KUSDDebt;
     address public collSurplusPoolAddress;
@@ -58,13 +60,15 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         address _troveManagerAddress,
         address _stabilityPoolAddress,
         address _defaultPoolAddress,
-        address _collSurplusPoolAddress
+        address _collSurplusPoolAddress,
+        address _kumoStakingAddress
     ) external onlyOwner {
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
         checkContract(_stabilityPoolAddress);
         checkContract(_defaultPoolAddress);
         checkContract(_collSurplusPoolAddress);
+        checkContract(_kumoStakingAddress);
 
         // __Ownable_init();
 
@@ -74,12 +78,14 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         stabilityPoolAddress = _stabilityPoolAddress;
         defaultPoolAddress = _defaultPoolAddress;
         collSurplusPoolAddress = _collSurplusPoolAddress;
+        kumoStakingAddress = _kumoStakingAddress;
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit StabilityPoolAddressChanged(_stabilityPoolAddress);
         emit DefaultPoolAddressChanged(_defaultPoolAddress);
         emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
+        emit KumoStakingAddressChanged(_kumoStakingAddress);
 
         // _renounceOwnership();
     }
@@ -142,7 +148,8 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     function isERC20DepositContract(address _account) private view returns (bool) {
         return (_account == defaultPoolAddress ||
             _account == collSurplusPoolAddress ||
-            _account == stabilityPoolAddress);
+            _account == stabilityPoolAddress ||
+            _account == kumoStakingAddress);
         // return (_account == defaultPoolAddress || _account == stabilityPoolAddress);
     }
 

@@ -21,6 +21,7 @@ interface ActivePoolCalls {
   getAssetStaked(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getKUSDDebt(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   isOwner(_overrides?: CallOverrides): Promise<boolean>;
+  kumoStakingAddress(_overrides?: CallOverrides): Promise<string>;
   owner(_overrides?: CallOverrides): Promise<string>;
   stabilityPoolAddress(_overrides?: CallOverrides): Promise<string>;
   troveManagerAddress(_overrides?: CallOverrides): Promise<string>;
@@ -33,7 +34,7 @@ interface ActivePoolTransactions {
   increaseKUSDDebt(_asset: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   receivedERC20(_asset: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   sendAsset(_asset: string, _account: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
-  setAddresses(_borrowerOperationsAddress: string, _troveManagerAddress: string, _stabilityPoolAddress: string, _defaultPoolAddress: string, _collSurplusPoolAddress: string, _overrides?: Overrides): Promise<void>;
+  setAddresses(_borrowerOperationsAddress: string, _troveManagerAddress: string, _stabilityPoolAddress: string, _defaultPoolAddress: string, _collSurplusPoolAddress: string, _kumoStakingAddress: string, _overrides?: Overrides): Promise<void>;
   setCollStakingManagerAddress(_collStakingManagerAddress: string, _overrides?: Overrides): Promise<void>;
 }
 
@@ -49,6 +50,7 @@ export interface ActivePool
     DefaultPoolAddressChanged(_newDefaultPoolAddress?: null): EventFilter;
     ETHBalanceUpdated(_newBalance?: null): EventFilter;
     KUSDBalanceUpdated(_newBalance?: null): EventFilter;
+    KumoStakingAddressChanged(_newKumoStakingAddress?: null): EventFilter;
     OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
     StabilityPoolAddressChanged(_newStabilityPoolAddress?: null): EventFilter;
     TroveManagerAddressChanged(_newTroveManagerAddress?: null): EventFilter;
@@ -62,6 +64,7 @@ export interface ActivePool
   extractEvents(logs: Log[], name: "DefaultPoolAddressChanged"): _TypedLogDescription<{ _newDefaultPoolAddress: string }>[];
   extractEvents(logs: Log[], name: "ETHBalanceUpdated"): _TypedLogDescription<{ _newBalance: BigNumber }>[];
   extractEvents(logs: Log[], name: "KUSDBalanceUpdated"): _TypedLogDescription<{ _newBalance: BigNumber }>[];
+  extractEvents(logs: Log[], name: "KumoStakingAddressChanged"): _TypedLogDescription<{ _newKumoStakingAddress: string }>[];
   extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
   extractEvents(logs: Log[], name: "StabilityPoolAddressChanged"): _TypedLogDescription<{ _newStabilityPoolAddress: string }>[];
   extractEvents(logs: Log[], name: "TroveManagerAddressChanged"): _TypedLogDescription<{ _newTroveManagerAddress: string }>[];
@@ -69,7 +72,6 @@ export interface ActivePool
 
 interface BorrowerOperationsCalls {
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
-  ETH_REF_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   MIN_NET_DEBT(_overrides?: CallOverrides): Promise<BigNumber>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   getCompositeDebt(_asset: string, _debt: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
@@ -295,7 +297,6 @@ export interface GasPool
 
 interface HintHelpersCalls {
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
-  ETH_REF_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   MIN_NET_DEBT(_overrides?: CallOverrides): Promise<BigNumber>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   computeCR(_coll: BigNumberish, _debt: BigNumberish, _price: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
@@ -438,6 +439,7 @@ interface KUMOStakingCalls {
   NAME(_overrides?: CallOverrides): Promise<string>;
   activePoolAddress(_overrides?: CallOverrides): Promise<string>;
   borrowerOperationsAddress(_overrides?: CallOverrides): Promise<string>;
+  getAssetBalance(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getPendingAssetGain(_asset: string, _user: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getPendingKUSDGain(_user: string, _overrides?: CallOverrides): Promise<BigNumber>;
   isOwner(_overrides?: CallOverrides): Promise<boolean>;
@@ -455,6 +457,7 @@ interface KUMOStakingCalls {
 interface KUMOStakingTransactions {
   increaseF_Asset(_asset: string, _AssetFee: BigNumberish, _overrides?: Overrides): Promise<void>;
   increaseF_KUSD(_KUSDFee: BigNumberish, _overrides?: Overrides): Promise<void>;
+  receivedERC20(_asset: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   setAddresses(_kumoTokenAddress: string, _kusdTokenAddress: string, _troveManagerAddress: string, _borrowerOperationsAddress: string, _activePoolAddress: string, _overrides?: Overrides): Promise<void>;
   stake(_KUMOamount: BigNumberish, _overrides?: Overrides): Promise<void>;
   unstake(_KUMOamount: BigNumberish, _overrides?: Overrides): Promise<void>;
@@ -468,6 +471,7 @@ export interface KUMOStaking
     BorrowerOperationsAddressSet(_borrowerOperationsAddress?: null): EventFilter;
     F_AssetUpdated(_asset?: string | null, _F_ASSET?: null): EventFilter;
     F_KUSDUpdated(_F_KUSD?: null): EventFilter;
+    KUMOStakingAssetBalanceUpdated(_asset?: null, _balance?: null): EventFilter;
     KUMOTokenAddressSet(_kumoTokenAddress?: null): EventFilter;
     KUSDTokenAddressSet(_kusdTokenAddress?: null): EventFilter;
     OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
@@ -484,6 +488,7 @@ export interface KUMOStaking
   extractEvents(logs: Log[], name: "BorrowerOperationsAddressSet"): _TypedLogDescription<{ _borrowerOperationsAddress: string }>[];
   extractEvents(logs: Log[], name: "F_AssetUpdated"): _TypedLogDescription<{ _asset: string; _F_ASSET: BigNumber }>[];
   extractEvents(logs: Log[], name: "F_KUSDUpdated"): _TypedLogDescription<{ _F_KUSD: BigNumber }>[];
+  extractEvents(logs: Log[], name: "KUMOStakingAssetBalanceUpdated"): _TypedLogDescription<{ _asset: string; _balance: BigNumber }>[];
   extractEvents(logs: Log[], name: "KUMOTokenAddressSet"): _TypedLogDescription<{ _kumoTokenAddress: string }>[];
   extractEvents(logs: Log[], name: "KUSDTokenAddressSet"): _TypedLogDescription<{ _kusdTokenAddress: string }>[];
   extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
@@ -656,7 +661,6 @@ export interface SortedTroves
 
 interface StabilityPoolCalls {
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
-  ETH_REF_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   MIN_NET_DEBT(_overrides?: CallOverrides): Promise<BigNumber>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   P(_overrides?: CallOverrides): Promise<BigNumber>;
@@ -771,7 +775,6 @@ export interface StabilityPool
 interface TroveManagerCalls {
   BETA(_overrides?: CallOverrides): Promise<BigNumber>;
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
-  ETH_REF_ADDRESS(_overrides?: CallOverrides): Promise<string>;
   L_ASSETS(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
   L_KUSDDebts(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
   MINUTE_DECAY_FACTOR(_overrides?: CallOverrides): Promise<BigNumber>;
