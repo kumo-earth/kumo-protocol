@@ -99,7 +99,6 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
         troveManagerAddress = _troveManagerAddress;
         borrowerOperationsAddress = _borrowerOperationsAddress;
         activePoolAddress = _activePoolAddress;
-        // treasury = _treasury;
 
         emit KUMOTokenAddressSet(_kumoTokenAddress);
         emit KUMOTokenAddressSet(_kusdTokenAddress);
@@ -107,7 +106,7 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
         emit BorrowerOperationsAddressSet(_borrowerOperationsAddress);
         emit ActivePoolAddressSet(_activePoolAddress);
 
-        // _renounceOwnership();
+        _renounceOwnership();
     }
 
     // If caller has a pre-existing stake, send any accumulated ETH and KUSD gains to them.
