@@ -365,8 +365,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     it("fallback(): reverts when called by an account that is not the Active Pool", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await web3.eth.sendTransaction({ from: alice, to: stabilityPool.address, value: 100 })
-
+        const txAlice = await stabilityPool.receivedERC20(erc20.address, 100, { from: alice })
       } catch (err) {
         console.log(err.message)
         assert.include(err.message, "revert")
