@@ -36,14 +36,13 @@ export const ReadOnlyTrove: React.FC = () => {
   } else if (getPathName(location) === "mco2") {
     collateralRatio = trove?.collateralRatio(mco2Price) || undefined;
   }
-  let unit = ((getPathName(location) === "bct" && "Carbon Token X") || (getPathName(location) === "mco2" && "Biodiversity Token Y")) || ""
   // console.log("READONLY TROVE", trove.collateral.prettify(4));
   return (
     <Card
       variant="base"
     >
       <Heading>
-        {unit.toUpperCase()} <span style={{ marginLeft: "22px" }}>Trove</span>
+        {vaultType.type.toUpperCase()} Trove
       </Heading>
       <Box sx={{ p: [2, 3] }}>
         <Box>
@@ -51,7 +50,7 @@ export const ReadOnlyTrove: React.FC = () => {
             label="Collateral"
             inputId="trove-collateral"
             amount={trove?.collateral.prettify(4) || "0"}
-            unit={unit.toUpperCase()}
+            unit={getPathName(location).toUpperCase()}
           />
 
           <DisabledEditableRow
@@ -66,11 +65,11 @@ export const ReadOnlyTrove: React.FC = () => {
 
         <Flex variant="layout.actions">
           <Button
-            // variant="outline"
+            variant="outline"
             onClick={handleCloseTrove}
-            // sx={{
-            //   border: "none",
-            // }}
+            sx={{
+              border: "none",
+            }}
           >
             Close Trove
           </Button>

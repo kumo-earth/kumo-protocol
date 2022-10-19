@@ -22,12 +22,10 @@ export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
 
   const aprRatio = divdideVal ? new Percent(divdideVal) : new Percent(Decimal.ZERO);
 
-  let unit = ((vault?.type === "bct" && "Carbon Token X") || (vault?.type === "mco2" && "Biodiversity Token Y")) || ""
-
   return (
     <Card
       sx={{
-        maxWidth: "100%",
+        maxWidth: 450,
         maxHeight: 390
       }}
       variant="base"
@@ -39,7 +37,7 @@ export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
         }}
         as="h2"
       >
-        {unit.toUpperCase()} <span style={{ marginLeft: "22px" }}>Pool Staking</span> 
+        {vault?.type?.toUpperCase()} Stability Pool Staking
       </Heading>
 
       <Box sx={{ px: 4 }}>

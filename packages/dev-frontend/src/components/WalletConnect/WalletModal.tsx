@@ -61,7 +61,7 @@ export const WalletModal: React.FC = () => {
             <Button
               onClick={e => {
                 activate(injectedConnector, undefined, true).catch(async error => {
-                  if (error?.name === "UnsupportedChainIdError") {
+                  if (error?.name === "UnsupportedChainIdError" || error?.message?.includes("Unsupported chain id")) {
                     try {
                       const metaMaaskProvider = await injectedConnector.getProvider();
                       if (metaMaaskProvider) {

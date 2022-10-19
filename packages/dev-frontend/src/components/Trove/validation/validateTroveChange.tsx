@@ -36,7 +36,6 @@ let unit: string = "";
 const TroveChangeDescription: React.FC<TroveAdjustmentDescriptionParams> = ({ params }) => {
   const location = useLocation();
   unit = getPathName(location).toUpperCase();
-  unit = ((unit === "bct" && "Carbon Token X") || (unit === "mco2" && "Biodiversity Token Y")) || ""
   return (
     <ActionDescription>
       {params.depositCollateral && params.borrowKUSD ? (

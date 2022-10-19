@@ -12,10 +12,10 @@ export const Collateral: React.FC = () => {
         py: 5
       }}
     >
-      <Flex sx={{ height: "max-content", width: "97%"  }}>
+      <Flex sx={{ height: "max-content", width: "95%" }}>
         <Trove />
       </Flex>
-      <Flex sx={{ flexDirection: "column", width: "97%"  }}>
+      <Flex sx={{ flexDirection: "column", width: "95%"  }}>
         {/* <SystemStats /> */}
         <Stability />
       </Flex>
