@@ -69,7 +69,7 @@ contract('BorrowerOperations', async accounts => {
   const testCorpus = ({ withProxy = false }) => {
     beforeEach(async () => {
       contracts = await deploymentHelper.deployKumoCore()
-      contracts.borrowerOperations = await BorrowerOperationsTester.new()
+      contracts.borrowerOperations = await deploymentHelper.deployAndInitContract(BorrowerOperationsTester)
       contracts.troveManager = await TroveManagerTester.new()
       contracts = await deploymentHelper.deployKUSDTokenTester(contracts)
       const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)

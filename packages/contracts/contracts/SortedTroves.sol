@@ -87,9 +87,9 @@ contract SortedTroves is Initializable, UUPSUpgradeable, OwnableUpgradeable, Che
     }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
+    // constructor() {
+    //     _disableInitializers();
+    // }
 
     function setParams(uint256 _size, address _troveManagerAddress, address _borrowerOperationsAddress) external onlyOwner {
         require(_size > 0, "SortedTroves: Size can't be zero");

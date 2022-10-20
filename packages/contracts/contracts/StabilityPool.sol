@@ -279,8 +279,9 @@ contract StabilityPool is KumoBaseUpgradeable, CheckContract, IStabilityPool {
     }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
+    // constructor() {
+    //     _disableInitializers();
+    // }
     }
 
     function setAddresses(

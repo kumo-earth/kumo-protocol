@@ -102,9 +102,9 @@ contract BorrowerOperations is KumoBaseUpgradeable, CheckContract, IBorrowerOper
     }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
+    // constructor() {
+    //     _disableInitializers();
+    // }
 
     function setAddresses(
         address _troveManagerAddress,
