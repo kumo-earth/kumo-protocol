@@ -91,7 +91,7 @@ const deployContracts = async (
     kumoParameters: await deployContract(deployer, getContractFactory, "KumoParameters", {
       ...overrides
     }),
-  
+
     priceFeed: await deployContract(
       deployer,
       getContractFactory,
@@ -107,7 +107,8 @@ const deployContracts = async (
     gasPool: await deployContract(deployer, getContractFactory, "GasPool", {
       ...overrides
     }),
-    unipool: await deployContract(deployer, getContractFactory, "Unipool", { ...overrides })   
+    unipool: await deployContract(deployer, getContractFactory, "Unipool", { ...overrides })
+
   };
 
   return [
@@ -190,7 +191,7 @@ const connectContracts = async (
 
   const connections: ((nonce: number) => Promise<ContractTransaction>)[] = [
     nonce =>
-      sortedTroves.setParams(1e6, troveManager.address, borrowerOperations.address, {
+      sortedTroves.setParams(troveManager.address, borrowerOperations.address, {
         ...overrides,
         nonce
       }),
@@ -246,6 +247,8 @@ const connectContracts = async (
         troveManager.address,
         stabilityPool.address,
         defaultPool.address,
+        collSurplusPool.address,
+        kumoStaking.address,
         { ...overrides, nonce }
       ),
 
@@ -330,6 +333,28 @@ const deployMockUniToken = (
     { ...overrides }
   );
 
+const deployMockER20Assets = async (
+  deployer: Signer,
+  getContractFactory: (name: string, signer: Signer) => Promise<ContractFactory>,
+  overrides?: Overrides
+) => {
+  const MockAsset1 = await deployContract(
+    deployer,
+    getContractFactory,
+    "ERC20Test",
+    { ...overrides }
+  );
+  const MockAsset2 = await deployContract(
+    deployer,
+    getContractFactory,
+    "ERC20Test",
+    { ...overrides }
+  );
+
+  return [MockAsset1, MockAsset2]
+}
+
+
 export const deployAndSetupContracts = async (
   deployer: Signer,
   getContractFactory: (name: string, signer: Signer) => Promise<ContractFactory>,
@@ -366,6 +391,8 @@ export const deployAndSetupContracts = async (
           uniToken: await (wethAddress
             ? createUniswapV2Pair(deployer, wethAddress, addresses.kusdToken, overrides)
             : deployMockUniToken(deployer, getContractFactory, overrides))
+
+
         }
       })
     ))
