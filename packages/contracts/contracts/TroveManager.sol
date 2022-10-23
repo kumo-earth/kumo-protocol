@@ -283,7 +283,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         emit KUMOTokenAddressChanged(_kumoTokenAddress);
         emit KUMOStakingAddressChanged(_kumoStakingAddress);
 
-        // _renounceOwnership();
+        // _renounceOwnership(); --> Needs to be paused because of current test deployment with adding an asset to the system
     }
 
     function addNewAsset(address _asset) external onlyOwner {

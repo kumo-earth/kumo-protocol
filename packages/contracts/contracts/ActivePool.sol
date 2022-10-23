@@ -87,7 +87,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
         emit KumoStakingAddressChanged(_kumoStakingAddress);
 
-        // _renounceOwnership();
+        _renounceOwnership();
     }
 
     function setCollStakingManagerAddress(address _collStakingManagerAddress)

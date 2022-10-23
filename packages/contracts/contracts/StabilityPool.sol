@@ -291,7 +291,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit CommunityIssuanceAddressChanged(_communityIssuanceAddress);
 
-        _renounceOwnership();
+        // _renounceOwnership(); --> Needs to be paused because of current test deployment with adding an asset to the system
     }
 
     // --- Getters for public variables. Required by IPool interface ---
