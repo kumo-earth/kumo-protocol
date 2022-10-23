@@ -1,6 +1,6 @@
 import React from "react";
 import { Flex, Container } from "theme-ui";
-import { HashRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route,Redirect } from "react-router-dom";
 import { Wallet } from "@ethersproject/wallet";
 
 import { Decimal, Difference, Trove } from "@kumodao/lib-base";
@@ -35,6 +35,7 @@ import { SwitchNetworkModal } from "./components/SwitchNetwork/SwitchNetwork";
 import { DomainSafetyBanner } from "./components/DomainSafetyBanner";
 
 import appBackground from "./asset/images/appBackground.svg";
+import UserView from "./components/UserView";
 
 type KumoFrontendProps = {
   loader?: React.ReactNode;
@@ -89,15 +90,17 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                       }}
                     >
                       <Header>
+                        <UserView />
                         <UserAccount />
-                        <SystemStatsPopup />
+                        {/* <SystemStatsPopup /> */}
                       </Header>
 
                       <Container variant="main">
                         {view === "OPEN" && <WalletModal />}
                         {switchNetworkView === "OPEN" && <SwitchNetworkModal />}{" "}
                         <Switch>
-                          <Route path="/" exact>
+                          <Redirect from="/" to="/dashboard" exact />
+                          <Route path="/dashboard"  exact>
                             <PageSwitcher />
                           </Route>
                           <Route path="/dashboard/:collateralType" exact>

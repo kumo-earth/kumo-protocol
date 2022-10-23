@@ -192,6 +192,12 @@ const theme: Theme = {
       fontSize: 1
     }
   },
+  
+  images : {
+    primary: {
+      cursor: 'pointer'
+    }
+  },
 
   buttons: {
     primary: {
@@ -343,6 +349,7 @@ const theme: Theme = {
 
     editor: {}
   },
+  
 
   layout: {
     header: {
@@ -351,7 +358,7 @@ const theme: Theme = {
       alignItems: "stretch",
 
       pt: 4,
-      pl: 4,
+      pl: 5,
       
       height: "110px",
       // ...headerGradient,
@@ -452,7 +459,8 @@ const theme: Theme = {
     sideBarLogo: {
       pl: 4,
       pt: 4,
-      height: "110px"
+      height: "110px",
+      
     },
     sideBarNav: {
       display: "flex",

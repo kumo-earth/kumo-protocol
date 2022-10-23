@@ -20,16 +20,7 @@ export const Header: React.FC = ({ children }) => {
 
   return (
     <Container variant="header">
-      <Flex sx={{ alignItems: "center", flex: 1, width: "fit-content", zIndex: "100000" }}>
-        <Box
-          sx={{
-            width: "0px",
-            height: "100%",
-            color: "black"
-          }}
-        />
-        <SideNav />
-      </Flex>
+      <SideNav />
       {children}
     </Container>
   );

@@ -29,7 +29,7 @@ export const NoDeposit: React.FC = props => {
   }, [dispatchEvent]);
 
   return (
-    <Card variant="base">
+    <Card variant="base" sx={{ background: '#ebd8df' }}>
       <Heading>
         {getPathName(location).toUpperCase()} Stability Pool
         {/* <Flex sx={{ justifyContent: "flex-end" }}>

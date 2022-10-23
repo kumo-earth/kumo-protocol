@@ -84,17 +84,7 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
 
   return (
     <Card
-      {...{ variant }}
-      sx={{
-        background: "rgba(249,248,249,.1)",
-        backgroundColor: "#303553",
-        // color: "rgba(0, 0, 0, 0.87)",
-        transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-        boxShadow:
-          "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
-        overflow: "hidden",
-        borderRadius: "20px"
-      }}
+      variant="base"
     >
       {showBalances && <Balances />}
 

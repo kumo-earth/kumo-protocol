@@ -1,6 +1,8 @@
 import { Grid, Flex } from "theme-ui";
 import { Trove } from "../components/Trove/Trove";
 import { Stability } from "../components/Stability/Stability";
+import { SystemStats } from "../components/SystemStats"
+import { PriceManager } from "../components/PriceManager";
 
 export const Collateral: React.FC = () => {
   return (
@@ -16,8 +18,9 @@ export const Collateral: React.FC = () => {
         <Trove />
       </Flex>
       <Flex sx={{ flexDirection: "column", width: "95%"  }}>
-        {/* <SystemStats /> */}
+        <SystemStats />
         <Stability />
+        <PriceManager />
       </Flex>
     </Grid>
   );

@@ -76,7 +76,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
         <Box sx={{ my: 2 }}>
           <Progress
             max={10000}
-            value={collateralType === "bct" ? "3000" : "7000"}
+            value={collateral.toString()}
             sx={{ height: "12px", backgroundColor: "#F0CFDC" }}
           ></Progress>
         </Box>

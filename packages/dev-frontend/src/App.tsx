@@ -108,7 +108,9 @@ const App = () => {
               unsupportedMainnetFallback={<UnsupportedMainnetFallback />}
             >
               <TransactionProvider>
+               
                 <KumoFrontend loader={loader} />
+               
               </TransactionProvider>
             </KumoProvider>
           </SwitchNetworkViewProvider>

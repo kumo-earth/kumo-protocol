@@ -11,6 +11,9 @@ export const Sidebar: React.FC = props => {
         <Box  as='nav' variant="layout.sideBarNav">
           <Link to="/">Dashboard</Link>
           <Link to="/staking">Staking</Link>
+          <Link to="/redemption">Redeem</Link>
+          <Link to="/risky-troves">Risky Troves</Link>  
+          <Link to="/farm">Farm</Link>
         </Box>
       </Flex>
     </Container>

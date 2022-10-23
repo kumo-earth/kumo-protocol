@@ -66,7 +66,8 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   return (
     <Card
       sx={{
-        width: "90%"
+        width: "90%",
+        background: '#ebd8df'
       }}
       variant="base"
     >
