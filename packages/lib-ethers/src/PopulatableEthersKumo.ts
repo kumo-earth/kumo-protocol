@@ -823,15 +823,13 @@ export class PopulatableEthersKumo
   /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.openTrove} */
   async openTrove(
     params: TroveCreationParams<Decimalish>,
-    asset: string,
-    tokenAmount: Decimalish,
     maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams,
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<TroveCreationDetails>> {
     const { borrowerOperations } = _getContracts(this._readable.connection);
 
     const normalizedParams = _normalizeTroveCreation(params);
-    const { depositCollateral, borrowKUSD } = normalizedParams;
+    const { asset, depositCollateral, borrowKUSD } = normalizedParams;
 
     const [fees, blockTimestamp, total, price] = await Promise.all([
       this._readable._getFeesFactory(asset),
