@@ -21,6 +21,7 @@ import { _connectToMulticall, _Multicall } from "./_Multicall";
 
 const dev = devOrNull as _KumoDeploymentJSON | null;
 
+
 const deployments: {
   [chainId: number]: _KumoDeploymentJSON | undefined;
 } = {

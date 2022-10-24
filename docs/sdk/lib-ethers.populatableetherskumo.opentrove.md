@@ -9,7 +9,7 @@ Open a new Trove by depositing collateral and borrowing KUSD.
 <b>Signature:</b>
 
 ```typescript
-openTrove(params: TroveCreationParams<Decimalish>, asset: string, tokenAmount: Decimalish, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveCreationDetails>>;
+openTrove(params: TroveCreationParams<Decimalish>, asset: string, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveCreationDetails>>;
 ```
 
 ## Parameters
@@ -18,7 +18,6 @@ openTrove(params: TroveCreationParams<Decimalish>, asset: string, tokenAmount: D
 |  --- | --- | --- |
 |  params | [TroveCreationParams](./lib-base.trovecreationparams.md)<!-- -->&lt;[Decimalish](./lib-base.decimalish.md)<!-- -->&gt; | How much to deposit and borrow. |
 |  asset | string |  |
-|  tokenAmount | [Decimalish](./lib-base.decimalish.md) |  |
 |  maxBorrowingRateOrOptionalParams | [Decimalish](./lib-base.decimalish.md) \| [BorrowingOperationOptionalParams](./lib-ethers.borrowingoperationoptionalparams.md) |  |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 

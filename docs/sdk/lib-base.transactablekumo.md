@@ -32,7 +32,7 @@ Implemented by [EthersKumo](./lib-ethers.etherskumo.md)<!-- -->.
 |  [exitLiquidityMining()](./lib-base.transactablekumo.exitliquiditymining.md) | Withdraw all staked LP tokens from liquidity mining and claim reward. |
 |  [liquidate(asset, address)](./lib-base.transactablekumo.liquidate.md) | Liquidate one or more undercollateralized Troves. |
 |  [liquidateUpTo(asset, maximumNumberOfTrovesToLiquidate)](./lib-base.transactablekumo.liquidateupto.md) | Liquidate the least collateralized Troves up to a maximum number. |
-|  [openTrove(params, asset, tokenAmount, maxBorrowingRate)](./lib-base.transactablekumo.opentrove.md) | Open a new Trove by depositing collateral and borrowing KUSD. |
+|  [openTrove(params, asset, maxBorrowingRate)](./lib-base.transactablekumo.opentrove.md) | Open a new Trove by depositing collateral and borrowing KUSD. |
 |  [redeemKUSD(asset, amount, maxRedemptionRate)](./lib-base.transactablekumo.redeemkusd.md) | Redeem KUSD to native currency (e.g. Ether) at face value. |
 |  [registerFrontend(kickbackRate)](./lib-base.transactablekumo.registerfrontend.md) | Register current wallet address as a Kumo frontend. |
 |  [repayKUSD(asset, amount)](./lib-base.transactablekumo.repaykusd.md) | Adjust existing Trove by repaying some of its debt. |

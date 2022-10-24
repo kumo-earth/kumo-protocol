@@ -33,7 +33,7 @@ export declare class PopulatableEthersKumo implements PopulatableKumo<EthersTran
 |  [exitLiquidityMining(overrides)](./lib-ethers.populatableetherskumo.exitliquiditymining.md) |  | Withdraw all staked LP tokens from liquidity mining and claim reward. |
 |  [liquidate(asset, address, overrides)](./lib-ethers.populatableetherskumo.liquidate.md) |  | Liquidate one or more undercollateralized Troves. |
 |  [liquidateUpTo(asset, maximumNumberOfTrovesToLiquidate, overrides)](./lib-ethers.populatableetherskumo.liquidateupto.md) |  | Liquidate the least collateralized Troves up to a maximum number. |
-|  [openTrove(params, asset, tokenAmount, maxBorrowingRateOrOptionalParams, overrides)](./lib-ethers.populatableetherskumo.opentrove.md) |  | Open a new Trove by depositing collateral and borrowing KUSD. |
+|  [openTrove(params, asset, maxBorrowingRateOrOptionalParams, overrides)](./lib-ethers.populatableetherskumo.opentrove.md) |  | Open a new Trove by depositing collateral and borrowing KUSD. |
 |  [redeemKUSD(asset, amount, maxRedemptionRate, overrides)](./lib-ethers.populatableetherskumo.redeemkusd.md) |  | Redeem KUSD to native currency (e.g. Ether) at face value. |
 |  [registerFrontend(kickbackRate, overrides)](./lib-ethers.populatableetherskumo.registerfrontend.md) |  | Register current wallet address as a Kumo frontend. |
 |  [repayKUSD(asset, amount, overrides)](./lib-ethers.populatableetherskumo.repaykusd.md) |  | Adjust existing Trove by repaying some of its debt. |

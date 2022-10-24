@@ -46,12 +46,11 @@ export class SendableEthersKumo
   async openTrove(
     params: TroveCreationParams<Decimalish>,
     asset: string,
-    tokenAmount: Decimalish,
     maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersKumoTransaction<TroveCreationDetails>> {
     return this._populate
-      .openTrove(params, asset, tokenAmount, maxBorrowingRateOrOptionalParams, overrides)
+      .openTrove(params, asset, maxBorrowingRateOrOptionalParams, overrides)
       .then(sendTransaction);
   }
 

@@ -125,8 +125,8 @@ export type KumoReceipt<R = unknown, D = unknown> = PendingReceipt | MinedReceip
 /** @internal */
 export type _SendableFrom<T, R, S> = {
   [M in keyof T]: T[M] extends (...args: infer A) => Promise<infer D>
-    ? (...args: A) => Promise<SentKumoTransaction<S, KumoReceipt<R, D>>>
-    : never;
+  ? (...args: A) => Promise<SentKumoTransaction<S, KumoReceipt<R, D>>>
+  : never;
 };
 
 /**
@@ -148,7 +148,6 @@ export interface SendableKumo<R = unknown, S = unknown>
   openTrove(
     params: TroveCreationParams<Decimalish>,
     asset: string,
-    tokenAmount: Decimalish,
     maxBorrowingRate?: Decimalish
   ): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveCreationDetails>>>;
 
@@ -192,13 +191,13 @@ export interface SendableKumo<R = unknown, S = unknown>
 
   /** {@inheritDoc TransactableKumo.liquidate} */
   liquidate(
-    asset:string,
+    asset: string,
     address: string | string[]
   ): Promise<SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>;
 
   /** {@inheritDoc TransactableKumo.liquidateUpTo} */
   liquidateUpTo(
-    asset:string,
+    asset: string,
     maximumNumberOfTrovesToLiquidate: number
   ): Promise<SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>;
 
@@ -218,7 +217,7 @@ export interface SendableKumo<R = unknown, S = unknown>
   >;
 
   /** {@inheritDoc TransactableKumo.transferCollateralGainToTrove} */
-  transferCollateralGainToTrove(asset:string): Promise<
+  transferCollateralGainToTrove(asset: string): Promise<
     SentKumoTransaction<S, KumoReceipt<R, CollateralGainTransferDetails>>
   >;
 
@@ -236,7 +235,7 @@ export interface SendableKumo<R = unknown, S = unknown>
 
   /** {@inheritDoc TransactableKumo.redeemKUSD} */
   redeemKUSD(
-    asset:string,
+    asset: string,
     amount: Decimalish,
     maxRedemptionRate?: Decimalish
   ): Promise<SentKumoTransaction<S, KumoReceipt<R, RedemptionDetails>>>;

@@ -87,6 +87,7 @@ const wethAddresses = {
 const hasWETH = (network: string): network is keyof typeof wethAddresses => network in wethAddresses;
 
 const config: HardhatUserConfig = {
+  defaultNetwork: "dev",
   networks: {
     hardhat: {
       accounts: accounts.slice(0, numAccounts),
@@ -103,7 +104,7 @@ const config: HardhatUserConfig = {
 
     dev: {
       url: "http://localhost:8545",
-      accounts: [deployerAccount, devChainRichAccount],
+      accounts: [accounts[0].privateKey, accounts[1].privateKey, accounts[2].privateKey],
       allowUnlimitedContractSize: true
     },
 
@@ -113,7 +114,7 @@ const config: HardhatUserConfig = {
   paths: {
     artifacts,
     cache
-  }
+  },
 };
 
 declare module "hardhat/types/runtime" {
@@ -133,11 +134,11 @@ const getLiveArtifact = (name: string): { abi: JsonFragment[]; bytecode: string 
 const getContractFactory: (
   env: HardhatRuntimeEnvironment
 ) => (name: string, signer: Signer) => Promise<ContractFactory> = useLiveVersion
-  ? env => (name, signer) => {
+    ? env => (name, signer) => {
       const { abi, bytecode } = getLiveArtifact(name);
       return env.ethers.getContractFactory(abi, bytecode, signer);
     }
-  : env => env.ethers.getContractFactory;
+    : env => env.ethers.getContractFactory;
 
 extendEnvironment(env => {
   env.deployKumo = async (

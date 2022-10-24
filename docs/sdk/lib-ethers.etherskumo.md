@@ -65,7 +65,7 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [hasStore(store)](./lib-ethers.etherskumo.hasstore_1.md) |  | Check whether this <code>EthersKumo</code> is an [EthersKumoWithStore](./lib-ethers.etherskumowithstore.md)<!-- -->&lt;[BlockPolledKumoStore](./lib-ethers.blockpolledkumostore.md)<!-- -->&gt;<!-- -->. |
 |  [liquidate(asset, address, overrides)](./lib-ethers.etherskumo.liquidate.md) |  | Liquidate one or more undercollateralized Troves. |
 |  [liquidateUpTo(asset, maximumNumberOfTrovesToLiquidate, overrides)](./lib-ethers.etherskumo.liquidateupto.md) |  | Liquidate the least collateralized Troves up to a maximum number. |
-|  [openTrove(params, asset, tokenAmount, maxBorrowingRateOrOptionalParams, overrides)](./lib-ethers.etherskumo.opentrove.md) |  | Open a new Trove by depositing collateral and borrowing KUSD. |
+|  [openTrove(params, asset, maxBorrowingRateOrOptionalParams, overrides)](./lib-ethers.etherskumo.opentrove.md) |  | Open a new Trove by depositing collateral and borrowing KUSD. |
 |  [redeemKUSD(asset, amount, maxRedemptionRate, overrides)](./lib-ethers.etherskumo.redeemkusd.md) |  | Redeem KUSD to native currency (e.g. Ether) at face value. |
 |  [registerFrontend(kickbackRate, overrides)](./lib-ethers.etherskumo.registerfrontend.md) |  | Register current wallet address as a Kumo frontend. |
 |  [repayKUSD(asset, amount, overrides)](./lib-ethers.etherskumo.repaykusd.md) |  | Adjust existing Trove by repaying some of its debt. |

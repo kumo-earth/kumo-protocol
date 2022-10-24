@@ -87,10 +87,10 @@ export interface PopulatedRedemption<P = unknown, S = unknown, R = unknown>
 /** @internal */
 export type _PopulatableFrom<T, P> = {
   [M in keyof T]: T[M] extends (...args: infer A) => Promise<infer U>
-    ? U extends SentKumoTransaction
-      ? (...args: A) => Promise<PopulatedKumoTransaction<P, U>>
-      : never
-    : never;
+  ? U extends SentKumoTransaction
+  ? (...args: A) => Promise<PopulatedKumoTransaction<P, U>>
+  : never
+  : never;
 };
 
 /**
@@ -112,7 +112,6 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
   openTrove(
     params: TroveCreationParams<Decimalish>,
     asset: string,
-    tokenAmount: Decimalish,
     maxBorrowingRate?: Decimalish
   ): Promise<
     PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveCreationDetails>>>
@@ -174,7 +173,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
 
   /** {@inheritDoc TransactableKumo.liquidate} */
   liquidate(
-    asset:string,
+    asset: string,
     address: string | string[]
   ): Promise<
     PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>
@@ -182,7 +181,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
 
   /** {@inheritDoc TransactableKumo.liquidateUpTo} */
   liquidateUpTo(
-    asset:string,
+    asset: string,
     maximumNumberOfTrovesToLiquidate: number
   ): Promise<
     PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>
@@ -217,7 +216,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
   >;
 
   /** {@inheritDoc TransactableKumo.transferCollateralGainToTrove} */
-  transferCollateralGainToTrove(asset:string): Promise<
+  transferCollateralGainToTrove(asset: string): Promise<
     PopulatedKumoTransaction<
       P,
       SentKumoTransaction<S, KumoReceipt<R, CollateralGainTransferDetails>>
@@ -238,7 +237,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
 
   /** {@inheritDoc TransactableKumo.redeemKUSD} */
   redeemKUSD(
-    asset:string,
+    asset: string,
     amount: Decimalish,
     maxRedemptionRate?: Decimalish
   ): Promise<PopulatedRedemption<P, S, R>>;
