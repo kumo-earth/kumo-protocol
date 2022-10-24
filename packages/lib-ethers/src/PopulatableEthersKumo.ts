@@ -823,13 +823,14 @@ export class PopulatableEthersKumo
   /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.openTrove} */
   async openTrove(
     params: TroveCreationParams<Decimalish>,
+    asset: string,
     maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams,
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<TroveCreationDetails>> {
     const { borrowerOperations } = _getContracts(this._readable.connection);
 
     const normalizedParams = _normalizeTroveCreation(params);
-    const { asset, depositCollateral, borrowKUSD } = normalizedParams;
+    const { depositCollateral, borrowKUSD } = normalizedParams;
 
     const [fees, blockTimestamp, total, price] = await Promise.all([
       this._readable._getFeesFactory(asset),
@@ -855,11 +856,11 @@ export class PopulatableEthersKumo
 
     const txParams = (borrowKUSD: Decimal): Parameters<typeof borrowerOperations.openTrove> => [
       asset,
-      Decimal.from(tokenAmount).hex,
+      depositCollateral.hex,
       maxBorrowingRate.hex,
       borrowKUSD.hex,
       ...hints,
-      { value: depositCollateral.hex, ...overrides }
+      { ...overrides }
     ];
 
     let gasHeadroom: number | undefined;

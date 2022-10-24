@@ -183,7 +183,6 @@ export interface TransactableKumo {
   openTrove(
     params: TroveCreationParams<Decimalish>,
     asset: string,
-    tokenAmount: Decimalish,
     maxBorrowingRate?: Decimalish
   ): Promise<TroveCreationDetails>;
 
@@ -314,7 +313,7 @@ export interface TransactableKumo {
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
    */
-  liquidateUpTo(asset:string, maximumNumberOfTrovesToLiquidate: number): Promise<LiquidationDetails>;
+  liquidateUpTo(asset: string, maximumNumberOfTrovesToLiquidate: number): Promise<LiquidationDetails>;
 
   /**
    * Make a new Stability Deposit, or top up existing one.
@@ -373,7 +372,7 @@ export interface TransactableKumo {
    * As a side-effect, the transaction will also pay out the Stability Deposit's
    * {@link @kumodao/lib-base#StabilityDeposit.kumoReward | KUMO reward}.
    */
-  transferCollateralGainToTrove(asset:string): Promise<CollateralGainTransferDetails>;
+  transferCollateralGainToTrove(asset: string): Promise<CollateralGainTransferDetails>;
 
   /**
    * Send KUSD tokens to an address.
@@ -411,7 +410,7 @@ export interface TransactableKumo {
    * If `maxRedemptionRate` is omitted, the current redemption rate (based on `amount`) plus 0.1%
    * is used as maximum acceptable rate.
    */
-  redeemKUSD( asset:string,amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<RedemptionDetails>;
+  redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<RedemptionDetails>;
 
   /**
    * Claim leftover collateral after a liquidation or redemption.

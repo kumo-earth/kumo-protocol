@@ -107,7 +107,12 @@ const deployContracts = async (
     gasPool: await deployContract(deployer, getContractFactory, "GasPool", {
       ...overrides
     }),
-    unipool: await deployContract(deployer, getContractFactory, "Unipool", { ...overrides })
+    unipool: await deployContract(deployer, getContractFactory, "Unipool", { ...overrides }),
+
+
+    mockAsset1: await deployContract(deployer, getContractFactory, "ERC20Test", { ...overrides })
+
+
 
   };
 
@@ -229,17 +234,17 @@ const connectContracts = async (
         { ...overrides, nonce }
       ),
 
-    nonce =>
-      stabilityPool.setAddresses(
-        borrowerOperations.address,
-        troveManager.address,
-        activePool.address,
-        kusdToken.address,
-        sortedTroves.address,
-        priceFeed.address,
-        communityIssuance.address,
-        { ...overrides, nonce }
-      ),
+    // nonce =>
+    //   stabilityPool.setAddresses(
+    //     borrowerOperations.address,
+    //     troveManager.address,
+    //     activePool.address,
+    //     kusdToken.address,
+    //     sortedTroves.address,
+    //     priceFeed.address,
+    //     communityIssuance.address,
+    //     { ...overrides, nonce }
+    //   ),
 
     nonce =>
       activePool.setAddresses(
@@ -333,26 +338,48 @@ const deployMockUniToken = (
     { ...overrides }
   );
 
-const deployMockER20Assets = async (
+
+
+const addNewAssetToSystem = async (
+  {
+    troveManager,
+    sortedTroves,
+    stabilityPool,
+    kumoParameters,
+    borrowerOperations,
+    communityIssuance,
+    kusdToken,
+    mockAsset1
+  }: _KumoContracts,
   deployer: Signer,
-  getContractFactory: (name: string, signer: Signer) => Promise<ContractFactory>,
   overrides?: Overrides
 ) => {
-  const MockAsset1 = await deployContract(
-    deployer,
-    getContractFactory,
-    "ERC20Test",
-    { ...overrides }
-  );
-  const MockAsset2 = await deployContract(
-    deployer,
-    getContractFactory,
-    "ERC20Test",
-    { ...overrides }
-  );
+  if (!deployer.provider) {
+    throw new Error("Signer must have a provider.");
+  }
 
-  return [MockAsset1, MockAsset2]
+
+
+  await stabilityPool.setAddresses(
+    mockAsset1.address,
+    borrowerOperations.address,
+    troveManager.address,
+    kusdToken.address,
+    sortedTroves.address,
+    communityIssuance.address,
+    kumoParameters.address,
+  ),
+
+    await kumoParameters.setAsDefault(mockAsset1.address)
+  await troveManager.addNewAsset(mockAsset1.address)
+  await sortedTroves.addNewAsset(mockAsset1.address)
+
+
+
+
 }
+
+
 
 
 export const deployAndSetupContracts = async (
@@ -402,6 +429,10 @@ export const deployAndSetupContracts = async (
 
   log("Connecting contracts...");
   await connectContracts(contracts, deployer, overrides);
+
+  log("Add Asset to the system...")
+  await addNewAssetToSystem(contracts, deployer, overrides);
+
 
   const kumoTokenDeploymentTime = await contracts.kumoToken.getDeploymentStartTime();
   // const bootstrapPeriod = await contracts.troveManager.BOOTSTRAP_PERIOD();

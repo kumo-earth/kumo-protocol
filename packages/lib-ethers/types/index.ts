@@ -1039,3 +1039,35 @@ export interface KumoParameters
   extractEvents(logs: Log[], name: "RedemptionBlockRemoved"): _TypedLogDescription<{ _asset: string }>[];
   extractEvents(logs: Log[], name: "RedemptionFeeFloorChanged"): _TypedLogDescription<{ oldRedemptionFeeFloor: BigNumber; newRedemptionFeeFloor: BigNumber }>[];
 }
+
+interface ERC20TestCalls {
+  DOMAIN_SEPARATOR(_overrides?: CallOverrides): Promise<string>;
+  allowance(owner: string, spender: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  balanceOf(account: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  decimals(_overrides?: CallOverrides): Promise<number>;
+  name(_overrides?: CallOverrides): Promise<string>;
+  nonces(owner: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  symbol(_overrides?: CallOverrides): Promise<string>;
+  totalSupply(_overrides?: CallOverrides): Promise<BigNumber>;
+}
+
+interface ERC20TestTransactions {
+  approve(spender: string, amount: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  decreaseAllowance(spender: string, subtractedValue: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  increaseAllowance(spender: string, addedValue: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  mint(to: string, amount: BigNumberish, _overrides?: Overrides): Promise<void>;
+  permit(owner: string, spender: string, value: BigNumberish, deadline: BigNumberish, v: BigNumberish, r: BytesLike, s: BytesLike, _overrides?: Overrides): Promise<void>;
+  setDecimals(_decimals: BigNumberish, _overrides?: Overrides): Promise<void>;
+  transfer(to: string, amount: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  transferFrom(sender: string, recipient: string, amount: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+}
+
+export interface ERC20Test
+  extends _TypedKumoContract<ERC20TestCalls, ERC20TestTransactions> {
+  readonly filters: {
+    Approval(owner?: string | null, spender?: string | null, value?: null): EventFilter;
+    Transfer(from?: string | null, to?: string | null, value?: null): EventFilter;
+  };
+  extractEvents(logs: Log[], name: "Approval"): _TypedLogDescription<{ owner: string; spender: string; value: BigNumber }>[];
+  extractEvents(logs: Log[], name: "Transfer"): _TypedLogDescription<{ from: string; to: string; value: BigNumber }>[];
+}
