@@ -303,6 +303,12 @@ const connectContracts = async (
       unipool.setParams(kumoToken.address, uniToken.address, 2 * 30 * 24 * 60 * 60, {
         ...overrides,
         nonce
+      }),
+
+    nonce =>
+      kumoParameters.setAddresses(activePool.address, defaultPool.address, priceFeed.address, stabilityPool.address, {
+        ...overrides,
+        nonce
       })
   ];
 
@@ -375,9 +381,21 @@ const addNewAssetToSystem = async (
   await sortedTroves.addNewAsset(mockAsset1.address)
 
 
+  // let accounts: Signer[];
+  // [...accounts] = await ethers.getSigners();
+  // await mockAsset1.mint(await accounts[0].getAddress(), 10000000000000000000000000000)
 
 
 }
+
+
+// Mint token to each acccount
+// const mintMockAsset1 = async (accounts: { privateKey: string; balance: string; }[], { mockAsset1 }: _KumoContracts) => {
+//   for (let i = 0; i < accounts.length; ++i) {
+//     await mockAsset1.mint(accounts[i].privateKey, 10000000000000000000000000000)
+//   }
+
+// };
 
 
 
@@ -432,6 +450,9 @@ export const deployAndSetupContracts = async (
 
   log("Add Asset to the system...")
   await addNewAssetToSystem(contracts, deployer, overrides);
+
+  log("Mint MockAsset token...")
+  // await mintMockAsset1(accounts, contracts);
 
 
   const kumoTokenDeploymentTime = await contracts.kumoToken.getDeploymentStartTime();

@@ -100,14 +100,16 @@ describe("EthersKumo", () => {
   let liquity: EthersKumo;
   let otherLiquities: EthersKumo[];
 
-  let asset = AddressZero;
+  let asset: string;
 
-  const gasLimit = BigNumber.from(25000);
+  const gasLimit = BigNumber.from(2500000);
 
   const connectUsers = (users: Signer[]) =>
     Promise.all(users.map(user => connectToDeployment(deployment, user)));
 
-  const openTroves = (users: Signer[], params: TroveCreationParams<Decimalish>[]) =>
+
+
+  const openTroves = (users: Signer[], params: TroveCreationParams<Decimalish>[], asset: string) =>
     params
       .map(
         (params, i) => () =>
@@ -138,6 +140,7 @@ describe("EthersKumo", () => {
   before(async () => {
     [deployer, funder, user, ...otherUsers] = await ethers.getSigners();
     deployment = await deployKumo(deployer);
+    asset = deployment.addresses.mockAsset1;
     liquity = await connectToDeployment(deployment, user);
     expect(liquity).to.be.an.instanceOf(EthersKumo);
   });
@@ -291,7 +294,7 @@ describe("EthersKumo", () => {
     it("should create a Trove with some borrowing", async () => {
       const { newTrove, fee } = await liquity.openTrove(
         withSomeBorrowing,
-        AddressZero,
+        asset,
         undefined,
         { gasLimit }
       );
@@ -346,7 +349,7 @@ describe("EthersKumo", () => {
       } = await waitForSuccess(liquity.send.adjustTrove(repayAndWithdraw, asset));
 
       expect(newTrove).to.deep.equal(
-        Trove.create(withSomeBorrowing)
+        Trove.create(withSomeBorrowing, asset)
           .adjust(repaySomeDebt)
           .adjust(borrowSomeMore)
           .adjust(depositMoreCollateral)
@@ -1141,7 +1144,7 @@ describe("EthersKumo", () => {
         // Test 2:           30,             2900
         // Test 2 (other):   30,             3000
         // Test 3:           30,             3100 -> 3200
-      ]);
+      ], asset);
     });
 
     // Test 1
@@ -1240,7 +1243,7 @@ describe("EthersKumo", () => {
         { depositCollateral: 20, borrowKUSD: 2060 },
         { depositCollateral: 20, borrowKUSD: 2070 },
         { depositCollateral: 20, borrowKUSD: 2080 }
-      ]);
+      ], asset);
 
       await increaseTime(60 * 60 * 24 * 15);
     });
@@ -1294,7 +1297,7 @@ describe("EthersKumo", () => {
       // A terribly rude user interferes
       const rudeTrove = newTrove.addDebt(1);
       const rudeCreation = Trove.recreate(rudeTrove);
-      await openTroves([rudeUser], [rudeCreation]);
+      await openTroves([rudeUser], [rudeCreation], asset);
 
       const newGasEstimate = await provider.estimateGas(tx.rawPopulatedTransaction);
       const gasIncrease = newGasEstimate.sub(originalGasEstimate).toNumber();
@@ -1326,7 +1329,7 @@ describe("EthersKumo", () => {
       const originalGasEstimate = await provider.estimateGas(tx.rawPopulatedTransaction);
 
       // A terribly rude user interferes again
-      await openTroves([rudeUser], [Trove.recreate(newTrove.addDebt(1))]);
+      await openTroves([rudeUser], [Trove.recreate(newTrove.addDebt(1))], asset);
 
       // On top of that, we'll need to update lastFeeOperationTime
       await increaseTime(120);
@@ -1431,7 +1434,7 @@ describe("EthersKumo", () => {
         someMoreUsers.map((_, i) => ({
           depositCollateral: 20,
           borrowKUSD: KUSD_MINIMUM_NET_DEBT.add(i / 10)
-        }))
+        })), asset
       );
 
       // Sweep KUSD
@@ -1450,7 +1453,7 @@ describe("EthersKumo", () => {
       const redeemedTroveCollateral = redeemedTroveDebt.mulDiv(1.1, price);
       const redeemedTrove = new Trove(redeemedTroveCollateral, redeemedTroveDebt);
 
-      await openTroves([redeemedUser], [Trove.recreate(redeemedTrove)]);
+      await openTroves([redeemedUser], [Trove.recreate(redeemedTrove)], asset);
 
       // Jump past bootstrap period
       await increaseTime(60 * 60 * 24 * 15);
