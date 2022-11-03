@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.11;
 
-import "../StabilityPool.sol";
+import "../BorrowerOperations.sol";
 
-contract StabilityPoolV2 is StabilityPool {
+contract BorrowerOperationsV2 is BorrowerOperations {
   uint newVar;
 
   function initializeV2(uint _newVar) external reinitializer(2) {

@@ -279,8 +279,7 @@ contract('SortedTroves', async accounts => {
     let sortedTrovesTester
 
     beforeEach(async () => {
-      const { sortedTrovesEthers } = await deploymentHelper.deployKUMOCoreUpgradeableEthers();
-      sortedTroves = sortedTrovesEthers;
+      sortedTroves = await deploymentHelper.deployAndInitContract(SortedTroves);
       
       sortedTrovesTester = await SortedTrovesTester.new()
       await sortedTrovesTester.setSortedTroves(sortedTroves.address)

@@ -85,6 +85,20 @@ class DeploymentHelper {
     }
   }
 
+  static async deployKUMOCoreUpgradeableEthers() {
+    let contracts = {}
+
+    const SortedTrovesEthers = await ethers.getContractFactory("SortedTroves")
+    const StabilityPoolEthers = await ethers.getContractFactory("StabilityPool")
+    const BorrowerOperationsEthers = await ethers.getContractFactory("BorrowerOperations")
+
+    contracts.sortedTrovesEthers = await upgrades.deployProxy(SortedTrovesEthers, [], { kind: "uups" })
+    contracts.stabilityPoolEthers = await upgrades.deployProxy(StabilityPoolEthers, [], { kind: "uups" })
+    contracts.borrowerOperationsEthers = await upgrades.deployProxy(BorrowerOperationsEthers, [], { kind: "uups" })
+
+    return contracts
+  }
+
   static async deployKumoCoreHardhat() {
     const priceFeedTestnet = await PriceFeedTestnet.new()
     const sortedTroves = await this.deployAndInitContract(SortedTroves)
@@ -137,16 +151,16 @@ class DeploymentHelper {
 
     // Contract without testers (yet)
     testerContracts.priceFeedTestnet = await PriceFeedTestnet.new()
-    testerContracts.sortedTroves = await SortedTroves.new()
+    testerContracts.sortedTroves = await await this.deployAndInitContract(SortedTroves)
     // Actual tester contracts
     testerContracts.communityIssuance = await CommunityIssuanceTester.new()
     testerContracts.activePool = await ActivePoolTester.new()
     testerContracts.defaultPool = await DefaultPoolTester.new()
-    testerContracts.stabilityPool = await StabilityPoolTester.new()
+    testerContracts.stabilityPool = await await this.deployAndInitContract(StabilityPoolTester)
     testerContracts.gasPool = await GasPool.new()
     testerContracts.collSurplusPool = await CollSurplusPool.new()
     testerContracts.math = await KumoMathTester.new()
-    testerContracts.borrowerOperations = await BorrowerOperationsTester.new()
+    testerContracts.borrowerOperations = await await this.deployAndInitContract(BorrowerOperationsTester)
     testerContracts.troveManager = await TroveManagerTester.new()
     testerContracts.functionCaller = await FunctionCaller.new()
     testerContracts.hintHelpers = await HintHelpers.new()
