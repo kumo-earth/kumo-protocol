@@ -26,7 +26,7 @@ contract('All Kumo functions with onlyOwner modifier', async accounts => {
 
   before(async () => {
     contracts = await deploymentHelper.deployKumoCore()
-    contracts.borrowerOperations = await BorrowerOperationsTester.new()
+    contracts.borrowerOperations = await deploymentHelper.deployAndInitContract(BorrowerOperationsTester)
     contracts = await deploymentHelper.deployKUSDToken(contracts)
     const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
@@ -87,7 +87,7 @@ contract('All Kumo functions with onlyOwner modifier', async accounts => {
 
   describe('BorrowerOperations', async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      await testSetAddresses(borrowerOperations, 10)
+      await testSetAddresses(borrowerOperations, 10, false)
     })
   })
 
