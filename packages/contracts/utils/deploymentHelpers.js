@@ -1,5 +1,5 @@
-const TroveManager = artifacts.require("./TroveManager.sol")
 const SortedTroves = artifacts.require("./SortedTroves.sol")
+const TroveManager = artifacts.require("./TroveManager.sol")
 const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol")
 const KUSDToken = artifacts.require("./KUSDToken.sol")
 const ActivePool = artifacts.require("./ActivePool.sol");
@@ -27,8 +27,6 @@ const KumoMathTester = artifacts.require("./KumoMathTester.sol")
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
 const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol")
-
-const { ethers, upgrades } = require('hardhat')
 
 // Proxy scripts
 const BorrowerOperationsScript = artifacts.require('BorrowerOperationsScript')
@@ -92,40 +90,36 @@ class DeploymentHelper {
 
     const SortedTrovesEthers = await ethers.getContractFactory("SortedTroves")
     const StabilityPoolEthers = await ethers.getContractFactory("StabilityPool")
-    const StabilityPoolTesterEthers = await ethers.getContractFactory("StabilityPoolTester")
+    const PriceFeedEthers = await ethers.getContractFactory("PriceFeed")
 
     contracts.sortedTrovesEthers = await upgrades.deployProxy(SortedTrovesEthers, [], { kind: "uups" })
     contracts.stabilityPoolEthers = await upgrades.deployProxy(StabilityPoolEthers, [], { kind: "uups" })
-    contracts.stabilityPoolTesterEthers = await upgrades.deployProxy(StabilityPoolTesterEthers, [], { kind: "uups" })
+    contracts.priceFeedEthers = await upgrades.deployProxy(PriceFeedEthers, [], { kind: "uups" })
 
     return contracts
   }
 
   static async deployKumoCoreHardhat() {
-    // Upgradable Contracts
-    const { sortedTrovesEthers, stabilityPoolEthers } = await this.deployKUMOCoreUpgradeableEthers();
-    const sortedTroves = await SortedTroves.at(sortedTrovesEthers.address);
-    const stabilityPool = await StabilityPool.at(stabilityPoolEthers.address);
-
     const priceFeedTestnet = await PriceFeedTestnet.new()
+    const sortedTroves = await this.deployAndInitContract(SortedTroves)
     const troveManager = await TroveManager.new()
     const activePool = await ActivePool.new()
+    const stabilityPool = await this.deployAndInitContract(StabilityPool)
     const gasPool = await GasPool.new()
     const defaultPool = await DefaultPool.new()
     const collSurplusPool = await CollSurplusPool.new()
     const functionCaller = await FunctionCaller.new()
-    const borrowerOperations = await BorrowerOperations.new()
+    const borrowerOperations = await this.deployAndInitContract(BorrowerOperations)
     const hintHelpers = await HintHelpers.new()
     const kusdToken = await KUSDToken.new(
       troveManager.address,
       stabilityPool.address,
       borrowerOperations.address
     )
-
-    SortedTroves.setAsDeployed(sortedTroves)
     KUSDToken.setAsDeployed(kusdToken)
     DefaultPool.setAsDeployed(defaultPool)
     PriceFeedTestnet.setAsDeployed(priceFeedTestnet)
+    SortedTroves.setAsDeployed(sortedTroves)
     TroveManager.setAsDeployed(troveManager)
     ActivePool.setAsDeployed(activePool)
     StabilityPool.setAsDeployed(stabilityPool)
@@ -154,20 +148,19 @@ class DeploymentHelper {
 
   static async deployTesterContractsHardhat() {
     const testerContracts = {}
-    const { sortedTrovesEthers, stabilityPoolTesterEthers } = await this.deployKUMOCoreUpgradeableEthers();
 
     // Contract without testers (yet)
     testerContracts.priceFeedTestnet = await PriceFeedTestnet.new()
-    testerContracts.sortedTroves = await SortedTroves.at(sortedTrovesEthers.address)
+    testerContracts.sortedTroves = await await this.deployAndInitContract(SortedTroves)
     // Actual tester contracts
     testerContracts.communityIssuance = await CommunityIssuanceTester.new()
     testerContracts.activePool = await ActivePoolTester.new()
     testerContracts.defaultPool = await DefaultPoolTester.new()
-    testerContracts.stabilityPool = await StabilityPoolTester.at(stabilityPoolTesterEthers.address)
+    testerContracts.stabilityPool = await await this.deployAndInitContract(StabilityPoolTester)
     testerContracts.gasPool = await GasPool.new()
     testerContracts.collSurplusPool = await CollSurplusPool.new()
     testerContracts.math = await KumoMathTester.new()
-    testerContracts.borrowerOperations = await BorrowerOperationsTester.new()
+    testerContracts.borrowerOperations = await await this.deployAndInitContract(BorrowerOperationsTester)
     testerContracts.troveManager = await TroveManagerTester.new()
     testerContracts.functionCaller = await FunctionCaller.new()
     testerContracts.hintHelpers = await HintHelpers.new()
@@ -446,6 +439,13 @@ class DeploymentHelper {
 
   static async connectUnipool(uniPool, KUMOContracts, uniswapPairAddr, duration) {
     await uniPool.setParams(KUMOContracts.kumoToken.address, uniswapPairAddr, duration)
+  }
+
+  static async deployAndInitContract(truffleFactory) {
+    const contract = await truffleFactory.new();
+    await contract.initialize();
+
+    return contract;
   }
 }
 module.exports = DeploymentHelper

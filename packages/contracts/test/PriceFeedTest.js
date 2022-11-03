@@ -6,6 +6,7 @@ const MockTellor = artifacts.require("./MockTellor.sol")
 const TellorCaller = artifacts.require("./TellorCaller.sol")
 
 const testHelpers = require("../utils/testHelpers.js")
+const deploymentHelper = require("../utils/deploymentHelpers.js")
 const th = testHelpers.TestHelper
 
 const { dec, assertRevert, toBN, uintTob32 } = th
@@ -26,10 +27,10 @@ contract('PriceFeed', async accounts => {
     priceFeedTestnet = await PriceFeedTestnet.new()
     PriceFeedTestnet.setAsDeployed(priceFeedTestnet)
 
-    priceFeed = await PriceFeed.new()
+    priceFeed = await deploymentHelper.deployAndInitContract(PriceFeed)
     PriceFeed.setAsDeployed(priceFeed)
 
-    zeroAddressPriceFeed = await PriceFeed.new()
+    zeroAddressPriceFeed = await deploymentHelper.deployAndInitContract(PriceFeed)
     PriceFeed.setAsDeployed(zeroAddressPriceFeed)
 
     mockChainlink = await MockChainlink.new()
@@ -2250,6 +2251,25 @@ contract('PriceFeed', async accounts => {
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(246, 18))
+  })
+
+  describe('PriceFeed with upgrades', () => {
+    let PriceFeedV2;
+    let priceFeedV2;
+    let arg;
+
+    beforeEach(async () => {
+      PriceFeedV2 = await ethers.getContractFactory("PriceFeedV2");
+      contracts = await deploymentHelper.deployKUMOCoreUpgradeableEthers();
+      arg = 42;
+    })
+
+    it("successfully upgrades", async () => {
+      priceFeedV2 = await upgrades.upgradeProxy(contracts.priceFeedEthers.address, PriceFeedV2, { call: { fn: "initializeV2", args: [arg] }, kinds: "uups"});
+    })
+    it("reinitialized correctly", async () => {
+      assert.equal(await priceFeedV2.testFunction(), arg, 'newVar should be equal value from initializer')
+    })
   })
 })
 

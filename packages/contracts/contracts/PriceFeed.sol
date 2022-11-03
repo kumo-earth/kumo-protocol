@@ -2,7 +2,9 @@
 
 pragma solidity 0.8.11;
 
-// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "./Interfaces/IPriceFeed.sol";
 import "./Interfaces/ITellorCaller.sol";
@@ -22,7 +24,7 @@ import "./Dependencies/console.sol";
 * switching oracles based on oracle failures, timeouts, and conditions for returning to the primary
 * Chainlink oracle.
 */
-contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
+contract PriceFeed is Initializable, UUPSUpgradeable, OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
     using SafeMath for uint256;
 
 	// bool public isInitialized;
@@ -87,6 +89,11 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     event PriceFeedStatusChanged(Status newStatus);
 
     // --- Dependency setters ---
+
+    function initialize() initializer public {
+        __Ownable_init();
+        __UUPSUpgradeable_init();
+    }
     
     function setAddresses(
         address _priceAggregatorAddress,
@@ -115,9 +122,9 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
             "PriceFeed: Chainlink must be working and current");
 
         _storeChainlinkPrice(chainlinkResponse);
-
-        _renounceOwnership();
     }
+
+    function _authorizeUpgrade(address) internal override onlyOwner {}
 
     // --- Functions ---
 
