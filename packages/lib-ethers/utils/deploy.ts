@@ -4,6 +4,9 @@ import { Wallet } from "@ethersproject/wallet";
 
 import { Decimal } from "@kumodao/lib-base";
 
+import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
+
+
 import {
   _KumoContractAddresses,
   _KumoContracts,
@@ -12,6 +15,8 @@ import {
 } from "../src/contracts";
 
 import { createUniswapV2Pair } from "./UniswapV2Factory";
+
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 let silent = true;
 
@@ -390,12 +395,11 @@ const addNewAssetToSystem = async (
 
 
 // Mint token to each acccount
-// const mintMockAsset1 = async (accounts: { privateKey: string; balance: string; }[], { mockAsset1 }: _KumoContracts) => {
-//   for (let i = 0; i < accounts.length; ++i) {
-//     await mockAsset1.mint(accounts[i].privateKey, 10000000000000000000000000000)
-//   }
-
-// };
+const mintMockAsset1 = async (signers: SignerWithAddress[], { mockAsset1 }: _KumoContracts) => {
+  for (let i = 0; i < signers.length; ++i) {
+    await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000"))
+  }
+};
 
 
 
@@ -405,6 +409,7 @@ export const deployAndSetupContracts = async (
   getContractFactory: (name: string, signer: Signer) => Promise<ContractFactory>,
   _priceFeedIsTestnet = true,
   _isDev = true,
+  signers: SignerWithAddress[],
   wethAddress?: string,
   overrides?: Overrides
 ): Promise<_KumoDeploymentJSON> => {
@@ -452,7 +457,7 @@ export const deployAndSetupContracts = async (
   await addNewAssetToSystem(contracts, deployer, overrides);
 
   log("Mint MockAsset token...")
-  // await mintMockAsset1(accounts, contracts);
+  await mintMockAsset1(signers, contracts);
 
 
   const kumoTokenDeploymentTime = await contracts.kumoToken.getDeploymentStartTime();

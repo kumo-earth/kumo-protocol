@@ -50,6 +50,19 @@ const generateRandomAccounts = (numberOfAccounts: number) => {
   return accounts;
 };
 
+const generateAccountArray = (numberOfAccounts: number, accounts: {
+  privateKey: string;
+  balance: string;
+}[]) => {
+  const accountArray = new Array<string>(numberOfAccounts);
+  for (let i = 0; i < numberOfAccounts; ++i) {
+    accountArray[i] = accounts[i].privateKey;
+  }
+
+  return accountArray;
+
+}
+
 const deployerAccount = process.env.DEPLOYER_PRIVATE_KEY || Wallet.createRandom().privateKey;
 const devChainRichAccount = "0x4d5db4107d237df6a3d58ee5f70ae63d73d7658d4026f2eefd2f204c81682cb7";
 
@@ -87,7 +100,7 @@ const wethAddresses = {
 const hasWETH = (network: string): network is keyof typeof wethAddresses => network in wethAddresses;
 
 const config: HardhatUserConfig = {
-  defaultNetwork: "dev",
+  // defaultNetwork: "dev",
   networks: {
     hardhat: {
       accounts: accounts.slice(0, numAccounts),
@@ -104,7 +117,7 @@ const config: HardhatUserConfig = {
 
     dev: {
       url: "http://localhost:8545",
-      accounts: [accounts[0].privateKey, accounts[1].privateKey, accounts[2].privateKey],
+      accounts: generateAccountArray(3, accounts),
       allowUnlimitedContractSize: true
     },
 
@@ -140,6 +153,7 @@ const getContractFactory: (
     }
     : env => env.ethers.getContractFactory;
 
+
 extendEnvironment(env => {
   env.deployKumo = async (
     deployer,
@@ -152,6 +166,7 @@ extendEnvironment(env => {
       getContractFactory(env),
       !useRealPriceFeed,
       env.network.name === "dev",
+      await env.ethers.getSigners(),
       wethAddress,
       overrides
     );
