@@ -69,13 +69,8 @@ interface ITroveManager is IKumoBase {
     );
     // event TroveUpdated(address indexed _borrower, uint256 _debt, uint256 _coll, uint256 stake, uint8 operation);
     // event TroveLiquidated(address indexed _borrower, uint256 _debt, uint256 _coll, uint8 operation);
-    event BaseRateUpdated(uint256 _baseRate);
-    event LastFeeOpTimeUpdated(uint256 _lastFeeOpTime);
-    event TotalStakesUpdated(uint256 _newTotalStakes);
-    event SystemSnapshotsUpdated(uint256 _totalStakesSnapshot, uint256 _totalCollateralSnapshot);
     event LTermsUpdated(uint256 _L_ETH, uint256 _L_KUSDDebt);
     event TroveSnapshotsUpdated(address indexed _asset, uint256 _L_ETH, uint256 _L_KUSDDebt);
-    event TroveIndexUpdated(address _borrower, uint256 _newIndex);
     event TotalStakesUpdated(address indexed _asset, uint256 _newTotalStakes);
     event SystemSnapshotsUpdated(
         address indexed _asset,
