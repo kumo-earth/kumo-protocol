@@ -1221,7 +1221,7 @@ describe("EthersKumo", () => {
     });
   });
 
-  describe("Gas estimation - TEST", () => {
+  describe("Gas estimation", () => {
     const troveWithICRBetween = (a: Trove, b: Trove) => a.add(b).multiply(0.5);
 
     let rudeUser: Signer;
@@ -1425,7 +1425,7 @@ describe("EthersKumo", () => {
     });
   });
 
-  describe("Gas estimation fee decay - TEST", () => {
+  describe("Gas estimation fee decay", () => {
     before(async function () {
       if (network.name !== "hardhat") {
         this.skip();
@@ -1485,24 +1485,20 @@ describe("EthersKumo", () => {
         sortedBy: "ascendingCollateralRatio"
       });
 
-      console.log("bottomTrove: ", bottomTrove)
       const borrowingRate = await kumo.getFees(mockAssetAddress1).then(fees => fees.borrowingRate());
 
       for (const [borrowingFeeDecayToleranceMinutes, roughGasHeadroom] of [
-        [10, 127000],
-        [20, 240000],
-        [30, 319000]
+        [10, 133000],
+        [20, 251000],
+        [30, 335000]
       ]) {
         const tx = await kumo.populate.openTrove(
           Trove.recreate(bottomTrove, borrowingRate),
           mockAssetAddress1,
           {
             borrowingFeeDecayToleranceMinutes
-          },
-          { gasLimit }
+          }
         );
-        console.log("+++++++++++++++++++++++")
-        console.log(tx.gasHeadroom)
         expect(tx.gasHeadroom).to.be.within(roughGasHeadroom - 1000, roughGasHeadroom + 1000);
       }
     });
