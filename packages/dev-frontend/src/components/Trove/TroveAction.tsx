@@ -9,7 +9,6 @@ type TroveActionProps = {
   transactionId: string;
   change: Exclude<TroveChange<Decimal>, { type: "invalidCreation" }>;
   asset?: string;
-  tokenAmount?: Decimal;
   maxBorrowingRate: Decimal;
   borrowingFeeDecayToleranceMinutes: number;
 };
@@ -19,7 +18,6 @@ export const TroveAction: React.FC<TroveActionProps> = ({
   transactionId,
   change,
   asset = "",
-  tokenAmount = Decimal.from(0),
   maxBorrowingRate,
   borrowingFeeDecayToleranceMinutes
 }) => {
@@ -28,13 +26,13 @@ export const TroveAction: React.FC<TroveActionProps> = ({
   const [sendTransaction] = useTransactionFunction(
     transactionId,
     change.type === "creation"
-      ? liquity.send.openTrove.bind(liquity.send, change.params, asset, tokenAmount, {
-          maxBorrowingRate,
-          borrowingFeeDecayToleranceMinutes
-        })
+      ? liquity.send.openTrove.bind(liquity.send, change.params, asset, {
+        maxBorrowingRate,
+        borrowingFeeDecayToleranceMinutes
+      })
       : change.type === "closure"
-      ? liquity.send.closeTrove.bind(liquity.send, asset)
-      : liquity.send.adjustTrove.bind(liquity.send, change.params, asset, {
+        ? liquity.send.closeTrove.bind(liquity.send, asset)
+        : liquity.send.adjustTrove.bind(liquity.send, change.params, asset, {
           maxBorrowingRate,
           borrowingFeeDecayToleranceMinutes
         })
