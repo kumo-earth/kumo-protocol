@@ -4,6 +4,9 @@ import { Wallet } from "@ethersproject/wallet";
 
 import { Decimal } from "@kumodao/lib-base";
 
+import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
+
+
 import {
   _KumoContractAddresses,
   _KumoContracts,
@@ -12,6 +15,8 @@ import {
 } from "../src/contracts";
 
 import { createUniswapV2Pair } from "./UniswapV2Factory";
+
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 let silent = true;
 
@@ -303,6 +308,12 @@ const connectContracts = async (
       unipool.setParams(kumoToken.address, uniToken.address, 2 * 30 * 24 * 60 * 60, {
         ...overrides,
         nonce
+      }),
+
+    nonce =>
+      kumoParameters.setAddresses(activePool.address, defaultPool.address, priceFeed.address, stabilityPool.address, {
+        ...overrides,
+        nonce
       })
   ];
 
@@ -375,9 +386,20 @@ const addNewAssetToSystem = async (
   await sortedTroves.addNewAsset(mockAsset1.address)
 
 
+  // let accounts: Signer[];
+  // [...accounts] = await ethers.getSigners();
+  // await mockAsset1.mint(await accounts[0].getAddress(), 10000000000000000000000000000)
 
 
 }
+
+
+// Mint token to each acccount
+const mintMockAsset1 = async (signers: SignerWithAddress[], { mockAsset1 }: _KumoContracts) => {
+  for (let i = 0; i < signers.length; ++i) {
+    await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000"))
+  }
+};
 
 
 
@@ -387,6 +409,7 @@ export const deployAndSetupContracts = async (
   getContractFactory: (name: string, signer: Signer) => Promise<ContractFactory>,
   _priceFeedIsTestnet = true,
   _isDev = true,
+  signers: SignerWithAddress[],
   wethAddress?: string,
   overrides?: Overrides
 ): Promise<_KumoDeploymentJSON> => {
@@ -432,6 +455,9 @@ export const deployAndSetupContracts = async (
 
   log("Add Asset to the system...")
   await addNewAssetToSystem(contracts, deployer, overrides);
+
+  log("Mint MockAsset token...")
+  await mintMockAsset1(signers, contracts);
 
 
   const kumoTokenDeploymentTime = await contracts.kumoToken.getDeploymentStartTime();

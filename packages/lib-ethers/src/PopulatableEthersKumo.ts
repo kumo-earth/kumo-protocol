@@ -963,7 +963,7 @@ export class PopulatableEthersKumo
     const { depositCollateral, withdrawCollateral, borrowKUSD, repayKUSD } = normalizedParams;
 
     const [trove, feeVars] = await Promise.all([
-      this._readable.getTrove(address),
+      this._readable.getTrove(asset, address),
       borrowKUSD &&
       promiseAllValues({
         fees: this._readable._getFeesFactory(asset),
@@ -993,13 +993,13 @@ export class PopulatableEthersKumo
 
     const txParams = (borrowKUSD?: Decimal): Parameters<typeof borrowerOperations.adjustTrove> => [
       asset,
-      BigNumber.from(depositCollateral?.hex),
+      (depositCollateral ?? Decimal.ZERO).hex,
       maxBorrowingRate.hex,
       (withdrawCollateral ?? Decimal.ZERO).hex,
       (borrowKUSD ?? repayKUSD ?? Decimal.ZERO).hex,
       !!borrowKUSD,
       ...hints,
-      { value: depositCollateral?.hex, ...overrides }
+      { ...overrides }
     ];
 
     let gasHeadroom: number | undefined;

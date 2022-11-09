@@ -16,19 +16,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_baseRate",
-        "type": "uint256"
-      }
-    ],
-    "name": "BaseRateUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": true,
         "internalType": "address",
         "name": "_asset",
@@ -152,19 +139,6 @@
       }
     ],
     "name": "LTermsUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_lastFeeOpTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "LastFeeOpTimeUpdated",
     "type": "event"
   },
   {
@@ -322,6 +296,12 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "_totalStakesSnapshot",
@@ -349,68 +329,11 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_totalStakesSnapshot",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_totalCollateralSnapshot",
-        "type": "uint256"
-      }
-    ],
-    "name": "SystemSnapshotsUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
         "name": "_newTotalStakes",
         "type": "uint256"
       }
     ],
     "name": "TotalStakesUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_asset",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_newTotalStakes",
-        "type": "uint256"
-      }
-    ],
-    "name": "TotalStakesUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_borrower",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_newIndex",
-        "type": "uint256"
-      }
-    ],
-    "name": "TroveIndexUpdated",
     "type": "event"
   },
   {

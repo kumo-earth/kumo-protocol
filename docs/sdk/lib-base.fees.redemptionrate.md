@@ -35,8 +35,8 @@ To calculate the redemption fee in KUSD, multiply the redeemed KUSD amount with 
 
 
 ```typescript
-const fees = await liquity.getFees();
-const total = await liquity.getTotal();
+const fees = await kumo.getFees();
+const total = await kumo.getTotal();
 
 const redeemedKUSDAmount = Decimal.from(100);
 const redeemedFractionOfSupply = redeemedKUSDAmount.div(total.debt);

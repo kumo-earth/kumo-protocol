@@ -1940,7 +1940,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         assert(decayedBaseRate <= DECIMAL_PRECISION); // The baseRate can decay to 0
 
         baseRate[_asset] = decayedBaseRate;
-        emit BaseRateUpdated(decayedBaseRate);
+        emit BaseRateUpdated(_asset, decayedBaseRate);
 
         _updateLastFeeOpTime(_asset);
     }
