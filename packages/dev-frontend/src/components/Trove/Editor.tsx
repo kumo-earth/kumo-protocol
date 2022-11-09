@@ -23,6 +23,7 @@ export const Row: React.FC<RowProps> = ({ sx, label, labelId, labelFor, children
           position: "absolute",
 
           fontSize: 1,
+          fontWeight: 'bold',
           border: 1,
           borderColor: "transparent"
         }}

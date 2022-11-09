@@ -29,21 +29,18 @@ export const StabilityPoolStaking: React.FC = () => {
 
   const totalCollateralRatioPct = new Percent(total.collateralRatio(price));
   return (
-    <Grid
-      sx={{
-        width: "100%",
-        display: "grid",
-        gridGap: 2,
-        gridTemplateColumns: `repeat(auto-fill, minmax(400px, 1fr))`,
-        height: "100%"
-      }}
-    >
+    <Grid sx={{ p: 6, gridGap: 4, gridTemplateColumns: ["auto-fill", "1fr 1fr"] }}>
       <StabilityPoolStakingCard
         stakingType={"stability"}
+        title="Stability Pool Staking"
+        description="Stability pools play a critical role in the systems’ 
+        liquidation process as KUSD from the stability pool are used toward liquidations."
         totalCollateralRatioPct={totalCollateralRatioPct.prettify()}
         total={total}
       />
       <StabilityPoolStakingCard
+        title="Liquidity Mining"
+        description="Help bootstrap the Vesta ecosystem by providing and staking liquidity to receive rewards."
         stakingType={"liquidity"}
         totalCollateralRatioPct={totalCollateralRatioPct.prettify()}
         total={total}

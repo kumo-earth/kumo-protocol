@@ -161,7 +161,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
               ownFrontend: { status: "unregistered" as const }
             })
       });
-
+    console.log("blockedPolledStore2", { ...baseState });
     return [
       {
         ...baseState,

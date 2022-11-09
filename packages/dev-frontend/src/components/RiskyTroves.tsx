@@ -14,6 +14,7 @@ import { useKumoSelector } from "@kumodao/lib-react";
 
 import { shortenAddress } from "../utils/shortenAddress";
 import { useKumo } from "../hooks/KumoContext";
+import { useDashboard } from "../hooks/DashboardContext";
 import { COIN } from "../strings";
 
 import { Icon } from "./Icon";
@@ -74,6 +75,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
     price
   } = useKumoSelector(select);
   const { kumo } = useKumo();
+  const { vaults, bctPrice, mco2Price } = useDashboard();
 
   const [loading, setLoading] = useState(true);
   const [troves, setTroves] = useState<UserTrove[]>();
@@ -313,7 +315,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
                           >
                             {new Percent(collateralRatio).prettify()}
                           </Text>
-                        ))(trove.collateralRatio(price))}
+                        )) (trove.collateralRatio(bctPrice))}
                       </td>
                       <td>
                         <Transaction

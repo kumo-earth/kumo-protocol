@@ -139,7 +139,7 @@ export const Opening: React.FC = () => {
 
   return (
     <Card variant="base">
-      <Heading>
+      <Heading as="h2">
         {getPathName(location).toUpperCase()} Trove
         {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>

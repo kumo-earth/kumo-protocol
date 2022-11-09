@@ -18,7 +18,7 @@ export const NoTrove: React.FC = props => {
 
   return (
     <Card variant="base" sx={{ width: "100%" }}>
-      <Heading>{getPathName(location).toUpperCase()} Trove</Heading>
+      <Heading  as='h2'>{getPathName(location).toUpperCase()} Trove</Heading>
       <Box sx={{ p: [2, 3] }}>
         <InfoMessage title="You haven't borrowed any KUSD yet.">
           You can borrow KUSD by opening a Trove.

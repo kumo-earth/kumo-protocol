@@ -86,7 +86,6 @@ const cardGapY = [3, 3, 4];
 
 const card: ThemeUIStyleObject = {
   position: "relative",
-  mt: ["0 !important"],
   border: 1,
   boxShadow: [1, null, 2]
 };
@@ -148,23 +147,24 @@ const headerGradient: ThemeUIStyleObject = {
 const theme: Theme = {
   breakpoints: ["48em", "52em", "64em"],
 
-  space: [0, 4, 8, 16, 32, 64, 128, 256, 512],
+  space: [0, 4, 8, 16, 24, 30, 32, 48, 64, 128, 256, 512],
 
   fonts: {
     body: [
+      '"Roboto"',
+      '"Helvetica"',
+      '"Helvetica Neue"',
       "system-ui",
       "-apple-system",
       "BlinkMacSystemFont",
       '"Segoe UI"',
-      "Roboto",
-      '"Helvetica Neue"',
       "sans-serif"
     ].join(", "),
-    heading: "inherit",
+    heading: "Quicksand",
     monospace: "Menlo, monospace"
   },
 
-  fontSizes: [12, 14, 16, 20, 24, 32, 48, 64, 96],
+  fontSizes: [12, 14, 16, 18, 20, 22, 24, 26, 28, 32, 36, 48, 64, 96],
 
   fontWeights: {
     body: 400,
@@ -172,7 +172,7 @@ const theme: Theme = {
 
     light: 200,
     medium: 500,
-    bold: 700
+    bold: 600
   },
 
   lineHeights: {
@@ -187,15 +187,23 @@ const theme: Theme = {
   shadows: ["0", "0px 4px 8px rgba(41, 49, 71, 0.1)", "0px 8px 16px rgba(41, 49, 71, 0.1)"],
 
   text: {
+    heading: {
+      fontFamily: "heading",
+      fontWeight: "heading",
+      lineHeight: "heading"
+    },
+    textBold: {
+      fontWeight: "bold"
+    },
     address: {
       fontFamily: "monospace",
       fontSize: 1
     }
   },
-  
-  images : {
+
+  images: {
     primary: {
-      cursor: 'pointer'
+      cursor: "pointer"
     }
   },
 
@@ -277,8 +285,7 @@ const theme: Theme = {
 
         fontSize: 3,
         fontWeight: "bold"
-      },
-      
+      }
     },
 
     info: {
@@ -299,7 +306,7 @@ const theme: Theme = {
       overflowY: "scroll"
     },
     base: {
-      variant: 'cards.primary',
+      variant: "cards.primary",
       bg: "transparent",
       boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
       borderRadius: "20px",
@@ -308,8 +315,34 @@ const theme: Theme = {
       position: "relative",
 
       "> h2": {
-        variant: 'cards.primary.> h2',
-        borderBottom: "1px solid #E6E6E6"
+        variant: "cards.primary.> h2",
+        fontSize: 6,
+        borderBottom: 1,
+        borderColor: "muted"
+      }
+    },
+
+    collateralCard: {
+      variant: "cards.base",
+      ":hover": {
+        cursor: "pointer",
+        transform: "translateY(-3px)",
+        backdropFilter: "blur(30px) !important",
+        boxShadow: "rgb(218 53 122 / 37%) 0px 5px 10px !important",
+        transition: "box-shadow 5ms ease 0s !important"
+      }
+    },
+    StabilityPoolStakingCard: {
+      variant: "cards.base",
+      border: "none",
+      borderRadius: "20px",
+      height: "max-content",
+      ":hover": {
+        cursor: "pointer",
+        transform: "translateY(-3px)",
+        backdropFilter: "blur(30px) !important",
+        boxShadow: "rgb(218 53 122 / 37%) 0px 5px 10px !important",
+        transition: "box-shadow 5ms ease 0s !important"
       }
     },
 
@@ -349,19 +382,16 @@ const theme: Theme = {
 
     editor: {}
   },
-  
 
   layout: {
     header: {
       display: "flex",
       justifyContent: "space-between",
-      alignItems: "stretch",
-
-      pt: 4,
+      alignItems: "center",
       pl: 5,
-      
       height: "110px",
-      // ...headerGradient,
+      borderBottom: 1,
+      borderColor: "muted",
       boxShadow: [1, "none"]
     },
 
@@ -381,7 +411,9 @@ const theme: Theme = {
       height: "calc(100vh - 110px)",
       width: "100%",
       overflow: "auto",
-      px: 5
+      "::-webkit-scrollbar": {
+        display: "none"
+      }
     },
 
     columns: {
@@ -404,7 +436,8 @@ const theme: Theme = {
       mt: 2,
 
       button: {
-        ml: 2
+        p: 2,
+        minWidth: "64px"
       }
     },
 
@@ -450,17 +483,18 @@ const theme: Theme = {
       border: 1,
       borderColor: "muted",
       height: "100%",
-      width: "20vw"
+      width: "20vw",
+      flexDirection: "column"
     },
     sideBar: {
       display: "flex",
       flexDirection: "column"
     },
     sideBarLogo: {
+      display: "flex",
+      alignItems: "center",
       pl: 4,
-      pt: 4,
-      height: "110px",
-      
+      height: "110px"
     },
     sideBarNav: {
       display: "flex",
@@ -523,10 +557,9 @@ const theme: Theme = {
   links: {
     nav: {
       py: 2,
-      fontWeight: 700,
+      fontWeight: 800,
       fontSize: 2,
       textTransform: "uppercase",
-      letterSpacing: "2px",
       width: ["100%", "auto"],
       mt: [3, "auto"]
     }

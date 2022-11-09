@@ -1,27 +1,67 @@
-import { Grid, Flex } from "theme-ui";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+
+import { Grid, Flex, Heading, Box } from "theme-ui";
+
 import { Trove } from "../components/Trove/Trove";
 import { Stability } from "../components/Stability/Stability";
-import { SystemStats } from "../components/SystemStats"
-import { PriceManager } from "../components/PriceManager";
+import { AssetStats } from "../components/AssetStats";
+import { useDashboard } from "../hooks/DashboardContext";
+import { useDialogState, Dialog } from "reakit/Dialog";
+import { StakingCardV1 } from "../components/StakingCardV1/StakingCardV1";
+
+const style = {
+  top: "45%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 470,
+  // bgcolor: "background.paper",
+  bgcolor: "white",
+  border: "none",
+  boxShadow: 24,
+  p: 0
+};
 
 export const Collateral: React.FC = () => {
+  const dialog = useDialogState();
+  const { vaults } = useDashboard();
+  const [stakeDeposit, setStakeDeposit] = useState(false);
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const vault = vaults.find(vault => vault.type === collateralType);
+
   return (
     <Grid
       columns={[2, "1fr 1fr"]}
       sx={{
         width: "100%",
         gridGap: 2,
-        py: 5
+        p: 5
       }}
     >
-      <Flex sx={{ height: "max-content", width: "95%" }}>
+      <Flex sx={{ height: "max-content", width: "95%", mt: 6  }}>
         <Trove />
       </Flex>
-      <Flex sx={{ flexDirection: "column", width: "95%"  }}>
-        <SystemStats />
-        <Stability />
-        <PriceManager />
+
+      <Flex sx={{ flexDirection: "column", width: "95%" }}>
+        <Heading sx={{ mb: 3 }}>System Overview</Heading>
+        <AssetStats />
+        <Heading sx={{ my: 3, mt: 5 }}>Stability Pool</Heading>
+        <StakingCardV1
+          key={vault?.type}
+          vault={vault}
+          handleViewStakeDeposit={() => {
+            setStakeDeposit(true);
+            dialog.setVisible(true);
+          }}
+        />
       </Flex>
+      {stakeDeposit && (
+        <Dialog {...dialog}>
+          <Box sx={{ ...style, position: "absolute" }}>
+            <Stability />
+          </Box>
+        </Dialog>
+      )}
     </Grid>
   );
 };

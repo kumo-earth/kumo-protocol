@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 
-const  getSessionStorageOrDefault = (key: string, defaultValue: boolean) => {
+const getSessionStorageOrDefault = (key: string, defaultValue: boolean) => {
   const stored = sessionStorage.getItem(key);
   if (!stored) {
     return defaultValue;
   }
   return JSON.parse(stored);
-}
+};
 
 export const useViewSafetyBanner = () => {
   const [changeInProgress, setChangeInProgress] = useState(300);
@@ -18,14 +18,18 @@ export const useViewSafetyBanner = () => {
   }, [isDomainSafetyCheck]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setChangeInProgress(changeInProgress - 1);
-      if (changeInProgress <= 0) {
-        setIsDomainSafetyCheck(true);
-      }
-    }, 10);
-    return () => clearInterval(interval);
-  }, [changeInProgress]);
+    if (!isDomainSafetyCheck) {
+      const interval = setInterval(() => {
+        if (changeInProgress > 0) {
+          setChangeInProgress(changeInProgress - 1);
+        }
+        if (changeInProgress === 0) {
+          setIsDomainSafetyCheck(true);
+        }
+      }, 10);
+      return () => clearInterval(interval);
+    }
+  }, [changeInProgress, isDomainSafetyCheck]);
 
   return { isDomainSafetyCheck, changeInProgress };
 };

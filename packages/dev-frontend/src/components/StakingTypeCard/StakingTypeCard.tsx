@@ -24,10 +24,6 @@ export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
 
   return (
     <Card
-      sx={{
-        maxWidth: 450,
-        maxHeight: 390
-      }}
       variant="base"
       onClick={handleViewStakeDeposit}
     >
@@ -40,7 +36,7 @@ export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
         {vault?.type?.toUpperCase()} Stability Pool Staking
       </Heading>
 
-      <Box sx={{ px: 4 }}>
+      <Box sx={{ p: 4 }}>
         <Flex sx={{ justifyContent: "space-between", alignItems: "center", mt: 4 }}>
           <Heading as="h6">APR</Heading>
           <Heading as="h6">Total KUSD In Pool</Heading>

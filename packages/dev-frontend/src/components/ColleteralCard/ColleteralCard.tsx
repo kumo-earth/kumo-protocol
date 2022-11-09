@@ -1,7 +1,7 @@
 import { Decimal, UserTrove } from "@kumodao/lib-base";
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { Flex, Progress, Box, Card, Heading } from "theme-ui";
+import { Flex, Progress, Box, Card, Text, Heading } from "theme-ui";
 import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 
@@ -37,7 +37,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
     history.push(`/dashboard/${collateralType}`);
   };
   return (
-    <Card variant="base" sx={{ mb: 5 }} onClick={() => handleClick()}>
+    <Card variant="collateralCard" sx={{ mb: 5 }} onClick={() => handleClick()}>
       {/* {!account && (
         <Flex
           sx={{
@@ -59,19 +59,20 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
       </Heading>
 
       <Box sx={{ px: 4 }}>
-        <Heading as="h4" sx={{mt: 4}}>SYSTEM COLLATERALL RATIO</Heading>
-        <Heading
-          as="h2"
-          sx={{mt: 1}}
-        >
+        <Heading as="h4" sx={{ mt: 4 }}>
+          SYSTEM COLLATERALL RATIO
+        </Heading>
+        <Heading as="h1" sx={{ mt: 1 }}>
           {totalCollateralRatioPct}
         </Heading>
         <Flex sx={{ justifyContent: "space-between", mt: 4 }}>
-          <Heading as="h4">COLLATERAL</Heading>
-          <Heading as="h4">
+          <Text as="p" sx={{ fontWeight: "bold" }}>
+            COLLATERAL
+          </Text>
+          <Text as="p" sx={{ fontWeight: "bold" }}>
             {collateral.prettify(2)}{" "}
             {(collateralType === "bct" && "BCT") || (collateralType === "mco2" && "MCO2")}
-          </Heading>
+          </Text>
         </Flex>
         <Box sx={{ my: 2 }}>
           <Progress
@@ -81,8 +82,13 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
           ></Progress>
         </Box>
         <Flex sx={{ justifyContent: "space-between", mb: 4 }}>
-          <Heading as="h4">MINTED KUSD</Heading>
-          <Heading as="h4">{debt.prettify(2)} KUSD</Heading>
+          <Text as="p" sx={{ fontWeight: "bold" }}>
+            MINTED KUSD
+          </Text>
+          <Text as="p" sx={{ fontWeight: "bold" }}>
+            {" "}
+            KUSD
+          </Text>
         </Flex>
       </Box>
     </Card>

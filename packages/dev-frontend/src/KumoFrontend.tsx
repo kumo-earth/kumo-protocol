@@ -6,7 +6,6 @@ import { Wallet } from "@ethersproject/wallet";
 import { Decimal, Difference, Trove } from "@kumodao/lib-base";
 import { KumoStoreProvider } from "@kumodao/lib-react";
 
-import { useViewSafetyBanner } from "./hooks/viewSafetyBanner";
 import { useKumo } from "./hooks/KumoContext";
 import { useWalletView } from "./components/WalletConnect/context/WalletViewContext";
 import { useSwitchNetworkView } from "./components/SwitchNetwork/context/SwitchNetworkViewContext";
@@ -36,6 +35,9 @@ import { DomainSafetyBanner } from "./components/DomainSafetyBanner";
 
 import appBackground from "./asset/images/appBackground.svg";
 import UserView from "./components/UserView";
+import { Portfolio } from "./pages/Portfolio";
+import { Stats } from "./pages/stats";
+import { LiquidityStaking } from "./pages/LiquidityStaking";
 
 type KumoFrontendProps = {
   loader?: React.ReactNode;
@@ -45,8 +47,7 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
   const { provider, kumo } = useKumo();
   const { view } = useWalletView();
   const { view: switchNetworkView } = useSwitchNetworkView();
-  const { isDomainSafetyCheck, changeInProgress } = useViewSafetyBanner();
-
+    
   // For console tinkering ;-)
   Object.assign(window, {
     account,
@@ -58,6 +59,7 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
     Wallet
   });
 
+  console.log("blockedPolledStore1", kumo.store);
   return (
     <KumoStoreProvider {...{ loader }} store={kumo.store}>
       <Router>
@@ -66,8 +68,7 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
             <StabilityViewProvider>
               <StakingViewProvider>
                 <FarmViewProvider>
-                  {!isDomainSafetyCheck && <DomainSafetyBanner changeInProgress={changeInProgress} />}
-
+                  <DomainSafetyBanner />
                   <Flex
                     sx={{
                       flexWrap: "wrap",
@@ -100,20 +101,31 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                         {switchNetworkView === "OPEN" && <SwitchNetworkModal />}{" "}
                         <Switch>
                           <Redirect from="/" to="/dashboard" exact />
+                          <Redirect from="/stats" to="/stats/protocol" exact />
+
                           <Route path="/dashboard"  exact>
                             <PageSwitcher />
                           </Route>
                           <Route path="/dashboard/:collateralType" exact>
                             <Collateral />
                           </Route>
+                          <Route path="/portfolio" exact>
+                            <Portfolio />
+                          </Route>
                           <Route path="/staking" exact>
                             <StabilityPoolStaking />
+                          </Route>
+                          <Route path="/staking/liquidity" exact>
+                            <LiquidityStaking />
                           </Route>
                           <Route path="/staking/:stakingType" exact>
                             <StakingType />
                           </Route>
                           <Route path="/staking/:stakingType/:modalType" exact>
                             <StakingType />
+                          </Route>
+                          <Route path="/stats/:statsType" exact>
+                            <Stats />
                           </Route>
                           <Route path="/farm">
                             <Farm />

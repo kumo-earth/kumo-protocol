@@ -1,23 +1,18 @@
-import { Box, Flex, Heading } from "theme-ui";
+import { Box, Flex, Text, Heading } from "theme-ui";
 
 type DashboadHeaderItemProps = React.ComponentProps<typeof Box> & {
   title: string;
   value: string;
+  fontSize?: number;
 };
 
-export const DashboadHeaderItem: React.FC<DashboadHeaderItemProps> = ({ title, value }) => (
-  <Box sx={{ paddingTop: "12px" }}>
+export const DashboadHeaderItem: React.FC<DashboadHeaderItemProps> = ({ title, value, fontSize }) => (
+  <Box sx={{ pt: "12px" }}>
     <Flex sx={{ flexDirection: "column", mr: 5 }}>
-      <Heading
-        as="h4"
-    
-      >
+      <Text as="p" variant="textBold">
         {title}
-      </Heading>
-      <Heading
-        as="h1"
-        sx={{ fontWeight: "bold", mt: 1 }}
-      >
+      </Text>
+      <Heading as="h1" sx={{ mt: 1, fontSize }}>
         {value}
       </Heading>
     </Flex>
