@@ -39,31 +39,33 @@ const debounce = (listener: (latestBlock: number) => void) => {
 /** @alpha */
 export class ObservableEthersKumo implements ObservableKumo {
   private readonly _readable: ReadableEthersKumo;
+  private readonly _asset: string;
 
   constructor(readable: ReadableEthersKumo) {
     this._readable = readable;
+    this._asset = "MCO2";
   }
 
   watchTotalRedistributed(
     onTotalRedistributedChanged: (totalRedistributed: Trove) => void
   ): () => void {
     const { activePool, defaultPool } = _getContracts(this._readable.connection);
-    const etherSent = activePool.filters.EtherSent();
+    const assetSent = activePool.filters.AssetSent();
 
     const redistributionListener = debounce((blockTag: number) => {
-      this._readable.getTotalRedistributed({ blockTag }).then(onTotalRedistributedChanged);
+      this._readable.getTotalRedistributed(this._asset,{ blockTag }).then(onTotalRedistributedChanged);
     });
 
-    const etherSentListener = (toAddress: string, _amount: BigNumber, event: Event) => {
+    const assetSentListener = (toAddress: string, _amount: BigNumber, event: Event) => {
       if (toAddress === defaultPool.address) {
         redistributionListener(event);
       }
     };
 
-    activePool.on(etherSent, etherSentListener);
+    activePool.on(assetSent, assetSentListener);
 
     return () => {
-      activePool.removeListener(etherSent, etherSentListener);
+      activePool.removeListener(assetSent, assetSentListener);
     };
   }
 
@@ -78,7 +80,7 @@ export class ObservableEthersKumo implements ObservableKumo {
     const troveUpdatedByBorrowerOperations = borrowerOperations.filters.TroveUpdated(address);
 
     const troveListener = debounce((blockTag: number) => {
-      this._readable.getTroveBeforeRedistribution(address, { blockTag }).then(onTroveChanged);
+      this._readable.getTroveBeforeRedistribution(this._asset,address, { blockTag }).then(onTroveChanged);
     });
 
     troveManager.on(troveUpdatedByTroveManager, troveListener);
@@ -96,7 +98,7 @@ export class ObservableEthersKumo implements ObservableKumo {
     const troveUpdated = TroveUpdated();
 
     const troveUpdatedListener = debounce((blockTag: number) => {
-      this._readable.getNumberOfTroves({ blockTag }).then(onNumberOfTrovesChanged);
+      this._readable.getNumberOfTroves("MCO2", { blockTag }).then(onNumberOfTrovesChanged);
     });
 
     troveManager.on(troveUpdated, troveUpdatedListener);
@@ -120,7 +122,7 @@ export class ObservableEthersKumo implements ObservableKumo {
     const troveUpdated = TroveUpdated();
 
     const totalListener = debounce((blockTag: number) => {
-      this._readable.getTotal({ blockTag }).then(onTotalChanged);
+      this._readable.getTotal(this._asset, { blockTag }).then(onTotalChanged);
     });
 
     troveManager.on(troveUpdated, totalListener);
@@ -138,16 +140,16 @@ export class ObservableEthersKumo implements ObservableKumo {
 
     const { activePool, stabilityPool } = _getContracts(this._readable.connection);
     const { UserDepositChanged } = stabilityPool.filters;
-    const { EtherSent } = activePool.filters;
+    const { AssetSent } = activePool.filters;
 
     const userDepositChanged = UserDepositChanged(address);
-    const etherSent = EtherSent();
+    const assetSent = AssetSent();
 
     const depositListener = debounce((blockTag: number) => {
       this._readable.getStabilityDeposit(address, { blockTag }).then(onStabilityDepositChanged);
     });
 
-    const etherSentListener = (toAddress: string, _amount: BigNumber, event: Event) => {
+    const assetSentListener = (toAddress: string, _amount: BigNumber, event: Event) => {
       if (toAddress === stabilityPool.address) {
         // Liquidation while Stability Pool has some deposits
         // There may be new gains
@@ -156,11 +158,11 @@ export class ObservableEthersKumo implements ObservableKumo {
     };
 
     stabilityPool.on(userDepositChanged, depositListener);
-    activePool.on(etherSent, etherSentListener);
+    activePool.on(assetSent, assetSentListener);
 
     return () => {
       stabilityPool.removeListener(userDepositChanged, depositListener);
-      activePool.removeListener(etherSent, etherSentListener);
+      activePool.removeListener(assetSent, assetSentListener);
     };
   }
 

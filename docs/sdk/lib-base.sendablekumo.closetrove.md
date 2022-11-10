@@ -9,8 +9,15 @@ Close existing Trove by repaying all debt and withdrawing all collateral.
 <b>Signature:</b>
 
 ```typescript
-closeTrove(): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveClosureDetails>>>;
+closeTrove(asset: string): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveClosureDetails>>>;
 ```
+
+## Parameters
+
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  asset | string |  |
+
 <b>Returns:</b>
 
 Promise&lt;[SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, [TroveClosureDetails](./lib-base.troveclosuredetails.md)<!-- -->&gt;&gt;&gt;

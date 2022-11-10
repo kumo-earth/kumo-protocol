@@ -9,13 +9,14 @@ Get a slice from the list of Troves.
 <b>Signature:</b>
 
 ```typescript
-getTroves(params: TroveListingParams): Promise<UserTrove[]>;
+getTroves(asset: string, params: TroveListingParams): Promise<UserTrove[]>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  asset | string |  |
 |  params | [TroveListingParams](./lib-base.trovelistingparams.md) | Controls how the list is sorted, and where the slice begins and ends. |
 
 <b>Returns:</b>

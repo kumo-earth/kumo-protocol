@@ -26,13 +26,13 @@ import "../Dependencies/console.sol";
 */
 
 contract LockupContractFactory is ILockupContractFactory, Ownable, CheckContract {
-    using SafeMath for uint;
+    using SafeMath for uint256;
 
 	// bool public isInitialized;
     // --- Data ---
     string constant public NAME = "LockupContractFactory";
 
-    uint constant public SECONDS_IN_ONE_YEAR = 31536000;
+    uint256 constant public SECONDS_IN_ONE_YEAR = 31536000;
 
     address public kumoTokenAddress;
     
@@ -41,7 +41,7 @@ contract LockupContractFactory is ILockupContractFactory, Ownable, CheckContract
     // --- Events ---
 
     // event KUMOTokenAddressSet(address _kumoTokenAddress);
-    // event LockupContractDeployedThroughFactory(address _lockupContractAddress, address _beneficiary, uint _unlockTime, address _deployer);
+    // event LockupContractDeployedThroughFactory(address _lockupContractAddress, address _beneficiary, uint256 _unlockTime, address _deployer);
 
     // --- Functions ---
 
@@ -58,7 +58,7 @@ contract LockupContractFactory is ILockupContractFactory, Ownable, CheckContract
         _renounceOwnership();
     }
 
-    function deployLockupContract(address _beneficiary, uint _unlockTime) external override {
+    function deployLockupContract(address _beneficiary, uint256 _unlockTime) external override {
         address kumoTokenAddressCached = kumoTokenAddress;
         _requireKUMOAddressIsSet(kumoTokenAddressCached);
         LockupContract lockupContract = new LockupContract(

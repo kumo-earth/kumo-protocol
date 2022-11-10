@@ -59,7 +59,7 @@ export interface ReadableKumo {
    * @remarks
    * Needed when dealing with instances of {@link @kumodao/lib-base#TroveWithPendingRedistribution}.
    */
-  getTotalRedistributed(): Promise<Trove>;
+  getTotalRedistributed(asset: string): Promise<Trove>;
 
   /**
    * Get a Trove in its state after the last direct modification.
@@ -77,12 +77,12 @@ export interface ReadableKumo {
    *
    * @param address - Address that owns the Trove.
    */
-  getTrove(address?: string): Promise<UserTrove>;
+  getTrove(asset: string, address?: string): Promise<UserTrove>;
 
   /**
    * Get number of Troves that are currently open.
    */
-  getNumberOfTroves(): Promise<number>;
+  getNumberOfTroves(asset: string): Promise<number>;
 
   /**
    * Get the current price of the native currency (e.g. Ether) in USD.
@@ -92,7 +92,7 @@ export interface ReadableKumo {
   /**
    * Get the total amount of collateral and debt in the Kumo system.
    */
-  getTotal(): Promise<Trove>;
+  getTotal(asset: string): Promise<Trove>;
 
   /**
    * Get the current state of a Stability Deposit.
@@ -176,6 +176,7 @@ export interface ReadableKumo {
 
   /** @internal */
   getTroves(
+    asset: string,
     params: TroveListingParams & { beforeRedistribution: true }
   ): Promise<TroveWithPendingRedistribution[]>;
 
@@ -185,12 +186,12 @@ export interface ReadableKumo {
    * @param params - Controls how the list is sorted, and where the slice begins and ends.
    * @returns Pairs of owner addresses and their Troves.
    */
-  getTroves(params: TroveListingParams): Promise<UserTrove[]>;
+  getTroves(asset: string, params: TroveListingParams): Promise<UserTrove[]>;
 
   /**
    * Get a calculator for current fees.
    */
-  getFees(): Promise<Fees>;
+  getFees(asset: string): Promise<Fees>;
 
   /**
    * Get the current state of an KUMO Stake.

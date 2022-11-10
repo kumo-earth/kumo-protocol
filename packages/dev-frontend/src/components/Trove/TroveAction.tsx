@@ -8,6 +8,7 @@ import { useTransactionFunction } from "../Transaction";
 type TroveActionProps = {
   transactionId: string;
   change: Exclude<TroveChange<Decimal>, { type: "invalidCreation" }>;
+  asset?: string;
   maxBorrowingRate: Decimal;
   borrowingFeeDecayToleranceMinutes: number;
 };
@@ -16,6 +17,7 @@ export const TroveAction: React.FC<TroveActionProps> = ({
   children,
   transactionId,
   change,
+  asset = "",
   maxBorrowingRate,
   borrowingFeeDecayToleranceMinutes
 }) => {
@@ -24,13 +26,13 @@ export const TroveAction: React.FC<TroveActionProps> = ({
   const [sendTransaction] = useTransactionFunction(
     transactionId,
     change.type === "creation"
-      ? kumo.send.openTrove.bind(kumo.send, change.params, {
-          maxBorrowingRate,
-          borrowingFeeDecayToleranceMinutes
-        })
+      ? kumo.send.openTrove.bind(kumo.send, change.params, asset, {
+        maxBorrowingRate,
+        borrowingFeeDecayToleranceMinutes
+      })
       : change.type === "closure"
-      ? kumo.send.closeTrove.bind(kumo.send)
-      : kumo.send.adjustTrove.bind(kumo.send, change.params, {
+        ? kumo.send.closeTrove.bind(kumo.send, asset)
+        : kumo.send.adjustTrove.bind(kumo.send, change.params, asset, {
           maxBorrowingRate,
           borrowingFeeDecayToleranceMinutes
         })

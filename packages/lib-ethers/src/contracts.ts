@@ -23,6 +23,7 @@ import kumoTokenAbi from "../abi/KUMOToken.json";
 import hintHelpersAbi from "../abi/HintHelpers.json";
 import lockupContractFactoryAbi from "../abi/LockupContractFactory.json";
 import kumoStakingAbi from "../abi/KUMOStaking.json";
+import kumoParametersAbi from "../abi/KumoParameters.json";
 import multiTroveGetterAbi from "../abi/MultiTroveGetter.json";
 import priceFeedAbi from "../abi/PriceFeed.json";
 import priceFeedTestnetAbi from "../abi/PriceFeedTestnet.json";
@@ -32,6 +33,7 @@ import gasPoolAbi from "../abi/GasPool.json";
 import unipoolAbi from "../abi/Unipool.json";
 import iERC20Abi from "../abi/IERC20.json";
 import erc20MockAbi from "../abi/ERC20Mock.json";
+import erc20TestAbi from "../abi/ERC20Test.json"
 
 import {
   ActivePool,
@@ -53,7 +55,9 @@ import {
   GasPool,
   Unipool,
   ERC20Mock,
-  IERC20
+  IERC20,
+  KumoParameters,
+  ERC20Test
 } from "../types";
 
 import { EthersProvider, EthersSigner } from "./types";
@@ -72,8 +76,8 @@ export type _TypeSafeContract<T> = Pick<
   } extends {
     [_ in keyof T]: infer U;
   }
-    ? U
-    : never
+  ? U
+  : never
 >;
 
 type EstimatedContractFunction<R = unknown, A extends unknown[] = unknown[], O = Overrides> = (
@@ -88,31 +92,31 @@ type TypedContract<T extends Contract, U, V> = _TypeSafeContract<T> &
   U &
   {
     [P in keyof V]: V[P] extends (...args: infer A) => unknown
-      ? (...args: A) => Promise<ContractTransaction>
-      : never;
+    ? (...args: A) => Promise<ContractTransaction>
+    : never;
   } & {
     readonly callStatic: {
       [P in keyof V]: V[P] extends (...args: [...infer A, never]) => infer R
-        ? (...args: [...A, ...CallOverridesArg]) => R
-        : never;
+      ? (...args: [...A, ...CallOverridesArg]) => R
+      : never;
     };
 
     readonly estimateGas: {
       [P in keyof V]: V[P] extends (...args: infer A) => unknown
-        ? (...args: A) => Promise<BigNumber>
-        : never;
+      ? (...args: A) => Promise<BigNumber>
+      : never;
     };
 
     readonly populateTransaction: {
       [P in keyof V]: V[P] extends (...args: infer A) => unknown
-        ? (...args: A) => Promise<PopulatedTransaction>
-        : never;
+      ? (...args: A) => Promise<PopulatedTransaction>
+      : never;
     };
 
     readonly estimateAndPopulate: {
       [P in keyof V]: V[P] extends (...args: [...infer A, infer O | undefined]) => unknown
-        ? EstimatedContractFunction<PopulatedTransaction, A, O>
-        : never;
+      ? EstimatedContractFunction<PopulatedTransaction, A, O>
+      : never;
     };
   };
 
@@ -176,6 +180,7 @@ export interface _KumoContracts {
   hintHelpers: HintHelpers;
   lockupContractFactory: LockupContractFactory;
   kumoStaking: KUMOStaking;
+  kumoParameters: KumoParameters;
   multiTroveGetter: MultiTroveGetter;
   priceFeed: PriceFeed | PriceFeedTestnet;
   sortedTroves: SortedTroves;
@@ -183,6 +188,7 @@ export interface _KumoContracts {
   gasPool: GasPool;
   unipool: Unipool;
   uniToken: IERC20 | ERC20Mock;
+  mockAsset1: ERC20Test;
 }
 
 /** @internal */
@@ -212,6 +218,7 @@ const getAbi = (priceFeedIsTestnet: boolean, uniTokenIsMock: boolean): KumoContr
   hintHelpers: hintHelpersAbi,
   lockupContractFactory: lockupContractFactoryAbi,
   kumoStaking: kumoStakingAbi,
+  kumoParameters: kumoParametersAbi,
   multiTroveGetter: multiTroveGetterAbi,
   priceFeed: priceFeedIsTestnet ? priceFeedTestnetAbi : priceFeedAbi,
   sortedTroves: sortedTrovesAbi,
@@ -219,7 +226,8 @@ const getAbi = (priceFeedIsTestnet: boolean, uniTokenIsMock: boolean): KumoContr
   gasPool: gasPoolAbi,
   collSurplusPool: collSurplusPoolAbi,
   unipool: unipoolAbi,
-  uniToken: uniTokenIsMock ? erc20MockAbi : iERC20Abi
+  uniToken: uniTokenIsMock ? erc20MockAbi : iERC20Abi,
+  mockAsset1: erc20TestAbi
 });
 
 const mapKumoContracts = <T, U>(

@@ -6,7 +6,7 @@ import { useKumo } from "../hooks/KumoContext";
 import { Icon } from "./Icon";
 import { Transaction } from "./Transaction";
 
-export const LiquidationManager: React.FC = () => {
+export const LiquidationManager: React.FC<{ asset?: string }> = ({ asset = "" }) => {
   const {
     kumo: { send: kumo }
   } = useKumo();
@@ -39,7 +39,11 @@ export const LiquidationManager: React.FC = () => {
                 if (!numberOfTrovesToLiquidate) {
                   throw new Error("Invalid number");
                 }
-                return kumo.liquidateUpTo(parseInt(numberOfTrovesToLiquidate, 10), overrides);
+                return liquity.liquidateUpTo(
+                  asset,
+                  parseInt(numberOfTrovesToLiquidate, 10),
+                  overrides
+                );
               }}
             >
               <Button variant="dangerIcon">

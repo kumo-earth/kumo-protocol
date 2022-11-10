@@ -11,6 +11,7 @@ export type GasEstimationState =
   | { type: "complete"; populatedTx: PopulatedEthersKumoTransaction };
 
 type ExpensiveTroveChangeWarningParams = {
+  asset?: string;
   troveChange?: Exclude<TroveChange<Decimal>, { type: "invalidCreation" }>;
   maxBorrowingRate: Decimal;
   borrowingFeeDecayToleranceMinutes: number;
@@ -19,6 +20,7 @@ type ExpensiveTroveChangeWarningParams = {
 };
 
 export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningParams> = ({
+  asset = "",
   troveChange,
   maxBorrowingRate,
   borrowingFeeDecayToleranceMinutes,
@@ -35,20 +37,20 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
 
       const timeoutId = setTimeout(async () => {
         const populatedTx = await (troveChange.type === "creation"
-          ? kumo.populate.openTrove(troveChange.params, {
-              maxBorrowingRate,
-              borrowingFeeDecayToleranceMinutes
-            })
-          : kumo.populate.adjustTrove(troveChange.params, {
-              maxBorrowingRate,
-              borrowingFeeDecayToleranceMinutes
-            }));
+          ? kumo.populate.openTrove(troveChange.params, asset, {
+            maxBorrowingRate,
+            borrowingFeeDecayToleranceMinutes
+          })
+          : kumo.populate.adjustTrove(troveChange.params, asset, {
+            maxBorrowingRate,
+            borrowingFeeDecayToleranceMinutes
+          }));
 
         if (!cancelled) {
           setGasEstimationState({ type: "complete", populatedTx });
           console.log(
             "Estimated TX cost: " +
-              Decimal.from(`${populatedTx.rawPopulatedTransaction.gasLimit}`).prettify(0)
+            Decimal.from(`${populatedTx.rawPopulatedTransaction.gasLimit}`).prettify(0)
           );
         }
       }, 333);

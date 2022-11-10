@@ -9,13 +9,14 @@ Liquidate one or more undercollateralized Troves.
 <b>Signature:</b>
 
 ```typescript
-liquidate(address: string | string[], overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<LiquidationDetails>>;
+liquidate(asset: string, address: string | string[], overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<LiquidationDetails>>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  asset | string |  |
 |  address | string \| string\[\] | Address or array of addresses whose Troves to liquidate. |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 

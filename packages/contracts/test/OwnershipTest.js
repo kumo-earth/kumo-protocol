@@ -2,6 +2,7 @@ const deploymentHelper = require("../utils/deploymentHelpers.js")
 const { TestHelper: th, MoneyValues: mv } = require("../utils/testHelpers.js")
 
 const GasPool = artifacts.require("./GasPool.sol")
+// const KumoParameters = artifacts.require("./KumoParameters.sol")
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol")
 
 contract('All Kumo functions with onlyOwner modifier', async accounts => {
@@ -9,7 +10,7 @@ contract('All Kumo functions with onlyOwner modifier', async accounts => {
   const [owner, alice, bob] = accounts;
 
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
-  
+
   let contracts
   let kusdToken
   let sortedTroves
@@ -21,7 +22,7 @@ contract('All Kumo functions with onlyOwner modifier', async accounts => {
 
   let kumoStaking
   let communityIssuance
-  let kumoToken 
+  let kumoToken
   let lockupContractFactory
 
   before(async () => {
@@ -58,7 +59,7 @@ contract('All Kumo functions with onlyOwner modifier', async accounts => {
     }
   }
 
-  const testSetAddresses = async (contract, numberOfAddresses) => {
+  const testSetAddresses = async (contract, numberOfAddresses, renounceOwnership = true) => {
     const dumbContract = await GasPool.new()
     const params = Array(numberOfAddresses).fill(dumbContract.address)
 
@@ -74,18 +75,19 @@ contract('All Kumo functions with onlyOwner modifier', async accounts => {
     const txOwner = await contract.setAddresses(...params, { from: owner })
     assert.isTrue(txOwner.receipt.status)
     // fails if called twice
-    await th.assertRevert(contract.setAddresses(...params, { from: owner }))
+    renounceOwnership == true ? await th.assertRevert(contract.setAddresses(...params, { from: owner })) : "";
   }
 
+
   describe('TroveManager', async accounts => {
-    it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      await testSetAddresses(troveManager, 11)
+    it("setAddresses(): reverts when called by non-owner, with wrong addresses", async () => {
+      await testSetAddresses(troveManager, 9, false)
     })
   })
 
   describe('BorrowerOperations', async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      await testSetAddresses(borrowerOperations, 10)
+      await testSetAddresses(borrowerOperations, 8)
     })
   })
 
@@ -96,21 +98,21 @@ contract('All Kumo functions with onlyOwner modifier', async accounts => {
   })
 
   describe('StabilityPool', async accounts => {
-    it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      await testSetAddresses(stabilityPool, 7)
+    it("setAddresses(): reverts when called by non-owner, with wrong addresses", async () => {
+      await testSetAddresses(stabilityPool, 7, false)
     })
   })
 
   describe('ActivePool', async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      await testSetAddresses(activePool, 4)
+      await testSetAddresses(activePool, 6)
     })
   })
 
   describe('SortedTroves', async accounts => {
-    it("setParams(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
+    it("setParams(): reverts when called by non-owner, with wrong addresses", async () => {
       const dumbContract = await GasPool.new()
-      const params = [10000001, dumbContract.address, dumbContract.address]
+      const params = [dumbContract.address, dumbContract.address]
 
       // Attempt call from alice
       await th.assertRevert(sortedTroves.setParams(...params, { from: alice }))
@@ -125,7 +127,9 @@ contract('All Kumo functions with onlyOwner modifier', async accounts => {
       assert.isTrue(txOwner.receipt.status)
 
       // fails if called twice
-      await th.assertRevert(sortedTroves.setParams(...params, { from: owner }))
+      // Can be called multiple times because of adding new assets to the system
+      // await th.assertRevert(sortedTroves.setParams(...params, { from: owner })) 
+
     })
   })
 

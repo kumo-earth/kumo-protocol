@@ -8,13 +8,13 @@ interface ICommunityIssuance {
     
     event KUMOTokenAddressSet(address _kumoTokenAddress);
     event StabilityPoolAddressSet(address _stabilityPoolAddress);
-    event TotalKUMOIssuedUpdated(uint _totalKUMOIssued);
+    event TotalKUMOIssuedUpdated(uint256 _totalKUMOIssued);
 
     // --- Functions ---
 
     function setAddresses(address _kumoTokenAddress, address _stabilityPoolAddress) external;
 
-    function issueKUMO() external returns (uint);
+    function issueKUMO() external returns (uint256);
 
-    function sendKUMO(address _account, uint _KUMOamount) external;
+    function sendKUMO(address _account, uint256 _KUMOamount) external;
 }
