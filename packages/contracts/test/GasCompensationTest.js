@@ -35,6 +35,8 @@ contract('Gas compensation tests', async accounts => {
   let kumoParameters
   let hardhatTester
   let erc20
+  let assetAddress1
+  let assetAddress2
 
   let contracts
   let troveManagerTester

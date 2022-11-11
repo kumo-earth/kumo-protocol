@@ -23,6 +23,7 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
   let KUMOContracts
   let hardhatTester
   let erc20Asset1
+  let erc20Asset2
 
   const openTrove = async (params) => th.openTrove(contracts, params)
 
@@ -42,8 +43,10 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
     priceFeed = contracts.priceFeedTestnet
     sortedTroves = contracts.sortedTroves
     kumoParams = contracts.kumoParameters
-    erc20Asset1 = hardhatTester.erc20
+    erc20Asset1 = hardhatTester.erc20Asset1
     assetAddress1 = erc20Asset1.address
+    erc20Asset2 = hardhatTester.erc20Asset2
+    assetAddress2 = erc20Asset2.address
 
     await deploymentHelper.connectKUMOContracts(KUMOContracts)
     await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)

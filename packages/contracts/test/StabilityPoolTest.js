@@ -49,6 +49,7 @@ contract('StabilityPool', async accounts => {
   let KUMOContracts
   let hardhatTester
   let erc20Asset1
+  let erc20Asset2
 
   let gasPriceInWei
 

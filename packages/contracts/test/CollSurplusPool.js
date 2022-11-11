@@ -25,6 +25,8 @@ contract('CollSurplusPool -TEST', async accounts => {
   let hardhatTester
   let erc20
   let contracts
+  let assetAddress1
+  let assetAddress2
 
   const getOpenTroveKUSDAmount = async (totalDebt) => th.getOpenTroveKUSDAmount(contracts, totalDebt)
   const openTrove = async (params) => th.openTrove(contracts, params)

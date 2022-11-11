@@ -40,7 +40,7 @@ contract('TroveManager', async accounts => {
   let sortedTroves
   let troveManager
   let activePool
-  let stabilityPool
+  let stabilityPoolFactory
   let collSurplusPool
   let defaultPool
   let borrowerOperations
@@ -49,6 +49,7 @@ contract('TroveManager', async accounts => {
   let KUMOContracts
   let hardhatTester
   let erc20Asset1
+  let erc20Asset2
 
 
 
@@ -66,7 +67,7 @@ contract('TroveManager', async accounts => {
     contracts.troveManager = await TroveManagerTester.new()
     contracts.kusdToken = await KUSDTokenTester.new(
       contracts.troveManager.address,
-      contracts.stabilityPool.address,
+      contracts.stabilityPoolFactory.address,
       contracts.borrowerOperations.address
     )
     KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
@@ -88,8 +89,10 @@ contract('TroveManager', async accounts => {
     kumoToken = KUMOContracts.kumoToken
     communityIssuance = KUMOContracts.communityIssuance
     lockupContractFactory = KUMOContracts.lockupContractFactory
-    erc20Asset1 = hardhatTester.erc20
+    erc20Asset1 = hardhatTester.erc20Asset1
     assetAddress1 = erc20Asset1.address
+    erc20Asset2 = hardhatTester.erc20Asset2
+    assetAddress2 = erc20Asset2.address
 
     await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
     await deploymentHelper.connectKUMOContracts(KUMOContracts)
@@ -97,12 +100,21 @@ contract('TroveManager', async accounts => {
 
     // Add asset to the system
     await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
+    await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress2)
 
     // Mint token to each acccount
     let index = 0;
     for (const acc of accounts) {
-      // await vstaToken.approve(vstaStaking.address, await erc20Asset1.balanceOf(acc), { from: acc })
       await erc20Asset1.mint(acc, await web3.eth.getBalance(acc))
+      index++;
+
+      if (index >= 20)
+        break;
+    }
+
+    index = 0;
+    for (const acc of accounts) {
+      await erc20Asset2.mint(acc, await web3.eth.getBalance(acc))
       index++;
 
       if (index >= 20)
@@ -114,36 +126,56 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(4, 18)), extraParams: { from: alice } })
 
+    await openTrove({ asset: assetAddress2, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: assetAddress2, ICR: toBN(dec(4, 18)), extraParams: { from: alice } })
+
+
     const price = await priceFeed.getPrice()
     const ICR_Before_Asset1 = await troveManager.getCurrentICR(assetAddress1, alice, price)
     assert.equal(ICR_Before_Asset1.toString(), dec(4, 18))
 
+    const ICR_Before_Asset2 = await troveManager.getCurrentICR(assetAddress2, alice, price)
+    assert.equal(ICR_Before_Asset2.toString(), dec(4, 18))
+
     const MCR_Asset1 = (await kumoParams.MCR(assetAddress1)).toString()
     assert.equal(MCR_Asset1.toString(), '1100000000000000000')
 
+    const MCR_Asset2 = (await kumoParams.MCR(assetAddress2)).toString()
+    assert.equal(MCR_Asset2.toString(), '1100000000000000000')
+
     // Alice increases debt to 180 KUSD, lowering her ICR to 1.11
     const A_KUSDWithdrawal_Asset1 = await getNetBorrowingAmount(dec(130, 18), assetAddress1)
+    const A_KUSDWithdrawal_Asset2 = await getNetBorrowingAmount(dec(130, 18), assetAddress2)
 
     const targetICR_Asset1 = toBN('1111111111111111111')
+    const targetICR_Asset2 = toBN('1111111111111111111')
     await withdrawKUSD({ asset: assetAddress1, ICR: targetICR_Asset1, extraParams: { from: alice } })
+    await withdrawKUSD({ asset: assetAddress2, ICR: targetICR_Asset2, extraParams: { from: alice } })
 
     const ICR_AfterWithdrawal_Asset1 = await troveManager.getCurrentICR(assetAddress1, alice, price)
     assert.isAtMost(th.getDifference(ICR_AfterWithdrawal_Asset1, targetICR_Asset1), 100)
+    const ICR_AfterWithdrawal_Asset2 = await troveManager.getCurrentICR(assetAddress2, alice, price)
+    assert.isAtMost(th.getDifference(ICR_AfterWithdrawal_Asset2, targetICR_Asset2), 100)
 
     // price drops to 1Asset1:100KUSD, reducing Alice's ICR below MCR
     await priceFeed.setPrice('100000000000000000000');
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));
-
+    assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress2));
     // close Trove
     await troveManager.liquidate(assetAddress1, alice, { from: owner });
+    await troveManager.liquidate(assetAddress2, alice, { from: owner });
 
     // check the Trove is successfully closed, and removed from sortedList
-    const status = (await troveManager.Troves(alice, assetAddress1))[TroveData.status]
-    assert.equal(status, 3)  // status enum 3 corresponds to "Closed by liquidation"
+    const statusAsset1 = (await troveManager.Troves(alice, assetAddress1))[TroveData.status]
+    assert.equal(statusAsset1, 3)  // status enum 3 corresponds to "Closed by liquidation"
     const alice_Trove_isInSortedList_Asset1 = await sortedTroves.contains(assetAddress1, alice)
     assert.isFalse(alice_Trove_isInSortedList_Asset1)
+    const statusAsset2 = (await troveManager.Troves(alice, assetAddress2))[TroveData.status]
+    assert.equal(statusAsset2, 3)  // status enum 3 corresponds to "Closed by liquidation"
+    const alice_Trove_isInSortedList_Asset2 = await sortedTroves.contains(assetAddress2, alice)
+    assert.isFalse(alice_Trove_isInSortedList_Asset2)
   })
 
   it("liquidate(): decreases ActivePool Asset and KUSDDebt by correct amounts", async () => {
