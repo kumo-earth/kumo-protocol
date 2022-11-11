@@ -278,11 +278,6 @@ contract StabilityPool is KumoBaseUpgradeable, CheckContract, IStabilityPool {
         P = DECIMAL_PRECISION;
     }
 
-    //// @custom:oz-upgrades-unsafe-allow constructor
-    // constructor() {
-    //     _disableInitializers();
-    // }
-
     function setAddresses(
         address _borrowerOperationsAddress,
         address _troveManagerAddress,

@@ -101,11 +101,6 @@ contract BorrowerOperations is KumoBaseUpgradeable, CheckContract, IBorrowerOper
         __UUPSUpgradeable_init();
     }
 
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    // constructor() {
-    //     _disableInitializers();
-    // }
-
     function setAddresses(
         address _troveManagerAddress,
         address _activePoolAddress,
