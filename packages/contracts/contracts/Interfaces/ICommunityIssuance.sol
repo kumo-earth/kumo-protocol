@@ -2,12 +2,11 @@
 
 pragma solidity 0.8.11;
 
-interface ICommunityIssuance { 
-    
+interface ICommunityIssuance {
     // --- Events ---
-    
+
     event KUMOTokenAddressSet(address _kumoTokenAddress);
-    event StabilityPoolAddressSet(address _stabilityPoolAddress);
+    event StabilityPoolFactoryAddressSet(address _stabilityPoolFactoryAddress);
     event TotalKUMOIssuedUpdated(uint256 _totalKUMOIssued);
 
     // --- Functions ---

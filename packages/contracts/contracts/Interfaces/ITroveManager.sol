@@ -3,7 +3,7 @@
 pragma solidity 0.8.11;
 
 import "./IKumoBase.sol";
-import "./IStabilityPool.sol";
+import "./IStabilityPoolFactory.sol";
 import "./IKUSDToken.sol";
 import "./IKUMOToken.sol";
 import "./IKUMOStaking.sol";
@@ -46,7 +46,7 @@ interface ITroveManager is IKumoBase {
     event KUSDTokenAddressChanged(address _newKUSDTokenAddress);
     event ActivePoolAddressChanged(address _activePoolAddress);
     event DefaultPoolAddressChanged(address _defaultPoolAddress);
-    event StabilityPoolAddressChanged(address _stabilityPoolAddress);
+    event StabilityPoolFactoryAddressChanged(address _stabilityPoolFactoryAddress);
     event GasPoolAddressChanged(address _gasPoolAddress);
     event CollSurplusPoolAddressChanged(address _collSurplusPoolAddress);
     event SortedTrovesAddressChanged(address _sortedTrovesAddress);
@@ -85,7 +85,7 @@ interface ITroveManager is IKumoBase {
 
     function setAddresses(
         address _borrowerOperationsAddress,
-        address _stabilityPoolAddress,
+        address _stabilityPoolFactoryAddress,
         address _gasPoolAddress,
         address _collSurplusPoolAddress,
         address _kusdTokenAddress,
@@ -95,7 +95,7 @@ interface ITroveManager is IKumoBase {
         address _kumoParamsAddress
     ) external;
 
-    function stabilityPool() external view returns (IStabilityPool);
+    function stabilityPoolFactory() external view returns (IStabilityPoolFactory);
 
     function kusdToken() external view returns (IKUSDToken);
 

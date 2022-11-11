@@ -3,42 +3,46 @@
 pragma solidity 0.8.11;
 
 import "./Interfaces/IKUSDToken.sol";
+import "./Interfaces/IStabilityPoolFactory.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
+
 /*
-*
-* Based upon OpenZeppelin's ERC20 contract:
-* https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol
-*  
-* and their EIP2612 (ERC20Permit / ERC712) functionality:
-* https://github.com/OpenZeppelin/openzeppelin-contracts/blob/53516bc555a454862470e7860a9b5254db4d00f5/contracts/token/ERC20/ERC20Permit.sol
-* 
-*
-* --- Functionality added specific to the KUSDToken ---
-* 
-* 1) Transfer protection: blacklist of addresses that are invalid recipients (i.e. core Kumo contracts) in external 
-* transfer() and transferFrom() calls. The purpose is to protect users from losing tokens by mistakenly sending KUSD directly to a Kumo 
-* core contract, when they should rather call the right function. 
-*
-* 2) sendToPool() and returnFromPool(): functions callable only Kumo core contracts, which move KUSD tokens between Kumo <-> user.
-*/
+ *
+ * Based upon OpenZeppelin's ERC20 contract:
+ * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol
+ *
+ * and their EIP2612 (ERC20Permit / ERC712) functionality:
+ * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/53516bc555a454862470e7860a9b5254db4d00f5/contracts/token/ERC20/ERC20Permit.sol
+ *
+ *
+ * --- Functionality added specific to the KUSDToken ---
+ *
+ * 1) Transfer protection: blacklist of addresses that are invalid recipients (i.e. core Kumo contracts) in external
+ * transfer() and transferFrom() calls. The purpose is to protect users from losing tokens by mistakenly sending KUSD directly to a Kumo
+ * core contract, when they should rather call the right function.
+ *
+ * 2) sendToPool() and returnFromPool(): functions callable only Kumo core contracts, which move KUSD tokens between Kumo <-> user.
+ */
 
 contract KUSDToken is CheckContract, IKUSDToken {
     using SafeMath for uint256;
-    
+
     uint256 private _totalSupply;
-    string constant internal _NAME = "KUSD Stablecoin";
-    string constant internal _SYMBOL = "KUSD";
-    string constant internal _VERSION = "1";
-    uint8 constant internal _DECIMALS = 18;
-    
+    string internal constant _NAME = "KUSD Stablecoin";
+    string internal constant _SYMBOL = "KUSD";
+    string internal constant _VERSION = "1";
+    uint8 internal constant _DECIMALS = 18;
+
     // --- Data for EIP2612 ---
-    
+
     // keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
-    bytes32 private constant _PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
+    bytes32 private constant _PERMIT_TYPEHASH =
+        0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
     // keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
-    bytes32 private constant _TYPE_HASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
+    bytes32 private constant _TYPE_HASH =
+        0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
 
     // Cache the domain separator as an immutable value, but also store the chain id that it corresponds to, in order to
     // invalidate the cached domain separator if the chain id changes.
@@ -47,48 +51,48 @@ contract KUSDToken is CheckContract, IKUSDToken {
 
     bytes32 private immutable _HASHED_NAME;
     bytes32 private immutable _HASHED_VERSION;
-    
-    mapping (address => uint256) private _nonces;
-    
+
+    mapping(address => uint256) private _nonces;
+
     // User data for KUSD token
-    mapping (address => uint256) private _balances;
-    mapping (address => mapping (address => uint256)) private _allowances;  
-    
+    mapping(address => uint256) private _balances;
+    mapping(address => mapping(address => uint256)) private _allowances;
+
     // --- Addresses ---
     address public immutable troveManagerAddress;
-    address public immutable stabilityPoolAddress;
     address public immutable borrowerOperationsAddress;
-    
+
+    // --- Interfaces ---
+    IStabilityPoolFactory public stabilityPoolFactory;
+
     // --- Events ---
     // event TroveManagerAddressChanged(address _troveManagerAddress);
     // event StabilityPoolAddressChanged(address _newStabilityPoolAddress);
     // event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
     mapping(address => bool) public emergencyStopMintingCollateral;
-    event EmergencyStopMintingCollateral(address _asset, bool state);   
+    event EmergencyStopMintingCollateral(address _asset, bool state);
 
-    constructor
-    ( 
+    constructor(
         address _troveManagerAddress,
-        address _stabilityPoolAddress,
+        address _stabilityPoolFactoryAddress,
         address _borrowerOperationsAddress
-    ) 
-    {  
+    ) {
         checkContract(_troveManagerAddress);
-        checkContract(_stabilityPoolAddress);
+        checkContract(_stabilityPoolFactoryAddress);
         checkContract(_borrowerOperationsAddress);
 
         troveManagerAddress = _troveManagerAddress;
         emit TroveManagerAddressChanged(_troveManagerAddress);
 
-        stabilityPoolAddress = _stabilityPoolAddress;
-        emit StabilityPoolAddressChanged(_stabilityPoolAddress);
+        stabilityPoolFactory = IStabilityPoolFactory(_stabilityPoolFactoryAddress);
+        emit StabilityPoolFactoryAddressChanged(_stabilityPoolFactoryAddress);
 
-        borrowerOperationsAddress = _borrowerOperationsAddress;        
+        borrowerOperationsAddress = _borrowerOperationsAddress;
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
-        
+
         bytes32 hashedName = keccak256(bytes(_NAME));
         bytes32 hashedVersion = keccak256(bytes(_VERSION));
-        
+
         _HASHED_NAME = hashedName;
         _HASHED_VERSION = hashedVersion;
         _CACHED_CHAIN_ID = _chainID();
@@ -97,24 +101,36 @@ contract KUSDToken is CheckContract, IKUSDToken {
 
     // --- Functions for intra-Kumo calls ---
 
-	function mint( address _asset, address _account, uint256 _amount) external override {
-		_requireCallerIsBorrowerOperations();
-		require(!emergencyStopMintingCollateral[_asset], "Mint is blocked on this collateral");
+    function mint(
+        address _asset,
+        address _account,
+        uint256 _amount
+    ) external override {
+        _requireCallerIsBorrowerOperations();
+        require(!emergencyStopMintingCollateral[_asset], "Mint is blocked on this collateral");
 
-		_mint(_account, _amount);
-	}
+        _mint(_account, _amount);
+    }
 
     function burn(address _account, uint256 _amount) external override {
         _requireCallerIsBOorTroveMorSP();
         _burn(_account, _amount);
     }
 
-    function sendToPool(address _sender,  address _poolAddress, uint256 _amount) external override {
+    function sendToPool(
+        address _sender,
+        address _poolAddress,
+        uint256 _amount
+    ) external override {
         _requireCallerIsStabilityPool();
         _transfer(_sender, _poolAddress, _amount);
     }
 
-    function returnFromPool(address _poolAddress, address _receiver, uint256 _amount) external override {
+    function returnFromPool(
+        address _poolAddress,
+        address _receiver,
+        uint256 _amount
+    ) external override {
         _requireCallerIsTroveMorSP();
         _transfer(_poolAddress, _receiver, _amount);
     }
@@ -144,26 +160,49 @@ contract KUSDToken is CheckContract, IKUSDToken {
         return true;
     }
 
-    function transferFrom(address sender, address recipient, uint256 amount) external override returns (bool) {
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external override returns (bool) {
         _requireValidRecipient(recipient);
         _transfer(sender, recipient, amount);
-        _approve(sender, msg.sender, _allowances[sender][msg.sender].sub(amount, "ERC20: transfer amount exceeds allowance"));
+        _approve(
+            sender,
+            msg.sender,
+            _allowances[sender][msg.sender].sub(amount, "ERC20: transfer amount exceeds allowance")
+        );
         return true;
     }
 
-    function increaseAllowance(address spender, uint256 addedValue) external override returns (bool) {
+    function increaseAllowance(address spender, uint256 addedValue)
+        external
+        override
+        returns (bool)
+    {
         _approve(msg.sender, spender, _allowances[msg.sender][spender].add(addedValue));
         return true;
     }
 
-    function decreaseAllowance(address spender, uint256 subtractedValue) external override returns (bool) {
-        _approve(msg.sender, spender, _allowances[msg.sender][spender].sub(subtractedValue, "ERC20: decreased allowance below zero"));
+    function decreaseAllowance(address spender, uint256 subtractedValue)
+        external
+        override
+        returns (bool)
+    {
+        _approve(
+            msg.sender,
+            spender,
+            _allowances[msg.sender][spender].sub(
+                subtractedValue,
+                "ERC20: decreased allowance below zero"
+            )
+        );
         return true;
     }
 
     // --- EIP 2612 Functionality ---
 
-    function domainSeparator() public view override returns (bytes32) {    
+    function domainSeparator() public view override returns (bytes32) {
         if (_chainID() == _CACHED_CHAIN_ID) {
             return _CACHED_DOMAIN_SEPARATOR;
         } else {
@@ -171,30 +210,32 @@ contract KUSDToken is CheckContract, IKUSDToken {
         }
     }
 
-    function permit
-    (
-        address owner, 
-        address spender, 
-        uint256 amount, 
-        uint256 deadline, 
-        uint8 v, 
-        bytes32 r, 
+    function permit(
+        address owner,
+        address spender,
+        uint256 amount,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
         bytes32 s
-    ) 
-        external 
-        override 
-    {            
-        require(deadline >= block.timestamp, 'KUSD: expired deadline');
-        bytes32 digest = keccak256(abi.encodePacked('\x19\x01', 
-                         domainSeparator(), keccak256(abi.encode(
-                         _PERMIT_TYPEHASH, owner, spender, amount, 
-                         _nonces[owner]++, deadline))));
+    ) external override {
+        require(deadline >= block.timestamp, "KUSD: expired deadline");
+        bytes32 digest = keccak256(
+            abi.encodePacked(
+                "\x19\x01",
+                domainSeparator(),
+                keccak256(
+                    abi.encode(_PERMIT_TYPEHASH, owner, spender, amount, _nonces[owner]++, deadline)
+                )
+            )
+        );
         address recoveredAddress = ecrecover(digest, v, r, s);
-        require(recoveredAddress == owner, 'KUSD: invalid signature');
+        require(recoveredAddress == owner, "KUSD: invalid signature");
         _approve(owner, spender, amount);
     }
 
-    function nonces(address owner) external view override returns (uint256) { // FOR EIP 2612
+    function nonces(address owner) external view override returns (uint256) {
+        // FOR EIP 2612
         return _nonces[owner];
     }
 
@@ -205,15 +246,23 @@ contract KUSDToken is CheckContract, IKUSDToken {
             chainID := chainid()
         }
     }
-    
-    function _buildDomainSeparator(bytes32 typeHash, bytes32 _name, bytes32 _version) private view returns (bytes32) {
+
+    function _buildDomainSeparator(
+        bytes32 typeHash,
+        bytes32 _name,
+        bytes32 _version
+    ) private view returns (bytes32) {
         return keccak256(abi.encode(typeHash, _name, _version, _chainID(), address(this)));
     }
 
     // --- Internal operations ---
     // Warning: sanity checks (for sender and recipient) should have been done before calling these internal functions
 
-    function _transfer(address sender, address recipient, uint256 amount) internal {
+    function _transfer(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) internal {
         assert(sender != address(0));
         assert(recipient != address(0));
 
@@ -223,9 +272,9 @@ contract KUSDToken is CheckContract, IKUSDToken {
     }
 
     function emergencyStopMinting(address _asset, bool status) external override {
-		emergencyStopMintingCollateral[_asset] = status;
-		emit EmergencyStopMintingCollateral(_asset, status);
-	}
+        emergencyStopMintingCollateral[_asset] = status;
+        emit EmergencyStopMintingCollateral(_asset, status);
+    }
 
     function _mint(address account, uint256 amount) internal {
         assert(account != address(0));
@@ -237,13 +286,17 @@ contract KUSDToken is CheckContract, IKUSDToken {
 
     function _burn(address account, uint256 amount) internal {
         assert(account != address(0));
-        
+
         _balances[account] = _balances[account].sub(amount, "ERC20: burn amount exceeds balance");
         _totalSupply = _totalSupply.sub(amount);
         emit Transfer(account, address(0), amount);
     }
 
-    function _approve(address owner, address spender, uint256 amount) internal {
+    function _approve(
+        address owner,
+        address spender,
+        uint256 amount
+    ) internal {
         assert(owner != address(0));
         assert(spender != address(0));
 
@@ -255,39 +308,46 @@ contract KUSDToken is CheckContract, IKUSDToken {
 
     function _requireValidRecipient(address _recipient) internal view {
         require(
-            _recipient != address(0) && 
-            _recipient != address(this),
+            _recipient != address(0) && _recipient != address(this),
             "KUSD: Cannot transfer tokens directly to the KUSD token contract or the zero address"
         );
         require(
-            _recipient != stabilityPoolAddress && 
-            _recipient != troveManagerAddress && 
-            _recipient != borrowerOperationsAddress, 
+            stabilityPoolFactory.isRegisteredStabilityPool(_recipient) &&
+                _recipient != troveManagerAddress &&
+                _recipient != borrowerOperationsAddress,
             "KUSD: Cannot transfer tokens directly to the StabilityPool, TroveManager or BorrowerOps"
         );
     }
 
     function _requireCallerIsBorrowerOperations() internal view {
-        require(msg.sender == borrowerOperationsAddress, "KUSDToken: Caller is not BorrowerOperations");
+        require(
+            msg.sender == borrowerOperationsAddress,
+            "KUSDToken: Caller is not BorrowerOperations"
+        );
     }
 
     function _requireCallerIsBOorTroveMorSP() internal view {
         require(
             msg.sender == borrowerOperationsAddress ||
-            msg.sender == troveManagerAddress ||
-            msg.sender == stabilityPoolAddress,
+                msg.sender == troveManagerAddress ||
+                stabilityPoolFactory.isRegisteredStabilityPool(msg.sender),
             "KUSD: Caller is neither BorrowerOperations nor TroveManager nor StabilityPool"
         );
     }
 
     function _requireCallerIsStabilityPool() internal view {
-        require(msg.sender == stabilityPoolAddress, "KUSD: Caller is not the StabilityPool");
+        require(
+            stabilityPoolFactory.isRegisteredStabilityPool(msg.sender),
+            "KUSD: Caller is not the StabilityPool"
+        );
     }
 
     function _requireCallerIsTroveMorSP() internal view {
         require(
-            msg.sender == troveManagerAddress || msg.sender == stabilityPoolAddress,
-            "KUSD: Caller is neither TroveManager nor StabilityPool");
+            msg.sender == troveManagerAddress ||
+                stabilityPoolFactory.isRegisteredStabilityPool(msg.sender),
+            "KUSD: Caller is neither TroveManager nor StabilityPool"
+        );
     }
 
     // --- Optional functions ---
