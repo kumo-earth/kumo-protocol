@@ -32,7 +32,7 @@ To calculate the borrowing fee in KUSD, multiply the borrowed KUSD amount by the
 
 
 ```typescript
-const fees = await liquity.getFees();
+const fees = await kumo.getFees();
 
 const borrowedKUSDAmount = 100;
 const borrowingRate = fees.borrowingRate();

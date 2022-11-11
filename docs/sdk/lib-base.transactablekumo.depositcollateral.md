@@ -9,13 +9,14 @@ Adjust existing Trove by depositing more collateral.
 <b>Signature:</b>
 
 ```typescript
-depositCollateral(amount: Decimalish): Promise<TroveAdjustmentDetails>;
+depositCollateral(asset: string, amount: Decimalish): Promise<TroveAdjustmentDetails>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  asset | string |  |
 |  amount | [Decimalish](./lib-base.decimalish.md) | The amount of collateral to add to the Trove's existing collateral. |
 
 <b>Returns:</b>

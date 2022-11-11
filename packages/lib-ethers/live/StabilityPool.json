@@ -1244,7 +1244,7 @@
           "type": "address"
         }
       ],
-      "name": "withdrawETHGainToTrove",
+      "name": "withdrawAssetGainToTrove",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

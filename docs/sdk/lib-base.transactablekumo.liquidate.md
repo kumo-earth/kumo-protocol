@@ -9,13 +9,14 @@ Liquidate one or more undercollateralized Troves.
 <b>Signature:</b>
 
 ```typescript
-liquidate(address: string | string[]): Promise<LiquidationDetails>;
+liquidate(asset: string, address: string | string[]): Promise<LiquidationDetails>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  asset | string |  |
 |  address | string \| string\[\] | Address or array of addresses whose Troves to liquidate. |
 
 <b>Returns:</b>

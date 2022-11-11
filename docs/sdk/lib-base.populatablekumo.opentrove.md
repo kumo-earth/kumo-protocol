@@ -9,7 +9,7 @@ Open a new Trove by depositing collateral and borrowing KUSD.
 <b>Signature:</b>
 
 ```typescript
-openTrove(params: TroveCreationParams<Decimalish>, maxBorrowingRate?: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveCreationDetails>>>>;
+openTrove(params: TroveCreationParams<Decimalish>, asset: string, maxBorrowingRate?: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveCreationDetails>>>>;
 ```
 
 ## Parameters
@@ -17,6 +17,7 @@ openTrove(params: TroveCreationParams<Decimalish>, maxBorrowingRate?: Decimalish
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  params | [TroveCreationParams](./lib-base.trovecreationparams.md)<!-- -->&lt;[Decimalish](./lib-base.decimalish.md)<!-- -->&gt; | How much to deposit and borrow. |
+|  asset | string |  |
 |  maxBorrowingRate | [Decimalish](./lib-base.decimalish.md) | Maximum acceptable [borrowing rate](./lib-base.fees.borrowingrate.md)<!-- -->. |
 
 <b>Returns:</b>

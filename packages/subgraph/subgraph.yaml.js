@@ -43,13 +43,13 @@ dataSources:
         - name: TroveManager
           file: ../lib-ethers/abi/TroveManager.json
       eventHandlers:
-        - event: TroveUpdated(indexed address,uint256,uint256,uint256,uint8)
+        - event: TroveUpdated(indexed address,indexed address,uint256,uint256,uint256,uint8)
           handler: handleTroveUpdated
-        - event: TroveLiquidated(indexed address,uint256,uint256,uint8)
+        - event: TroveLiquidated(indexed address,indexed address,uint256,uint256,uint8)
           handler: handleTroveLiquidated
-        - event: Liquidation(uint256,uint256,uint256,uint256)
+        - event: Liquidation(indexed address,uint256,uint256,uint256,uint256)
           handler: handleLiquidation
-        - event: Redemption(uint256,uint256,uint256,uint256)
+        - event: Redemption(indexed address,uint256,uint256,uint256,uint256)
           handler: handleRedemption
         - event: LTermsUpdated(uint256,uint256)
           handler: handleLTermsUpdated
@@ -76,9 +76,9 @@ dataSources:
         - name: BorrowerOperations
           file: ../lib-ethers/abi/BorrowerOperations.json
       eventHandlers:
-        - event: TroveUpdated(indexed address,uint256,uint256,uint256,uint8)
+        - event: TroveUpdated(indexed address,indexed address,uint256,uint256,uint256,uint8)
           handler: handleTroveUpdated
-        - event: KUSDBorrowingFeePaid(indexed address,uint256)
+        - event: KUSDBorrowingFeePaid(indexed address,indexed address,uint256)
           handler: handleKUSDBorrowingFeePaid
   - name: PriceFeed
     kind: ethereum/contract
@@ -129,7 +129,7 @@ dataSources:
       eventHandlers:
         - event: UserDepositChanged(indexed address,uint256)
           handler: handleUserDepositChanged
-        - event: ETHGainWithdrawn(indexed address,uint256,uint256)
+        - event: AssetGainWithdrawn(indexed address,uint256,uint256)
           handler: handleETHGainWithdrawn
         - event: FrontEndRegistered(indexed address,uint256)
           handler: handleFrontendRegistered
@@ -158,7 +158,7 @@ dataSources:
         - name: CollSurplusPool
           file: ../lib-ethers/abi/CollSurplusPool.json
       eventHandlers:
-        - event: CollBalanceUpdated(indexed address,uint256)
+        - event: CollBalanceUpdated(indexed address,indexed address,uint256)
           handler: handleCollSurplusBalanceUpdated
   - name: KUMOStaking
     kind: ethereum/contract
@@ -187,10 +187,10 @@ dataSources:
         - event: StakingGainsWithdrawn(indexed address,uint256,uint256)
           handler: handleStakeGainsWithdrawn
 ${[
-  ["KUSDToken", addresses.kusdToken],
-  ["KUMOToken", addresses.kumoToken]
-].map(
-  ([name, address]) => yaml`
+    ["KUSDToken", addresses.kusdToken],
+    ["KUMOToken", addresses.kumoToken]
+  ].map(
+    ([name, address]) => yaml`
   - name: ${name}
     kind: ethereum/contract
     network: mainnet
@@ -217,6 +217,6 @@ ${[
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleTokenApproval
 `
-)}`;
+  )}`;
 
 fs.writeFileSync("subgraph.yaml", manifest);

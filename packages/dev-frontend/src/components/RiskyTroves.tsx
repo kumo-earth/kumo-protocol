@@ -47,6 +47,7 @@ const liquidatableInRecoveryMode = (
 
 type RiskyTrovesProps = {
   pageSize: number;
+  asset?: string;
 };
 
 const select = ({
@@ -64,7 +65,7 @@ const select = ({
   blockTag
 });
 
-export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
+export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }) => {
   const {
     blockTag,
     numberOfTroves,
@@ -110,6 +111,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
 
     liquity
       .getTroves(
+        "",
         {
           first: pageSize,
           sortedBy: "ascendingCollateralRatio",
@@ -329,7 +331,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize }) => {
                                 )
                               : liquidatableInNormalMode(trove, price)
                           ]}
-                          send={liquity.send.liquidate.bind(liquity.send, trove.ownerAddress)}
+                          send={liquity.send.liquidate.bind(liquity.send, asset, trove.ownerAddress)}
                         >
                           <Button variant="dangerIcon">
                             <Icon name="trash" />

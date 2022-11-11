@@ -105,7 +105,7 @@ export class Fees {
    *
    * @example
    * ```typescript
-   * const fees = await liquity.getFees();
+   * const fees = await kumo.getFees();
    *
    * const borrowedKUSDAmount = 100;
    * const borrowingRate = fees.borrowingRate();
@@ -138,8 +138,8 @@ export class Fees {
    *
    * @example
    * ```typescript
-   * const fees = await liquity.getFees();
-   * const total = await liquity.getTotal();
+   * const fees = await kumo.getFees();
+   * const total = await kumo.getTotal();
    *
    * const redeemedKUSDAmount = Decimal.from(100);
    * const redeemedFractionOfSupply = redeemedKUSDAmount.div(total.debt);

@@ -9,7 +9,7 @@ contract MockTellor {
 
     bool didRetrieve = true; // default to a positive retrieval
     bytes private price;
-    uint private updateTime;
+    uint256 private updateTime;
 
     bool private revertRequest;
 
@@ -23,7 +23,7 @@ contract MockTellor {
         didRetrieve = _didRetrieve;
     }
 
-    function setUpdateTime(uint _updateTime) external {
+    function setUpdateTime(uint256 _updateTime) external {
         updateTime = _updateTime;
     }
 
@@ -33,11 +33,11 @@ contract MockTellor {
 
     // --- Mock data reporting functions --- 
 
-    function getTimestampbyQueryIdandIndex(bytes32, uint) external view returns (uint) {
+    function getTimestampbyQueryIdandIndex(bytes32, uint256) external view returns (uint256) {
         return updateTime;
     }
 
-    function getNewValueCountbyQueryId(bytes32) external view returns (uint) {
+    function getNewValueCountbyQueryId(bytes32) external view returns (uint256) {
         if (revertRequest) {require (1 == 0, "Tellor request reverted");}
         return 1;
     }
