@@ -8,12 +8,12 @@ import "./Interfaces/IKUSDToken.sol";
 import "./Interfaces/ICollSurplusPool.sol";
 import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/IKUMOStaking.sol";
-import "./Dependencies/KumoBase.sol";
+import "./Dependencies/KumoBaseUpgradeable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 import "./Dependencies/SafeMath.sol";
 
-contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
+contract BorrowerOperations is KumoBaseUpgradeable, CheckContract, IBorrowerOperations {
     using SafeMath for uint256;
     string constant public NAME = "BorrowerOperations";
     // bool public isInitialized;
@@ -96,6 +96,11 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     
     // --- Dependency setters ---
 
+    function initialize() external initializer {
+        __Ownable_init();
+        __UUPSUpgradeable_init();
+    }
+
     function setAddresses(
         address _troveManagerAddress,
         address _activePoolAddress,
@@ -151,9 +156,9 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit KUSDTokenAddressChanged(_kusdTokenAddress);
         emit KUMOStakingAddressChanged(_kumoStakingAddress);
-
-        _renounceOwnership();
     }
+
+    function _authorizeUpgrade(address) internal override onlyOwner {}
 
     // --- Borrower Trove Operations ---
 

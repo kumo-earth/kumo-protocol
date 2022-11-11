@@ -69,7 +69,7 @@ contract('BorrowerOperations', async accounts => {
   const testCorpus = ({ withProxy = false }) => {
     beforeEach(async () => {
       contracts = await deploymentHelper.deployKumoCore()
-      contracts.borrowerOperations = await BorrowerOperationsTester.new()
+      contracts.borrowerOperations = await deploymentHelper.deployAndInitContract(BorrowerOperationsTester)
       contracts.troveManager = await TroveManagerTester.new()
       contracts = await deploymentHelper.deployKUSDTokenTester(contracts)
       const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
@@ -4323,6 +4323,25 @@ contract('BorrowerOperations', async accounts => {
     testCorpus({ withProxy: false })
   })
 
+  describe('BorrowerOperations with upgrades', () => {
+    let BorrowerOperationsV2;
+    let borrowerOperationsV2;
+    let arg;
+
+    beforeEach(async () => {
+      BorrowerOperationsV2 = await ethers.getContractFactory("BorrowerOperationsV2");
+      contracts = await deploymentHelper.deployKUMOCoreUpgradeableEthers();
+      arg = 42;
+    })
+
+    it("successfully upgrades", async () => {
+      borrowerOperationsV2 = await upgrades.upgradeProxy(contracts.borrowerOperationsEthers.address, BorrowerOperationsV2, { call: { fn: "initializeV2", args: [arg] }, kinds: "uups"});
+    })
+    it("reinitialized correctly", async () => {
+      assert.equal(await borrowerOperationsV2.testFunction(), arg, 'newVar should be equal value from initializer')
+    })
+  })
+  
   // describe('With proxy', async () => {
   //   testCorpus({ withProxy: true })
   // })

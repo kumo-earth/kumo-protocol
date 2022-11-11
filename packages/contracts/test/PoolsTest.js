@@ -20,9 +20,8 @@ contract('StabilityPool', async accounts => {
   const [owner, alice] = accounts;
 
   beforeEach(async () => {
-    const { stabilityPoolEthers } = await deploymentHelper.deployKUMOCoreUpgradeableEthers();
+    stabilityPool = await deploymentHelper.deployAndInitContract(StabilityPool)
 
-    stabilityPool = await StabilityPool.at(stabilityPoolEthers.address)
     const mockActivePoolAddress = (await NonPayable.new()).address
     const dumbContractAddress = (await NonPayable.new()).address
     await stabilityPool.setAddresses(dumbContractAddress, dumbContractAddress, mockActivePoolAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress)
