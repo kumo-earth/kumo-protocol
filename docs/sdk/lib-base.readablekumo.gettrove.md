@@ -9,14 +9,14 @@ Get the current state of a Trove.
 <b>Signature:</b>
 
 ```typescript
-getTrove(asset: string, address?: string): Promise<UserTrove>;
+getTrove(asset: string, address: string): Promise<UserTrove>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  asset | string |  |
+|  asset | string | Address of the ERC20 Asset |
 |  address | string | Address that owns the Trove. |
 
 <b>Returns:</b>

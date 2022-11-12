@@ -247,7 +247,7 @@ export class SendableEthersKumo
   /** @internal */
   _mintUniToken(
     amount: Decimalish,
-    address?: string,
+    address: string,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersKumoTransaction<void>> {
     return this._populate._mintUniToken(amount, address, overrides).then(sendTransaction);

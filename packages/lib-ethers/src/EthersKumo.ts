@@ -165,14 +165,14 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTroveBeforeRedistribution} */
   getTroveBeforeRedistribution(
     asset: string,
-    address?: string,
+    address: string,
     overrides?: EthersCallOverrides
   ): Promise<TroveWithPendingRedistribution> {
     return this._readable.getTroveBeforeRedistribution(asset, address, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTrove} */
-  getTrove(asset: string, address?: string, overrides?: EthersCallOverrides): Promise<UserTrove> {
+  getTrove(asset: string, address: string, overrides?: EthersCallOverrides): Promise<UserTrove> {
     return this._readable.getTrove(asset, address, overrides);
   }
 
@@ -202,7 +202,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getStabilityDeposit} */
-  getStabilityDeposit(address?: string, overrides?: EthersCallOverrides): Promise<StabilityDeposit> {
+  getStabilityDeposit(address: string, overrides?: EthersCallOverrides): Promise<StabilityDeposit> {
     return this._readable.getStabilityDeposit(address, overrides);
   }
 
@@ -217,22 +217,22 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDBalance} */
-  getKUSDBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+  getKUSDBalance(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getKUSDBalance(address, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUMOBalance} */
-  getKUMOBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+  getKUMOBalance(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getKUMOBalance(address, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getUniTokenBalance} */
-  getUniTokenBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+  getUniTokenBalance(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getUniTokenBalance(address, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getUniTokenAllowance} */
-  getUniTokenAllowance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+  getUniTokenAllowance(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getUniTokenAllowance(address, overrides);
   }
 
@@ -249,7 +249,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getLiquidityMiningStake} */
-  getLiquidityMiningStake(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+  getLiquidityMiningStake(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getLiquidityMiningStake(address, overrides);
   }
 
@@ -259,14 +259,14 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getLiquidityMiningKUMOReward} */
-  getLiquidityMiningKUMOReward(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+  getLiquidityMiningKUMOReward(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getLiquidityMiningKUMOReward(address, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getCollateralSurplusBalance} */
   getCollateralSurplusBalance(
     asset: string,
-    address?: string,
+    address: string,
     overrides?: EthersCallOverrides
   ): Promise<Decimal> {
     return this._readable.getCollateralSurplusBalance(asset, address, overrides);
@@ -315,7 +315,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUMOStake} */
   getKUMOStake(
     asset: string,
-    address?: string,
+    address: string,
     overrides?: EthersCallOverrides
   ): Promise<KUMOStake> {
     return this._readable.getKUMOStake(asset, address, overrides);
@@ -327,7 +327,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getFrontendStatus} */
-  getFrontendStatus(address?: string, overrides?: EthersCallOverrides): Promise<FrontendStatus> {
+  getFrontendStatus(address: string, overrides?: EthersCallOverrides): Promise<FrontendStatus> {
     return this._readable.getFrontendStatus(address, overrides);
   }
 
@@ -636,7 +636,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   /** @internal */
   _mintUniToken(
     amount: Decimalish,
-    address?: string,
+    address: string,
     overrides?: EthersTransactionOverrides
   ): Promise<void> {
     return this.send._mintUniToken(amount, address, overrides).then(waitForSuccess);

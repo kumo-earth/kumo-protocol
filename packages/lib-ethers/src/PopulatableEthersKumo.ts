@@ -1177,7 +1177,7 @@ export class PopulatableEthersKumo
     const { stabilityPool } = _getContracts(this._readable.connection);
 
     const [initialTrove, stabilityDeposit] = await Promise.all([
-      this._readable.getTrove(address),
+      this._readable.getTrove(asset, address),
       this._readable.getStabilityDeposit(address)
     ]);
 
@@ -1356,7 +1356,7 @@ export class PopulatableEthersKumo
   /** @internal */
   async _mintUniToken(
     amount: Decimalish,
-    address?: string,
+    address: string,
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<void>> {
     address ??= _requireAddress(this._readable.connection, overrides);

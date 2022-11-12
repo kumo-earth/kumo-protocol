@@ -9,7 +9,7 @@ Check whether an address is registered as a Kumo frontend, and what its kickback
 <b>Signature:</b>
 
 ```typescript
-getFrontendStatus(address?: string, overrides?: EthersCallOverrides): Promise<FrontendStatus>;
+getFrontendStatus(address: string, overrides?: EthersCallOverrides): Promise<FrontendStatus>;
 ```
 
 ## Parameters

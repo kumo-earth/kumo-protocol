@@ -22,13 +22,15 @@
     "kumoParameters": "0",
     "priceFeed": "0x4c517D4e2C851CA76d7eC94B805269Df0f2201De",
     "sortedTroves": "0x8FdD3fbFEb32b28fb73555518f8b361bCeA741A6",
-    "stabilityPool": "0x66017D22b0f8556afDd19FC67041899Eb65a21bb",
+    "stabilityPool": "0xE827B7ef5362281292f0327DBB7f233d8A076627",
+    "stabilityPoolFactory": "0",
     "gasPool": "0x9555b042F969E561855e5F28cB1230819149A8d9",
     "unipool": "0xd37a77E71ddF3373a79BE2eBB76B6c4808bDF0d5",
     "kusdToken": "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
     "kumoToken": "0x6DEA81C8171D0bA574754EF6F8b412F2Ed88c54D",
     "multiTroveGetter": "0xFc92d0E9Fa35df17E3A6d9F40716ca2cE749922B",
     "uniToken": "0xF20EF17b889b437C151eB5bA15A47bFc62bfF469",
-    "mockAsset1": "0x69C735ce75B3Dec7c1Cdf21306628A6eb1b81346"
+    "mockAsset1": "0x69C735ce75B3Dec7c1Cdf21306628A6eb1b81346",
+    "mockAsset2": "0x874bE2797c1038dB009dc00ed3Bc89C5366f1F61"
   }
 }
