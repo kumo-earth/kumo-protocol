@@ -103,7 +103,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
         numberOfTroves: this._readable.getNumberOfTroves(asset, { blockTag }),
         totalRedistributed: this._readable.getTotalRedistributed(asset, { blockTag }),
         total: this._readable.getTotal(asset, { blockTag }),
-        kusdInStabilityPool: this._readable.getKUSDInStabilityPool({ blockTag }),
+        kusdInStabilityPool: this._readable.getKUSDInStabilityPool(asset, { blockTag }),
         totalStakedKUMO: this._readable.getTotalStakedKUMO({ blockTag }),
         _riskiestTroveBeforeRedistribution: this._getRiskiestTroveBeforeRedistribution(asset, {
           blockTag

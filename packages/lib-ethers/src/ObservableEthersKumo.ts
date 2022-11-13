@@ -167,6 +167,7 @@ export class ObservableEthersKumo implements ObservableKumo {
   }
 
   watchKUSDInStabilityPool(
+    asset: string,
     onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void
   ): () => void {
     const { kusdToken, stabilityPool } = _getContracts(this._readable.connection);
@@ -178,7 +179,7 @@ export class ObservableEthersKumo implements ObservableKumo {
     const stabilityPoolKUSDFilters = [transferKUSDFromStabilityPool, transferKUSDToStabilityPool];
 
     const stabilityPoolKUSDListener = debounce((blockTag: number) => {
-      this._readable.getKUSDInStabilityPool({ blockTag }).then(onKUSDInStabilityPoolChanged);
+      this._readable.getKUSDInStabilityPool(asset, { blockTag }).then(onKUSDInStabilityPoolChanged);
     });
 
     stabilityPoolKUSDFilters.forEach(filter => kusdToken.on(filter, stabilityPoolKUSDListener));

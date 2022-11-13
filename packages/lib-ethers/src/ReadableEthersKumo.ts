@@ -287,21 +287,23 @@ export class ReadableEthersKumo implements ReadableKumo {
     return issuanceCap.sub(totalKUMOIssued);
   }
 
-  // /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDInStabilityPool} */
-  // getKUSDInStabilityPool(asset: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-  //   const { stabilityPoolFactory, stabilityPool } = _getContracts(this.connection);
-  //   let stabilityPoolCached: typeof stabilityPool;
-  //   stabilityPoolCached = stabilityPoolFactory.getStabilityPoolByAsset(asset);
-
-  //   return stabilityPoolCached.getTotalKUSDDeposits({ ...overrides }).then(decimalify);
-  // }
-
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDInStabilityPool} */
-  getKUSDInStabilityPool(overrides?: EthersCallOverrides): Promise<Decimal> {
-    const { stabilityPool } = _getContracts(this.connection);
-
-    return stabilityPool.getTotalKUSDDeposits({ ...overrides }).then(decimalify);
+  async getKUSDInStabilityPool(asset: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+    const { stabilityPoolFactory } = _getContracts(this.connection);
+    // let stabilityPoolCached: IStabilityPool
+    const stabilityPoolCached = await stabilityPoolFactory.getStabilityPoolByAsset(asset);
+    // const stabiltyPool = await hardhatethershe
+    const stabiltyPool = await ethers.getContractAt("StabilityPool", stabilityPoolCached);
+    return stabiltyPool.getTotalKUSDDeposits({ ...overrides }).then(decimalify);
   }
+
+  // /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDInStabilityPool} */
+  // getKUSDInStabilityPool(overrides?: EthersCallOverrides): Promise<Decimal> {
+  //   const { stabilityPool } = _getContracts(this.connection);
+
+
+  //   return stabilityPool.getTotalKUSDDeposits({ ...overrides }).then(decimalify);
+  // }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDBalance} */
   getKUSDBalance(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
@@ -657,10 +659,10 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
       : this._readable.getRemainingStabilityPoolKUMOReward(overrides);
   }
 
-  async getKUSDInStabilityPool(overrides?: EthersCallOverrides): Promise<Decimal> {
+  async getKUSDInStabilityPool(asset: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._blockHit(overrides)
       ? this.store.state.kusdInStabilityPool
-      : this._readable.getKUSDInStabilityPool(overrides);
+      : this._readable.getKUSDInStabilityPool(asset, overrides);
   }
 
   async getKUSDBalance(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {

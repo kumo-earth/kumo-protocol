@@ -212,8 +212,8 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDInStabilityPool} */
-  getKUSDInStabilityPool(overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._readable.getKUSDInStabilityPool(overrides);
+  getKUSDInStabilityPool(asset: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+    return this._readable.getKUSDInStabilityPool(asset, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDBalance} */
