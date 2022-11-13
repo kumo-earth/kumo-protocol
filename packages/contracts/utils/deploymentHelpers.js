@@ -458,6 +458,16 @@ class DeploymentHelper {
     await uniPool.setParams(KUMOContracts.kumoToken.address, uniswapPairAddr, duration)
   }
 
+  static async mintMockAssets(erc20Asset, accounts, numberOfAccounts) {
+    let index = 0;
+    for (const acc of accounts) {
+      await erc20Asset.mint(acc, await web3.eth.getBalance(acc))
+      index++;
+      if (index >= numberOfAccounts)
+        break;
+    }
+  }
+
   static async addNewAssetToSystem(contracts, KUMOContracts, asset) {
 
     // Deoloy new stability pool contract
