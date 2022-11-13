@@ -111,7 +111,7 @@ export interface ReadableKumo {
   /**
    * Get the total amount of KUSD currently deposited in the Stability Pool.
    */
-  getKUSDInStabilityPool(): Promise<Decimal>;
+  getKUSDInStabilityPool(asset: string): Promise<Decimal>;
 
   /**
    * Get the amount of KUSD held by an address.

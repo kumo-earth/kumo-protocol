@@ -20,7 +20,7 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     // (undocumented)
     getKUSDBalance(address: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
-    getKUSDInStabilityPool(...extraParams: T): Promise<Decimal>;
+    getKUSDInStabilityPool(asset: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
     getLiquidityMiningKUMOReward(address: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
@@ -394,7 +394,7 @@ export interface ObservableKumo {
     // (undocumented)
     watchKUSDBalance(onKUSDBalanceChanged: (balance: Decimal) => void, address: string): () => void;
     // (undocumented)
-    watchKUSDInStabilityPool(onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void): () => void;
+    watchKUSDInStabilityPool(asset: string, onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void): () => void;
     // (undocumented)
     watchNumberOfTroves(onNumberOfTrovesChanged: (numberOfTroves: number) => void): () => void;
     // (undocumented)
@@ -496,7 +496,7 @@ export interface ReadableKumo {
     getKUMOBalance(address: string): Promise<Decimal>;
     getKUMOStake(asset: string, address: string): Promise<KUMOStake>;
     getKUSDBalance(address: string): Promise<Decimal>;
-    getKUSDInStabilityPool(): Promise<Decimal>;
+    getKUSDInStabilityPool(asset: string): Promise<Decimal>;
     getLiquidityMiningKUMOReward(address: string): Promise<Decimal>;
     getLiquidityMiningStake(address: string): Promise<Decimal>;
     getNumberOfTroves(asset: string): Promise<number>;

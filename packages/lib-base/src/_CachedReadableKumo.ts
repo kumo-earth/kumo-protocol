@@ -115,10 +115,10 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     );
   }
 
-  async getKUSDInStabilityPool(...extraParams: T): Promise<Decimal> {
+  async getKUSDInStabilityPool(asset: string, ...extraParams: T): Promise<Decimal> {
     return (
-      this._cache.getKUSDInStabilityPool(...extraParams) ??
-      this._readable.getKUSDInStabilityPool(...extraParams)
+      this._cache.getKUSDInStabilityPool(asset, ...extraParams) ??
+      this._readable.getKUSDInStabilityPool(asset, ...extraParams)
     );
   }
 

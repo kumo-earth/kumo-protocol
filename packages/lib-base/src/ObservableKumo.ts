@@ -25,6 +25,7 @@ export interface ObservableKumo {
   ): () => void;
 
   watchKUSDInStabilityPool(
+    asset: string,
     onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void
   ): () => void;
 
