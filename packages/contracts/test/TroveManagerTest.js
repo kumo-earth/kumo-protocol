@@ -3,6 +3,7 @@ const deploymentHelper = require("../utils/deploymentHelpers.js")
 const testHelpers = require("../utils/testHelpers.js")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
 const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol")
+const StabilityPool = artifacts.require("./StabilityPool.sol")
 
 const th = testHelpers.TestHelper
 const dec = th.dec
@@ -50,8 +51,8 @@ contract('TroveManager', async accounts => {
   let hardhatTester
   let erc20Asset1
   let erc20Asset2
-
-
+  let stabilityPoolAsset1
+  let stabilityPoolAsset2
 
   let contracts
 
@@ -78,12 +79,12 @@ contract('TroveManager', async accounts => {
     sortedTroves = contracts.sortedTroves
     troveManager = contracts.troveManager
     activePool = contracts.activePool
-    stabilityPool = contracts.stabilityPool
     defaultPool = contracts.defaultPool
     collSurplusPool = contracts.collSurplusPool
     borrowerOperations = contracts.borrowerOperations
     hintHelpers = contracts.hintHelpers
     kumoParams = contracts.kumoParameters
+    stabilityPoolFactory = contracts.stabilityPoolFactory
 
     kumoStaking = KUMOContracts.kumoStaking
     kumoToken = KUMOContracts.kumoToken
@@ -98,28 +99,17 @@ contract('TroveManager', async accounts => {
     await deploymentHelper.connectKUMOContracts(KUMOContracts)
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
 
-    // Add asset to the system
+    // Add assets to the system
     await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
     await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress2)
 
     // Mint token to each acccount
-    let index = 0;
-    for (const acc of accounts) {
-      await erc20Asset1.mint(acc, await web3.eth.getBalance(acc))
-      index++;
+    await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 20)
+    await deploymentHelper.mintMockAssets(erc20Asset2, accounts, 20)
 
-      if (index >= 20)
-        break;
-    }
-
-    index = 0;
-    for (const acc of accounts) {
-      await erc20Asset2.mint(acc, await web3.eth.getBalance(acc))
-      index++;
-
-      if (index >= 20)
-        break;
-    }
+    // Set StabilityPools
+    stabilityPoolAsset1 = await StabilityPool.at(await stabilityPoolFactory.getStabilityPoolByAsset(assetAddress1))
+    stabilityPoolAsset2 = await StabilityPool.at(await stabilityPoolFactory.getStabilityPoolByAsset(assetAddress2))
   })
 
   it('liquidate(): closes a Trove that has ICR < MCR', async () => {
@@ -444,7 +434,7 @@ contract('TroveManager', async accounts => {
     const { collateral: A_collateral_Asset1, totalDebt: A_totalDebt_Asset1 } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
     // Alice proves 10 KUSD to SP
-    await stabilityPool.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: alice })
+    await stabilityPoolAsset1.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: alice })
 
     // Set ETH:USD price to 105
     await priceFeed.setPrice('105000000000000000000')
@@ -562,7 +552,7 @@ contract('TroveManager', async accounts => {
     // Whale provides KUSD to SP
     const spDeposit = toBN(dec(100, 24))
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(4, 18)), extraKUSDAmount: spDeposit, extraParams: { from: whale } })
-    await stabilityPool.provideToSP(spDeposit, ZERO_ADDRESS, { from: whale })
+    await stabilityPoolAsset1.provideToSP(spDeposit, ZERO_ADDRESS, { from: whale })
 
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(70, 18)), extraParams: { from: bob } })
@@ -611,7 +601,7 @@ contract('TroveManager', async accounts => {
     // Whale provides KUSD to SP
     const spDeposit = toBN(dec(100, 24))
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(4, 18)), extraKUSDAmount: spDeposit, extraParams: { from: whale } })
-    await stabilityPool.provideToSP(spDeposit, ZERO_ADDRESS, { from: whale })
+    await stabilityPoolAsset1.provideToSP(spDeposit, ZERO_ADDRESS, { from: whale })
 
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(70, 18)), extraParams: { from: bob } })
@@ -734,7 +724,7 @@ contract('TroveManager', async accounts => {
     assert.isTrue(expectedTCR_3.eq(TCR_3))
 
     //   // B provides to SP
-    //   await stabilityPool.provideToSP(dec(100, 18), assetAddress1, { from: B })
+    //   await stabilityPoolAsset1.provideToSP(dec(100, 18), assetAddress1, { from: B })
 
     const liquidationTx_4 = await troveManager.liquidate(assetAddress1, defaulter_4)
     const [liquidatedDebt_4, liquidatedColl_4, gasComp_4] = th.getEmittedLiquidationValues(liquidationTx_4)
@@ -763,7 +753,7 @@ contract('TroveManager', async accounts => {
     await kusdToken.transfer(dennis, spDeposit, { from: bob })
 
     //Dennis provides KUSD to SP
-    await stabilityPool.provideToSP(spDeposit, ZERO_ADDRESS, { from: dennis })
+    await stabilityPoolAsset1.provideToSP(spDeposit, ZERO_ADDRESS, { from: dennis })
 
     // Carol gets liquidated
     await priceFeed.setPrice(dec(100, 18))
@@ -772,8 +762,8 @@ contract('TroveManager', async accounts => {
 
     assert.isFalse(await sortedTroves.contains(assetAddress1, carol))
     // Check Dennis' SP deposit has absorbed Carol's debt, and he has received her liquidated ETH
-    const dennis_Deposit_Before = (await stabilityPool.getCompoundedKUSDDeposit(dennis)).toString()
-    const dennis_ETHGain_Before = (await stabilityPool.getDepositorAssetGain(dennis)).toString()
+    const dennis_Deposit_Before = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(dennis)).toString()
+    const dennis_ETHGain_Before = (await stabilityPoolAsset1.getDepositorAssetGain(dennis)).toString()
     assert.isAtMost(th.getDifference(dennis_Deposit_Before, spDeposit.sub(liquidatedDebt)), 1000000)
     assert.isAtMost(th.getDifference(dennis_ETHGain_Before, liquidatedColl), 1000)
 
@@ -790,8 +780,8 @@ contract('TroveManager', async accounts => {
     }
 
     // Check Dennis' SP deposit does not change after liquidation attempt
-    const dennis_Deposit_After = (await stabilityPool.getCompoundedKUSDDeposit(dennis)).toString()
-    const dennis_ETHGain_After = (await stabilityPool.getDepositorAssetGain(dennis)).toString()
+    const dennis_Deposit_After = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(dennis)).toString()
+    const dennis_ETHGain_After = (await stabilityPoolAsset1.getDepositorAssetGain(dennis)).toString()
     assert.equal(dennis_Deposit_Before, dennis_Deposit_After)
     assert.equal(dennis_ETHGain_Before, dennis_ETHGain_After)
   })
@@ -803,7 +793,7 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(218, 16)), extraKUSDAmount: toBN(dec(100, 18)), extraParams: { from: carol } })
 
     //Bob provides KUSD to SP
-    await stabilityPool.provideToSP(spDeposit, ZERO_ADDRESS, { from: bob })
+    await stabilityPoolAsset1.provideToSP(spDeposit, ZERO_ADDRESS, { from: bob })
 
     // Carol gets liquidated
     await priceFeed.setPrice(dec(100, 18))
@@ -817,8 +807,8 @@ contract('TroveManager', async accounts => {
     assert.isTrue((await troveManager.getCurrentICR(assetAddress1, bob, price)).gt(mv._MCR))
 
     // Check Bob' SP deposit has absorbed Carol's debt, and he has received her liquidated ETH
-    const bob_Deposit_Before = (await stabilityPool.getCompoundedKUSDDeposit(bob)).toString()
-    const bob_ETHGain_Before = (await stabilityPool.getDepositorAssetGain(bob)).toString()
+    const bob_Deposit_Before = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)).toString()
+    const bob_ETHGain_Before = (await stabilityPoolAsset1.getDepositorAssetGain(bob)).toString()
     assert.isAtMost(th.getDifference(bob_Deposit_Before, spDeposit.sub(liquidatedDebt)), 1000000)
     assert.isAtMost(th.getDifference(bob_ETHGain_Before, liquidatedColl), 1000)
 
@@ -832,8 +822,8 @@ contract('TroveManager', async accounts => {
     assert.isTrue(await sortedTroves.contains(assetAddress1, bob))
 
     // Check Bob' SP deposit does not change after liquidation attempt
-    const bob_Deposit_After = (await stabilityPool.getCompoundedKUSDDeposit(bob)).toString()
-    const bob_ETHGain_After = (await stabilityPool.getDepositorAssetGain(bob)).toString()
+    const bob_Deposit_After = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)).toString()
+    const bob_ETHGain_After = (await stabilityPoolAsset1.getDepositorAssetGain(bob)).toString()
     assert.equal(bob_Deposit_Before, bob_Deposit_After)
     assert.equal(bob_ETHGain_Before, bob_ETHGain_After)
   })
@@ -847,20 +837,20 @@ contract('TroveManager', async accounts => {
     const { collateral: C_collateral, totalDebt: C_debt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(210, 16)), extraKUSDAmount: toBN(dec(100, 18)), extraParams: { from: carol } })
 
     //Bob provides KUSD to SP
-    await stabilityPool.provideToSP(B_spDeposit, ZERO_ADDRESS, { from: bob })
+    await stabilityPoolAsset1.provideToSP(B_spDeposit, ZERO_ADDRESS, { from: bob })
 
     // Carol gets liquidated
     await priceFeed.setPrice(dec(100, 18))
     await troveManager.liquidate(assetAddress1, carol)
 
     // Check Bob' SP deposit has absorbed Carol's debt, and he has received her liquidated ETH
-    const bob_Deposit_Before = await stabilityPool.getCompoundedKUSDDeposit(bob)
-    const bob_ETHGain_Before = await stabilityPool.getDepositorAssetGain(bob)
+    const bob_Deposit_Before = await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)
+    const bob_ETHGain_Before = await stabilityPoolAsset1.getDepositorAssetGain(bob)
     assert.isAtMost(th.getDifference(bob_Deposit_Before, B_spDeposit.sub(C_debt)), 1000000)
     assert.isAtMost(th.getDifference(bob_ETHGain_Before, th.applyLiquidationFee(C_collateral)), 1000)
 
     // Alice provides KUSD to SP
-    await stabilityPool.provideToSP(A_spDeposit, ZERO_ADDRESS, { from: alice })
+    await stabilityPoolAsset1.provideToSP(A_spDeposit, ZERO_ADDRESS, { from: alice })
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -880,16 +870,16 @@ contract('TroveManager', async accounts => {
        Bob's ETH gain = (100 / 400) * 2*0.995 = 0.4975 ETH
 
      Check Bob' SP deposit has been reduced to 50 KUSD, and his ETH gain has increased to 1.5 ETH. */
-    const alice_Deposit_After = (await stabilityPool.getCompoundedKUSDDeposit(alice)).toString()
-    const alice_ETHGain_After = (await stabilityPool.getDepositorAssetGain(alice)).toString()
+    const alice_Deposit_After = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(alice)).toString()
+    const alice_ETHGain_After = (await stabilityPoolAsset1.getDepositorAssetGain(alice)).toString()
 
     const totalDeposits = bob_Deposit_Before.add(A_spDeposit)
 
     assert.isAtMost(th.getDifference(alice_Deposit_After, A_spDeposit.sub(B_debt.mul(A_spDeposit).div(totalDeposits))), 1000000)
     assert.isAtMost(th.getDifference(alice_ETHGain_After, th.applyLiquidationFee(B_collateral_Asset1).mul(A_spDeposit).div(totalDeposits)), 1000000)
 
-    const bob_Deposit_After = await stabilityPool.getCompoundedKUSDDeposit(bob)
-    const bob_ETHGain_After = await stabilityPool.getDepositorAssetGain(bob)
+    const bob_Deposit_After = await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)
+    const bob_ETHGain_After = await stabilityPoolAsset1.getDepositorAssetGain(bob)
 
     assert.isAtMost(th.getDifference(bob_Deposit_After, bob_Deposit_Before.sub(B_debt.mul(bob_Deposit_Before).div(totalDeposits))), 1000000)
     assert.isAtMost(th.getDifference(bob_ETHGain_After, bob_ETHGain_Before.add(th.applyLiquidationFee(B_collateral_Asset1).mul(bob_Deposit_Before).div(totalDeposits))), 1000000)
@@ -1039,10 +1029,10 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
     // B provides to SP
-    await stabilityPool.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B })
-    assert.equal(await stabilityPool.getTotalKUSDDeposits(), dec(100, 18))
+    await stabilityPoolAsset1.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B })
+    assert.equal(await stabilityPoolAsset1.getTotalKUSDDeposits(), dec(100, 18))
 
-    const G_Before = await stabilityPool.epochToScaleToG(0, 0)
+    const G_Before = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -1055,7 +1045,7 @@ contract('TroveManager', async accounts => {
     await troveManager.liquidate(assetAddress1, defaulter_1)
     assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
 
-    const G_After = await stabilityPool.epochToScaleToG(0, 0)
+    const G_After = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
     // Expect G has increased from the KUMO reward event triggered
     assert.isTrue(G_After.gt(G_Before))
@@ -1072,18 +1062,18 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
     // B provides to SP
-    await stabilityPool.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B })
+    await stabilityPoolAsset1.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B })
 
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
     // B withdraws
-    await stabilityPool.withdrawFromSP(dec(100, 18), { from: B })
+    await stabilityPoolAsset1.withdrawFromSP(dec(100, 18), { from: B })
 
     // Check SP is empty
-    assert.equal((await stabilityPool.getTotalKUSDDeposits()), '0')
+    assert.equal((await stabilityPoolAsset1.getTotalKUSDDeposits()), '0')
 
     // Check G is non-zero
-    const G_Before = await stabilityPool.epochToScaleToG(0, 0)
+    const G_Before = await stabilityPoolAsset1.epochToScaleToG(0, 0)
     assert.isTrue(G_Before.gt(toBN('0')))
 
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
@@ -1097,7 +1087,7 @@ contract('TroveManager', async accounts => {
     await troveManager.liquidate(assetAddress1, defaulter_1)
     assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
 
-    const G_After = await stabilityPool.epochToScaleToG(0, 0)
+    const G_After = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
     // Expect G has not changed
     assert.isTrue(G_After.eq(G_Before))
@@ -1126,7 +1116,7 @@ contract('TroveManager', async accounts => {
     assert.isFalse(await sortedTroves.contains(assetAddress1, A))
 
     // A adds 10 KUSD to the SP, but less than C's debt
-    await stabilityPool.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: A })
+    await stabilityPoolAsset1.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: A })
 
     // Price drops
     await priceFeed.setPrice(dec(100, 18))
@@ -1173,8 +1163,8 @@ contract('TroveManager', async accounts => {
     assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1),)
 
     // D and E fill the Stability Pool, enough to completely absorb C's debt of 70
-    await stabilityPool.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: D })
-    await stabilityPool.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: E })
+    await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: D })
+    await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: E })
 
     await priceFeed.setPrice(dec(50, 18))
 
@@ -1204,7 +1194,7 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(80, 18)), extraParams: { from: ida } })
 
     // Whale puts some tokens in Stability Pool
-    await stabilityPool.provideToSP(dec(300, 18), ZERO_ADDRESS, { from: whale })
+    await stabilityPoolAsset1.provideToSP(dec(300, 18), ZERO_ADDRESS, { from: whale })
 
     // --- TEST ---
 
@@ -1560,7 +1550,7 @@ contract('TroveManager', async accounts => {
   it("liquidateTroves(): A liquidation sequence containing Pool offsets increases the TCR", async () => {
     // Whale provides 500 KUSD to SP
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(100, 18)), extraKUSDAmount: toBN(dec(500, 18)), extraParams: { from: whale } })
-    await stabilityPool.provideToSP(dec(500, 18), ZERO_ADDRESS, { from: whale })
+    await stabilityPoolAsset1.provideToSP(dec(500, 18), ZERO_ADDRESS, { from: whale })
 
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(4, 18)), extraParams: { from: alice } })
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(28, 18)), extraParams: { from: bob } })
@@ -1585,7 +1575,7 @@ contract('TroveManager', async accounts => {
     const TCR_Before = await th.getTCR(contracts, assetAddress1)
 
     // Check pool has 500 KUSD
-    assert.equal((await stabilityPool.getTotalKUSDDeposits()).toString(), dec(500, 18))
+    assert.equal((await stabilityPoolAsset1.getTotalKUSDDeposits()).toString(), dec(500, 18))
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -1594,7 +1584,7 @@ contract('TroveManager', async accounts => {
     await troveManager.liquidateTroves(assetAddress1, 10)
 
     // Check pool has been emptied by the liquidations
-    assert.equal((await stabilityPool.getTotalKUSDDeposits()).toString(), '0')
+    assert.equal((await stabilityPoolAsset1.getTotalKUSDDeposits()).toString(), '0')
 
     // Check all defaulters have been liquidated
     assert.isFalse((await sortedTroves.contains(assetAddress1, defaulter_1)))
@@ -1642,7 +1632,7 @@ contract('TroveManager', async accounts => {
     assert.isAtMost(th.getDifference(TCR_Before, totalColl.mul(price).div(totalDebt)), 1000)
 
     // Check pool is empty before liquidation
-    assert.equal((await stabilityPool.getTotalKUSDDeposits()).toString(), '0')
+    assert.equal((await stabilityPoolAsset1.getTotalKUSDDeposits()).toString(), '0')
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -1671,7 +1661,7 @@ contract('TroveManager', async accounts => {
     // Whale provides 400 KUSD to the SP
     const whaleDeposit = toBN(dec(40000, 18))
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(100, 18)), extraKUSDAmount: whaleDeposit, extraParams: { from: whale } })
-    await stabilityPool.provideToSP(whaleDeposit, ZERO_ADDRESS, { from: whale })
+    await stabilityPoolAsset1.provideToSP(whaleDeposit, ZERO_ADDRESS, { from: whale })
 
     const A_deposit = toBN(dec(10000, 18))
     const B_deposit = toBN(dec(30000, 18))
@@ -1683,8 +1673,8 @@ contract('TroveManager', async accounts => {
     const liquidatedDebt = A_debt.add(B_debt).add(C_debt)
 
     // A, B provide 100, 300 to the SP
-    await stabilityPool.provideToSP(A_deposit, ZERO_ADDRESS, { from: alice })
-    await stabilityPool.provideToSP(B_deposit, ZERO_ADDRESS, { from: bob })
+    await stabilityPoolAsset1.provideToSP(A_deposit, ZERO_ADDRESS, { from: alice })
+    await stabilityPoolAsset1.provideToSP(B_deposit, ZERO_ADDRESS, { from: bob })
 
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), '4')
 
@@ -1693,7 +1683,7 @@ contract('TroveManager', async accounts => {
 
     // Check 800 KUSD in Pool
     const totalDeposits = whaleDeposit.add(A_deposit).add(B_deposit)
-    assert.equal((await stabilityPool.getTotalKUSDDeposits()).toString(), totalDeposits)
+    assert.equal((await stabilityPoolAsset1.getTotalKUSDDeposits()).toString(), totalDeposits)
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -1738,13 +1728,13 @@ contract('TroveManager', async accounts => {
     Total ETH gain: 4.975 ETH */
 
     // Check remaining KUSD Deposits and ETH gain, for whale and depositors whose troves were liquidated
-    const whale_Deposit_After = await stabilityPool.getCompoundedKUSDDeposit(whale)
-    const alice_Deposit_After = await stabilityPool.getCompoundedKUSDDeposit(alice)
-    const bob_Deposit_After = await stabilityPool.getCompoundedKUSDDeposit(bob)
+    const whale_Deposit_After = await stabilityPoolAsset1.getCompoundedKUSDDeposit(whale)
+    const alice_Deposit_After = await stabilityPoolAsset1.getCompoundedKUSDDeposit(alice)
+    const bob_Deposit_After = await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)
 
-    const whale_ETHGain = await stabilityPool.getDepositorAssetGain(whale)
-    const alice_ETHGain = await stabilityPool.getDepositorAssetGain(alice)
-    const bob_ETHGain = await stabilityPool.getDepositorAssetGain(bob)
+    const whale_ETHGain = await stabilityPoolAsset1.getDepositorAssetGain(whale)
+    const alice_ETHGain = await stabilityPoolAsset1.getDepositorAssetGain(alice)
+    const bob_ETHGain = await stabilityPoolAsset1.getDepositorAssetGain(bob)
 
     assert.isAtMost(th.getDifference(whale_Deposit_After, whaleDeposit.sub(liquidatedDebt.mul(whaleDeposit).div(totalDeposits))), 100000)
     assert.isAtMost(th.getDifference(alice_Deposit_After, A_deposit.sub(liquidatedDebt.mul(A_deposit).div(totalDeposits))), 100000)
@@ -1755,8 +1745,8 @@ contract('TroveManager', async accounts => {
     assert.isAtMost(th.getDifference(bob_ETHGain, th.applyLiquidationFee(liquidatedColl).mul(B_deposit).div(totalDeposits)), 100000)
 
     // Check total remaining deposits and ETH gain in Stability Pool
-    const total_KUSDinSP = (await stabilityPool.getTotalKUSDDeposits()).toString()
-    const total_ETHinSP = (await stabilityPool.getAssetBalance()).toString()
+    const total_KUSDinSP = (await stabilityPoolAsset1.getTotalKUSDDeposits()).toString()
+    const total_ETHinSP = (await stabilityPoolAsset1.getAssetBalance()).toString()
 
     assert.isAtMost(th.getDifference(total_KUSDinSP, totalDeposits.sub(liquidatedDebt)), 1000)
     assert.isAtMost(th.getDifference(total_ETHinSP, th.applyLiquidationFee(liquidatedColl)), 1000)
@@ -1774,10 +1764,10 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(213, 16)), extraParams: { from: defaulter_2 } })
 
     // B provides to SP
-    await stabilityPool.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B })
-    assert.equal(await stabilityPool.getTotalKUSDDeposits(), dec(100, 18))
+    await stabilityPoolAsset1.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B })
+    assert.equal(await stabilityPoolAsset1.getTotalKUSDDeposits(), dec(100, 18))
 
-    const G_Before = await stabilityPool.epochToScaleToG(0, 0)
+    const G_Before = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -1791,7 +1781,7 @@ contract('TroveManager', async accounts => {
     assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
     assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_2))
 
-    const G_After = await stabilityPool.epochToScaleToG(0, 0)
+    const G_After = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
     // Expect G has increased from the KUMO reward event triggered
     assert.isTrue(G_After.gt(G_Before))
@@ -1809,18 +1799,18 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(213, 16)), extraParams: { from: defaulter_2 } })
 
     // B provides to SP
-    await stabilityPool.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B })
+    await stabilityPoolAsset1.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B })
 
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
     // B withdraws
-    await stabilityPool.withdrawFromSP(dec(100, 18), { from: B })
+    await stabilityPoolAsset1.withdrawFromSP(dec(100, 18), { from: B })
 
     // Check SP is empty
-    assert.equal((await stabilityPool.getTotalKUSDDeposits()), '0')
+    assert.equal((await stabilityPoolAsset1.getTotalKUSDDeposits()), '0')
 
     // Check G is non-zero
-    const G_Before = await stabilityPool.epochToScaleToG(0, 0)
+    const G_Before = await stabilityPoolAsset1.epochToScaleToG(0, 0)
     assert.isTrue(G_Before.gt(toBN('0')))
 
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
@@ -1835,7 +1825,7 @@ contract('TroveManager', async accounts => {
     assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
     assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_2))
 
-    const G_After = await stabilityPool.epochToScaleToG(0, 0)
+    const G_After = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
     // Expect G has not changed
     assert.isTrue(G_After.eq(G_Before))
@@ -1869,7 +1859,7 @@ contract('TroveManager', async accounts => {
     assert.isFalse(await sortedTroves.contains(assetAddress1, A))
 
     // A adds 10 KUSD to the SP, but less than C's debt
-    await stabilityPool.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: A })
+    await stabilityPoolAsset1.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: A })
 
     // Price drops
     await priceFeed.setPrice(dec(100, 18))
@@ -1916,8 +1906,8 @@ contract('TroveManager', async accounts => {
     assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1),)
 
     // D and E fill the Stability Pool, enough to completely absorb C's debt of 70
-    await stabilityPool.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: D })
-    await stabilityPool.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: E })
+    await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: D })
+    await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: E })
 
     await priceFeed.setPrice(dec(50, 18))
 
@@ -1944,7 +1934,7 @@ contract('TroveManager', async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), '6')
 
     // Whale puts some tokens in Stability Pool
-    await stabilityPool.provideToSP(dec(300, 18), ZERO_ADDRESS, { from: whale })
+    await stabilityPoolAsset1.provideToSP(dec(300, 18), ZERO_ADDRESS, { from: whale })
 
     // --- TEST ---
 
@@ -1998,7 +1988,7 @@ contract('TroveManager', async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), '6')
 
     // Whale puts some tokens in Stability Pool
-    await stabilityPool.provideToSP(dec(300, 18), ZERO_ADDRESS, { from: whale })
+    await stabilityPoolAsset1.provideToSP(dec(300, 18), ZERO_ADDRESS, { from: whale })
 
     // --- TEST ---
 
@@ -2055,7 +2045,7 @@ contract('TroveManager', async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), '6')
 
     // Whale puts some tokens in Stability Pool
-    await stabilityPool.provideToSP(dec(300, 18), ZERO_ADDRESS, { from: whale })
+    await stabilityPoolAsset1.provideToSP(dec(300, 18), ZERO_ADDRESS, { from: whale })
 
     // --- TEST ---
 
@@ -2109,7 +2099,7 @@ contract('TroveManager', async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), '6')
 
     // Whale puts some tokens in Stability Pool
-    await stabilityPool.provideToSP(dec(300, 18), ZERO_ADDRESS, { from: whale })
+    await stabilityPoolAsset1.provideToSP(dec(300, 18), ZERO_ADDRESS, { from: whale })
 
     // --- TEST ---
 
@@ -2145,7 +2135,7 @@ contract('TroveManager', async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), '5')
 
     // Whale puts some tokens in Stability Pool
-    await stabilityPool.provideToSP(spDeposit, ZERO_ADDRESS, { from: whale })
+    await stabilityPoolAsset1.provideToSP(spDeposit, ZERO_ADDRESS, { from: whale })
 
     // --- TEST ---
 
@@ -2187,7 +2177,7 @@ contract('TroveManager', async accounts => {
     assert.equal((await troveManager.Troves(carol, assetAddress1))[TroveData.status].toString(), '0')
 
     // Check Stability pool has only been reduced by A-B
-    th.assertIsApproximatelyEqual((await stabilityPool.getTotalKUSDDeposits()).toString(), spDeposit.sub(A_debt).sub(B_debt))
+    th.assertIsApproximatelyEqual((await stabilityPoolAsset1.getTotalKUSDDeposits()).toString(), spDeposit.sub(A_debt).sub(B_debt))
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -2210,7 +2200,7 @@ contract('TroveManager', async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), '6')
 
     // Whale puts some tokens in Stability Pool
-    await stabilityPool.provideToSP(spDeposit, ZERO_ADDRESS, { from: whale })
+    await stabilityPoolAsset1.provideToSP(spDeposit, ZERO_ADDRESS, { from: whale })
 
     // Whale transfers to Carol so she can close her trove
     await kusdToken.transfer(carol, dec(100, 18), { from: whale })
@@ -2261,7 +2251,7 @@ contract('TroveManager', async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), '3')
 
     // Check Stability pool has only been reduced by A-B
-    th.assertIsApproximatelyEqual((await stabilityPool.getTotalKUSDDeposits()).toString(), spDeposit.sub(A_debt).sub(B_debt))
+    th.assertIsApproximatelyEqual((await stabilityPoolAsset1.getTotalKUSDDeposits()).toString(), spDeposit.sub(A_debt).sub(B_debt))
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -2279,10 +2269,10 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraParams: { from: defaulter_2 } })
 
     // B provides to SP
-    await stabilityPool.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B })
-    assert.equal(await stabilityPool.getTotalKUSDDeposits(), dec(100, 18))
+    await stabilityPoolAsset1.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B })
+    assert.equal(await stabilityPoolAsset1.getTotalKUSDDeposits(), dec(100, 18))
 
-    const G_Before = await stabilityPool.epochToScaleToG(0, 0)
+    const G_Before = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -2296,7 +2286,7 @@ contract('TroveManager', async accounts => {
     assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
     assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_2))
 
-    const G_After = await stabilityPool.epochToScaleToG(0, 0)
+    const G_After = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
     // Expect G has increased from the KUMO reward event triggered
     assert.isTrue(G_After.gt(G_Before))
@@ -2314,18 +2304,18 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraParams: { from: defaulter_2 } })
 
     // B provides to SP
-    await stabilityPool.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B })
+    await stabilityPoolAsset1.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B })
 
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
     // B withdraws
-    await stabilityPool.withdrawFromSP(dec(100, 18), { from: B })
+    await stabilityPoolAsset1.withdrawFromSP(dec(100, 18), { from: B })
 
     // Check SP is empty
-    assert.equal((await stabilityPool.getTotalKUSDDeposits()), '0')
+    assert.equal((await stabilityPoolAsset1.getTotalKUSDDeposits()), '0')
 
     // Check G is non-zero
-    const G_Before = await stabilityPool.epochToScaleToG(0, 0)
+    const G_Before = await stabilityPoolAsset1.epochToScaleToG(0, 0)
     assert.isTrue(G_Before.gt(toBN('0')))
 
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
@@ -2340,7 +2330,7 @@ contract('TroveManager', async accounts => {
     assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
     assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_2))
 
-    const G_After = await stabilityPool.epochToScaleToG(0, 0)
+    const G_After = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
     // Expect G has not changed
     assert.isTrue(G_After.eq(G_Before))
@@ -3292,9 +3282,9 @@ contract('TroveManager', async accounts => {
     await kusdToken.transfer(erin, redemptionAmount, { from: alice })
 
     // B, C, D deposit some of their tokens to the Stability Pool
-    await stabilityPool.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: bob })
-    await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: carol })
-    await stabilityPool.provideToSP(dec(200, 18), ZERO_ADDRESS, { from: dennis })
+    await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: bob })
+    await stabilityPoolAsset1.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: carol })
+    await stabilityPoolAsset1.provideToSP(dec(200, 18), ZERO_ADDRESS, { from: dennis })
 
     let price = await priceFeed.getPrice()
     const bob_ICR_before = await troveManager.getCurrentICR(assetAddress1, bob, price)
@@ -3313,17 +3303,17 @@ contract('TroveManager', async accounts => {
     // Price bounces back, bringing B, C, D back above MCR
     await priceFeed.setPrice(dec(200, 18))
 
-    const bob_SPDeposit_before = (await stabilityPool.getCompoundedKUSDDeposit(bob)).toString()
-    const carol_SPDeposit_before = (await stabilityPool.getCompoundedKUSDDeposit(carol)).toString()
-    const dennis_SPDeposit_before = (await stabilityPool.getCompoundedKUSDDeposit(dennis)).toString()
+    const bob_SPDeposit_before = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)).toString()
+    const carol_SPDeposit_before = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(carol)).toString()
+    const dennis_SPDeposit_before = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(dennis)).toString()
 
-    const bob_ETHGain_before = (await stabilityPool.getDepositorAssetGain(bob)).toString()
-    const carol_ETHGain_before = (await stabilityPool.getDepositorAssetGain(carol)).toString()
-    const dennis_ETHGain_before = (await stabilityPool.getDepositorAssetGain(dennis)).toString()
+    const bob_ETHGain_before = (await stabilityPoolAsset1.getDepositorAssetGain(bob)).toString()
+    const carol_ETHGain_before = (await stabilityPoolAsset1.getDepositorAssetGain(carol)).toString()
+    const dennis_ETHGain_before = (await stabilityPoolAsset1.getDepositorAssetGain(dennis)).toString()
 
     // Check the remaining KUSD and ETH in Stability Pool after liquidation is non-zero
-    const KUSDinSP = await stabilityPool.getTotalKUSDDeposits()
-    const ETHinSP = await stabilityPool.getAssetBalance()
+    const KUSDinSP = await stabilityPoolAsset1.getTotalKUSDDeposits()
+    const ETHinSP = await stabilityPoolAsset1.getAssetBalance()
     assert.isTrue(KUSDinSP.gte(mv._zeroBN))
     assert.isTrue(ETHinSP.gte(mv._zeroBN))
 
@@ -3343,13 +3333,13 @@ contract('TroveManager', async accounts => {
     assert.isTrue(carol_ICR_after.gte(carol_ICR_before))
     assert.isTrue(dennis_ICR_after.gte(dennis_ICR_before))
 
-    const bob_SPDeposit_after = (await stabilityPool.getCompoundedKUSDDeposit(bob)).toString()
-    const carol_SPDeposit_after = (await stabilityPool.getCompoundedKUSDDeposit(carol)).toString()
-    const dennis_SPDeposit_after = (await stabilityPool.getCompoundedKUSDDeposit(dennis)).toString()
+    const bob_SPDeposit_after = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)).toString()
+    const carol_SPDeposit_after = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(carol)).toString()
+    const dennis_SPDeposit_after = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(dennis)).toString()
 
-    const bob_ETHGain_after = (await stabilityPool.getDepositorAssetGain(bob)).toString()
-    const carol_ETHGain_after = (await stabilityPool.getDepositorAssetGain(carol)).toString()
-    const dennis_ETHGain_after = (await stabilityPool.getDepositorAssetGain(dennis)).toString()
+    const bob_ETHGain_after = (await stabilityPoolAsset1.getDepositorAssetGain(bob)).toString()
+    const carol_ETHGain_after = (await stabilityPoolAsset1.getDepositorAssetGain(carol)).toString()
+    const dennis_ETHGain_after = (await stabilityPoolAsset1.getDepositorAssetGain(dennis)).toString()
 
     // Check B, C, D Stability Pool deposits and ETH gain have not been affected by redemptions from their troves
     assert.equal(bob_SPDeposit_before, bob_SPDeposit_after)
@@ -4351,7 +4341,7 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(3, 18)), extraKUSDAmount: dec(20, 18), extraParams: { from: carol } })
 
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraKUSDAmount: totalDebt, extraParams: { from: whale } })
-    await stabilityPool.provideToSP(totalDebt, ZERO_ADDRESS, { from: whale })
+    await stabilityPoolAsset1.provideToSP(totalDebt, ZERO_ADDRESS, { from: whale })
 
     // Price drops
     await priceFeed.setPrice(dec(100, 18))
@@ -4379,7 +4369,7 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(3, 18)), extraKUSDAmount: dec(20, 18), extraParams: { from: carol } })
 
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraKUSDAmount: totalDebt, extraParams: { from: whale } })
-    await stabilityPool.provideToSP(totalDebt, ZERO_ADDRESS, { from: whale })
+    await stabilityPoolAsset1.provideToSP(totalDebt, ZERO_ADDRESS, { from: whale })
 
     // Price drops
     await priceFeed.setPrice(dec(100, 18))
