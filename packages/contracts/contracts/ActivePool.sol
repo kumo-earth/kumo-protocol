@@ -7,7 +7,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeab
 import "./Interfaces/IActivePool.sol";
 import "./Interfaces/IDefaultPool.sol";
 // import "./Interfaces/IStabilityPoolManager.sol";
-import "./Interfaces/ICollStakingManager.sol";
 import "./Interfaces/ICollSurplusPool.sol";
 import "./Interfaces/IDeposit.sol";
 import "./Interfaces/IKUMOStaking.sol";
@@ -47,7 +46,6 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     mapping(address => uint256) internal assetsStaked;
 
     address private stakingAdmin;
-    ICollStakingManager public collStakingManager;
     modifier onlyStakingAdmin() {
         require(msg.sender == stakingAdmin, "ActivePool: not a staking admin");
         _;
@@ -90,15 +88,6 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         _renounceOwnership();
     }
 
-    function setCollStakingManagerAddress(address _collStakingManagerAddress)
-        external
-        onlyStakingAdmin
-    {
-        checkContract(_collStakingManagerAddress);
-
-        collStakingManager = ICollStakingManager(_collStakingManagerAddress);
-    }
-
     // --- Getters for public variables. Required by IPool interface ---
 
     /*
@@ -108,10 +97,6 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
      */
     function getAssetBalance(address _asset) external view override returns (uint256) {
         return assetsBalance[_asset];
-    }
-
-    function getAssetStaked(address _asset) external view override returns (uint256) {
-        return assetsStaked[_asset];
     }
 
     function getKUSDDebt(address _asset) external view override returns (uint256) {
@@ -130,11 +115,6 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         if (safetyTransferAmount == 0) return;
 
         uint256 totalBalance = assetsBalance[_asset] -= _amount;
-        uint256 stakedBalance = assetsStaked[_asset];
-
-        if (stakedBalance > totalBalance) {
-            _unstakeCollateral(_asset, stakedBalance - totalBalance);
-        }
 
         IERC20Upgradeable(_asset).safeTransfer(_account, safetyTransferAmount);
         if (isERC20DepositContract(_account)) {
@@ -174,15 +154,6 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         );
     }
 
-    modifier callerIsBorrowerOperationOrDefaultPool() {
-        require(
-            msg.sender == borrowerOperationsAddress || msg.sender == defaultPoolAddress,
-            "ActivePool: Caller is neither BO nor Default Pool"
-        );
-
-        _;
-    }
-
     function _requireCallerIsBOorTroveMorSP() internal view {
         require(
             msg.sender == borrowerOperationsAddress ||
@@ -199,48 +170,9 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         );
     }
 
-    function receivedERC20(address _asset, uint256 _amount)
-        external
-        override
-        callerIsBorrowerOperationOrDefaultPool
-    {
+    function receivedERC20(address _asset, uint256 _amount) external override {
+        _requireCallerIsBorrowerOperationsOrDefaultPool();
         assetsBalance[_asset] += _amount;
-        _stakeCollateral(_asset, _amount);
         emit ActivePoolAssetBalanceUpdated(_asset, assetsBalance[_asset]);
-    }
-
-    function forceStake(address _asset) external onlyStakingAdmin {
-        _stakeCollateral(_asset, IERC20(_asset).balanceOf(address(this)));
-    }
-
-    function forceUnstake(address _asset) external onlyStakingAdmin {
-        _unstakeCollateral(_asset, assetsStaked[_asset]);
-    }
-
-    function _stakeCollateral(address _asset, uint256 _amount) internal {
-        if (
-            address(collStakingManager) != address(0) && collStakingManager.isSupportedAsset(_asset)
-        ) {
-            if (
-                IERC20Upgradeable(_asset).allowance(address(this), address(collStakingManager)) <
-                _amount
-            ) {
-                IERC20Upgradeable(_asset).safeApprove(
-                    address(collStakingManager),
-                    type(uint256).max
-                );
-            }
-
-            try collStakingManager.stakeCollaterals(_asset, _amount) {
-                assetsStaked[_asset] += _amount;
-            } catch {}
-        }
-    }
-
-    function _unstakeCollateral(address _asset, uint256 _amount) internal {
-        if (address(collStakingManager) != address(0)) {
-            assetsStaked[_asset] -= _amount;
-            collStakingManager.unstakeCollaterals(_asset, _amount);
-        }
     }
 }
