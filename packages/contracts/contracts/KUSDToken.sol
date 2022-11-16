@@ -312,7 +312,7 @@ contract KUSDToken is CheckContract, IKUSDToken {
             "KUSD: Cannot transfer tokens directly to the KUSD token contract or the zero address"
         );
         require(
-            stabilityPoolFactory.isRegisteredStabilityPool(_recipient) &&
+            !stabilityPoolFactory.isRegisteredStabilityPool(_recipient) &&
                 _recipient != troveManagerAddress &&
                 _recipient != borrowerOperationsAddress,
             "KUSD: Cannot transfer tokens directly to the StabilityPool, TroveManager or BorrowerOps"
