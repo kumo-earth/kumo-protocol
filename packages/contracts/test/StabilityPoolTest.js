@@ -19,7 +19,7 @@ const maxBytes32 = th.maxBytes32
 const GAS_PRICE = 10000000
 
 const getFrontEndTag = async (stabilityPool, depositor) => {
-  return (await stabilityPoolAsset1.deposits(depositor))[1]
+  return (await stabilityPool.deposits(depositor))[1]
 }
 
 contract('StabilityPool - TEST', async accounts => {
@@ -108,8 +108,8 @@ contract('StabilityPool - TEST', async accounts => {
       await deploymentHelper.mintMockAssets(erc20Asset2, accounts, 20)
 
       // Set StabilityPools
-      stabilityPoolAsset1 = await StabilityPool.at(await stabilityPoolFactory.getStabilityPoolByAsset(assetAddress1))
-      stabilityPoolAsset2 = await StabilityPool.at(await stabilityPoolFactory.getStabilityPoolByAsset(assetAddress2))
+      stabilityPoolAsset1 = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
+      stabilityPoolAsset2 = await deploymentHelper.getStabilityPoolByAsset(contracts,assetAddress2)
 
       // Register 3 front ends
       await th.registerFrontEnds(frontEnds, stabilityPoolAsset1)
@@ -714,10 +714,10 @@ contract('StabilityPool - TEST', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Check A, B, C D have no front end tags
-      const A_tagBefore = await getFrontEndTag(stabilityPool, A)
-      const B_tagBefore = await getFrontEndTag(stabilityPool, B)
-      const C_tagBefore = await getFrontEndTag(stabilityPool, C)
-      const D_tagBefore = await getFrontEndTag(stabilityPool, D)
+      const A_tagBefore = await getFrontEndTag(stabilityPoolAsset1, A)
+      const B_tagBefore = await getFrontEndTag(stabilityPoolAsset1, B)
+      const C_tagBefore = await getFrontEndTag(stabilityPoolAsset1, C)
+      const D_tagBefore = await getFrontEndTag(stabilityPoolAsset1, D)
 
       assert.equal(A_tagBefore, ZERO_ADDRESS)
       assert.equal(B_tagBefore, ZERO_ADDRESS)
@@ -731,10 +731,10 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(4000, 18), ZERO_ADDRESS, { from: D })  // transacts directly, no front end
 
       // Check A, B, C D have no front end tags
-      const A_tagAfter = await getFrontEndTag(stabilityPool, A)
-      const B_tagAfter = await getFrontEndTag(stabilityPool, B)
-      const C_tagAfter = await getFrontEndTag(stabilityPool, C)
-      const D_tagAfter = await getFrontEndTag(stabilityPool, D)
+      const A_tagAfter = await getFrontEndTag(stabilityPoolAsset1, A)
+      const B_tagAfter = await getFrontEndTag(stabilityPoolAsset1, B)
+      const C_tagAfter = await getFrontEndTag(stabilityPoolAsset1, C)
+      const D_tagAfter = await getFrontEndTag(stabilityPoolAsset1, D)
 
       // Check front end tags are correctly set
       assert.equal(A_tagAfter, frontEnd_1)
@@ -2768,10 +2768,10 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(40000, 18), ZERO_ADDRESS, { from: D })
 
       // Check deposits are tagged with correct front end 
-      const A_tagBefore = await getFrontEndTag(stabilityPool, A)
-      const B_tagBefore = await getFrontEndTag(stabilityPool, B)
-      const C_tagBefore = await getFrontEndTag(stabilityPool, C)
-      const D_tagBefore = await getFrontEndTag(stabilityPool, D)
+      const A_tagBefore = await getFrontEndTag(stabilityPoolAsset1, A)
+      const B_tagBefore = await getFrontEndTag(stabilityPoolAsset1, B)
+      const C_tagBefore = await getFrontEndTag(stabilityPoolAsset1, C)
+      const D_tagBefore = await getFrontEndTag(stabilityPoolAsset1, D)
 
       assert.equal(A_tagBefore, frontEnd_1)
       assert.equal(B_tagBefore, ZERO_ADDRESS)
@@ -2785,10 +2785,10 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.withdrawFromSP(dec(40000, 18), { from: D })
 
       // Check all deposits now have no front end tag
-      const A_tagAfter = await getFrontEndTag(stabilityPool, A)
-      const B_tagAfter = await getFrontEndTag(stabilityPool, B)
-      const C_tagAfter = await getFrontEndTag(stabilityPool, C)
-      const D_tagAfter = await getFrontEndTag(stabilityPool, D)
+      const A_tagAfter = await getFrontEndTag(stabilityPoolAsset1, A)
+      const B_tagAfter = await getFrontEndTag(stabilityPoolAsset1, B)
+      const C_tagAfter = await getFrontEndTag(stabilityPoolAsset1, C)
+      const D_tagAfter = await getFrontEndTag(stabilityPoolAsset1, D)
 
       assert.equal(A_tagAfter, ZERO_ADDRESS)
       assert.equal(B_tagAfter, ZERO_ADDRESS)
