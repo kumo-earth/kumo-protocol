@@ -78,7 +78,7 @@ contract('KUMOStaking revenue share tests', async accounts => {
     await kumoToken.unprotectedMint(multisig, dec(5, 24))
 
     hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-    erc20 = hardhatTester.erc20
+    erc20 = hardhatTester.erc20Asset1
     assetAddress1 = erc20.address
 
     kumoParams = contracts.kumoParameters

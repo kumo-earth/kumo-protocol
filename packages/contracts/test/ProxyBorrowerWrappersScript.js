@@ -84,7 +84,7 @@
 //     const users = [alice, bob, carol, dennis, whale, A, B, C, D, E, defaulter_1, defaulter_2]
 
 
-//     erc20Asset1 = hardhatTester.erc20
+//     erc20Asset1 = hardhatTester.erc20Asset1
 //     assetAddress1 = erc20Asset1.address
 
 //     // Add asset to the system

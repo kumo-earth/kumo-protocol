@@ -299,23 +299,23 @@ class DeploymentHelper {
   //   return KUMOContracts
   // }
 
-  // static async deployKUSDToken(contracts) {
-  //   contracts.kusdToken = await KUSDToken.new(
-  //     contracts.troveManager.address,
-  //     contracts.stabilityPoolFactory.address,
-  //     contracts.borrowerOperations.address
-  //   )
-  //   return contracts
-  // }
+  static async deployKUSDToken(contracts) {
+    contracts.kusdToken = await KUSDToken.new(
+      contracts.troveManager.address,
+      contracts.stabilityPoolFactory.address,
+      contracts.borrowerOperations.address
+    )
+    return contracts
+  }
 
-  // static async deployKUSDTokenTester(contracts) {
-  //   contracts.kusdToken = await KUSDTokenTester.new(
-  //     contracts.troveManager.address,
-  //     contracts.stabilityPoolFactory.address,
-  //     contracts.borrowerOperations.address
-  //   )
-  //   return contracts
-  // }
+  static async deployKUSDTokenTester(contracts) {
+    contracts.kusdToken = await KUSDTokenTester.new(
+      contracts.troveManager.address,
+      contracts.stabilityPoolFactory.address,
+      contracts.borrowerOperations.address
+    )
+    return contracts
+  }
 
   // static async deployProxyScripts(contracts, KUMOContracts, owner, users) {
   //   const proxies = await buildUserProxies(users)
@@ -492,5 +492,11 @@ class DeploymentHelper {
     await contracts.troveManager.addNewAsset(asset)
     await contracts.sortedTroves.addNewAsset(asset)
   }
+
+  static async getStabilityPoolByAsset(contracts, address) {
+    const stabilityPoolAddress = await contracts.stabilityPoolFactory.getStabilityPoolByAsset(address);
+    return await StabilityPool.at(stabilityPoolAddress);
+  }
 }
+
 module.exports = DeploymentHelper

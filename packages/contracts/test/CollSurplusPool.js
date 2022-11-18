@@ -36,7 +36,7 @@ contract('CollSurplusPool -TEST', async accounts => {
     contracts.troveManager = await TroveManagerTester.new()
     contracts.kusdToken = await KUSDToken.new(
       contracts.troveManager.address,
-      contracts.stabilityPool.address,
+      contracts.stabilityPoolFactory.address,
       contracts.borrowerOperations.address
     )
     const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
@@ -49,7 +49,7 @@ contract('CollSurplusPool -TEST', async accounts => {
     await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
     hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-    erc20 = hardhatTester.erc20
+    erc20 = hardhatTester.erc20Asset1
     assetAddress1 = erc20.address
 
     kumoParams = contracts.kumoParameters

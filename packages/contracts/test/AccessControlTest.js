@@ -56,7 +56,6 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     troveManager = coreContracts.troveManager
     nameRegistry = coreContracts.nameRegistry
     activePool = coreContracts.activePool
-    stabilityPool = coreContracts.stabilityPool
     defaultPool = coreContracts.defaultPool
     functionCaller = coreContracts.functionCaller
     borrowerOperations = coreContracts.borrowerOperations
@@ -65,7 +64,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     kumoToken = KUMOContracts.kumoToken
     communityIssuance = KUMOContracts.communityIssuance
     lockupContractFactory = KUMOContracts.lockupContractFactory
-    erc20 = hardhatTester.erc20
+    erc20 = hardhatTester.erc20Asset1
     assetAddress1 = erc20.address
 
     await deploymentHelper.connectKUMOContracts(KUMOContracts)
@@ -73,6 +72,8 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, coreContracts)
 
     await deploymentHelper.addNewAssetToSystem(coreContracts, KUMOContracts, assetAddress1)
+    
+    stabilityPool = await deploymentHelper.getStabilityPoolByAsset(coreContracts, assetAddress1)
 
     // Mint token to each acccount
     let index = 0;

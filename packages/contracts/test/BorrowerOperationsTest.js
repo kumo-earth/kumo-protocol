@@ -99,7 +99,7 @@ contract('BorrowerOperations', async accounts => {
       borrowerOperations = contracts.borrowerOperations
       hintHelpers = contracts.hintHelpers
       kumoParams = contracts.kumoParameters
-      erc20 = hardhatTester.erc20
+      erc20 = hardhatTester.erc20Asset1
       assetAddress1 = erc20.address
 
       await kumoParams.sanitizeParameters(assetAddress1);

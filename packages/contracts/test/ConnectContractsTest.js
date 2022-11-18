@@ -44,7 +44,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     await deploymentHelper.connectCoreContracts(coreContracts, KUMOContracts)
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, coreContracts)
     hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-    erc20 = hardhatTester.erc20
+    erc20 = hardhatTester.erc20Asset1
     assetAddress1 = erc20.address
 
     await deploymentHelper.addNewAssetToSystem(coreContracts, KUMOContracts, assetAddress1)

@@ -81,7 +81,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       await deploymentHelper.connectKUMOContracts(KUMOContracts)
 
       hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-      erc20Asset1 = hardhatTester.erc20
+      erc20Asset1 = hardhatTester.erc20Asset1
       assetAddress1 = erc20Asset1.address
       kumoParams = contracts.kumoParameters
 

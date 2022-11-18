@@ -58,7 +58,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
     beforeEach(async () => {
 
       hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-      erc20Asset1 = hardhatTester.erc20
+      erc20Asset1 = hardhatTester.erc20Asset1
       assetAddress1 = erc20Asset1.address
 
 
@@ -78,7 +78,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       contracts.troveManager = await TroveManagerTester.new()
       contracts.kusdToken = await KUSDToken.new(
         contracts.troveManager.address,
-        contracts.stabilityPool.address,
+        contracts.stabilityPoolFactory.address,
         contracts.borrowerOperations.address
       )
       KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
