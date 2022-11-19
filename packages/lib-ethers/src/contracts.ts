@@ -186,7 +186,8 @@ export interface _KumoContracts {
   multiTroveGetter: MultiTroveGetter;
   priceFeed: PriceFeed | PriceFeedTestnet;
   sortedTroves: SortedTroves;
-  stabilityPool: StabilityPool;
+  stabilityPoolAsset1: StabilityPool;
+  stabilityPoolAsset2: StabilityPool;
   stabilityPoolFactory: StabilityPoolFactory;
   gasPool: GasPool;
   unipool: Unipool;
@@ -226,7 +227,8 @@ const getAbi = (priceFeedIsTestnet: boolean, uniTokenIsMock: boolean): KumoContr
   multiTroveGetter: multiTroveGetterAbi,
   priceFeed: priceFeedIsTestnet ? priceFeedTestnetAbi : priceFeedAbi,
   sortedTroves: sortedTrovesAbi,
-  stabilityPool: stabilityPoolAbi,
+  stabilityPoolAsset1: stabilityPoolAbi,
+  stabilityPoolAsset2: stabilityPoolAbi,
   stabilityPoolFactory: stabilityPoolFactoryAbi,
   gasPool: gasPoolAbi,
   collSurplusPool: collSurplusPoolAbi,

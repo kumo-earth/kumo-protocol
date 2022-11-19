@@ -289,12 +289,19 @@ export class ReadableEthersKumo implements ReadableKumo {
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDInStabilityPool} */
   async getKUSDInStabilityPool(asset: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    const { stabilityPoolFactory } = _getContracts(this.connection);
+
+    const { stabilityPoolAsset1, stabilityPoolAsset2 } = _getContracts(this.connection);
     // let stabilityPoolCached: IStabilityPool
-    const stabilityPoolCached = await stabilityPoolFactory.getStabilityPoolByAsset(asset);
+    if (asset == "mockAsset1") {
+      return stabilityPoolAsset1.getTotalKUSDDeposits({ ...overrides }).then(decimalify);
+    } else {
+      return stabilityPoolAsset2.getTotalKUSDDeposits({ ...overrides }).then(decimalify);
+    }
+
+
     // const stabiltyPool = await hardhatethershe
-    const stabiltyPool = await ethers.getContractAt("StabilityPool", stabilityPoolCached);
-    return stabiltyPool.getTotalKUSDDeposits({ ...overrides }).then(decimalify);
+    // const stabiltyPool = await ethers.getContractAt("StabilityPool", stabilityPoolCached);
+    // return stabiltyPool.getTotalKUSDDeposits({ ...overrides }).then(decimalify);
   }
 
   // /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDInStabilityPool} */
