@@ -5,8 +5,10 @@ const { toBN, dec, ZERO_ADDRESS } = th
 
 const TroveManagerTester = artifacts.require("./TroveManagerTester")
 const KUSDToken = artifacts.require("./KUSDToken.sol")
+const StabilityPool = artifacts.require("./StabilityPool.sol")
 
-contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async accounts => {
+
+contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx - TEST', async accounts => {
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
   const [
     owner,
@@ -17,12 +19,14 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
 
   let contracts
   let troveManager
-  let stabilityPool
   let priceFeed
   let sortedTroves
   let KUMOContracts
   let hardhatTester
   let erc20Asset1
+  let erc20Asset2
+  let stabilityPoolAsset1
+  let stabilityPoolAsset2
 
   const openTrove = async (params) => th.openTrove(contracts, params)
 
@@ -31,37 +35,38 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
     contracts.troveManager = await TroveManagerTester.new()
     contracts.kusdToken = await KUSDToken.new(
       contracts.troveManager.address,
-      contracts.stabilityPool.address,
+      contracts.stabilityPoolFactory.address,
       contracts.borrowerOperations.address
     )
     KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
     hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
 
     troveManager = contracts.troveManager
-    stabilityPool = contracts.stabilityPool
     priceFeed = contracts.priceFeedTestnet
     sortedTroves = contracts.sortedTroves
     kumoParams = contracts.kumoParameters
-    erc20Asset1 = hardhatTester.erc20
+    erc20Asset1 = hardhatTester.erc20Asset1
     assetAddress1 = erc20Asset1.address
+    erc20Asset2 = hardhatTester.erc20Asset2
+    assetAddress2 = erc20Asset2.address
+    stabilityPoolFactory = contracts.stabilityPoolFactory
 
     await deploymentHelper.connectKUMOContracts(KUMOContracts)
     await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
 
-    // Add asset to the system
+    // Add assets to the system
     await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
+    await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress2)
 
     // Mint token to each acccount
-    let index = 0;
-    for (const acc of accounts) {
-      // await vstaToken.approve(vstaStaking.address, await erc20Asset1.balanceOf(acc), { from: acc })
-      await erc20Asset1.mint(acc, await web3.eth.getBalance(acc))
-      index++;
+    await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 25)
+    await deploymentHelper.mintMockAssets(erc20Asset2, accounts, 25)
 
-      if (index >= 20)
-        break;
-    }
+    // Set StabilityPools
+    stabilityPoolAsset1 = await StabilityPool.at(await stabilityPoolFactory.getStabilityPoolByAsset(assetAddress1))
+    stabilityPoolAsset2 = await StabilityPool.at(await stabilityPoolFactory.getStabilityPoolByAsset(assetAddress2))
+
   })
 
   context('Batch liquidations', () => {
@@ -73,7 +78,7 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       const totalLiquidatedDebt = A_totalDebt.add(B_totalDebt).add(C_totalDebt)
 
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(340, 16)), extraKUSDAmount: totalLiquidatedDebt, extraParams: { from: whale } })
-      await stabilityPool.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale })
+      await stabilityPoolAsset1.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale })
 
       // Price drops
       await priceFeed.setPrice(dec(100, 18))
@@ -135,8 +140,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
         price,
       } = await setup()
 
-      const spEthBefore = await stabilityPool.getAssetBalance()
-      const spKusdBefore = await stabilityPool.getTotalKUSDDeposits()
+      const spEthBefore = await stabilityPoolAsset1.getAssetBalance()
+      const spKusdBefore = await stabilityPoolAsset1.getTotalKUSDDeposits()
 
       const tx = await troveManager.batchLiquidateTroves(assetAddress1, [alice, carol])
 
@@ -148,8 +153,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       assert.equal((await troveManager.Troves(alice, assetAddress1))[TroveData.status], '3')
       assert.equal((await troveManager.Troves(carol, assetAddress1))[TroveData.status], '3')
 
-      const spEthAfter = await stabilityPool.getAssetBalance()
-      const spKusdAfter = await stabilityPool.getTotalKUSDDeposits()
+      const spEthAfter = await stabilityPoolAsset1.getAssetBalance()
+      const spKusdAfter = await stabilityPoolAsset1.getTotalKUSDDeposits()
 
       // liquidate collaterals with the gas compensation fee subtracted
       const expectedCollateralLiquidatedA = th.applyLiquidationFee(A_totalDebt.mul(mv._MCR).div(price))
@@ -171,7 +176,7 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       const totalLiquidatedDebt = A_totalDebt.add(B_totalDebt).add(C_totalDebt)
 
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(310, 16)), extraKUSDAmount: totalLiquidatedDebt, extraParams: { from: whale } })
-      await stabilityPool.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale })
+      await stabilityPoolAsset1.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale })
 
       // Price drops
       await priceFeed.setPrice(dec(100, 18))
@@ -216,7 +221,7 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       const totalLiquidatedDebt = A_totalDebt.add(B_totalDebt)
 
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(300, 16)), extraKUSDAmount: totalLiquidatedDebt, extraParams: { from: whale } })
-      await stabilityPool.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale })
+      await stabilityPoolAsset1.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale })
 
       // Price drops
       await priceFeed.setPrice(dec(100, 18))

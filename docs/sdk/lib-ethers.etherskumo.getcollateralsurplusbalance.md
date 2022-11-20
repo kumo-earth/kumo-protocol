@@ -9,7 +9,7 @@ Get the amount of leftover collateral available for withdrawal by an address.
 <b>Signature:</b>
 
 ```typescript
-getCollateralSurplusBalance(asset: string, address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
+getCollateralSurplusBalance(asset: string, address: string, overrides?: EthersCallOverrides): Promise<Decimal>;
 ```
 
 ## Parameters

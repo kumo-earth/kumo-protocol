@@ -4,24 +4,25 @@ pragma solidity 0.8.11;
 
 import "../TroveManager.sol";
 import "../BorrowerOperations.sol";
-import "../StabilityPool.sol";
+import "../StabilityPoolFactory.sol";
 import "../KUSDToken.sol";
+import "../Interfaces/IStabilityPool.sol";
 
 contract EchidnaProxy {
     TroveManager troveManager;
     BorrowerOperations borrowerOperations;
-    StabilityPool stabilityPool;
+    StabilityPoolFactory stabilityPoolFactory;
     KUSDToken kusdToken;
 
-    constructor (
+    constructor(
         TroveManager _troveManager,
         BorrowerOperations _borrowerOperations,
-        StabilityPool _stabilityPool,
+        StabilityPoolFactory _stabilityPoolFactory,
         KUSDToken _kusdToken
     ) {
         troveManager = _troveManager;
         borrowerOperations = _borrowerOperations;
-        stabilityPool = _stabilityPool;
+        stabilityPoolFactory = _stabilityPoolFactory;
         kusdToken = _kusdToken;
     }
 
@@ -53,27 +54,71 @@ contract EchidnaProxy {
         uint256 _maxIterations,
         uint256 _maxFee
     ) external {
-        troveManager.redeemCollateral(_asset, _KUSDAmount, _firstRedemptionHint, _upperPartialRedemptionHint, _lowerPartialRedemptionHint, _partialRedemptionHintNICR, _maxIterations, _maxFee);
+        troveManager.redeemCollateral(
+            _asset,
+            _KUSDAmount,
+            _firstRedemptionHint,
+            _upperPartialRedemptionHint,
+            _lowerPartialRedemptionHint,
+            _partialRedemptionHintNICR,
+            _maxIterations,
+            _maxFee
+        );
     }
 
     // Borrower Operations
-    function openTrovePrx(address _asset, uint256 _tokenAmount, uint256 _KUSDAmount, address _upperHint, address _lowerHint, uint256 _maxFee) external payable {
-        borrowerOperations.openTrove{value: _tokenAmount}(_asset, _tokenAmount, _maxFee, _KUSDAmount, _upperHint, _lowerHint);
+    function openTrovePrx(
+        address _asset,
+        uint256 _tokenAmount,
+        uint256 _KUSDAmount,
+        address _upperHint,
+        address _lowerHint,
+        uint256 _maxFee
+    ) external payable {
+        borrowerOperations.openTrove{value: _tokenAmount}(
+            _asset,
+            _tokenAmount,
+            _maxFee,
+            _KUSDAmount,
+            _upperHint,
+            _lowerHint
+        );
     }
 
-    function addCollPrx(address _asset, uint256 _assetSent, address _upperHint, address _lowerHint) external payable {
+    function addCollPrx(
+        address _asset,
+        uint256 _assetSent,
+        address _upperHint,
+        address _lowerHint
+    ) external payable {
         borrowerOperations.addColl{value: _assetSent}(_asset, _assetSent, _upperHint, _lowerHint);
     }
 
-    function withdrawCollPrx(address _asset,  uint256 _amount, address _upperHint, address _lowerHint) external {
+    function withdrawCollPrx(
+        address _asset,
+        uint256 _amount,
+        address _upperHint,
+        address _lowerHint
+    ) external {
         borrowerOperations.withdrawColl(_asset, _amount, _upperHint, _lowerHint);
     }
 
-    function withdrawKUSDPrx(address _asset,  uint256 _amount, address _upperHint, address _lowerHint, uint256 _maxFee) external {
+    function withdrawKUSDPrx(
+        address _asset,
+        uint256 _amount,
+        address _upperHint,
+        address _lowerHint,
+        uint256 _maxFee
+    ) external {
         borrowerOperations.withdrawKUSD(_asset, _maxFee, _amount, _upperHint, _lowerHint);
     }
 
-    function repayKUSDPrx(address _asset,  uint256 _amount, address _upperHint, address _lowerHint) external {
+    function repayKUSDPrx(
+        address _asset,
+        uint256 _amount,
+        address _upperHint,
+        address _lowerHint
+    ) external {
         borrowerOperations.repayKUSD(_asset, _amount, _upperHint, _lowerHint);
     }
 
@@ -81,17 +126,41 @@ contract EchidnaProxy {
         borrowerOperations.closeTrove(_asset);
     }
 
-    function adjustTrovePrx(address _asset, uint256 _assetSent, uint256 _collWithdrawal, uint256 _debtChange, bool _isDebtIncrease, address _upperHint, address _lowerHint, uint256 _maxFee) external payable {
-        borrowerOperations.adjustTrove{value: _assetSent}(_asset, _assetSent, _maxFee, _collWithdrawal, _debtChange, _isDebtIncrease, _upperHint, _lowerHint);
+    function adjustTrovePrx(
+        address _asset,
+        uint256 _assetSent,
+        uint256 _collWithdrawal,
+        uint256 _debtChange,
+        bool _isDebtIncrease,
+        address _upperHint,
+        address _lowerHint,
+        uint256 _maxFee
+    ) external payable {
+        borrowerOperations.adjustTrove{value: _assetSent}(
+            _asset,
+            _assetSent,
+            _maxFee,
+            _collWithdrawal,
+            _debtChange,
+            _isDebtIncrease,
+            _upperHint,
+            _lowerHint
+        );
     }
 
     // Pool Manager
-    function provideToSPPrx(uint256 _amount, address _frontEndTag) external {
-        stabilityPool.provideToSP(_amount, _frontEndTag);
+    function provideToSPPrx(
+        address _asset,
+        uint256 _amount,
+        address _frontEndTag
+    ) external {
+        IStabilityPool stabilityPoolCached = stabilityPoolFactory.getStabilityPoolByAsset(_asset);
+        stabilityPoolCached.provideToSP(_amount, _frontEndTag);
     }
 
-    function withdrawFromSPPrx(uint256 _amount) external {
-        stabilityPool.withdrawFromSP(_amount);
+    function withdrawFromSPPrx(address _asset, uint256 _amount) external {
+        IStabilityPool stabilityPoolCached = stabilityPoolFactory.getStabilityPoolByAsset(_asset);
+        stabilityPoolCached.withdrawFromSP(_amount);
     }
 
     // KUSD Token
@@ -104,7 +173,11 @@ contract EchidnaProxy {
         return kusdToken.approve(spender, amount);
     }
 
-    function transferFromPrx(address sender, address recipient, uint256 amount) external returns (bool) {
+    function transferFromPrx(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external returns (bool) {
         return kusdToken.transferFrom(sender, recipient, amount);
     }
 

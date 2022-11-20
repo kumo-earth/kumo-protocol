@@ -46,6 +46,8 @@ contract('KUMOStaking revenue share tests', async accounts => {
   let hardhatTester
   let erc20
   let kumoParams
+  let erc20Asset1
+  let erc20Asset2
 
   let contracts
 

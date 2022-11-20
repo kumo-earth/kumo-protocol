@@ -36,6 +36,7 @@ contract('Access Control: Kumo functions with the caller restricted to Kumo cont
   let hardhatTester
   let erc20
   let assetAddress1
+  let assetAddress2
 
   let kumoStaking
   let kumoToken

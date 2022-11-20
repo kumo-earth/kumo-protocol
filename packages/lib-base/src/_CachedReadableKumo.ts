@@ -9,15 +9,15 @@ import { FrontendStatus, ReadableKumo, TroveListingParams } from "./ReadableKumo
 /** @internal */
 export type _ReadableKumoWithExtraParamsBase<T extends unknown[]> = {
   [P in keyof ReadableKumo]: ReadableKumo[P] extends (...params: infer A) => infer R
-    ? (...params: [...originalParams: A, ...extraParams: T]) => R
-    : never;
+  ? (...params: [...originalParams: A, ...extraParams: T]) => R
+  : never;
 };
 
 /** @internal */
 export type _KumoReadCacheBase<T extends unknown[]> = {
   [P in keyof ReadableKumo]: ReadableKumo[P] extends (...args: infer A) => Promise<infer R>
-    ? (...params: [...originalParams: A, ...extraParams: T]) => R | undefined
-    : never;
+  ? (...params: [...originalParams: A, ...extraParams: T]) => R | undefined
+  : never;
 };
 
 // Overloads get lost in the mapping, so we need to define them again...
@@ -63,18 +63,19 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
   }
 
   async getTroveBeforeRedistribution(
-    address?: string,
+    asset: string,
+    address: string,
     ...extraParams: T
   ): Promise<TroveWithPendingRedistribution> {
     return (
-      this._cache.getTroveBeforeRedistribution(address, ...extraParams) ??
-      this._readable.getTroveBeforeRedistribution(address, ...extraParams)
+      this._cache.getTroveBeforeRedistribution(asset, address, ...extraParams) ??
+      this._readable.getTroveBeforeRedistribution(asset, address, ...extraParams)
     );
   }
 
-  async getTrove(asset: string, address?: string, ...extraParams: T): Promise<UserTrove> {
+  async getTrove(asset: string, address: string, ...extraParams: T): Promise<UserTrove> {
     const [troveBeforeRedistribution, totalRedistributed] = await Promise.all([
-      this.getTroveBeforeRedistribution(address, ...extraParams),
+      this.getTroveBeforeRedistribution(asset, address, ...extraParams),
       this.getTotalRedistributed(asset, ...extraParams)
     ]);
 
@@ -99,7 +100,7 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
   }
 
   async getStabilityDeposit(
-    address?: string,
+    address: string,
     ...extraParams: T
   ): Promise<StabilityDeposit> {
     return (
@@ -115,14 +116,14 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     );
   }
 
-  async getKUSDInStabilityPool(...extraParams: T): Promise<Decimal> {
+  async getKUSDInStabilityPool(asset: string, ...extraParams: T): Promise<Decimal> {
     return (
-      this._cache.getKUSDInStabilityPool(...extraParams) ??
-      this._readable.getKUSDInStabilityPool(...extraParams)
+      this._cache.getKUSDInStabilityPool(asset, ...extraParams) ??
+      this._readable.getKUSDInStabilityPool(asset, ...extraParams)
     );
   }
 
-  async getKUSDBalance(address?: string, ...extraParams: T): Promise<Decimal> {
+  async getKUSDBalance(address: string, ...extraParams: T): Promise<Decimal> {
     return (
       this._cache.getKUSDBalance(address, ...extraParams) ??
       this._readable.getKUSDBalance(address, ...extraParams)
@@ -140,22 +141,22 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
       this._readable.getAssetBalance(address, assetType, provider, ...extraParams)
     );
   }
-
-  async getKUMOBalance(address?: string, ...extraParams: T): Promise<Decimal> {
+  
+  async getKUMOBalance(address: string, ...extraParams: T): Promise<Decimal> {
     return (
       this._cache.getKUMOBalance(address, ...extraParams) ??
       this._readable.getKUMOBalance(address, ...extraParams)
     );
   }
 
-  async getUniTokenBalance(address?: string, ...extraParams: T): Promise<Decimal> {
+  async getUniTokenBalance(address: string, ...extraParams: T): Promise<Decimal> {
     return (
       this._cache.getUniTokenBalance(address, ...extraParams) ??
       this._readable.getUniTokenBalance(address, ...extraParams)
     );
   }
 
-  async getUniTokenAllowance(address?: string, ...extraParams: T): Promise<Decimal> {
+  async getUniTokenAllowance(address: string, ...extraParams: T): Promise<Decimal> {
     return (
       this._cache.getUniTokenAllowance(address, ...extraParams) ??
       this._readable.getUniTokenAllowance(address, ...extraParams)
@@ -169,7 +170,7 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     );
   }
 
-  async getLiquidityMiningStake(address?: string, ...extraParams: T): Promise<Decimal> {
+  async getLiquidityMiningStake(address: string, ...extraParams: T): Promise<Decimal> {
     return (
       this._cache.getLiquidityMiningStake(address, ...extraParams) ??
       this._readable.getLiquidityMiningStake(address, ...extraParams)
@@ -183,17 +184,17 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     );
   }
 
-  async getLiquidityMiningKUMOReward(address?: string, ...extraParams: T): Promise<Decimal> {
+  async getLiquidityMiningKUMOReward(address: string, ...extraParams: T): Promise<Decimal> {
     return (
       this._cache.getLiquidityMiningKUMOReward(address, ...extraParams) ??
       this._readable.getLiquidityMiningKUMOReward(address, ...extraParams)
     );
   }
 
-  async getCollateralSurplusBalance(address?: string, ...extraParams: T): Promise<Decimal> {
+  async getCollateralSurplusBalance(asset: string, address: string, ...extraParams: T): Promise<Decimal> {
     return (
-      this._cache.getCollateralSurplusBalance(address, ...extraParams) ??
-      this._readable.getCollateralSurplusBalance(address, ...extraParams)
+      this._cache.getCollateralSurplusBalance(asset, address, ...extraParams) ??
+      this._readable.getCollateralSurplusBalance(asset, address, ...extraParams)
     );
   }
 
@@ -219,11 +220,11 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
         { beforeRedistribution: true, ...restOfParams },
         ...extraParams
       ) ??
-        this._readable.getTroves(
-          asset,
-          { beforeRedistribution: true, ...restOfParams },
-          ...extraParams
-        )
+      this._readable.getTroves(
+        asset,
+        { beforeRedistribution: true, ...restOfParams },
+        ...extraParams
+      )
     ]);
 
     if (totalRedistributed) {
@@ -239,10 +240,10 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     );
   }
 
-  async getKUMOStake(address?: string, ...extraParams: T): Promise<KUMOStake> {
+  async getKUMOStake(asset: string, address: string, ...extraParams: T): Promise<KUMOStake> {
     return (
-      this._cache.getKUMOStake(address, ...extraParams) ??
-      this._readable.getKUMOStake(address, ...extraParams)
+      this._cache.getKUMOStake(asset, address, ...extraParams) ??
+      this._readable.getKUMOStake(asset, address, ...extraParams)
     );
   }
 
@@ -253,7 +254,7 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     );
   }
 
-  async getFrontendStatus(address?: string, ...extraParams: T): Promise<FrontendStatus> {
+  async getFrontendStatus(address: string, ...extraParams: T): Promise<FrontendStatus> {
     return (
       this._cache.getFrontendStatus(address, ...extraParams) ??
       this._readable.getFrontendStatus(address, ...extraParams)

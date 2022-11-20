@@ -9,7 +9,7 @@ Get the current state of a Stability Deposit.
 <b>Signature:</b>
 
 ```typescript
-getStabilityDeposit(address?: string): Promise<StabilityDeposit>;
+getStabilityDeposit(address: string): Promise<StabilityDeposit>;
 ```
 
 ## Parameters

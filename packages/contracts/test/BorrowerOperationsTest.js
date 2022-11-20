@@ -49,6 +49,8 @@ contract('BorrowerOperations', async accounts => {
   let kumoToken
   let erc20
   let hardhatTester
+  let assetAddress1
+  let assetAddress2
 
   let contracts
 
@@ -64,7 +66,6 @@ contract('BorrowerOperations', async accounts => {
   let MIN_NET_DEBT
   let BORROWING_FEE_FLOOR
   let kumoParams
-  let assetAddress1
 
   before(async () => {
 

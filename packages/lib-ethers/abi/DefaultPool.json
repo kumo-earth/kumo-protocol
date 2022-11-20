@@ -139,11 +139,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_newStabilityPoolAddress",
+        "name": "_newStabilityPoolFactoryAddress",
         "type": "address"
       }
     ],
-    "name": "StabilityPoolAddressChanged",
+    "name": "StabilityPoolFactoryAddressChanged",
     "type": "event"
   },
   {

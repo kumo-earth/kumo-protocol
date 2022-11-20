@@ -54,6 +54,7 @@ contract('SortedTroves - TEST', async accounts => {
   let KUMOContracts
   let hardhatTester
   let erc20Asset1
+  let erc20Asset2
 
 
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)

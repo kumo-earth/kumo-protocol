@@ -65,20 +65,22 @@ export interface ReadableKumo {
   /**
    * Get a Trove in its state after the last direct modification.
    *
+   * @param asset - Address of the ERC20 Asset
    * @param address - Address that owns the Trove.
    *
    * @remarks
    * The current state of a Trove can be fetched using
    * {@link @kumodao/lib-base#ReadableKumo.getTrove | getTrove()}.
    */
-  getTroveBeforeRedistribution(address?: string): Promise<TroveWithPendingRedistribution>;
+  getTroveBeforeRedistribution(asset: string, address: string): Promise<TroveWithPendingRedistribution>;
 
   /**
    * Get the current state of a Trove.
    *
+   * @param asset - Address of the ERC20 Asset
    * @param address - Address that owns the Trove.
    */
-  getTrove(asset: string, address?: string): Promise<UserTrove>;
+  getTrove(asset: string, address: string): Promise<UserTrove>;
 
   /**
    * Get number of Troves that are currently open.
@@ -100,7 +102,7 @@ export interface ReadableKumo {
    *
    * @param address - Address that owns the Stability Deposit.
    */
-  getStabilityDeposit(address?: string): Promise<StabilityDeposit>;
+  getStabilityDeposit(address: string): Promise<StabilityDeposit>;
 
   /**
    * Get the remaining KUMO that will be collectively rewarded to stability depositors.
@@ -110,14 +112,14 @@ export interface ReadableKumo {
   /**
    * Get the total amount of KUSD currently deposited in the Stability Pool.
    */
-  getKUSDInStabilityPool(): Promise<Decimal>;
+  getKUSDInStabilityPool(asset: string): Promise<Decimal>;
 
   /**
    * Get the amount of KUSD held by an address.
    *
    * @param address - Address whose balance should be retrieved.
    */
-  getKUSDBalance(address?: string): Promise<Decimal>;
+  getKUSDBalance(address: string): Promise<Decimal>;
 
   /**
    * Get the amount of BCT held by an address.
@@ -131,21 +133,21 @@ export interface ReadableKumo {
    *
    * @param address - Address whose balance should be retrieved.
    */
-  getKUMOBalance(address?: string): Promise<Decimal>;
+  getKUMOBalance(address: string): Promise<Decimal>;
 
   /**
    * Get the amount of Uniswap ETH/KUSD LP tokens held by an address.
    *
    * @param address - Address whose balance should be retrieved.
    */
-  getUniTokenBalance(address?: string): Promise<Decimal>;
+  getUniTokenBalance(address: string): Promise<Decimal>;
 
   /**
    * Get the liquidity mining contract's allowance of a holder's Uniswap ETH/KUSD LP tokens.
    *
    * @param address - Address holding the Uniswap ETH/KUSD LP tokens.
    */
-  getUniTokenAllowance(address?: string): Promise<Decimal>;
+  getUniTokenAllowance(address: string): Promise<Decimal>;
 
   /**
    * Get the remaining KUMO that will be collectively rewarded to liquidity miners.
@@ -157,7 +159,7 @@ export interface ReadableKumo {
    *
    * @param address - Address whose LP stake should be retrieved.
    */
-  getLiquidityMiningStake(address?: string): Promise<Decimal>;
+  getLiquidityMiningStake(address: string): Promise<Decimal>;
 
   /**
    * Get the total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining.
@@ -169,7 +171,7 @@ export interface ReadableKumo {
    *
    * @param address - Address whose KUMO reward should be retrieved.
    */
-  getLiquidityMiningKUMOReward(address?: string): Promise<Decimal>;
+  getLiquidityMiningKUMOReward(address: string): Promise<Decimal>;
 
   /**
    * Get the amount of leftover collateral available for withdrawal by an address.
@@ -180,7 +182,7 @@ export interface ReadableKumo {
    * can be withdrawn from using
    * {@link @kumodao/lib-base#TransactableKumo.claimCollateralSurplus | claimCollateralSurplus()}.
    */
-  getCollateralSurplusBalance(address?: string): Promise<Decimal>;
+  getCollateralSurplusBalance(asset: string, address: string): Promise<Decimal>;
 
   /** @internal */
   getTroves(
@@ -206,7 +208,7 @@ export interface ReadableKumo {
    *
    * @param address - Address that owns the KUMO Stake.
    */
-  getKUMOStake(address?: string): Promise<KUMOStake>;
+  getKUMOStake(asset: string, address: string): Promise<KUMOStake>;
 
   /**
    * Get the total amount of KUMO currently staked.
@@ -218,5 +220,5 @@ export interface ReadableKumo {
    *
    * @param address - Address to check.
    */
-  getFrontendStatus(address?: string): Promise<FrontendStatus>;
+  getFrontendStatus(address: string): Promise<FrontendStatus>;
 }

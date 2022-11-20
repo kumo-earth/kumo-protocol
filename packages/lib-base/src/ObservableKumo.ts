@@ -10,7 +10,7 @@ export interface ObservableKumo {
 
   watchTroveWithoutRewards(
     onTroveChanged: (trove: TroveWithPendingRedistribution) => void,
-    address?: string
+    address: string
   ): () => void;
 
   watchNumberOfTroves(onNumberOfTrovesChanged: (numberOfTroves: number) => void): () => void;
@@ -21,12 +21,13 @@ export interface ObservableKumo {
 
   watchStabilityDeposit(
     onStabilityDepositChanged: (stabilityDeposit: StabilityDeposit) => void,
-    address?: string
+    address: string
   ): () => void;
 
   watchKUSDInStabilityPool(
+    asset: string,
     onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void
   ): () => void;
 
-  watchKUSDBalance(onKUSDBalanceChanged: (balance: Decimal) => void, address?: string): () => void;
+  watchKUSDBalance(onKUSDBalanceChanged: (balance: Decimal) => void, address: string): () => void;
 }

@@ -100,7 +100,7 @@ const wethAddresses = {
 const hasWETH = (network: string): network is keyof typeof wethAddresses => network in wethAddresses;
 
 const config: HardhatUserConfig = {
-  // defaultNetwork: "dev",
+  defaultNetwork: "dev",
   networks: {
     hardhat: {
       accounts: accounts.slice(0, numAccounts),

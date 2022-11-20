@@ -12,23 +12,23 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     // (undocumented)
     getAssetBalance(address: string, assetType: string, provider: Provider, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
-    getCollateralSurplusBalance(address?: string, ...extraParams: T): Promise<Decimal>;
+    getCollateralSurplusBalance(asset: string, address: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
     getFees(asset: string, ...extraParams: T): Promise<Fees>;
     // (undocumented)
-    getFrontendStatus(address?: string, ...extraParams: T): Promise<FrontendStatus>;
+    getFrontendStatus(address: string, ...extraParams: T): Promise<FrontendStatus>;
     // (undocumented)
-    getKUMOBalance(address?: string, ...extraParams: T): Promise<Decimal>;
+    getKUMOBalance(address: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
-    getKUMOStake(address?: string, ...extraParams: T): Promise<KUMOStake>;
+    getKUMOStake(asset: string, address: string, ...extraParams: T): Promise<KUMOStake>;
     // (undocumented)
-    getKUSDBalance(address?: string, ...extraParams: T): Promise<Decimal>;
+    getKUSDBalance(address: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
-    getKUSDInStabilityPool(...extraParams: T): Promise<Decimal>;
+    getKUSDInStabilityPool(asset: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
-    getLiquidityMiningKUMOReward(address?: string, ...extraParams: T): Promise<Decimal>;
+    getLiquidityMiningKUMOReward(address: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
-    getLiquidityMiningStake(address?: string, ...extraParams: T): Promise<Decimal>;
+    getLiquidityMiningStake(address: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
     getNumberOfTroves(asset: string, ...extraParams: T): Promise<number>;
     // (undocumented)
@@ -38,7 +38,7 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     // (undocumented)
     getRemainingStabilityPoolKUMOReward(...extraParams: T): Promise<Decimal>;
     // (undocumented)
-    getStabilityDeposit(address?: string, ...extraParams: T): Promise<StabilityDeposit>;
+    getStabilityDeposit(address: string, ...extraParams: T): Promise<StabilityDeposit>;
     // (undocumented)
     getTotal(asset: string, ...extraParams: T): Promise<Trove>;
     // (undocumented)
@@ -48,9 +48,9 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     // (undocumented)
     getTotalStakedUniTokens(...extraParams: T): Promise<Decimal>;
     // (undocumented)
-    getTrove(asset: string, address?: string, ...extraParams: T): Promise<UserTrove>;
+    getTrove(asset: string, address: string, ...extraParams: T): Promise<UserTrove>;
     // (undocumented)
-    getTroveBeforeRedistribution(address?: string, ...extraParams: T): Promise<TroveWithPendingRedistribution>;
+    getTroveBeforeRedistribution(asset: string, address: string, ...extraParams: T): Promise<TroveWithPendingRedistribution>;
     // (undocumented)
     getTroves(asset: string, params: TroveListingParams & {
         beforeRedistribution: true;
@@ -58,9 +58,9 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     // (undocumented)
     getTroves(asset: string, params: TroveListingParams, ...extraParams: T): Promise<UserTrove[]>;
     // (undocumented)
-    getUniTokenAllowance(address?: string, ...extraParams: T): Promise<Decimal>;
+    getUniTokenAllowance(address: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
-    getUniTokenBalance(address?: string, ...extraParams: T): Promise<Decimal>;
+    getUniTokenBalance(address: string, ...extraParams: T): Promise<Decimal>;
     }
 
 // @internal (undocumented)
@@ -398,21 +398,21 @@ export const _normalizeTroveCreation: (params: Record<string, Decimalish | undef
 // @alpha (undocumented)
 export interface ObservableKumo {
     // (undocumented)
-    watchKUSDBalance(onKUSDBalanceChanged: (balance: Decimal) => void, address?: string): () => void;
+    watchKUSDBalance(onKUSDBalanceChanged: (balance: Decimal) => void, address: string): () => void;
     // (undocumented)
-    watchKUSDInStabilityPool(onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void): () => void;
+    watchKUSDInStabilityPool(asset: string, onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void): () => void;
     // (undocumented)
     watchNumberOfTroves(onNumberOfTrovesChanged: (numberOfTroves: number) => void): () => void;
     // (undocumented)
     watchPrice(onPriceChanged: (price: Decimal) => void): () => void;
     // (undocumented)
-    watchStabilityDeposit(onStabilityDepositChanged: (stabilityDeposit: StabilityDeposit) => void, address?: string): () => void;
+    watchStabilityDeposit(onStabilityDepositChanged: (stabilityDeposit: StabilityDeposit) => void, address: string): () => void;
     // (undocumented)
     watchTotal(onTotalChanged: (total: Trove) => void): () => void;
     // (undocumented)
     watchTotalRedistributed(onTotalRedistributedChanged: (totalRedistributed: Trove) => void): () => void;
     // (undocumented)
-    watchTroveWithoutRewards(onTroveChanged: (trove: TroveWithPendingRedistribution) => void, address?: string): () => void;
+    watchTroveWithoutRewards(onTroveChanged: (trove: TroveWithPendingRedistribution) => void, address: string): () => void;
 }
 
 // @public
@@ -497,33 +497,33 @@ export interface PopulatedRedemption<P = unknown, S = unknown, R = unknown> exte
 // @public
 export interface ReadableKumo {
     getAssetBalance(address: string, assetType: string, provider: Provider): Promise<Decimal>;
-    getCollateralSurplusBalance(address?: string): Promise<Decimal>;
+    getCollateralSurplusBalance(asset: string, address: string): Promise<Decimal>;
     getFees(asset: string): Promise<Fees>;
-    getFrontendStatus(address?: string): Promise<FrontendStatus>;
-    getKUMOBalance(address?: string): Promise<Decimal>;
-    getKUMOStake(address?: string): Promise<KUMOStake>;
-    getKUSDBalance(address?: string): Promise<Decimal>;
-    getKUSDInStabilityPool(): Promise<Decimal>;
-    getLiquidityMiningKUMOReward(address?: string): Promise<Decimal>;
-    getLiquidityMiningStake(address?: string): Promise<Decimal>;
+    getFrontendStatus(address: string): Promise<FrontendStatus>;
+    getKUMOBalance(address: string): Promise<Decimal>;
+    getKUMOStake(asset: string, address: string): Promise<KUMOStake>;
+    getKUSDBalance(address: string): Promise<Decimal>;
+    getKUSDInStabilityPool(asset: string): Promise<Decimal>;
+    getLiquidityMiningKUMOReward(address: string): Promise<Decimal>;
+    getLiquidityMiningStake(address: string): Promise<Decimal>;
     getNumberOfTroves(asset: string): Promise<number>;
     getPrice(): Promise<Decimal>;
     getRemainingLiquidityMiningKUMOReward(): Promise<Decimal>;
     getRemainingStabilityPoolKUMOReward(): Promise<Decimal>;
-    getStabilityDeposit(address?: string): Promise<StabilityDeposit>;
+    getStabilityDeposit(address: string): Promise<StabilityDeposit>;
     getTotal(asset: string): Promise<Trove>;
     getTotalRedistributed(asset: string): Promise<Trove>;
     getTotalStakedKUMO(): Promise<Decimal>;
     getTotalStakedUniTokens(): Promise<Decimal>;
-    getTrove(asset: string, address?: string): Promise<UserTrove>;
-    getTroveBeforeRedistribution(address?: string): Promise<TroveWithPendingRedistribution>;
+    getTrove(asset: string, address: string): Promise<UserTrove>;
+    getTroveBeforeRedistribution(asset: string, address: string): Promise<TroveWithPendingRedistribution>;
     // @internal (undocumented)
     getTroves(asset: string, params: TroveListingParams & {
         beforeRedistribution: true;
     }): Promise<TroveWithPendingRedistribution[]>;
     getTroves(asset: string, params: TroveListingParams): Promise<UserTrove[]>;
-    getUniTokenAllowance(address?: string): Promise<Decimal>;
-    getUniTokenBalance(address?: string): Promise<Decimal>;
+    getUniTokenAllowance(address: string): Promise<Decimal>;
+    getUniTokenBalance(address: string): Promise<Decimal>;
 }
 
 // @internal (undocumented)
