@@ -54,15 +54,10 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
 
   const openTrove = async (params) => th.openTrove(contracts, params)
   describe("KUMO Rewards - TEST", async () => {
-
     beforeEach(async () => {
-
       hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
       erc20Asset1 = hardhatTester.erc20Asset1
       assetAddress1 = erc20Asset1.address
-
-
-
 
       // Mint token to each acccount
       let index = 0;
@@ -82,13 +77,14 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
         contracts.borrowerOperations.address
       )
       KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
+      
+      await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
       priceFeed = contracts.priceFeedTestnet
       kusdToken = contracts.kusdToken
       stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
       sortedTroves = contracts.sortedTroves
       troveManager = contracts.troveManager
-      stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
       borrowerOperations = contracts.borrowerOperations
       kumoParams = contracts.kumoParameters
 
@@ -99,7 +95,6 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
       await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
       await kumoParams.sanitizeParameters(assetAddress1);
-      await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
       // Check community issuance starts with 32 million KUMO
       communityKUMOSupply = toBN(await kumoToken.balanceOf(communityIssuanceTester.address))
