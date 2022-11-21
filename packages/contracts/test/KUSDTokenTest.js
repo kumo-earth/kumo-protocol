@@ -94,8 +94,8 @@ contract('KUSDToken', async accounts => {
       //chainId = await web3.eth.getChainId()
       chainId = await kusdTokenOriginal.getChainId()
 
-      stabilityPool = contracts.stabilityPool
-      troveManager = contracts.stabilityPool
+      stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
+      troveManager = contracts.troveManager
       borrowerOperations = contracts.borrowerOperations
 
       tokenVersion = await kusdTokenOriginal.version()

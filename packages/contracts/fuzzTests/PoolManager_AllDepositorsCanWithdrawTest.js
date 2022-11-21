@@ -217,10 +217,10 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
       contracts = await deploymentHelper.deployKumoCore()
       const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress)
 
-      stabilityPool = contracts.stabilityPool
+      stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
       priceFeed = contracts.priceFeedTestnet
       kusdToken = contracts.kusdToken
-      stabilityPool = contracts.stabilityPool
+      stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
       troveManager = contracts.troveManager
       borrowerOperations = contracts.borrowerOperations
       sortedTroves = contracts.sortedTroves

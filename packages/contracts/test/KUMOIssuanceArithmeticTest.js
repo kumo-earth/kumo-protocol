@@ -54,7 +54,7 @@ contract('KUMO community issuance arithmetic tests', async accounts => {
     contracts.stabilityPool = await StabilityPool.new()
     contracts = await deploymentHelper.deployKUSDToken(contracts)
 
-    stabilityPool = contracts.stabilityPool
+    stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
     borrowerOperations = contracts.borrowerOperations
 
     kumoToken = KUMOContracts.kumoToken

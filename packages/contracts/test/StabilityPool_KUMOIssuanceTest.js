@@ -85,10 +85,10 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
 
       priceFeed = contracts.priceFeedTestnet
       kusdToken = contracts.kusdToken
-      stabilityPool = contracts.stabilityPool
+      stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
       sortedTroves = contracts.sortedTroves
       troveManager = contracts.troveManager
-      stabilityPool = contracts.stabilityPool
+      stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
       borrowerOperations = contracts.borrowerOperations
       kumoParams = contracts.kumoParameters
 

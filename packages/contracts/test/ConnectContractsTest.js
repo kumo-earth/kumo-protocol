@@ -29,7 +29,6 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     sortedTroves = coreContracts.sortedTroves
     troveManager = coreContracts.troveManager
     activePool = coreContracts.activePool
-    stabilityPool = coreContracts.stabilityPool
     defaultPool = coreContracts.defaultPool
     functionCaller = coreContracts.functionCaller
     borrowerOperations = coreContracts.borrowerOperations
@@ -48,6 +47,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     assetAddress1 = erc20.address
 
     await deploymentHelper.addNewAssetToSystem(coreContracts, KUMOContracts, assetAddress1)
+    stabilityPool = await deploymentHelper.getStabilityPoolByAsset(coreContracts, assetAddress1)
   })
 
   it('Check if correct Addresses in Vault Parameters', async () => {

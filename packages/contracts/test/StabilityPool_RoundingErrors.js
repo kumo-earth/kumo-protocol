@@ -26,7 +26,7 @@ contract('Pool Manager: Sum-Product rounding errors', async accounts => {
     
     priceFeed = contracts.priceFeedTestnet
     kusdToken = contracts.kusdToken
-    stabilityPool = contracts.stabilityPool
+    stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
     troveManager = contracts.troveManager
     borrowerOperations = contracts.borrowerOperations
 

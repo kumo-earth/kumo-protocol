@@ -74,7 +74,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       sortedTroves = contracts.sortedTroves
       troveManager = contracts.troveManager
       activePool = contracts.activePool
-      stabilityPool = contracts.stabilityPool
+      stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
       defaultPool = contracts.defaultPool
       borrowerOperations = contracts.borrowerOperations
 
