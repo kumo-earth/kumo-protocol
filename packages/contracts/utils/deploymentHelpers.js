@@ -497,6 +497,10 @@ class DeploymentHelper {
     const stabilityPoolAddress = await contracts.stabilityPoolFactory.getStabilityPoolByAsset(address);
     return await StabilityPool.at(stabilityPoolAddress);
   }
+
+  static async deployERC20Asset() {
+    return await ERC20Test.new();
+  }
 }
 
 module.exports = DeploymentHelper
