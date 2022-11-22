@@ -51,10 +51,13 @@ contract('KUMO community issuance arithmetic tests', async accounts => {
   beforeEach(async () => {
     contracts = await deploymentHelper.deployKumoCore()
     const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
-    contracts.stabilityPool = await StabilityPool.new()
     contracts = await deploymentHelper.deployKUSDToken(contracts)
 
-    stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
+    erc20Asset1 = await deploymentHelper.deployERC20Asset()
+    assetAddress1 = erc20Asset1.address
+    await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
+
+    contracts.stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
     borrowerOperations = contracts.borrowerOperations
 
     kumoToken = KUMOContracts.kumoToken

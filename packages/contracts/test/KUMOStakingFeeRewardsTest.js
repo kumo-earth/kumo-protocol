@@ -43,9 +43,6 @@ contract('KUMOStaking revenue share tests', async accounts => {
   let borrowerOperations
   let kumoStaking
   let kumoToken
-  let hardhatTester
-  let erc20
-  let kumoParams
   let erc20Asset1
   let erc20Asset2
 
@@ -63,6 +60,12 @@ contract('KUMOStaking revenue share tests', async accounts => {
     await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
 
+    erc20Asset1 = await deploymentHelper.deployERC20Asset()
+    assetAddress1 = erc20Asset1.address
+    
+    await contracts.kumoParameters.sanitizeParameters(assetAddress1);
+    await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
+
     nonPayable = await NonPayable.new()
     priceFeed = contracts.priceFeedTestnet
     kusdToken = contracts.kusdToken
@@ -77,24 +80,18 @@ contract('KUMOStaking revenue share tests', async accounts => {
     kumoStaking = KUMOContracts.kumoStaking
     await kumoToken.unprotectedMint(multisig, dec(5, 24))
 
-    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-    erc20 = hardhatTester.erc20Asset1
-    assetAddress1 = erc20.address
-
-    kumoParams = contracts.kumoParameters
-    await kumoParams.sanitizeParameters(assetAddress1);
-    await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
-
     // Mint token to each acccount
-    let index = 0;
-    for (const acc of accounts) {
-      await kumoToken.approve(kumoStaking.address, await web3.eth.getBalance(acc), { from: acc })
-      await erc20.mint(acc, await web3.eth.getBalance(acc))
-      index++;
+    await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 20)
 
-      if (index >= 20)
-        break;
-    }
+    // let index = 0;
+    // for (const acc of accounts) {
+    //   await kumoToken.approve(kumoStaking.address, await web3.eth.getBalance(acc), { from: acc })
+    //   await erc20.mint(acc, await web3.eth.getBalance(acc))
+    //   index++;
+
+    //   if (index >= 20)
+    //     break;
+    // }
 
 
   })
@@ -332,13 +329,13 @@ contract('KUMOStaking revenue share tests', async accounts => {
     const expectedTotalAsset1Gain = emittedETHFee_1.add(emittedETHFee_2)
     const expectedTotalKUSDGain = emittedKUSDFee_1.add(emittedKUSDFee_2)
 
-    const A_Asset1Balance_Before = toBN(await erc20.balanceOf(A))
+    const A_Asset1Balance_Before = toBN(await erc20Asset1.balanceOf(A))
     const A_KUSDBalance_Before = toBN(await kusdToken.balanceOf(A))
 
     // A un-stakes
     await kumoStaking.unstake(dec(100, 18), { from: A, gasPrice: 0 })
 
-    const A_Asset1Balance_After = toBN(await erc20.balanceOf(A))
+    const A_Asset1Balance_After = toBN(await erc20Asset1.balanceOf(A))
     const A_KUSDBalance_After = toBN(await kusdToken.balanceOf(A))
 
 
@@ -405,13 +402,13 @@ contract('KUMOStaking revenue share tests', async accounts => {
     const expectedTotalAsset1Gain = emittedETHFee_1.add(emittedETHFee_2)
     const expectedTotalKUSDGain = emittedKUSDFee_1.add(emittedKUSDFee_2)
 
-    const A_Asset1Balance_Before = toBN(await erc20.balanceOf(A))
+    const A_Asset1Balance_Before = toBN(await erc20Asset1.balanceOf(A))
     const A_KUSDBalance_Before = toBN(await kusdToken.balanceOf(A))
 
     // A tops up
     await kumoStaking.stake(dec(50, 18), { from: A, gasPrice: 0 })
 
-    const A_Asset1Balance_After = toBN(await erc20.balanceOf(A))
+    const A_Asset1Balance_After = toBN(await erc20Asset1.balanceOf(A))
     const A_KUSDBalance_After = toBN(await kusdToken.balanceOf(A))
 
     const A_Asset1Gain = A_Asset1Balance_After.sub(A_Asset1Balance_Before)
@@ -642,13 +639,13 @@ contract('KUMOStaking revenue share tests', async accounts => {
     const expectedKUSDGain_D = toBN('50').mul(emittedKUSDFee_3).div(toBN('650'))
 
 
-    const A_Asset1Balance_Before = toBN(await erc20.balanceOf(A))
+    const A_Asset1Balance_Before = toBN(await erc20Asset1.balanceOf(A))
     const A_KUSDBalance_Before = toBN(await kusdToken.balanceOf(A))
-    const B_Asset1Balance_Before = toBN(await erc20.balanceOf(B))
+    const B_Asset1Balance_Before = toBN(await erc20Asset1.balanceOf(B))
     const B_KUSDBalance_Before = toBN(await kusdToken.balanceOf(B))
-    const C_Asset1Balance_Before = toBN(await erc20.balanceOf(C))
+    const C_Asset1Balance_Before = toBN(await erc20Asset1.balanceOf(C))
     const C_KUSDBalance_Before = toBN(await kusdToken.balanceOf(C))
-    const D_Asset1Balance_Before = toBN(await erc20.balanceOf(D))
+    const D_Asset1Balance_Before = toBN(await erc20Asset1.balanceOf(D))
     const D_KUSDBalance_Before = toBN(await kusdToken.balanceOf(D))
 
     // A-D un-stake
@@ -664,13 +661,13 @@ contract('KUMOStaking revenue share tests', async accounts => {
     assert.equal((await kumoStaking.totalKUMOStaked()), '0')
 
     // Get A-D ETH and KUSD balances
-    const A_Asset1Balance_After = toBN(await erc20.balanceOf(A))
+    const A_Asset1Balance_After = toBN(await erc20Asset1.balanceOf(A))
     const A_KUSDBalance_After = toBN(await kusdToken.balanceOf(A))
-    const B_Asset1Balance_After = toBN(await erc20.balanceOf(B))
+    const B_Asset1Balance_After = toBN(await erc20Asset1.balanceOf(B))
     const B_KUSDBalance_After = toBN(await kusdToken.balanceOf(B))
-    const C_Asset1Balance_After = toBN(await erc20.balanceOf(C))
+    const C_Asset1Balance_After = toBN(await erc20Asset1.balanceOf(C))
     const C_KUSDBalance_After = toBN(await kusdToken.balanceOf(C))
-    const D_Asset1Balance_After = toBN(await erc20.balanceOf(D))
+    const D_Asset1Balance_After = toBN(await erc20Asset1.balanceOf(D))
     const D_KUSDBalance_After = toBN(await kusdToken.balanceOf(D))
 
     // Get ETH and KUSD gains
