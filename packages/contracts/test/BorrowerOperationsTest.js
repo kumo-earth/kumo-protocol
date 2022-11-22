@@ -78,7 +78,13 @@ contract('BorrowerOperations', async accounts => {
       contracts.troveManager = await TroveManagerTester.new()
       contracts = await deploymentHelper.deployKUSDTokenTester(contracts)
       const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
-      hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
+      
+      erc20 = await deploymentHelper.deployERC20Asset()
+      assetAddress1 = erc20.address
+      
+      kumoParams = contracts.kumoParameters
+      await kumoParams.sanitizeParameters(assetAddress1);
+      await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
       await deploymentHelper.connectKUMOContracts(KUMOContracts)
       await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
@@ -98,13 +104,6 @@ contract('BorrowerOperations', async accounts => {
       defaultPool = contracts.defaultPool
       borrowerOperations = contracts.borrowerOperations
       hintHelpers = contracts.hintHelpers
-      kumoParams = contracts.kumoParameters
-      erc20 = hardhatTester.erc20Asset1
-      assetAddress1 = erc20.address
-
-      await kumoParams.sanitizeParameters(assetAddress1);
-      await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
-
       kumoStaking = KUMOContracts.kumoStaking
       kumoToken = KUMOContracts.kumoToken
       communityIssuance = KUMOContracts.communityIssuance
