@@ -190,7 +190,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
   /** {@inheritDoc TransactableKumo.depositKUSDInStabilityPool} */
   depositKUSDInStabilityPool(
     amount: Decimalish,
-    asset:string
+    asset: string
   ): Promise<
     PopulatedKumoTransaction<
       P,
@@ -201,7 +201,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
   /** {@inheritDoc TransactableKumo.withdrawKUSDFromStabilityPool} */
   withdrawKUSDFromStabilityPool(
     amount: Decimalish,
-    asset:string
+    asset: string
   ): Promise<
     PopulatedKumoTransaction<
       P,
@@ -218,7 +218,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
   >;
 
   /** {@inheritDoc TransactableKumo.transferCollateralGainToTrove} */
-  transferCollateralGainToTrove(asset: string): Promise<
+  transferCollateralGainToTrove(asset: string, assetName: string): Promise<
     PopulatedKumoTransaction<
       P,
       SentKumoTransaction<S, KumoReceipt<R, CollateralGainTransferDetails>>
@@ -291,6 +291,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
 
   /** {@inheritDoc TransactableKumo.registerFrontend} */
   registerFrontend(
+    assetName: string,
     kickbackRate: Decimalish
   ): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
 }

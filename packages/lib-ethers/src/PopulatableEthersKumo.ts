@@ -601,11 +601,11 @@ export class PopulatableEthersKumo
   }
 
   private _extractStabilityPoolGainsWithdrawalDetails(
-    asset: string,
+    assetName: string,
     logs: Log[]
   ): StabilityPoolGainsWithdrawalDetails {
     // const { stabilityPool } = _getContracts(this._readable.connection);
-    const stabilityPool = _getStabilityPoolByAsset(asset, this._readable.connection);
+    const stabilityPool = _getStabilityPoolByAsset(assetName, this._readable.connection);
 
     const [newKUSDDeposit] = stabilityPool
       .extractEvents(logs, "UserDepositChanged")
@@ -648,17 +648,17 @@ export class PopulatableEthersKumo
       this._readable.connection,
 
       ({ logs }) => ({
-        ...this._extractStabilityPoolGainsWithdrawalDetails(asset,logs),
+        ...this._extractStabilityPoolGainsWithdrawalDetails(asset, logs),
         change
       })
     );
   }
 
   private async _wrapStabilityDepositWithdrawal(
-    asset: string,
+    assetName: string,
     rawPopulatedTransaction: EthersPopulatedTransaction
   ): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>> {
-    const stabilityPool = _getStabilityPoolByAsset(asset, this._readable.connection);
+    const stabilityPool = _getStabilityPoolByAsset(assetName, this._readable.connection);
     const { kusdToken } = _getContracts(this._readable.connection);
 
     return new PopulatedEthersKumoTransaction(
@@ -666,7 +666,7 @@ export class PopulatableEthersKumo
       this._readable.connection,
 
       ({ logs, from: userAddress }) => {
-        const gainsWithdrawalDetails = this._extractStabilityPoolGainsWithdrawalDetails(asset, logs);
+        const gainsWithdrawalDetails = this._extractStabilityPoolGainsWithdrawalDetails(assetName, logs);
 
         const [withdrawKUSD] = kusdToken
           .extractEvents(logs, "Transfer")
@@ -682,7 +682,7 @@ export class PopulatableEthersKumo
   }
 
   private _wrapCollateralGainTransfer(
-    asset:string,
+    assetName: string,
     rawPopulatedTransaction: EthersPopulatedTransaction
   ): PopulatedEthersKumoTransaction<CollateralGainTransferDetails> {
     const { borrowerOperations } = _getContracts(this._readable.connection);
@@ -697,7 +697,7 @@ export class PopulatableEthersKumo
           .map(({ args: { _coll, _debt } }) => new Trove(decimalify(_coll), decimalify(_debt)));
 
         return {
-          ...this._extractStabilityPoolGainsWithdrawalDetails(asset, logs),
+          ...this._extractStabilityPoolGainsWithdrawalDetails(assetName, logs),
           newTrove
         };
       }
@@ -839,14 +839,14 @@ export class PopulatableEthersKumo
 
     const normalizedParams = _normalizeTroveCreation(params);
     const { depositCollateral, borrowKUSD } = normalizedParams;
-    console.log("openTrove", depositCollateral, borrowKUSD)
+    // console.log("openTrove", depositCollateral, borrowKUSD)
     const [fees, blockTimestamp, total, price] = await Promise.all([
       this._readable._getFeesFactory(asset),
       this._readable._getBlockTimestamp(),
       this._readable.getTotal(asset),
       this._readable.getPrice()
     ]);
-    console.log("openTrove", fees, blockTimestamp, total, price)
+    // console.log("openTrove", fees, blockTimestamp, total, price)
     const recoveryMode = total.collateralRatioIsBelowCritical(price);
 
     const decayBorrowingRate = (seconds: number) =>
@@ -856,7 +856,7 @@ export class PopulatableEthersKumo
     const newTrove = Trove.create(normalizedParams, currentBorrowingRate);
     const hints = await this._findHints(asset, newTrove);
 
-    console.log("openTrove", decayBorrowingRate, currentBorrowingRate, newTrove, hints)
+    // console.log("openTrove", decayBorrowingRate, currentBorrowingRate, newTrove, hints)
 
     const { maxBorrowingRate, borrowingFeeDecayToleranceMinutes } =
       normalizeBorrowingOperationOptionalParams(
@@ -889,12 +889,12 @@ export class PopulatableEthersKumo
           `within ${borrowingFeeDecayToleranceMinutes} minutes`
         );
       }
-      console.log("openTrove", decayBorrowingRate, currentBorrowingRate, newTrove, hints)
+      // console.log("openTrove", decayBorrowingRate, currentBorrowingRate, newTrove, hints)
       const [gasNow, gasLater] = await Promise.all([
         borrowerOperations.estimateGas.openTrove(...txParams(borrowKUSD)),
         borrowerOperations.estimateGas.openTrove(...txParams(borrowKUSDSimulatingDecay))
       ]);
-      console.log("openTrove", gasNow, gasLater)
+      // console.log("openTrove", gasNow, gasLater)
       const gasLimit = addGasForBaseRateUpdate(borrowingFeeDecayToleranceMinutes)(
         bigNumberMax(addGasForPotentialListTraversal(gasNow), gasLater)
       );
@@ -1130,16 +1130,16 @@ export class PopulatableEthersKumo
   /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.depositKUSDInStabilityPool} */
   async depositKUSDInStabilityPool(
     amount: Decimalish,
-    asset: string,
+    assetName: string,
     frontendTag?: string,
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>> {
-    const stabilityPool = _getStabilityPoolByAsset(asset, this._readable.connection);
+    const stabilityPool = _getStabilityPoolByAsset(assetName, this._readable.connection);
     // const { stabilityPool } = _getContracts(this._readable.connection);
     const depositKUSD = Decimal.from(amount);
 
     return this._wrapStabilityDepositTopup(
-      asset,
+      assetName,
       { depositKUSD },
       await stabilityPool.estimateAndPopulate.provideToSP(
         { ...overrides },
@@ -1153,14 +1153,14 @@ export class PopulatableEthersKumo
   /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.withdrawKUSDFromStabilityPool} */
   async withdrawKUSDFromStabilityPool(
     amount: Decimalish,
-    asset:string,
+    assetName: string,
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>> {
-    const stabilityPool = _getStabilityPoolByAsset(asset, this._readable.connection);
+    const stabilityPool = _getStabilityPoolByAsset(assetName, this._readable.connection);
     // const { stabilityPool } = _getContracts(this._readable.connection);
 
     return this._wrapStabilityDepositWithdrawal(
-      asset,
+      assetName,
       await stabilityPool.estimateAndPopulate.withdrawFromSP(
         { ...overrides },
         addGasForKUMOIssuance,
@@ -1171,12 +1171,12 @@ export class PopulatableEthersKumo
 
   /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.withdrawGainsFromStabilityPool} */
   async withdrawGainsFromStabilityPool(
-    asset: string,
+    assetName: string,
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<StabilityPoolGainsWithdrawalDetails>> {
-    const stabilityPool = _getStabilityPoolByAsset(asset, this._readable.connection);
+    const stabilityPool = _getStabilityPoolByAsset(assetName, this._readable.connection);
     return this._wrapStabilityPoolGainsWithdrawal(
-      asset,
+      assetName,
       await stabilityPool.estimateAndPopulate.withdrawFromSP(
         { ...overrides },
         addGasForKUMOIssuance,
@@ -1188,21 +1188,22 @@ export class PopulatableEthersKumo
   /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.transferCollateralGainToTrove} */
   async transferCollateralGainToTrove(
     asset: string,
+    assetName: string,
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<CollateralGainTransferDetails>> {
     const address = _requireAddress(this._readable.connection, overrides);
-    const stabilityPool = _getStabilityPoolByAsset(asset, this._readable.connection);
+    const stabilityPool = _getStabilityPoolByAsset(assetName, this._readable.connection);
     // const { stabilityPool } = _getContracts(this._readable.connection);
 
     const [initialTrove, stabilityDeposit] = await Promise.all([
       this._readable.getTrove(asset, address),
-      this._readable.getStabilityDeposit(asset, address)
+      this._readable.getStabilityDeposit(assetName, address)
     ]);
 
     const finalTrove = initialTrove.addCollateral(stabilityDeposit.collateralGain);
 
     return this._wrapCollateralGainTransfer(
-      asset,
+      assetName,
       await stabilityPool.estimateAndPopulate.withdrawAssetGainToTrove(
         { ...overrides },
         compose(addGasForPotentialListTraversal, addGasForKUMOIssuance),
@@ -1358,10 +1359,11 @@ export class PopulatableEthersKumo
 
   /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.registerFrontend} */
   async registerFrontend(
+    assetName: string,
     kickbackRate: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<void>> {
-    const stabilityPool = _getStabilityPoolByAsset("ctx", this._readable.connection);
+    const stabilityPool = _getStabilityPoolByAsset(assetName, this._readable.connection);
     // const { stabilityPool } = _getContracts(this._readable.connection);
 
     return this._wrapSimpleTransaction(
@@ -1376,7 +1378,7 @@ export class PopulatableEthersKumo
   /** @internal */
   async _mintUniToken(
     amount: Decimalish,
-    address: string,
+    address?: string,
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<void>> {
     address ??= _requireAddress(this._readable.connection, overrides);

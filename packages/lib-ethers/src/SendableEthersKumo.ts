@@ -176,9 +176,10 @@ export class SendableEthersKumo
   /** {@inheritDoc @kumodao/lib-base#SendableKumo.transferCollateralGainToTrove} */
   transferCollateralGainToTrove(
     asset: string,
+    assetName: string,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersKumoTransaction<CollateralGainTransferDetails>> {
-    return this._populate.transferCollateralGainToTrove(asset, overrides).then(sendTransaction);
+    return this._populate.transferCollateralGainToTrove(asset, assetName, overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @kumodao/lib-base#SendableKumo.sendKUSD} */
@@ -244,16 +245,17 @@ export class SendableEthersKumo
 
   /** {@inheritDoc @kumodao/lib-base#SendableKumo.registerFrontend} */
   registerFrontend(
+    assetName: string,
     kickbackRate: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersKumoTransaction<void>> {
-    return this._populate.registerFrontend(kickbackRate, overrides).then(sendTransaction);
+    return this._populate.registerFrontend(assetName, kickbackRate, overrides).then(sendTransaction);
   }
 
   /** @internal */
   _mintUniToken(
     amount: Decimalish,
-    address: string,
+    address?: string,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersKumoTransaction<void>> {
     return this._populate._mintUniToken(amount, address, overrides).then(sendTransaction);

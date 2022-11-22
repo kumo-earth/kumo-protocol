@@ -131,16 +131,16 @@ const connectionFrom = (
 export const _getContracts = (connection: EthersKumoConnection): _KumoContracts =>
   (connection as _InternalEthersKumoConnection)._contracts;
 
-export const _getStabilityPoolByAsset = (asset: string, connection: EthersKumoConnection) => {
+export const _getStabilityPoolByAsset = (assetName: string, connection: EthersKumoConnection) => {
   const { stabilityPoolAsset1, stabilityPoolAsset2 } = _getContracts(connection);
-  if(asset === 'ctx'){
+  if (assetName === 'ctx') {
     return stabilityPoolAsset1
-  } else if(asset === 'cty'){
+  } else if (assetName === 'cty') {
     return stabilityPoolAsset2
   } else {
     throw new Error("Can't get the required Stability Pool");
   }
-  
+
 }
 
 

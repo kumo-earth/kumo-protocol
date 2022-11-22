@@ -135,11 +135,11 @@ export class ObservableEthersKumo implements ObservableKumo {
 
   watchStabilityDeposit(
     onStabilityDepositChanged: (stabilityDeposit: StabilityDeposit) => void,
-    asset:string,
+    assetName: string,
     address: string
   ): () => void {
     address ??= _requireAddress(this._readable.connection);
-    const stabilityPool = _getStabilityPoolByAsset(asset, this._readable.connection);
+    const stabilityPool = _getStabilityPoolByAsset(assetName, this._readable.connection);
     const { activePool } = _getContracts(this._readable.connection);
     const { UserDepositChanged } = stabilityPool.filters;
     const { AssetSent } = activePool.filters;
@@ -148,7 +148,7 @@ export class ObservableEthersKumo implements ObservableKumo {
     const assetSent = AssetSent();
 
     const depositListener = debounce((blockTag: number) => {
-      this._readable.getStabilityDeposit(asset, address, { blockTag }).then(onStabilityDepositChanged);
+      this._readable.getStabilityDeposit(assetName, address, { blockTag }).then(onStabilityDepositChanged);
     });
 
     const assetSentListener = (toAddress: string, _amount: BigNumber, event: Event) => {
@@ -169,10 +169,10 @@ export class ObservableEthersKumo implements ObservableKumo {
   }
 
   watchKUSDInStabilityPool(
-    asset: string,
+    assetName: string,
     onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void
   ): () => void {
-    const stabilityPool =  _getStabilityPoolByAsset(asset, this._readable.connection);
+    const stabilityPool = _getStabilityPoolByAsset(assetName, this._readable.connection);
     const { kusdToken } = _getContracts(this._readable.connection);
     const { Transfer } = kusdToken.filters;
 
@@ -182,7 +182,7 @@ export class ObservableEthersKumo implements ObservableKumo {
     const stabilityPoolKUSDFilters = [transferKUSDFromStabilityPool, transferKUSDToStabilityPool];
 
     const stabilityPoolKUSDListener = debounce((blockTag: number) => {
-      this._readable.getKUSDInStabilityPool(asset, { blockTag }).then(onKUSDInStabilityPoolChanged);
+      this._readable.getKUSDInStabilityPool(assetName, { blockTag }).then(onKUSDInStabilityPoolChanged);
     });
 
     stabilityPoolKUSDFilters.forEach(filter => kusdToken.on(filter, stabilityPoolKUSDListener));

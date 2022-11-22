@@ -391,7 +391,7 @@ const addMockAssetsToSystem = async (
     kumoParameters.address,
   ),
 
-  await stabilityPoolFactory.createNewStabilityPool(mockAsset1.address, stabilityPoolAsset1.address)
+    await stabilityPoolFactory.createNewStabilityPool(mockAsset1.address, stabilityPoolAsset1.address)
 
   await kumoParameters.setAsDefault(mockAsset1.address)
   await troveManager.addNewAsset(mockAsset1.address)
@@ -421,8 +421,8 @@ const addMockAssetsToSystem = async (
 // Mint token to each acccount
 const mintMockAssets = async (signers: SignerWithAddress[], { mockAsset1, mockAsset2 }: _KumoContracts) => {
   for (let i = 0; i < signers.length; ++i) {
-    await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("10000000000000000000000000000000000000000"))
-    await mockAsset2.mint((await signers[i].getAddress()), BigNumber.from("10000000000000000000000000000000000000000"))
+    await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000"))
+    await mockAsset2.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000"))
   }
 };
 
