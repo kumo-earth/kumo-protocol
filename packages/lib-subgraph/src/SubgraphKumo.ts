@@ -257,6 +257,7 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
 
   watchStabilityDeposit(
     onStabilityDepositChanged: (stabilityDeposit: StabilityDeposit) => void,
+    asset: string,
     address?: string
   ): () => void {
     throw new Error("Method not implemented.");

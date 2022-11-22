@@ -1,14 +1,22 @@
 import { Divider, Flex } from "theme-ui";
-import { Percent } from "@kumodao/lib-base";
+import { KumoStoreState, Percent, Decimal } from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 import { CollateralCard } from "../components/ColleteralCard/ColleteralCard";
 import { DashboadHeader } from "../components/DashboardHeader";
 import { useDashboard } from "../hooks/DashboardContext";
 import { DashboadHeaderItem } from "../components/DashboardHeaderItem";
 import { DashboadContent } from "../components/DashboardContent";
 
+
+const select = ({
+  vaults
+}: KumoStoreState) => ({
+  vaults
+});
+
 export const Dashboard: React.FC = () => {
-  const { vaults, totalCollDebt } = useDashboard();
-  console.log("statsType1", vaults)
+  const { totalCollDebt, ctx, cty } = useDashboard();
+  const { vaults } = useKumoSelector(select);
   return (
     <Flex variant="layout.dashboard">
       <DashboadHeader>
@@ -19,13 +27,14 @@ export const Dashboard: React.FC = () => {
       <Divider  sx={{ color: "muted" }} />
       <DashboadContent>
         {vaults.map(vault => {
-          const totalCollateralRatioPct = new Percent(vault.collateralRatio);
+          const price = vault?.asset === 'ctx' ? ctx : vault?.asset === 'cty' ? cty : Decimal.from(0)
+          const totalCollateralRatioPct = new Percent(vault.total.collateralRatio(price));
           return (
             <CollateralCard
-              collateralType={vault.type}
+              collateralType={vault.asset}
               totalCollateralRatioPct={totalCollateralRatioPct.prettify()}
-              usersTroves={vault.usersTroves}
-              key={vault.type}
+              trove={vault?.trove}
+              key={vault?.asset}
             />
           );
         })}

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Flex, Button, Box, Card, Heading, Spinner } from "theme-ui";
 import {
   KumoStoreState,
@@ -8,11 +8,10 @@ import {
   KUSD_LIQUIDATION_RESERVE,
   KUSD_MINIMUM_NET_DEBT,
   Percent,
-  UserTrove
+  ASSET_TOKENS,
+  Fees
 } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
-import { Web3Provider } from "@ethersproject/providers";
-import { useWeb3React } from "@web3-react/core";
 
 import { useStableTroveChange } from "../../hooks/useStableTroveChange";
 import { ActionDescription } from "../ActionDescription";
@@ -32,35 +31,29 @@ import {
 } from "./validation/validateTroveChange";
 import { useDashboard } from "../../hooks/DashboardContext";
 
-const selector = (state: KumoStoreState) => {
-  const { fees, price, accountBalance } = state;
-  return {
-    fees,
-    price,
-    accountBalance,
-    validationContext: selectForTroveChangeValidation(state)
-  };
-};
-
 const EMPTY_TROVE = new Trove(Decimal.ZERO, Decimal.ZERO);
 const TRANSACTION_ID = "trove-creation";
 const GAS_ROOM_ETH = Decimal.from(0.1);
 
-const getPathName = (location: any) => {
-  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-};
-
 export const Opening: React.FC = () => {
   const { dispatchEvent } = useTroveView();
-  const { fees, accountBalance, validationContext } = useKumoSelector(selector);
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const { ctx, cty } = useDashboard();
 
-  const location = useLocation();
-  const { vaults, openTroveT, bctPrice, mco2Price } = useDashboard();
-  // const vault = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
-  // const userTrove = vault.usersTroves.find(userT => userT.ownerAddress === account) ||
-  //   new UserTrove(account || "0x0", "nonExistent", Decimal.ZERO, Decimal.ZERO);
+  const { accountBalance, fees, validationContext } = useKumoSelector((state: KumoStoreState) => {
+    const { vaults } = state;
+    const vault = vaults.find(vault => vault.asset === collateralType);
+    const accountBalance = vault?.accountBalance as Decimal;
+    const fees = vault?.fees as Fees;
+    const validationContext = {
+      ...selectForTroveChangeValidation(state),
+      accountBalance: accountBalance
+    };
+    return { accountBalance, fees, validationContext };
+  });
 
-  const vaultType = vaults.some(vault => vault.usersTroves.some(userT => userT.status === "open"));
+  const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
+
   const borrowingRate = fees.borrowingRate();
   const editingState = useState<string>();
 
@@ -68,25 +61,20 @@ export const Opening: React.FC = () => {
   const [borrowAmount, setBorrowAmount] = useState<Decimal>(Decimal.ZERO);
 
   const maxBorrowingRate = borrowingRate.add(0.005);
-
+  const price = collateralType === "ctx" ? ctx : collateralType === "cty" ? cty : Decimal.from(0);
   const fee = borrowAmount.mul(borrowingRate);
   const feePct = new Percent(borrowingRate);
   const totalDebt = borrowAmount.add(KUSD_LIQUIDATION_RESERVE).add(fee);
   const isDirty = !collateral.isZero || !borrowAmount.isZero;
   const trove = isDirty ? new Trove(collateral, totalDebt) : EMPTY_TROVE;
+
   const maxCollateral = accountBalance.gt(GAS_ROOM_ETH)
     ? accountBalance.sub(GAS_ROOM_ETH)
     : Decimal.ZERO;
   const collateralMaxedOut = collateral.eq(maxCollateral);
-  let collateralRatio: Decimal | undefined = undefined;
-  if (getPathName(location) === "bct") {
-    collateralRatio =
-      !collateral.isZero && !borrowAmount.isZero ? trove.collateralRatio(bctPrice) : undefined;
-  } else if (getPathName(location) === "mco2") {
-    collateralRatio =
-      !collateral.isZero && !borrowAmount.isZero ? trove.collateralRatio(mco2Price) : undefined;
-  }
-
+  const collateralRatio =
+    !collateral.isZero && !borrowAmount.isZero ? trove.collateralRatio(price) : undefined;
+    
   const [troveChange, description] = validateTroveChange(
     EMPTY_TROVE,
     trove,
@@ -97,7 +85,7 @@ export const Opening: React.FC = () => {
   const stableTroveChange = useStableTroveChange(troveChange);
   const [gasEstimationState, setGasEstimationState] = useState<GasEstimationState>({ type: "idle" });
 
-  const transactionState = useMyTransactionState(vaultType ? "trove-adjustment" : TRANSACTION_ID);
+  const transactionState = useMyTransactionState(TRANSACTION_ID);
   const isTransactionPending =
     transactionState.type === "waitingForApproval" ||
     transactionState.type === "waitingForConfirmation";
@@ -110,20 +98,6 @@ export const Opening: React.FC = () => {
     setCollateral(Decimal.ZERO);
     setBorrowAmount(Decimal.ZERO);
   }, []);
-
-  useEffect(() => {
-    if (transactionState.type === "confirmedOneShot") {
-      if (!vaultType) {
-        collateralRatio &&
-          openTroveT(getPathName(location), collateral, totalDebt, borrowAmount.add(fee));
-      } else {
-        collateralRatio &&
-          openTroveT(getPathName(location), collateral, totalDebt, borrowAmount.add(fee));
-        dispatchEvent("CANCEL_ADJUST_TROVE_PRESSED");
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transactionState.type]);
 
   //   params:
   // borrowLUSD: Decimal {_bigNumber: BigNumber}
@@ -140,7 +114,7 @@ export const Opening: React.FC = () => {
   return (
     <Card variant="base">
       <Heading as="h2">
-        {getPathName(location).toUpperCase()} Trove
+        {collateralType.toUpperCase()} Trove
         {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
             <Icon name="history" size="lg" />
@@ -156,16 +130,10 @@ export const Opening: React.FC = () => {
           maxAmount={maxCollateral.toString()}
           maxedOut={collateralMaxedOut}
           editingState={editingState}
-          unit={getPathName(location).toUpperCase()}
+          unit={collateralType.toUpperCase()}
           editedAmount={collateral.toString(4)}
           setEditedAmount={(amount: string) => setCollateral(Decimal.from(amount))}
-          tokenPrice={
-            getPathName(location) === "bct"
-              ? bctPrice
-              : getPathName(location) === "mco2"
-              ? mco2Price
-              : Decimal.ZERO
-          }
+          tokenPrice={price}
         />
 
         <EditableRow
@@ -241,50 +209,33 @@ export const Opening: React.FC = () => {
 
         {description ?? (
           <ActionDescription>
-            {`Start by entering the amount of ${getPathName(
-              location
-            ).toUpperCase()} you'd like to deposit as collateral.`}
+            {`Start by entering the amount of ${collateralType.toUpperCase()} you'd like to deposit as collateral.`}
           </ActionDescription>
         )}
 
-        {!vaultType && (
-          <ExpensiveTroveChangeWarning
-            troveChange={
-              vaultType
-                ? {
-                    params: { borrowKUSD: borrowAmount, depositCollateral: collateral },
-                    type: "creation"
-                  }
-                : stableTroveChange
-            }
-            maxBorrowingRate={maxBorrowingRate}
-            borrowingFeeDecayToleranceMinutes={60}
-            gasEstimationState={gasEstimationState}
-            setGasEstimationState={setGasEstimationState}
-          />
-        )}
+        <ExpensiveTroveChangeWarning
+          asset={assetTokenAddress}
+          troveChange={stableTroveChange}
+          maxBorrowingRate={maxBorrowingRate}
+          borrowingFeeDecayToleranceMinutes={60}
+          gasEstimationState={gasEstimationState}
+          setGasEstimationState={setGasEstimationState}
+        />
 
         <Flex variant="layout.actions">
-          <Button variant="cancel" onClick={handleCancelPressed}>
+          <Button variant="cancel" sx={{ mr : 2 }} onClick={handleCancelPressed}>
             Cancel
           </Button>
 
-          {gasEstimationState.type === "inProgress" && !vaultType ? (
+          {gasEstimationState.type === "inProgress" ? (
             <Button disabled>
               <Spinner size="24px" sx={{ color: "background" }} />
             </Button>
           ) : stableTroveChange ? (
             <TroveAction
-              transactionId={vaultType ? "trove-adjustment" : TRANSACTION_ID}
-              change={
-                vaultType
-                  ? {
-                      params: { depositCollateral: collateral },
-                      setToZero: undefined,
-                      type: "adjustment"
-                    }
-                  : stableTroveChange
-              }
+              transactionId={TRANSACTION_ID}
+              change={stableTroveChange}
+              asset={assetTokenAddress}
               maxBorrowingRate={maxBorrowingRate}
               borrowingFeeDecayToleranceMinutes={60}
             >

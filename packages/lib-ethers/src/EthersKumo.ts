@@ -202,8 +202,12 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getStabilityDeposit} */
-  getStabilityDeposit(address: string, overrides?: EthersCallOverrides): Promise<StabilityDeposit> {
-    return this._readable.getStabilityDeposit(address, overrides);
+  getStabilityDeposit(
+    asset: string,
+    address: string,
+    overrides?: EthersCallOverrides
+  ): Promise<StabilityDeposit> {
+    return this._readable.getStabilityDeposit(asset, address, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getRemainingStabilityPoolKUMOReward} */
@@ -323,11 +327,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUMOStake} */
-  getKUMOStake(
-    asset: string,
-    address: string,
-    overrides?: EthersCallOverrides
-  ): Promise<KUMOStake> {
+  getKUMOStake(asset: string, address: string, overrides?: EthersCallOverrides): Promise<KUMOStake> {
     return this._readable.getKUMOStake(asset, address, overrides);
   }
 
@@ -337,8 +337,12 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getFrontendStatus} */
-  getFrontendStatus(address: string, overrides?: EthersCallOverrides): Promise<FrontendStatus> {
-    return this._readable.getFrontendStatus(address, overrides);
+  getFrontendStatus(
+    asset: string,
+    address: string,
+    overrides?: EthersCallOverrides
+  ): Promise<FrontendStatus> {
+    return this._readable.getFrontendStatus(asset, address, overrides);
   }
 
   /**
@@ -495,10 +499,11 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    */
   depositKUSDInStabilityPool(
     amount: Decimalish,
+    asset: string,
     frontendTag?: string,
     overrides?: EthersTransactionOverrides
   ): Promise<StabilityDepositChangeDetails> {
-    return this.send.depositKUSDInStabilityPool(amount, frontendTag, overrides).then(waitForSuccess);
+    return this.send.depositKUSDInStabilityPool(amount, asset, frontendTag, overrides).then(waitForSuccess);
   }
 
   /**
@@ -510,9 +515,10 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    */
   withdrawKUSDFromStabilityPool(
     amount: Decimalish,
+    asset:string,
     overrides?: EthersTransactionOverrides
   ): Promise<StabilityDepositChangeDetails> {
-    return this.send.withdrawKUSDFromStabilityPool(amount, overrides).then(waitForSuccess);
+    return this.send.withdrawKUSDFromStabilityPool(amount, asset, overrides).then(waitForSuccess);
   }
 
   /**
@@ -523,9 +529,10 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
    */
   withdrawGainsFromStabilityPool(
+    asset: string,
     overrides?: EthersTransactionOverrides
   ): Promise<StabilityPoolGainsWithdrawalDetails> {
-    return this.send.withdrawGainsFromStabilityPool(overrides).then(waitForSuccess);
+    return this.send.withdrawGainsFromStabilityPool(asset,overrides).then(waitForSuccess);
   }
 
   /**

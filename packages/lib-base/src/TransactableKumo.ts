@@ -333,6 +333,7 @@ export interface TransactableKumo {
    */
   depositKUSDInStabilityPool(
     amount: Decimalish,
+    asset:string
   ): Promise<StabilityDepositChangeDetails>;
 
   /**
@@ -348,7 +349,7 @@ export interface TransactableKumo {
    * {@link @kumodao/lib-base#StabilityDeposit.collateralGain | collateral gain} and
    * {@link @kumodao/lib-base#StabilityDeposit.kumoReward | KUMO reward}.
    */
-  withdrawKUSDFromStabilityPool(amount: Decimalish): Promise<StabilityDepositChangeDetails>;
+  withdrawKUSDFromStabilityPool(amount: Decimalish, asset:string): Promise<StabilityDepositChangeDetails>;
 
   /**
    * Withdraw {@link @kumodao/lib-base#StabilityDeposit.collateralGain | collateral gain} and
@@ -357,7 +358,7 @@ export interface TransactableKumo {
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
    */
-  withdrawGainsFromStabilityPool(): Promise<StabilityPoolGainsWithdrawalDetails>;
+  withdrawGainsFromStabilityPool(asset: string): Promise<StabilityPoolGainsWithdrawalDetails>;
 
   /**
    * Transfer {@link @kumodao/lib-base#StabilityDeposit.collateralGain | collateral gain} from

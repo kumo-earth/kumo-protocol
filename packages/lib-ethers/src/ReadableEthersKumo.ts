@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 
 import iERC20Abi from "../abi/IERC20.json";
 
@@ -16,7 +16,8 @@ import {
   TroveListingParams,
   TroveWithPendingRedistribution,
   UserTrove,
-  UserTroveStatus
+  UserTroveStatus,
+  ASSET_TOKENS
 } from "@kumodao/lib-base";
 
 import { MultiTroveGetter } from "../types";
@@ -33,7 +34,8 @@ import {
   _getContracts,
   _requireAddress,
   _requireFrontendAddress,
-  _requireSigner
+  _requireSigner,
+  _getStabilityPoolByAsset
 } from "./EthersKumoConnection";
 
 import { BlockPolledKumoStore } from "./BlockPolledKumoStore";
@@ -56,23 +58,18 @@ const userTroveStatusFrom = (backendStatus: BackendTroveStatus): UserTroveStatus
   backendStatus === BackendTroveStatus.nonExistent
     ? "nonExistent"
     : backendStatus === BackendTroveStatus.active
-      ? "open"
-      : backendStatus === BackendTroveStatus.closedByOwner
-        ? "closedByOwner"
-        : backendStatus === BackendTroveStatus.closedByLiquidation
-          ? "closedByLiquidation"
-          : backendStatus === BackendTroveStatus.closedByRedemption
-            ? "closedByRedemption"
-            : panic(new Error(`invalid backendStatus ${backendStatus}`));
+    ? "open"
+    : backendStatus === BackendTroveStatus.closedByOwner
+    ? "closedByOwner"
+    : backendStatus === BackendTroveStatus.closedByLiquidation
+    ? "closedByLiquidation"
+    : backendStatus === BackendTroveStatus.closedByRedemption
+    ? "closedByRedemption"
+    : panic(new Error(`invalid backendStatus ${backendStatus}`));
 
 const convertToDate = (timestamp: number) => new Date(timestamp * 1000);
 
 const validSortingOptions = ["ascendingCollateralRatio", "descendingCollateralRatio"];
-
-const assetTokens: { [index: string]: string } = {
-  BCT: "0xf2438A14f668b1bbA53408346288f3d7C71c10a1",
-  MCO2: "0x7beCBA11618Ca63Ead5605DE235f6dD3b25c530E"
-};
 
 const expectPositiveInt = <K extends string>(obj: { [P in K]?: number }, key: K) => {
   if (obj[key] !== undefined) {
@@ -262,12 +259,13 @@ export class ReadableEthersKumo implements ReadableKumo {
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getStabilityDeposit} */
   async getStabilityDeposit(
+    asset: string,
     address: string,
     overrides?: EthersCallOverrides
   ): Promise<StabilityDeposit> {
     address ??= _requireAddress(this.connection);
-    const { stabilityPool } = _getContracts(this.connection);
-
+    const stabilityPool = _getStabilityPoolByAsset(asset, this.connection);
+    // const { stabilityPool } = _getContracts(this.connection);
     const [{ frontEndTag, initialValue }, currentKUSD, collateralGain, kumoReward] =
       await Promise.all([
         stabilityPool.deposits(address, { ...overrides }),
@@ -298,25 +296,13 @@ export class ReadableEthersKumo implements ReadableKumo {
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDInStabilityPool} */
   async getKUSDInStabilityPool(asset: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-
-    const { stabilityPoolAsset1, stabilityPoolAsset2 } = _getContracts(this.connection);
-    // let stabilityPoolCached: IStabilityPool
-    if (asset == "mockAsset1") {
-      return stabilityPoolAsset1.getTotalKUSDDeposits({ ...overrides }).then(decimalify);
-    } else {
-      return stabilityPoolAsset2.getTotalKUSDDeposits({ ...overrides }).then(decimalify);
-    }
-
-
-    // const stabiltyPool = await hardhatethershe
-    // const stabiltyPool = await ethers.getContractAt("StabilityPool", stabilityPoolCached);
-    // return stabiltyPool.getTotalKUSDDeposits({ ...overrides }).then(decimalify);
+    const stabilityPool = _getStabilityPoolByAsset(asset, this.connection);
+    return stabilityPool.getTotalKUSDDeposits({ ...overrides }).then(decimalify);
   }
 
   // /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDInStabilityPool} */
   // getKUSDInStabilityPool(overrides?: EthersCallOverrides): Promise<Decimal> {
   //   const { stabilityPool } = _getContracts(this.connection);
-
 
   //   return stabilityPool.getTotalKUSDDeposits({ ...overrides }).then(decimalify);
   // }
@@ -331,15 +317,13 @@ export class ReadableEthersKumo implements ReadableKumo {
 
   getAssetBalance(
     address: string,
-    assetType: string,
+    asset: string,
     provider: EthersProvider,
     overrides?: EthersCallOverrides
   ) {
     address ??= _requireAddress(this.connection);
-    const assetTokenAddress = assetTokens[assetType];
-    const assetTokenContract = new ethers.Contract(assetTokenAddress, iERC20Abi, provider);
-    const assetTokenBalance = assetTokenContract?.balanceOf(address);
-    console.log("assetTokenBalance", assetType,  assetTokenBalance);
+
+    const assetTokenContract = new ethers.Contract(asset, iERC20Abi, provider);
     return assetTokenContract.balanceOf(address, { ...overrides }).then(decimalify);
   }
 
@@ -427,7 +411,6 @@ export class ReadableEthersKumo implements ReadableKumo {
   ): Promise<Decimal> {
     address ??= _requireAddress(this.connection);
     const { collSurplusPool } = _getContracts(this.connection);
-
     return collSurplusPool.getCollateral(asset, address, { ...overrides }).then(decimalify);
   }
 
@@ -551,12 +534,12 @@ export class ReadableEthersKumo implements ReadableKumo {
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getFrontendStatus} */
   async getFrontendStatus(
+    asset: string,
     address: string,
     overrides?: EthersCallOverrides
   ): Promise<FrontendStatus> {
     address ??= _requireFrontendAddress(this.connection);
-    const { stabilityPool } = _getContracts(this.connection);
-
+    const stabilityPool = _getStabilityPoolByAsset(asset, this.connection);
     const { registered, kickbackRate } = await stabilityPool.frontEnds(address, { ...overrides });
 
     return registered
@@ -675,12 +658,13 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
   }
 
   async getStabilityDeposit(
+    asset: string,
     address: string,
     overrides?: EthersCallOverrides
   ): Promise<StabilityDeposit> {
     return this._userHit(address, overrides)
       ? this.store.state.stabilityDeposit
-      : this._readable.getStabilityDeposit(address, overrides);
+      : this._readable.getStabilityDeposit(asset, address, overrides);
   }
 
   async getRemainingStabilityPoolKUMOReward(overrides?: EthersCallOverrides): Promise<Decimal> {
@@ -707,10 +691,9 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
     overrides?: EthersCallOverrides
   ) {
     if (this._userHit(address, overrides)) {
-      if (assetType === "BCT") {
-        return this.store.state.bctBalance;
-      } else if (assetType === "MCO2") {
-        return this.store.state.mco2Balance;
+      const vault = this.store.state.vaults.find(vault => vault.asset === assetType);
+      if (vault) {
+        return vault?.accountBalance;
       }
     } else {
       this._readable.getAssetBalance(address, assetType, provider, overrides);
@@ -741,10 +724,7 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
       : this._readable.getRemainingLiquidityMiningKUMOReward(overrides);
   }
 
-  async getLiquidityMiningStake(
-    address: string,
-    overrides?: EthersCallOverrides
-  ): Promise<Decimal> {
+  async getLiquidityMiningStake(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._userHit(address, overrides)
       ? this.store.state.liquidityMiningStake
       : this._readable.getLiquidityMiningStake(address, overrides);
@@ -813,12 +793,13 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
   }
 
   async getFrontendStatus(
+    asset: string,
     address: string,
     overrides?: EthersCallOverrides
   ): Promise<FrontendStatus> {
     return this._frontendHit(address, overrides)
       ? this.store.state.frontend
-      : this._readable.getFrontendStatus(address, overrides);
+      : this._readable.getFrontendStatus(asset, address, overrides);
   }
 
   getTroves(

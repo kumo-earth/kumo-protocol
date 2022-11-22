@@ -8,8 +8,9 @@ import {
   Trove,
   TroveWithPendingRedistribution
 } from "@kumodao/lib-base";
+import { _KumoContract, _KumoContracts } from "./contracts";
 
-import { _getContracts, _requireAddress } from "./EthersKumoConnection";
+import { _getContracts, _InternalEthersKumoConnection, _requireAddress, _getStabilityPoolByAsset } from "./EthersKumoConnection";
 import { ReadableEthersKumo } from "./ReadableEthersKumo";
 
 const debouncingDelayMs = 50;
@@ -134,11 +135,12 @@ export class ObservableEthersKumo implements ObservableKumo {
 
   watchStabilityDeposit(
     onStabilityDepositChanged: (stabilityDeposit: StabilityDeposit) => void,
+    asset:string,
     address: string
   ): () => void {
     address ??= _requireAddress(this._readable.connection);
-
-    const { activePool, stabilityPool } = _getContracts(this._readable.connection);
+    const stabilityPool = _getStabilityPoolByAsset(asset, this._readable.connection);
+    const { activePool } = _getContracts(this._readable.connection);
     const { UserDepositChanged } = stabilityPool.filters;
     const { AssetSent } = activePool.filters;
 
@@ -146,7 +148,7 @@ export class ObservableEthersKumo implements ObservableKumo {
     const assetSent = AssetSent();
 
     const depositListener = debounce((blockTag: number) => {
-      this._readable.getStabilityDeposit(address, { blockTag }).then(onStabilityDepositChanged);
+      this._readable.getStabilityDeposit(asset, address, { blockTag }).then(onStabilityDepositChanged);
     });
 
     const assetSentListener = (toAddress: string, _amount: BigNumber, event: Event) => {
@@ -170,7 +172,8 @@ export class ObservableEthersKumo implements ObservableKumo {
     asset: string,
     onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void
   ): () => void {
-    const { kusdToken, stabilityPool } = _getContracts(this._readable.connection);
+    const stabilityPool =  _getStabilityPoolByAsset(asset, this._readable.connection);
+    const { kusdToken } = _getContracts(this._readable.connection);
     const { Transfer } = kusdToken.filters;
 
     const transferKUSDFromStabilityPool = Transfer(stabilityPool.address);

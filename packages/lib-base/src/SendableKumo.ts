@@ -204,15 +204,17 @@ export interface SendableKumo<R = unknown, S = unknown>
   /** {@inheritDoc TransactableKumo.depositKUSDInStabilityPool} */
   depositKUSDInStabilityPool(
     amount: Decimalish,
+    asset:string,
   ): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>;
 
   /** {@inheritDoc TransactableKumo.withdrawKUSDFromStabilityPool} */
   withdrawKUSDFromStabilityPool(
-    amount: Decimalish
+    amount: Decimalish,
+    asset:string
   ): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>;
 
   /** {@inheritDoc TransactableKumo.withdrawGainsFromStabilityPool} */
-  withdrawGainsFromStabilityPool(): Promise<
+  withdrawGainsFromStabilityPool(asset:string): Promise<
     SentKumoTransaction<S, KumoReceipt<R, StabilityPoolGainsWithdrawalDetails>>
   >;
 

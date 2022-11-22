@@ -1,9 +1,7 @@
 import { Divider, Flex, Heading, Text } from "theme-ui";
-import { useDashboard } from "../hooks/DashboardContext";
 import { DashboadHeaderItem } from "../components/DashboardHeaderItem";
 
 export const Portfolio: React.FC = () => {
-  const { vaults, totalCollDebt } = useDashboard();
 
   return (
     <Flex sx={{ flexDirection: "column" }}>

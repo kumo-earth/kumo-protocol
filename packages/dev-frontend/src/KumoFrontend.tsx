@@ -1,6 +1,6 @@
 import React from "react";
 import { Flex, Container } from "theme-ui";
-import { BrowserRouter as Router, Switch, Route,Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import { Wallet } from "@ethersproject/wallet";
 
 import { Decimal, Difference, Trove } from "@kumodao/lib-base";
@@ -47,7 +47,7 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
   const { provider, kumo } = useKumo();
   const { view } = useWalletView();
   const { view: switchNetworkView } = useSwitchNetworkView();
-    
+
   // For console tinkering ;-)
   Object.assign(window, {
     account,
@@ -59,7 +59,9 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
     Wallet
   });
 
-  console.log("blockedPolledStore1", kumo.store);
+  const { state } = kumo?.store;
+
+  console.log("blockedPolledStore1", kumo?.store);
   return (
     <KumoStoreProvider {...{ loader }} store={kumo.store}>
       <Router>
@@ -69,17 +71,7 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
               <StakingViewProvider>
                 <FarmViewProvider>
                   <DomainSafetyBanner />
-                  <Flex
-                    sx={{
-                      flexWrap: "wrap",
-                      height: "100vh",
-                      overflow: "hidden",
-                      backgroundImage: `url(${appBackground})`,
-                      backgroundSize: "cover",
-                      backgroundRepeat: "no-repeat",
-                      flexDirection: "column"
-                    }}
-                  >
+                  <Flex variant="layout.app" sx={{ backgroundImage: `url(${appBackground})` }}>
                     <Sidebar />
                     <Flex
                       sx={{
@@ -103,7 +95,7 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                           <Redirect from="/" to="/dashboard" exact />
                           <Redirect from="/stats" to="/stats/protocol" exact />
 
-                          <Route path="/dashboard"  exact>
+                          <Route path="/dashboard" exact>
                             <PageSwitcher />
                           </Route>
                           <Route path="/dashboard/:collateralType" exact>

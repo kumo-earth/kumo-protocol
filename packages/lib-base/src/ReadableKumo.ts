@@ -72,7 +72,10 @@ export interface ReadableKumo {
    * The current state of a Trove can be fetched using
    * {@link @kumodao/lib-base#ReadableKumo.getTrove | getTrove()}.
    */
-  getTroveBeforeRedistribution(asset: string, address: string): Promise<TroveWithPendingRedistribution>;
+  getTroveBeforeRedistribution(
+    asset: string,
+    address: string
+  ): Promise<TroveWithPendingRedistribution>;
 
   /**
    * Get the current state of a Trove.
@@ -102,7 +105,7 @@ export interface ReadableKumo {
    *
    * @param address - Address that owns the Stability Deposit.
    */
-  getStabilityDeposit(address: string): Promise<StabilityDeposit>;
+  getStabilityDeposit(asset:string, address: string): Promise<StabilityDeposit>;
 
   /**
    * Get the remaining KUMO that will be collectively rewarded to stability depositors.
@@ -126,7 +129,7 @@ export interface ReadableKumo {
    *
    * @param address - Address whose balance should be retrieved.
    */
-   getAssetBalance(address: string, assetType: string, provider: Provider): Promise<Decimal>;
+  getAssetBalance(address: string, assetType: string, provider: Provider): Promise<Decimal>;
 
   /**
    * Get the amount of KUMO held by an address.
@@ -220,5 +223,5 @@ export interface ReadableKumo {
    *
    * @param address - Address to check.
    */
-  getFrontendStatus(address: string): Promise<FrontendStatus>;
+  getFrontendStatus(asset: string, address: string): Promise<FrontendStatus>;
 }

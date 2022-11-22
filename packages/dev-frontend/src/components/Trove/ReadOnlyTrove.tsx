@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
-import { useLocation } from "react-router-dom";
-import { Card, Heading, Box, Flex, Button } from "theme-ui";
-import { Decimal } from "@kumodao/lib-base";
+import { useParams } from "react-router-dom";
+import { Card, Heading, Box, Flex, Button, Select } from "theme-ui";
+import { Decimal, KumoStoreState, UserTrove } from "@kumodao/lib-base";
 import { DisabledEditableRow } from "./Editor";
 import { useTroveView } from "./context/TroveViewContext";
 import { Icon } from "../Icon";
@@ -10,10 +10,11 @@ import { CollateralRatio } from "./CollateralRatio";
 import { useDashboard } from "../../hooks/DashboardContext";
 import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
+import { useKumoSelector } from "@kumodao/lib-react";
 
-const getPathName = (location: any) => {
-  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-};
+const select = ({ vaults }: KumoStoreState) => ({
+  vaults
+});
 
 export const ReadOnlyTrove: React.FC = () => {
   const { dispatchEvent } = useTroveView();
@@ -26,31 +27,26 @@ export const ReadOnlyTrove: React.FC = () => {
 
   const { account } = useWeb3React<Web3Provider>();
 
-  const location = useLocation();
-  const { vaults, bctPrice, mco2Price } = useDashboard();
-  const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
-  const trove = vaultType.usersTroves.find(userT => userT.ownerAddress === account);
-  let collateralRatio: Decimal | undefined = undefined;
-  if (getPathName(location) === "bct") {
-    collateralRatio = trove?.collateralRatio(bctPrice) || undefined;
-  } else if (getPathName(location) === "mco2") {
-    collateralRatio = trove?.collateralRatio(mco2Price) || undefined;
-  }
+  const { collateralType } = useParams<{ collateralType: string }>();
+
+  const { ctx, cty } = useDashboard();
+  const { vaults } = useKumoSelector(select);
+  const vault = vaults.find(vault => vault.asset === collateralType);
+  const trove: UserTrove = vault?.trove?.ownerAddress === account && vault?.trove;
+  const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
+  let collateralRatio: Decimal = trove.collateralRatio(price);
+
   // console.log("READONLY TROVE", trove.collateral.prettify(4));
   return (
-    <Card
-      variant="base"
-    >
-      <Heading>
-        {vaultType.type.toUpperCase()} Trove
-      </Heading>
+    <Card variant="base">
+      <Heading as="h2">{vault?.asset.toUpperCase()} Trove</Heading>
       <Box sx={{ p: [2, 3] }}>
         <Box>
           <DisabledEditableRow
             label="Collateral"
             inputId="trove-collateral"
             amount={trove?.collateral.prettify(4) || "0"}
-            unit={getPathName(location).toUpperCase()}
+            unit={collateralType?.toUpperCase()}
           />
 
           <DisabledEditableRow
@@ -68,7 +64,7 @@ export const ReadOnlyTrove: React.FC = () => {
             variant="outline"
             onClick={handleCloseTrove}
             sx={{
-              border: "none",
+              border: "none"
             }}
           >
             Close Trove

@@ -53,13 +53,13 @@ import {
   PriceFeedTestnet,
   SortedTroves,
   StabilityPool,
+  StabilityPoolFactory,
   GasPool,
   Unipool,
   ERC20Mock,
   IERC20,
   KumoParameters,
-  ERC20Test,
-  StabilityPoolFactory
+  ERC20Test
 } from "../types";
 
 import { EthersProvider, EthersSigner } from "./types";

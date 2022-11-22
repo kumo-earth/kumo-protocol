@@ -5,8 +5,7 @@ import { Flex, Box, Card, Button, Heading, Text, Paragraph } from "theme-ui";
 
 type StakingCardV1Props = {
   vault?: {
-    type: string;
-    collateralRatio: Decimal;
+    asset: string;
     stabilityStatus: Boolean;
     usersTroves: UserTrove[];
     stabilityDeposit: StabilityDeposit;
@@ -29,24 +28,24 @@ export const StakingCardV1: React.FC<StakingCardV1Props> = ({ vault, handleViewS
     >
       <Box sx={{ p: 4 }}>
         <Flex sx={{ justifyContent: "space-between" }}>
-          <Text as="p" sx={{ fontSize: 1, fontWeight: "bold" }}>
+          <Text as="p" variant="small">
            KUMO REWARD APR
           </Text>
-          <Text as="p" sx={{ fontSize: 1, fontWeight: "bold" }}>
+          <Text as="p" variant="small">
             LIQUIDATION BONUS
           </Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between", mt: 1 }}>
-          <Heading as="h1">0%</Heading>
-          <Heading as="h1">0%</Heading>
+          <Text as="p" variant="xlarge">0%</Text>
+          <Text as="p" variant="xlarge">0%</Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between", mt: 4 }}>
-          <Text as="p" sx={{ fontSize: 1, fontWeight: "bold" }}>TOTAL DEPOSITED KUSD</Text>
-          <Text as="p" sx={{ fontSize: 1, fontWeight: "bold" }}>0.00</Text>
+          <Text as="p" variant="normalBold">TOTAL DEPOSITED KUSD</Text>
+          <Text as="p" variant="normalBold">0.00</Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between", mt: 2 }}>
-          <Text as="p" sx={{ fontSize: 1, fontWeight: "bold" }}>YOUR DEPOSITED KUSD</Text>
-          <Text as="p" sx={{ fontSize: 1, fontWeight: "bold" }}>0.00</Text>
+          <Text as="p" variant="normalBold">YOUR DEPOSITED KUSD</Text>
+          <Text as="p" variant="normalBold">0.00</Text>
         </Flex>
         <Flex sx={{ justifyContent: "center", pt: 3 }}>
           <Button variant="layout.actions" sx={{ width: "122px" }} onClick={handleViewStakeDeposit}>

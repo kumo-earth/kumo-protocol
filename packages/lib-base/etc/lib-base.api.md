@@ -6,6 +6,9 @@
 
 import { Provider } from '@ethersproject/abstract-provider';
 
+// @public
+export const ASSET_TOKENS: ASSET_TOKENS_TYPES<AssetType>;
+
 // @internal (undocumented)
 export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWithExtraParams<T> {
     constructor(readable: _ReadableKumoWithExtraParams<T>, cache: _KumoReadCache<T>);
@@ -16,7 +19,7 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     // (undocumented)
     getFees(asset: string, ...extraParams: T): Promise<Fees>;
     // (undocumented)
-    getFrontendStatus(address: string, ...extraParams: T): Promise<FrontendStatus>;
+    getFrontendStatus(asset: string, address: string, ...extraParams: T): Promise<FrontendStatus>;
     // (undocumented)
     getKUMOBalance(address: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
@@ -38,7 +41,7 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     // (undocumented)
     getRemainingStabilityPoolKUMOReward(...extraParams: T): Promise<Decimal>;
     // (undocumented)
-    getStabilityDeposit(address: string, ...extraParams: T): Promise<StabilityDeposit>;
+    getStabilityDeposit(asset: string, address: string, ...extraParams: T): Promise<StabilityDeposit>;
     // (undocumented)
     getTotal(asset: string, ...extraParams: T): Promise<Trove>;
     // (undocumented)
@@ -281,7 +284,6 @@ export abstract class KumoStore<T = unknown> {
 // @public
 export interface KumoStoreBaseState {
     accountBalance: Decimal;
-    bctBalance: Decimal;
     collateralSurplusBalance: Decimal;
     // @internal (undocumented)
     _feesInNormalMode: Fees;
@@ -292,7 +294,6 @@ export interface KumoStoreBaseState {
     kusdInStabilityPool: Decimal;
     liquidityMiningKUMOReward: Decimal;
     liquidityMiningStake: Decimal;
-    mco2Balance: Decimal;
     numberOfTroves: number;
     ownFrontend: FrontendStatus;
     price: Decimal;
@@ -308,6 +309,7 @@ export interface KumoStoreBaseState {
     troveBeforeRedistribution: TroveWithPendingRedistribution;
     uniTokenAllowance: Decimal;
     uniTokenBalance: Decimal;
+    vaults: any[];
 }
 
 // @public
@@ -406,7 +408,7 @@ export interface ObservableKumo {
     // (undocumented)
     watchPrice(onPriceChanged: (price: Decimal) => void): () => void;
     // (undocumented)
-    watchStabilityDeposit(onStabilityDepositChanged: (stabilityDeposit: StabilityDeposit) => void, address: string): () => void;
+    watchStabilityDeposit(onStabilityDepositChanged: (stabilityDeposit: StabilityDeposit) => void, asset: string, address: string): () => void;
     // (undocumented)
     watchTotal(onTotalChanged: (total: Trove) => void): () => void;
     // (undocumented)
@@ -456,7 +458,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown> extends 
     claimCollateralSurplus(asset: string): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     closeTrove(asset: string): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveClosureDetails>>>>;
     depositCollateral(asset: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
-    depositKUSDInStabilityPool(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>>;
+    depositKUSDInStabilityPool(amount: Decimalish, asset: string): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>>;
     exitLiquidityMining(): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     liquidate(asset: string, address: string | string[]): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>>;
     liquidateUpTo(asset: string, maximumNumberOfTrovesToLiquidate: number): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>>;
@@ -474,10 +476,10 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown> extends 
     unstakeKUMO(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     unstakeUniTokens(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     withdrawCollateral(asset: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
-    withdrawGainsFromStabilityPool(): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, StabilityPoolGainsWithdrawalDetails>>>>;
+    withdrawGainsFromStabilityPool(asset: string): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, StabilityPoolGainsWithdrawalDetails>>>>;
     withdrawGainsFromStaking(): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     withdrawKUMORewardFromLiquidityMining(): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
-    withdrawKUSDFromStabilityPool(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>>;
+    withdrawKUSDFromStabilityPool(amount: Decimalish, asset: string): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>>;
 }
 
 // @public
@@ -499,7 +501,7 @@ export interface ReadableKumo {
     getAssetBalance(address: string, assetType: string, provider: Provider): Promise<Decimal>;
     getCollateralSurplusBalance(asset: string, address: string): Promise<Decimal>;
     getFees(asset: string): Promise<Fees>;
-    getFrontendStatus(address: string): Promise<FrontendStatus>;
+    getFrontendStatus(asset: string, address: string): Promise<FrontendStatus>;
     getKUMOBalance(address: string): Promise<Decimal>;
     getKUMOStake(asset: string, address: string): Promise<KUMOStake>;
     getKUSDBalance(address: string): Promise<Decimal>;
@@ -510,7 +512,7 @@ export interface ReadableKumo {
     getPrice(): Promise<Decimal>;
     getRemainingLiquidityMiningKUMOReward(): Promise<Decimal>;
     getRemainingStabilityPoolKUMOReward(): Promise<Decimal>;
-    getStabilityDeposit(address: string): Promise<StabilityDeposit>;
+    getStabilityDeposit(asset: string, address: string): Promise<StabilityDeposit>;
     getTotal(asset: string): Promise<Trove>;
     getTotalRedistributed(asset: string): Promise<Trove>;
     getTotalStakedKUMO(): Promise<Decimal>;
@@ -564,7 +566,7 @@ export interface SendableKumo<R = unknown, S = unknown> extends _SendableFrom<Tr
     claimCollateralSurplus(asset: string): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     closeTrove(asset: string): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveClosureDetails>>>;
     depositCollateral(asset: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
-    depositKUSDInStabilityPool(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>;
+    depositKUSDInStabilityPool(amount: Decimalish, asset: string): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>;
     exitLiquidityMining(): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     liquidate(asset: string, address: string | string[]): Promise<SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>;
     liquidateUpTo(asset: string, maximumNumberOfTrovesToLiquidate: number): Promise<SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>;
@@ -582,10 +584,10 @@ export interface SendableKumo<R = unknown, S = unknown> extends _SendableFrom<Tr
     unstakeKUMO(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     unstakeUniTokens(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     withdrawCollateral(asset: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
-    withdrawGainsFromStabilityPool(): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityPoolGainsWithdrawalDetails>>>;
+    withdrawGainsFromStabilityPool(asset: string): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityPoolGainsWithdrawalDetails>>>;
     withdrawGainsFromStaking(): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     withdrawKUMORewardFromLiquidityMining(): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-    withdrawKUSDFromStabilityPool(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>;
+    withdrawKUSDFromStabilityPool(amount: Decimalish, asset: string): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>;
 }
 
 // @public
@@ -654,7 +656,7 @@ export interface TransactableKumo {
     claimCollateralSurplus(asset: string): Promise<void>;
     closeTrove(asset: string): Promise<TroveClosureDetails>;
     depositCollateral(asset: string, amount: Decimalish): Promise<TroveAdjustmentDetails>;
-    depositKUSDInStabilityPool(amount: Decimalish): Promise<StabilityDepositChangeDetails>;
+    depositKUSDInStabilityPool(amount: Decimalish, asset: string): Promise<StabilityDepositChangeDetails>;
     exitLiquidityMining(): Promise<void>;
     liquidate(asset: string, address: string | string[]): Promise<LiquidationDetails>;
     liquidateUpTo(asset: string, maximumNumberOfTrovesToLiquidate: number): Promise<LiquidationDetails>;
@@ -672,10 +674,10 @@ export interface TransactableKumo {
     unstakeKUMO(amount: Decimalish): Promise<void>;
     unstakeUniTokens(amount: Decimalish): Promise<void>;
     withdrawCollateral(asset: string, amount: Decimalish): Promise<TroveAdjustmentDetails>;
-    withdrawGainsFromStabilityPool(): Promise<StabilityPoolGainsWithdrawalDetails>;
+    withdrawGainsFromStabilityPool(asset: string): Promise<StabilityPoolGainsWithdrawalDetails>;
     withdrawGainsFromStaking(): Promise<void>;
     withdrawKUMORewardFromLiquidityMining(): Promise<void>;
-    withdrawKUSDFromStabilityPool(amount: Decimalish): Promise<StabilityDepositChangeDetails>;
+    withdrawKUSDFromStabilityPool(amount: Decimalish, asset: string): Promise<StabilityDepositChangeDetails>;
 }
 
 // @public

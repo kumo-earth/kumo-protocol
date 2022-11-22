@@ -1,31 +1,26 @@
 import { Theme, ThemeUIStyleObject } from "theme-ui";
 
 const baseColors = {
-  blue: "#1542cd",
-  purple: "#745ddf",
-  cyan: "#2eb6ea",
-  green: "#28c081",
-  yellow: "#fd9d28",
-  red: "#dc2c10",
-  lightRed: "#ff755f",
-  magenta: "#da357a"
+  black: "#000",
+  white: "#fff",
+  magenta: "#da357a",
+  magentaLight: "#f0cfdc",
+  magentaDark: "#a81f58",
+  magentaMedium: "#de96b3",
+  lightGrey: "#e6e6e6",
+  transparent: "transparent"
 };
 
 const colors = {
+  text: baseColors.black,
+  background: baseColors.white,
   primary: baseColors.magenta,
-  secondary: baseColors.purple,
-  accent: baseColors.cyan,
+  secondary: baseColors.magentaLight,
+  muted: baseColors.lightGrey,
 
-  success: baseColors.green,
-  warning: baseColors.yellow,
-  danger: baseColors.red,
-  dangerHover: baseColors.lightRed,
-  info: baseColors.blue,
-  invalid: "pink",
-
-  text: "#293147",
-  background: "transparent",
-  muted: "#e6e6e6"
+  primaryHover: baseColors.magentaDark,
+  secondaryHover: baseColors.magentaMedium,
+  transparent: baseColors.transparent
 };
 
 const buttonBase: ThemeUIStyleObject = {
@@ -38,12 +33,9 @@ const buttonBase: ThemeUIStyleObject = {
 
 const button: ThemeUIStyleObject = {
   ...buttonBase,
-
   px: "32px",
   py: "12px",
-
   color: "white",
-  border: 1,
 
   fontWeight: "bold",
 
@@ -80,6 +72,14 @@ const iconButton: ThemeUIStyleObject = {
 };
 
 const cardHeadingFontSize = 18.7167;
+
+const cardHoverEffects: ThemeUIStyleObject = {
+  cursor: "pointer",
+  transform: "translateY(-3px)",
+  backdropFilter: "blur(30px)",
+  boxShadow: "rgb(218 53 122 / 37%) 0px 5px 10px",
+  transition: "box-shadow 5ms ease 0s"
+};
 
 const cardGapX = [0, 3, 4];
 const cardGapY = [3, 3, 4];
@@ -151,13 +151,12 @@ const theme: Theme = {
 
   fonts: {
     body: [
-      '"Roboto"',
-      '"Helvetica"',
-      '"Helvetica Neue"',
-      "system-ui",
+      "Lato",
       "-apple-system",
       "BlinkMacSystemFont",
       '"Segoe UI"',
+      "Roboto",
+      '"Helvetica Neue"',
       "sans-serif"
     ].join(", "),
     heading: "Quicksand",
@@ -168,11 +167,11 @@ const theme: Theme = {
 
   fontWeights: {
     body: 400,
-    heading: 600,
+    heading: 700,
 
     light: 200,
     medium: 500,
-    bold: 600
+    bold: 700
   },
 
   lineHeights: {
@@ -192,12 +191,24 @@ const theme: Theme = {
       fontWeight: "heading",
       lineHeight: "heading"
     },
-    textBold: {
+    normalBold: {
       fontWeight: "bold"
     },
-    address: {
-      fontFamily: "monospace",
-      fontSize: 1
+    small: {
+      fontSize: 1,
+      fontWeight: "bold"
+    },
+    medium: {
+      fontSize: 3,
+      fontWeight: "bold"
+    },
+    large: {
+      fontSize: 8,
+      fontWeight: "bold"
+    },
+    xlarge: {
+      fontSize: 10,
+      fontWeight: "bold"
     }
   },
 
@@ -215,8 +226,8 @@ const theme: Theme = {
       borderColor: "primary",
 
       ":enabled:hover": {
-        bg: "secondary",
-        borderColor: "secondary"
+        bg: "primaryHover",
+        borderColor: "primaryHover"
       }
     },
 
@@ -227,21 +238,14 @@ const theme: Theme = {
 
     cancel: {
       ...button,
-      ...buttonOutline("text", "text"),
-
-      opacity: 0.8
-    },
-
-    danger: {
-      ...button,
-
-      bg: "danger",
-      borderColor: "danger",
-
+      color: "text",
+      bg: "secondary",
+      borderColor: "secondary",
       ":enabled:hover": {
-        bg: "dangerHover",
-        borderColor: "dangerHover"
-      }
+        bg: "secondaryHover",
+        borderColor: "secondaryHover"
+      },
+      opacity: 0.9
     },
 
     icon: {
@@ -266,25 +270,31 @@ const theme: Theme = {
   cards: {
     primary: {
       ...card,
-
       padding: 0,
-
       borderColor: "muted",
       bg: "background",
-
       "> h2": {
         display: "flex",
-        // justifyContent: "space-between",
         alignItems: "center",
-        height: "56px",
+        height: "60px",
         borderRadius: "20px 20px 0 0",
-
         pl: 4,
         py: 2,
-        pr: 2,
-
-        fontSize: 3,
-        fontWeight: "bold"
+        pr: 2
+      }
+    },
+    base: {
+      variant: "cards.primary",
+      bg: "transparent",
+      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
+      borderRadius: "20px",
+      width: "97%",
+      maxWidth: "100%",
+      position: "relative",
+      "> h2": {
+        variant: "cards.primary.> h2",
+        borderBottom: 1,
+        borderColor: "muted"
       }
     },
 
@@ -305,7 +315,8 @@ const theme: Theme = {
       height: "80%",
       overflowY: "scroll"
     },
-    base: {
+
+    collateralCard: {
       variant: "cards.primary",
       bg: "transparent",
       boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
@@ -313,23 +324,12 @@ const theme: Theme = {
       width: "97%",
       maxWidth: "100%",
       position: "relative",
-
       "> h2": {
-        variant: "cards.primary.> h2",
-        fontSize: 6,
-        borderBottom: 1,
-        borderColor: "muted"
-      }
-    },
-
-    collateralCard: {
-      variant: "cards.base",
+        variant: "cards.base.> h2",
+        height: "60px",
+      },
       ":hover": {
-        cursor: "pointer",
-        transform: "translateY(-3px)",
-        backdropFilter: "blur(30px) !important",
-        boxShadow: "rgb(218 53 122 / 37%) 0px 5px 10px !important",
-        transition: "box-shadow 5ms ease 0s !important"
+        ...cardHoverEffects
       }
     },
     StabilityPoolStakingCard: {
@@ -338,11 +338,7 @@ const theme: Theme = {
       borderRadius: "20px",
       height: "max-content",
       ":hover": {
-        cursor: "pointer",
-        transform: "translateY(-3px)",
-        backdropFilter: "blur(30px) !important",
-        boxShadow: "rgb(218 53 122 / 37%) 0px 5px 10px !important",
-        transition: "box-shadow 5ms ease 0s !important"
+        ...cardHoverEffects
       }
     },
 
@@ -384,6 +380,15 @@ const theme: Theme = {
   },
 
   layout: {
+    app: {
+      position: "relative",
+      flexWrap: "wrap",
+      height: "100vh",
+      overflow: "hidden",
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+      flexDirection: "column"
+    },
     header: {
       display: "flex",
       justifyContent: "space-between",
@@ -546,9 +551,14 @@ const theme: Theme = {
       }
     },
 
+    h1: {
+      variant: "text.heading"
+    },
+    h2: {
+      variant: "text.heading"
+    },
+
     a: {
-      color: "magenta",
-      ":hover": { color: "magenta" },
       textDecoration: "none",
       fontWeight: "bold"
     }

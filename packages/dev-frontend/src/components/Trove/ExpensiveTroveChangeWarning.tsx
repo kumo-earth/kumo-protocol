@@ -11,7 +11,7 @@ export type GasEstimationState =
   | { type: "complete"; populatedTx: PopulatedEthersKumoTransaction };
 
 type ExpensiveTroveChangeWarningParams = {
-  asset?: string;
+  asset: string;
   troveChange?: Exclude<TroveChange<Decimal>, { type: "invalidCreation" }>;
   maxBorrowingRate: Decimal;
   borrowingFeeDecayToleranceMinutes: number;
@@ -20,7 +20,7 @@ type ExpensiveTroveChangeWarningParams = {
 };
 
 export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningParams> = ({
-  asset = "",
+  asset = "0x290f75D7b3A23b140cFB54b08E3C9618d728E227",
   troveChange,
   maxBorrowingRate,
   borrowingFeeDecayToleranceMinutes,
@@ -32,25 +32,25 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
   useEffect(() => {
     if (troveChange && troveChange.type !== "closure") {
       setGasEstimationState({ type: "inProgress" });
-
       let cancelled = false;
 
       const timeoutId = setTimeout(async () => {
+        console.log("Estimated TX cost: ");
         const populatedTx = await (troveChange.type === "creation"
           ? kumo.populate.openTrove(troveChange.params, asset, {
-            maxBorrowingRate,
-            borrowingFeeDecayToleranceMinutes
-          })
+              maxBorrowingRate,
+              borrowingFeeDecayToleranceMinutes
+            })
           : kumo.populate.adjustTrove(troveChange.params, asset, {
-            maxBorrowingRate,
-            borrowingFeeDecayToleranceMinutes
-          }));
+              maxBorrowingRate,
+              borrowingFeeDecayToleranceMinutes
+            }));
 
         if (!cancelled) {
           setGasEstimationState({ type: "complete", populatedTx });
           console.log(
             "Estimated TX cost: " +
-            Decimal.from(`${populatedTx.rawPopulatedTransaction.gasLimit}`).prettify(0)
+              Decimal.from(`${populatedTx.rawPopulatedTransaction.gasLimit}`).prettify(0)
           );
         }
       }, 333);

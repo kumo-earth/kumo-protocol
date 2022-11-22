@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Flex, Button, Box, Card, Heading } from "theme-ui";
 import {
   KumoStoreState,
@@ -8,7 +8,9 @@ import {
   KUSD_LIQUIDATION_RESERVE,
   Percent,
   Difference,
-  UserTrove
+  UserTrove,
+  ASSET_TOKENS,
+  Fees
 } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { Web3Provider } from "@ethersproject/providers";
@@ -33,12 +35,11 @@ import {
 import { useDashboard } from "../../hooks/DashboardContext";
 
 const selector = (state: KumoStoreState) => {
-  const { trove, fees, price, accountBalance } = state;
+  const { vaults, fees, price } = state;
   return {
-    trove,
+    vaults,
     fees,
     price,
-    accountBalance,
     validationContext: selectForTroveChangeValidation(state)
   };
 };
@@ -86,22 +87,18 @@ const applyUnsavedNetDebtChanges = (unsavedChanges: Difference, trove: Trove) =>
   return trove.netDebt;
 };
 
-const getPathName = (location: any) => {
-  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-};
-
 export const Adjusting: React.FC = () => {
   const { dispatchEvent } = useTroveView();
   const { account } = useWeb3React<Web3Provider>();
-  const { fees, accountBalance, validationContext } = useKumoSelector(selector);
-  const location = useLocation();
-  const { vaults, adjustTroveT, bctPrice, mco2Price } = useDashboard();
- 
+  const { vaults, validationContext } = useKumoSelector(selector);
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const { ctx, cty } = useDashboard();
 
-  const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
-  const trove =
-    vaultType.usersTroves.find(userT => userT.ownerAddress === account) ||
-    new UserTrove(account || "0x0", "nonExistent", Decimal.ZERO, Decimal.ZERO);
+  const vault = vaults.find(vault => vault.asset === collateralType);
+  const trove: UserTrove = vault?.trove?.ownerAddress === account && vault?.trove;
+  const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
+  const fees = vault?.fees as Fees
+
   const editingState = useState<string>();
   const previousTrove = useRef<Trove>(trove);
   const [collateral, setCollateral] = useState<Decimal>(trove.collateral);
@@ -112,7 +109,6 @@ export const Adjusting: React.FC = () => {
 
   useEffect(() => {
     if (transactionState.type === "confirmedOneShot") {
-      collateralRatio && adjustTroveT(getPathName(location), trove.ownerAddress, collateral, totalDebt, netDebt);
       dispatchEvent("TROVE_ADJUSTED");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -152,22 +148,15 @@ export const Adjusting: React.FC = () => {
   const maxBorrowingRate = borrowingRate.add(0.005);
   const updatedTrove = isDirty ? new Trove(collateral, totalDebt) : trove;
   const feePct = new Percent(borrowingRate);
-  const availableEth = accountBalance.gt(GAS_ROOM_ETH)
-    ? accountBalance.sub(GAS_ROOM_ETH)
+  const availableTokens = vault?.accountBalance?.gt(GAS_ROOM_ETH)
+    ? vault?.accountBalance.sub(GAS_ROOM_ETH)
     : Decimal.ZERO;
-  const maxCollateral = trove.collateral.add(availableEth);
+  const maxCollateral = trove.collateral.add(availableTokens);
   const collateralMaxedOut = collateral.eq(maxCollateral);
-  let collateralRatioChange = Difference.between(Decimal.ZERO, Decimal.ZERO);
-  let collateralRatio: Decimal | undefined = undefined;
-  if (getPathName(location) === "bct") {
-    collateralRatio =
-      !collateral.isZero && !netDebt.isZero ? updatedTrove.collateralRatio(bctPrice) : undefined;
-    collateralRatioChange = Difference.between(collateralRatio, trove.collateralRatio(bctPrice));
-  } else if (getPathName(location) === "mco2") {
-    collateralRatio =
-      !collateral.isZero && !netDebt.isZero ? updatedTrove.collateralRatio(mco2Price) : undefined;
-    collateralRatioChange = Difference.between(collateralRatio, trove.collateralRatio(mco2Price));
-  }
+  const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
+  const collateralRatio =
+    !collateral.isZero && !netDebt.isZero ? updatedTrove.collateralRatio(price) : undefined;
+  const collateralRatioChange = Difference.between(collateralRatio, trove.collateralRatio(cty));
 
   const [troveChange, description] = validateTroveChange(
     trove,
@@ -187,27 +176,9 @@ export const Adjusting: React.FC = () => {
   }
 
   return (
-    <Card
-      sx={{
-        background: "rgba(249,248,249,.1)",
-        backgroundColor: "#303553",
-        // color: "rgba(0, 0, 0, 0.87)",
-        transition: "box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-        boxShadow:
-          "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
-        overflow: "hidden",
-        borderRadius: "20px",
-        width: "100%",
-        color: "white"
-      }}
-    >
-      <Heading
-        sx={{
-          background: "linear-gradient(103.69deg, #2b2b2b 18.43%, #525252 100%)",
-          color: "white"
-        }}
-      >
-        {vaultType.type.toUpperCase()} Trove
+    <Card variant="base">
+      <Heading>
+        {vault?.asset.toUpperCase()} Trove
         {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
             <Icon name="history" size="lg" />
@@ -223,18 +194,12 @@ export const Adjusting: React.FC = () => {
           maxAmount={maxCollateral.toString()}
           maxedOut={collateralMaxedOut}
           editingState={editingState}
-          unit={getPathName(location).toUpperCase()}
+          unit={collateralType?.toUpperCase()}
           editedAmount={collateral.toString(4)}
           setEditedAmount={(amount: string) => {
             setCollateral(Decimal.from(amount));
           }}
-          tokenPrice={
-            getPathName(location) === "bct"
-              ? bctPrice
-              : getPathName(location) === "mco2"
-              ? mco2Price
-              : Decimal.ZERO
-          }
+          tokenPrice={price}
         />
 
         <EditableRow
@@ -315,6 +280,7 @@ export const Adjusting: React.FC = () => {
         )}
 
         <ExpensiveTroveChangeWarning
+          asset={assetTokenAddress}
           troveChange={stableTroveChange}
           maxBorrowingRate={maxBorrowingRate}
           borrowingFeeDecayToleranceMinutes={60}
@@ -341,6 +307,7 @@ export const Adjusting: React.FC = () => {
             <TroveAction
               transactionId={TRANSACTION_ID}
               change={stableTroveChange}
+              asset={assetTokenAddress}
               maxBorrowingRate={maxBorrowingRate}
               borrowingFeeDecayToleranceMinutes={60}
             >

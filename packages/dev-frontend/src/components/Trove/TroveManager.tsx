@@ -1,8 +1,16 @@
 import { useCallback, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Flex, Button } from "theme-ui";
 
-import { KumoStoreState, Decimal, Trove, Decimalish, KUSD_MINIMUM_DEBT } from "@kumodao/lib-base";
+import {
+  KumoStoreState,
+  Decimal,
+  Trove,
+  Decimalish,
+  KUSD_MINIMUM_DEBT,
+  UserTrove,
+  ASSET_TOKENS
+} from "@kumodao/lib-base";
 
 import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@kumodao/lib-react";
 
@@ -17,17 +25,17 @@ import {
   selectForTroveChangeValidation,
   validateTroveChange
 } from "./validation/validateTroveChange";
+import { Web3Provider } from "@ethersproject/providers";
+import { useWeb3React } from "@web3-react/core";
 
-const init = ({ trove }: KumoStoreState) => ({
-  original: trove,
-  edited: new Trove(trove.collateral, trove.debt),
-  changePending: false,
-  debtDirty: false,
-  addedMinimumDebt: false
-});
-
-const getPathName = (location: any) => {
-  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+const init = ({ trove }: KumoStoreState) => {
+  return {
+    original: trove,
+    edited: new Trove(trove.collateral, trove.debt),
+    changePending: false,
+    debtDirty: false,
+    addedMinimumDebt: false
+  };
 };
 
 type TroveManagerState = ReturnType<typeof init>;
@@ -163,9 +171,24 @@ type TroveManagerProps = {
 };
 
 export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) => {
-  const [{ original, edited, changePending }, dispatch] = useKumoReducer(reduce, init);
+  const { account } = useWeb3React<Web3Provider>();
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
+  const [{ original, edited, changePending }, dispatch] = useKumoReducer(
+    reduce,
+    ({ vaults }: KumoStoreState) => {
+      const vault = vaults.find(vault => vault.asset === collateralType);
+      const trove: UserTrove = vault?.trove?.ownerAddress === account && vault?.trove;
+      return {
+        original: trove,
+        edited: new Trove(trove.collateral, trove.debt),
+        changePending: false,
+        debtDirty: false,
+        addedMinimumDebt: false
+      };
+    }
+  );
   const { fees, validationContext } = useKumoSelector(select);
-  const location = useLocation();
 
   useEffect(() => {
     if (collateral !== undefined) {
@@ -225,9 +248,7 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
       {description ??
         (openingNewTrove ? (
           <ActionDescription>
-            {`Start by entering the amount of ${getPathName(
-              location
-            ).toUpperCase()} you'd like to deposit as collateral.`}
+            {`Start by entering the amount of ${collateralType.toUpperCase()} you'd like to deposit as collateral.`}
           </ActionDescription>
         ) : (
           <ActionDescription>
@@ -250,6 +271,7 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
           <TroveAction
             transactionId={`${transactionIdPrefix}${validChange.type}`}
             change={validChange}
+            asset={assetTokenAddress}
             maxBorrowingRate={maxBorrowingRate}
             borrowingFeeDecayToleranceMinutes={60}
           >

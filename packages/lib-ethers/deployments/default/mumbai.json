@@ -24,6 +24,7 @@
     "sortedTroves": "0xea7B8be44297d2747fBD33502Bd5020270caffF5",
     "stabilityPoolAsset1": "0x18dD64e06AD03241553C02C079eD1b7513dD038b",
     "stabilityPoolAsset2": "0x18dD64e06AD03241553C02C079eD1b7513dD038c",
+    "stabilityPool": "0x2f372E96721f305BC3E55D6c985dFe30dDDBBA6F",
     "stabilityPoolFactory": "0",
     "gasPool": "0x392355b1b222B23Cc637bA8c04515AF549E0C8d0",
     "unipool": "0xace5b45b8aB41a88224A8fbdFDE99DB9063dFe3a",

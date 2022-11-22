@@ -85,16 +85,18 @@ export const AssetStats: React.FC<SystemStatsProps> = ({ variant = "info", showB
   return (
     <Card variant="base" sx={{ py: 4, px: 4 }}>
       <Flex sx={{ flexDirection: "column", justifyContent: "space-between", mb: 1 }}>
-        <Text as="p" sx={{ fontWeight: "bold" }}>
+        <Text as="p" variant="medium">
           MIN. COLLATERAL RATIO
         </Text>
-        <Heading as="h1">0%</Heading>
+        <Text as="p" variant="xlarge">
+          0%
+        </Text>
       </Flex>
       <Flex sx={{ justifyContent: "space-between", mt: 4 }}>
-        <Text as="p" sx={{ fontWeight: "bold" }}>
+        <Text as="p" variant="medium">
           TOTAL MINTED
         </Text>
-        <Text as="p" sx={{ fontWeight: "bold" }}>
+        <Text as="p" variant="medium">
           0.00 BCT
         </Text>
       </Flex>
@@ -106,34 +108,54 @@ export const AssetStats: React.FC<SystemStatsProps> = ({ variant = "info", showB
         ></Progress>
       </Box>
       <Flex sx={{ justifyContent: "space-between" }}>
-        <Text as="p" sx={{ fontWeight: "bold" }}>
+        <Text as="p" variant="medium">
           MINT CAP
         </Text>
-        <Text as="p" sx={{ fontWeight: "bold" }}>
+        <Text as="p" variant="medium">
           0
         </Text>
       </Flex>
       <Divider sx={{ my: 3, color: "#E6E6E6" }} />
       <Box sx={{ my: 2 }}>
         <Flex sx={{ justifyContent: "space-between", mb: 2 }}>
-          <Text as="p" sx={{ fontSize: 1, fontWeight: "bold" }}>MIN. NET DEBT</Text>
-          <Text as="p" sx={{ fontWeight: "bold" }}>0 $</Text>
+          <Text as="p" variant="small">
+            MIN. NET DEBT
+          </Text>
+          <Text as="p" variant="small">
+            0 $
+          </Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between", mb: 2 }}>
-          <Text as="p" sx={{ fontSize: 1, fontWeight: "bold" }}>INTEREST RATE</Text>
-          <Text as="p" sx={{ fontSize: 1, fontWeight: "bold" }}>0 %</Text>
+          <Text as="p" variant="small">
+            INTEREST RATE
+          </Text>
+          <Text as="p" variant="small">
+            0 %
+          </Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between", mb: 2 }}>
-          <Text as="p" sx={{ fontSize: 1, fontWeight: "bold" }}>MINT FREE</Text>
-          <Text as="p" sx={{ fontSize: 1, fontWeight: "bold" }}>0.00 %</Text>
+          <Text as="p" variant="small">
+            MINT FREE
+          </Text>
+          <Text as="p" variant="small">
+            0.00 %
+          </Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between", mb: 2 }}>
-          <Text as="p" sx={{ fontSize: 1,  fontWeight: "bold" }}>ORACLE PRICE</Text>
-          <Text as="p" sx={{ fontSize: 1, fontWeight: "bold" }}>$ 0.00</Text>
+          <Text as="p" variant="small">
+            ORACLE PRICE
+          </Text>
+          <Text as="p" variant="small">
+            $ 0.00
+          </Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between" }}>
-          <Text as="p" sx={{ fontSize: 1, fontWeight: "bold" }}>MARKET PRICE</Text>
-          <Text as="p" sx={{ fontSize: 1, fontWeight: "bold" }}>$ 0.00</Text>
+          <Text as="p" variant="small">
+            MARKET PRICE
+          </Text>
+          <Text as="p" variant="small">
+            $ 0.00
+          </Text>
         </Flex>
       </Box>
     </Card>

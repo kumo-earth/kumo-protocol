@@ -1,11 +1,9 @@
 import React, { useCallback, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Button, Flex } from "theme-ui";
 
-import { Decimal, Decimalish, KumoStoreState } from "@kumodao/lib-base";
+import { ASSET_TOKENS, Decimal, Decimalish, KumoStoreState, StabilityDeposit } from "@kumodao/lib-base";
 import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@kumodao/lib-react";
-
-import { useDashboard } from "../../hooks/DashboardContext";
 
 import { COIN } from "../../strings";
 
@@ -97,22 +95,23 @@ const reduce = (
 
 const transactionId = "stability-deposit";
 
-const getPathName = (location: any) => {
-  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-};
+const select = ({ vaults }: KumoStoreState) => ({
+  vaults
+});
 
 export const StabilityDepositManager: React.FC = () => {
-  const location = useLocation();
-  const { vaults, depositKusd, handleDepositKusd, openStabilityDeposit } = useDashboard();
-  const vaultType = vaults.find(vault => vault.type === getPathName(location)) || vaults[0];
-
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const { vaults } = useKumoSelector(select);
+  const vault = vaults.find(vault => vault.asset === collateralType);
+  const stabilityDeposit: StabilityDeposit = vault?.stabilityDeposit && vault.stabilityDeposit;
   const [{ originalDeposit, editedKUSD, changePending }, dispatch] = useKumoReducer(reduce, () => {
     return {
-      originalDeposit: vaultType.stabilityDeposit,
-      editedKUSD: vaultType.stabilityDeposit.currentKUSD,
+      originalDeposit: stabilityDeposit,
+      editedKUSD: stabilityDeposit?.currentKUSD,
       changePending: false
     };
   });
+
 
   const validationContext = useKumoSelector(selectForStabilityDepositChangeValidation);
   const { dispatchEvent } = useStabilityView();
@@ -131,41 +130,17 @@ export const StabilityDepositManager: React.FC = () => {
 
   const myTransactionState = useMyTransactionState(transactionId);
 
-
   useEffect(() => {
     if (
       myTransactionState.type === "waitingForApproval" ||
       myTransactionState.type === "waitingForConfirmation"
     ) {
       dispatch({ type: "startChange" });
-      if (validChange?.depositKUSD) {
-        handleDepositKusd(validChange?.depositKUSD, undefined, false);
-      } else if (validChange?.withdrawAllKUSD) {
-        handleDepositKusd(undefined, Decimal.ZERO, true);
-      } else if (validChange?.withdrawKUSD) {
-        handleDepositKusd(undefined, validChange?.withdrawKUSD, false);
-      }
     } else if (myTransactionState.type === "failed" || myTransactionState.type === "cancelled") {
       dispatch({ type: "finishChange" });
     } else if (myTransactionState.type === "confirmedOneShot") {
-      if (depositKusd.depositKUSD) {
-        openStabilityDeposit(
-          getPathName(location),
-          vaultType.stabilityDeposit.currentKUSD.add(depositKusd.depositKUSD)
-        );
-      }
-      if (depositKusd.withdrawAllKUSD) {
-        openStabilityDeposit(getPathName(location), Decimal.ZERO);
-      } else if (depositKusd.withdrawKUSD) {
-        openStabilityDeposit(
-          getPathName(location),
-          vaultType.stabilityDeposit.currentKUSD.sub(depositKusd?.withdrawKUSD)
-        );
-      }
-      handleDepositKusd(undefined, undefined, false);
       dispatchEvent("DEPOSIT_CONFIRMED");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myTransactionState.type, dispatch, dispatchEvent]);
 
   return (
@@ -183,37 +158,16 @@ export const StabilityDepositManager: React.FC = () => {
         ))}
 
       <Flex variant="layout.actions">
-        <Button
-          sx={{
-            backgroundColor: "rgb(152, 80, 90)",
-            boxShadow:
-              "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
-            border: "none",
-            color: "white"
-          }}
-          variant="cancel"
-          onClick={handleCancel}
-        >
+        <Button variant="cancel" onClick={handleCancel}>
           Cancel
         </Button>
 
         {validChange ? (
-          <StabilityDepositAction transactionId={transactionId} change={validChange}>
+          <StabilityDepositAction transactionId={transactionId} change={validChange} asset={collateralType}>
             Confirm
           </StabilityDepositAction>
         ) : (
-          <Button
-            sx={{
-              backgroundColor: "rgb(152, 80, 90)",
-              boxShadow:
-                "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
-              border: "none",
-              color: "white"
-            }}
-            disabled
-          >
-            Confirm
-          </Button>
+          <Button>Confirm</Button>
         )}
       </Flex>
     </StabilityDepositEditor>

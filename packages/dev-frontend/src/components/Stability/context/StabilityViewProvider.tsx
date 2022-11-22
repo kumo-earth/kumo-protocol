@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
+import { useKumoSelector } from "@kumodao/lib-react";
+import { KumoStoreState, StabilityDeposit } from "@kumodao/lib-base";
 import { StabilityViewContext } from "./StabilityViewContext";
-import { useDashboard } from "../../../hooks/DashboardContext";
 import type { StabilityView, StabilityEvent } from "./types";
 
 type StabilityEventTransitions = Record<
@@ -29,53 +30,56 @@ const transitions: StabilityEventTransitions = {
   }
 };
 
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
+
 const transition = (view: StabilityView, event: StabilityEvent): StabilityView => {
   const nextView = transitions[view][event] ?? view;
   return nextView;
 };
 
-const getInitialView = (isEmpty: Boolean): StabilityView => {
-  return isEmpty ? "NONE" : "ACTIVE";
+const getInitialView = (stabilityDeposit: StabilityDeposit): StabilityView => {
+  return stabilityDeposit?.isEmpty ? "NONE" : "ACTIVE";
 };
 
-const getPathName = (location: any) => {
-  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-};
+const select = ({ vaults }: KumoStoreState) => ({
+  vaults
+});
 
 export const StabilityViewProvider: React.FC = props => {
   const { children } = props;
-  // const stabilityDeposit = useLiquitySelector(select);
+  const { vaults } = useKumoSelector(select);
   const location = useLocation();
-  const { vaults } = useDashboard();
-  const vaultType = vaults.find(vault => vault.type === getPathName(location)) ?? vaults[0];
-  const isEmpty = vaultType.stabilityStatus;
 
-  const [view, setView] = useState<StabilityView>(getInitialView(isEmpty));
+  const vault = vaults.find(vault => vault.asset === getPathName(location));
+  const stabilityDeposit: StabilityDeposit = vault?.stabilityDeposit && vault.stabilityDeposit
+
+  const [view, setView] = useState<StabilityView>(getInitialView(stabilityDeposit));
   const viewRef = useRef<StabilityView>(view);
 
+
   const dispatchEvent = useCallback((event: StabilityEvent) => {
-    if (event === "DEPOSIT_PRESSED" && isEmpty) {
-      const nextView = transition("DEPOSITING", event);
-      setView(nextView);
-    } else {
-      const nextView = isEmpty ? transition(viewRef.current, event) : transition("ACTIVE", event);
-      setView(nextView);
-    }
-  }, [isEmpty]);
+    const nextView = transition(viewRef.current, event);
+
+    console.log(
+      "dispatchEvent() [current-view, event, next-view]",
+      viewRef.current,
+      event,
+      nextView
+    );
+    setView(nextView);
+  }, []);
 
   useEffect(() => {
     viewRef.current = view;
   }, [view]);
 
   useEffect(() => {
-    if (isEmpty) {
+    if (stabilityDeposit?.isEmpty) {
       dispatchEvent("DEPOSIT_EMPTIED");
-    } else {
-      if (!isEmpty && viewRef.current !== "ACTIVE" && viewRef.current !== "ADJUSTING") {
-        setView("ACTIVE");
-      }
     }
-  }, [isEmpty, dispatchEvent]);
+  }, [stabilityDeposit?.isEmpty, dispatchEvent]);
 
   const provider = {
     view,

@@ -4,12 +4,17 @@ import { useHistory } from "react-router-dom";
 import { Grid, Box } from "theme-ui";
 import { Stability } from "../components/Stability/Stability";
 import { StakingTypeCard } from "../components/StakingTypeCard/StakingTypeCard";
-import { useDashboard } from "../hooks/DashboardContext";
 import { useDialogState, Dialog } from "reakit/Dialog";
+import { KumoStoreState } from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
+
+const select = ({ vaults }: KumoStoreState) => ({
+  vaults
+});
 
 export const StakingType: React.FC = () => {
   const dialog = useDialogState();
-  const { vaults } = useDashboard();
+  const { vaults } = useKumoSelector(select);
   const [stakeDeposit, setStakeDeposit] = useState(false);
   const history = useHistory();
 
@@ -25,7 +30,7 @@ export const StakingType: React.FC = () => {
     transform: "translate(-50%, -50%)",
     width: 470,
     // bgcolor: "background.paper",
-    bgcolor: 'white',
+    bgcolor: "white",
     border: "none",
     boxShadow: 24,
     p: 0

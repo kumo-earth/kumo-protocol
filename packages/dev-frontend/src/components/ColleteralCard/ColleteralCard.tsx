@@ -6,29 +6,22 @@ import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 
 import { useTroveView } from "../Trove/context/TroveViewContext";
+import { toUpper } from "lodash";
 
 type CollateralCardProps = {
   collateralType?: string;
   totalCollateralRatioPct?: string;
-  usersTroves: UserTrove[];
+  trove: UserTrove;
 };
 
 export const CollateralCard: React.FC<CollateralCardProps> = ({
   collateralType,
   totalCollateralRatioPct,
-  usersTroves
+  trove
 }) => {
   const { account } = useWeb3React<Web3Provider>();
   const { dispatchEvent, view } = useTroveView();
   const history = useHistory();
-
-  let collateral = Decimal.ZERO;
-  let debt = Decimal.ZERO;
-
-  usersTroves.forEach(userTrove => {
-    collateral = collateral.add(userTrove.debt);
-    debt = debt.add(userTrove.collateral);
-  });
 
   const handleClick = () => {
     if (view === "ADJUSTING") {
@@ -54,38 +47,37 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
           <Box sx={{ fontWeight: 600 }}>Please Connect the Wallet to Proceed</Box>
         </Flex>
       )} */}
-      <Heading as="h2">
-        {(collateralType === "bct" && "BCT") || (collateralType === "mco2" && "MCO2")} Vault
-      </Heading>
+      <Heading as="h2">{toUpper(collateralType)} Vault</Heading>
 
-      <Box sx={{ px: 4 }}>
-        <Heading as="h4" sx={{ mt: 4 }}>
+      <Box sx={{ px: 4, mt: 5 }}>
+        <Text as="p" variant="normalBold">
           SYSTEM COLLATERALL RATIO
-        </Heading>
-        <Heading as="h1" sx={{ mt: 1 }}>
-          {totalCollateralRatioPct}
-        </Heading>
-        <Flex sx={{ justifyContent: "space-between", mt: 4 }}>
-          <Text as="p" sx={{ fontWeight: "bold" }}>
+        </Text>
+
+        <Text as="p" variant="xlarge" sx={{ mt: 1 }}>
+          {/* {totalCollateralRatioPct 0.00%} */}
+          0.00%
+        </Text>
+        <Flex sx={{ justifyContent: "space-between", mt: 6 }}>
+          <Text as="p" variant="normalBold">
             COLLATERAL
           </Text>
-          <Text as="p" sx={{ fontWeight: "bold" }}>
-            {collateral.prettify(2)}{" "}
-            {(collateralType === "bct" && "BCT") || (collateralType === "mco2" && "MCO2")}
+          <Text as="p" variant="normalBold">
+            {trove?.collateral.prettify(2)} {toUpper(collateralType)}
           </Text>
         </Flex>
         <Box sx={{ my: 2 }}>
           <Progress
             max={10000}
-            value={collateral.toString()}
+            value={trove?.collateral.toString()}
             sx={{ height: "12px", backgroundColor: "#F0CFDC" }}
           ></Progress>
         </Box>
         <Flex sx={{ justifyContent: "space-between", mb: 4 }}>
-          <Text as="p" sx={{ fontWeight: "bold" }}>
+          <Text as="p" variant="normalBold">
             MINTED KUSD
           </Text>
-          <Text as="p" sx={{ fontWeight: "bold" }}>
+          <Text as="p" variant="normalBold">
             {" "}
             KUSD
           </Text>

@@ -190,6 +190,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
   /** {@inheritDoc TransactableKumo.depositKUSDInStabilityPool} */
   depositKUSDInStabilityPool(
     amount: Decimalish,
+    asset:string
   ): Promise<
     PopulatedKumoTransaction<
       P,
@@ -199,7 +200,8 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
 
   /** {@inheritDoc TransactableKumo.withdrawKUSDFromStabilityPool} */
   withdrawKUSDFromStabilityPool(
-    amount: Decimalish
+    amount: Decimalish,
+    asset:string
   ): Promise<
     PopulatedKumoTransaction<
       P,
@@ -208,7 +210,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
   >;
 
   /** {@inheritDoc TransactableKumo.withdrawGainsFromStabilityPool} */
-  withdrawGainsFromStabilityPool(): Promise<
+  withdrawGainsFromStabilityPool(asset: string): Promise<
     PopulatedKumoTransaction<
       P,
       SentKumoTransaction<S, KumoReceipt<R, StabilityPoolGainsWithdrawalDetails>>

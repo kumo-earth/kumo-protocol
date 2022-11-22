@@ -42,7 +42,7 @@ export const CollateralSurplusAction: React.FC<{ asset?: string }> = ({ asset = 
     <Flex variant="layout.actions">
       <Transaction
         id={myTransactionId}
-        send={liquity.claimCollateralSurplus.bind(liquity, asset, undefined)}
+        send={kumo.claimCollateralSurplus.bind(kumo, asset, undefined)}
       >
         <Button sx={{ mx: 2 }}>Claim {collateralSurplusBalance.prettify()} ETH</Button>
       </Transaction>

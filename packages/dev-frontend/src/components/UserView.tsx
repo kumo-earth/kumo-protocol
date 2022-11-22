@@ -3,6 +3,6 @@ import useUserViewParam from "../hooks/useUserViewParam";
 
 const UserView = () => {
   const userViewParam = useUserViewParam();
-  return <Heading as="h1" sx={{ fontWeight: 'medium' }}>{userViewParam}</Heading>;
+  return <Heading as="h1">{userViewParam}</Heading>;
 };
 export default UserView;

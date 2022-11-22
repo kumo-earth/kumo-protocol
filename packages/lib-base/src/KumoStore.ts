@@ -28,12 +28,6 @@ export interface KumoStoreBaseState {
   /** User's KUSD token balance. */
   kusdBalance: Decimal;
 
-  /** User's BCT token balance. */
-  bctBalance: Decimal;
-
-  /** User's BCT token balance. */
-  mco2Balance: Decimal;
-
   /** User's KUMO token balance. */
   kumoBalance: Decimal;
 
@@ -105,6 +99,9 @@ export interface KumoStoreBaseState {
   /** Total amount of KUMO currently staked. */
   totalStakedKUMO: Decimal;
 
+   /** Total amount of KUMO currently staked. */
+   vaults: any[];
+
   /** @internal */
   _riskiestTroveBeforeRedistribution: TroveWithPendingRedistribution;
 }
@@ -148,6 +145,7 @@ export interface KumoStoreDerivedState {
    * {@link MINIMUM_COLLATERAL_RATIO | minimum}.
    */
   haveUndercollateralizedTroves: boolean;
+
 }
 
 /**
@@ -364,19 +362,6 @@ export abstract class KumoStore<T = unknown> {
         baseState.kusdBalance,
         baseStateUpdate.kusdBalance
       ),
-      bctBalance: this._updateIfChanged(
-        eq,
-        "bctBalance",
-        baseState.bctBalance,
-        baseStateUpdate.bctBalance
-      ),
-
-      mco2Balance: this._updateIfChanged(
-        eq,
-        "mco2Balance",
-        baseState.mco2Balance,
-        baseStateUpdate.mco2Balance
-      ),
 
       kumoBalance: this._updateIfChanged(
         eq,
@@ -490,6 +475,13 @@ export abstract class KumoStore<T = unknown> {
         baseStateUpdate.totalStakedKUMO
       ),
 
+      vaults: this._updateIfChanged(
+        strictEquals,
+        "vaults",
+        baseState.vaults,
+        baseStateUpdate.vaults
+      ),
+
       _riskiestTroveBeforeRedistribution: this._silentlyUpdateIfChanged(
         equals,
         baseState._riskiestTroveBeforeRedistribution,
@@ -504,8 +496,11 @@ export abstract class KumoStore<T = unknown> {
     _feesInNormalMode,
     total,
     price,
-    _riskiestTroveBeforeRedistribution
+    _riskiestTroveBeforeRedistribution,
+    vaults,
   }: KumoStoreBaseState): KumoStoreDerivedState {
+
+
     const fees = _feesInNormalMode._setRecoveryMode(total.collateralRatioIsBelowCritical(price));
 
     return {

@@ -100,12 +100,13 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
   }
 
   async getStabilityDeposit(
+    asset:string,
     address: string,
     ...extraParams: T
   ): Promise<StabilityDeposit> {
     return (
-      this._cache.getStabilityDeposit(address, ...extraParams) ??
-      this._readable.getStabilityDeposit(address, ...extraParams)
+      this._cache.getStabilityDeposit(asset, address, ...extraParams) ??
+      this._readable.getStabilityDeposit(asset, address, ...extraParams)
     );
   }
 
@@ -141,7 +142,7 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
       this._readable.getAssetBalance(address, assetType, provider, ...extraParams)
     );
   }
-  
+
   async getKUMOBalance(address: string, ...extraParams: T): Promise<Decimal> {
     return (
       this._cache.getKUMOBalance(address, ...extraParams) ??
@@ -254,10 +255,10 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     );
   }
 
-  async getFrontendStatus(address: string, ...extraParams: T): Promise<FrontendStatus> {
+  async getFrontendStatus(asset:string, address: string, ...extraParams: T): Promise<FrontendStatus> {
     return (
-      this._cache.getFrontendStatus(address, ...extraParams) ??
-      this._readable.getFrontendStatus(address, ...extraParams)
+      this._cache.getFrontendStatus(asset, address, ...extraParams) ??
+      this._readable.getFrontendStatus(asset, address, ...extraParams)
     );
   }
 }

@@ -1,14 +1,9 @@
 import React, { useCallback, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { Decimal, UserTrove } from "@kumodao/lib-base";
+import { useParams } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 
 import { KumoStoreState } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
-import { Web3Provider } from "@ethersproject/providers";
-import { useWeb3React } from "@web3-react/core";
-
-import { useDashboard } from "../../hooks/DashboardContext";
 
 import { COIN, GT } from "../../strings";
 import { Icon } from "../Icon";
@@ -22,27 +17,16 @@ import { RemainingKUMO } from "./RemainingKUMO";
 import { Yield } from "./Yield";
 import { InfoIcon } from "../InfoIcon";
 
-const selector = ({ stabilityDeposit, trove, kusdInStabilityPool }: KumoStoreState) => ({
-  stabilityDeposit,
-  trove,
-  kusdInStabilityPool
+const select = ({ vaults }: KumoStoreState) => ({
+  vaults
 });
-
-const getPathName = (location: any) => {
-  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-};
 
 export const ActiveDeposit: React.FC = () => {
   const { dispatchEvent } = useStabilityView();
-  const { account } = useWeb3React<Web3Provider>();
-  const location = useLocation();
-  const { vaults } = useDashboard();
-  const vaultType = vaults.find(vault => vault.type === getPathName(location)) || vaults[0];
-  const trove =
-    vaultType.usersTroves.find(userT => userT.ownerAddress === account) ||
-    new UserTrove(account || "0x0", "nonExistent", Decimal.ZERO, Decimal.ZERO);
-  const { kusdInStabilityPool } = useKumoSelector(selector);
-  const { stabilityDeposit } = vaultType;
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const { vaults } = useKumoSelector(select);
+  const vault = vaults.find(vault => vault.asset === collateralType);
+  const { stabilityDeposit , trove, kusdInStabilityPool } = vault;
 
   const poolShare = stabilityDeposit.currentKUSD.mulDiv(100, kusdInStabilityPool);
 
@@ -74,7 +58,7 @@ export const ActiveDeposit: React.FC = () => {
       variant="base"
     >
       <Heading as="h2">
-        {getPathName(location).toUpperCase()} Stability Pool
+        {collateralType?.toUpperCase()} Stability Pool
         {!isWaitingForTransaction && (
           <Flex sx={{ justifyContent: "flex-end" }}>
             <RemainingKUMO />
@@ -102,7 +86,7 @@ export const ActiveDeposit: React.FC = () => {
             inputId="deposit-gain"
             amount={stabilityDeposit.collateralGain.prettify(4)}
             color={stabilityDeposit.collateralGain.nonZero && "success"}
-            unit={getPathName(location).toUpperCase()}
+            unit={collateralType?.toUpperCase()}
           />
 
           <Flex sx={{ alignItems: "center" }}>
@@ -137,13 +121,13 @@ export const ActiveDeposit: React.FC = () => {
           </Button>
 
           <ClaimRewards disabled={!hasGain && !hasReward}>
-            Claim {getPathName(location).toUpperCase()} and LQTY
+            Claim {collateralType?.toUpperCase()} and LQTY
           </ClaimRewards>
         </Flex>
 
         {hasTrove && (
           <ClaimAndMove disabled={!hasGain}>
-            Claim KUMO and move {getPathName(location).toUpperCase()} to Trove
+            Claim KUMO and move {collateralType?.toUpperCase()} to Trove
           </ClaimAndMove>
         )}
       </Box>

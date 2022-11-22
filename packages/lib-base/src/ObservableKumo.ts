@@ -21,6 +21,7 @@ export interface ObservableKumo {
 
   watchStabilityDeposit(
     onStabilityDepositChanged: (stabilityDeposit: StabilityDeposit) => void,
+    asset: string,
     address: string
   ): () => void;
 

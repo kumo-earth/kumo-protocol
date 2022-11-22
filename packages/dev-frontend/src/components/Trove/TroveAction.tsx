@@ -8,7 +8,7 @@ import { useTransactionFunction } from "../Transaction";
 type TroveActionProps = {
   transactionId: string;
   change: Exclude<TroveChange<Decimal>, { type: "invalidCreation" }>;
-  asset?: string;
+  asset: string;
   maxBorrowingRate: Decimal;
   borrowingFeeDecayToleranceMinutes: number;
 };
@@ -17,7 +17,7 @@ export const TroveAction: React.FC<TroveActionProps> = ({
   children,
   transactionId,
   change,
-  asset = "",
+  asset,
   maxBorrowingRate,
   borrowingFeeDecayToleranceMinutes
 }) => {
