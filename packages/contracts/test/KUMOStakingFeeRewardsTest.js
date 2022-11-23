@@ -44,7 +44,6 @@ contract('KUMOStaking revenue share tests', async accounts => {
   let kumoStaking
   let kumoToken
   let erc20Asset1
-  let erc20Asset2
 
   let contracts
 
@@ -82,18 +81,6 @@ contract('KUMOStaking revenue share tests', async accounts => {
 
     // Mint token to each acccount
     await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 20)
-
-    // let index = 0;
-    // for (const acc of accounts) {
-    //   await kumoToken.approve(kumoStaking.address, await web3.eth.getBalance(acc), { from: acc })
-    //   await erc20.mint(acc, await web3.eth.getBalance(acc))
-    //   index++;
-
-    //   if (index >= 20)
-    //     break;
-    // }
-
-
   })
 
   it('stake(): reverts if amount is zero', async () => {

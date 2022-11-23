@@ -217,7 +217,6 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
       contracts = await deploymentHelper.deployKumoCore()
       const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress)
 
-      stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
       priceFeed = contracts.priceFeedTestnet
       kusdToken = contracts.kusdToken
       stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)

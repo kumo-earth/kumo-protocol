@@ -13,7 +13,7 @@ const toBN = th.toBN
 const mv = testHelpers.MoneyValues
 const TroveData = testHelpers.TroveData
 
-contract('SortedTroves - TEST', async accounts => {
+contract('SortedTroves', async accounts => {
 
   const assertSortedListIsOrdered = async (contracts, asset) => {
     const price = await contracts.priceFeedTestnet.getPrice()
@@ -50,11 +50,8 @@ contract('SortedTroves - TEST', async accounts => {
   let troveManager
   let borrowerOperations
   let kusdToken
-  let kumoParams
   let KUMOContracts
-  let hardhatTester
   let erc20Asset1
-  let erc20Asset2
 
 
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
@@ -74,17 +71,14 @@ contract('SortedTroves - TEST', async accounts => {
         contracts.borrowerOperations.address
       )
       KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
-      hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
+      erc20Asset1 = await deploymentHelper.deployERC20Asset()
+      assetAddress1 = erc20Asset1.address
 
       priceFeed = contracts.priceFeedTestnet
       sortedTroves = contracts.sortedTroves
       troveManager = contracts.troveManager
       borrowerOperations = contracts.borrowerOperations
       kusdToken = contracts.kusdToken
-      kumoParams = contracts.kumoParameters
-
-      erc20Asset1 = hardhatTester.erc20Asset1
-      assetAddress1 = erc20Asset1.address
 
       await deploymentHelper.connectKUMOContracts(KUMOContracts)
       await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
@@ -94,15 +88,7 @@ contract('SortedTroves - TEST', async accounts => {
       await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
       // Mint token to each acccount
-      let index = 0;
-      for (const acc of accounts) {
-        // await vstaToken.approve(vstaStaking.address, await erc20Asset1.balanceOf(acc), { from: acc })
-        await erc20Asset1.mint(acc, await web3.eth.getBalance(acc))
-        index++;
-
-        if (index >= 25)
-          break;
-      }
+    await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 25)
     })
 
     it('contains(): returns true for addresses that have opened troves', async () => {

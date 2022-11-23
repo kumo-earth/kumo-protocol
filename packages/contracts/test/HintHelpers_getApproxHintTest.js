@@ -21,11 +21,8 @@ contract('HintHelpers', async accounts => {
   let borrowerOperations
   let hintHelpers
   let priceFeed
-  let kumoParameters
-  let hardhatTester
-  let erc20
+  let erc20Asset1
   let assetAddress1
-  let assetAddress2
 
 
   let contracts
@@ -86,13 +83,11 @@ contract('HintHelpers', async accounts => {
       contracts.borrowerOperations.address
     )
     const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
-    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-    erc20 = hardhatTester.erc20Asset1
-    assetAddress1 = erc20.address
+    
+    erc20Asset1 = await deploymentHelper.deployERC20Asset()
+    assetAddress1 = erc20Asset1.address
 
-    kumoParams = contracts.kumoParameters
-
-    await kumoParams.sanitizeParameters(assetAddress1);
+    await contracts.kumoParameters.sanitizeParameters(assetAddress1);
     await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
     sortedTroves = contracts.sortedTroves
@@ -106,15 +101,7 @@ contract('HintHelpers', async accounts => {
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
 
     // Mint token to each acccount
-    let index = 0;
-    for (const acc of accounts) {
-      // await vstaToken.approve(vstaStaking.address, await erc20Asset1.balanceOf(acc), { from: acc })
-      await erc20.mint(acc, await web3.eth.getBalance(acc))
-      index++;
-
-      if (index >= 20)
-        break;
-    }
+    await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 20)
 
     numAccounts = 10
 

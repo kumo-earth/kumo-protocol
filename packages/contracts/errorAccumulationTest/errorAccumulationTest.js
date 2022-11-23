@@ -20,7 +20,6 @@ contract('TroveManager', async accounts => {
   let stabilityPool
   let defaultPool
   let borrowerOperations
-  let hardhatTester
   let erc20
   let assetAddress1
   
@@ -28,8 +27,7 @@ contract('TroveManager', async accounts => {
     contracts = await deploymentHelper.deployKumoCore()
     const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress)
 
-    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-    erc20 = hardhatTester.erc20Asset1
+    erc20 = await deploymentHelper.deployERC20Asset()
     assetAddress1 = erc20.address
     
     kusdToken = contracts.kusdToken

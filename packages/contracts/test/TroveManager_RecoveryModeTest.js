@@ -48,9 +48,7 @@ contract('TroveManager - in Recovery Mode', async accounts => {
     let functionCaller
     let borrowerOperations
     let collSurplusPool
-    let kumoParams
     let KUMOContracts
-    let hardhatTester
     let erc20Asset1
     let erc20Asset2
     let stabilityPoolAsset1
@@ -71,7 +69,6 @@ contract('TroveManager - in Recovery Mode', async accounts => {
             contracts.borrowerOperations.address
         )
         KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
-        hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
 
         priceFeed = contracts.priceFeedTestnet
         kusdToken = contracts.kusdToken
@@ -83,11 +80,10 @@ contract('TroveManager - in Recovery Mode', async accounts => {
         functionCaller = contracts.functionCaller
         borrowerOperations = contracts.borrowerOperations
         collSurplusPool = contracts.collSurplusPool
-        kumoParams = contracts.kumoParameters
 
-        erc20Asset1 = hardhatTester.erc20Asset1
+        erc20Asset1 = await deploymentHelper.deployERC20Asset()
         assetAddress1 = erc20Asset1.address
-        erc20Asset2 = hardhatTester.erc20Asset2
+        erc20Asset2 = await deploymentHelper.deployERC20Asset()
         assetAddress2 = erc20Asset2.address
 
         await deploymentHelper.connectKUMOContracts(KUMOContracts)

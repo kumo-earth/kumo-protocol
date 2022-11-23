@@ -27,7 +27,7 @@ contract('StabilityPool', async accounts => {
     stabilityPool = await StabilityPool.new()
     const mockActivePoolAddress = (await NonPayable.new()).address
     const dumbContractAddress = (await NonPayable.new()).address
-    // const kumoParameters = KumoParameters.new()
+    
     await stabilityPool.setAddresses(dumbContractAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress)
   })
 

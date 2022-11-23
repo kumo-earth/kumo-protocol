@@ -36,7 +36,6 @@ contract('TroveManager - stakeDecline', async accounts => {
   let borrowerOperations
   let hintHelpers
   let KUMOContracts
-  let hardhatTester
   let erc20Asset1
   let erc20Asset2
 
@@ -61,7 +60,6 @@ contract('TroveManager - stakeDecline', async accounts => {
       contracts.borrowerOperations.address
     )
     KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
-    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
 
     priceFeed = contracts.priceFeedTestnet
     kusdToken = contracts.kusdToken
@@ -77,9 +75,9 @@ contract('TroveManager - stakeDecline', async accounts => {
     kumoToken = KUMOContracts.kumoToken
     communityIssuance = KUMOContracts.communityIssuance
     lockupContractFactory = KUMOContracts.lockupContractFactory
-    erc20Asset1 = hardhatTester.erc20Asset1
+    erc20Asset1 = await deploymentHelper.deployERC20Asset()
     assetAddress1 = erc20Asset1.address
-    erc20Asset2 = hardhatTester.erc20Asset2
+    erc20Asset2 = await deploymentHelper.deployERC20Asset()
     assetAddress2 = erc20Asset2.address
 
     await deploymentHelper.connectKUMOContracts(KUMOContracts)

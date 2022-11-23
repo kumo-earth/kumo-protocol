@@ -459,12 +459,8 @@ class DeploymentHelper {
   }
 
   static async mintMockAssets(erc20Asset, accounts, numberOfAccounts) {
-    let index = 0;
-    for (const acc of accounts) {
-      await erc20Asset.mint(acc, await web3.eth.getBalance(acc))
-      index++;
-      if (index >= numberOfAccounts)
-        break;
+    for (let index = 0; index < numberOfAccounts; index++) {
+      await erc20Asset.mint(accounts[index], await web3.eth.getBalance(accounts[index]))
     }
   }
 

@@ -47,9 +47,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
   let stabilityPool
   let defaultPool
   let borrowerOperations
-  let kumoParams
   let KUMOContracts
-  let hardhatTester
   let erc20Asset1
 
   let gasPriceInWei
@@ -82,10 +80,9 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
       defaultPool = contracts.defaultPool
       borrowerOperations = contracts.borrowerOperations
-      kumoParams = contracts.kumoParameters
 
       await deploymentHelper.connectKUMOContracts(KUMOContracts)
-      await kumoParams.sanitizeParameters(assetAddress1);
+      await contracts.kumoParameters.sanitizeParameters(assetAddress1);
 
       // Mint token to each acccount
       await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 50)

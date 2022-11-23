@@ -1,4 +1,5 @@
-
+// TODO: rewrite with hardhat helpers and multi-asset StabilityPool
+// https://github.com/kumodao/kumo-protocol/issues/286
 const deploymentHelpers = require("../utils/truffleDeploymentHelpers.js")
 const testHelpers = require("../utils/testHelpers.js")
 

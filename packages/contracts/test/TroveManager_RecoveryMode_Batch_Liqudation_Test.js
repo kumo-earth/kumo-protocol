@@ -8,7 +8,7 @@ const KUSDToken = artifacts.require("./KUSDToken.sol")
 const StabilityPool = artifacts.require("./StabilityPool.sol")
 
 
-contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx - TEST', async accounts => {
+contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async accounts => {
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
   const [
     owner,
@@ -22,7 +22,6 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx - TEST',
   let priceFeed
   let sortedTroves
   let KUMOContracts
-  let hardhatTester
   let erc20Asset1
   let erc20Asset2
   let stabilityPoolAsset1
@@ -39,15 +38,13 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx - TEST',
       contracts.borrowerOperations.address
     )
     KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
-    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
 
     troveManager = contracts.troveManager
     priceFeed = contracts.priceFeedTestnet
     sortedTroves = contracts.sortedTroves
-    kumoParams = contracts.kumoParameters
-    erc20Asset1 = hardhatTester.erc20Asset1
+    erc20Asset1 = await deploymentHelper.deployERC20Asset()
     assetAddress1 = erc20Asset1.address
-    erc20Asset2 = hardhatTester.erc20Asset2
+    erc20Asset2 = await deploymentHelper.deployERC20Asset()
     assetAddress2 = erc20Asset2.address
     stabilityPoolFactory = contracts.stabilityPoolFactory
 
