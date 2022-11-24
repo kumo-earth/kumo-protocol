@@ -555,7 +555,7 @@
           "type": "address"
         }
       ],
-      "name": "moveETHGainToTrove",
+      "name": "moveAssetGainToTrove",
       "outputs": [],
       "stateMutability": "payable",
       "type": "function"

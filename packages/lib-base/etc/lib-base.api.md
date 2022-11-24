@@ -10,7 +10,7 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     // (undocumented)
     getCollateralSurplusBalance(address?: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
-    getFees(...extraParams: T): Promise<Fees>;
+    getFees(asset: string, ...extraParams: T): Promise<Fees>;
     // (undocumented)
     getFrontendStatus(address?: string, ...extraParams: T): Promise<FrontendStatus>;
     // (undocumented)
@@ -26,7 +26,7 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     // (undocumented)
     getLiquidityMiningStake(address?: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
-    getNumberOfTroves(...extraParams: T): Promise<number>;
+    getNumberOfTroves(asset: string, ...extraParams: T): Promise<number>;
     // (undocumented)
     getPrice(...extraParams: T): Promise<Decimal>;
     // (undocumented)
@@ -36,23 +36,23 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     // (undocumented)
     getStabilityDeposit(address?: string, ...extraParams: T): Promise<StabilityDeposit>;
     // (undocumented)
-    getTotal(...extraParams: T): Promise<Trove>;
+    getTotal(asset: string, ...extraParams: T): Promise<Trove>;
     // (undocumented)
-    getTotalRedistributed(...extraParams: T): Promise<Trove>;
+    getTotalRedistributed(asset: string, ...extraParams: T): Promise<Trove>;
     // (undocumented)
     getTotalStakedKUMO(...extraParams: T): Promise<Decimal>;
     // (undocumented)
     getTotalStakedUniTokens(...extraParams: T): Promise<Decimal>;
     // (undocumented)
-    getTrove(address?: string, ...extraParams: T): Promise<UserTrove>;
+    getTrove(asset: string, address?: string, ...extraParams: T): Promise<UserTrove>;
     // (undocumented)
     getTroveBeforeRedistribution(address?: string, ...extraParams: T): Promise<TroveWithPendingRedistribution>;
     // (undocumented)
-    getTroves(params: TroveListingParams & {
+    getTroves(asset: string, params: TroveListingParams & {
         beforeRedistribution: true;
     }, ...extraParams: T): Promise<TroveWithPendingRedistribution[]>;
     // (undocumented)
-    getTroves(params: TroveListingParams, ...extraParams: T): Promise<UserTrove[]>;
+    getTroves(asset: string, params: TroveListingParams, ...extraParams: T): Promise<UserTrove[]>;
     // (undocumented)
     getUniTokenAllowance(address?: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
@@ -214,11 +214,11 @@ export type FrontendStatus = {
 // @internal (undocumented)
 export interface _KumoReadCache<T extends unknown[]> extends _KumoReadCacheBase<T> {
     // (undocumented)
-    getTroves(params: TroveListingParams & {
+    getTroves(asset: string, params: TroveListingParams & {
         beforeRedistribution: true;
     }, ...extraParams: T): TroveWithPendingRedistribution[] | undefined;
     // (undocumented)
-    getTroves(params: TroveListingParams, ...extraParams: T): UserTrove[] | undefined;
+    getTroves(asset: string, params: TroveListingParams, ...extraParams: T): UserTrove[] | undefined;
 }
 
 // @internal (undocumented)
@@ -444,30 +444,30 @@ export type _PopulatableFrom<T, P> = {
 //
 // @public
 export interface PopulatableKumo<R = unknown, S = unknown, P = unknown> extends _PopulatableFrom<SendableKumo<R, S>, P> {
-    adjustTrove(params: TroveAdjustmentParams<Decimalish>, maxBorrowingRate?: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
+    adjustTrove(params: TroveAdjustmentParams<Decimalish>, asset: string, maxBorrowingRate?: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
     approveUniTokens(allowance?: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
-    borrowKUSD(amount: Decimalish, maxBorrowingRate?: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
-    claimCollateralSurplus(): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
-    closeTrove(): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveClosureDetails>>>>;
-    depositCollateral(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
-    depositKUSDInStabilityPool(amount: Decimalish, frontendTag?: string): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>>;
+    borrowKUSD(asset: string, amount: Decimalish, maxBorrowingRate?: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
+    claimCollateralSurplus(asset: string): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
+    closeTrove(asset: string): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveClosureDetails>>>>;
+    depositCollateral(asset: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
+    depositKUSDInStabilityPool(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>>;
     exitLiquidityMining(): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
-    liquidate(address: string | string[]): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>>;
-    liquidateUpTo(maximumNumberOfTrovesToLiquidate: number): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>>;
-    openTrove(params: TroveCreationParams<Decimalish>, maxBorrowingRate?: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveCreationDetails>>>>;
-    redeemKUSD(amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<PopulatedRedemption<P, S, R>>;
+    liquidate(asset: string, address: string | string[]): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>>;
+    liquidateUpTo(asset: string, maximumNumberOfTrovesToLiquidate: number): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>>;
+    openTrove(params: TroveCreationParams<Decimalish>, asset: string, maxBorrowingRate?: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveCreationDetails>>>>;
+    redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<PopulatedRedemption<P, S, R>>;
     registerFrontend(kickbackRate: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
-    repayKUSD(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
+    repayKUSD(asset: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
     sendKUMO(toAddress: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     sendKUSD(toAddress: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     // @internal (undocumented)
     setPrice(price: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     stakeKUMO(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     stakeUniTokens(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
-    transferCollateralGainToTrove(): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, CollateralGainTransferDetails>>>>;
+    transferCollateralGainToTrove(asset: string): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, CollateralGainTransferDetails>>>>;
     unstakeKUMO(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     unstakeUniTokens(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
-    withdrawCollateral(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
+    withdrawCollateral(asset: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
     withdrawGainsFromStabilityPool(): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, StabilityPoolGainsWithdrawalDetails>>>>;
     withdrawGainsFromStaking(): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     withdrawKUMORewardFromLiquidityMining(): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
@@ -491,7 +491,7 @@ export interface PopulatedRedemption<P = unknown, S = unknown, R = unknown> exte
 // @public
 export interface ReadableKumo {
     getCollateralSurplusBalance(address?: string): Promise<Decimal>;
-    getFees(): Promise<Fees>;
+    getFees(asset: string): Promise<Fees>;
     getFrontendStatus(address?: string): Promise<FrontendStatus>;
     getKUMOBalance(address?: string): Promise<Decimal>;
     getKUMOStake(address?: string): Promise<KUMOStake>;
@@ -499,22 +499,22 @@ export interface ReadableKumo {
     getKUSDInStabilityPool(): Promise<Decimal>;
     getLiquidityMiningKUMOReward(address?: string): Promise<Decimal>;
     getLiquidityMiningStake(address?: string): Promise<Decimal>;
-    getNumberOfTroves(): Promise<number>;
+    getNumberOfTroves(asset: string): Promise<number>;
     getPrice(): Promise<Decimal>;
     getRemainingLiquidityMiningKUMOReward(): Promise<Decimal>;
     getRemainingStabilityPoolKUMOReward(): Promise<Decimal>;
     getStabilityDeposit(address?: string): Promise<StabilityDeposit>;
-    getTotal(): Promise<Trove>;
-    getTotalRedistributed(): Promise<Trove>;
+    getTotal(asset: string): Promise<Trove>;
+    getTotalRedistributed(asset: string): Promise<Trove>;
     getTotalStakedKUMO(): Promise<Decimal>;
     getTotalStakedUniTokens(): Promise<Decimal>;
-    getTrove(address?: string): Promise<UserTrove>;
+    getTrove(asset: string, address?: string): Promise<UserTrove>;
     getTroveBeforeRedistribution(address?: string): Promise<TroveWithPendingRedistribution>;
     // @internal (undocumented)
-    getTroves(params: TroveListingParams & {
+    getTroves(asset: string, params: TroveListingParams & {
         beforeRedistribution: true;
     }): Promise<TroveWithPendingRedistribution[]>;
-    getTroves(params: TroveListingParams): Promise<UserTrove[]>;
+    getTroves(asset: string, params: TroveListingParams): Promise<UserTrove[]>;
     getUniTokenAllowance(address?: string): Promise<Decimal>;
     getUniTokenBalance(address?: string): Promise<Decimal>;
 }
@@ -522,11 +522,11 @@ export interface ReadableKumo {
 // @internal (undocumented)
 export interface _ReadableKumoWithExtraParams<T extends unknown[]> extends _ReadableKumoWithExtraParamsBase<T> {
     // (undocumented)
-    getTroves(params: TroveListingParams & {
+    getTroves(asset: string, params: TroveListingParams & {
         beforeRedistribution: true;
     }, ...extraParams: T): Promise<TroveWithPendingRedistribution[]>;
     // (undocumented)
-    getTroves(params: TroveListingParams, ...extraParams: T): Promise<UserTrove[]>;
+    getTroves(asset: string, params: TroveListingParams, ...extraParams: T): Promise<UserTrove[]>;
 }
 
 // @internal (undocumented)
@@ -551,30 +551,30 @@ export type _SendableFrom<T, R, S> = {
 //
 // @public
 export interface SendableKumo<R = unknown, S = unknown> extends _SendableFrom<TransactableKumo, R, S> {
-    adjustTrove(params: TroveAdjustmentParams<Decimalish>, maxBorrowingRate?: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
+    adjustTrove(params: TroveAdjustmentParams<Decimalish>, asset: string, maxBorrowingRate?: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
     approveUniTokens(allowance?: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-    borrowKUSD(amount: Decimalish, maxBorrowingRate?: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
-    claimCollateralSurplus(): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-    closeTrove(): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveClosureDetails>>>;
-    depositCollateral(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
-    depositKUSDInStabilityPool(amount: Decimalish, frontendTag?: string): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>;
+    borrowKUSD(asset: string, amount: Decimalish, maxBorrowingRate?: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
+    claimCollateralSurplus(asset: string): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
+    closeTrove(asset: string): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveClosureDetails>>>;
+    depositCollateral(asset: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
+    depositKUSDInStabilityPool(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>;
     exitLiquidityMining(): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-    liquidate(address: string | string[]): Promise<SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>;
-    liquidateUpTo(maximumNumberOfTrovesToLiquidate: number): Promise<SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>;
-    openTrove(params: TroveCreationParams<Decimalish>, maxBorrowingRate?: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveCreationDetails>>>;
-    redeemKUSD(amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, RedemptionDetails>>>;
+    liquidate(asset: string, address: string | string[]): Promise<SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>;
+    liquidateUpTo(asset: string, maximumNumberOfTrovesToLiquidate: number): Promise<SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>;
+    openTrove(params: TroveCreationParams<Decimalish>, asset: string, maxBorrowingRate?: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveCreationDetails>>>;
+    redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, RedemptionDetails>>>;
     registerFrontend(kickbackRate: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-    repayKUSD(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
+    repayKUSD(asset: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
     sendKUMO(toAddress: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     sendKUSD(toAddress: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     // @internal (undocumented)
     setPrice(price: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     stakeKUMO(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     stakeUniTokens(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-    transferCollateralGainToTrove(): Promise<SentKumoTransaction<S, KumoReceipt<R, CollateralGainTransferDetails>>>;
+    transferCollateralGainToTrove(asset: string): Promise<SentKumoTransaction<S, KumoReceipt<R, CollateralGainTransferDetails>>>;
     unstakeKUMO(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     unstakeUniTokens(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-    withdrawCollateral(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
+    withdrawCollateral(asset: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
     withdrawGainsFromStabilityPool(): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityPoolGainsWithdrawalDetails>>>;
     withdrawGainsFromStaking(): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     withdrawKUMORewardFromLiquidityMining(): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
@@ -641,30 +641,30 @@ export const _successfulReceipt: <R, D>(rawReceipt: R, details: D, toString?: ((
 
 // @public
 export interface TransactableKumo {
-    adjustTrove(params: TroveAdjustmentParams<Decimalish>, maxBorrowingRate?: Decimalish): Promise<TroveAdjustmentDetails>;
+    adjustTrove(params: TroveAdjustmentParams<Decimalish>, asset: string, maxBorrowingRate?: Decimalish): Promise<TroveAdjustmentDetails>;
     approveUniTokens(allowance?: Decimalish): Promise<void>;
-    borrowKUSD(amount: Decimalish, maxBorrowingRate?: Decimalish): Promise<TroveAdjustmentDetails>;
-    claimCollateralSurplus(): Promise<void>;
-    closeTrove(): Promise<TroveClosureDetails>;
-    depositCollateral(amount: Decimalish): Promise<TroveAdjustmentDetails>;
-    depositKUSDInStabilityPool(amount: Decimalish, frontendTag?: string): Promise<StabilityDepositChangeDetails>;
+    borrowKUSD(asset: string, amount: Decimalish, maxBorrowingRate?: Decimalish): Promise<TroveAdjustmentDetails>;
+    claimCollateralSurplus(asset: string): Promise<void>;
+    closeTrove(asset: string): Promise<TroveClosureDetails>;
+    depositCollateral(asset: string, amount: Decimalish): Promise<TroveAdjustmentDetails>;
+    depositKUSDInStabilityPool(amount: Decimalish): Promise<StabilityDepositChangeDetails>;
     exitLiquidityMining(): Promise<void>;
-    liquidate(address: string | string[]): Promise<LiquidationDetails>;
-    liquidateUpTo(maximumNumberOfTrovesToLiquidate: number): Promise<LiquidationDetails>;
-    openTrove(params: TroveCreationParams<Decimalish>, maxBorrowingRate?: Decimalish): Promise<TroveCreationDetails>;
-    redeemKUSD(amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<RedemptionDetails>;
+    liquidate(asset: string, address: string | string[]): Promise<LiquidationDetails>;
+    liquidateUpTo(asset: string, maximumNumberOfTrovesToLiquidate: number): Promise<LiquidationDetails>;
+    openTrove(params: TroveCreationParams<Decimalish>, asset: string, maxBorrowingRate?: Decimalish): Promise<TroveCreationDetails>;
+    redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<RedemptionDetails>;
     registerFrontend(kickbackRate: Decimalish): Promise<void>;
-    repayKUSD(amount: Decimalish): Promise<TroveAdjustmentDetails>;
+    repayKUSD(asset: string, amount: Decimalish): Promise<TroveAdjustmentDetails>;
     sendKUMO(toAddress: string, amount: Decimalish): Promise<void>;
     sendKUSD(toAddress: string, amount: Decimalish): Promise<void>;
     // @internal (undocumented)
     setPrice(price: Decimalish): Promise<void>;
     stakeKUMO(amount: Decimalish): Promise<void>;
     stakeUniTokens(amount: Decimalish): Promise<void>;
-    transferCollateralGainToTrove(): Promise<CollateralGainTransferDetails>;
+    transferCollateralGainToTrove(asset: string): Promise<CollateralGainTransferDetails>;
     unstakeKUMO(amount: Decimalish): Promise<void>;
     unstakeUniTokens(amount: Decimalish): Promise<void>;
-    withdrawCollateral(amount: Decimalish): Promise<TroveAdjustmentDetails>;
+    withdrawCollateral(asset: string, amount: Decimalish): Promise<TroveAdjustmentDetails>;
     withdrawGainsFromStabilityPool(): Promise<StabilityPoolGainsWithdrawalDetails>;
     withdrawGainsFromStaking(): Promise<void>;
     withdrawKUMORewardFromLiquidityMining(): Promise<void>;

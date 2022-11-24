@@ -9,8 +9,15 @@ Claim leftover collateral after a liquidation or redemption.
 <b>Signature:</b>
 
 ```typescript
-claimCollateralSurplus(): Promise<void>;
+claimCollateralSurplus(asset: string): Promise<void>;
 ```
+
+## Parameters
+
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  asset | string |  |
+
 <b>Returns:</b>
 
 Promise&lt;void&gt;

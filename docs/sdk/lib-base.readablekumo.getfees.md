@@ -9,8 +9,15 @@ Get a calculator for current fees.
 <b>Signature:</b>
 
 ```typescript
-getFees(): Promise<Fees>;
+getFees(asset: string): Promise<Fees>;
 ```
+
+## Parameters
+
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  asset | string |  |
+
 <b>Returns:</b>
 
 Promise&lt;[Fees](./lib-base.fees.md)<!-- -->&gt;

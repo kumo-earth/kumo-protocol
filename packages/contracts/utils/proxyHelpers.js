@@ -6,7 +6,7 @@ const DSProxy = artifacts.require('DSProxy')
 const buildUserProxies = async (users) => {
   const proxies = {}
   const proxyFactory = await DSProxyFactory.new()
-  for(let user of users) {
+  for (let user of users) {
     const proxyTx = await proxyFactory.build({ from: user })
     proxies[user] = await DSProxy.at(proxyTx.logs[0].args.proxy)
   }
@@ -15,7 +15,7 @@ const buildUserProxies = async (users) => {
 }
 
 class Proxy {
-  constructor (owner, proxies, scriptAddress, contract) {
+  constructor(owner, proxies, scriptAddress, contract) {
     this.owner = owner
     this.proxies = proxies
     this.scriptAddress = scriptAddress
@@ -92,7 +92,7 @@ class BorrowerOperationsProxy extends Proxy {
   }
 
   async openTrove(...params) {
-    return this.forwardFunction(params, 'openTrove(uint256,uint256,address,address)')
+    return this.forwardFunction(params, 'openTrove(address,uint256,uint256,uint256,address,address)')
   }
 
   async addColl(...params) {
@@ -255,12 +255,12 @@ class TroveManagerProxy extends Proxy {
     return this.proxyFunction('getRedemptionFeeWithDecay', params)
   }
 
-  async getBorrowingRate() {
-    return this.proxyFunction('getBorrowingRate', [])
+  async getBorrowingRate(...params) {
+    return this.proxyFunction('getBorrowingRate', params)
   }
 
-  async getBorrowingRateWithDecay() {
-    return this.proxyFunction('getBorrowingRateWithDecay', [])
+  async getBorrowingRateWithDecay(...params) {
+    return this.proxyFunction('getBorrowingRateWithDecay', params)
   }
 
   async getBorrowingFee(...params) {

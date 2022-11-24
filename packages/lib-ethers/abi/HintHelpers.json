@@ -59,59 +59,7 @@
   },
   {
     "inputs": [],
-    "name": "BORROWING_FEE_FLOOR",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "CCR",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "DECIMAL_PRECISION",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "KUSD_GAS_COMPENSATION",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "MCR",
     "outputs": [
       {
         "internalType": "uint256",
@@ -143,45 +91,6 @@
         "internalType": "string",
         "name": "",
         "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "PERCENT_DIVISOR",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "_100pct",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "activePool",
-    "outputs": [
-      {
-        "internalType": "contract IActivePool",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -241,20 +150,12 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "defaultPool",
-    "outputs": [
-      {
-        "internalType": "contract IDefaultPool",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
       {
         "internalType": "uint256",
         "name": "_CR",
@@ -293,7 +194,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      }
+    ],
     "name": "getEntireSystemColl",
     "outputs": [
       {
@@ -306,7 +213,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      }
+    ],
     "name": "getEntireSystemDebt",
     "outputs": [
       {
@@ -320,6 +233,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
       {
         "internalType": "uint256",
         "name": "_KUSDamount",
@@ -385,10 +303,10 @@
   },
   {
     "inputs": [],
-    "name": "owner",
+    "name": "kumoParams",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract IKumoParameters",
         "name": "",
         "type": "address"
       }
@@ -398,10 +316,10 @@
   },
   {
     "inputs": [],
-    "name": "priceFeed",
+    "name": "owner",
     "outputs": [
       {
-        "internalType": "contract IPriceFeed",
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -420,9 +338,27 @@
         "internalType": "address",
         "name": "_troveManagerAddress",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_kumoParamsAddress",
+        "type": "address"
       }
     ],
     "name": "setAddresses",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_kumoParamsAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setKumoParameters",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

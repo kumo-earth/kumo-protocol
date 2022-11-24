@@ -9,13 +9,14 @@ Adjust existing Trove by repaying some of its debt.
 <b>Signature:</b>
 
 ```typescript
-repayKUSD(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveAdjustmentDetails>>;
+repayKUSD(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveAdjustmentDetails>>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  asset | string |  |
 |  amount | [Decimalish](./lib-base.decimalish.md) | The amount of KUSD to repay. |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 

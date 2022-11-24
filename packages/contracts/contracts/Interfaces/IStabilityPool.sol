@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.11;
 
+import "./IDeposit.sol";
+
 /*
  * The Stability Pool holds KUSD tokens deposited by Stability Pool depositors.
  *
@@ -33,12 +35,11 @@ pragma solidity 0.8.11;
  * Please see the system Readme for an overview:
  * https://github.com/liquity/dev/blob/main/README.md#kumo-issuance-to-stability-providers
  */
-interface IStabilityPool {
-
+interface IStabilityPool is IDeposit {
     // --- Events ---
-    
-    event StabilityPoolETHBalanceUpdated(uint _newBalance);
-    event StabilityPoolKUSDBalanceUpdated(uint _newBalance);
+
+    event StabilityPoolAssetBalanceUpdated(uint256 _newBalance);
+    event StabilityPoolKUSDBalanceUpdated(uint256 _newBalance);
 
     event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
     event TroveManagerAddressChanged(address _newTroveManagerAddress);
@@ -49,24 +50,32 @@ interface IStabilityPool {
     event PriceFeedAddressChanged(address _newPriceFeedAddress);
     event CommunityIssuanceAddressChanged(address _newCommunityIssuanceAddress);
 
-    event P_Updated(uint _P);
-    event S_Updated(uint _S, uint128 _epoch, uint128 _scale);
-    event G_Updated(uint _G, uint128 _epoch, uint128 _scale);
+    event P_Updated(uint256 _P);
+    event S_Updated(uint256 _S, uint128 _epoch, uint128 _scale);
+    event G_Updated(uint256 _G, uint128 _epoch, uint128 _scale);
     event EpochUpdated(uint128 _currentEpoch);
     event ScaleUpdated(uint128 _currentScale);
 
-    event FrontEndRegistered(address indexed _frontEnd, uint _kickbackRate);
+    //  FrontEnd
+
+    event FrontEndRegistered(address indexed _frontEnd, uint256 _kickbackRate);
     event FrontEndTagSet(address indexed _depositor, address indexed _frontEnd);
+    event FrontEndSnapshotUpdated(address indexed _frontEnd, uint256 _P, uint256 _G);
+    event FrontEndStakeChanged(
+        address indexed _frontEnd,
+        uint256 _newFrontEndStake,
+        address _depositor
+    );
+    event KUMOPaidToFrontEnd(address indexed _frontEnd, uint256 _KUMO);
 
-    event DepositSnapshotUpdated(address indexed _depositor, uint _P, uint _S, uint _G);
-    event FrontEndSnapshotUpdated(address indexed _frontEnd, uint _P, uint _G);
-    event UserDepositChanged(address indexed _depositor, uint _newDeposit);
-    event FrontEndStakeChanged(address indexed _frontEnd, uint _newFrontEndStake, address _depositor);
+    event DepositSnapshotUpdated(address indexed _depositor, uint256 _P, uint256 _S, uint256 _G);
+    event UserDepositChanged(address indexed _depositor, uint256 _newDeposit);
 
-    event ETHGainWithdrawn(address indexed _depositor, uint _ETH, uint _kusdLoss);
-    event KUMOPaidToDepositor(address indexed _depositor, uint _KUMO);
-    event KUMOPaidToFrontEnd(address indexed _frontEnd, uint _KUMO);
-    event EtherSent(address _to, uint _amount);
+    event AssetGainWithdrawn(address indexed _depositor, uint256 _Asset, uint256 _kusdLoss);
+    event SystemSnapshotUpdated(uint256 _P, uint256 _G);
+
+    event KUMOPaidToDepositor(address indexed _depositor, uint256 _KUMO);
+    event AssetSent(address _to, uint256 _amount);
 
     // --- Functions ---
 
@@ -75,13 +84,13 @@ interface IStabilityPool {
      * Callable only by owner, renounces ownership at the end
      */
     function setAddresses(
+        address _assetAddress,
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
-        address _activePoolAddress,
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
-        address _priceFeedAddress,
-        address _communityIssuanceAddress
+        address _communityIssuanceAddress,
+        address _kumoParamsAddress
     ) external;
 
     /*
@@ -96,7 +105,7 @@ interface IStabilityPool {
      * - Sends the tagged front end's accumulated KUMO gains to the tagged front end
      * - Increases deposit and tagged front end's stake, and takes new snapshots for each.
      */
-    function provideToSP(uint _amount, address _frontEndTag) external;
+    function provideToSP(uint256 _amount, address _frontEndTag) external;
 
     /*
      * Initial checks:
@@ -111,7 +120,7 @@ interface IStabilityPool {
      *
      * If _amount > userDeposit, the user withdraws all of their compounded deposit.
      */
-    function withdrawFromSP(uint _amount) external;
+    function withdrawFromSP(uint256 _amount) external;
 
     /*
      * Initial checks:
@@ -126,7 +135,7 @@ interface IStabilityPool {
      * - Leaves their compounded deposit in the Stability Pool
      * - Updates snapshots for deposit and tagged front end stake
      */
-    function withdrawETHGainToTrove(address _upperHint, address _lowerHint) external;
+    function withdrawAssetGainToTrove(address _upperHint, address _lowerHint) external;
 
     /*
      * Initial checks:
@@ -136,7 +145,7 @@ interface IStabilityPool {
      * ---
      * Front end makes a one-time selection of kickback rate upon registering
      */
-    function registerFrontEnd(uint _kickbackRate) external;
+    function registerFrontEnd(uint256 _kickbackRate) external;
 
     /*
      * Initial checks:
@@ -146,23 +155,18 @@ interface IStabilityPool {
      * and transfers the Trove's ETH collateral from ActivePool to StabilityPool.
      * Only called by liquidation functions in the TroveManager.
      */
-    function offset(uint _debt, uint _coll) external;
+    function offset(uint256 _debt, uint256 _coll) external;
 
     /*
      * Returns the total amount of ETH held by the pool, accounted in an internal variable instead of `balance`,
      * to exclude edge cases like ETH received from a self-destruct.
      */
-    function getETH() external view returns (uint);
+    function getAssetBalance() external view returns (uint256);
 
     /*
      * Returns KUSD held in the pool. Changes when users deposit/withdraw, and when Trove debt is offset.
      */
-    function getTotalKUSDDeposits() external view returns (uint);
-
-    /*
-     * Calculates the ETH gain earned by the deposit since its last snapshots were taken.
-     */
-    function getDepositorETHGain(address _depositor) external view returns (uint);
+    function getTotalKUSDDeposits() external view returns (uint256);
 
     /*
      * Calculate the KUMO gain earned by a deposit since its last snapshots were taken.
@@ -170,24 +174,38 @@ interface IStabilityPool {
      * Otherwise, their cut of the deposit's earnings is equal to the kickbackRate, set by the front end through
      * which they made their deposit.
      */
-    function getDepositorKUMOGain(address _depositor) external view returns (uint);
+    function getDepositorKUMOGain(address _depositor) external view returns (uint256);
 
     /*
      * Return the KUMO gain earned by the front end.
      */
-    function getFrontEndKUMOGain(address _frontEnd) external view returns (uint);
+    function getFrontEndKUMOGain(address _frontEnd) external view returns (uint256);
 
     /*
      * Return the user's compounded deposit.
      */
-    function getCompoundedKUSDDeposit(address _depositor) external view returns (uint);
+    function getCompoundedKUSDDeposit(address _depositor) external view returns (uint256);
 
     /*
      * Return the front end's compounded stake.
      *
      * The front end's compounded stake is equal to the sum of its depositors' compounded deposits.
      */
-    function getCompoundedFrontEndStake(address _frontEnd) external view returns (uint);
+    function getCompoundedFrontEndStake(address _frontEnd) external view returns (uint256);
+
+    /*
+     * Calculates the ETH gain earned by the deposit since its last snapshots were taken.
+     */
+    function getDepositorAssetGain(address _depositor) external view returns (uint256);
+
+    /*
+     * Return the front end's compounded stake.
+     *
+     * The front end's compounded stake is equal to the sum of its depositors' compounded deposits.
+     */
+    function getNameBytes() external view returns (bytes32);
+
+    function getAssetType() external view returns (address);
 
     /*
      * Fallback function

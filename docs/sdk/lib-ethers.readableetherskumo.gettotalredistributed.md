@@ -9,13 +9,14 @@ Get the total collateral and debt per stake that has been liquidated through red
 <b>Signature:</b>
 
 ```typescript
-getTotalRedistributed(overrides?: EthersCallOverrides): Promise<Trove>;
+getTotalRedistributed(asset: string, overrides?: EthersCallOverrides): Promise<Trove>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  asset | string |  |
 |  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
 
 <b>Returns:</b>

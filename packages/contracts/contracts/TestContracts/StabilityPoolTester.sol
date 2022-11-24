@@ -8,14 +8,14 @@ contract StabilityPoolTester is StabilityPool {
     using SafeMath for uint256;
     
     function unprotectedPayable() external payable {
-        ETH = ETH.add(msg.value);
+        assetBalance = assetBalance.add(msg.value);
     }
 
     function setCurrentScale(uint128 _currentScale) external {
         currentScale = _currentScale;
     }
 
-    function setTotalDeposits(uint _totalKUSDDeposits) external {
+    function setTotalDeposits(uint256 _totalKUSDDeposits) external {
         totalKUSDDeposits = _totalKUSDDeposits;
     }
 }
