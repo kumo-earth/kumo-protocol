@@ -17,9 +17,9 @@ jobs:
         id: build-flags
         run: |
           if [[ ${{github.event.repository.full_name}} == 'kumodao/kumo-protocol' && ${{github.event_name}} == 'push' && ( "${{github.base_ref}}" == 'main' || "${{github.ref}}" == 'refs/heads/main' ) ]]; then
-            echo "::set-output name=publish::true"
+            echo "{publish}={true}" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=publish::false"
+            echo "{publish}={false}" >> $GITHUB_OUTPUT
           fi
 
   test:
@@ -52,6 +52,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ workflow-setup, test ]
     steps:
+      - uses: actions/checkout@v3
+      
       - uses: actions/setup-node@v3
         env:
           FORCE_COLOR: 0
