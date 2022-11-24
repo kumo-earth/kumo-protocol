@@ -14,6 +14,7 @@ import "./PriceFeedTestnet.sol";
 import "../SortedTroves.sol";
 import "./EchidnaProxy.sol";
 import "../KumoParameters.sol";
+import "../Interfaces/IStabilityPool.sol";
 
 //import "../Dependencies/console.sol";
 
@@ -35,7 +36,7 @@ contract EchidnaTester {
     ActivePool public activePool;
     DefaultPool public defaultPool;
     StabilityPool public stabilityPool;
-    ///  StabilityPoolManager public stabilityPoolManager;
+    StabilityPoolFactory public stabilityPoolFactory;
     GasPool public gasPool;
     CollSurplusPool public collSurplusPool;
     KUSDToken public kusdToken;
@@ -53,11 +54,11 @@ contract EchidnaTester {
         activePool = new ActivePool();
         defaultPool = new DefaultPool();
         stabilityPool = new StabilityPool();
-        // stabilityPoolManager = new stabilityPoolManager();
+        stabilityPoolFactory = new StabilityPoolFactory();
         gasPool = new GasPool();
         kusdToken = new KUSDToken(
             address(troveManager),
-            address(stabilityPool),
+            address(stabilityPoolFactory),
             address(borrowerOperations)
         );
 
@@ -68,7 +69,7 @@ contract EchidnaTester {
 
         troveManager.setAddresses(
             address(borrowerOperations),
-            address(stabilityPool),
+            address(stabilityPoolFactory),
             address(gasPool),
             address(collSurplusPool),
             address(kusdToken),
@@ -80,7 +81,7 @@ contract EchidnaTester {
 
         borrowerOperations.setAddresses(
             address(troveManager),
-            address(stabilityPool),
+            address(stabilityPoolFactory),
             address(gasPool),
             address(collSurplusPool),
             address(sortedTroves),
@@ -92,7 +93,7 @@ contract EchidnaTester {
         activePool.setAddresses(
             address(borrowerOperations),
             address(troveManager),
-            address(stabilityPool),
+            address(stabilityPoolFactory),
             address(defaultPool),
             address(collSurplusPool),
             address(0) // kumoStaking
@@ -121,7 +122,7 @@ contract EchidnaTester {
             echidnaProxies[i] = new EchidnaProxy(
                 troveManager,
                 borrowerOperations,
-                stabilityPool,
+                stabilityPoolFactory,
                 kusdToken
             );
             (bool success, ) = address(echidnaProxies[i]).call{value: INITIAL_BALANCE}("");
@@ -390,16 +391,21 @@ contract EchidnaTester {
 
     function provideToSPExt(
         uint256 _i,
+        address _asset,
         uint256 _amount,
         address _frontEndTag
     ) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
-        echidnaProxies[actor].provideToSPPrx(_amount, _frontEndTag);
+        echidnaProxies[actor].provideToSPPrx(_asset, _amount, _frontEndTag);
     }
 
-    function withdrawFromSPExt(uint256 _i, uint256 _amount) external {
+    function withdrawFromSPExt(
+        uint256 _i,
+        address _asset,
+        uint256 _amount
+    ) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
-        echidnaProxies[actor].withdrawFromSPPrx(_amount);
+        echidnaProxies[actor].withdrawFromSPPrx(_asset, _amount);
     }
 
     // KUSD Token
@@ -551,7 +557,10 @@ contract EchidnaTester {
             return false;
         }
 
-        if (address(stabilityPool).balance != stabilityPool.getAssetBalance()) {
+        if (
+            address(stabilityPool).balance !=
+            stabilityPoolFactory.getStabilityPoolByAsset(_asset).getAssetBalance()
+        ) {
             return false;
         }
 
@@ -594,7 +603,8 @@ contract EchidnaTester {
             return false;
         }
 
-        uint256 stabilityPoolBalance = stabilityPool.getTotalKUSDDeposits();
+        IStabilityPool stabilityPoolCached = stabilityPoolFactory.getStabilityPoolByAsset(_asset);
+        uint256 stabilityPoolBalance = stabilityPoolCached.getTotalKUSDDeposits();
         address currentTrove = sortedTroves.getFirst(_asset);
         uint256 trovesBalance;
         while (currentTrove != address(0)) {

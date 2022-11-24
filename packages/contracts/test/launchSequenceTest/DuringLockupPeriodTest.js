@@ -59,15 +59,11 @@ contract('During the initial lockup period', async accounts => {
 
   let oneYearFromSystemDeployment
   let twoYearsFromSystemDeployment
-  let hardhatTester
-  let erc20 
 
   beforeEach(async () => {
     // Deploy all contracts from the first account
     coreContracts = await deploymentHelper.deployKumoCore()
     KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
-    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-    erc20 = hardhatTester.erc20
 
     kumoStaking = KUMOContracts.kumoStaking
     kumoToken = KUMOContracts.kumoToken

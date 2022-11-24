@@ -19,7 +19,7 @@ const TroveData = testHelpers.TroveData
  * the parameter BETA in the TroveManager, which is still TBD based on economic modelling.
  * 
  */
-contract('TroveManager', async accounts => {
+contract('TroveManager - stakeDecline', async accounts => {
 
   const ZERO_ADDRESS = th.ZERO_ADDRESS
   const [owner, A, B, C, D, E, F] = accounts.slice(0, 7);
@@ -31,14 +31,13 @@ contract('TroveManager', async accounts => {
   let sortedTroves
   let troveManager
   let activePool
-  let stabilityPool
   let collSurplusPool
   let defaultPool
   let borrowerOperations
   let hintHelpers
   let KUMOContracts
-  let hardhatTester
   let erc20Asset1
+  let erc20Asset2
 
   let contracts
 
@@ -57,18 +56,16 @@ contract('TroveManager', async accounts => {
     contracts.troveManager = await TroveManagerTester.new()
     contracts.kusdToken = await KUSDTokenTester.new(
       contracts.troveManager.address,
-      contracts.stabilityPool.address,
+      contracts.stabilityPoolFactory.address,
       contracts.borrowerOperations.address
     )
     KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
-    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
 
     priceFeed = contracts.priceFeedTestnet
     kusdToken = contracts.kusdToken
     sortedTroves = contracts.sortedTroves
     troveManager = contracts.troveManager
     activePool = contracts.activePool
-    stabilityPool = contracts.stabilityPool
     defaultPool = contracts.defaultPool
     collSurplusPool = contracts.collSurplusPool
     borrowerOperations = contracts.borrowerOperations
@@ -78,27 +75,22 @@ contract('TroveManager', async accounts => {
     kumoToken = KUMOContracts.kumoToken
     communityIssuance = KUMOContracts.communityIssuance
     lockupContractFactory = KUMOContracts.lockupContractFactory
-    erc20Asset1 = hardhatTester.erc20
+    erc20Asset1 = await deploymentHelper.deployERC20Asset()
     assetAddress1 = erc20Asset1.address
+    erc20Asset2 = await deploymentHelper.deployERC20Asset()
+    assetAddress2 = erc20Asset2.address
 
-
-    await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
     await deploymentHelper.connectKUMOContracts(KUMOContracts)
+    await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
 
-    // Add asset to the system
+    // Add assets to the system
     await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
+    await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress2)
 
     // Mint token to each acccount
-    let index = 0;
-    for (const acc of accounts) {
-      // await vstaToken.approve(vstaStaking.address, await erc20Asset1.balanceOf(acc), { from: acc })
-      await erc20Asset1.mint(acc, await web3.eth.getBalance(acc))
-      index++;
-
-      if (index >= 20)
-        break;
-    }
+    await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 25)
+    await deploymentHelper.mintMockAssets(erc20Asset2, accounts, 25)
   })
 
   it("A given trove's stake decline is negligible with adjustments and tiny liquidations", async () => {

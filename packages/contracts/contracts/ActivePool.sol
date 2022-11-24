@@ -6,10 +6,10 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeab
 
 import "./Interfaces/IActivePool.sol";
 import "./Interfaces/IDefaultPool.sol";
-// import "./Interfaces/IStabilityPoolManager.sol";
 import "./Interfaces/ICollSurplusPool.sol";
 import "./Interfaces/IDeposit.sol";
 import "./Interfaces/IKUMOStaking.sol";
+import "./Interfaces//IStabilityPoolFactory.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
@@ -32,13 +32,12 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
 
     address public borrowerOperationsAddress;
     address public troveManagerAddress;
-    address public stabilityPoolAddress;
     address public defaultPoolAddress;
     address public kumoStakingAddress;
-    // IDefaultPool public defaultPool;
-    // uint256 internal KUSDDebt;
     address public collSurplusPoolAddress;
-    // IStabilityPoolManager public stabilityPoolManager;
+
+    IStabilityPoolFactory public stabilityPoolFactory;
+
     // --- Events ---
 
     mapping(address => uint256) internal assetsBalance;
@@ -56,14 +55,14 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     function setAddresses(
         address _borrowerOperationsAddress,
         address _troveManagerAddress,
-        address _stabilityPoolAddress,
+        address _stabilityPoolFactoryAddress,
         address _defaultPoolAddress,
         address _collSurplusPoolAddress,
         address _kumoStakingAddress
     ) external onlyOwner {
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
-        checkContract(_stabilityPoolAddress);
+        checkContract(_stabilityPoolFactoryAddress);
         checkContract(_defaultPoolAddress);
         checkContract(_collSurplusPoolAddress);
         checkContract(_kumoStakingAddress);
@@ -72,15 +71,14 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
 
         borrowerOperationsAddress = _borrowerOperationsAddress;
         troveManagerAddress = _troveManagerAddress;
-        // stabilityPoolManager = IStabilityPoolManager(_stabilityManagerAddress);
-        stabilityPoolAddress = _stabilityPoolAddress;
+        stabilityPoolFactory = IStabilityPoolFactory(_stabilityPoolFactoryAddress);
         defaultPoolAddress = _defaultPoolAddress;
         collSurplusPoolAddress = _collSurplusPoolAddress;
         kumoStakingAddress = _kumoStakingAddress;
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
-        emit StabilityPoolAddressChanged(_stabilityPoolAddress);
+        emit StabilityPoolFactoryAddressChanged(_stabilityPoolFactoryAddress);
         emit DefaultPoolAddressChanged(_defaultPoolAddress);
         emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
         emit KumoStakingAddressChanged(_kumoStakingAddress);
@@ -114,7 +112,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         uint256 safetyTransferAmount = SafetyTransfer.decimalsCorrection(_asset, _amount);
         if (safetyTransferAmount == 0) return;
 
-        uint256 totalBalance = assetsBalance[_asset] -= _amount;
+        assetsBalance[_asset] -= _amount;
 
         IERC20Upgradeable(_asset).safeTransfer(_account, safetyTransferAmount);
         if (isERC20DepositContract(_account)) {
@@ -128,9 +126,8 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     function isERC20DepositContract(address _account) private view returns (bool) {
         return (_account == defaultPoolAddress ||
             _account == collSurplusPoolAddress ||
-            _account == stabilityPoolAddress ||
-            _account == kumoStakingAddress);
-        // return (_account == defaultPoolAddress || _account == stabilityPoolAddress);
+            _account == kumoStakingAddress ||
+            stabilityPoolFactory.isRegisteredStabilityPool(_account));
     }
 
     function increaseKUSDDebt(address _asset, uint256 _amount) external override {
@@ -158,7 +155,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         require(
             msg.sender == borrowerOperationsAddress ||
                 msg.sender == troveManagerAddress ||
-                msg.sender == stabilityPoolAddress,
+                stabilityPoolFactory.isRegisteredStabilityPool(msg.sender),
             "ActivePool: Caller is neither BorrowerOperations nor TroveManager nor StabilityPool"
         );
     }

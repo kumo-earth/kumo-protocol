@@ -36,9 +36,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
   let borrowerOperations
   let kumoToken
   let communityIssuanceTester
-  let kumoParams
   let KUMOContracts
-  let hardhatTester
   let erc20Asset1
 
   let communityKUMOSupply
@@ -53,53 +51,38 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
   const getOpenTroveKUSDAmount = async (asset, totalDebt) => th.getOpenTroveKUSDAmount(contracts, totalDebt, asset)
 
   const openTrove = async (params) => th.openTrove(contracts, params)
-  describe("KUMO Rewards - TEST", async () => {
-
+  describe("KUMO Rewards", async () => {
     beforeEach(async () => {
-
-      hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-      erc20Asset1 = hardhatTester.erc20
+      erc20Asset1 = await deploymentHelper.deployERC20Asset()
       assetAddress1 = erc20Asset1.address
 
-
-
-
       // Mint token to each acccount
-      let index = 0;
-      for (const acc of accounts) {
-        await erc20Asset1.mint(acc, await web3.eth.getBalance(acc))
-        index++;
-
-        if (index >= 20)
-          break;
-      }
+      await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 20)
 
       contracts = await deploymentHelper.deployKumoCore()
       contracts.troveManager = await TroveManagerTester.new()
       contracts.kusdToken = await KUSDToken.new(
         contracts.troveManager.address,
-        contracts.stabilityPool.address,
+        contracts.stabilityPoolFactory.address,
         contracts.borrowerOperations.address
       )
       KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
+      
+      await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
       priceFeed = contracts.priceFeedTestnet
       kusdToken = contracts.kusdToken
-      stabilityPool = contracts.stabilityPool
+      stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
       sortedTroves = contracts.sortedTroves
       troveManager = contracts.troveManager
-      stabilityPool = contracts.stabilityPool
       borrowerOperations = contracts.borrowerOperations
-      kumoParams = contracts.kumoParameters
-
       kumoToken = KUMOContracts.kumoToken
       communityIssuanceTester = KUMOContracts.communityIssuance
 
       await deploymentHelper.connectKUMOContracts(KUMOContracts)
       await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
       await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
-      await kumoParams.sanitizeParameters(assetAddress1);
-      await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
+      await contracts.kumoParameters.sanitizeParameters(assetAddress1);
 
       // Check community issuance starts with 32 million KUMO
       communityKUMOSupply = toBN(await kumoToken.balanceOf(communityIssuanceTester.address))

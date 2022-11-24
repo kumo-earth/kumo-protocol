@@ -4,8 +4,10 @@ const DefaultPool = artifacts.require("./DefaultPool.sol")
 const NonPayable = artifacts.require("./NonPayable.sol")
 const CollSurplusPool = artifacts.require("./CollSurplusPool.sol")
 const ERC20Test = artifacts.require("./ERC20Test.sol")
+const StabilityPoolFactory = artifacts.require("./StabilityPoolFactory.sol")
 // const KumoParameters = artifacts.require("./KumoParameters.sol")
 const { ZERO_ADDRESS } = require("@openzeppelin/test-helpers/src/constants")
+const deploymentHelper = require("../utils/deploymentHelpers.js")
 const testHelpers = require("../utils/testHelpers.js")
 
 const th = testHelpers.TestHelper
@@ -25,7 +27,7 @@ contract('StabilityPool', async accounts => {
     stabilityPool = await StabilityPool.new()
     const mockActivePoolAddress = (await NonPayable.new()).address
     const dumbContractAddress = (await NonPayable.new()).address
-    // const kumoParameters = KumoParameters.new()
+    
     await stabilityPool.setAddresses(dumbContractAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress)
   })
 
@@ -50,8 +52,12 @@ contract('ActivePool', async accounts => {
     await erc20Test.mint(owner, await web3.eth.getBalance(owner))
     activePool = await ActivePool.new()
     mockBorrowerOperations = await NonPayable.new()
+    stabilityPoolFactory = await StabilityPoolFactory.new()
     const dumbContractAddress = (await NonPayable.new()).address
-    await activePool.setAddresses(mockBorrowerOperations.address, dumbContractAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress)
+
+    await stabilityPoolFactory.createNewStabilityPool(erc20Test.address, dumbContractAddress)
+    
+    await activePool.setAddresses(mockBorrowerOperations.address, dumbContractAddress, stabilityPoolFactory.address, dumbContractAddress, dumbContractAddress, dumbContractAddress)
   })
 
   it('getAssetBalance(): gets the recorded Asset balance', async () => {

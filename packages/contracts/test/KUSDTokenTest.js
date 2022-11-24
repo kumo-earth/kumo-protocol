@@ -59,9 +59,7 @@ contract('KUSDToken', async accounts => {
   let stabilityPool
   let troveManager
   let borrowerOperations
-  let hardhatTester
-  let erc20
-  let kumoParams
+  let erc20Asset1
 
   let tokenName
   let tokenVersion
@@ -75,12 +73,10 @@ contract('KUSDToken', async accounts => {
       await deploymentHelper.connectKUMOContracts(KUMOContracts)
       await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
 
-      hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-      erc20 = hardhatTester.erc20
-      assetAddress1 = erc20.address
+      erc20Asset1 = await deploymentHelper.deployERC20Asset()
+      assetAddress1 = erc20Asset1.address
 
-      kumoParams = contracts.kumoParameters
-      await kumoParams.sanitizeParameters(assetAddress1);
+      await contracts.kumoParameters.sanitizeParameters(assetAddress1);
       await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
       kusdTokenOriginal = contracts.kusdToken
@@ -94,8 +90,8 @@ contract('KUSDToken', async accounts => {
       //chainId = await web3.eth.getChainId()
       chainId = await kusdTokenOriginal.getChainId()
 
-      stabilityPool = contracts.stabilityPool
-      troveManager = contracts.stabilityPool
+      stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
+      troveManager = contracts.troveManager
       borrowerOperations = contracts.borrowerOperations
 
       tokenVersion = await kusdTokenOriginal.version()
