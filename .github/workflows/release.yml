@@ -9,7 +9,7 @@ on: [ push, pull_request ]
 jobs:
   workflow-setup:
     name: Initialize Workflow
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     outputs: 
       publish: ${{ steps.build-flags.outputs.publish }}
     steps:
@@ -47,6 +47,7 @@ jobs:
   release:
     if: needs.workflow-setup.outputs.publish == 'true'
     runs-on: ubuntu-latest
+    steps:
       - uses: actions/setup-node@v3
         env:
           FORCE_COLOR: 0
