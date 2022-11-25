@@ -135,8 +135,8 @@ contract('BorrowerOperations', async accounts => {
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(10, 18)), extraParams: { from: bob } })
 
       // Price drops
-      await priceFeed.setPrice(dec(100, 18))
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
+      const price = await priceFeed.getPrice(assetAddress1)
 
       assert.isFalse(await troveManager.checkRecoveryMode(assetAddress1, price))
       assert.isTrue((await troveManager.getCurrentICR(assetAddress1, alice, price)).lt(toBN(dec(110, 16))))
@@ -238,7 +238,7 @@ contract('BorrowerOperations', async accounts => {
       // --- TEST ---
 
       // price drops to 1ETH:100KUSD, reducing Carol's ICR below MCR
-      await priceFeed.setPrice('100000000000000000000');
+      await priceFeed.setPrice(assetAddress1, '100000000000000000000');
 
       // Liquidate Carol's Trove,
       await troveManager.liquidate(assetAddress1, carol, { from: owner });
@@ -317,7 +317,7 @@ contract('BorrowerOperations', async accounts => {
     //   // --- TEST ---
 
     //   // price drops to 1ETH:100KUSD, reducing Carol's ICR below MCR
-    //   await priceFeed.setPrice('100000000000000000000');
+    //   await priceFeed.setPrice(assetAddress1, '100000000000000000000');
 
     //   // close Carol's Trove, liquidating her 5 ether and 900KUSD.
     //   await troveManager.liquidate(assetAddress1, assetAddress1, carol, { from: owner });
@@ -360,7 +360,7 @@ contract('BorrowerOperations', async accounts => {
       }
 
       // Price drops
-      await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
       // Bob gets liquidated
       await troveManager.liquidate(assetAddress1, bob)
@@ -382,7 +382,7 @@ contract('BorrowerOperations', async accounts => {
       const aliceCollBefore = await getTroveEntireColl(alice, assetAddress1)
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
-      await priceFeed.setPrice('105000000000000000000')
+      await priceFeed.setPrice(assetAddress1, '105000000000000000000')
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -402,8 +402,8 @@ contract('BorrowerOperations', async accounts => {
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(10, 18)), extraParams: { from: bob } })
 
       // Price drops
-      await priceFeed.setPrice(dec(100, 18))
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
+      const price = await priceFeed.getPrice(assetAddress1)
 
       assert.isFalse(await troveManager.checkRecoveryMode(assetAddress1, price))
       assert.isTrue((await troveManager.getCurrentICR(assetAddress1, alice, price)).lt(toBN(dec(110, 16))))
@@ -442,7 +442,7 @@ contract('BorrowerOperations', async accounts => {
       const txAlice = await borrowerOperations.withdrawColl(assetAddress1, 1000, alice, alice, { from: alice })
       assert.isTrue(txAlice.receipt.status)
 
-      await priceFeed.setPrice('105000000000000000000')
+      await priceFeed.setPrice(assetAddress1, '105000000000000000000')
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -508,7 +508,7 @@ contract('BorrowerOperations', async accounts => {
       // --- TEST ---
 
       // price drops to 1ETH:150KUSD, reducing TCR below 150%
-      await priceFeed.setPrice('150000000000000000000');
+      await priceFeed.setPrice(assetAddress1, '150000000000000000000');
 
       //Alice tries to withdraw collateral during Recovery Mode
       try {
@@ -642,7 +642,7 @@ contract('BorrowerOperations', async accounts => {
       // --- TEST ---
 
       // price drops to 1ETH:100KUSD, reducing Carol's ICR below MCR
-      await priceFeed.setPrice('100000000000000000000');
+      await priceFeed.setPrice(assetAddress1, '100000000000000000000');
 
       // close Carol's Trove, liquidating her 1 ether and 180KUSD.
       await troveManager.liquidate(assetAddress1, carol, { from: owner });
@@ -716,8 +716,8 @@ contract('BorrowerOperations', async accounts => {
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(10, 18)), extraParams: { from: bob } })
 
       // Price drops
-      await priceFeed.setPrice(dec(100, 18))
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
+      const price = await priceFeed.getPrice(assetAddress1)
 
       assert.isFalse(await troveManager.checkRecoveryMode(assetAddress1, price))
       assert.isTrue((await troveManager.getCurrentICR(assetAddress1, alice, price)).lt(toBN(dec(110, 16))))
@@ -1243,7 +1243,7 @@ contract('BorrowerOperations', async accounts => {
       const txAlice = await borrowerOperations.withdrawKUSD(assetAddress1, th._100pct, dec(100, 18), alice, alice, { from: alice })
       assert.isTrue(txAlice.receipt.status)
 
-      await priceFeed.setPrice('50000000000000000000')
+      await priceFeed.setPrice(assetAddress1, '50000000000000000000')
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -1270,8 +1270,8 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("withdrawKUSD(): reverts when a withdrawal would cause the TCR of the system to fall below the CCR", async () => {
-      await priceFeed.setPrice(dec(100, 18))
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
+      const price = await priceFeed.getPrice(assetAddress1)
 
       // Alice and Bob creates troves with 150% ICR.  System TCR = 150%.
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
@@ -1298,7 +1298,7 @@ contract('BorrowerOperations', async accounts => {
       // --- TEST ---
 
       // price drops to 1ETH:150KUSD, reducing TCR below 150%
-      await priceFeed.setPrice('150000000000000000000');
+      await priceFeed.setPrice(assetAddress1, '150000000000000000000');
       assert.isTrue((await th.getTCR(contracts, assetAddress1)).lt(toBN(dec(15, 17))))
 
       try {
@@ -1361,8 +1361,8 @@ contract('BorrowerOperations', async accounts => {
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(10, 18)), extraParams: { from: bob } })
 
       // Price drops
-      await priceFeed.setPrice(dec(100, 18))
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
+      const price = await priceFeed.getPrice(assetAddress1)
 
       assert.isFalse(await troveManager.checkRecoveryMode(assetAddress1, price))
       assert.isTrue((await troveManager.getCurrentICR(assetAddress1, alice, price)).lt(toBN(dec(110, 16))))
@@ -1496,7 +1496,7 @@ contract('BorrowerOperations', async accounts => {
 
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
-      await priceFeed.setPrice('105000000000000000000')
+      await priceFeed.setPrice(assetAddress1, '105000000000000000000')
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -1536,8 +1536,8 @@ contract('BorrowerOperations', async accounts => {
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(10, 18)), extraParams: { from: bob } })
 
       // Price drops
-      await priceFeed.setPrice(dec(100, 18))
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
+      const price = await priceFeed.getPrice(assetAddress1)
 
       assert.isFalse(await troveManager.checkRecoveryMode(assetAddress1, price))
       assert.isTrue((await troveManager.getCurrentICR(assetAddress1, alice, price)).lt(toBN(dec(110, 16))))
@@ -1562,14 +1562,14 @@ contract('BorrowerOperations', async accounts => {
 
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
 
-      await priceFeed.setPrice(dec(120, 18))
+      await priceFeed.setPrice(assetAddress1, dec(120, 18))
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
       await borrowerOperations.adjustTrove(assetAddress1, dec(300, 18), 0, 0, dec(1, 9), true, A, A, { from: A })
-      await priceFeed.setPrice(dec(1, 18))
+      await priceFeed.setPrice(assetAddress1, dec(1, 18))
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
       await borrowerOperations.adjustTrove(assetAddress1, dec(30000, 18), 1, 0, dec(1, 9), true, A, A, { from: A })
-      await priceFeed.setPrice(dec(1, 16))
+      await priceFeed.setPrice(assetAddress1, dec(1, 16))
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
       await borrowerOperations.adjustTrove(assetAddress1, dec(3000000, 18), '4999999999999999', 0, dec(1, 9), true, A, A, { from: A })
     })
@@ -1996,7 +1996,7 @@ contract('BorrowerOperations', async accounts => {
       const txAlice = await borrowerOperations.adjustTrove(assetAddress1, 0, th._100pct, 0, dec(50, 18), true, alice, alice, { from: alice, value: dec(1, 'ether') })
       assert.isTrue(txAlice.receipt.status)
 
-      await priceFeed.setPrice(dec(120, 18)) // trigger drop in ETH price
+      await priceFeed.setPrice(assetAddress1, dec(120, 18)) // trigger drop in ETH price
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -2028,7 +2028,7 @@ contract('BorrowerOperations', async accounts => {
 
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
-      await priceFeed.setPrice(dec(120, 18)) // trigger drop in ETH price
+      await priceFeed.setPrice(assetAddress1, dec(120, 18)) // trigger drop in ETH price
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -2044,8 +2044,8 @@ contract('BorrowerOperations', async accounts => {
 
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
-      await priceFeed.setPrice(dec(120, 18)) // trigger drop in ETH price
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(120, 18)) // trigger drop in ETH price
+      const price = await priceFeed.getPrice(assetAddress1)
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -2072,8 +2072,8 @@ contract('BorrowerOperations', async accounts => {
 
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
-      await priceFeed.setPrice(dec(105, 18)) // trigger drop in ETH price
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(105, 18)) // trigger drop in ETH price
+      const price = await priceFeed.getPrice(assetAddress1)
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -2125,8 +2125,8 @@ contract('BorrowerOperations', async accounts => {
 
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
-      await priceFeed.setPrice(dec(100, 18)) // trigger drop in ETH price
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(100, 18)) // trigger drop in ETH price
+      const price = await priceFeed.getPrice(assetAddress1)
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -2158,8 +2158,8 @@ contract('BorrowerOperations', async accounts => {
 
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
-      await priceFeed.setPrice(dec(105, 18)) // trigger drop in ETH price
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(105, 18)) // trigger drop in ETH price
+      const price = await priceFeed.getPrice(assetAddress1)
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -2190,7 +2190,7 @@ contract('BorrowerOperations', async accounts => {
 
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
-      await priceFeed.setPrice(dec(120, 18)) // trigger drop in ETH price
+      await priceFeed.setPrice(assetAddress1, dec(120, 18)) // trigger drop in ETH price
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -2216,7 +2216,7 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): reverts when change would cause the TCR of the system to fall below the CCR", async () => {
-      await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(15, 17)), extraParams: { from: bob } })
@@ -2276,7 +2276,7 @@ contract('BorrowerOperations', async accounts => {
     it("adjustTrove(): reverts when change would cause the ICR of the trove to fall below the MCR", async () => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(100, 18)), extraParams: { from: whale } })
 
-      await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(11, 17)), extraParams: { from: alice } })
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(11, 17)), extraParams: { from: bob } })
@@ -2640,7 +2640,7 @@ contract('BorrowerOperations', async accounts => {
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(300, 16)), extraParams: { from: alice } })
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(120, 16)), extraKUSDAmount: toBN(dec(300, 18)), extraParams: { from: bob } })
 
-      const price = await priceFeed.getPrice()
+      const price = await priceFeed.getPrice(assetAddress1)
 
       // to compensate borrowing fees
       await kusdToken.transfer(alice, dec(300, 18), { from: bob })
@@ -2683,7 +2683,7 @@ contract('BorrowerOperations', async accounts => {
       const txBob = await borrowerOperations.closeTrove(assetAddress1, { from: bob })
       assert.isTrue(txBob.receipt.status)
 
-      await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -2779,21 +2779,21 @@ contract('BorrowerOperations', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
       // Price drops
-      await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
       // Liquidate Bob
       await troveManager.liquidate(assetAddress1, bob)
       assert.isFalse(await sortedTroves.contains(assetAddress1, bob))
 
       // Price bounces back
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // Alice and Carol open troves
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // Price drops ...again
-      await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
       // Get Alice's pending reward snapshots 
       const L_ETH_A_Snapshot = (await troveManager.rewardSnapshots(alice, assetAddress1))[0]
@@ -2815,7 +2815,7 @@ contract('BorrowerOperations', async accounts => {
       // to compensate borrowing fees
       await kusdToken.transfer(alice, await kusdToken.balanceOf(dennis), { from: dennis })
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // Alice closes trove
       await borrowerOperations.closeTrove(assetAddress1, { from: alice })
@@ -3001,8 +3001,8 @@ contract('BorrowerOperations', async accounts => {
       // --- TEST ---
 
       // price drops to 1ETH:100KUSD, reducing Carol's ICR below MCR
-      await priceFeed.setPrice(dec(100, 18));
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(100, 18));
+      const price = await priceFeed.getPrice(assetAddress1)
 
       // liquidate Carol's Trove, Alice and Bob earn rewards.
       const liquidationTx = await troveManager.liquidate(assetAddress1, carol, { from: owner });
@@ -3282,14 +3282,14 @@ contract('BorrowerOperations', async accounts => {
     it("openTrove(): allows max fee < 0.5% in Recovery Mode", async () => {
       await borrowerOperations.openTrove(assetAddress1, dec(2000, 'ether'), th._100pct, dec(195000, 18), A, A, { from: A })
 
-      await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
       await borrowerOperations.openTrove(assetAddress1, dec(3100, 'ether'), 0, dec(19500, 18), B, B, { from: B })
-      await priceFeed.setPrice(dec(50, 18))
+      await priceFeed.setPrice(assetAddress1, dec(50, 18))
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
       await borrowerOperations.openTrove(assetAddress1, dec(3100, 'ether'), 1, dec(19500, 18), C, C, { from: C })
-      await priceFeed.setPrice(dec(25, 18))
+      await priceFeed.setPrice(assetAddress1, dec(25, 18))
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
       await borrowerOperations.openTrove(assetAddress1, dec(3100, 'ether'), '4999999999999999', dec(19500, 18), D, D, { from: D })
     })
@@ -3595,7 +3595,7 @@ contract('BorrowerOperations', async accounts => {
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
       // price drops, and Recovery Mode kicks in
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -3623,7 +3623,7 @@ contract('BorrowerOperations', async accounts => {
       }
 
       // price drops, and Recovery Mode kicks in
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -3637,7 +3637,7 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("openTrove(): reverts when opening the trove would cause the TCR of the system to fall below the CCR", async () => {
-      await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
       // Alice creates trove with 150% ICR.  System TCR = 150%.
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
@@ -3688,8 +3688,8 @@ contract('BorrowerOperations', async accounts => {
       assert.equal(TCR, '1500000000000000000')
 
       // price drops to 1ETH:100KUSD, reducing TCR below 150%
-      await priceFeed.setPrice('100000000000000000000');
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, '100000000000000000000');
+      const price = await priceFeed.getPrice(assetAddress1)
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -3715,7 +3715,7 @@ contract('BorrowerOperations', async accounts => {
       assert.equal(TCR, '1500000000000000000')
 
       // price drops to 1ETH:100KUSD, reducing TCR below 150%
-      await priceFeed.setPrice('100000000000000000000');
+      await priceFeed.setPrice(assetAddress1, '100000000000000000000');
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -3825,7 +3825,7 @@ contract('BorrowerOperations', async accounts => {
       // --- TEST ---
 
       // price drops to 1ETH:100KUSD, reducing Carol's ICR below MCR
-      await priceFeed.setPrice(dec(100, 18));
+      await priceFeed.setPrice(assetAddress1, dec(100, 18));
 
       // close Carol's Trove, liquidating her 1 ether and 180KUSD.
       const liquidationTx = await troveManager.liquidate(assetAddress1, carol, { from: owner });
@@ -3931,7 +3931,7 @@ contract('BorrowerOperations', async accounts => {
 
       // 0, 0
       it("collChange = 0, debtChange = 0", async () => {
-        price = await priceFeed.getPrice()
+        price = await priceFeed.getPrice(assetAddress1)
         const initialColl = dec(1, 'ether')
         const initialDebt = dec(100, 18)
         const collChange = 0
@@ -3943,7 +3943,7 @@ contract('BorrowerOperations', async accounts => {
 
       // 0, +ve
       it("collChange = 0, debtChange is positive", async () => {
-        price = await priceFeed.getPrice()
+        price = await priceFeed.getPrice(assetAddress1)
         const initialColl = dec(1, 'ether')
         const initialDebt = dec(100, 18)
         const collChange = 0
@@ -3955,7 +3955,7 @@ contract('BorrowerOperations', async accounts => {
 
       // 0, -ve
       it("collChange = 0, debtChange is negative", async () => {
-        price = await priceFeed.getPrice()
+        price = await priceFeed.getPrice(assetAddress1)
         const initialColl = dec(1, 'ether')
         const initialDebt = dec(100, 18)
         const collChange = 0
@@ -3967,7 +3967,7 @@ contract('BorrowerOperations', async accounts => {
 
       // +ve, 0
       it("collChange is positive, debtChange is 0", async () => {
-        price = await priceFeed.getPrice()
+        price = await priceFeed.getPrice(assetAddress1)
         const initialColl = dec(1, 'ether')
         const initialDebt = dec(100, 18)
         const collChange = dec(1, 'ether')
@@ -3979,7 +3979,7 @@ contract('BorrowerOperations', async accounts => {
 
       // -ve, 0
       it("collChange is negative, debtChange is 0", async () => {
-        price = await priceFeed.getPrice()
+        price = await priceFeed.getPrice(assetAddress1)
         const initialColl = dec(1, 'ether')
         const initialDebt = dec(100, 18)
         const collChange = dec(5, 17)
@@ -3991,7 +3991,7 @@ contract('BorrowerOperations', async accounts => {
 
       // -ve, -ve
       it("collChange is negative, debtChange is negative", async () => {
-        price = await priceFeed.getPrice()
+        price = await priceFeed.getPrice(assetAddress1)
         const initialColl = dec(1, 'ether')
         const initialDebt = dec(100, 18)
         const collChange = dec(5, 17)
@@ -4003,7 +4003,7 @@ contract('BorrowerOperations', async accounts => {
 
       // +ve, +ve 
       it("collChange is positive, debtChange is positive", async () => {
-        price = await priceFeed.getPrice()
+        price = await priceFeed.getPrice(assetAddress1)
         const initialColl = dec(1, 'ether')
         const initialDebt = dec(100, 18)
         const collChange = dec(1, 'ether')
@@ -4015,7 +4015,7 @@ contract('BorrowerOperations', async accounts => {
 
       // +ve, -ve
       it("collChange is positive, debtChange is negative", async () => {
-        price = await priceFeed.getPrice()
+        price = await priceFeed.getPrice(assetAddress1)
         const initialColl = dec(1, 'ether')
         const initialDebt = dec(100, 18)
         const collChange = dec(1, 'ether')
@@ -4027,7 +4027,7 @@ contract('BorrowerOperations', async accounts => {
 
       // -ve, +ve
       it("collChange is negative, debtChange is positive", async () => {
-        price = await priceFeed.getPrice()
+        price = await priceFeed.getPrice(assetAddress1)
         const initialColl = dec(1, 'ether')
         const initialDebt = dec(100, 18)
         const collChange = dec(5, 17)
@@ -4064,15 +4064,15 @@ contract('BorrowerOperations', async accounts => {
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, alice, alice, { from: alice, value: troveColl })
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, bob, bob, { from: bob, value: troveColl })
 
-        await priceFeed.setPrice(dec(100, 18))
+        await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
         const liquidationTx = await troveManager.liquidate(assetAddress1, bob)
         assert.isFalse(await sortedTroves.contains(assetAddress1, bob))
 
         const [liquidatedDebt, liquidatedColl, gasComp] = th.getEmittedLiquidationValues(liquidationTx)
 
-        await priceFeed.setPrice(dec(200, 18))
-        const price = await priceFeed.getPrice()
+        await priceFeed.setPrice(assetAddress1, dec(200, 18))
+        const price = await priceFeed.getPrice(assetAddress1)
 
         // --- TEST ---
         const collChange = 0
@@ -4094,15 +4094,15 @@ contract('BorrowerOperations', async accounts => {
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, alice, alice, { from: alice })
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, bob, bob, { from: bob })
 
-        await priceFeed.setPrice(dec(100, 18))
+        await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
         const liquidationTx = await troveManager.liquidate(assetAddress1, bob)
         assert.isFalse(await sortedTroves.contains(assetAddress1, bob))
 
         const [liquidatedDebt, liquidatedColl, gasComp] = th.getEmittedLiquidationValues(liquidationTx)
 
-        await priceFeed.setPrice(dec(200, 18))
-        const price = await priceFeed.getPrice()
+        await priceFeed.setPrice(assetAddress1, dec(200, 18))
+        const price = await priceFeed.getPrice(assetAddress1)
 
         // --- TEST ---
         const collChange = 0
@@ -4124,15 +4124,15 @@ contract('BorrowerOperations', async accounts => {
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, alice, alice, { from: alice })
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, bob, bob, { from: bob })
 
-        await priceFeed.setPrice(dec(100, 18))
+        await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
         const liquidationTx = await troveManager.liquidate(assetAddress1, bob)
         assert.isFalse(await sortedTroves.contains(assetAddress1, bob))
 
         const [liquidatedDebt, liquidatedColl, gasComp] = th.getEmittedLiquidationValues(liquidationTx)
 
-        await priceFeed.setPrice(dec(200, 18))
-        const price = await priceFeed.getPrice()
+        await priceFeed.setPrice(assetAddress1, dec(200, 18))
+        const price = await priceFeed.getPrice(assetAddress1)
         // --- TEST ---
         const collChange = 0
         const debtChange = dec(100, 18)
@@ -4153,15 +4153,15 @@ contract('BorrowerOperations', async accounts => {
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, alice, alice, { from: alice })
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, bob, bob, { from: bob })
 
-        await priceFeed.setPrice(dec(100, 18))
+        await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
         const liquidationTx = await troveManager.liquidate(assetAddress1, bob)
         assert.isFalse(await sortedTroves.contains(assetAddress1, bob))
 
         const [liquidatedDebt, liquidatedColl, gasComp] = th.getEmittedLiquidationValues(liquidationTx)
 
-        await priceFeed.setPrice(dec(200, 18))
-        const price = await priceFeed.getPrice()
+        await priceFeed.setPrice(assetAddress1, dec(200, 18))
+        const price = await priceFeed.getPrice(assetAddress1)
         // --- TEST ---
         const collChange = dec(2, 'ether')
         const debtChange = 0
@@ -4182,15 +4182,15 @@ contract('BorrowerOperations', async accounts => {
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, alice, alice, { from: alice })
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, bob, bob, { from: bob })
 
-        await priceFeed.setPrice(dec(100, 18))
+        await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
         const liquidationTx = await troveManager.liquidate(assetAddress1, bob)
         assert.isFalse(await sortedTroves.contains(assetAddress1, bob))
 
         const [liquidatedDebt, liquidatedColl, gasComp] = th.getEmittedLiquidationValues(liquidationTx)
 
-        await priceFeed.setPrice(dec(200, 18))
-        const price = await priceFeed.getPrice()
+        await priceFeed.setPrice(assetAddress1, dec(200, 18))
+        const price = await priceFeed.getPrice(assetAddress1)
 
         // --- TEST ---
         const collChange = dec(1, 18)
@@ -4212,15 +4212,15 @@ contract('BorrowerOperations', async accounts => {
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, alice, alice, { from: alice })
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, bob, bob, { from: bob })
 
-        await priceFeed.setPrice(dec(100, 18))
+        await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
         const liquidationTx = await troveManager.liquidate(assetAddress1, bob)
         assert.isFalse(await sortedTroves.contains(assetAddress1, bob))
 
         const [liquidatedDebt, liquidatedColl, gasComp] = th.getEmittedLiquidationValues(liquidationTx)
 
-        await priceFeed.setPrice(dec(200, 18))
-        const price = await priceFeed.getPrice()
+        await priceFeed.setPrice(assetAddress1, dec(200, 18))
+        const price = await priceFeed.getPrice(assetAddress1)
 
         // --- TEST ---
         const collChange = dec(1, 18)
@@ -4242,15 +4242,15 @@ contract('BorrowerOperations', async accounts => {
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, alice, alice, { from: alice })
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, bob, bob, { from: bob })
 
-        await priceFeed.setPrice(dec(100, 18))
+        await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
         const liquidationTx = await troveManager.liquidate(assetAddress1, bob)
         assert.isFalse(await sortedTroves.contains(assetAddress1, bob))
 
         const [liquidatedDebt, liquidatedColl, gasComp] = th.getEmittedLiquidationValues(liquidationTx)
 
-        await priceFeed.setPrice(dec(200, 18))
-        const price = await priceFeed.getPrice()
+        await priceFeed.setPrice(assetAddress1, dec(200, 18))
+        const price = await priceFeed.getPrice(assetAddress1)
 
         // --- TEST ---
         const collChange = dec(1, 'ether')
@@ -4272,15 +4272,15 @@ contract('BorrowerOperations', async accounts => {
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, alice, alice, { from: alice })
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, bob, bob, { from: bob })
 
-        await priceFeed.setPrice(dec(100, 18))
+        await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
         const liquidationTx = await troveManager.liquidate(assetAddress1, bob)
         assert.isFalse(await sortedTroves.contains(assetAddress1, bob))
 
         const [liquidatedDebt, liquidatedColl, gasComp] = th.getEmittedLiquidationValues(liquidationTx)
 
-        await priceFeed.setPrice(dec(200, 18))
-        const price = await priceFeed.getPrice()
+        await priceFeed.setPrice(assetAddress1, dec(200, 18))
+        const price = await priceFeed.getPrice(assetAddress1)
 
         // --- TEST ---
         const collChange = dec(1, 'ether')
@@ -4302,15 +4302,15 @@ contract('BorrowerOperations', async accounts => {
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, alice, alice, { from: alice })
         await borrowerOperations.openTrove(assetAddress1, troveColl, th._100pct, troveKUSDAmount, bob, bob, { from: bob })
 
-        await priceFeed.setPrice(dec(100, 18))
+        await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
         const liquidationTx = await troveManager.liquidate(assetAddress1, bob)
         assert.isFalse(await sortedTroves.contains(assetAddress1, bob))
 
         const [liquidatedDebt, liquidatedColl, gasComp] = th.getEmittedLiquidationValues(liquidationTx)
 
-        await priceFeed.setPrice(dec(200, 18))
-        const price = await priceFeed.getPrice()
+        await priceFeed.setPrice(assetAddress1, dec(200, 18))
+        const price = await priceFeed.getPrice(assetAddress1)
 
         // --- TEST ---
         const collChange = dec(1, 18)

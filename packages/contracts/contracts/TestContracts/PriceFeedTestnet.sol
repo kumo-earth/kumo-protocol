@@ -17,14 +17,22 @@ contract PriceFeedTestnet is IPriceFeed {
 
     // View price getter for simplicity in tests
     function getPrice(address _asset) external view returns (uint256) {
-        return assetPrices[_asset];
+        if (assetPrices[_asset] == 0) {
+            return 200 * 1e18;
+        } else {
+            return assetPrices[_asset];
+        }
     }
 
     function fetchPrice(address _asset) external override returns (uint256) {
         // Fire an event just like the mainnet version would.
         // This lets the subgraph rely on events to get the latest price even when developing locally.
         emit LastGoodPriceUpdated(_asset, assetPrices[_asset]);
-        return assetPrices[_asset];
+        if (assetPrices[_asset] == 0) {
+            return 200 * 1e18;
+        } else {
+            return assetPrices[_asset];
+        }
     }
 
     // Manual external price setter.
