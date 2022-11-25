@@ -184,7 +184,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         LocalVariables_openTrove memory vars;
         vars.asset = _asset;
 
-        vars.price = kumoParams.priceFeed().fetchPrice();
+        vars.price = kumoParams.priceFeed().fetchPrice(_asset);
         bool isRecoveryMode = _checkRecoveryMode(vars.asset, vars.price);
 
         _requireValidMaxFeePercentage(vars.asset, _maxFeePercentage, isRecoveryMode);
@@ -382,7 +382,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         LocalVariables_adjustTrove memory vars;
         vars.asset = _asset;
 
-        vars.price = kumoParams.priceFeed().fetchPrice();
+        vars.price = kumoParams.priceFeed().fetchPrice(_asset);
         bool isRecoveryMode = _checkRecoveryMode(vars.asset, vars.price);
 
         if (_isDebtIncrease) {
@@ -506,7 +506,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         IKUSDToken kusdTokenCached = kusdToken;
 
         _requireTroveisActive(_asset, troveManagerCached, msg.sender);
-        uint256 price = kumoParams.priceFeed().fetchPrice();
+        uint256 price = kumoParams.priceFeed().fetchPrice(_asset);
         _requireNotInRecoveryMode(_asset, price);
 
         troveManagerCached.applyPendingRewards(_asset, msg.sender);

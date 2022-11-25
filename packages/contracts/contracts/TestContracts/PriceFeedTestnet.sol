@@ -10,25 +10,26 @@ import "../Interfaces/IPriceFeed.sol";
 */
 contract PriceFeedTestnet is IPriceFeed {
     
-    uint256 private _price = 200 * 1e18;
+    // uint256 private _price = 200 * 1e18;
+    mapping(address => uint256) private assetPrices;
 
     // --- Functions ---
 
     // View price getter for simplicity in tests
-    function getPrice() external view returns (uint256) {
-        return _price;
+    function getPrice(address _asset) external view returns (uint256) {
+        return assetPrices[_asset];
     }
 
-    function fetchPrice() external override returns (uint256) {
+    function fetchPrice(address _asset) external override returns (uint256) {
         // Fire an event just like the mainnet version would.
         // This lets the subgraph rely on events to get the latest price even when developing locally.
-        emit LastGoodPriceUpdated(_price);
-        return _price;
+        emit LastGoodPriceUpdated(_asset, assetPrices[_asset]);
+        return assetPrices[_asset];
     }
 
     // Manual external price setter.
-    function setPrice(uint256 price) external returns (bool) {
-        _price = price;
+    function setPrice(address _asset, uint256 _price) external returns (bool) {
+        assetPrices[_asset] = _price;
         return true;
     }
 }

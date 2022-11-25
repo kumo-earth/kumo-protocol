@@ -133,7 +133,9 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     * it uses the last good price seen by Kumo.
     *
     */
-    function fetchPrice() external override returns (uint256 latestprice_) {
+    function fetchPrice(address _asset) external override returns (uint256 latestprice_) {
+        _asset; // Compilator won't bother me now because of unused variable
+
         // Get current and previous price data from Chainlink, and current price data from Tellor
         ChainlinkResponse memory chainlinkResponse = _getCurrentChainlinkResponse();
         ChainlinkResponse memory prevChainlinkResponse = _getPrevChainlinkResponse(chainlinkResponse.roundId, chainlinkResponse.decimals);
@@ -476,7 +478,7 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
 
     function _storePrice(uint256 _currentPrice) internal {
         lastGoodPrice = _currentPrice;
-        emit LastGoodPriceUpdated(_currentPrice);
+        emit LastGoodPriceUpdated(address(0), _currentPrice);
     }
 
      function _storeTellorPrice(TellorResponse memory _tellorResponse) internal returns (uint256) {
