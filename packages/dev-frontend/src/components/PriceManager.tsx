@@ -9,7 +9,7 @@ import { useKumo } from "../hooks/KumoContext";
 import { Icon } from "./Icon";
 import { Transaction } from "./Transaction";
 
-const selectPrice = ({ price }: KumoStoreState) => price;
+// const selectPrice = ({ price }: KumoStoreState) => price;
 
 export const PriceManager: React.FC = () => {
   const {
@@ -19,7 +19,8 @@ export const PriceManager: React.FC = () => {
     }
   } = useKumo();
 
-  const price = useKumoSelector(selectPrice);
+  // const price = useKumoSelector(selectPrice);
+  const price = Decimal.from(0);
   const [editedPrice, setEditedPrice] = useState(price.toString(2));
 
   useEffect(() => {

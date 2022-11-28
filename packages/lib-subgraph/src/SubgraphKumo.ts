@@ -1,6 +1,7 @@
 import fetch from "cross-fetch";
 import { ApolloClient, gql, HttpLink, InMemoryCache, NormalizedCacheObject } from "@apollo/client";
 import { getAddress } from "@ethersproject/address";
+import { Provider } from "@ethersproject/abstract-provider";
 
 import {
   Decimal,
@@ -197,6 +198,9 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
     });
   }
 
+  getAssetBalance(address: string, assetType: string, provider: Provider): any {
+    throw new Error("Method not implemented.");
+  }
   getTotalRedistributed() {
     return totalRedistributed.get(this.client, undefined);
   }
@@ -267,7 +271,7 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
     return tokensInStabilityPool.get(this.client, undefined);
   }
 
-  watchKUSDInStabilityPool(onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void) {
+  watchKUSDInStabilityPool(asset:string, onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void) {
     return tokensInStabilityPool.watch(this.client, onKUSDInStabilityPoolChanged, undefined);
   }
 
@@ -288,7 +292,8 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
   }
 
   getTroves(
-    asset: string, params: TroveListingParams & { beforeRedistribution: true }
+    asset: string,
+    params: TroveListingParams & { beforeRedistribution: true }
   ): Promise<TroveWithPendingRedistribution[]>;
 
   getTroves(asset: string, params: TroveListingParams): Promise<UserTrove[]>;

@@ -28,21 +28,22 @@ import { LoadingOverlay } from "../LoadingOverlay";
 import { CollateralRatio } from "./CollateralRatio";
 import { EditableRow, StaticRow } from "./Editor";
 import { ExpensiveTroveChangeWarning, GasEstimationState } from "./ExpensiveTroveChangeWarning";
-import {
-  selectForTroveChangeValidation,
-  validateTroveChange
-} from "./validation/validateTroveChange";
+// import {
+//   selectForTroveChangeValidation,
+//   validateTroveChange
+// } from "./validation/validateTroveChange";
+import { validateTroveChange } from "./validation/validateTroveChange";
 import { useDashboard } from "../../hooks/DashboardContext";
 
-const selector = (state: KumoStoreState) => {
-  const { vaults, fees, price } = state;
-  return {
-    vaults,
-    fees,
-    price,
-    validationContext: selectForTroveChangeValidation(state)
-  };
-};
+// const selector = (state: KumoStoreState) => {
+//   const { vaults, fees, price } = state;
+//   return {
+//     vaults,
+//     fees,
+//     price,
+//     validationContext: selectForTroveChangeValidation(state)
+//   };
+// };
 
 const TRANSACTION_ID = "trove-adjustment";
 const GAS_ROOM_ETH = Decimal.from(0.1);
@@ -90,14 +91,33 @@ const applyUnsavedNetDebtChanges = (unsavedChanges: Difference, trove: Trove) =>
 export const Adjusting: React.FC = () => {
   const { dispatchEvent } = useTroveView();
   const { account } = useWeb3React<Web3Provider>();
-  const { vaults, validationContext } = useKumoSelector(selector);
   const { collateralType } = useParams<{ collateralType: string }>();
   const { ctx, cty } = useDashboard();
+  const { vault, accountBalance, fees, validationContext } = useKumoSelector(
+    (state: KumoStoreState) => {
+      const { vaults, kusdBalance } = state;
+      const vault = vaults.find(vault => vault.asset === collateralType);
+      const accountBalance = vault?.accountBalance as Decimal;
+      const fees = vault?.fees as Fees;
+      const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
+      const total = vault?.total && vault.total;
+      const numberOfTroves = vault?.numberOfTroves && vault.numberOfTroves;
+      const validationContext = {
+        // ...selectForTroveChangeValidation({ price, accountBalance,  }),
+        price,
+        total,
+        accountBalance,
+        kusdBalance,
+        numberOfTroves
+      };
+      return { vault, accountBalance, fees, validationContext };
+    }
+  );
 
-  const vault = vaults.find(vault => vault.asset === collateralType);
+  // const vault = vaults.find(vault => vault.asset === collateralType);
   const trove: UserTrove = vault?.trove?.ownerAddress === account && vault?.trove;
   const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
-  const fees = vault?.fees as Fees
+  // const fees = vault?.fees as Fees
 
   const editingState = useState<string>();
   const previousTrove = useRef<Trove>(trove);
@@ -148,8 +168,8 @@ export const Adjusting: React.FC = () => {
   const maxBorrowingRate = borrowingRate.add(0.005);
   const updatedTrove = isDirty ? new Trove(collateral, totalDebt) : trove;
   const feePct = new Percent(borrowingRate);
-  const availableTokens = vault?.accountBalance?.gt(GAS_ROOM_ETH)
-    ? vault?.accountBalance.sub(GAS_ROOM_ETH)
+  const availableTokens = accountBalance?.gt(GAS_ROOM_ETH)
+    ? accountBalance.sub(GAS_ROOM_ETH)
     : Decimal.ZERO;
   const maxCollateral = trove.collateral.add(availableTokens);
   const collateralMaxedOut = collateral.eq(maxCollateral);
@@ -164,7 +184,6 @@ export const Adjusting: React.FC = () => {
     borrowingRate,
     validationContext
   );
-
   const stableTroveChange = useStableTroveChange(troveChange);
   const [gasEstimationState, setGasEstimationState] = useState<GasEstimationState>({ type: "idle" });
 

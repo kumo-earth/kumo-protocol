@@ -1,13 +1,15 @@
 import { Divider, Flex, Heading, Text } from "theme-ui";
 import { DashboadHeaderItem } from "../components/DashboardHeaderItem";
+import { useDashboard } from "../hooks/DashboardContext";
 
 export const Portfolio: React.FC = () => {
+  const { totalTroveCollDebt } = useDashboard();
 
   return (
     <Flex sx={{ flexDirection: "column" }}>
       <Flex sx={{ height: "max-content", px: 5, pb: 4 }}>
-        <DashboadHeaderItem title={"MY TOTAL COLLATERAL"} value={`${0.0}`} />
-        <DashboadHeaderItem title={"MY TOTAL KUSD MINTED"} value={`${0} KUSD`} fontSize={6} />
+        <DashboadHeaderItem title={"MY TOTAL COLLATERAL"} value={`$ ${totalTroveCollDebt.totalTroveColl}`} />
+        <DashboadHeaderItem title={"MY TOTAL DEPT"} value={`${totalTroveCollDebt.totalTroveDebt} KUSD`} />
       </Flex>
       <Divider sx={{ color: "muted" }} />
       <Flex sx={{ height: "max-content", px: 5, pb: 4, flexDirection: "column" }}>

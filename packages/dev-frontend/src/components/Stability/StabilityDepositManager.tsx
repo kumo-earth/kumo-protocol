@@ -2,7 +2,14 @@ import React, { useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Button, Flex } from "theme-ui";
 
-import { ASSET_TOKENS, Decimal, Decimalish, KumoStoreState, StabilityDeposit } from "@kumodao/lib-base";
+import {
+  ASSET_TOKENS,
+  Decimal,
+  Decimalish,
+  KumoStoreState,
+  StabilityDeposit,
+  UserTrove
+} from "@kumodao/lib-base";
 import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@kumodao/lib-react";
 
 import { COIN } from "../../strings";
@@ -13,20 +20,29 @@ import { useMyTransactionState } from "../Transaction";
 import { StabilityDepositEditor } from "./StabilityDepositEditor";
 import { StabilityDepositAction } from "./StabilityDepositAction";
 import { useStabilityView } from "./context/StabilityViewContext";
+// import {
+//   selectForStabilityDepositChangeValidation,
+//   validateStabilityDepositChange
+// } from "./validation/validateStabilityDepositChange";
 import {
-  selectForStabilityDepositChangeValidation,
   validateStabilityDepositChange
 } from "./validation/validateStabilityDepositChange";
 
-const init = ({ stabilityDeposit }: KumoStoreState) => {
-  return {
-    originalDeposit: stabilityDeposit,
-    editedKUSD: stabilityDeposit.currentKUSD,
-    changePending: false
-  };
-};
+// const init = ({ stabilityDeposit, vaults }: KumoStoreState) => {
+//   return {
+//     originalDeposit: stabilityDeposit,
+//     editedKUSD: stabilityDeposit.currentKUSD,
+//     changePending: false
+//   };
+// };
 
-type StabilityDepositManagerState = ReturnType<typeof init>;
+// type StabilityDepositManagerState = ReturnType<typeof init>;
+type StabilityDepositManagerState = {
+  collateralType: string,
+  originalDeposit: StabilityDeposit;
+  editedKUSD: Decimal;
+  changePending: boolean;
+};
 type StabilityDepositManagerAction =
   | KumoStoreUpdate
   | { type: "startChange" | "finishChange" | "revert" }
@@ -65,21 +81,44 @@ const reduce = (
       return { ...state, editedKUSD: originalDeposit.currentKUSD };
 
     case "updateStore": {
-      const {
-        stateChange: { stabilityDeposit: updatedDeposit }
-      } = action;
 
-      if (!updatedDeposit) {
+      const vault = action.stateChange.vaults?.find(vault => vault.asset === state.collateralType)
+      const updatedStabilityDeposit = vault?.stabilityDeposit
+      // const {
+      //   stateChange: { stabilityDeposit: updatedDeposit }
+      // } = action;
+
+      // if (!updatedVualts) {
+      //   return state;
+      // }
+      // const newState = { ...state, originalDeposit: updatedDeposit };
+
+      // const changeCommitted =
+      //   !updatedDeposit.initialKUSD.eq(originalDeposit.initialKUSD) ||
+      //   updatedDeposit.currentKUSD.gt(originalDeposit.currentKUSD) ||
+      //   updatedDeposit.collateralGain.lt(originalDeposit.collateralGain) ||
+      //   updatedDeposit.kumoReward.lt(originalDeposit.kumoReward);
+
+      // if (changePending && changeCommitted) {
+      //   return finishChange(revert(newState));
+      // }
+
+      // console.log("newState", newState, updatedDeposit);
+
+      // return {
+      //   ...newState,
+      //   editedKUSD: updatedDeposit.apply(originalDeposit.whatChanged(editedKUSD))
+      // };
+      if (!updatedStabilityDeposit) {
         return state;
       }
-
-      const newState = { ...state, originalDeposit: updatedDeposit };
+      const newState = { ...state, originalDeposit: updatedStabilityDeposit };
 
       const changeCommitted =
-        !updatedDeposit.initialKUSD.eq(originalDeposit.initialKUSD) ||
-        updatedDeposit.currentKUSD.gt(originalDeposit.currentKUSD) ||
-        updatedDeposit.collateralGain.lt(originalDeposit.collateralGain) ||
-        updatedDeposit.kumoReward.lt(originalDeposit.kumoReward);
+        !updatedStabilityDeposit.initialKUSD.eq(originalDeposit.initialKUSD) ||
+        updatedStabilityDeposit.currentKUSD.gt(originalDeposit.currentKUSD) ||
+        updatedStabilityDeposit.collateralGain.lt(originalDeposit.collateralGain) ||
+        updatedStabilityDeposit.kumoReward.lt(originalDeposit.kumoReward);
 
       if (changePending && changeCommitted) {
         return finishChange(revert(newState));
@@ -87,7 +126,7 @@ const reduce = (
 
       return {
         ...newState,
-        editedKUSD: updatedDeposit.apply(originalDeposit.whatChanged(editedKUSD))
+        editedKUSD: updatedStabilityDeposit.apply(originalDeposit.whatChanged(editedKUSD))
       };
     }
   }
@@ -95,25 +134,41 @@ const reduce = (
 
 const transactionId = "stability-deposit";
 
-const select = ({ vaults }: KumoStoreState) => ({
-  vaults
+const select = ({ vaults, kusdBalance, ownFrontend  }: KumoStoreState) => ({
+  vaults,
+  kusdBalance, 
+  ownFrontend 
 });
 
 export const StabilityDepositManager: React.FC = () => {
   const { collateralType } = useParams<{ collateralType: string }>();
-  const { vaults } = useKumoSelector(select);
+  const { vaults, kusdBalance, ownFrontend } = useKumoSelector(select);
   const vault = vaults.find(vault => vault.asset === collateralType);
   const stabilityDeposit: StabilityDeposit = vault?.stabilityDeposit && vault.stabilityDeposit;
+  const trove : UserTrove = vault.trove && vault?.trove
+  const haveUndercollateralizedTroves : boolean = vault?.haveUndercollateralizedTroves &&  vault?.haveUndercollateralizedTroves
+
+  const validationContext = {
+    trove,
+    kusdBalance,
+    haveOwnFrontend: ownFrontend.status === "registered",
+    haveUndercollateralizedTroves
+  }
+  
   const [{ originalDeposit, editedKUSD, changePending }, dispatch] = useKumoReducer(reduce, () => {
     return {
+      collateralType,
       originalDeposit: stabilityDeposit,
       editedKUSD: stabilityDeposit?.currentKUSD,
       changePending: false
     };
   });
 
-
-  const validationContext = useKumoSelector(selectForStabilityDepositChangeValidation);
+  // const validationContext = useKumoSelector(selectForStabilityDepositChangeValidation);
+  // const validationContext = useKumoSelector((state: KumoStoreState) => {
+    
+    
+  // });
   const { dispatchEvent } = useStabilityView();
 
   const handleCancel = useCallback(() => {
@@ -163,7 +218,11 @@ export const StabilityDepositManager: React.FC = () => {
         </Button>
 
         {validChange ? (
-          <StabilityDepositAction transactionId={transactionId} change={validChange} asset={collateralType}>
+          <StabilityDepositAction
+            transactionId={transactionId}
+            change={validChange}
+            asset={collateralType}
+          >
             Confirm
           </StabilityDepositAction>
         ) : (

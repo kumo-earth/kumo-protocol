@@ -20,6 +20,7 @@ export const StakingType: React.FC = () => {
 
   useEffect(() => {
     if (!dialog.visible) {
+      setStakeDeposit(false)
       history.push("/staking/stability");
     }
   }, [dialog.visible]);
@@ -50,12 +51,12 @@ export const StakingType: React.FC = () => {
       {vaults.map(vault => {
         return (
           <StakingTypeCard
-            key={vault.type}
+            key={vault.asset}
             vault={vault}
             handleViewStakeDeposit={() => {
               setStakeDeposit(true);
               dialog.setVisible(true);
-              history.push(`/staking/stability/${vault.type}`);
+              history.push(`/staking/stability/${vault.asset}`);
             }}
           />
         );

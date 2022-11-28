@@ -2,7 +2,8 @@ import {
   Decimal,
   KumoStoreState,
   StabilityDeposit,
-  StabilityDepositChange
+  StabilityDepositChange,
+  UserTrove
 } from "@kumodao/lib-base";
 
 import { COIN } from "../../../strings";
@@ -10,21 +11,28 @@ import { Amount } from "../../ActionDescription";
 import { ErrorDescription } from "../../ErrorDescription";
 import { StabilityActionDescription } from "../StabilityActionDescription";
 
-export const selectForStabilityDepositChangeValidation = ({
-  trove,
-  kusdBalance,
-  ownFrontend,
-  haveUndercollateralizedTroves
-}: KumoStoreState) => ({
-  trove,
-  kusdBalance,
-  haveOwnFrontend: ownFrontend.status === "registered",
-  haveUndercollateralizedTroves
-});
+// export const selectForStabilityDepositChangeValidation = ({
+//   trove,
+//   kusdBalance,
+//   ownFrontend,
+//   haveUndercollateralizedTroves
+// }: KumoStoreState) => ({
+//   trove,
+//   kusdBalance,
+//   haveOwnFrontend: ownFrontend.status === "registered",
+//   haveUndercollateralizedTroves
+// });
+type SelectForStabilityDepositChangeValidationType = {
+  trove: UserTrove;
+    kusdBalance: Decimal;
+    haveOwnFrontend: boolean;
+    haveUndercollateralizedTroves: boolean;
+}
 
-type StabilityDepositChangeValidationContext = ReturnType<
-  typeof selectForStabilityDepositChangeValidation
->;
+// type StabilityDepositChangeValidationContext = ReturnType<
+//   typeof selectForStabilityDepositChangeValidation
+// >;
+type StabilityDepositChangeValidationContext = SelectForStabilityDepositChangeValidationType;
 
 export const validateStabilityDepositChange = (
   originalDeposit: StabilityDeposit,

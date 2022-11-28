@@ -46,7 +46,6 @@ export const StakingEditor: React.FC<StakingEditorProps> = ({
   const newPoolShare = editedKUMO.mulDiv(100, totalStakedKUMOAfterChange);
   const poolShareChange =
     originalStake.stakedKUMO.nonZero && Difference.between(newPoolShare, originalPoolShare).nonZero;
-
   return (
     <Card>
       <Heading>

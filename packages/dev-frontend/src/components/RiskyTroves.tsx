@@ -22,6 +22,7 @@ import { LoadingOverlay } from "./LoadingOverlay";
 import { Transaction } from "./Transaction";
 import { Tooltip } from "./Tooltip";
 import { Abbreviation } from "./Abbreviation";
+import { useParams } from "react-router-dom";
 
 const rowHeight = "40px";
 
@@ -51,35 +52,24 @@ type RiskyTrovesProps = {
   asset?: string;
 };
 
-const select = ({
+const select = ({ vaults, blockTag }: BlockPolledKumoStoreState) => ({
   vaults,
-  numberOfTroves,
-  price,
-  total,
-  kusdInStabilityPool,
-  blockTag
-}: BlockPolledKumoStoreState) => ({
-  vaults,
-  numberOfTroves,
-  price,
-  recoveryMode: total.collateralRatioIsBelowCritical(price),
-  totalCollateralRatio: total.collateralRatio(price),
-  kusdInStabilityPool,
   blockTag
 });
 
 export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }) => {
-  const {
-    vaults,
-    blockTag,
-    numberOfTroves,
-    recoveryMode,
-    totalCollateralRatio,
-    kusdInStabilityPool,
-    price
-  } = useKumoSelector(select);
+  const { vaults, blockTag } = useKumoSelector(select);
   const { kumo } = useKumo();
   const { ctx, cty } = useDashboard();
+  const { collateralType } = useParams<{ collateralType: string }>();
+
+  const vault = vaults.find(vault => vault.asset === 'cty');
+  const numberOfTroves = vault?.numberOfTroves && vault.numberOfTroves;
+  const price = vault?.price && vault.price;
+  const total = vault?.total && vault.total;
+  const kusdInStabilityPool = vault?.numberOfTroves && vault.numberOfTroves;
+  const recoveryMode = total.collateralRatioIsBelowCritical(price);
+  const totalCollateralRatio = total.collateralRatio(price);
 
   const [loading, setLoading] = useState(true);
   const [troves, setTroves] = useState<UserTrove[]>();
@@ -116,7 +106,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
 
     kumo
       .getTroves(
-        "",
+        vault?.assetAddress,
         {
           first: pageSize,
           sortedBy: "ascendingCollateralRatio",
@@ -320,7 +310,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
                           >
                             {new Percent(collateralRatio).prettify()}
                           </Text>
-                        )) (trove.collateralRatio(ctx))}
+                        ))(trove.collateralRatio(ctx))}
                       </td>
                       <td>
                         <Transaction
@@ -336,7 +326,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
                                 )
                               : liquidatableInNormalMode(trove, price)
                           ]}
-                          send={kumo.send.liquidate.bind(kumo.send, asset, trove.ownerAddress)}
+                          send={kumo.send.liquidate.bind(kumo.send, vault.assetAddress, trove.ownerAddress)}
                         >
                           <Button variant="dangerIcon">
                             <Icon name="trash" />

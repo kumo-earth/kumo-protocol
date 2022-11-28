@@ -1,4 +1,4 @@
-import { Decimal, UserTrove } from "@kumodao/lib-base";
+import { Decimal, Trove, UserTrove } from "@kumodao/lib-base";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { Flex, Progress, Box, Card, Text, Heading } from "theme-ui";
@@ -10,16 +10,18 @@ import { toUpper } from "lodash";
 
 type CollateralCardProps = {
   collateralType?: string;
-  totalCollateralRatioPct?: string;
-  trove: UserTrove;
+  totalCollateralRatioPct: string;
+  total: Trove;
+  kusdMintedCap: Decimal
 };
 
 export const CollateralCard: React.FC<CollateralCardProps> = ({
   collateralType,
   totalCollateralRatioPct,
-  trove
+  total,
+  kusdMintedCap
+
 }) => {
-  const { account } = useWeb3React<Web3Provider>();
   const { dispatchEvent, view } = useTroveView();
   const history = useHistory();
 
@@ -55,31 +57,29 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
         </Text>
 
         <Text as="p" variant="xlarge" sx={{ mt: 1 }}>
-          {/* {totalCollateralRatioPct 0.00%} */}
-          0.00%
+          {totalCollateralRatioPct}
         </Text>
         <Flex sx={{ justifyContent: "space-between", mt: 6 }}>
           <Text as="p" variant="normalBold">
             COLLATERAL
           </Text>
           <Text as="p" variant="normalBold">
-            {trove?.collateral.prettify(2)} {toUpper(collateralType)}
+            {total?.collateral.prettify(2)} {toUpper(collateralType)}
           </Text>
         </Flex>
         <Box sx={{ my: 2 }}>
           <Progress
-            max={10000}
-            value={trove?.collateral.toString()}
+            max={kusdMintedCap.toString()}
+            value={total?.collateral.toString()}
             sx={{ height: "12px", backgroundColor: "#F0CFDC" }}
           ></Progress>
         </Box>
         <Flex sx={{ justifyContent: "space-between", mb: 4 }}>
           <Text as="p" variant="normalBold">
-            MINTED KUSD
+            MIN CAP
           </Text>
           <Text as="p" variant="normalBold">
-            {" "}
-            KUSD
+           {kusdMintedCap.shorten().toString().toLowerCase()}
           </Text>
         </Flex>
       </Box>

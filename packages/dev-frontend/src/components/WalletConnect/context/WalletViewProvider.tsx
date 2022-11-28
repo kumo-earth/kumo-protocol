@@ -30,7 +30,6 @@ export const WalletViewProvider: React.FC = props => {
       viewRef.current = "NONE";
     }
     const nextView = transition(viewRef.current, event);
-    console.log("dispatchEvent", nextView);
     setView(nextView);
   }, []);
 

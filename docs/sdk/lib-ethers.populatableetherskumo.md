@@ -29,7 +29,7 @@ export declare class PopulatableEthersKumo implements PopulatableKumo<EthersTran
 |  [claimCollateralSurplus(asset, overrides)](./lib-ethers.populatableetherskumo.claimcollateralsurplus.md) |  | Claim leftover collateral after a liquidation or redemption. |
 |  [closeTrove(asset, overrides)](./lib-ethers.populatableetherskumo.closetrove.md) |  | Close existing Trove by repaying all debt and withdrawing all collateral. |
 |  [depositCollateral(asset, amount, overrides)](./lib-ethers.populatableetherskumo.depositcollateral.md) |  | Adjust existing Trove by depositing more collateral. |
-|  [depositKUSDInStabilityPool(amount, frontendTag, overrides)](./lib-ethers.populatableetherskumo.depositkusdinstabilitypool.md) |  | Make a new Stability Deposit, or top up existing one. |
+|  [depositKUSDInStabilityPool(amount, asset, frontendTag, overrides)](./lib-ethers.populatableetherskumo.depositkusdinstabilitypool.md) |  | Make a new Stability Deposit, or top up existing one. |
 |  [exitLiquidityMining(overrides)](./lib-ethers.populatableetherskumo.exitliquiditymining.md) |  | Withdraw all staked LP tokens from liquidity mining and claim reward. |
 |  [liquidate(asset, address, overrides)](./lib-ethers.populatableetherskumo.liquidate.md) |  | Liquidate one or more undercollateralized Troves. |
 |  [liquidateUpTo(asset, maximumNumberOfTrovesToLiquidate, overrides)](./lib-ethers.populatableetherskumo.liquidateupto.md) |  | Liquidate the least collateralized Troves up to a maximum number. |
@@ -45,8 +45,8 @@ export declare class PopulatableEthersKumo implements PopulatableKumo<EthersTran
 |  [unstakeKUMO(amount, overrides)](./lib-ethers.populatableetherskumo.unstakekumo.md) |  | Withdraw KUMO from staking. |
 |  [unstakeUniTokens(amount, overrides)](./lib-ethers.populatableetherskumo.unstakeunitokens.md) |  | Withdraw Uniswap ETH/KUSD LP tokens from liquidity mining. |
 |  [withdrawCollateral(asset, amount, overrides)](./lib-ethers.populatableetherskumo.withdrawcollateral.md) |  | Adjust existing Trove by withdrawing some of its collateral. |
-|  [withdrawGainsFromStabilityPool(overrides)](./lib-ethers.populatableetherskumo.withdrawgainsfromstabilitypool.md) |  | Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [KUMO reward](./lib-base.stabilitydeposit.kumoreward.md) from Stability Deposit. |
+|  [withdrawGainsFromStabilityPool(asset, overrides)](./lib-ethers.populatableetherskumo.withdrawgainsfromstabilitypool.md) |  | Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [KUMO reward](./lib-base.stabilitydeposit.kumoreward.md) from Stability Deposit. |
 |  [withdrawGainsFromStaking(overrides)](./lib-ethers.populatableetherskumo.withdrawgainsfromstaking.md) |  | Withdraw [collateral gain](./lib-base.kumostake.collateralgain.md) and [KUSD gain](./lib-base.kumostake.kusdgain.md) from KUMO stake. |
 |  [withdrawKUMORewardFromLiquidityMining(overrides)](./lib-ethers.populatableetherskumo.withdrawkumorewardfromliquiditymining.md) |  | Withdraw KUMO that has been earned by mining liquidity. |
-|  [withdrawKUSDFromStabilityPool(amount, overrides)](./lib-ethers.populatableetherskumo.withdrawkusdfromstabilitypool.md) |  | Withdraw KUSD from Stability Deposit. |
+|  [withdrawKUSDFromStabilityPool(amount, asset, overrides)](./lib-ethers.populatableetherskumo.withdrawkusdfromstabilitypool.md) |  | Withdraw KUSD from Stability Deposit. |
 

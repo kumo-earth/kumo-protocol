@@ -34,6 +34,7 @@ export const Collateral: React.FC = () => {
   const { collateralType } = useParams<{ collateralType: string }>();
   const vault = vaults.find(vault => vault.asset === collateralType);
 
+  console.log("vaultCollateral", vault);
   return (
     <Grid
       columns={[2, "1fr 1fr"]}
@@ -50,12 +51,19 @@ export const Collateral: React.FC = () => {
         <Text as="p" variant="large" sx={{ mb: 3 }}>
           System Overview
         </Text>
-        <AssetStats />
+        <AssetStats
+          total={vault.total}
+          kusdMintedCap={vault?.kusdMintedCap}
+          minNetDebt={vault?.minNetDebt}
+          collateralType={collateralType}
+        />
         <Text as="p" variant="large" sx={{ my: 3, mt: 5 }}>
           Stability Pool
         </Text>
         <StakingCardV1
           key={vault?.asset}
+          totalKUSD={vault?.kusdInStabilityPool}
+          userKUSD={vault?.stabilityDeposit?.currentKUSD}
           vault={vault}
           handleViewStakeDeposit={() => {
             setStakeDeposit(true);

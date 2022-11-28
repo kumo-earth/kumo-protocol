@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 import { Heading, Box, Card, Button } from "theme-ui";
 
@@ -20,9 +20,9 @@ import { EditableRow, StaticRow } from "../Trove/Editor";
 import { LoadingOverlay } from "../LoadingOverlay";
 import { InfoIcon } from "../InfoIcon";
 
-const select = ({ kusdBalance, kusdInStabilityPool }: KumoStoreState) => ({
-  kusdBalance,
-  kusdInStabilityPool
+const select = ({ vaults, kusdBalance }: KumoStoreState) => ({
+  vaults,
+  kusdBalance
 });
 
 type StabilityDepositEditorProps = {
@@ -43,10 +43,14 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   dispatch,
   children
 }) => {
-  const { kusdBalance, kusdInStabilityPool } = useKumoSelector(select);
+  const {vaults,  kusdBalance,  } = useKumoSelector(select);
   const editingState = useState<string>();
-
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const vault = vaults.find(vault => vault.asset === collateralType);
+  const kusdInStabilityPool = vault?.kusdInStabilityPool && vault?.kusdInStabilityPool;
   const location = useLocation();
+
+
 
   const edited = !editedKUSD.eq(originalDeposit.currentKUSD);
 

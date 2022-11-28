@@ -1,28 +1,26 @@
 import React from "react";
 import { Card, Heading, Link, Box, Text, Flex, Progress, Divider, Paragraph } from "theme-ui";
-import { AddressZero } from "@ethersproject/constants";
-import { Decimal, Percent, KumoStoreState } from "@kumodao/lib-base";
+import { Decimal, KumoStoreState, Trove } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 
 import { useKumo } from "../hooks/KumoContext";
-import { COIN, GT } from "../strings";
-import { Statistic } from "./Statistic";
+import { toUpper } from "lodash";
 
-const selectBalances = ({ accountBalance, kusdBalance, kumoBalance }: KumoStoreState) => ({
-  accountBalance,
-  kusdBalance,
-  kumoBalance
-});
+// const selectBalances = ({ accountBalance, kusdBalance, kumoBalance }: KumoStoreState) => ({
+//   accountBalance,
+//   kusdBalance,
+//   kumoBalance
+// });
 
 const Balances: React.FC = () => {
-  const { accountBalance, kusdBalance, kumoBalance } = useKumoSelector(selectBalances);
+  // const { accountBalance, kusdBalance, kumoBalance } = useKumoSelector(selectBalances);
 
   return (
     <Box sx={{ mb: 3 }}>
       <Heading>My Account Balances</Heading>
-      <Statistic name="ETH"> {accountBalance.prettify(4)}</Statistic>
+      {/* <Statistic name="ETH"> {accountBalance.prettify(4)}</Statistic>
       <Statistic name={COIN}> {kusdBalance.prettify()}</Statistic>
-      <Statistic name={GT}>{kumoBalance.prettify()}</Statistic>
+      <Statistic name={GT}>{kumoBalance.prettify()}</Statistic> */}
     </Box>
   );
 };
@@ -35,31 +33,42 @@ const GitHubCommit: React.FC<{ children?: string }> = ({ children }) =>
   );
 
 type SystemStatsProps = {
+  total: Trove;
+  kusdMintedCap: Decimal;
+  minNetDebt: Decimal;
+  collateralType: string;
   variant?: string;
   showBalances?: boolean;
 };
 
 const select = ({
-  numberOfTroves,
-  price,
-  total,
-  kusdInStabilityPool,
-  borrowingRate,
-  redemptionRate,
+  // numberOfTroves,
+  // price,
+  // total,
+  // kusdInStabilityPool,
+  // borrowingRate,
+  // redemptionRate,
   totalStakedKUMO,
   frontend
 }: KumoStoreState) => ({
-  numberOfTroves,
-  price,
-  total,
-  kusdInStabilityPool,
-  borrowingRate,
-  redemptionRate,
+  // numberOfTroves,
+  // price,
+  // total,
+  // kusdInStabilityPool,
+  // borrowingRate,
+  // redemptionRate,
   totalStakedKUMO,
   kickbackRate: frontend.status === "registered" ? frontend.kickbackRate : null
 });
 
-export const AssetStats: React.FC<SystemStatsProps> = ({ variant = "info", showBalances }) => {
+export const AssetStats: React.FC<SystemStatsProps> = ({
+  total,
+  kusdMintedCap,
+  minNetDebt,
+  collateralType,
+  variant = "info",
+  showBalances
+}) => {
   const {
     kumo: {
       connection: { version: contractsVersion, deploymentDate, frontendTag }
@@ -67,20 +76,20 @@ export const AssetStats: React.FC<SystemStatsProps> = ({ variant = "info", showB
   } = useKumo();
 
   const {
-    numberOfTroves,
-    price,
-    kusdInStabilityPool,
-    total,
-    borrowingRate,
+    // numberOfTroves,
+    // price,
+    // kusdInStabilityPool,
+    // total,
+    // borrowingRate,
     totalStakedKUMO,
     kickbackRate
   } = useKumoSelector(select);
 
-  const kusdInStabilityPoolPct =
-    total.debt.nonZero && new Percent(kusdInStabilityPool.div(total.debt));
-  const totalCollateralRatioPct = new Percent(total.collateralRatio(price));
-  const borrowingFeePct = new Percent(borrowingRate);
-  const kickbackRatePct = frontendTag === AddressZero ? "100" : kickbackRate?.mul(100).prettify();
+  // const kusdInStabilityPoolPct =
+  //   total.debt.nonZero && new Percent(kusdInStabilityPool.div(total.debt));
+  // const totalCollateralRatioPct = new Percent(total.collateralRatio(price));
+  // const borrowingFeePct = new Percent(borrowingRate);
+  // const kickbackRatePct = frontendTag === AddressZero ? "100" : kickbackRate?.mul(100).prettify();
 
   return (
     <Card variant="base" sx={{ py: 4, px: 4 }}>
@@ -89,7 +98,7 @@ export const AssetStats: React.FC<SystemStatsProps> = ({ variant = "info", showB
           MIN. COLLATERAL RATIO
         </Text>
         <Text as="p" variant="xlarge">
-          0%
+          150%
         </Text>
       </Flex>
       <Flex sx={{ justifyContent: "space-between", mt: 4 }}>
@@ -97,13 +106,13 @@ export const AssetStats: React.FC<SystemStatsProps> = ({ variant = "info", showB
           TOTAL MINTED
         </Text>
         <Text as="p" variant="medium">
-          0.00 BCT
+          {total?.collateral.prettify(2)} {'KUSD'}
         </Text>
       </Flex>
       <Box sx={{ my: 2 }}>
         <Progress
-          max={10000}
-          value={0}
+          max={kusdMintedCap.toString()}
+          value={total?.collateral.toString()}
           sx={{ height: "12px", backgroundColor: "#F0CFDC" }}
         ></Progress>
       </Box>
@@ -112,7 +121,7 @@ export const AssetStats: React.FC<SystemStatsProps> = ({ variant = "info", showB
           MINT CAP
         </Text>
         <Text as="p" variant="medium">
-          0
+          {kusdMintedCap?.shorten().toLowerCase()}
         </Text>
       </Flex>
       <Divider sx={{ my: 3, color: "#E6E6E6" }} />
@@ -122,41 +131,41 @@ export const AssetStats: React.FC<SystemStatsProps> = ({ variant = "info", showB
             MIN. NET DEBT
           </Text>
           <Text as="p" variant="small">
-            0 $
+            {minNetDebt.toString()}$
           </Text>
         </Flex>
-        <Flex sx={{ justifyContent: "space-between", mb: 2 }}>
+        {/* <Flex sx={{ justifyContent: "space-between", mb: 2 }}>
           <Text as="p" variant="small">
             INTEREST RATE
           </Text>
           <Text as="p" variant="small">
             0 %
           </Text>
-        </Flex>
-        <Flex sx={{ justifyContent: "space-between", mb: 2 }}>
+        </Flex> */}
+        {/* <Flex sx={{ justifyContent: "space-between", mb: 2 }}>
           <Text as="p" variant="small">
             MINT FREE
           </Text>
           <Text as="p" variant="small">
             0.00 %
           </Text>
-        </Flex>
-        <Flex sx={{ justifyContent: "space-between", mb: 2 }}>
+        </Flex> */}
+        {/* <Flex sx={{ justifyContent: "space-between", mb: 2 }}>
           <Text as="p" variant="small">
             ORACLE PRICE
           </Text>
           <Text as="p" variant="small">
             $ 0.00
           </Text>
-        </Flex>
-        <Flex sx={{ justifyContent: "space-between" }}>
+        </Flex> */}
+        {/* <Flex sx={{ justifyContent: "space-between" }}>
           <Text as="p" variant="small">
             MARKET PRICE
           </Text>
           <Text as="p" variant="small">
             $ 0.00
           </Text>
-        </Flex>
+        </Flex> */}
       </Box>
     </Card>
   );

@@ -72,6 +72,8 @@ export function useSwitchNetwork(): {
         dispatchEvent("OPEN_MODAL_PRESSED");
       }
     };
+   
+
     handleSwitch();
   }, [provider, connector, error?.name]);
 
@@ -82,6 +84,5 @@ export function useSwitchNetwork(): {
       setNetworkSwitched(false);
     }
   }, [active]);
-
   return { networkSwitched, switchNetwork };
 }

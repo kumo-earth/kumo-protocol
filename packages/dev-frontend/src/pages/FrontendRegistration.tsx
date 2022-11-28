@@ -25,7 +25,7 @@ const FrontendRegistrationAction: React.FC<FrontendRegistrationActionProps> = ({
     </Button>
   ) : myTransactionState.type !== "waitingForConfirmation" &&
     myTransactionState.type !== "confirmed" ? (
-    <Transaction id={myTransactionId} send={kumo.registerFrontend.bind(kumo, kickbackRate)}>
+    <Transaction id={myTransactionId} send={kumo.registerFrontend.bind(kumo, "ctx", kickbackRate)}>
       <Button>Register</Button>
     </Transaction>
   ) : null;

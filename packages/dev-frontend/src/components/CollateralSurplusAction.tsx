@@ -9,12 +9,12 @@ import { useKumo } from "../hooks/KumoContext";
 import { Transaction, useMyTransactionState } from "./Transaction";
 import { useTroveView } from "./Trove/context/TroveViewContext";
 
-const select = ({ collateralSurplusBalance }: KumoStoreState) => ({
-  collateralSurplusBalance
-});
+// const select = ({ collateralSurplusBalance }: KumoStoreState) => ({
+//   collateralSurplusBalance
+// });
 
 export const CollateralSurplusAction: React.FC<{ asset?: string }> = ({ asset = "" }) => {
-  const { collateralSurplusBalance } = useKumoSelector(select);
+  // const { collateralSurplusBalance } = useKumoSelector(select);
   const {
     kumo: { send: kumo }
   } = useKumo();
@@ -40,12 +40,12 @@ export const CollateralSurplusAction: React.FC<{ asset?: string }> = ({ asset = 
   ) : myTransactionState.type !== "waitingForConfirmation" &&
     myTransactionState.type !== "confirmed" ? (
     <Flex variant="layout.actions">
-      <Transaction
+      {/* <Transaction
         id={myTransactionId}
         send={kumo.claimCollateralSurplus.bind(kumo, asset, undefined)}
       >
         <Button sx={{ mx: 2 }}>Claim {collateralSurplusBalance.prettify()} ETH</Button>
-      </Transaction>
+      </Transaction> */}
     </Flex>
   ) : null;
 };

@@ -3,13 +3,13 @@ import { Flex, Box, Card, Text, Heading, Divider, Paragraph } from "theme-ui";
 import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer } from "recharts";
 
 const data01 = [
-  { name: "BCT", value: 100 },
-  { name: "MCO2", value: 300 }
+  { name: "CTX", value: 100 },
+  { name: "CTY", value: 300 }
 ];
 
 const data02 = [
-  { name: "BCT", value: 2400 },
-  { name: "MCO2", value: 4567 }
+  { name: "CTX", value: 2400 },
+  { name: "CTY", value: 4567 }
 ];
 
 type StatsPieChartProps = {

@@ -11,15 +11,15 @@ export const ProtocolStats: React.FC = () => {
         <StatsTVCard
           title="Total Value Locked"
           data={[
-            { name: "BCT TVL", value: "$ 0" },
-            { name: "BCT TVL", value: "$ 0" }
+            { name: "CTX TVL", value: "$ 0" },
+            { name: "CTX TVL", value: "$ 0" }
           ]}
         />
         <StatsTVCard
           title="Total KUSD Minted"
           data={[
-            { name: "BCT Vault", value: "0 KUSD" },
-            { name: "BCT Vault", value: "0 KUSD" }
+            { name: "CTX Vault", value: "0 KUSD" },
+            { name: "CTX Vault", value: "0 KUSD" }
           ]}
         />
       </Grid>

@@ -1,13 +1,7 @@
 import React from "react";
 import { Button, Flex } from "theme-ui";
 
-import {
-  Decimal,
-  Decimalish,
-  KumoStoreState,
-  KUMOStake,
-  KUMOStakeChange
-} from "@kumodao/lib-base";
+import { Decimal, Decimalish, KumoStoreState, KUMOStake, KUMOStakeChange } from "@kumodao/lib-base";
 
 import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@kumodao/lib-react";
 
@@ -18,11 +12,15 @@ import { StakingEditor } from "./StakingEditor";
 import { StakingManagerAction } from "./StakingManagerAction";
 import { ActionDescription, Amount } from "../ActionDescription";
 import { ErrorDescription } from "../ErrorDescription";
+import { useLocation } from "react-router-dom";
 
-const init = ({ kumoStake }: KumoStoreState) => ({
-  originalStake: kumoStake,
-  editedKUMO: kumoStake.stakedKUMO
-});
+const init = ({ kumoStake }: KumoStoreState) => {
+  const location = useLocation();
+  return {
+    originalStake: kumoStake,
+    editedKUMO: kumoStake.stakedKUMO
+  };
+};
 
 type StakeManagerState = ReturnType<typeof init>;
 type StakeManagerAction =

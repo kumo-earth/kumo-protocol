@@ -8,7 +8,14 @@ const baseColors = {
   magentaDark: "#a81f58",
   magentaMedium: "#de96b3",
   lightGrey: "#e6e6e6",
-  transparent: "transparent"
+  transparent: "transparent",
+
+  blue: "#1542cd",
+  green: "#28c081",
+  yellow: "#fd9d28",
+  red: "#dc2c10",
+  lightRed: "#ff755f"
+
 };
 
 const colors = {
@@ -20,7 +27,14 @@ const colors = {
 
   primaryHover: baseColors.magentaDark,
   secondaryHover: baseColors.magentaMedium,
-  transparent: baseColors.transparent
+  transparent: baseColors.transparent,
+
+  success: baseColors.green,
+  warning: baseColors.yellow,
+  danger: baseColors.red,
+  dangerHover: baseColors.lightRed,
+  info: baseColors.blue,
+  invalid: "pink",
 };
 
 const buttonBase: ThemeUIStyleObject = {
@@ -442,7 +456,8 @@ const theme: Theme = {
 
       button: {
         p: 2,
-        minWidth: "64px"
+        minWidth: "64px",
+        ml: 2
       }
     },
 

@@ -609,8 +609,9 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
   }
 
   async getTotalRedistributed(asset: string, overrides?: EthersCallOverrides): Promise<Trove> {
+    const vault = this.store.state.vaults.find(vault => vault.assetAddress === asset);
     return this._blockHit(overrides)
-      ? this.store.state.totalRedistributed
+      ? vault?.totalRedistributed
       : this._readable.getTotalRedistributed(asset, overrides);
   }
 
@@ -619,8 +620,9 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
     address: string,
     overrides?: EthersCallOverrides
   ): Promise<TroveWithPendingRedistribution> {
+    const vault = this.store.state.vaults.find(vault => vault.assetAddress === asset);
     return this._userHit(address, overrides)
-      ? this.store.state.troveBeforeRedistribution
+      ? vault?.troveBeforeRedistribution
       : this._readable.getTroveBeforeRedistribution(asset, address, overrides);
   }
 
@@ -629,24 +631,28 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
     address: string,
     overrides?: EthersCallOverrides
   ): Promise<UserTrove> {
+    const vault = this.store.state.vaults.find(vault => vault.assetAddress === asset);
     return this._userHit(address, overrides)
-      ? this.store.state.trove
+      ? vault.trove
       : this._readable.getTrove(asset, address, overrides);
   }
 
   async getNumberOfTroves(asset: string, overrides?: EthersCallOverrides): Promise<number> {
+    const vault = this.store.state.vaults.find(vault => vault.assetAddress === asset);
     return this._blockHit(overrides)
-      ? this.store.state.numberOfTroves
+      ? vault.numberOfTroves
       : this._readable.getNumberOfTroves(asset, overrides);
   }
 
   async getPrice(overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._blockHit(overrides) ? this.store.state.price : this._readable.getPrice(overrides);
+    const vault = this.store.state.vaults.find(vault => vault.asset === 'ctx');
+    return this._blockHit(overrides) ? vault.price : this._readable.getPrice(overrides);
   }
 
   async getTotal(asset: string, overrides?: EthersCallOverrides): Promise<Trove> {
+    const vault = this.store.state.vaults.find(vault => vault.assetAddress === asset);
     return this._blockHit(overrides)
-      ? this.store.state.total
+      ? vault.total
       : this._readable.getTotal(asset, overrides);
   }
 
@@ -655,8 +661,9 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
     address: string,
     overrides?: EthersCallOverrides
   ): Promise<StabilityDeposit> {
+    const vault = this.store.state.vaults.find(vault => vault.asset === asset);
     return this._userHit(address, overrides)
-      ? this.store.state.stabilityDeposit
+      ? vault.stabilityDeposit
       : this._readable.getStabilityDeposit(asset, address, overrides);
   }
 
@@ -667,8 +674,9 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
   }
 
   async getKUSDInStabilityPool(asset: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+    const vault = this.store.state.vaults.find(vault => vault.asset === asset);
     return this._blockHit(overrides)
-      ? this.store.state.kusdInStabilityPool
+      ? vault.kusdInStabilityPool
       : this._readable.getKUSDInStabilityPool(asset, overrides);
   }
 
@@ -743,8 +751,9 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
     address: string,
     overrides?: EthersCallOverrides
   ): Promise<Decimal> {
+    const vault = this.store.state.vaults.find(vault => vault.assetAddress === asset);
     return this._userHit(address, overrides)
-      ? this.store.state.collateralSurplusBalance
+      ? vault.collateralSurplusBalance
       : this._readable.getCollateralSurplusBalance(asset, address, overrides);
   }
 
@@ -764,8 +773,9 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
   }
 
   async getFees(asset: string, overrides?: EthersCallOverrides): Promise<Fees> {
+    const vault = this.store.state.vaults.find(vault => vault.assetAddress === asset);
     return this._blockHit(overrides)
-      ? this.store.state.fees
+      ? vault.fees
       : this._readable.getFees(asset, overrides);
   }
 

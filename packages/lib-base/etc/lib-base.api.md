@@ -283,30 +283,17 @@ export abstract class KumoStore<T = unknown> {
 
 // @public
 export interface KumoStoreBaseState {
-    accountBalance: Decimal;
-    collateralSurplusBalance: Decimal;
-    // @internal (undocumented)
-    _feesInNormalMode: Fees;
     frontend: FrontendStatus;
     kumoBalance: Decimal;
     kumoStake: KUMOStake;
     kusdBalance: Decimal;
-    kusdInStabilityPool: Decimal;
     liquidityMiningKUMOReward: Decimal;
     liquidityMiningStake: Decimal;
-    numberOfTroves: number;
     ownFrontend: FrontendStatus;
-    price: Decimal;
     remainingLiquidityMiningKUMOReward: Decimal;
     remainingStabilityPoolKUMOReward: Decimal;
-    // @internal (undocumented)
-    _riskiestTroveBeforeRedistribution: TroveWithPendingRedistribution;
-    stabilityDeposit: StabilityDeposit;
-    total: Trove;
-    totalRedistributed: Trove;
     totalStakedKUMO: Decimal;
     totalStakedUniTokens: Decimal;
-    troveBeforeRedistribution: TroveWithPendingRedistribution;
     uniTokenAllowance: Decimal;
     uniTokenBalance: Decimal;
     vaults: any[];
@@ -329,7 +316,7 @@ export interface KumoStoreListenerParams<T = unknown> {
 }
 
 // @public
-export type KumoStoreState<T = unknown> = KumoStoreBaseState & KumoStoreDerivedState & T;
+export type KumoStoreState<T = unknown> = KumoStoreBaseState & T;
 
 // @public
 export const KUSD_LIQUIDATION_RESERVE: Decimal;

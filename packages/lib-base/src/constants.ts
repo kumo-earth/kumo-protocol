@@ -8,20 +8,27 @@ interface AssetType {
   assetAddress: string;
   CRITICAL_COLLATERAL_RATIO: Decimal;
   MINIMUM_COLLATERAL_RATIO: Decimal;
+  KUSD_MINTED_CAP: Decimal,
+  MIN_NET_DEBT: Decimal
 }
 /**
  * Assets Types
  */
 export const ASSET_TOKENS: ASSET_TOKENS_TYPES<AssetType> = {
   ctx: {
-    assetAddress: "0xB861c98B465272765c5B2F651471Ea8a65871ACd",
+    assetAddress: "0x4d05D73a8C29945706b8dF4e1C4cF1653685D60E",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
-    MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1)
+    MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
+    KUSD_MINTED_CAP: Decimal.from(15000000),
+    MIN_NET_DEBT: Decimal.from(2000)
   },
   cty: {
-    assetAddress: "0x3E474b98BA08CdF37543d6c8aa6F0e9B260F4881",
+    assetAddress: "0xE827B7ef5362281292f0327DBB7f233d8A076627",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
-    MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1)
+    MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
+    KUSD_MINTED_CAP: Decimal.from(10000000),
+    MIN_NET_DEBT: Decimal.from(2000)
+
   }
 };
 /**

@@ -7,15 +7,19 @@ import { useKumoSelector } from "@kumodao/lib-react";
 import { useKumo } from "../hooks/KumoContext";
 import { COIN, GT } from "../strings";
 import { Statistic } from "./Statistic";
+import { useParams } from "react-router-dom";
 
-const selectBalances = ({ accountBalance, kusdBalance, kumoBalance }: KumoStoreState) => ({
-  accountBalance,
+const selectBalances = ({ vaults, kusdBalance, kumoBalance }: KumoStoreState) => ({
+  vaults,
   kusdBalance,
   kumoBalance
 });
 
 const Balances: React.FC = () => {
-  const { accountBalance, kusdBalance, kumoBalance } = useKumoSelector(selectBalances);
+  const { vaults, kusdBalance, kumoBalance } = useKumoSelector(selectBalances);
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const vault = vaults.find(vault => vault.asset === collateralType);
+  const accountBalance =  vault?.accountBalance && vault?.accountBalance;
 
   return (
     <Box sx={{ mb: 3 }}>
@@ -40,21 +44,12 @@ type SystemStatsProps = {
 };
 
 const select = ({
-  numberOfTroves,
-  price,
-  total,
-  kusdInStabilityPool,
-  borrowingRate,
-  redemptionRate,
+  vaults,
+
   totalStakedKUMO,
   frontend
 }: KumoStoreState) => ({
-  numberOfTroves,
-  price,
-  total,
-  kusdInStabilityPool,
-  borrowingRate,
-  redemptionRate,
+  vaults,
   totalStakedKUMO,
   kickbackRate: frontend.status === "registered" ? frontend.kickbackRate : null
 });
@@ -67,14 +62,19 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
   } = useKumo();
 
   const {
-    numberOfTroves,
-    price,
-    kusdInStabilityPool,
-    total,
-    borrowingRate,
+    vaults,
     totalStakedKUMO,
     kickbackRate
   } = useKumoSelector(select);
+
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const vault = vaults.find(vault => vault.asset === collateralType);
+  const numberOfTroves =  vault?.numberOfTroves && vault?.numberOfTroves;
+  const price = vault?.price && vault?.price;
+  const total =  vault?.total && vault?.total;
+  const borrowingRate = vault?.borrowingRate && vault.borrowingRate;
+
+  const kusdInStabilityPool = vault?.kusdInStabilityPool && vault?.kusdInStabilityPool;
 
   const kusdInStabilityPoolPct =
     total.debt.nonZero && new Percent(kusdInStabilityPool.div(total.debt));

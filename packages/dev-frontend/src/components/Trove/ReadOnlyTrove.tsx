@@ -34,7 +34,7 @@ export const ReadOnlyTrove: React.FC = () => {
   const vault = vaults.find(vault => vault.asset === collateralType);
   const trove: UserTrove = vault?.trove?.ownerAddress === account && vault?.trove;
   const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
-  let collateralRatio: Decimal = trove.collateralRatio(price);
+  let collateralRatio: Decimal = trove?.collateralRatio(price);
 
   // console.log("READONLY TROVE", trove.collateral.prettify(4));
   return (
@@ -61,7 +61,7 @@ export const ReadOnlyTrove: React.FC = () => {
 
         <Flex variant="layout.actions">
           <Button
-            variant="outline"
+            variant="cancel"
             onClick={handleCloseTrove}
             sx={{
               border: "none"

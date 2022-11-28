@@ -121,12 +121,12 @@ export const ActiveDeposit: React.FC = () => {
           </Button>
 
           <ClaimRewards disabled={!hasGain && !hasReward}>
-            Claim {collateralType?.toUpperCase()} and LQTY
+            Claim {collateralType?.toUpperCase()} and KUMO
           </ClaimRewards>
         </Flex>
 
         {hasTrove && (
-          <ClaimAndMove disabled={!hasGain}>
+          <ClaimAndMove disabled={!hasGain} asset={vault?.assetAddress} assetName={vault?.asset}>
             Claim KUMO and move {collateralType?.toUpperCase()} to Trove
           </ClaimAndMove>
         )}

@@ -17,8 +17,8 @@ export const Sidebar: React.FC = props => {
       </Flex>
       <Divider sx={{ color: "muted" }} />
       <Flex sx={{ flexDirection: "column", pl: 4, pb: 4 }}>
-        {/* <Link to="/#">Medium</Link> */}
-        <Link to={{ pathname: "https://discord.gg/smxnnmG6" }} target="_blank" >Discord</Link>
+        <Link to={{ pathname: " https://docs.kumo.earth" }} target="_blank">Documentation</Link>
+        <Link to={{ pathname: "https://discord.gg/smxnnmG6" }} target="_blank">Discord</Link>
         <Link to="/#">Twitter</Link>
       </Flex>
     </Container>

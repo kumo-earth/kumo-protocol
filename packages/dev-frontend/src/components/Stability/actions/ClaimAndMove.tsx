@@ -5,15 +5,21 @@ import { useTransactionFunction } from "../../Transaction";
 
 type ClaimAndMoveProps = {
   disabled?: boolean;
-  asset?: string;
+  asset: string;
+  assetName: string;
 };
 
-export const ClaimAndMove: React.FC<ClaimAndMoveProps> = ({ disabled, asset = "", children }) => {
+export const ClaimAndMove: React.FC<ClaimAndMoveProps> = ({
+  disabled,
+  asset,
+  assetName,
+  children
+}) => {
   const { kumo } = useKumo();
 
   const [sendTransaction] = useTransactionFunction(
     "stability-deposit",
-    kumo.send.transferCollateralGainToTrove.bind(kumo.send, asset)
+    kumo.send.transferCollateralGainToTrove.bind(kumo.send, asset, assetName)
   );
 
   return (

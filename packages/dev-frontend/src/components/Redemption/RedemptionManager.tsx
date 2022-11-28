@@ -15,20 +15,26 @@ import { useMyTransactionState } from "../Transaction";
 
 import { RedemptionAction } from "./RedemptionAction";
 import { InfoIcon } from "../InfoIcon";
+import { useParams } from "react-router-dom";
 
 const mcrPercent = new Percent(MINIMUM_COLLATERAL_RATIO).toString(0);
 
-const select = ({ price, fees, total, kusdBalance }: KumoStoreState) => ({
-  price,
-  fees,
-  total,
+const select = ({ vaults, kusdBalance }: KumoStoreState) => ({
+  vaults,
   kusdBalance
 });
 
 const transactionId = "redemption";
 
 export const RedemptionManager: React.FC = () => {
-  const { price, fees, total, kusdBalance } = useKumoSelector(select);
+  const { vaults, kusdBalance } = useKumoSelector(select);
+  const { collateralType } = useParams<{ collateralType: string }>();
+
+  const vault = vaults.find(vault => vault.asset === collateralType);
+  const price: Decimal = vault?.price && vault?.price;
+  const fees = vault?.fees && vault?.fees;
+
+  const total = vault?.total && vault?.total;
   const [kusdAmount, setKUSDAmount] = useState(Decimal.ZERO);
   const [changePending, setChangePending] = useState(false);
   const editingState = useState<string>();

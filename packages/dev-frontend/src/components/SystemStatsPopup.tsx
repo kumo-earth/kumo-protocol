@@ -6,11 +6,17 @@ import { useKumoSelector } from "@kumodao/lib-react";
 
 import { Icon } from "./Icon";
 import { SystemStats } from "./SystemStats";
+import { useParams } from "react-router-dom";
 
-const select = ({ total, price }: KumoStoreState) => ({ total, price });
+const select = ({ vaults }: KumoStoreState) => ({ vaults });
 
 export const SystemStatsPopup: React.FC = () => {
-  const { price, total } = useKumoSelector(select);
+  const {vaults } = useKumoSelector(select);
+
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const vault = vaults.find(vault => vault.asset === collateralType);
+  const price =  vault?.price && vault?.price;
+  const total =  vault?.total && vault?.total;
 
   const [systemStatsOpen, setSystemStatsOpen] = useState(false);
   const systemStatsOverlayRef = useRef<HTMLDivElement>(null);

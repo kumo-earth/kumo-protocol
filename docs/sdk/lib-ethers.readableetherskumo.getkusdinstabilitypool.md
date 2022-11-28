@@ -9,13 +9,14 @@ Get the total amount of KUSD currently deposited in the Stability Pool.
 <b>Signature:</b>
 
 ```typescript
-getKUSDInStabilityPool(overrides?: EthersCallOverrides): Promise<Decimal>;
+getKUSDInStabilityPool(asset: string, overrides?: EthersCallOverrides): Promise<Decimal>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  asset | string |  |
 |  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
 
 <b>Returns:</b>

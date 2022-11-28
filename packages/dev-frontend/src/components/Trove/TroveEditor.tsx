@@ -18,6 +18,7 @@ import { StaticRow } from "./Editor";
 import { LoadingOverlay } from "../LoadingOverlay";
 import { CollateralRatio } from "./CollateralRatio";
 import { InfoIcon } from "../InfoIcon";
+import { useParams } from "react-router-dom";
 
 type TroveEditorProps = {
   original: Trove;
@@ -30,7 +31,7 @@ type TroveEditorProps = {
   ) => void;
 };
 
-const select = ({ price }: KumoStoreState) => ({ price });
+const select = ({ vaults }: KumoStoreState) => ({ vaults });
 
 export const TroveEditor: React.FC<TroveEditorProps> = ({
   children,
@@ -40,9 +41,13 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
   borrowingRate,
   changePending
 }) => {
-  const { price } = useKumoSelector(select);
+  const { vaults } = useKumoSelector(select);
 
   const feePct = new Percent(borrowingRate);
+
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const vault = vaults.find(vault => vault.asset === collateralType);
+  const price =  vault?.price && vault?.price;
 
   const originalCollateralRatio = !original.isEmpty ? original.collateralRatio(price) : undefined;
   const collateralRatio = !edited.isEmpty ? edited.collateralRatio(price) : undefined;
@@ -62,7 +67,7 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
           label="Collateral"
           inputId="trove-collateral"
           amount={edited.collateral.prettify(4)}
-          unit="ETH"
+          unit={COIN}
         />
 
         <StaticRow label="Debt" inputId="trove-debt" amount={edited.debt.prettify()} unit={COIN} />

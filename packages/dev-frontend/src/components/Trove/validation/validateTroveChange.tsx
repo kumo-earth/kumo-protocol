@@ -14,7 +14,6 @@ import {
 } from "@kumodao/lib-base";
 import { useLocation } from "react-router-dom";
 
-
 import { COIN } from "../../../strings";
 
 import { ActionDescription, Amount } from "../../ActionDescription";
@@ -116,15 +115,23 @@ const TroveChangeDescription: React.FC<TroveAdjustmentDescriptionParams> = ({ pa
   );
 };
 
-export const selectForTroveChangeValidation = ({
-  price,
-  total,
-  accountBalance,
-  kusdBalance,
-  numberOfTroves
-}: KumoStoreState) => ({ price, total, accountBalance, kusdBalance, numberOfTroves });
+// export const selectForTroveChangeValidation = ({
+//   price,
+//   total,
+//   accountBalance,
+//   kusdBalance,
+//   numberOfTroves
+// }: KumoStoreState) => ({ price, total, accountBalance, kusdBalance, numberOfTroves });
+type TroveChangeValidationSelectedStateType = {
+  price: Decimal;
+  total: Trove;
+  accountBalance: Decimal;
+  kusdBalance: Decimal;
+  numberOfTroves: Number;
+};
 
-type TroveChangeValidationSelectedState = ReturnType<typeof selectForTroveChangeValidation>;
+// type TroveChangeValidationSelectedState = ReturnType<typeof selectForTroveChangeValidation>;
+type TroveChangeValidationSelectedState = TroveChangeValidationSelectedStateType;
 
 interface TroveChangeValidationContext extends TroveChangeValidationSelectedState {
   originalTrove: Trove;
@@ -142,7 +149,6 @@ export const validateTroveChange = (
   validChange: Exclude<TroveChange<Decimal>, { type: "invalidCreation" }> | undefined,
   description: JSX.Element | undefined
 ] => {
-  console.log("selectedState", selectedState)
   const { total, price } = selectedState;
   const change = originalTrove.whatChanged(adjustedTrove, borrowingRate);
 

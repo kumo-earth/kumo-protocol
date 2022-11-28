@@ -87,7 +87,7 @@ type WalletConnectorProps = {
 };
 
 export const WalletConnector: React.FC<WalletConnectorProps> = ({ children, loader }) => {
-  const { activate, deactivate, active, error } = useWeb3React<unknown>();
+  const { activate, deactivate, active, error, connector } = useWeb3React<unknown>();
   const triedAuthorizedConnection = useAuthorizedConnection();
   const [connectionState, dispatch] = useReducer(connectionReducer, { type: "inactive" });
   const isMetaMask = detectMetaMask();
@@ -114,6 +114,10 @@ export const WalletConnector: React.FC<WalletConnectorProps> = ({ children, load
   if (connectionState.type === "active") {
     return <>{children}</>;
   }
+
+  connector?.on("accountsChanged", () => {
+    alert("accountChanged");
+  });
 
   return (
     <>

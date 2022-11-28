@@ -36,22 +36,23 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [closeTrove(asset, overrides)](./lib-ethers.etherskumo.closetrove.md) |  | Close existing Trove by repaying all debt and withdrawing all collateral. |
 |  [connect(signerOrProvider, optionalParams)](./lib-ethers.etherskumo.connect_1.md) | <code>static</code> | Connect to the Kumo protocol and create an <code>EthersKumo</code> object. |
 |  [depositCollateral(asset, amount, overrides)](./lib-ethers.etherskumo.depositcollateral.md) |  | Adjust existing Trove by depositing more collateral. |
-|  [depositKUSDInStabilityPool(amount, frontendTag, overrides)](./lib-ethers.etherskumo.depositkusdinstabilitypool.md) |  | Make a new Stability Deposit, or top up existing one. |
+|  [depositKUSDInStabilityPool(amount, asset, frontendTag, overrides)](./lib-ethers.etherskumo.depositkusdinstabilitypool.md) |  | Make a new Stability Deposit, or top up existing one. |
 |  [exitLiquidityMining(overrides)](./lib-ethers.etherskumo.exitliquiditymining.md) |  | Withdraw all staked LP tokens from liquidity mining and claim reward. |
+|  [getAssetBalance(address, assetType, provider, overrides)](./lib-ethers.etherskumo.getassetbalance.md) |  |  |
 |  [getCollateralSurplusBalance(asset, address, overrides)](./lib-ethers.etherskumo.getcollateralsurplusbalance.md) |  | Get the amount of leftover collateral available for withdrawal by an address. |
 |  [getFees(asset, overrides)](./lib-ethers.etherskumo.getfees.md) |  | Get a calculator for current fees. |
-|  [getFrontendStatus(address, overrides)](./lib-ethers.etherskumo.getfrontendstatus.md) |  | Check whether an address is registered as a Kumo frontend, and what its kickback rate is. |
+|  [getFrontendStatus(asset, address, overrides)](./lib-ethers.etherskumo.getfrontendstatus.md) |  | Check whether an address is registered as a Kumo frontend, and what its kickback rate is. |
 |  [getKUMOBalance(address, overrides)](./lib-ethers.etherskumo.getkumobalance.md) |  | Get the amount of KUMO held by an address. |
 |  [getKUMOStake(asset, address, overrides)](./lib-ethers.etherskumo.getkumostake.md) |  | Get the current state of an KUMO Stake. |
 |  [getKUSDBalance(address, overrides)](./lib-ethers.etherskumo.getkusdbalance.md) |  | Get the amount of KUSD held by an address. |
-|  [getKUSDInStabilityPool(overrides)](./lib-ethers.etherskumo.getkusdinstabilitypool.md) |  | Get the total amount of KUSD currently deposited in the Stability Pool. |
+|  [getKUSDInStabilityPool(asset, overrides)](./lib-ethers.etherskumo.getkusdinstabilitypool.md) |  | Get the total amount of KUSD currently deposited in the Stability Pool. |
 |  [getLiquidityMiningKUMOReward(address, overrides)](./lib-ethers.etherskumo.getliquidityminingkumoreward.md) |  | Get the amount of KUMO earned by an address through mining liquidity. |
 |  [getLiquidityMiningStake(address, overrides)](./lib-ethers.etherskumo.getliquidityminingstake.md) |  | Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in liquidity mining. |
 |  [getNumberOfTroves(asset, overrides)](./lib-ethers.etherskumo.getnumberoftroves.md) |  | Get number of Troves that are currently open. |
 |  [getPrice(overrides)](./lib-ethers.etherskumo.getprice.md) |  | Get the current price of the native currency (e.g. Ether) in USD. |
 |  [getRemainingLiquidityMiningKUMOReward(overrides)](./lib-ethers.etherskumo.getremainingliquidityminingkumoreward.md) |  | Get the remaining KUMO that will be collectively rewarded to liquidity miners. |
 |  [getRemainingStabilityPoolKUMOReward(overrides)](./lib-ethers.etherskumo.getremainingstabilitypoolkumoreward.md) |  | Get the remaining KUMO that will be collectively rewarded to stability depositors. |
-|  [getStabilityDeposit(address, overrides)](./lib-ethers.etherskumo.getstabilitydeposit.md) |  | Get the current state of a Stability Deposit. |
+|  [getStabilityDeposit(asset, address, overrides)](./lib-ethers.etherskumo.getstabilitydeposit.md) |  | Get the current state of a Stability Deposit. |
 |  [getTotal(asset, overrides)](./lib-ethers.etherskumo.gettotal.md) |  | Get the total amount of collateral and debt in the Kumo system. |
 |  [getTotalRedistributed(asset, overrides)](./lib-ethers.etherskumo.gettotalredistributed.md) |  | Get the total collateral and debt per stake that has been liquidated through redistribution. |
 |  [getTotalStakedKUMO(overrides)](./lib-ethers.etherskumo.gettotalstakedkumo.md) |  | Get the total amount of KUMO currently staked. |
@@ -77,8 +78,8 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [unstakeKUMO(amount, overrides)](./lib-ethers.etherskumo.unstakekumo.md) |  | Withdraw KUMO from staking. |
 |  [unstakeUniTokens(amount, overrides)](./lib-ethers.etherskumo.unstakeunitokens.md) |  | Withdraw Uniswap ETH/KUSD LP tokens from liquidity mining. |
 |  [withdrawCollateral(asset, amount, overrides)](./lib-ethers.etherskumo.withdrawcollateral.md) |  | Adjust existing Trove by withdrawing some of its collateral. |
-|  [withdrawGainsFromStabilityPool(overrides)](./lib-ethers.etherskumo.withdrawgainsfromstabilitypool.md) |  | Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [KUMO reward](./lib-base.stabilitydeposit.kumoreward.md) from Stability Deposit. |
+|  [withdrawGainsFromStabilityPool(asset, overrides)](./lib-ethers.etherskumo.withdrawgainsfromstabilitypool.md) |  | Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [KUMO reward](./lib-base.stabilitydeposit.kumoreward.md) from Stability Deposit. |
 |  [withdrawGainsFromStaking(overrides)](./lib-ethers.etherskumo.withdrawgainsfromstaking.md) |  | Withdraw [collateral gain](./lib-base.kumostake.collateralgain.md) and [KUSD gain](./lib-base.kumostake.kusdgain.md) from KUMO stake. |
 |  [withdrawKUMORewardFromLiquidityMining(overrides)](./lib-ethers.etherskumo.withdrawkumorewardfromliquiditymining.md) |  | Withdraw KUMO that has been earned by mining liquidity. |
-|  [withdrawKUSDFromStabilityPool(amount, overrides)](./lib-ethers.etherskumo.withdrawkusdfromstabilitypool.md) |  | Withdraw KUSD from Stability Deposit. |
+|  [withdrawKUSDFromStabilityPool(amount, asset, overrides)](./lib-ethers.etherskumo.withdrawkusdfromstabilitypool.md) |  | Withdraw KUSD from Stability Deposit. |
 

@@ -20,7 +20,7 @@ type ExpensiveTroveChangeWarningParams = {
 };
 
 export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningParams> = ({
-  asset = "0x290f75D7b3A23b140cFB54b08E3C9618d728E227",
+  asset,
   troveChange,
   maxBorrowingRate,
   borrowingFeeDecayToleranceMinutes,
@@ -28,14 +28,13 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
   setGasEstimationState
 }) => {
   const { kumo } = useKumo();
-
   useEffect(() => {
     if (troveChange && troveChange.type !== "closure") {
       setGasEstimationState({ type: "inProgress" });
       let cancelled = false;
-
+      
       const timeoutId = setTimeout(async () => {
-        console.log("Estimated TX cost: ");
+        console.log("Estimated TX cost: ", asset, troveChange);
         const populatedTx = await (troveChange.type === "creation"
           ? kumo.populate.openTrove(troveChange.params, asset, {
               maxBorrowingRate,

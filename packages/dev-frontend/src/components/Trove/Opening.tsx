@@ -25,10 +25,11 @@ import { LoadingOverlay } from "../LoadingOverlay";
 import { CollateralRatio } from "./CollateralRatio";
 import { EditableRow, StaticRow } from "./Editor";
 import { ExpensiveTroveChangeWarning, GasEstimationState } from "./ExpensiveTroveChangeWarning";
-import {
-  selectForTroveChangeValidation,
-  validateTroveChange
-} from "./validation/validateTroveChange";
+// import {
+//   selectForTroveChangeValidation,
+//   validateTroveChange
+// } from "./validation/validateTroveChange";
+import { validateTroveChange } from "./validation/validateTroveChange";
 import { useDashboard } from "../../hooks/DashboardContext";
 
 const EMPTY_TROVE = new Trove(Decimal.ZERO, Decimal.ZERO);
@@ -41,13 +42,20 @@ export const Opening: React.FC = () => {
   const { ctx, cty } = useDashboard();
 
   const { accountBalance, fees, validationContext } = useKumoSelector((state: KumoStoreState) => {
-    const { vaults } = state;
+    const { vaults, kusdBalance } = state;
     const vault = vaults.find(vault => vault.asset === collateralType);
     const accountBalance = vault?.accountBalance as Decimal;
     const fees = vault?.fees as Fees;
+    const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
+    const total = vault?.total && vault.total;
+    const numberOfTroves = vault?.numberOfTroves && vault.numberOfTroves;
     const validationContext = {
-      ...selectForTroveChangeValidation(state),
-      accountBalance: accountBalance
+      // ...selectForTroveChangeValidation(state),
+      price,
+      total,
+      accountBalance,
+      kusdBalance,
+      numberOfTroves
     };
     return { accountBalance, fees, validationContext };
   });
@@ -74,7 +82,7 @@ export const Opening: React.FC = () => {
   const collateralMaxedOut = collateral.eq(maxCollateral);
   const collateralRatio =
     !collateral.isZero && !borrowAmount.isZero ? trove.collateralRatio(price) : undefined;
-    
+
   const [troveChange, description] = validateTroveChange(
     EMPTY_TROVE,
     trove,
@@ -223,7 +231,7 @@ export const Opening: React.FC = () => {
         />
 
         <Flex variant="layout.actions">
-          <Button variant="cancel" sx={{ mr : 2 }} onClick={handleCancelPressed}>
+          <Button variant="cancel" sx={{ mr: 2 }} onClick={handleCancelPressed}>
             Cancel
           </Button>
 

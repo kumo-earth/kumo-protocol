@@ -11,7 +11,6 @@ import { useWalletView } from "./components/WalletConnect/context/WalletViewCont
 import { useSwitchNetworkView } from "./components/SwitchNetwork/context/SwitchNetworkViewContext";
 import { TransactionMonitor } from "./components/Transaction";
 import { UserAccount } from "./components/UserAccount";
-import { SystemStatsPopup } from "./components/SystemStatsPopup";
 import { Header } from "./components/Header";
 
 import { PageSwitcher } from "./pages/PageSwitcher";
@@ -58,8 +57,6 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
     Difference,
     Wallet
   });
-
-  const { state } = kumo?.store;
 
   console.log("blockedPolledStore1", kumo?.store);
   return (
@@ -113,7 +110,7 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                           <Route path="/staking/:stakingType" exact>
                             <StakingType />
                           </Route>
-                          <Route path="/staking/:stakingType/:modalType" exact>
+                          <Route path="/staking/:stakingType/:collateralType" exact>
                             <StakingType />
                           </Route>
                           <Route path="/stats/:statsType" exact>

@@ -5,17 +5,13 @@ import {  Box, Card, Heading, Text } from "theme-ui";
 type CollateralCardProps = {
   title: string,
   description: string,
-  stakingType?: string;
-  totalCollateralRatioPct?: string;
-  total?: { collateral: any; debt: any };
+  stakingType?: string
 };
 
 export const StabilityPoolStakingCard: React.FC<CollateralCardProps> = ({
   title, 
   description,
   stakingType = "url(https://assets.website-files.com/62e0a7c58c1c3ac32d0e3136/631959bb22c9cd67a1483971_australian-carbon-token.jpg)",
-  totalCollateralRatioPct,
-  total
 }) => {
   const history = useHistory();
 

@@ -7,6 +7,7 @@ type DashboardContextValue = {
   ctx: Decimal;
   cty: Decimal;
   totalCollDebt: { totalColl: Decimal; totalDebt: Decimal; totalCarbonCredits: Decimal };
+  totalTroveCollDebt : {totalTroveColl: Decimal, totalTroveDebt: Decimal }
 };
 
 const DashboardContext = createContext<DashboardContextValue | undefined>(undefined);
@@ -22,43 +23,59 @@ export const DashboardProvider: React.FC = ({ children }) => {
     totalDebt: Decimal.ZERO,
     totalCarbonCredits: Decimal.ZERO
   });
+  const [totalTroveCollDebt, setTotalTroveCollDebt] = useState({
+    totalTroveColl: Decimal.ZERO,
+    totalTroveDebt: Decimal.ZERO
+  });
 
   useEffect(() => {
     let calcCollat = Decimal.ZERO;
     let calcDebt = Decimal.ZERO;
     let calcCarbonCredits = Decimal.ZERO;
 
+    let troveCalcCollat = Decimal.ZERO;
+    let troveCalcDebt = Decimal.ZERO;
+
     vaults.forEach(vault => {
-      const { trove } = vault;
-      calcDebt = calcDebt.add(trove.debt);
-      calcCarbonCredits = calcCarbonCredits.add(trove.collateral);
-      if (vault.asset === "ctx" && trove.collateral.nonZero && ctx.nonZero) {
-        calcCollat = calcCollat.add(trove.collateral.mul(ctx));
-      } else if (vault.asset === "cty" && trove.collateral.nonZero && cty.nonZero) {
-        calcCollat = calcCollat.add(trove.collateral.mul(cty));
+      const { total, trove } = vault;
+      calcDebt = calcDebt.add(total.debt);
+      troveCalcDebt = troveCalcDebt.add(trove.debt);
+      calcCarbonCredits = calcCarbonCredits.add(total.collateral);
+      if (vault.asset === "ctx" && total.collateral.nonZero && ctx.nonZero) {
+        calcCollat = calcCollat.add(total.collateral.mul(ctx));
+        troveCalcCollat = troveCalcCollat.add(trove.collateral.mul(ctx));
+      } else if (vault.asset === "cty" && total.collateral.nonZero && cty.nonZero) {
+        calcCollat = calcCollat.add(total.collateral.mul(cty));
+        troveCalcCollat = troveCalcCollat.add(trove.collateral.mul(cty));
       }
       setTotalCollDebt({
         totalColl: calcCollat,
         totalDebt: calcDebt,
         totalCarbonCredits: calcCarbonCredits
       });
+      setTotalTroveCollDebt({
+        totalTroveColl: troveCalcCollat,
+        totalTroveDebt: troveCalcDebt
+      });
     });
   }, [vaults, ctx, cty]);
+
   useEffect(() => {
     setPrices();
   }, []);
 
   const setPrices = async () => {
-    const bctResponse = await getTokenPrice("toucan-protocol-base-carbon-tonne");
-    setCTX(bctResponse.data);
-    const mco2Response = await getTokenPrice("moss-carbon-credit");
-    setCTY(mco2Response.data);
+    const ctxResponse = await getTokenPrice("toucan-protocol-base-carbon-tonne");
+    setCTX(ctxResponse.data);
+    const ctyResponse = await getTokenPrice("moss-carbon-credit");
+    setCTY(ctyResponse.data);
   };
 
   return (
     <DashboardContext.Provider
       value={{
         totalCollDebt,
+        totalTroveCollDebt,
         ctx,
         cty
       }}

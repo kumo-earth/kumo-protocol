@@ -1,5 +1,5 @@
 import { Divider, Flex } from "theme-ui";
-import { KumoStoreState, Percent, Decimal } from "@kumodao/lib-base";
+import { KumoStoreState, Percent, Decimal, Trove } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { CollateralCard } from "../components/ColleteralCard/ColleteralCard";
 import { DashboadHeader } from "../components/DashboardHeader";
@@ -28,12 +28,14 @@ export const Dashboard: React.FC = () => {
       <DashboadContent>
         {vaults.map(vault => {
           const price = vault?.asset === 'ctx' ? ctx : vault?.asset === 'cty' ? cty : Decimal.from(0)
-          const totalCollateralRatioPct = new Percent(vault.total.collateralRatio(price));
+          const total: Trove = vault?.total
+          const totalCollateralRatioPct = !vault?.total?.isEmpty ? new Percent(vault.total.collateralRatio(price)).prettify() : "0.00%";
           return (
             <CollateralCard
               collateralType={vault.asset}
-              totalCollateralRatioPct={totalCollateralRatioPct.prettify()}
-              trove={vault?.trove}
+              totalCollateralRatioPct={totalCollateralRatioPct}
+              total={vault?.total}
+              kusdMintedCap={vault?.kusdMintedCap}
               key={vault?.asset}
             />
           );

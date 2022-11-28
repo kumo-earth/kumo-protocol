@@ -7,9 +7,6 @@ import { ProtocolStats } from "./ProtocolStats";
 
 export const Stats: React.FC = () => {
   const { statsType } = useParams<{ statsType: string }>();
-
-
-  console.log("statsType", statsType)
   
   const renderStatsView = (view: string) => {
     switch (view) {

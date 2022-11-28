@@ -20,10 +20,10 @@ export interface KumoStoreBaseState {
   ownFrontend: FrontendStatus;
 
   /** Number of Troves that are currently open. */
-  numberOfTroves: number;
+  // numberOfTroves: number;
 
   /** User's native currency balance (e.g. Ether). */
-  accountBalance: Decimal;
+  // accountBalance: Decimal;
 
   /** User's KUSD token balance. */
   kusdBalance: Decimal;
@@ -56,16 +56,16 @@ export interface KumoStoreBaseState {
    * See {@link ReadableKumo.getCollateralSurplusBalance | getCollateralSurplusBalance()} for
    * more information.
    */
-  collateralSurplusBalance: Decimal;
+  // collateralSurplusBalance: Decimal;
 
   /** Current price of the native currency (e.g. Ether) in USD. */
-  price: Decimal;
+  // price: Decimal;
 
   /** Total amount of KUSD currently deposited in the Stability Pool. */
-  kusdInStabilityPool: Decimal;
+  // kusdInStabilityPool: Decimal;
 
   /** Total collateral and debt in the Kumo system. */
-  total: Trove;
+  // total: Trove;
 
   /**
    * Total collateral and debt per stake that has been liquidated through redistribution.
@@ -73,7 +73,7 @@ export interface KumoStoreBaseState {
    * @remarks
    * Needed when dealing with instances of {@link TroveWithPendingRedistribution}.
    */
-  totalRedistributed: Trove;
+  // totalRedistributed: Trove;
 
   /**
    * User's Trove in its state after the last direct modification.
@@ -82,16 +82,16 @@ export interface KumoStoreBaseState {
    * The current state of the user's Trove can be found as
    * {@link KumoStoreDerivedState.trove | trove}.
    */
-  troveBeforeRedistribution: TroveWithPendingRedistribution;
+  // troveBeforeRedistribution: TroveWithPendingRedistribution;
 
   /** User's stability deposit. */
-  stabilityDeposit: StabilityDeposit;
+  // stabilityDeposit: StabilityDeposit;
 
   /** Remaining KUMO that will be collectively rewarded to stability depositors. */
   remainingStabilityPoolKUMOReward: Decimal;
 
   /** @internal */
-  _feesInNormalMode: Fees;
+  // _feesInNormalMode: Fees;
 
   /** User's KUMO stake. */
   kumoStake: KUMOStake;
@@ -103,7 +103,7 @@ export interface KumoStoreBaseState {
    vaults: any[];
 
   /** @internal */
-  _riskiestTroveBeforeRedistribution: TroveWithPendingRedistribution;
+  // _riskiestTroveBeforeRedistribution: TroveWithPendingRedistribution;
 }
 
 /**
@@ -159,7 +159,8 @@ export interface KumoStoreDerivedState {
  *
  * @public
  */
-export type KumoStoreState<T = unknown> = KumoStoreBaseState & KumoStoreDerivedState & T;
+// export type KumoStoreState<T = unknown> = KumoStoreBaseState & KumoStoreDerivedState & T;
+export type KumoStoreState<T = unknown> = KumoStoreBaseState & T;
 
 /**
  * Parameters passed to {@link KumoStore} listeners.
@@ -228,7 +229,7 @@ export abstract class KumoStore<T = unknown> {
   protected _loaded = false;
 
   private _baseState?: KumoStoreBaseState;
-  private _derivedState?: KumoStoreDerivedState;
+  // private _derivedState?: KumoStoreDerivedState;
   private _extraState?: T;
 
   private _updateTimeoutId: ReturnType<typeof setTimeout> | undefined;
@@ -243,8 +244,11 @@ export abstract class KumoStore<T = unknown> {
    *
    * See {@link KumoStoreState} for the list of properties returned.
    */
+  // get state(): KumoStoreState<T> {
+  //   return Object.assign({}, this._baseState, this._derivedState, this._extraState);
+  // }
   get state(): KumoStoreState<T> {
-    return Object.assign({}, this._baseState, this._derivedState, this._extraState);
+    return Object.assign({}, this._baseState, this._extraState);
   }
 
   /** @internal */
@@ -342,19 +346,19 @@ export abstract class KumoStore<T = unknown> {
         showFrontendStatus
       ),
 
-      numberOfTroves: this._updateIfChanged(
-        strictEquals,
-        "numberOfTroves",
-        baseState.numberOfTroves,
-        baseStateUpdate.numberOfTroves
-      ),
+      // numberOfTroves: this._updateIfChanged(
+      //   strictEquals,
+      //   "numberOfTroves",
+      //   baseState.numberOfTroves,
+      //   baseStateUpdate.numberOfTroves
+      // ),
 
-      accountBalance: this._updateIfChanged(
-        eq,
-        "accountBalance",
-        baseState.accountBalance,
-        baseStateUpdate.accountBalance
-      ),
+      // accountBalance: this._updateIfChanged(
+      //   eq,
+      //   "accountBalance",
+      //   baseState.accountBalance,
+      //   baseStateUpdate.accountBalance
+      // ),
 
       kusdBalance: this._updateIfChanged(
         eq,
@@ -410,44 +414,44 @@ export abstract class KumoStore<T = unknown> {
         baseStateUpdate.liquidityMiningKUMOReward
       ),
 
-      collateralSurplusBalance: this._updateIfChanged(
-        eq,
-        "collateralSurplusBalance",
-        baseState.collateralSurplusBalance,
-        baseStateUpdate.collateralSurplusBalance
-      ),
+      // collateralSurplusBalance: this._updateIfChanged(
+      //   eq,
+      //   "collateralSurplusBalance",
+      //   baseState.collateralSurplusBalance,
+      //   baseStateUpdate.collateralSurplusBalance
+      // ),
 
-      price: this._updateIfChanged(eq, "price", baseState.price, baseStateUpdate.price),
+      // price: this._updateIfChanged(eq, "price", baseState.price, baseStateUpdate.price),
 
-      kusdInStabilityPool: this._updateIfChanged(
-        eq,
-        "kusdInStabilityPool",
-        baseState.kusdInStabilityPool,
-        baseStateUpdate.kusdInStabilityPool
-      ),
+      // kusdInStabilityPool: this._updateIfChanged(
+      //   eq,
+      //   "kusdInStabilityPool",
+      //   baseState.kusdInStabilityPool,
+      //   baseStateUpdate.kusdInStabilityPool
+      // ),
 
-      total: this._updateIfChanged(equals, "total", baseState.total, baseStateUpdate.total),
+      // total: this._updateIfChanged(equals, "total", baseState.total, baseStateUpdate.total),
 
-      totalRedistributed: this._updateIfChanged(
-        equals,
-        "totalRedistributed",
-        baseState.totalRedistributed,
-        baseStateUpdate.totalRedistributed
-      ),
+      // totalRedistributed: this._updateIfChanged(
+      //   equals,
+      //   "totalRedistributed",
+      //   baseState.totalRedistributed,
+      //   baseStateUpdate.totalRedistributed
+      // ),
 
-      troveBeforeRedistribution: this._updateIfChanged(
-        equals,
-        "troveBeforeRedistribution",
-        baseState.troveBeforeRedistribution,
-        baseStateUpdate.troveBeforeRedistribution
-      ),
+      // troveBeforeRedistribution: this._updateIfChanged(
+      //   equals,
+      //   "troveBeforeRedistribution",
+      //   baseState.troveBeforeRedistribution,
+      //   baseStateUpdate.troveBeforeRedistribution
+      // ),
 
-      stabilityDeposit: this._updateIfChanged(
-        equals,
-        "stabilityDeposit",
-        baseState.stabilityDeposit,
-        baseStateUpdate.stabilityDeposit
-      ),
+      // stabilityDeposit: this._updateIfChanged(
+      //   equals,
+      //   "stabilityDeposit",
+      //   baseState.stabilityDeposit,
+      //   baseStateUpdate.stabilityDeposit
+      // ),
 
       remainingStabilityPoolKUMOReward: this._silentlyUpdateIfChanged(
         eq,
@@ -455,11 +459,11 @@ export abstract class KumoStore<T = unknown> {
         baseStateUpdate.remainingStabilityPoolKUMOReward
       ),
 
-      _feesInNormalMode: this._silentlyUpdateIfChanged(
-        equals,
-        baseState._feesInNormalMode,
-        baseStateUpdate._feesInNormalMode
-      ),
+      // _feesInNormalMode: this._silentlyUpdateIfChanged(
+      //   equals,
+      //   baseState._feesInNormalMode,
+      //   baseStateUpdate._feesInNormalMode
+      // ),
 
       kumoStake: this._updateIfChanged(
         equals,
@@ -482,37 +486,36 @@ export abstract class KumoStore<T = unknown> {
         baseStateUpdate.vaults
       ),
 
-      _riskiestTroveBeforeRedistribution: this._silentlyUpdateIfChanged(
-        equals,
-        baseState._riskiestTroveBeforeRedistribution,
-        baseStateUpdate._riskiestTroveBeforeRedistribution
-      )
+      // _riskiestTroveBeforeRedistribution: this._silentlyUpdateIfChanged(
+      //   equals,
+      //   baseState._riskiestTroveBeforeRedistribution,
+      //   baseStateUpdate._riskiestTroveBeforeRedistribution
+      // )
     };
   }
 
-  private _derive({
-    troveBeforeRedistribution,
-    totalRedistributed,
-    _feesInNormalMode,
-    total,
-    price,
-    _riskiestTroveBeforeRedistribution,
-    vaults,
-  }: KumoStoreBaseState): KumoStoreDerivedState {
+  // private _derive({
+  //   troveBeforeRedistribution,
+  //   totalRedistributed,
+  //   _feesInNormalMode,
+  //   total,
+  //   price,
+  //   _riskiestTroveBeforeRedistribution,
+  // }: KumoStoreBaseState): KumoStoreDerivedState {
 
 
-    const fees = _feesInNormalMode._setRecoveryMode(total.collateralRatioIsBelowCritical(price));
+  //   const fees = _feesInNormalMode._setRecoveryMode(total.collateralRatioIsBelowCritical(price));
 
-    return {
-      trove: troveBeforeRedistribution.applyRedistribution(totalRedistributed),
-      fees,
-      borrowingRate: fees.borrowingRate(),
-      redemptionRate: fees.redemptionRate(),
-      haveUndercollateralizedTroves: _riskiestTroveBeforeRedistribution
-        .applyRedistribution(totalRedistributed)
-        .collateralRatioIsBelowMinimum(price)
-    };
-  }
+  //   return {
+  //     trove: troveBeforeRedistribution.applyRedistribution(totalRedistributed),
+  //     fees,
+  //     borrowingRate: fees.borrowingRate(),
+  //     redemptionRate: fees.redemptionRate(),
+  //     haveUndercollateralizedTroves: _riskiestTroveBeforeRedistribution
+  //       .applyRedistribution(totalRedistributed)
+  //       .collateralRatioIsBelowMinimum(price)
+  //   };
+  // }
 
   private _reduceDerived(
     derivedState: KumoStoreDerivedState,
@@ -582,7 +585,7 @@ export abstract class KumoStore<T = unknown> {
     assert(!this._loaded);
 
     this._baseState = baseState;
-    this._derivedState = this._derive(baseState);
+    // this._derivedState = this._derive(baseState);
     this._extraState = extraState;
     this._loaded = true;
 
@@ -598,7 +601,8 @@ export abstract class KumoStore<T = unknown> {
     baseStateUpdate?: Partial<KumoStoreBaseState>,
     extraStateUpdate?: Partial<T>
   ): void {
-    assert(this._baseState && this._derivedState);
+    // assert(this._baseState && this._derivedState);
+    assert(this._baseState);
 
     const oldState = this.state;
 
@@ -607,7 +611,7 @@ export abstract class KumoStore<T = unknown> {
     }
 
     // Always running this lets us derive state based on passage of time, like baseRate decay
-    this._derivedState = this._reduceDerived(this._derivedState, this._derive(this._baseState));
+    // this._derivedState = this._reduceDerived(this._derivedState, this._derive(this._baseState));
 
     if (extraStateUpdate) {
       assert(this._extraState);
