@@ -51,7 +51,7 @@ export const Staking: React.FC = () => {
             sx={{ ":enabled:hover": { color: "danger" } }}
             onClick={() => setAmount(Decimal.from(0))}
           >
-            <Icon name="history" size="lg" />
+            <Icon name="history" size="sm" />
           </Button>
         )}
       </Heading>

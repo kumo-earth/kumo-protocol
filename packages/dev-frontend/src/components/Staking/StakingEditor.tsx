@@ -56,7 +56,7 @@ export const StakingEditor: React.FC<StakingEditorProps> = ({
             sx={{ ":enabled:hover": { color: "danger" } }}
             onClick={() => dispatch({ type: "revert" })}
           >
-            <Icon name="history" size="lg" />
+            <Icon name="history" size="sm" />
           </Button>
         )}
       </Heading>

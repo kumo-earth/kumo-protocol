@@ -198,7 +198,7 @@ export const Adjusting: React.FC = () => {
         {vault?.asset.toUpperCase()} Trove
         {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
-            <Icon name="history" size="lg" />
+            <Icon name="history" size="sm" />
           </Button>
         )}
       </Heading>

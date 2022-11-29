@@ -71,7 +71,7 @@ export const Adjusting: React.FC = () => {
             sx={{ ":enabled:hover": { color: "danger" } }}
             onClick={() => setAmount(liquidityMiningStake)}
           >
-            <Icon name="history" size="lg" />
+            <Icon name="history" size="sm" />
           </Button>
         )}
       </Heading>

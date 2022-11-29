@@ -99,7 +99,7 @@ export const RedemptionManager: React.FC = () => {
             sx={{ ":enabled:hover": { color: "danger" } }}
             onClick={() => setKUSDAmount(Decimal.ZERO)}
           >
-            <Icon name="history" size="lg" />
+            <Icon name="history" size="sm" />
           </Button>
         )}
       </Heading>
