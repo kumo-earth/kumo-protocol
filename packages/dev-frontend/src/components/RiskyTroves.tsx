@@ -58,14 +58,14 @@ const select = ({ vaults, blockTag }: BlockPolledKumoStoreState) => ({
   blockTag
 });
 
-export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }) => {
+export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 20, asset = "" }) => {
   const { vaults, blockTag } = useKumoSelector(select);
   const { kumo } = useKumo();
   const { ctx, cty } = useDashboard();
   const { collateralType } = useParams<{ collateralType: string }>();
 
-  const vault = vaults.find(vault => vault.asset === 'cty') || new Vault;
-  const { numberOfTroves, price, total, kusdInStabilityPool} = vault;
+  const vault = vaults.find(vault => vault.asset === "cty") || new Vault();
+  const { numberOfTroves, price, total, kusdInStabilityPool } = vault;
   const recoveryMode = total.collateralRatioIsBelowCritical(price);
   const totalCollateralRatio = total.collateralRatio(price);
 
@@ -149,9 +149,9 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
   }, [copied]);
 
   return (
-    <Card sx={{ width: "100%" }}>
+    <Card sx={{ width: "100%", height: "100%", bg: "#f0cfdc", borderRadius: 20 }}>
       <Heading>
-        <Abbreviation short="Troves">Risky Vaults</Abbreviation>
+        {/* <Abbreviation short="Troves" sx={{ mr: 2}}>Risky Vaults</Abbreviation> */}
 
         <Flex sx={{ alignItems: "center" }}>
           {numberOfTroves !== 0 && (
@@ -165,7 +165,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
               </Abbreviation>
 
               <Button variant="titleIcon" onClick={previousPage} disabled={clampedPage <= 0}>
-                <Icon name="chevron-left" size="lg" />
+                <Icon name="chevron-left" size="sm" />
               </Button>
 
               <Button
@@ -173,7 +173,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
                 onClick={nextPage}
                 disabled={clampedPage >= numberOfPages - 1}
               >
-                <Icon name="chevron-right" size="lg" />
+                <Icon name="chevron-right" size="sm" />
               </Button>
             </>
           )}
@@ -183,7 +183,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
             sx={{ opacity: loading ? 0 : 1, ml: [0, 3] }}
             onClick={forceReload}
           >
-            <Icon name="redo" size="lg" />
+            <Icon name="redo" size="sm" />
           </Button>
         </Flex>
       </Heading>
@@ -324,7 +324,11 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
                                 )
                               : liquidatableInNormalMode(trove, price)
                           ]}
-                          send={kumo.send.liquidate.bind(kumo.send, vault.assetAddress, trove.ownerAddress)}
+                          send={kumo.send.liquidate.bind(
+                            kumo.send,
+                            vault.assetAddress,
+                            trove.ownerAddress
+                          )}
                         >
                           <Button variant="dangerIcon">
                             <Icon name="trash" />

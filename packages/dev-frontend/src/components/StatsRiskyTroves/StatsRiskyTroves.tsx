@@ -23,16 +23,8 @@ const data02 = [
 
 export const StatsRiskyTroves: React.FC = () => {
   return (
-    <Card variant="base" my={6}>
-      <Box sx={{ px: 4, py: 3 }}>
-        <Paragraph variant="headingLarge" sx={{ textAlign: "left" }}>
-          Total Value Locked
-        </Paragraph>
-
-        <Box sx={{ mt: 6 }}>
-          <RiskyTroves  pageSize={1} />
-        </Box>
-      </Box>
-    </Card>
+    <Box sx={{ my: 6, mt: 5, height: "90%" }}>
+      <RiskyTroves pageSize={1} />
+    </Box>
   );
 };
