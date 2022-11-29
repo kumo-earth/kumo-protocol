@@ -296,7 +296,7 @@ export interface KumoStoreBaseState {
     totalStakedUniTokens: Decimal;
     uniTokenAllowance: Decimal;
     uniTokenBalance: Decimal;
-    vaults: any[];
+    vaults: Vault[];
 }
 
 // @public
@@ -815,6 +815,53 @@ export class UserTrove extends Trove {
 
 // @public
 export type UserTroveStatus = "nonExistent" | "open" | "closedByOwner" | "closedByLiquidation" | "closedByRedemption";
+
+// @public
+export class Vault {
+    constructor();
+    // (undocumented)
+    readonly accountBalance: Decimal;
+    // (undocumented)
+    readonly asset: string;
+    // (undocumented)
+    readonly assetAddress: string;
+    // (undocumented)
+    readonly borrowingRate: Decimal;
+    // (undocumented)
+    readonly collateralSurplusBalance: Decimal;
+    // (undocumented)
+    readonly fees: Fees;
+    // (undocumented)
+    readonly _feesInNormalMode: Fees;
+    // (undocumented)
+    readonly haveUndercollateralizedTroves: boolean;
+    // (undocumented)
+    readonly kumoStake: KUMOStake;
+    // (undocumented)
+    readonly kusdInStabilityPool: Decimal;
+    // (undocumented)
+    readonly kusdMintedCap: Decimal;
+    // (undocumented)
+    readonly minNetDebt: Decimal;
+    // (undocumented)
+    readonly numberOfTroves: number;
+    // (undocumented)
+    readonly price: Decimal;
+    // (undocumented)
+    readonly redemptionRate: Decimal;
+    // (undocumented)
+    readonly _riskiestTroveBeforeRedistribution: TroveWithPendingRedistribution;
+    // (undocumented)
+    readonly stabilityDeposit: StabilityDeposit;
+    // (undocumented)
+    readonly total: Trove;
+    // (undocumented)
+    readonly totalRedistributed: Trove;
+    // (undocumented)
+    readonly trove: UserTrove;
+    // (undocumented)
+    readonly troveBeforeRedistribution: TroveWithPendingRedistribution;
+}
 
 
 // (No @packageDocumentation comment for this package)

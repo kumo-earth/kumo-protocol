@@ -21,7 +21,7 @@ export const CollateralRatio: React.FC<CollateralRatioProps> = ({ value, change 
     <>
       <Flex>
         <Box sx={{ mt: [2, 0], ml: 3, mr: -2, fontSize: "24px" }}>
-          <Icon name="heartbeat" />
+          <Icon name="heartbeat" color="#da357a"/>
         </Box>
 
         <StaticRow
@@ -35,7 +35,7 @@ export const CollateralRatio: React.FC<CollateralRatioProps> = ({ value, change 
               ? "warning"
               : value?.lte(1.2)
               ? "danger"
-              : "muted"
+              : "text"
           }
           pendingAmount={
             change?.positive?.absoluteValue?.gt(10)

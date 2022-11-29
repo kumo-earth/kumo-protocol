@@ -106,13 +106,13 @@ export const AssetStats: React.FC<SystemStatsProps> = ({
           TOTAL MINTED
         </Text>
         <Text as="p" variant="medium">
-          {total?.collateral.prettify(2)} {'KUSD'}
+          {total?.debt.prettify(2)} {'KUSD'}
         </Text>
       </Flex>
       <Box sx={{ my: 2 }}>
         <Progress
           max={kusdMintedCap.toString()}
-          value={total?.collateral.toString()}
+          value={total?.debt.toString()}
           sx={{ height: "12px", backgroundColor: "#F0CFDC" }}
         ></Progress>
       </Box>
@@ -131,7 +131,7 @@ export const AssetStats: React.FC<SystemStatsProps> = ({
             MIN. NET DEBT
           </Text>
           <Text as="p" variant="small">
-            {minNetDebt.toString()}$
+            ${minNetDebt.toString()}
           </Text>
         </Flex>
         {/* <Flex sx={{ justifyContent: "space-between", mb: 2 }}>

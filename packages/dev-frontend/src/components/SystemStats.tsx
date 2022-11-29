@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, Heading, Link, Box, Text } from "theme-ui";
 import { AddressZero } from "@ethersproject/constants";
-import { Decimal, Percent, KumoStoreState } from "@kumodao/lib-base";
+import { Decimal, Percent, KumoStoreState, Vault } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 
 import { useKumo } from "../hooks/KumoContext";
@@ -18,8 +18,8 @@ const selectBalances = ({ vaults, kusdBalance, kumoBalance }: KumoStoreState) =>
 const Balances: React.FC = () => {
   const { vaults, kusdBalance, kumoBalance } = useKumoSelector(selectBalances);
   const { collateralType } = useParams<{ collateralType: string }>();
-  const vault = vaults.find(vault => vault.asset === collateralType);
-  const accountBalance =  vault?.accountBalance && vault?.accountBalance;
+  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
+  const { accountBalance } = vault;
 
   return (
     <Box sx={{ mb: 3 }}>
@@ -61,21 +61,12 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
     }
   } = useKumo();
 
-  const {
-    vaults,
-    totalStakedKUMO,
-    kickbackRate
-  } = useKumoSelector(select);
+  const { vaults, totalStakedKUMO, kickbackRate } = useKumoSelector(select);
 
   const { collateralType } = useParams<{ collateralType: string }>();
-  const vault = vaults.find(vault => vault.asset === collateralType);
-  const numberOfTroves =  vault?.numberOfTroves && vault?.numberOfTroves;
-  const price = vault?.price && vault?.price;
-  const total =  vault?.total && vault?.total;
-  const borrowingRate = vault?.borrowingRate && vault.borrowingRate;
-
-  const kusdInStabilityPool = vault?.kusdInStabilityPool && vault?.kusdInStabilityPool;
-
+  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault;
+  const {numberOfTroves, price,  total, borrowingRate, kusdInStabilityPool } = vault;
+ 
   const kusdInStabilityPoolPct =
     total.debt.nonZero && new Percent(kusdInStabilityPool.div(total.debt));
   const totalCollateralRatioPct = new Percent(total.collateralRatio(price));
@@ -83,9 +74,7 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
   const kickbackRatePct = frontendTag === AddressZero ? "100" : kickbackRate?.mul(100).prettify();
 
   return (
-    <Card
-      variant="base"
-    >
+    <Card variant="base">
       {showBalances && <Balances />}
 
       <Heading>Kumo statistics</Heading>
@@ -96,7 +85,7 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
 
       <Statistic
         name="Borrowing Fee"
-        tooltip="The Borrowing Fee is a one-off fee charged as a percentage of the borrowed amount (in KUSD) and is part of a Trove's debt. The fee varies between 0.5% and 5% depending on KUSD redemption volumes."
+        tooltip="The Borrowing Fee is a one-off fee charged as a percentage of the borrowed amount (in KUSD) and is part of a Vault's debt. The fee varies between 0.5% and 5% depending on KUSD redemption volumes."
       >
         {borrowingFeePct.toString(2)}
       </Statistic>
@@ -110,7 +99,7 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
           &nbsp;(${Decimal.from(total.collateral.mul(price)).shorten()})
         </Text>
       </Statistic>
-      <Statistic name="Troves" tooltip="The total number of active Troves in the system.">
+      <Statistic name="Vaults" tooltip="The total number of active Vaults in the system.">
         {Decimal.from(numberOfTroves).prettify(0)}
       </Statistic>
       <Statistic name="KUSD supply" tooltip="The total KUSD minted by the kumo Protocol.">
@@ -140,7 +129,7 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
       </Statistic>
       <Statistic
         name="Recovery Mode"
-        tooltip="Recovery Mode is activated when the Total Collateral Ratio (TCR) falls below 150%. When active, your Trove can be liquidated if its collateral ratio is below the TCR. The maximum collateral you can lose from liquidation is capped at 110% of your Trove's debt. Operations are also restricted that would negatively impact the TCR."
+        tooltip="Recovery Mode is activated when the Total Collateral Ratio (TCR) falls below 150%. When active, your Vault can be liquidated if its collateral ratio is below the TCR. The maximum collateral you can lose from liquidation is capped at 110% of your Vault's debt. Operations are also restricted that would negatively impact the TCR."
       >
         {total.collateralRatioIsBelowCritical(price) ? <Box color="danger">Yes</Box> : "No"}
       </Statistic>

@@ -188,7 +188,7 @@ const editableStyle: ThemeUICSSProperties = {
 
   boxShadow: [1, 2],
   border: 1,
-  borderColor: "muted"
+  borderColor: "muted",
 };
 
 type StaticRowProps = RowProps & StaticAmountsProps;
@@ -279,7 +279,8 @@ export const EditableRow: React.FC<EditableRowProps> = ({
         sx={{
           ...editableStyle,
           fontWeight: "medium",
-          bg: invalid ? "invalid" : "background"
+          bg: invalid ? "invalid" : "transparent",
+          outline: "none"
         }}
       />
       {tokenPrice && <TokenUsd tokenPrice={tokenPrice} editedVal={Decimal.from(editedAmount)} />}
@@ -289,7 +290,7 @@ export const EditableRow: React.FC<EditableRowProps> = ({
       <StaticAmounts
         sx={{
           ...editableStyle,
-          bg: invalid ? "invalid" : "background"
+          bg: invalid ? "invalid" : "transparent"
         }}
         labelledBy={`${inputId}-label`}
         onClick={() => setEditing(inputId)}

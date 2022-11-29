@@ -1,11 +1,11 @@
 import assert from "assert";
 
 import { Decimal } from "./Decimal";
-import { StabilityDeposit } from "./StabilityDeposit";
-import { Trove, TroveWithPendingRedistribution, UserTrove } from "./Trove";
+import { TroveWithPendingRedistribution, UserTrove } from "./Trove";
 import { Fees } from "./Fees";
 import { KUMOStake } from "./KUMOStake";
-import { FrontendStatus } from "./ReadableKumo"
+import { FrontendStatus } from "./ReadableKumo";
+import { Vault } from "./Vault";
 
 /**
  * State variables read from the blockchain.
@@ -99,8 +99,8 @@ export interface KumoStoreBaseState {
   /** Total amount of KUMO currently staked. */
   totalStakedKUMO: Decimal;
 
-   /** Total amount of KUMO currently staked. */
-   vaults: any[];
+  /** Total amount of KUMO currently staked. */
+  vaults: Vault[];
 
   /** @internal */
   // _riskiestTroveBeforeRedistribution: TroveWithPendingRedistribution;
@@ -145,7 +145,6 @@ export interface KumoStoreDerivedState {
    * {@link MINIMUM_COLLATERAL_RATIO | minimum}.
    */
   haveUndercollateralizedTroves: boolean;
-
 }
 
 /**
@@ -195,7 +194,10 @@ const showFrontendStatus = (x: FrontendStatus) =>
     ? '{ status: "unregistered" }'
     : `{ status: "registered", kickbackRate: ${x.kickbackRate} }`;
 
-const wrap = <A extends unknown[], R>(f: (...args: A) => R) => (...args: A) => f(...args);
+const wrap =
+  <A extends unknown[], R>(f: (...args: A) => R) =>
+  (...args: A) =>
+    f(...args);
 
 const difference = <T>(a: T, b: T) =>
   Object.fromEntries(
@@ -479,12 +481,7 @@ export abstract class KumoStore<T = unknown> {
         baseStateUpdate.totalStakedKUMO
       ),
 
-      vaults: this._updateIfChanged(
-        strictEquals,
-        "vaults",
-        baseState.vaults,
-        baseStateUpdate.vaults
-      ),
+      vaults: this._updateIfChanged(strictEquals, "vaults", baseState.vaults, baseStateUpdate.vaults)
 
       // _riskiestTroveBeforeRedistribution: this._silentlyUpdateIfChanged(
       //   equals,
@@ -502,7 +499,6 @@ export abstract class KumoStore<T = unknown> {
   //   price,
   //   _riskiestTroveBeforeRedistribution,
   // }: KumoStoreBaseState): KumoStoreDerivedState {
-
 
   //   const fees = _feesInNormalMode._setRecoveryMode(total.collateralRatioIsBelowCritical(price));
 

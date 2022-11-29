@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
-import { Text, Flex, Box, Heading } from "theme-ui";
-
+import { Flex, Box, Heading } from "theme-ui";
 import { useWalletView } from "../components/WalletConnect/context/WalletViewContext";
-import { shortenAddress } from "../utils/shortenAddress";
 import { Web3Provider } from "@ethersproject/providers";
 
 

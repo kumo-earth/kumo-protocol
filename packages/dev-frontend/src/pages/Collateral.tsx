@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { KumoStoreState } from "@kumodao/lib-base";
+import { KumoStoreState, Vault } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { Grid, Flex, Heading, Text, Box } from "theme-ui";
 
@@ -32,9 +32,8 @@ export const Collateral: React.FC = () => {
   const { vaults } = useKumoSelector(select);
   const [stakeDeposit, setStakeDeposit] = useState(false);
   const { collateralType } = useParams<{ collateralType: string }>();
-  const vault = vaults.find(vault => vault.asset === collateralType);
+  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault;
 
-  console.log("vaultCollateral", vault);
   return (
     <Grid
       columns={[2, "1fr 1fr"]}
@@ -44,11 +43,11 @@ export const Collateral: React.FC = () => {
         p: 5
       }}
     >
-      <Flex sx={{ height: "max-content", width: "95%", mt: 6 }}>
+      <Flex sx={{ height: "max-content", width: "95%", mt: 8 }}>
         <Trove />
       </Flex>
       <Flex sx={{ flexDirection: "column", width: "95%" }}>
-        <Text as="p" variant="large" sx={{ mb: 3 }}>
+        <Text as="p" variant="large" sx={{ mb: "20px" }}>
           System Overview
         </Text>
         <AssetStats
@@ -64,7 +63,6 @@ export const Collateral: React.FC = () => {
           key={vault?.asset}
           totalKUSD={vault?.kusdInStabilityPool}
           userKUSD={vault?.stabilityDeposit?.currentKUSD}
-          vault={vault}
           handleViewStakeDeposit={() => {
             setStakeDeposit(true);
             dialog.setVisible(true);

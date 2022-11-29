@@ -7,7 +7,8 @@ import {
   MINIMUM_COLLATERAL_RATIO,
   CRITICAL_COLLATERAL_RATIO,
   UserTrove,
-  Decimal
+  Decimal,
+  Vault
 } from "@kumodao/lib-base";
 import { BlockPolledKumoStoreState } from "@kumodao/lib-ethers";
 import { useKumoSelector } from "@kumodao/lib-react";
@@ -63,11 +64,8 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
   const { ctx, cty } = useDashboard();
   const { collateralType } = useParams<{ collateralType: string }>();
 
-  const vault = vaults.find(vault => vault.asset === 'cty');
-  const numberOfTroves = vault?.numberOfTroves && vault.numberOfTroves;
-  const price = vault?.price && vault.price;
-  const total = vault?.total && vault.total;
-  const kusdInStabilityPool = vault?.numberOfTroves && vault.numberOfTroves;
+  const vault = vaults.find(vault => vault.asset === 'cty') || new Vault;
+  const { numberOfTroves, price, total, kusdInStabilityPool} = vault;
   const recoveryMode = total.collateralRatioIsBelowCritical(price);
   const totalCollateralRatio = total.collateralRatio(price);
 
@@ -153,7 +151,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
   return (
     <Card sx={{ width: "100%" }}>
       <Heading>
-        <Abbreviation short="Troves">Risky Troves</Abbreviation>
+        <Abbreviation short="Troves">Risky Vaults</Abbreviation>
 
         <Flex sx={{ alignItems: "center" }}>
           {numberOfTroves !== 0 && (
@@ -193,7 +191,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
       {!troves || troves.length === 0 ? (
         <Box sx={{ p: [2, 3] }}>
           <Box sx={{ p: 4, fontSize: 3, textAlign: "center" }}>
-            {!troves ? "Loading..." : "There are no Troves yet"}
+            {!troves ? "Loading..." : "There are no Vaults yet"}
           </Box>
         </Box>
       ) : (

@@ -1,24 +1,18 @@
 import React from "react";
-import { Decimal, UserTrove, StabilityDeposit, Percent } from "@kumodao/lib-base";
+import { Decimal } from "@kumodao/lib-base";
 
 import { Flex, Box, Card, Button, Heading, Text, Paragraph } from "theme-ui";
 
 type StakingCardV1Props = {
   totalKUSD: Decimal;
   userKUSD: Decimal;
-  vault?: {
-    asset: string;
-    stabilityStatus: Boolean;
-    usersTroves: UserTrove[];
-    stabilityDeposit: StabilityDeposit;
-  };
   handleViewStakeDeposit: () => void;
 };
 
-export const StakingCardV1: React.FC<StakingCardV1Props> = ({ totalKUSD, userKUSD, vault, handleViewStakeDeposit }) => {
-  const divdideVal = vault?.stabilityDeposit?.currentKUSD.div(vault?.stabilityDeposit?.currentKUSD);
+export const StakingCardV1: React.FC<StakingCardV1Props> = ({ totalKUSD, userKUSD, handleViewStakeDeposit }) => {
+  // const divdideVal = vault?.stabilityDeposit?.currentKUSD.div(vault?.stabilityDeposit?.currentKUSD);
 
-  const aprRatio = divdideVal ? new Percent(divdideVal) : new Percent(Decimal.ZERO);
+  // const aprRatio = divdideVal ? new Percent(divdideVal) : new Percent(Decimal.ZERO);
 
   return (
     <Card
@@ -38,7 +32,7 @@ export const StakingCardV1: React.FC<StakingCardV1Props> = ({ totalKUSD, userKUS
           </Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between", mt: 1 }}>
-          <Text as="p" variant="xlarge">7-8%</Text>
+          <Text as="p" variant="xlarge">8%</Text>
           <Text as="p" variant="xlarge">10%</Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between", mt: 4 }}>

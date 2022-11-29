@@ -50,7 +50,7 @@ export const Active: React.FC = () => {
         Uniswap Liquidity Farm
         {!isTransactionPending && (
           <Flex sx={{ justifyContent: "flex-end" }}>
-            <RemainingKUMO />
+            {/* <RemainingKUMO /> */}
           </Flex>
         )}
       </Heading>

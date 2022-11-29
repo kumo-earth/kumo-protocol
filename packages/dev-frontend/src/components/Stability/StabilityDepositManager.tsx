@@ -8,7 +8,8 @@ import {
   Decimalish,
   KumoStoreState,
   StabilityDeposit,
-  UserTrove
+  UserTrove,
+  Vault
 } from "@kumodao/lib-base";
 import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@kumodao/lib-react";
 
@@ -143,10 +144,8 @@ const select = ({ vaults, kusdBalance, ownFrontend  }: KumoStoreState) => ({
 export const StabilityDepositManager: React.FC = () => {
   const { collateralType } = useParams<{ collateralType: string }>();
   const { vaults, kusdBalance, ownFrontend } = useKumoSelector(select);
-  const vault = vaults.find(vault => vault.asset === collateralType);
-  const stabilityDeposit: StabilityDeposit = vault?.stabilityDeposit && vault.stabilityDeposit;
-  const trove : UserTrove = vault.trove && vault?.trove
-  const haveUndercollateralizedTroves : boolean = vault?.haveUndercollateralizedTroves &&  vault?.haveUndercollateralizedTroves
+  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault;
+  const {stabilityDeposit, trove, haveUndercollateralizedTroves } = vault;
 
   const validationContext = {
     trove,

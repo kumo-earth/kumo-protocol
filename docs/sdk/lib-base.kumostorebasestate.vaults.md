@@ -9,5 +9,5 @@ Total amount of KUMO currently staked.
 <b>Signature:</b>
 
 ```typescript
-vaults: any[];
+vaults: KumoVaultsState[];
 ```

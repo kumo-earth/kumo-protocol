@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
+import { Icon } from "../Icon";
 
 import { InfoMessage } from "../InfoMessage";
 import { useStabilityView } from "./context/StabilityViewContext";
@@ -16,11 +17,17 @@ export const NoDeposit: React.FC = props => {
 
   return (
     <Card variant="base" sx={{ background: "#ebd8df" }}>
-      <Heading>
+      <Heading as="h2" sx={{ display: "flex", justifyContent: "space-between", mr: 2 }}>
         {collateralType?.toUpperCase()} Stability Pool
         {/* <Flex sx={{ justifyContent: "flex-end" }}>
           <RemainingKUMO />
         </Flex> */}
+        <span
+          style={{ marginLeft: "auto", cursor: "pointer" }}
+          // onClick={() => dispatchEvent("CLOSE_MODAL_PRESSED")}
+        >
+          {/* <Icon name="window-close" size={"1x"} color="#da357a" /> */}
+        </span>
       </Heading>
       <Box sx={{ p: [2, 3] }}>
         <InfoMessage title="You have no KUSD in the Stability Pool.">

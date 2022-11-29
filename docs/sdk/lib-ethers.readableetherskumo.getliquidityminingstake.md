@@ -9,7 +9,7 @@ Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in l
 <b>Signature:</b>
 
 ```typescript
-getLiquidityMiningStake(address: string, overrides?: EthersCallOverrides): Promise<Decimal>;
+getLiquidityMiningStake(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
 ```
 
 ## Parameters

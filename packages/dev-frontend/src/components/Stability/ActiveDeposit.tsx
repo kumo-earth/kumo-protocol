@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 
-import { KumoStoreState } from "@kumodao/lib-base";
+import { KumoStoreState, Vault } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 
 import { COIN, GT } from "../../strings";
@@ -25,10 +25,12 @@ export const ActiveDeposit: React.FC = () => {
   const { dispatchEvent } = useStabilityView();
   const { collateralType } = useParams<{ collateralType: string }>();
   const { vaults } = useKumoSelector(select);
-  const vault = vaults.find(vault => vault.asset === collateralType);
+  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault;
   const { stabilityDeposit , trove, kusdInStabilityPool } = vault;
 
   const poolShare = stabilityDeposit.currentKUSD.mulDiv(100, kusdInStabilityPool);
+
+  console.log("ActiveDeposit3", vault)
 
   const handleAdjustDeposit = useCallback(() => {
     dispatchEvent("ADJUST_DEPOSIT_PRESSED");
@@ -61,7 +63,7 @@ export const ActiveDeposit: React.FC = () => {
         {collateralType?.toUpperCase()} Stability Pool
         {!isWaitingForTransaction && (
           <Flex sx={{ justifyContent: "flex-end" }}>
-            <RemainingKUMO />
+            {/* <RemainingKUMO /> */}
           </Flex>
         )}
       </Heading>
@@ -127,7 +129,7 @@ export const ActiveDeposit: React.FC = () => {
 
         {hasTrove && (
           <ClaimAndMove disabled={!hasGain} asset={vault?.assetAddress} assetName={vault?.asset}>
-            Claim KUMO and move {collateralType?.toUpperCase()} to Trove
+            Claim KUMO and move {collateralType?.toUpperCase()} to Vault
           </ClaimAndMove>
         )}
       </Box>

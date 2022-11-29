@@ -9,7 +9,7 @@ Get the amount of KUSD held by an address.
 <b>Signature:</b>
 
 ```typescript
-getKUSDBalance(address: string, overrides?: EthersCallOverrides): Promise<Decimal>;
+getKUSDBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
 ```
 
 ## Parameters

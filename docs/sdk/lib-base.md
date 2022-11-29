@@ -26,6 +26,7 @@
 |  [KumoStoreBaseState](./lib-base.kumostorebasestate.md) | State variables read from the blockchain. |
 |  [KumoStoreDerivedState](./lib-base.kumostorederivedstate.md) | State variables derived from [KumoStoreBaseState](./lib-base.kumostorebasestate.md)<!-- -->. |
 |  [KumoStoreListenerParams](./lib-base.kumostorelistenerparams.md) | Parameters passed to [KumoStore](./lib-base.kumostore.md) listeners. |
+|  [KumoVaultsState](./lib-base.kumovaultsstate.md) |  |
 |  [LiquidationDetails](./lib-base.liquidationdetails.md) | Details of a [liquidate()](./lib-base.transactablekumo.liquidate.md) or [liquidateUpTo()](./lib-base.transactablekumo.liquidateupto.md) transaction. |
 |  [PopulatableKumo](./lib-base.populatablekumo.md) | Prepare Kumo transactions for sending. |
 |  [PopulatedKumoTransaction](./lib-base.populatedkumotransaction.md) | A transaction that has been prepared for sending. |

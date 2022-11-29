@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
+import { Icon } from "../Icon";
 import { InfoMessage } from "../InfoMessage";
 import { useTroveView } from "./context/TroveViewContext";
 
@@ -14,14 +15,16 @@ export const NoTrove: React.FC = props => {
 
   return (
     <Card variant="base" sx={{ width: "100%" }}>
-      <Heading  as='h2'>{collateralType.toUpperCase()} Trove</Heading>
+      <Heading as="h2">
+        {collateralType.toUpperCase()} Vault
+      </Heading>
       <Box sx={{ p: [2, 3] }}>
         <InfoMessage title="You haven't borrowed any KUSD yet.">
-          You can borrow KUSD by opening a Trove.
+          You can borrow KUSD by opening a Vault.
         </InfoMessage>
 
         <Flex variant="layout.actions">
-          <Button onClick={handleOpenTrove}>Open Trove</Button>
+          <Button onClick={handleOpenTrove}>Open Vault</Button>
         </Flex>
       </Box>
     </Card>

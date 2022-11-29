@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button, Select } from "theme-ui";
-import { Decimal, KumoStoreState, UserTrove } from "@kumodao/lib-base";
+import { Decimal, KumoStoreState, UserTrove, Vault } from "@kumodao/lib-base";
 import { DisabledEditableRow } from "./Editor";
 import { useTroveView } from "./context/TroveViewContext";
 import { Icon } from "../Icon";
@@ -31,10 +31,10 @@ export const ReadOnlyTrove: React.FC = () => {
 
   const { ctx, cty } = useDashboard();
   const { vaults } = useKumoSelector(select);
-  const vault = vaults.find(vault => vault.asset === collateralType);
-  const trove: UserTrove = vault?.trove?.ownerAddress === account && vault?.trove;
+  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault;
+  const { trove } = vault;
   const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
-  let collateralRatio: Decimal = trove?.collateralRatio(price);
+  let collateralRatio = trove?.collateralRatio(price);
 
   // console.log("READONLY TROVE", trove.collateral.prettify(4));
   return (

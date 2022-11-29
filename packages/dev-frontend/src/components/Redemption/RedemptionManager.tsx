@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Box, Flex, Card, Heading } from "theme-ui";
 
-import { Decimal, Percent, KumoStoreState, MINIMUM_COLLATERAL_RATIO } from "@kumodao/lib-base";
+import { Decimal, Percent, KumoStoreState, MINIMUM_COLLATERAL_RATIO, Vault } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 
 import { COIN } from "../../strings";
@@ -30,11 +30,8 @@ export const RedemptionManager: React.FC = () => {
   const { vaults, kusdBalance } = useKumoSelector(select);
   const { collateralType } = useParams<{ collateralType: string }>();
 
-  const vault = vaults.find(vault => vault.asset === collateralType);
-  const price: Decimal = vault?.price && vault?.price;
-  const fees = vault?.fees && vault?.fees;
-
-  const total = vault?.total && vault?.total;
+  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault;
+  const { price, fees, total  } = vault
   const [kusdAmount, setKUSDAmount] = useState(Decimal.ZERO);
   const [changePending, setChangePending] = useState(false);
   const editingState = useState<string>();

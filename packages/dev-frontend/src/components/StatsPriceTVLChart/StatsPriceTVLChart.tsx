@@ -18,27 +18,27 @@ import {
 const data01 = [
   {
     name: "6th Oct 2022",
-    price: 0.281
+    price: 1 + 0.002
   },
   {
     name: "12th Oct 2022",
-    price: 0.391
+    price: 1 - 0.001
   },
   {
     name: "18th Oct 2022",
-    price: 0.571
+    price: 1 + 0.003
   },
   {
     name: "24th Oct 2022",
-    price: 0.431
+    price: 1 - 0.003
   },
   {
     name: "30th Oct 2022",
-    price: 0.221
+    price: 1 + 0.001
   },
   {
     name: "6th Nov 2022",
-    price: 0.181
+    price: 1 - 0.003
   }
 ];
 
@@ -51,7 +51,7 @@ const data = [
   {
     name: "12th Oct 2022",
     CTX: 705070,
-    CTY: 605000,
+    CTY: 605000
   },
   {
     name: "18th Oct 2022",
@@ -74,7 +74,18 @@ const data = [
     CTY: 400300
   }
 ];
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip">
+        <p style={{ margin: 0 }}>{`${label}`}</p>
+        <p style={{ margin: 0 }}>$ {payload[0].value}</p>
+      </div>
+    );
+  }
 
+  return null;
+};
 export const StatsPriceTVLChart: React.FC = () => {
   return (
     <Card variant="base" sx={{ mt: 8 }}>
@@ -110,8 +121,8 @@ export const StatsPriceTVLChart: React.FC = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="price" stroke="#8884d8" activeDot={{ r: 8 }} />
+                <Tooltip content={<CustomTooltip />} />
+                <Line type="monotone" dataKey="price" stroke="#00aed6" activeDot={{ r: 8 }} />
               </LineChart>
             </ResponsiveContainer>
           </Flex>
@@ -134,7 +145,7 @@ export const StatsPriceTVLChart: React.FC = () => {
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Area type="monotone" dataKey="CTX" stackId="1" stroke="#8884d8" fill="#8884d8" />
+                <Area type="monotone" dataKey="CTX" stackId="1" stroke="#b579e" fill="#8884d8" />
                 <Area type="monotone" dataKey="CTY" stackId="1" stroke="#82ca9d" fill="#82ca9d" />
                 <Legend />
               </AreaChart>

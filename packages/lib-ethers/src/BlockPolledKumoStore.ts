@@ -10,7 +10,7 @@ import {
   KumoStore,
   Fees,
   ASSET_TOKENS,
-  UserTrove
+  Vault
 } from "@kumodao/lib-base";
 
 import { decimalify, promiseAllValues } from "./_utils";
@@ -94,15 +94,8 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
   ): Promise<[baseState: KumoStoreBaseState, extraState: BlockPolledKumoStoreExtraState]> {
     const { userAddress, frontendTag, provider } = this.connection;
     const asset = ASSET_TOKENS.ctx.assetAddress
-    interface VaultStateType extends Partial<KumoStoreBaseState> {
-      asset: string;
-      assetAddress: string;
-      _feesInNormalMode: Fees;
-      kusdMintedCap: Decimal;
-      minNetDebt: Decimal;
-    }
 
-    const vaultState: VaultStateType[] = [];
+    const vaultState: Vault[] = [];
 
     Object.keys(ASSET_TOKENS).forEach(async assetToken => {
       const { assetAddress, KUSD_MINTED_CAP, MIN_NET_DEBT } = ASSET_TOKENS[assetToken];
@@ -132,9 +125,9 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
                   blockTag
                 }
               ),
-              trove: this._readable.getTrove(assetAddress, userAddress, {
-                blockTag
-              }),
+              // trove: this._readable.getTrove(assetAddress, userAddress, {
+              //   blockTag
+              // }),
 
               troveBeforeRedistribution: this._readable.getTroveBeforeRedistribution(
                 assetAddress,

@@ -9,14 +9,14 @@ Check whether an address is registered as a Kumo frontend, and what its kickback
 <b>Signature:</b>
 
 ```typescript
-getFrontendStatus(asset: string, address: string, overrides?: EthersCallOverrides): Promise<FrontendStatus>;
+getFrontendStatus(assetName: string, address: string, overrides?: EthersCallOverrides): Promise<FrontendStatus>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  asset | string |  |
+|  assetName | string |  |
 |  address | string | Address to check. |
 |  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
 

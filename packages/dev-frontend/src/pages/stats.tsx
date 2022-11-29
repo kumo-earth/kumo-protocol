@@ -14,8 +14,8 @@ export const Stats: React.FC = () => {
         return  <ProtocolStats />;
       case "vaults":
         return  <StatsRiskyTroves />;
-      case "liquidations":
-          return <StatsLiquidation />;
+      // case "liquidations":
+      //     return <StatsLiquidation />;
       default:
         return <Box>protocol</Box>;
     }
@@ -48,9 +48,9 @@ export const Stats: React.FC = () => {
             borderRadius: "8px"
           }}
         >
-          RISKY TROVES
+          RISKY Vaults
         </Link>
-        <Link
+        {/* <Link
           to="liquidations"
           sx={{
             py: 1,
@@ -61,7 +61,7 @@ export const Stats: React.FC = () => {
           }}
         >
           LIQUIDATION STATISTICS
-        </Link>
+        </Link> */}
       </Flex>
       <Box sx={{ flex: 1 }}>{renderStatsView(statsType)}</Box>
     </Flex>

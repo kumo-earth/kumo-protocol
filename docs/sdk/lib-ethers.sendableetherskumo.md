@@ -35,13 +35,13 @@ export declare class SendableEthersKumo implements SendableKumo<EthersTransactio
 |  [liquidateUpTo(asset, maximumNumberOfTrovesToLiquidate, overrides)](./lib-ethers.sendableetherskumo.liquidateupto.md) |  | Liquidate the least collateralized Troves up to a maximum number. |
 |  [openTrove(params, asset, maxBorrowingRateOrOptionalParams, overrides)](./lib-ethers.sendableetherskumo.opentrove.md) |  | Open a new Trove by depositing collateral and borrowing KUSD. |
 |  [redeemKUSD(asset, amount, maxRedemptionRate, overrides)](./lib-ethers.sendableetherskumo.redeemkusd.md) |  | Redeem KUSD to native currency (e.g. Ether) at face value. |
-|  [registerFrontend(kickbackRate, overrides)](./lib-ethers.sendableetherskumo.registerfrontend.md) |  | Register current wallet address as a Kumo frontend. |
+|  [registerFrontend(assetName, kickbackRate, overrides)](./lib-ethers.sendableetherskumo.registerfrontend.md) |  | Register current wallet address as a Kumo frontend. |
 |  [repayKUSD(asset, amount, overrides)](./lib-ethers.sendableetherskumo.repaykusd.md) |  | Adjust existing Trove by repaying some of its debt. |
 |  [sendKUMO(toAddress, amount, overrides)](./lib-ethers.sendableetherskumo.sendkumo.md) |  | Send KUMO tokens to an address. |
 |  [sendKUSD(toAddress, amount, overrides)](./lib-ethers.sendableetherskumo.sendkusd.md) |  | Send KUSD tokens to an address. |
 |  [stakeKUMO(amount, overrides)](./lib-ethers.sendableetherskumo.stakekumo.md) |  | Stake KUMO to start earning fee revenue or increase existing stake. |
 |  [stakeUniTokens(amount, overrides)](./lib-ethers.sendableetherskumo.stakeunitokens.md) |  | Stake Uniswap ETH/KUSD LP tokens to participate in liquidity mining and earn KUMO. |
-|  [transferCollateralGainToTrove(asset, overrides)](./lib-ethers.sendableetherskumo.transfercollateralgaintotrove.md) |  | Transfer [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) from Stability Deposit to Trove. |
+|  [transferCollateralGainToTrove(asset, assetName, overrides)](./lib-ethers.sendableetherskumo.transfercollateralgaintotrove.md) |  | Transfer [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) from Stability Deposit to Trove. |
 |  [unstakeKUMO(amount, overrides)](./lib-ethers.sendableetherskumo.unstakekumo.md) |  | Withdraw KUMO from staking. |
 |  [unstakeUniTokens(amount, overrides)](./lib-ethers.sendableetherskumo.unstakeunitokens.md) |  | Withdraw Uniswap ETH/KUSD LP tokens from liquidity mining. |
 |  [withdrawCollateral(asset, amount, overrides)](./lib-ethers.sendableetherskumo.withdrawcollateral.md) |  | Adjust existing Trove by withdrawing some of its collateral. |

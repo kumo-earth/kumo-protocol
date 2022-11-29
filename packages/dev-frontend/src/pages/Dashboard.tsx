@@ -21,20 +21,24 @@ export const Dashboard: React.FC = () => {
     <Flex variant="layout.dashboard">
       <DashboadHeader>
         <DashboadHeaderItem  title={"TOTAL COLLATERAL"} value={`$${totalCollDebt.totalColl.prettify(0)}`} />
-        <DashboadHeaderItem  title={"TOTAL DEBT"} value={`$${totalCollDebt.totalDebt.prettify(0)}`} />
+        <DashboadHeaderItem  title={"TOTAL MINTED KUSD"} value={`$${totalCollDebt.totalDebt.prettify(2)}`} />
         <DashboadHeaderItem  title={"TOTAL CARBON CREDITS"} value={totalCollDebt.totalCarbonCredits.prettify(0)} />
       </DashboadHeader>
       <Divider  sx={{ color: "muted" }} />
       <DashboadContent>
         {vaults.map(vault => {
           const price = vault?.asset === 'ctx' ? ctx : vault?.asset === 'cty' ? cty : Decimal.from(0)
-          const total: Trove = vault?.total
+          const total = vault.total
+          const kusdInStabilityPool = vault.kusdInStabilityPool;
+          const borrowingRate = vault.borrowingRate;
           const totalCollateralRatioPct = !vault?.total?.isEmpty ? new Percent(vault.total.collateralRatio(price)).prettify() : "0.00%";
           return (
             <CollateralCard
               collateralType={vault.asset}
               totalCollateralRatioPct={totalCollateralRatioPct}
-              total={vault?.total}
+              total={total}
+              kusdInStabilityPool={kusdInStabilityPool}
+              borrowingRate={borrowingRate}
               kusdMintedCap={vault?.kusdMintedCap}
               key={vault?.asset}
             />

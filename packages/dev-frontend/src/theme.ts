@@ -10,7 +10,9 @@ const baseColors = {
   lightGrey: "#e6e6e6",
   transparent: "transparent",
 
-  blue: "#1542cd",
+  blue: "#00aed6",
+  darkBlue: "#4721BD",
+  orange: "#f6701f",
   green: "#28c081",
   yellow: "#fd9d28",
   red: "#dc2c10",
@@ -29,8 +31,8 @@ const colors = {
   secondaryHover: baseColors.magentaMedium,
   transparent: baseColors.transparent,
 
-  success: baseColors.green,
-  warning: baseColors.yellow,
+  success: baseColors.darkBlue,
+  warning: baseColors.orange,
   danger: baseColors.red,
   dangerHover: baseColors.lightRed,
   info: baseColors.blue,
@@ -362,7 +364,7 @@ const theme: Theme = {
       border: 1,
       borderColor: "muted",
       borderRadius: "4px",
-      bg: "background",
+      bg: "secondary",
       boxShadow: 2,
 
       fontSize: 1,
@@ -582,7 +584,7 @@ const theme: Theme = {
   links: {
     nav: {
       py: 2,
-      fontWeight: 800,
+      fontWeight: 700,
       fontSize: 2,
       textTransform: "uppercase",
       width: ["100%", "auto"],

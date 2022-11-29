@@ -9,7 +9,7 @@ Withdraw KUSD from Stability Deposit.
 <b>Signature:</b>
 
 ```typescript
-withdrawKUSDFromStabilityPool(amount: Decimalish, asset: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>>;
+withdrawKUSDFromStabilityPool(amount: Decimalish, assetName: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>>;
 ```
 
 ## Parameters
@@ -17,7 +17,7 @@ withdrawKUSDFromStabilityPool(amount: Decimalish, asset: string, overrides?: Eth
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUSD to withdraw. |
-|  asset | string |  |
+|  assetName | string |  |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 
 <b>Returns:</b>

@@ -9,7 +9,8 @@ import {
   KUSD_MINIMUM_NET_DEBT,
   Percent,
   ASSET_TOKENS,
-  Fees
+  Fees,
+  Vault
 } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 
@@ -43,12 +44,11 @@ export const Opening: React.FC = () => {
 
   const { accountBalance, fees, validationContext } = useKumoSelector((state: KumoStoreState) => {
     const { vaults, kusdBalance } = state;
-    const vault = vaults.find(vault => vault.asset === collateralType);
-    const accountBalance = vault?.accountBalance as Decimal;
-    const fees = vault?.fees as Fees;
+    const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
+    const { accountBalance, fees, total, numberOfTroves } = vault;
+
     const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
-    const total = vault?.total && vault.total;
-    const numberOfTroves = vault?.numberOfTroves && vault.numberOfTroves;
+
     const validationContext = {
       // ...selectForTroveChangeValidation(state),
       price,
@@ -122,7 +122,7 @@ export const Opening: React.FC = () => {
   return (
     <Card variant="base">
       <Heading as="h2">
-        {collateralType.toUpperCase()} Trove
+        {collateralType.toUpperCase()} Vault
         {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
             <Icon name="history" size="lg" />
@@ -163,8 +163,8 @@ export const Opening: React.FC = () => {
             <InfoIcon
               tooltip={
                 <Card variant="tooltip" sx={{ width: "200px" }}>
-                  An amount set aside to cover the liquidator’s gas costs if your Trove needs to be
-                  liquidated. The amount increases your debt and is refunded if you close your Trove
+                  An amount set aside to cover the liquidator’s gas costs if your Vault needs to be
+                  liquidated. The amount increases your debt and is refunded if you close your Vault
                   by fully paying off its net debt.
                 </Card>
               }
@@ -199,7 +199,7 @@ export const Opening: React.FC = () => {
             <InfoIcon
               tooltip={
                 <Card variant="tooltip" sx={{ width: "240px" }}>
-                  The total amount of KUSD your Trove will hold.{" "}
+                  The total amount of KUSD your Vault will hold.{" "}
                   {isDirty && (
                     <>
                       You will need to repay {totalDebt.sub(KUSD_LIQUIDATION_RESERVE).prettify(2)}{" "}

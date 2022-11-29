@@ -7,20 +7,24 @@ import { useWeb3React } from "@web3-react/core";
 
 import { useTroveView } from "../Trove/context/TroveViewContext";
 import { toUpper } from "lodash";
+import { InfoIcon } from "../InfoIcon";
 
 type CollateralCardProps = {
   collateralType?: string;
   totalCollateralRatioPct: string;
   total: Trove;
-  kusdMintedCap: Decimal
+  kusdInStabilityPool: Decimal;
+  borrowingRate: Decimal;
+  kusdMintedCap: Decimal;
 };
 
 export const CollateralCard: React.FC<CollateralCardProps> = ({
   collateralType,
   totalCollateralRatioPct,
   total,
+  kusdInStabilityPool,
+  borrowingRate,
   kusdMintedCap
-
 }) => {
   const { dispatchEvent, view } = useTroveView();
   const history = useHistory();
@@ -53,7 +57,15 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
 
       <Box sx={{ px: 4, mt: 5 }}>
         <Text as="p" variant="normalBold">
-          SYSTEM COLLATERALL RATIO
+          TOTAL COLLATERAL RATIO{" "}
+          <InfoIcon
+            tooltip={
+              <Card variant="tooltip" sx={{ width: "220px" }}>
+                {`The Total Collateral Ratio or TCR is the ratio of the Dollar value of the entire
+                system collateral at the current ${toUpper(collateralType)}:USD price, to the entire system debt.`}
+              </Card>
+            }
+          />
         </Text>
 
         <Text as="p" variant="xlarge" sx={{ mt: 1 }}>
@@ -61,25 +73,41 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
         </Text>
         <Flex sx={{ justifyContent: "space-between", mt: 6 }}>
           <Text as="p" variant="normalBold">
-            COLLATERAL
+            MINTED KUSD
           </Text>
           <Text as="p" variant="normalBold">
-            {total?.collateral.prettify(2)} {toUpper(collateralType)}
+            {total?.debt.prettify(2)}
           </Text>
         </Flex>
         <Box sx={{ my: 2 }}>
           <Progress
             max={kusdMintedCap.toString()}
-            value={total?.collateral.toString()}
+            value={total?.debt.toString()}
             sx={{ height: "12px", backgroundColor: "#F0CFDC" }}
           ></Progress>
         </Box>
-        <Flex sx={{ justifyContent: "space-between", mb: 4 }}>
+        <Flex sx={{ justifyContent: "space-between", mb: 3 }}>
           <Text as="p" variant="normalBold">
-            MIN CAP
+            MINT CAP
           </Text>
           <Text as="p" variant="normalBold">
-           {kusdMintedCap.shorten().toString().toLowerCase()}
+            {kusdMintedCap.shorten().toString().toLowerCase()}
+          </Text>
+        </Flex>
+        <Flex sx={{ justifyContent: "space-between", mb: 1 }}>
+          <Text as="p" variant="normalBold">
+            KUSD in Stability Pool
+          </Text>
+          <Text as="p" variant="normalBold">
+            {kusdInStabilityPool.prettify(2)}
+          </Text>
+        </Flex>
+        <Flex sx={{ justifyContent: "space-between", mb: 4 }}>
+          <Text as="p" variant="normalBold">
+            Borrowing Rate
+          </Text>
+          <Text as="p" variant="normalBold">
+            {`${borrowingRate.mul(100).toString()}%`}
           </Text>
         </Flex>
       </Box>

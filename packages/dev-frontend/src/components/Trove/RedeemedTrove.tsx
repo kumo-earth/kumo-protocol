@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { Card, Heading, Box, Button, Flex } from "theme-ui";
 import { CollateralSurplusAction } from "../CollateralSurplusAction";
-import { Decimal, KumoStoreState } from "@kumodao/lib-base";
+import { Decimal, KumoStoreState, Vault } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { useTroveView } from "./context/TroveViewContext";
 import { InfoMessage } from "../InfoMessage";
@@ -18,9 +18,8 @@ export const RedeemedTrove: React.FC = () => {
   const { hasSurplusCollateral } = useKumoSelector((state: KumoStoreState) => {
     const { vaults } = state;
 
-    const vault = vaults.find(vault => vault.asset === collateralType);
-    const collateralSurplusBalance: Decimal =
-      vault?.collateralSurplusBalance && vault.collateralSurplusBalance;
+    const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
+    const { collateralSurplusBalance } = vault;
     return {
       hasSurplusCollateral: !collateralSurplusBalance.isZero
     };
@@ -38,25 +37,17 @@ export const RedeemedTrove: React.FC = () => {
         width: "100%"
       }}
     >
-      <Heading>
-        Trove
-      </Heading>
+      <Heading>Vault</Heading>
       <Box sx={{ p: [2, 3] }}>
-        <InfoMessage title="Your Trove has been redeemed.">
+        <InfoMessage title="Your Vault has been redeemed.">
           {hasSurplusCollateral
-            ? "Please reclaim your remaining collateral before opening a new Trove."
-            : "You can borrow KUSD by opening a Trove."}
+            ? "Please reclaim your remaining collateral before opening a new Vault."
+            : "You can borrow KUSD by opening a Vault."}
         </InfoMessage>
 
         <Flex variant="layout.actions">
           {hasSurplusCollateral && <CollateralSurplusAction />}
-          {!hasSurplusCollateral && (
-            <Button
-              onClick={handleOpenTrove}
-            >
-              Open Trove
-            </Button>
-          )}
+          {!hasSurplusCollateral && <Button onClick={handleOpenTrove}>Open Vault</Button>}
         </Flex>
       </Box>
     </Card>

@@ -8,7 +8,8 @@ import {
   Decimalish,
   StabilityDeposit,
   KumoStoreState,
-  Difference
+  Difference,
+  Vault
 } from "@kumodao/lib-base";
 
 import { useKumoSelector } from "@kumodao/lib-react";
@@ -43,14 +44,12 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   dispatch,
   children
 }) => {
-  const {vaults,  kusdBalance,  } = useKumoSelector(select);
+  const { vaults, kusdBalance } = useKumoSelector(select);
   const editingState = useState<string>();
   const { collateralType } = useParams<{ collateralType: string }>();
-  const vault = vaults.find(vault => vault.asset === collateralType);
-  const kusdInStabilityPool = vault?.kusdInStabilityPool && vault?.kusdInStabilityPool;
+  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
+  const { kusdInStabilityPool } = vault;
   const location = useLocation();
-
-
 
   const edited = !editedKUSD.eq(originalDeposit.currentKUSD);
 
@@ -71,7 +70,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
     <Card
       sx={{
         width: "90%",
-        background: '#ebd8df'
+        background: "#ebd8df"
       }}
       variant="base"
     >

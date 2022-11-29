@@ -10,7 +10,8 @@ import {
   Difference,
   UserTrove,
   ASSET_TOKENS,
-  Fees
+  Fees,
+  Vault
 } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { Web3Provider } from "@ethersproject/providers";
@@ -93,29 +94,26 @@ export const Adjusting: React.FC = () => {
   const { account } = useWeb3React<Web3Provider>();
   const { collateralType } = useParams<{ collateralType: string }>();
   const { ctx, cty } = useDashboard();
-  const { vault, accountBalance, fees, validationContext } = useKumoSelector(
+  const { vault, trove, accountBalance, fees, validationContext } = useKumoSelector(
     (state: KumoStoreState) => {
       const { vaults, kusdBalance } = state;
-      const vault = vaults.find(vault => vault.asset === collateralType);
-      const accountBalance = vault?.accountBalance as Decimal;
-      const fees = vault?.fees as Fees;
+      const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
+      const { numberOfTroves, total, fees, accountBalance, trove } = vault;
+
       const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
-      const total = vault?.total && vault.total;
-      const numberOfTroves = vault?.numberOfTroves && vault.numberOfTroves;
+
       const validationContext = {
         // ...selectForTroveChangeValidation({ price, accountBalance,  }),
+        trove,
         price,
         total,
         accountBalance,
         kusdBalance,
         numberOfTroves
       };
-      return { vault, accountBalance, fees, validationContext };
+      return { vault, trove, accountBalance, fees, validationContext };
     }
   );
-
-  // const vault = vaults.find(vault => vault.asset === collateralType);
-  const trove: UserTrove = vault?.trove?.ownerAddress === account && vault?.trove;
   const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
   // const fees = vault?.fees as Fees
 
@@ -240,8 +238,8 @@ export const Adjusting: React.FC = () => {
             <InfoIcon
               tooltip={
                 <Card variant="tooltip" sx={{ width: "200px" }}>
-                  An amount set aside to cover the liquidator’s gas costs if your Trove needs to be
-                  liquidated. The amount increases your debt and is refunded if you close your Trove
+                  An amount set aside to cover the liquidator’s gas costs if your Vault needs to be
+                  liquidated. The amount increases your debt and is refunded if you close your Vault
                   by fully paying off its net debt.
                 </Card>
               }
@@ -276,7 +274,7 @@ export const Adjusting: React.FC = () => {
             <InfoIcon
               tooltip={
                 <Card variant="tooltip" sx={{ width: "240px" }}>
-                  The total amount of KUSD your Trove will hold.{" "}
+                  The total amount of KUSD your Vault will hold.{" "}
                   {isDirty && (
                     <>
                       You will need to repay {totalDebt.sub(KUSD_LIQUIDATION_RESERVE).prettify(2)}{" "}
@@ -294,7 +292,7 @@ export const Adjusting: React.FC = () => {
 
         {description ?? (
           <ActionDescription>
-            Adjust your Trove by modifying its collateral, debt, or both.
+            Adjust your Vault by modifying its collateral, debt, or both.
           </ActionDescription>
         )}
 

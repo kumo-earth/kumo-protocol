@@ -7,7 +7,7 @@ type DashboardContextValue = {
   ctx: Decimal;
   cty: Decimal;
   totalCollDebt: { totalColl: Decimal; totalDebt: Decimal; totalCarbonCredits: Decimal };
-  totalTroveCollDebt : {totalTroveColl: Decimal, totalTroveDebt: Decimal }
+  totalTroveCollDebt : {totalTroveColl: Decimal, totalTroveDebt: Decimal, troveTotalCarbonCredits: Decimal }
 };
 
 const DashboardContext = createContext<DashboardContextValue | undefined>(undefined);
@@ -25,7 +25,8 @@ export const DashboardProvider: React.FC = ({ children }) => {
   });
   const [totalTroveCollDebt, setTotalTroveCollDebt] = useState({
     totalTroveColl: Decimal.ZERO,
-    totalTroveDebt: Decimal.ZERO
+    totalTroveDebt: Decimal.ZERO,
+    troveTotalCarbonCredits: Decimal.ZERO
   });
 
   useEffect(() => {
@@ -35,12 +36,14 @@ export const DashboardProvider: React.FC = ({ children }) => {
 
     let troveCalcCollat = Decimal.ZERO;
     let troveCalcDebt = Decimal.ZERO;
+    let troveCarbonCredits = Decimal.ZERO
 
     vaults.forEach(vault => {
       const { total, trove } = vault;
       calcDebt = calcDebt.add(total.debt);
       troveCalcDebt = troveCalcDebt.add(trove.debt);
       calcCarbonCredits = calcCarbonCredits.add(total.collateral);
+      troveCarbonCredits = troveCarbonCredits.add(trove.collateral)
       if (vault.asset === "ctx" && total.collateral.nonZero && ctx.nonZero) {
         calcCollat = calcCollat.add(total.collateral.mul(ctx));
         troveCalcCollat = troveCalcCollat.add(trove.collateral.mul(ctx));
@@ -55,7 +58,8 @@ export const DashboardProvider: React.FC = ({ children }) => {
       });
       setTotalTroveCollDebt({
         totalTroveColl: troveCalcCollat,
-        totalTroveDebt: troveCalcDebt
+        totalTroveDebt: troveCalcDebt,
+        troveTotalCarbonCredits: troveCarbonCredits
       });
     });
   }, [vaults, ctx, cty]);

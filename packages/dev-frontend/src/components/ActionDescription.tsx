@@ -20,7 +20,7 @@ export const ActionDescription: React.FC = ({ children }) => (
     }}
   >
     <Flex sx={{ alignItems: "center" }}>
-      <Icon name="info-circle" size="lg" />
+      <Icon name="info-circle" size="lg" color="#da357a"/>
       <Text sx={{ ml: 2 }}>{children}</Text>
     </Flex>
   </Box>

@@ -39,7 +39,7 @@ const transition = (view: StabilityView, event: StabilityEvent): StabilityView =
   return nextView;
 };
 
-const getInitialView = (stabilityDeposit: StabilityDeposit): StabilityView => {
+const getInitialView = (stabilityDeposit?: StabilityDeposit): StabilityView => {
   return stabilityDeposit?.isEmpty ? "NONE" : "ACTIVE";
 };
 
@@ -53,7 +53,7 @@ export const StabilityViewProvider: React.FC = props => {
   const location = useLocation();
 
   const vault = vaults.find(vault => vault.asset === getPathName(location));
-  const stabilityDeposit: StabilityDeposit = vault?.stabilityDeposit && vault.stabilityDeposit
+  const stabilityDeposit =  vault?.stabilityDeposit
 
   const [view, setView] = useState<StabilityView>(getInitialView(stabilityDeposit));
   const viewRef = useRef<StabilityView>(view);

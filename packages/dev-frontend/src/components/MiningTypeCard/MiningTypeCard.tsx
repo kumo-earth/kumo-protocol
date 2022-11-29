@@ -1,5 +1,5 @@
 import React from "react";
-import { Flex, Box, Card, Heading, Paragraph } from "theme-ui";
+import { Flex, Box, Card, Heading, Text } from "theme-ui";
 
 export const MiningTypeCard: React.FC = ({}) => {
   return (
@@ -15,29 +15,29 @@ export const MiningTypeCard: React.FC = ({}) => {
         }}
         as="h2"
       >
-        VSTA-ETH
+        KUSD-USDC
       </Heading>
 
       <Box sx={{ p: 4 }}>
         <Flex sx={{ justifyContent: "space-between", alignItems: "center" }}>
-          <Heading as="h6">APR</Heading>
-          <Heading as="h6">Total KUSD In Pool</Heading>
+          <Text as="p" variant="small">APR</Text>
+          <Text as="p" variant="small">Total KUSD In Pool</Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between" }}>
-          <Paragraph variant="mediumBold">YOUR STAKED AMOUNT</Paragraph>
-          <Paragraph variant="mediumBold">0</Paragraph>
+          <Text as="p" variant="normalBold">YOUR STAKED AMOUNT</Text>
+          <Text as="p" variant="normalBold">0</Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between", mt: 3 }}>
-          <Paragraph variant="mediumBold">YOUR STAKED AMOUNT (USD)</Paragraph>
-          <Paragraph variant="mediumBold">0</Paragraph>
+          <Text as="p" variant="normalBold">YOUR STAKED AMOUNT (USD)</Text>
+          <Text as="p" variant="normalBold">0</Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between" }}>
-          <Paragraph variant="mediumBold">POOL SHARE</Paragraph>
-          <Paragraph variant="mediumBold">0%</Paragraph>
+          <Text as="p" variant="normalBold">POOL SHARE</Text>
+          <Text as="p" variant="normalBold">0%</Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between" }}>
-          <Paragraph variant="mediumBold">PENDING REWARDS</Paragraph>
-          <Paragraph variant="mediumBold">0 KUSD</Paragraph>
+          <Text as="p" variant="normalBold">PENDING REWARDS</Text>
+          <Text as="p" variant="normalBold">0 KUSD</Text>
         </Flex>
       </Box>
     </Card>

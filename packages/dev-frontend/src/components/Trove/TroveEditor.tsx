@@ -8,7 +8,8 @@ import {
   Decimal,
   Trove,
   KumoStoreState,
-  KUSD_LIQUIDATION_RESERVE
+  KUSD_LIQUIDATION_RESERVE,
+  Vault
 } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 
@@ -19,6 +20,7 @@ import { LoadingOverlay } from "../LoadingOverlay";
 import { CollateralRatio } from "./CollateralRatio";
 import { InfoIcon } from "../InfoIcon";
 import { useParams } from "react-router-dom";
+import { useDashboard } from "../../hooks/DashboardContext";
 
 type TroveEditorProps = {
   original: Trove;
@@ -42,12 +44,12 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
   changePending
 }) => {
   const { vaults } = useKumoSelector(select);
+  const { ctx, cty } = useDashboard();
 
   const feePct = new Percent(borrowingRate);
 
   const { collateralType } = useParams<{ collateralType: string }>();
-  const vault = vaults.find(vault => vault.asset === collateralType);
-  const price =  vault?.price && vault?.price;
+  const price = collateralType === "ctx" ? ctx : collateralType === "cty" ? cty : Decimal.from(0);
 
   const originalCollateralRatio = !original.isEmpty ? original.collateralRatio(price) : undefined;
   const collateralRatio = !edited.isEmpty ? edited.collateralRatio(price) : undefined;
@@ -60,7 +62,7 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
         width: "90%"
       }}
     >
-      <Heading>Trove</Heading>
+      <Heading>Vault</Heading>
 
       <Box sx={{ p: [2, 3] }}>
         <StaticRow
@@ -82,9 +84,9 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
               <InfoIcon
                 tooltip={
                   <Card variant="tooltip" sx={{ width: "200px" }}>
-                    An amount set aside to cover the liquidator’s gas costs if your Trove needs to be
+                    An amount set aside to cover the liquidator’s gas costs if your Vault needs to be
                     liquidated. The amount increases your debt and is refunded if you close your
-                    Trove by fully paying off its net debt.
+                    Vault by fully paying off its net debt.
                   </Card>
                 }
               />

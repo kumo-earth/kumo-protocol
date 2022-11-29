@@ -22,7 +22,7 @@ export const Disabled: React.FC = () => {
       <Heading>
         Uniswap Liquidity Farm
         <Flex sx={{ justifyContent: "flex-end" }}>
-          <RemainingKUMO />
+          {/* <RemainingKUMO /> */}
         </Flex>
       </Heading>
       <Box sx={{ p: [2, 3] }}>
