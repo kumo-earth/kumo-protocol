@@ -105,7 +105,7 @@ export const Adjusting: React.FC = () => {
         <StaticRow
           label="Reward"
           inputId="farm-reward-amount"
-          amount={liquidityMiningKUMOReward.prettify(4)}
+          amount={liquidityMiningKUMOReward.prettify(0)}
           color={liquidityMiningKUMOReward.nonZero && "success"}
           unit={GT}
         />

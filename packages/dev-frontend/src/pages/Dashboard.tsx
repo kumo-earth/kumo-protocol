@@ -31,7 +31,7 @@ export const Dashboard: React.FC = () => {
           const total = vault.total
           const kusdInStabilityPool = vault.kusdInStabilityPool;
           const borrowingRate = vault.borrowingRate;
-          const totalCollateralRatioPct = !vault?.total?.isEmpty ? new Percent(vault.total.collateralRatio(price)).prettify() : "0.00%";
+          const totalCollateralRatioPct = !vault?.total?.isEmpty ? new Percent(vault.total.collateralRatio(price)).prettify(0) : "0%";
           return (
             <CollateralCard
               collateralType={vault.asset}

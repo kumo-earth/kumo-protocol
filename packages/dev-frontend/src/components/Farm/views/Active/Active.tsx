@@ -59,7 +59,7 @@ export const Active: React.FC = () => {
           <DisabledEditableRow
             label="Stake"
             inputId="farm-stake"
-            amount={liquidityMiningStake.prettify(4)}
+            amount={liquidityMiningStake.prettify(0)}
             unit={LP}
           />
           {poolShare.infinite ? (
@@ -68,7 +68,7 @@ export const Active: React.FC = () => {
             <StaticRow
               label="Pool share"
               inputId="farm-share"
-              amount={poolShare.prettify(4)}
+              amount={poolShare.prettify(0)}
               unit={"%"}
             />
           )}
@@ -76,7 +76,7 @@ export const Active: React.FC = () => {
             <StaticRow
               label="Reward"
               inputId="farm-reward"
-              amount={liquidityMiningKUMOReward.prettify(4)}
+              amount={liquidityMiningKUMOReward.prettify(0)}
               color={liquidityMiningKUMOReward.nonZero && "success"}
               unit={GT}
             />

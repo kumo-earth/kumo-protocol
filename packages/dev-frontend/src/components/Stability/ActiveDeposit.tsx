@@ -79,14 +79,14 @@ export const ActiveDeposit: React.FC = () => {
           <StaticRow
             label="Pool share"
             inputId="deposit-share"
-            amount={poolShare.prettify(4)}
+            amount={poolShare.prettify(0)}
             unit="%"
           />
 
           <StaticRow
             label="Liquidation gain"
             inputId="deposit-gain"
-            amount={stabilityDeposit.collateralGain.prettify(4)}
+            amount={stabilityDeposit.collateralGain.prettify(0)}
             color={stabilityDeposit.collateralGain.nonZero && "success"}
             unit={collateralType?.toUpperCase()}
           />
@@ -95,7 +95,7 @@ export const ActiveDeposit: React.FC = () => {
             <StaticRow
               label="Reward"
               inputId="deposit-reward"
-              amount={stabilityDeposit.kumoReward.prettify()}
+              amount={stabilityDeposit.kumoReward.prettify(0)}
               color={stabilityDeposit.kumoReward.nonZero && "success"}
               unit={GT}
               infoIcon={

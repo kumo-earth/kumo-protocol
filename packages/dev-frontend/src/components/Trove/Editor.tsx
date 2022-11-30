@@ -65,7 +65,7 @@ export const TokenUsd: React.FC<TokenUsdProps> = ({
         borderColor: "transparent"
       }}
     >
-      ${editedVal.mul(tokenPrice).prettify(2)}
+      ${editedVal.mul(tokenPrice).prettify(0)}
     </Box>
   );
 };

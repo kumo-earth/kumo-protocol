@@ -75,7 +75,7 @@ export const Staking: React.FC = () => {
           <StaticRow
             label="Pool share"
             inputId="farm-share"
-            amount={poolShare.prettify(4)}
+            amount={poolShare.prettify(0)}
             unit="%"
           />
         )}

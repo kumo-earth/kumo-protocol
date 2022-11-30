@@ -24,9 +24,9 @@ const Balances: React.FC = () => {
   return (
     <Box sx={{ mb: 3 }}>
       <Heading>My Account Balances</Heading>
-      <Statistic name="ETH"> {accountBalance.prettify(4)}</Statistic>
-      <Statistic name={COIN}> {kusdBalance.prettify()}</Statistic>
-      <Statistic name={GT}>{kumoBalance.prettify()}</Statistic>
+      <Statistic name="ETH"> {accountBalance.prettify(0)}</Statistic>
+      <Statistic name={COIN}> {kusdBalance.prettify(0)}</Statistic>
+      <Statistic name={GT}>{kumoBalance.prettify(0)}</Statistic>
     </Box>
   );
 };

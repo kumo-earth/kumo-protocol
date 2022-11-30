@@ -35,13 +35,13 @@ export const Disabled: React.FC = () => {
               <StaticRow
                 label="Stake"
                 inputId="farm-deposit"
-                amount={liquidityMiningStake.prettify(4)}
+                amount={liquidityMiningStake.prettify(0)}
                 unit={LP}
               />
               <StaticRow
                 label="Reward"
                 inputId="farm-reward"
-                amount={liquidityMiningKUMOReward.prettify(4)}
+                amount={liquidityMiningKUMOReward.prettify(0)}
                 color={liquidityMiningKUMOReward.nonZero && "success"}
                 unit={GT}
               />

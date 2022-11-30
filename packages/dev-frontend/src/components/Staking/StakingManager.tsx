@@ -128,7 +128,7 @@ export const StakingManager: React.FC = () => {
         <ErrorDescription>
           The amount you're trying to stake exceeds your balance by{" "}
           <Amount>
-            {change.stakeKUMO.sub(kumoBalance).prettify()} {GT}
+            {change.stakeKUMO.sub(kumoBalance).prettify(0)} {GT}
           </Amount>
           .
         </ErrorDescription>

@@ -106,8 +106,8 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
           <StaticRow
             label="Pool share"
             inputId="deposit-share"
-            amount={newPoolShare.prettify(4)}
-            pendingAmount={poolShareChange?.prettify(4).concat("%")}
+            amount={newPoolShare.prettify(0)}
+            pendingAmount={poolShareChange?.prettify(0).concat("%")}
             pendingColor={poolShareChange?.positive ? "success" : "danger"}
             unit="%"
           />
@@ -118,7 +118,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
             <StaticRow
               label="Liquidation gain"
               inputId="deposit-gain"
-              amount={originalDeposit.collateralGain.prettify(4)}
+              amount={originalDeposit.collateralGain.prettify(0)}
               color={originalDeposit.collateralGain.nonZero && "success"}
               unit={getPathName(location).toUpperCase()}
             />
@@ -126,7 +126,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
             <StaticRow
               label="Reward"
               inputId="deposit-reward"
-              amount={originalDeposit.kumoReward.prettify()}
+              amount={originalDeposit.kumoReward.prettify(0)}
               color={originalDeposit.kumoReward.nonZero && "success"}
               unit={GT}
               infoIcon={

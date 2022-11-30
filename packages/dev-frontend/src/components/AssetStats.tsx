@@ -106,7 +106,7 @@ export const AssetStats: React.FC<SystemStatsProps> = ({
           TOTAL MINTED
         </Text>
         <Text as="p" variant="medium">
-          {total?.debt.prettify()} {'KUSD'}
+          {total?.debt.prettify(0)} {'KUSD'}
         </Text>
       </Flex>
       <Box sx={{ my: 2 }}>

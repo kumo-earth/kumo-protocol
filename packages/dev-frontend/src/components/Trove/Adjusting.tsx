@@ -250,8 +250,8 @@ export const Adjusting: React.FC = () => {
         <StaticRow
           label="Borrowing Fee"
           inputId="trove-borrowing-fee"
-          amount={fee.prettify(2)}
-          pendingAmount={feePct.toString(2)}
+          amount={fee.prettify(0)}
+          pendingAmount={feePct.toString(0)}
           unit={COIN}
           infoIcon={
             <InfoIcon
@@ -268,7 +268,7 @@ export const Adjusting: React.FC = () => {
         <StaticRow
           label="Total debt"
           inputId="trove-total-debt"
-          amount={totalDebt.prettify(2)}
+          amount={totalDebt.prettify(0)}
           unit={COIN}
           infoIcon={
             <InfoIcon
@@ -277,7 +277,7 @@ export const Adjusting: React.FC = () => {
                   The total amount of KUSD your Vault will hold.{" "}
                   {isDirty && (
                     <>
-                      You will need to repay {totalDebt.sub(KUSD_LIQUIDATION_RESERVE).prettify(2)}{" "}
+                      You will need to repay {totalDebt.sub(KUSD_LIQUIDATION_RESERVE).prettify(0)}{" "}
                       KUSD to reclaim your collateral ({KUSD_LIQUIDATION_RESERVE.toString()} KUSD
                       Liquidation Reserve excluded).
                     </>

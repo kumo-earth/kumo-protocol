@@ -37,11 +37,11 @@ export const StakingCardV1: React.FC<StakingCardV1Props> = ({ totalKUSD, userKUS
         </Flex>
         <Flex sx={{ justifyContent: "space-between", mt: 4 }}>
           <Text as="p" variant="normalBold">TOTAL DEPOSITED KUSD</Text>
-          <Text as="p" variant="normalBold">{totalKUSD.prettify()}</Text>
+          <Text as="p" variant="normalBold">{totalKUSD.prettify(0)}</Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between", mt: 2 }}>
           <Text as="p" variant="normalBold">YOUR DEPOSITED KUSD</Text>
-          <Text as="p" variant="normalBold">{userKUSD.prettify()}</Text>
+          <Text as="p" variant="normalBold">{userKUSD.prettify(0)}</Text>
         </Flex>
         <Flex  variant="layout.actions" sx={{ justifyContent: "center", pt: 3 }}>
           <Button sx={{ width: "122px" }} onClick={handleViewStakeDeposit}>

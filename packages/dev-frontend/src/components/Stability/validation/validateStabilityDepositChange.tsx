@@ -67,7 +67,7 @@ export const validateStabilityDepositChange = (
       <ErrorDescription>
         The amount you're trying to deposit exceeds your balance by{" "}
         <Amount>
-          {change.depositKUSD.sub(kusdBalance).prettify()} {COIN}
+          {change.depositKUSD.sub(kusdBalance).prettify(0)} {COIN}
         </Amount>
         .
       </ErrorDescription>

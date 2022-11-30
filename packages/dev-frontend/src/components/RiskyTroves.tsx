@@ -287,12 +287,12 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 20, asset =
                       </td>
                       <td>
                         <Abbreviation short={trove.collateral.shorten()}>
-                          {trove.collateral.prettify(4)}
+                          {trove.collateral.prettify(0)}
                         </Abbreviation>
                       </td>
                       <td>
                         <Abbreviation short={trove.debt.shorten()}>
-                          {trove.debt.prettify()}
+                          {trove.debt.prettify(0)}
                         </Abbreviation>
                       </td>
                       <td>
