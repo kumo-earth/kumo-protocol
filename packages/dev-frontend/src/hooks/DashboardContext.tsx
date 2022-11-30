@@ -6,8 +6,20 @@ import { getTokenPrice } from "../tokensPrice";
 type DashboardContextValue = {
   ctx: Decimal;
   cty: Decimal;
-  totalCollDebt: { totalColl: Decimal; totalDebt: Decimal; totalCarbonCredits: Decimal };
-  totalTroveCollDebt : {totalTroveColl: Decimal, totalTroveDebt: Decimal, troveTotalCarbonCredits: Decimal }
+  totalCollDebt: {
+    totalColl: Decimal;
+    totalCTXColl: Decimal;
+    totalCTYColl: Decimal;
+    totalCTXDebt: Decimal;
+    totalCTYDebt: Decimal;
+    totalDebt: Decimal;
+    totalCarbonCredits: Decimal;
+  };
+  totalTroveCollDebt: {
+    totalTroveColl: Decimal;
+    totalTroveDebt: Decimal;
+    troveTotalCarbonCredits: Decimal;
+  };
 };
 
 const DashboardContext = createContext<DashboardContextValue | undefined>(undefined);
@@ -20,6 +32,10 @@ export const DashboardProvider: React.FC = ({ children }) => {
   const [cty, setCTY] = useState<Decimal>(Decimal.ZERO);
   const [totalCollDebt, setTotalCollDebt] = useState({
     totalColl: Decimal.ZERO,
+    totalCTXColl: Decimal.ZERO,
+    totalCTYColl: Decimal.ZERO,
+    totalCTXDebt: Decimal.ZERO,
+    totalCTYDebt: Decimal.ZERO,
     totalDebt: Decimal.ZERO,
     totalCarbonCredits: Decimal.ZERO
   });
@@ -32,27 +48,42 @@ export const DashboardProvider: React.FC = ({ children }) => {
   useEffect(() => {
     let calcCollat = Decimal.ZERO;
     let calcDebt = Decimal.ZERO;
+    let totalCTXColl = Decimal.ZERO;
+    let totalCTYColl = Decimal.ZERO;
+    let totalCTXDebt = Decimal.ZERO;
+    let totalCTYDebt = Decimal.ZERO;
     let calcCarbonCredits = Decimal.ZERO;
 
     let troveCalcCollat = Decimal.ZERO;
     let troveCalcDebt = Decimal.ZERO;
-    let troveCarbonCredits = Decimal.ZERO
+    let troveCarbonCredits = Decimal.ZERO;
 
     vaults.forEach(vault => {
       const { total, trove } = vault;
       calcDebt = calcDebt.add(total.debt);
       troveCalcDebt = troveCalcDebt.add(trove.debt);
       calcCarbonCredits = calcCarbonCredits.add(total.collateral);
-      troveCarbonCredits = troveCarbonCredits.add(trove.collateral)
+      troveCarbonCredits = troveCarbonCredits.add(trove.collateral);
+      if (vault.asset === "ctx") {
+        totalCTXDebt = totalCTXDebt.add(total.debt);
+      } else if (vault.asset === "cty") {
+        totalCTYDebt = totalCTYDebt.add(total.debt);
+      }
       if (vault.asset === "ctx" && total.collateral.nonZero && ctx.nonZero) {
         calcCollat = calcCollat.add(total.collateral.mul(ctx));
+        totalCTXColl = totalCTXColl.add(total.collateral.mul(ctx));
         troveCalcCollat = troveCalcCollat.add(trove.collateral.mul(ctx));
       } else if (vault.asset === "cty" && total.collateral.nonZero && cty.nonZero) {
         calcCollat = calcCollat.add(total.collateral.mul(cty));
+        totalCTYColl = totalCTYColl.add(total.collateral.mul(cty));
         troveCalcCollat = troveCalcCollat.add(trove.collateral.mul(cty));
       }
       setTotalCollDebt({
         totalColl: calcCollat,
+        totalCTXColl: totalCTXColl,
+        totalCTYColl: totalCTYColl,
+        totalCTXDebt: totalCTXDebt,
+        totalCTYDebt: totalCTYDebt,
         totalDebt: calcDebt,
         totalCarbonCredits: calcCarbonCredits
       });

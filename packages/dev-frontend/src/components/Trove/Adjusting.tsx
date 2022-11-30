@@ -195,7 +195,7 @@ export const Adjusting: React.FC = () => {
   return (
     <Card variant="base">
       <Heading>
-        {vault?.asset.toUpperCase()} Trove
+        {vault?.asset.toUpperCase()} Vault
         {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
             <Icon name="history" size="sm" />

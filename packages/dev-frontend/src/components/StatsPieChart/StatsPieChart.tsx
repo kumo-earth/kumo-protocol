@@ -2,26 +2,17 @@ import React from "react";
 import { Flex, Box, Card, Text, Heading, Divider, Paragraph } from "theme-ui";
 import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer } from "recharts";
 
-const data01 = [
-  { name: "CTX", value: 100 },
-  { name: "CTY", value: 300 }
-];
-
-const data02 = [
-  { name: "CTX", value: 2400 },
-  { name: "CTY", value: 4567 }
-];
-
 type StatsPieChartProps = {
-  title: string
-}
+  title: string;
+  data: { name: string; value: string }[];
+};
 
-export const StatsPieChart: React.FC<StatsPieChartProps> = ({ title }) => {
+export const StatsPieChart: React.FC<StatsPieChartProps> = ({ title, data }) => {
   return (
     <Card variant="base">
       <Box sx={{ px: 4, py: 3 }}>
         <Text as="p" sx={{ textAlign: "center", fontWeight: "bold" }}>
-          { title }
+          {title}
         </Text>
         <Flex sx={{ justifyContent: "center", mx: 2, mt: 3, height: 180 }}>
           <ResponsiveContainer width="100%">
@@ -29,12 +20,15 @@ export const StatsPieChart: React.FC<StatsPieChartProps> = ({ title }) => {
               <Pie
                 dataKey="value"
                 isAnimationActive={false}
-                data={data01}
+                data={data}
                 cx="50%"
                 cy="50%"
                 outerRadius={70}
                 fill="#8884d8"
-                label={label => `${label?.name} ${label?.value}`}
+                label={label => {
+                  console.log("label", data)
+                  return `${label?.name} ${label?.value}`
+                }}
               />
               <Tooltip />
             </PieChart>

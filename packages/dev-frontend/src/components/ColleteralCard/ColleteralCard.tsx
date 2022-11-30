@@ -76,7 +76,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             MINTED KUSD
           </Text>
           <Text as="p" variant="normalBold">
-            {total?.debt.prettify(2)}
+            {total?.debt.prettify(0)}
           </Text>
         </Flex>
         <Box sx={{ my: 2 }}>
@@ -99,7 +99,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             KUSD in Stability Pool
           </Text>
           <Text as="p" variant="normalBold">
-            {kusdInStabilityPool.prettify(2)}
+            {kusdInStabilityPool.prettify(0)}
           </Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between", mb: 4 }}>

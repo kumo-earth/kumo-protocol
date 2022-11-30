@@ -21,7 +21,7 @@ export const Dashboard: React.FC = () => {
     <Flex variant="layout.dashboard">
       <DashboadHeader>
         <DashboadHeaderItem  title={"TOTAL COLLATERAL"} value={`$${totalCollDebt.totalColl.prettify(0)}`} />
-        <DashboadHeaderItem  title={"TOTAL MINTED KUSD"} value={`$${totalCollDebt.totalDebt.prettify(2)}`} />
+        <DashboadHeaderItem  title={"TOTAL MINTED KUSD"} value={`$${totalCollDebt.totalDebt.prettify(0)}`} />
         <DashboadHeaderItem  title={"TOTAL CARBON CREDITS"} value={totalCollDebt.totalCarbonCredits.prettify(0)} />
       </DashboadHeader>
       <Divider  sx={{ color: "muted" }} />

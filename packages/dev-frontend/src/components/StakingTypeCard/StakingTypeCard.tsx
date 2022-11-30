@@ -38,10 +38,10 @@ export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
         </Flex>
         <Flex sx={{ justifyContent: "space-between", mt: 2 }}>
           <Text as="p" variant="large">
-            {aprRatio.toString(1) === "∞" ? Decimal.ZERO.prettify() : aprRatio.prettify()}
+            18%
           </Text>
           <Text as="p" variant="large">
-            {vault?.stabilityDeposit?.currentKUSD.shorten()}
+            {vault?.stabilityDeposit.currentKUSD.isZero ? 0 : vault?.stabilityDeposit?.currentKUSD.shorten()}
           </Text>
         </Flex>
         <Divider color="muted" />

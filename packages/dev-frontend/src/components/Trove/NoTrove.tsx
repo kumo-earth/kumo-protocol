@@ -16,7 +16,7 @@ export const NoTrove: React.FC = props => {
   return (
     <Card variant="base" sx={{ width: "100%" }}>
       <Heading as="h2">
-        {collateralType.toUpperCase()} Vault
+        {collateralType?.toUpperCase()} Vault
       </Heading>
       <Box sx={{ p: [2, 3] }}>
         <InfoMessage title="You haven't borrowed any KUSD yet.">

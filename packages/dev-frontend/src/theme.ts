@@ -332,6 +332,13 @@ const theme: Theme = {
       overflowY: "scroll"
     },
 
+    portfolioCard: {
+      variant: "cards.base",
+      ":hover": {
+        ...cardHoverEffects
+      }
+    },
+
     collateralCard: {
       variant: "cards.primary",
       bg: "transparent",
