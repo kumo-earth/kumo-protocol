@@ -35,7 +35,7 @@ export const Portfolio: React.FC = () => {
         />
         <DashboadHeaderItem
           title={"MY MINTED KUSD"}
-          value={`$ ${totalTroveCollDebt.totalTroveDebt.prettify(2)}`}
+          value={`$ ${totalTroveCollDebt.totalTroveDebt.prettify(0)}`}
         />
         <DashboadHeaderItem
           title={"MY TOTAL CARBON TOKENS"}
