@@ -53,11 +53,10 @@ export const StabilityViewProvider: React.FC = props => {
   const location = useLocation();
 
   const vault = vaults.find(vault => vault.asset === getPathName(location));
-  const stabilityDeposit =  vault?.stabilityDeposit
+  const stabilityDeposit = vault?.stabilityDeposit && vault.stabilityDeposit;
 
   const [view, setView] = useState<StabilityView>(getInitialView(stabilityDeposit));
   const viewRef = useRef<StabilityView>(view);
-
 
   const dispatchEvent = useCallback((event: StabilityEvent) => {
     const nextView = transition(viewRef.current, event);
@@ -70,6 +69,10 @@ export const StabilityViewProvider: React.FC = props => {
     );
     setView(nextView);
   }, []);
+
+  useEffect(() => {
+    setView(getInitialView(stabilityDeposit));
+  }, [getPathName(location)]);
 
   useEffect(() => {
     viewRef.current = view;
