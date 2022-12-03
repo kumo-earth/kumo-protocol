@@ -24,7 +24,7 @@ const data02 = [
 export const StatsRiskyTroves: React.FC = () => {
   return (
     <Box sx={{ my: 6, mt: 5, height: "90%" }}>
-      <RiskyTroves pageSize={1} />
+      <RiskyTroves pageSize={10} />
     </Box>
   );
 };

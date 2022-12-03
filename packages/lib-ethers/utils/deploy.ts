@@ -5,7 +5,7 @@ import { Wallet } from "@ethersproject/wallet";
 import { Decimal } from "@kumodao/lib-base";
 
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
-
+const networkHelpers = require("@nomicfoundation/hardhat-network-helpers");
 
 import {
   _KumoContractAddresses,
@@ -490,6 +490,9 @@ export const deployAndSetupContracts = async (
   const bootstrapPeriod = await contracts.kumoParameters.REDEMPTION_BLOCK_DAY();
   const totalStabilityPoolKUMOReward = await contracts.communityIssuance.KUMOSupplyCap();
   const liquidityMiningKUMORewardRate = await contracts.unipool.rewardRate();
+
+  // log("Fast forward 15 days...")
+  // await networkHelpers.time.increase(60 * 60 * 24 * 15);
 
   return {
     ...deployment,

@@ -3,6 +3,7 @@ import { Percent, KumoStoreState } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 
 import { StabilityPoolStakingCard } from "../components/StabilityPoolStakingCard/StabilityPoolStakingCard";
+import { DashboadContent } from "../components/DashboardContent";
 import { useParams } from "react-router-dom";
 
 const select = ({
@@ -17,7 +18,14 @@ const select = ({
 
 export const StabilityPoolStaking: React.FC = () => {
   return (
-    <Grid sx={{ p: 6, gridGap: 4, gridTemplateColumns: ["auto-fill", "1fr 1fr"] }}>
+    <Grid sx={{
+      width: "100%",
+      display: "grid",
+      gridGap: 5,
+      gridTemplateColumns: `repeat(auto-fill, minmax(400px, 1fr))`,
+      mt: 5,
+      px: 6
+    }}>
       <StabilityPoolStakingCard
         stakingType={"stability"}
         title="Stability Pool Staking"

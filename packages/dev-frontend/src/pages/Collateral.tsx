@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { KumoStoreState, Vault } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
-import { Grid, Flex, Heading, Text, Box } from "theme-ui";
+import { Grid, Flex, Text, Box } from "theme-ui";
 
 import { Trove } from "../components/Trove/Trove";
 import { Stability } from "../components/Stability/Stability";
 import { AssetStats } from "../components/AssetStats";
-import { useDashboard } from "../hooks/DashboardContext";
 import { useDialogState, Dialog } from "reakit/Dialog";
 import { StakingCardV1 } from "../components/StakingCardV1/StakingCardV1";
+import { useStabilityView } from "../components/Stability/context/StabilityViewContext";
 
 const select = ({ vaults }: KumoStoreState) => ({
   vaults
@@ -29,10 +29,39 @@ const style = {
 
 export const Collateral: React.FC = () => {
   const dialog = useDialogState();
+  const { showModal,view, dispatchEvent } = useStabilityView();
   const { vaults } = useKumoSelector(select);
-  const [stakeDeposit, setStakeDeposit] = useState(false);
   const { collateralType } = useParams<{ collateralType: string }>();
-  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault;
+  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
+
+
+  useEffect(() => {
+    if (!dialog.visible) {
+      dispatchEvent("CLOSE_MODAL_PRESSED");
+    }
+  }, [dialog.visible]);
+
+
+  useEffect(() => {
+    const keyDownHandler = (event: { key: string; preventDefault: () => void }) => {
+      if (event.key === "Escape") {
+       
+        event.preventDefault();
+        dialog.setVisible(false);
+        if(view === "ACTIVE" || view === "DEPOSITING"){
+          dispatchEvent("CANCEL_PRESSED");    
+        }        
+        dispatchEvent("CLOSE_MODAL_PRESSED");      
+      }
+    };
+
+    document.addEventListener("keydown", keyDownHandler);
+
+    // 👇️ clean up event listener
+    return () => {
+      document.removeEventListener("keydown", keyDownHandler);
+    };
+  }, []);
 
   return (
     <Grid
@@ -64,12 +93,12 @@ export const Collateral: React.FC = () => {
           totalKUSD={vault?.kusdInStabilityPool}
           userKUSD={vault?.stabilityDeposit?.currentKUSD}
           handleViewStakeDeposit={() => {
-            setStakeDeposit(true);
+            dispatchEvent("OPEN_MODAL_PRESSED");
             dialog.setVisible(true);
           }}
         />
       </Flex>
-      {stakeDeposit && (
+      {showModal && (
         <Dialog {...dialog}>
           <Box sx={{ ...style, position: "absolute" }}>
             <Stability />

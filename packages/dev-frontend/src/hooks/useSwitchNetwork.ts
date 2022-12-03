@@ -69,7 +69,7 @@ export function useSwitchNetwork(): {
       if (error?.name === "UnsupportedChainIdError") {
         sessionStorage.removeItem("account");
         deactivate();
-        dispatchEvent("OPEN_MODAL_PRESSED");
+        dispatchEvent("OPEN_SWITCH_MODAL_PRESSED");
       }
     };
    

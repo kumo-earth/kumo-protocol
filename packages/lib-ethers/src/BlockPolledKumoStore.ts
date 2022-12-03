@@ -326,18 +326,18 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
   // }
   /** @internal @override */
   protected _doStart(): () => void {
+    const assetNumbers = Object.keys(ASSET_TOKENS).length
     this._get().then(state => {
-      if (!this._loaded) {
+      if (!this._loaded && state[0].vaults.length === assetNumbers) {
         this._load(...state);
       }
     });
 
     const blockListener = async (blockTag: number) => {
       const state = await this._get(blockTag);
-
-      if (this._loaded) {
+      if (this._loaded && state[0].vaults.length === assetNumbers) {
         this._update(...state);
-      } else {
+      } else if(state[0].vaults.length === assetNumbers) {
         this._load(...state);
       }
     };

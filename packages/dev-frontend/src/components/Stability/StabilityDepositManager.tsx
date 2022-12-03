@@ -171,6 +171,7 @@ export const StabilityDepositManager: React.FC = () => {
   const { dispatchEvent } = useStabilityView();
 
   const handleCancel = useCallback(() => {
+    dispatchEvent("CLOSE_MODAL_PRESSED")
     dispatchEvent("CANCEL_PRESSED");
   }, [dispatchEvent]);
 

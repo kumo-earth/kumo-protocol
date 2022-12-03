@@ -55,6 +55,8 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
   const collateralRatio = !edited.isEmpty ? edited.collateralRatio(price) : undefined;
   const collateralRatioChange = Difference.between(collateralRatio, originalCollateralRatio);
 
+  console.log("originalTrove", original)
+
   return (
     <Card
       variant="base"
@@ -62,17 +64,17 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
         width: "90%"
       }}
     >
-      <Heading>Vault</Heading>
+      <Heading>{collateralType?.toUpperCase()} Vault</Heading>
 
       <Box sx={{ p: [2, 3] }}>
         <StaticRow
           label="Collateral"
           inputId="trove-collateral"
-          amount={edited.collateral.prettify(0)}
-          unit={COIN}
+          amount={original.collateral.prettify(0)}
+          unit={collateralType?.toUpperCase()}
         />
 
-        <StaticRow label="Debt" inputId="trove-debt" amount={edited.debt.prettify(0)} unit={COIN} />
+        <StaticRow label="Debt" inputId="trove-debt" amount={original.netDebt.prettify(0)} unit={COIN} />
 
         {original.isEmpty && (
           <StaticRow
@@ -94,7 +96,7 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
           />
         )}
 
-        <StaticRow
+        {/* <StaticRow
           label="Borrowing Fee"
           inputId="trove-borrowing-fee"
           amount={fee.toString(2)}
@@ -110,9 +112,9 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
               }
             />
           }
-        />
+        /> */}
 
-        <CollateralRatio value={collateralRatio} change={collateralRatioChange} />
+        <CollateralRatio value={originalCollateralRatio} change={collateralRatioChange} />
 
         {children}
       </Box>

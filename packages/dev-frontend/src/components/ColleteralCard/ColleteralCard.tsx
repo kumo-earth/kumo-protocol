@@ -11,7 +11,7 @@ import { InfoIcon } from "../InfoIcon";
 
 type CollateralCardProps = {
   collateralType?: string;
-  totalCollateralRatioPct: string;
+  totalCollateralRatioPct: Decimal;
   total: Trove;
   kusdInStabilityPool: Decimal;
   borrowingRate: Decimal;
@@ -69,7 +69,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
         </Text>
 
         <Text as="p" variant="xlarge" sx={{ mt: 1 }}>
-          {totalCollateralRatioPct}
+          {`${totalCollateralRatioPct.prettify(0)} %`}
         </Text>
         <Flex sx={{ justifyContent: "space-between", mt: 6 }}>
           <Text as="p" variant="normalBold">
@@ -107,7 +107,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             Borrowing Rate
           </Text>
           <Text as="p" variant="normalBold">
-            {`${borrowingRate.mul(100).toString()}%`}
+            {`${borrowingRate.mul(100).prettify(1)}%`}
           </Text>
         </Flex>
       </Box>

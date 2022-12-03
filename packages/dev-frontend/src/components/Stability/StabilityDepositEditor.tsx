@@ -20,6 +20,7 @@ import { Icon } from "../Icon";
 import { EditableRow, StaticRow } from "../Trove/Editor";
 import { LoadingOverlay } from "../LoadingOverlay";
 import { InfoIcon } from "../InfoIcon";
+import { useStabilityView } from "./context/StabilityViewContext";
 
 const select = ({ vaults, kusdBalance }: KumoStoreState) => ({
   vaults,
@@ -47,6 +48,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   const { vaults, kusdBalance } = useKumoSelector(select);
   const editingState = useState<string>();
   const { collateralType } = useParams<{ collateralType: string }>();
+  const { dispatchEvent } = useStabilityView();
   const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
   const { kusdInStabilityPool } = vault;
   const location = useLocation();
@@ -85,6 +87,12 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
             <Icon name="history" size="sm" />
           </Button>
         )}
+         <span
+          style={{ marginLeft: "auto", cursor: "pointer" }}
+          onClick={() => {dispatchEvent("CLOSE_MODAL_PRESSED");  dispatchEvent("CANCEL_PRESSED")}}
+        >
+          <Icon name="window-close" size={"1x"} color="#da357a" />
+        </span>
       </Heading>
 
       <Box sx={{ p: [2, 3] }}>

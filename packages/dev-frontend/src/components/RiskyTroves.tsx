@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 // import CopyToClipboard from "react-copy-to-clipboard";
-import { Card, Button, Text, Box, Heading, Flex } from "theme-ui";
+import { Card, Button, Text, Box, Heading, Flex, Select } from "theme-ui";
 
 import {
   Percent,
@@ -8,7 +8,8 @@ import {
   CRITICAL_COLLATERAL_RATIO,
   UserTrove,
   Decimal,
-  Vault
+  Vault,
+  Trove
 } from "@kumodao/lib-base";
 import { BlockPolledKumoStoreState } from "@kumodao/lib-ethers";
 import { useKumoSelector } from "@kumodao/lib-react";
@@ -24,6 +25,8 @@ import { Transaction } from "./Transaction";
 import { Tooltip } from "./Tooltip";
 import { Abbreviation } from "./Abbreviation";
 import { useParams } from "react-router-dom";
+import CopyToClipboard from "react-copy-to-clipboard";
+import { forEach } from "lodash";
 
 const rowHeight = "40px";
 
@@ -53,24 +56,41 @@ type RiskyTrovesProps = {
   asset?: string;
 };
 
+interface UpdatedUserTrove {
+  asset: string;
+  assetAddress: string;
+  price: Decimal;
+  total: Trove;
+  kusdInStabilityPool: Decimal;
+  recoveryMode: boolean;
+  totalCollateralRatio: Decimal;
+  userTrove: UserTrove;
+}
+
 const select = ({ vaults, blockTag }: BlockPolledKumoStoreState) => ({
   vaults,
   blockTag
 });
 
-export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 20, asset = "" }) => {
+export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10, asset = "" }) => {
+  const [assetType, setAssetType] = useState("ctx");
   const { vaults, blockTag } = useKumoSelector(select);
   const { kumo } = useKumo();
   const { ctx, cty } = useDashboard();
   const { collateralType } = useParams<{ collateralType: string }>();
+  let numberOfTroves = 0;
 
-  const vault = vaults.find(vault => vault.asset === "cty") || new Vault();
-  const { numberOfTroves, price, total, kusdInStabilityPool } = vault;
-  const recoveryMode = total.collateralRatioIsBelowCritical(price);
-  const totalCollateralRatio = total.collateralRatio(price);
+  if (assetType === "all") {
+    vaults.forEach(vault => {
+      numberOfTroves += vault?.numberOfTroves;
+    });
+  } else if (assetType === "ctx" || assetType === "cty") {
+    const vault = vaults.find(vault => vault.asset === assetType);
+    numberOfTroves = vault?.numberOfTroves || 0;
+  }
 
   const [loading, setLoading] = useState(true);
-  const [troves, setTroves] = useState<UserTrove[]>();
+  const [troves, setTroves] = useState<UpdatedUserTrove[]>();
 
   const [reload, setReload] = useState({});
   const forceReload = useCallback(() => setReload({}), []);
@@ -102,29 +122,75 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 20, asset =
 
     setLoading(true);
 
-    kumo
-      .getTroves(
-        vault?.assetAddress,
-        {
-          first: pageSize,
-          sortedBy: "ascendingCollateralRatio",
-          startingAt: clampedPage * pageSize
-        },
-        { blockTag }
-      )
-      .then(troves => {
-        if (mounted) {
-          setTroves(troves);
-          setLoading(false);
-        }
-      });
+    if (assetType === "ctx" || assetType === "cty") {
+      const tempVault = vaults.find(vault => vault.asset === assetType) || new Vault();
+      const { asset, assetAddress, price, total, kusdInStabilityPool } = tempVault;
+      const recoveryMode = total.collateralRatioIsBelowCritical(price);
+      const totalCollateralRatio = total.collateralRatio(price);
+      kumo
+        .getTroves(
+          assetAddress,
+          {
+            first: pageSize,
+            sortedBy: "ascendingCollateralRatio",
+            startingAt: clampedPage * pageSize
+          },
+          { blockTag }
+        )
+        .then(trovesVal => {
+          if (mounted) {
+            const userTroves = trovesVal.flat();
+            const updatedUserTroves = userTroves?.map(userTrove => {
+              return {
+                asset,
+                assetAddress,
+                price,
+                total,
+                kusdInStabilityPool,
+                recoveryMode,
+                totalCollateralRatio,
+                userTrove: userTrove
+              };
+            });
+            if (userTroves !== undefined && userTroves.length > 0) {
+              setTroves(updatedUserTroves);
+            }
+            setLoading(false);
+          }
+        });
+    }
+
+    // Promise.all(getAllTroves).then(troves => {
+    //   if (mounted) {
+    //     setTroves(troves);
+    //     setLoading(false);
+    //   }
+    // });
+
+    // kumo
+    //   .getTroves(
+    //     vault?.assetAddress,
+    //     {
+    //       first: pageSize,
+    //       sortedBy: "ascendingCollateralRatio",
+    //       startingAt: clampedPage * pageSize
+    //     },
+    //     { blockTag }
+    //   )
+    //   .then(troves => {
+    //     if (mounted) {
+    //       console.log("getAllTroves", troves)
+    //       setTroves(troves);
+    //       setLoading(false);
+    //     }
+    //   });
 
     return () => {
       mounted = false;
     };
     // Omit blockTag from deps on purpose
     // eslint-disable-next-line
-  }, [kumo, clampedPage, pageSize, reload]);
+  }, [kumo, clampedPage, pageSize, reload, assetType]);
 
   useEffect(() => {
     forceReload();
@@ -150,7 +216,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 20, asset =
 
   return (
     <Card sx={{ width: "100%", height: "100%", bg: "#f0cfdc", borderRadius: 20 }}>
-      <Heading>
+      <Heading sx={{ display: "flex", justifyContent: "space-between" }}>
         {/* <Abbreviation short="Troves" sx={{ mr: 2}}>Risky Vaults</Abbreviation> */}
 
         <Flex sx={{ alignItems: "center" }}>
@@ -175,17 +241,23 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 20, asset =
               >
                 <Icon name="chevron-right" size="sm" />
               </Button>
+              <Button
+                variant="titleIcon"
+                sx={{ opacity: loading ? 0 : 1, ml: [0, 3], mr: [0, 3] }}
+                onClick={forceReload}
+              >
+                <Icon name="redo" size="xs" />
+              </Button>
             </>
           )}
-
-          <Button
-            variant="titleIcon"
-            sx={{ opacity: loading ? 0 : 1, ml: [0, 3] }}
-            onClick={forceReload}
-          >
-            <Icon name="redo" size="sm" />
-          </Button>
         </Flex>
+        <Box sx={{ display: "flex", mr: 7 }}>
+          <Text sx={{ fontSize: 4 }}>Riskiest Vaults by Asset: </Text>
+          <Select value={assetType} onChange={event => setAssetType(event.target.value)}>
+            <option value={"ctx"}>CTX</option>
+            <option value={"cty"}>CTY</option>
+          </Select>
+        </Box>
       </Heading>
 
       {!troves || troves.length === 0 ? (
@@ -220,7 +292,9 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 20, asset =
                 <th>Owner</th>
                 <th>
                   <Abbreviation short="Coll.">Collateral</Abbreviation>
-                  <Box sx={{ fontSize: [0, 1], fontWeight: "body", opacity: 0.5 }}>ETH</Box>
+                  <Box sx={{ fontSize: [0, 1], fontWeight: "body", opacity: 0.5 }}>
+                    {assetType !== "all" ? assetType.toUpperCase() : ""}
+                  </Box>
                 </th>
                 <th>
                   Debt
@@ -238,9 +312,9 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 20, asset =
             <tbody>
               {troves.map(
                 trove =>
-                  !trove.isEmpty && ( // making sure the Trove hasn't been liquidated
+                  !trove.userTrove.isEmpty && ( // making sure the Trove hasn't been liquidated
                     // (TODO: remove check after we can fetch multiple Troves in one call)
-                    <tr key={trove.ownerAddress}>
+                    <tr key={trove.userTrove.ownerAddress}>
                       <td
                         style={{
                           display: "flex",
@@ -248,7 +322,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 20, asset =
                           height: rowHeight
                         }}
                       >
-                        <Tooltip message={trove.ownerAddress} placement="top">
+                        <Tooltip message={trove.userTrove.ownerAddress} placement="top">
                           <Text
                             variant="address"
                             sx={{
@@ -257,7 +331,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 20, asset =
                               position: "relative"
                             }}
                           >
-                            {shortenAddress(trove.ownerAddress)}
+                            {shortenAddress(trove.userTrove.ownerAddress)}
                             <Box
                               sx={{
                                 display: ["block", "none"],
@@ -273,26 +347,33 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 20, asset =
                           </Text>
                         </Tooltip>
 
-                        {/* <CopyToClipboard
-                          text={trove?.ownerAddress}
-                          onCopy={() => setCopied(trove?.ownerAddress)}
+                        <CopyToClipboard
+                          text={trove?.userTrove?.ownerAddress}
+                          onCopy={() => setCopied(trove?.userTrove?.ownerAddress)}
                         >
                           <Button variant="icon" sx={{ width: "24px", height: "24px" }}>
                             <Icon
-                              name={copied === trove.ownerAddress ? "clipboard-check" : "clipboard"}
+                              name={
+                                copied === trove?.userTrove?.ownerAddress
+                                  ? "clipboard-check"
+                                  : "clipboard"
+                              }
                               size="sm"
                             />
                           </Button>
-                        </CopyToClipboard> */}
+                        </CopyToClipboard>
                       </td>
                       <td>
-                        <Abbreviation short={trove.collateral.shorten()}>
-                          {trove.collateral.prettify(0)}
+                        <Abbreviation short={trove.userTrove.collateral.shorten()}>
+                          {trove.userTrove.collateral.prettify(0)}{" "}
+                          <Text sx={{ fontSize: "10px", fontWeight: 900 }}>
+                            {assetType === "all" ? trove?.asset?.toUpperCase() : ""}
+                          </Text>
                         </Abbreviation>
                       </td>
                       <td>
-                        <Abbreviation short={trove.debt.shorten()}>
-                          {trove.debt.prettify(0)}
+                        <Abbreviation short={trove.userTrove.debt.shorten()}>
+                          {trove.userTrove.debt.prettify(0)}
                         </Abbreviation>
                       </td>
                       <td>
@@ -308,26 +389,26 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 20, asset =
                           >
                             {new Percent(collateralRatio).prettify()}
                           </Text>
-                        ))(trove.collateralRatio(ctx))}
+                        ))(trove.userTrove.collateralRatio(ctx))}
                       </td>
                       <td>
                         <Transaction
-                          id={`liquidate-${trove.ownerAddress}`}
+                          id={`liquidate-${trove.userTrove.ownerAddress}`}
                           tooltip="Liquidate"
                           requires={[
-                            recoveryMode
+                            trove?.recoveryMode
                               ? liquidatableInRecoveryMode(
-                                  trove,
-                                  price,
-                                  totalCollateralRatio,
-                                  kusdInStabilityPool
+                                  trove.userTrove,
+                                  trove?.price,
+                                  trove?.totalCollateralRatio,
+                                  trove?.kusdInStabilityPool
                                 )
-                              : liquidatableInNormalMode(trove, price)
+                              : liquidatableInNormalMode(trove.userTrove, trove?.price)
                           ]}
                           send={kumo.send.liquidate.bind(
                             kumo.send,
-                            vault.assetAddress,
-                            trove.ownerAddress
+                            trove?.assetAddress,
+                            trove.userTrove.ownerAddress
                           )}
                         >
                           <Button variant="dangerIcon">

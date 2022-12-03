@@ -28,7 +28,7 @@ export const StatsTVCard: React.FC<StatsTVCardProps> = ({ title,totalValueLocked
           <Heading as="h1" sx={{ fontWeight: 600 }}>
             {title}
           </Heading>
-          <Heading as="h2">$ {totalValueLocked.prettify(2)}</Heading>
+          <Heading as="h2">$ {totalValueLocked.prettify(0)}</Heading>
           {/* <Text as="p" sx={{ fontWeight: "bold" }}>
             Yesterday: $ 0
           </Text> */}

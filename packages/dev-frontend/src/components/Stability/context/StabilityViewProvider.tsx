@@ -56,10 +56,20 @@ export const StabilityViewProvider: React.FC = props => {
   const stabilityDeposit = vault?.stabilityDeposit && vault.stabilityDeposit;
 
   const [view, setView] = useState<StabilityView>(getInitialView(stabilityDeposit));
+  const [showModal, setShowModal] = useState(false);
   const viewRef = useRef<StabilityView>(view);
 
   const dispatchEvent = useCallback((event: StabilityEvent) => {
+    if (event === "CLOSE_MODAL_PRESSED") {
+      setShowModal(false);
+      return;
+    } else if (event === "OPEN_MODAL_PRESSED") {
+      setShowModal(true);
+      return;
+    }
+
     const nextView = transition(viewRef.current, event);
+    console.log("nextView", nextView, viewRef.current, event);
 
     console.log(
       "dispatchEvent() [current-view, event, next-view]",
@@ -86,6 +96,7 @@ export const StabilityViewProvider: React.FC = props => {
 
   const provider = {
     view,
+    showModal,
     dispatchEvent
   };
 

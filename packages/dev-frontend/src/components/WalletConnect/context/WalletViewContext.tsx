@@ -3,6 +3,7 @@ import type { WalletView, WalletEvent } from "./types";
 
 type WalletViewContextType = {
   view: WalletView;
+  showModal: boolean;
   dispatchEvent: (event: WalletEvent) => void;
 };
 

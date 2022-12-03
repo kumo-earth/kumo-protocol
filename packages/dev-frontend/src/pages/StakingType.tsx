@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 import { useHistory } from "react-router-dom";
 import { Grid, Box } from "theme-ui";
@@ -7,23 +7,45 @@ import { StakingTypeCard } from "../components/StakingTypeCard/StakingTypeCard";
 import { useDialogState, Dialog } from "reakit/Dialog";
 import { KumoStoreState } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
+import { useStabilityView } from "../components/Stability/context/StabilityViewContext";
 
 const select = ({ vaults }: KumoStoreState) => ({
   vaults
 });
 
 export const StakingType: React.FC = () => {
+  const { showModal, view, dispatchEvent } = useStabilityView();
   const dialog = useDialogState();
   const { vaults } = useKumoSelector(select);
-  const [stakeDeposit, setStakeDeposit] = useState(false);
   const history = useHistory();
 
   useEffect(() => {
     if (!dialog.visible) {
-      setStakeDeposit(false)
+      dispatchEvent("CLOSE_MODAL_PRESSED");
       history.push("/staking/stability");
     }
   }, [dialog.visible]);
+
+  useEffect(() => {
+    const keyDownHandler = (event: { key: string; preventDefault: () => void }) => {
+
+      if (event.key === "Escape") {
+        event.preventDefault();
+        dialog.setVisible(false);
+        if (view === "ACTIVE" || view === "DEPOSITING") {
+          dispatchEvent("CANCEL_PRESSED");
+        }
+        dispatchEvent("CLOSE_MODAL_PRESSED");
+      }
+    };
+
+    document.addEventListener("keydown", keyDownHandler);
+
+    // 👇️ clean up event listener
+    return () => {
+      document.removeEventListener("keydown", keyDownHandler);
+    };
+  }, []);
 
   const style = {
     top: "45%",
@@ -54,14 +76,14 @@ export const StakingType: React.FC = () => {
             key={vault.asset}
             vault={vault}
             handleViewStakeDeposit={() => {
-              setStakeDeposit(true);
+              dispatchEvent("OPEN_MODAL_PRESSED");
               dialog.setVisible(true);
               history.push(`/staking/stability/${vault.asset}`);
             }}
           />
         );
       })}
-      {stakeDeposit && (
+      {showModal && (
         <Dialog {...dialog}>
           <Box sx={{ ...style, position: "absolute" }}>
             <Stability />

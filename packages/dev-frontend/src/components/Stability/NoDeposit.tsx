@@ -19,14 +19,11 @@ export const NoDeposit: React.FC = props => {
     <Card variant="base" sx={{ background: "#ebd8df" }}>
       <Heading as="h2" sx={{ display: "flex", justifyContent: "space-between", mr: 2 }}>
         {collateralType?.toUpperCase()} Stability Pool
-        {/* <Flex sx={{ justifyContent: "flex-end" }}>
-          <RemainingKUMO />
-        </Flex> */}
         <span
           style={{ marginLeft: "auto", cursor: "pointer" }}
-          // onClick={() => dispatchEvent("CLOSE_MODAL_PRESSED")}
+          onClick={() => dispatchEvent("CLOSE_MODAL_PRESSED")}
         >
-          {/* <Icon name="window-close" size={"1x"} color="#da357a" /> */}
+          <Icon name="window-close" size={"1x"} color="#da357a" />
         </span>
       </Heading>
       <Box sx={{ p: [2, 3] }}>

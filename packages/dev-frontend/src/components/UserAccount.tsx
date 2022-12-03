@@ -1,52 +1,123 @@
 import React, { useEffect } from "react";
-import { Flex, Box, Heading } from "theme-ui";
+import { Flex, Box, Button } from "theme-ui";
 import { useWalletView } from "../components/WalletConnect/context/WalletViewContext";
 import { Web3Provider } from "@ethersproject/providers";
 
-
-import { Icon } from "./Icon";
 import { useWeb3React } from "@web3-react/core";
+import { useDialogState, Dialog } from "reakit/Dialog";
+import { WalletModal } from "./WalletConnect/WalletModal";
+import { Tooltip } from "./Tooltip";
+import { SwitchNetworkModal } from "./SwitchNetwork/SwitchNetwork";
+import { useSwitchNetworkView } from "./SwitchNetwork/context/SwitchNetworkViewContext";
+
+
+const style = {
+  top: "45%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 470,
+  // bgcolor: "background.paper",
+  bgcolor: "white",
+  border: "none",
+  boxShadow: 24,
+  p: 0
+};
 
 export const UserAccount: React.FC = () => {
   const { deactivate, active } = useWeb3React<Web3Provider>();
-  // const { account } = useKumo();
-  const { dispatchEvent } = useWalletView();
+  const dialog = useDialogState();
+  const { view, showModal, dispatchEvent } = useWalletView();
+  const { showSwitchModal } = useSwitchNetworkView()
   const { account } = useWeb3React();
 
   useEffect(() => {
-    console.log(active);
-  }, [account]);
+    if (!active) {
+      dialog.setVisible(true);
+    }
+  }, []);
+
+  // useEffect(() => {
+  //   const keyDownHandler = (event: { key: string; preventDefault: () => void }) => {
+  //     if (event.key === "Escape") {
+  //       event.preventDefault();
+  //       console.log("UserAccount", view);
+  //       if (view === "NONE" || "OPEN") {
+  //         dispatchEvent("CLOSE_WALLET_MODAL_PRESSED");
+  //       }
+  //     }
+  //   };
+
+  //   document.addEventListener("keydown", keyDownHandler);
+
+  //   // 👇️ clean up event listener
+  //   return () => {
+  //     document.removeEventListener("keydown", keyDownHandler);
+  //   };
+  // }, []);
 
   return (
     <Box sx={{ display: ["none", "flex"] }}>
-      <Flex sx={{ alignItems: "flex-start" }}>
-        <Icon name="user-circle" size="lg" />
+      <Flex sx={{ alignItems: "center" }}>
+        {/* <Icon name="user-circle" size="lg" color="#a81f58"/> */}
         <Flex sx={{ ml: 3, mr: 4, flexDirection: "column" }}>
           {account ? (
             <>
-              {/* <Heading sx={{ fontSize: 1 }} onClick={() => dispatchEvent("CLOSE_MODAL_PRESSED")}>
-                Connected as
-              </Heading> */}
-              {/* <Text as="span" sx={{ fontSize: 1 }}>
-                {shortenAddress(account)}
-              </Text> */}
-              <Heading
-                sx={{ fontSize: 1 }}
-                onClick={() => {
-                  deactivate();
-                  sessionStorage.removeItem("account");
-                }}
-              >
-                Disconnect
-              </Heading>
+              <Tooltip message={account}>
+                <Button
+                  onClick={() => {
+                    deactivate();
+                    sessionStorage.removeItem("account");
+                  }}
+                  sx={{
+                    py: 1,
+                    px: 2,
+                    mr: 2,
+
+                    backgroundColor: "primary",
+                    borderRadius: "8px",
+                    fontSize: 1,
+                    outline: "none"
+                  }}
+                >
+                  {" "}
+                  Disconnect
+                </Button>
+              </Tooltip>
             </>
           ) : (
-            <Heading sx={{ fontSize: 1 }} onClick={() => dispatchEvent("OPEN_MODAL_PRESSED")}>
+            <Button
+              onClick={() => dispatchEvent("OPEN_WALLET_MODAL_PRESSED")}
+              sx={{
+                py: 1,
+                px: 2,
+                mr: 2,
+                // letterSpacing: "inherit",
+                // backgroundColor: "#f0cfdc",
+                borderRadius: "8px",
+                fontSize: 1,
+                outline: "none"
+              }}
+            >
               Connect
-            </Heading>
+            </Button>
           )}
         </Flex>
       </Flex>
+      {showModal && (
+        <Dialog {...dialog} hideOnClickOutside={false}>
+          <Box sx={{ ...style, position: "absolute" }}>
+            <WalletModal />
+          </Box>
+        </Dialog>
+      )}
+       {showSwitchModal && (
+        <Dialog {...dialog} hideOnClickOutside={false}>
+          <Box sx={{ ...style, position: "absolute" }}>
+            <SwitchNetworkModal />
+          </Box>
+        </Dialog>
+      )}
+     
     </Box>
   );
 };

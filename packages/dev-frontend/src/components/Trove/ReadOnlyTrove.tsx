@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { Card, Heading, Box, Flex, Button, Select } from "theme-ui";
-import { Decimal, KumoStoreState, UserTrove, Vault } from "@kumodao/lib-base";
+import { Card, Heading, Box, Flex, Button } from "theme-ui";
+import { Decimal, KumoStoreState, Vault } from "@kumodao/lib-base";
 import { DisabledEditableRow } from "./Editor";
 import { useTroveView } from "./context/TroveViewContext";
 import { Icon } from "../Icon";

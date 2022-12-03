@@ -61,11 +61,12 @@ export const ActiveDeposit: React.FC = () => {
     >
       <Heading as="h2">
         {collateralType?.toUpperCase()} Stability Pool
-        {!isWaitingForTransaction && (
-          <Flex sx={{ justifyContent: "flex-end" }}>
-            {/* <RemainingKUMO /> */}
-          </Flex>
-        )}
+        <span
+          style={{ marginLeft: "auto", cursor: "pointer" }}
+          onClick={() => dispatchEvent("CLOSE_MODAL_PRESSED")}
+        >
+          <Icon name="window-close" size={"1x"} color="#da357a" />
+        </span>
       </Heading>
       <Box sx={{ p: [2, 3] }}>
         <Box>

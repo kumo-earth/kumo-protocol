@@ -17,7 +17,6 @@ const baseColors = {
   yellow: "#fd9d28",
   red: "#dc2c10",
   lightRed: "#ff755f"
-
 };
 
 const colors = {
@@ -36,7 +35,7 @@ const colors = {
   danger: baseColors.red,
   dangerHover: baseColors.lightRed,
   info: baseColors.blue,
-  invalid: "pink",
+  invalid: "pink"
 };
 
 const buttonBase: ThemeUIStyleObject = {
@@ -207,6 +206,9 @@ const theme: Theme = {
       fontWeight: "heading",
       lineHeight: "heading"
     },
+    normal: {
+      fontWeight: "medium"
+    },
     normalBold: {
       fontWeight: "bold"
     },
@@ -304,7 +306,7 @@ const theme: Theme = {
       bg: "transparent",
       boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
       borderRadius: "20px",
-      width: "97%",
+      width: "100%",
       maxWidth: "100%",
       position: "relative",
       "> h2": {
@@ -349,7 +351,7 @@ const theme: Theme = {
       position: "relative",
       "> h2": {
         variant: "cards.base.> h2",
-        height: "60px",
+        height: "60px"
       },
       ":hover": {
         ...cardHoverEffects
@@ -358,8 +360,13 @@ const theme: Theme = {
     StabilityPoolStakingCard: {
       variant: "cards.base",
       border: "none",
+      // width: "100%",
+      // maxWidth: "100%",
+      display: "flex",
+      flexDirection: "column",
+     
       borderRadius: "20px",
-      height: "max-content",
+      // maxHeight: "max-content",
       ":hover": {
         ...cardHoverEffects
       }
@@ -398,7 +405,23 @@ const theme: Theme = {
 
       flex: 1
     },
-
+   
+    select: {
+      ml: 2,
+      p: 1,
+      border: "none",
+      borderRadius: 6,
+      minWidth: 90,
+      maxWidth: "max-content",
+      backgroundColor: "secondaryHover",
+      borderColor: "muted",
+      fontSize: 2,
+      ":focus": {
+        borderColor: "primary",
+        // boxShadow: t => `0 0 0 2px `,
+        outline: "none"
+      }
+    },
     editor: {}
   },
 
