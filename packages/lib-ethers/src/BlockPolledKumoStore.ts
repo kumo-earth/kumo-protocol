@@ -93,7 +93,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
     blockTag?: number
   ): Promise<[baseState: KumoStoreBaseState, extraState: BlockPolledKumoStoreExtraState]> {
     const { userAddress, frontendTag, provider } = this.connection;
-    const asset = ASSET_TOKENS.ctx.assetAddress
+    const asset = ASSET_TOKENS.ctx.assetAddress;
 
     const vaultState: Vault[] = [];
 
@@ -326,9 +326,9 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
   // }
   /** @internal @override */
   protected _doStart(): () => void {
-    const assetNumbers = Object.keys(ASSET_TOKENS).length
+    const assetNumbers = Object.keys(ASSET_TOKENS).length;
     this._get().then(state => {
-      if (!this._loaded && state[0].vaults.length === assetNumbers) {
+      if ((!this._loaded && state[0].vaults.length === assetNumbers) || this.connection?._isDev) {
         this._load(...state);
       }
     });
@@ -337,7 +337,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
       const state = await this._get(blockTag);
       if (this._loaded && state[0].vaults.length === assetNumbers) {
         this._update(...state);
-      } else if(state[0].vaults.length === assetNumbers) {
+      } else if (state[0].vaults.length === assetNumbers) {
         this._load(...state);
       }
     };

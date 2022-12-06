@@ -2,8 +2,6 @@ import { Decimal, Trove, UserTrove } from "@kumodao/lib-base";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { Flex, Progress, Box, Card, Text, Heading } from "theme-ui";
-import { Web3Provider } from "@ethersproject/providers";
-import { useWeb3React } from "@web3-react/core";
 
 import { useTroveView } from "../Trove/context/TroveViewContext";
 import { toUpper } from "lodash";
@@ -11,7 +9,7 @@ import { InfoIcon } from "../InfoIcon";
 
 type CollateralCardProps = {
   collateralType?: string;
-  totalCollateralRatioPct: Decimal;
+  totalCollateralRatioPct: string;
   total: Trove;
   kusdInStabilityPool: Decimal;
   borrowingRate: Decimal;
@@ -69,7 +67,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
         </Text>
 
         <Text as="p" variant="xlarge" sx={{ mt: 1 }}>
-          {`${totalCollateralRatioPct.prettify(0)} %`}
+          {totalCollateralRatioPct}
         </Text>
         <Flex sx={{ justifyContent: "space-between", mt: 6 }}>
           <Text as="p" variant="normalBold">

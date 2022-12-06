@@ -175,7 +175,7 @@ export const Opening: React.FC = () => {
         <StaticRow
           label="Borrowing Fee"
           inputId="trove-borrowing-fee"
-          amount={fee.prettify(0)}
+          amount={fee.prettify(2)}
           pendingAmount={feePct.toString(2)}
           unit={COIN}
           infoIcon={
@@ -193,7 +193,7 @@ export const Opening: React.FC = () => {
         <StaticRow
           label="Total debt"
           inputId="trove-total-debt"
-          amount={totalDebt.prettify(0)}
+          amount={totalDebt.prettify(2)}
           unit={COIN}
           infoIcon={
             <InfoIcon

@@ -16,19 +16,18 @@ interface AssetType {
  */
 export const ASSET_TOKENS: ASSET_TOKENS_TYPES<AssetType> = {
   ctx: {
-    assetAddress: "0x213696b6F4d41178D3E7069BAc8fab6fAaD53BF2",
+    assetAddress: "0xD2D6a32Cb871dc6Abe4b80b008c4030FCAAd7FA8",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
     MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
     KUSD_MINTED_CAP: Decimal.from(15000000),
     MIN_NET_DEBT: Decimal.from(2000)
   },
   cty: {
-    assetAddress: "0x19027dcD6026AA3251505dc7Af262370Fc26Aa89",
+    assetAddress: "0xc365A380e0e3B23C37c2a694975FaAf38316Fbc7",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
     MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
     KUSD_MINTED_CAP: Decimal.from(10000000),
     MIN_NET_DEBT: Decimal.from(2000)
-
   }
 };
 /**
