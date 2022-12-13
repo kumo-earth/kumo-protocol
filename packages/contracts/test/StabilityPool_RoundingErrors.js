@@ -1,5 +1,6 @@
 
 const deploymentHelpers = require("../utils/truffleDeploymentHelpers.js")
+const deploymentHelper = require("../utils/deploymentHelpers")
 const testHelpers = require("../utils/testHelpers.js")
 
 const deployKumo = deploymentHelpers.deployKumo
@@ -20,6 +21,7 @@ contract('Pool Manager: Sum-Product rounding errors', async accounts => {
   let stabilityPool
   let troveManager
   let borrowerOperations
+  let assetAddress1
 
   beforeEach(async () => {
     contracts = await deployKumo()
@@ -29,6 +31,7 @@ contract('Pool Manager: Sum-Product rounding errors', async accounts => {
     stabilityPool = contracts.stabilityPool
     troveManager = contracts.troveManager
     borrowerOperations = contracts.borrowerOperations
+    assetAddress1 = (await deploymentHelper.deployERC20Asset()).address
 
     const contractAddresses = getAddresses(contracts)
     await connectContracts(contracts, contractAddresses)
@@ -49,10 +52,10 @@ contract('Pool Manager: Sum-Product rounding errors', async accounts => {
     for (let defaulter of defaulters) {
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter } })
       }
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // price drops by 50%: defaulter ICR falls to 100%
-    await priceFeed.setPrice(dec(105, 18));
+    await priceFeed.setPrice(assetAddress1, dec(105, 18));
 
     // Defaulters liquidated
     for (let defaulter of defaulters) {

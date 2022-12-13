@@ -76,8 +76,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       await stabilityPool.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale })
 
       // Price drops
-      await priceFeed.setPrice(dec(100, 18))
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
+      const price = await priceFeed.getPrice(assetAddress1)
       const TCR = await th.getTCR(contracts, assetAddress1)
 
       // Check Recovery Mode is active
@@ -174,8 +174,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       await stabilityPool.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale })
 
       // Price drops
-      await priceFeed.setPrice(dec(100, 18))
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
+      const price = await priceFeed.getPrice(assetAddress1)
       const TCR = await th.getTCR(contracts, assetAddress1)
 
       // Check Recovery Mode is active
@@ -219,8 +219,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       await stabilityPool.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale })
 
       // Price drops
-      await priceFeed.setPrice(dec(100, 18))
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
+      const price = await priceFeed.getPrice(assetAddress1)
       const TCR = await th.getTCR(contracts, assetAddress1)
 
       // Check Recovery Mode is active
