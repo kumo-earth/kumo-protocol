@@ -30,7 +30,7 @@ Implemented by [EthersKumo](./lib-ethers.etherskumo.md)<!-- -->.
 |  [getLiquidityMiningKUMOReward(address)](./lib-base.readablekumo.getliquidityminingkumoreward.md) | Get the amount of KUMO earned by an address through mining liquidity. |
 |  [getLiquidityMiningStake(address)](./lib-base.readablekumo.getliquidityminingstake.md) | Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in liquidity mining. |
 |  [getNumberOfTroves(asset)](./lib-base.readablekumo.getnumberoftroves.md) | Get number of Troves that are currently open. |
-|  [getPrice()](./lib-base.readablekumo.getprice.md) | Get the current price of the native currency (e.g. Ether) in USD. |
+|  [getPrice(asset)](./lib-base.readablekumo.getprice.md) | Get the current price of the native currency (e.g. Ether) in USD. |
 |  [getRemainingLiquidityMiningKUMOReward()](./lib-base.readablekumo.getremainingliquidityminingkumoreward.md) | Get the remaining KUMO that will be collectively rewarded to liquidity miners. |
 |  [getRemainingStabilityPoolKUMOReward()](./lib-base.readablekumo.getremainingstabilitypoolkumoreward.md) | Get the remaining KUMO that will be collectively rewarded to stability depositors. |
 |  [getStabilityDeposit(address)](./lib-base.readablekumo.getstabilitydeposit.md) | Get the current state of a Stability Deposit. |

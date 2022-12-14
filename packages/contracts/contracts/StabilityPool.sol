@@ -1042,7 +1042,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     }
 
     function _requireNoUnderCollateralizedTroves() internal {
-        uint256 price = kumoParams.priceFeed().fetchPrice(address(0));
+        uint256 price = kumoParams.priceFeed().fetchPrice(assetAddress);
         address lowestTrove = sortedTroves.getLast(assetAddress);
         uint256 ICR = troveManager.getCurrentICR(assetAddress, lowestTrove, price);
         require(

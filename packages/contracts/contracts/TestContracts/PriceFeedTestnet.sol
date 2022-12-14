@@ -12,6 +12,7 @@ contract PriceFeedTestnet is IPriceFeed {
     
     // uint256 private _price = 200 * 1e18;
     mapping(address => uint256) private assetPrices;
+    uint private constant zeroValue = type(uint).max - 143; // 143 is just to increase randomness
 
     // --- Functions ---
 
@@ -19,6 +20,8 @@ contract PriceFeedTestnet is IPriceFeed {
     function getPrice(address _asset) external view returns (uint256) {
         if (assetPrices[_asset] == 0) {
             return 200 * 1e18;
+        } else if (assetPrices[_asset] == zeroValue) {
+            return 0;
         } else {
             return assetPrices[_asset];
         }
@@ -37,7 +40,11 @@ contract PriceFeedTestnet is IPriceFeed {
 
     // Manual external price setter.
     function setPrice(address _asset, uint256 _price) external returns (bool) {
-        assetPrices[_asset] = _price;
+        if (_price == 0) {
+            assetPrices[_asset] = zeroValue;
+        } else {
+            assetPrices[_asset] = _price;
+        }
         return true;
     }
 }
