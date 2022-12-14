@@ -17,6 +17,7 @@
 |  [Trove](./lib-base.trove.md) | A combination of collateral and debt. |
 |  [TroveWithPendingRedistribution](./lib-base.trovewithpendingredistribution.md) | A Trove in its state after the last direct modification. |
 |  [UserTrove](./lib-base.usertrove.md) | A Trove that is associated with a single owner. |
+|  [Vault](./lib-base.vault.md) | A Vault that is associated with each asset. |
 
 ## Interfaces
 
@@ -26,7 +27,6 @@
 |  [KumoStoreBaseState](./lib-base.kumostorebasestate.md) | State variables read from the blockchain. |
 |  [KumoStoreDerivedState](./lib-base.kumostorederivedstate.md) | State variables derived from [KumoStoreBaseState](./lib-base.kumostorebasestate.md)<!-- -->. |
 |  [KumoStoreListenerParams](./lib-base.kumostorelistenerparams.md) | Parameters passed to [KumoStore](./lib-base.kumostore.md) listeners. |
-|  [KumoVaultsState](./lib-base.kumovaultsstate.md) |  |
 |  [LiquidationDetails](./lib-base.liquidationdetails.md) | Details of a [liquidate()](./lib-base.transactablekumo.liquidate.md) or [liquidateUpTo()](./lib-base.transactablekumo.liquidateupto.md) transaction. |
 |  [PopulatableKumo](./lib-base.populatablekumo.md) | Prepare Kumo transactions for sending. |
 |  [PopulatedKumoTransaction](./lib-base.populatedkumotransaction.md) | A transaction that has been prepared for sending. |

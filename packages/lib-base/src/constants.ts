@@ -16,14 +16,14 @@ interface AssetType {
  */
 export const ASSET_TOKENS: ASSET_TOKENS_TYPES<AssetType> = {
   ctx: {
-    assetAddress: "0xD2D6a32Cb871dc6Abe4b80b008c4030FCAAd7FA8",
+    assetAddress: "0x84A85A35AF520fC2884167Fc62Fb7605a454A102",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
     MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
     KUSD_MINTED_CAP: Decimal.from(15000000),
     MIN_NET_DEBT: Decimal.from(2000)
   },
   cty: {
-    assetAddress: "0xc365A380e0e3B23C37c2a694975FaAf38316Fbc7",
+    assetAddress: "0xb0441e9262C2786db98a4A83bc5EF5Eb4A83aA17",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
     MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
     KUSD_MINTED_CAP: Decimal.from(10000000),
