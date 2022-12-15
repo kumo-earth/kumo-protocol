@@ -9,8 +9,15 @@ Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [K
 <b>Signature:</b>
 
 ```typescript
-withdrawGainsFromStabilityPool(): Promise<StabilityPoolGainsWithdrawalDetails>;
+withdrawGainsFromStabilityPool(asset: string): Promise<StabilityPoolGainsWithdrawalDetails>;
 ```
+
+## Parameters
+
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  asset | string |  |
+
 <b>Returns:</b>
 
 Promise&lt;[StabilityPoolGainsWithdrawalDetails](./lib-base.stabilitypoolgainswithdrawaldetails.md)<!-- -->&gt;

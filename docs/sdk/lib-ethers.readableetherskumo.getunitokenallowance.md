@@ -9,7 +9,7 @@ Get the liquidity mining contract's allowance of a holder's Uniswap ETH/KUSD LP 
 <b>Signature:</b>
 
 ```typescript
-getUniTokenAllowance(address: string, overrides?: EthersCallOverrides): Promise<Decimal>;
+getUniTokenAllowance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
 ```
 
 ## Parameters

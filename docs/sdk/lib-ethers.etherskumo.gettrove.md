@@ -9,7 +9,7 @@ Get the current state of a Trove.
 <b>Signature:</b>
 
 ```typescript
-getTrove(asset: string, address: string, overrides?: EthersCallOverrides): Promise<UserTrove>;
+getTrove(asset: string, address?: string, overrides?: EthersCallOverrides): Promise<UserTrove>;
 ```
 
 ## Parameters

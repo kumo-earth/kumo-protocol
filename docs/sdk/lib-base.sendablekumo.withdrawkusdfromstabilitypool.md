@@ -9,7 +9,7 @@ Withdraw KUSD from Stability Deposit.
 <b>Signature:</b>
 
 ```typescript
-withdrawKUSDFromStabilityPool(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>;
+withdrawKUSDFromStabilityPool(amount: Decimalish, asset: string): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>;
 ```
 
 ## Parameters
@@ -17,6 +17,7 @@ withdrawKUSDFromStabilityPool(amount: Decimalish): Promise<SentKumoTransaction<S
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUSD to withdraw. |
+|  asset | string |  |
 
 <b>Returns:</b>
 
