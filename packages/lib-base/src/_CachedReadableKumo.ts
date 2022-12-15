@@ -87,8 +87,8 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     );
   }
 
-  async getPrice(...extraParams: T): Promise<Decimal> {
-    return this._cache.getPrice(...extraParams) ?? this._readable.getPrice(...extraParams);
+  async getPrice(asset: string, ...extraParams: T): Promise<Decimal> {
+    return this._cache.getPrice(asset, ...extraParams) ?? this._readable.getPrice(asset, ...extraParams);
   }
 
   async getTotal(asset: string, ...extraParams: T): Promise<Trove> {

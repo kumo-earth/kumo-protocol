@@ -102,7 +102,7 @@ contract('TroveManager', async accounts => {
   })
 
   it("A given trove's stake decline is negligible with adjustments and tiny liquidations", async () => {
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Make 1 mega troves A at ~50% total collateral
     await borrowerOperations.openTrove(assetAddress1, dec(2, 29), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(1, 31)), ZERO_ADDRESS, ZERO_ADDRESS, { from: A })
@@ -121,8 +121,8 @@ contract('TroveManager', async accounts => {
     }
 
     // liquidate 1 trove at ~50% total system collateral
-    await priceFeed.setPrice(dec(50, 18))
-    assert.isTrue(await troveManager.checkRecoveryMode(assetAddress1, await priceFeed.getPrice()))
+    await priceFeed.setPrice(assetAddress1, dec(50, 18))
+    assert.isTrue(await troveManager.checkRecoveryMode(assetAddress1, await priceFeed.getPrice(assetAddress1)))
     await troveManager.liquidate(assetAddress1, A)
 
     console.log(`totalStakesSnapshot after L1: ${await troveManager.totalStakesSnapshot(assetAddress1)}`)

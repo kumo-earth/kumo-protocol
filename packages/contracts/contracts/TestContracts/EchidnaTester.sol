@@ -135,7 +135,7 @@ contract EchidnaTester {
         require(CCR > 0);
 
         // TODO:
-        priceFeedTestnet.setPrice(1e22);
+        priceFeedTestnet.setPrice(_asset, 1e22);
     }
 
     // TroveManager
@@ -197,7 +197,7 @@ contract EchidnaTester {
         uint256 _ASSET,
         uint256 ratio
     ) internal view returns (uint256) {
-        uint256 price = priceFeedTestnet.getPrice();
+        uint256 price = priceFeedTestnet.getPrice(_asset);
         require(price > 0);
         uint256 minASSET = ratio.mul(kumoParams.KUSD_GAS_COMPENSATION(_asset)).div(price);
         require(actorBalance > minASSET);
@@ -211,7 +211,7 @@ contract EchidnaTester {
         uint256 _KUSDAmount,
         uint256 ratio
     ) internal view returns (uint256) {
-        uint256 price = priceFeedTestnet.getPrice();
+        uint256 price = priceFeedTestnet.getPrice(_asset);
         uint256 KUSDAmount = _KUSDAmount;
         uint256 compositeDebt = KUSDAmount.add(kumoParams.KUSD_GAS_COMPENSATION(_asset));
         uint256 ICR = KumoMath._computeCR(ASSET, compositeDebt, price);
@@ -453,7 +453,7 @@ contract EchidnaTester {
     // PriceFeed
 
     function setPriceExt(uint256 _price) external {
-        bool result = priceFeedTestnet.setPrice(_price);
+        bool result = priceFeedTestnet.setPrice(address(0), _price);
         assert(result);
     }
 
@@ -572,7 +572,7 @@ contract EchidnaTester {
 
     // TODO: What should we do with this? Should it be allowed? Should it be a canary?
     function echidna_price() public view returns (bool) {
-        uint256 price = priceFeedTestnet.getPrice();
+        uint256 price = priceFeedTestnet.getPrice(address(0));
 
         if (price == 0) {
             return false;

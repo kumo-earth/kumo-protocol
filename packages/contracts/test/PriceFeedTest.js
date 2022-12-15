@@ -6,6 +6,7 @@ const MockTellor = artifacts.require("./MockTellor.sol")
 const TellorCaller = artifacts.require("./TellorCaller.sol")
 
 const testHelpers = require("../utils/testHelpers.js")
+const deploymentHelpers = require("../utils/deploymentHelpers")
 const th = testHelpers.TestHelper
 
 const { dec, assertRevert, toBN, uintTob32 } = th
@@ -17,6 +18,7 @@ contract('PriceFeed', async accounts => {
   let priceFeed
   let zeroAddressPriceFeed
   let mockChainlink
+  let erc20Address
 
   const setAddresses = async () => {
     await priceFeed.setAddresses(mockChainlink.address, tellorCaller.address, { from: owner })
@@ -54,16 +56,18 @@ contract('PriceFeed', async accounts => {
     const now = await th.getLatestBlockTimestamp(web3)
     await mockChainlink.setUpdateTime(now)
     await mockTellor.setUpdateTime(now)
+
+    erc20Address = (await deploymentHelpers.deployERC20Asset()).address
   })
 
   describe('PriceFeed internal testing contract', async accounts => {
     it("fetchPrice before setPrice should return the default price", async () => {
-      const price = await priceFeedTestnet.getPrice()
+      const price = await priceFeedTestnet.getPrice(erc20Address)
       assert.equal(price, dec(200, 18))
     })
     it("should be able to fetchPrice after setPrice, output of former matching input of latter", async () => {
-      await priceFeedTestnet.setPrice(dec(100, 18))
-      const price = await priceFeedTestnet.getPrice()
+      await priceFeedTestnet.setPrice(erc20Address, dec(100, 18))
+      const price = await priceFeedTestnet.getPrice(erc20Address)
       assert.equal(price, dec(100, 18))
     })
   })
@@ -71,7 +75,7 @@ contract('PriceFeed', async accounts => {
   describe('Mainnet PriceFeed setup', async accounts => {
     it("fetchPrice should fail on contract with no chainlink address set", async () => {
       try {
-        const price = await zeroAddressPriceFeed.fetchPrice()
+        const price = await zeroAddressPriceFeed.fetchPrice(erc20Address)
         assert.isFalse(price.receipt.status)
       } catch (err) {
         assert.include(err.message, "function returned an unexpected amount of data")
@@ -80,7 +84,7 @@ contract('PriceFeed', async accounts => {
 
     it("fetchPrice should fail on contract with no tellor address set", async () => {
       try {
-        const price = await zeroAddressPriceFeed.fetchPrice()
+        const price = await zeroAddressPriceFeed.fetchPrice(erc20Address)
         assert.isFalse(price.receipt.status)
       } catch (err) {
         assert.include(err.message, "function returned an unexpected amount of data")
@@ -118,7 +122,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setDecimals(8)
     await mockChainlink.setPrevPrice(dec(1, 9))
     await mockChainlink.setPrice(dec(1, 9))
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
     // Check Kumo PriceFeed gives 10, with 18 digit precision
     assert.equal(price, dec(10, 18))
@@ -127,7 +131,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setDecimals(0)
     await mockChainlink.setPrevPrice(dec(1, 9))
     await mockChainlink.setPrice(dec(1, 9))
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
     price = await priceFeed.lastGoodPrice()
     // Check Kumo PriceFeed gives 1e9, with 18 digit precision
     assert.isTrue(price.eq(toBN(dec(1, 27))))
@@ -138,7 +142,7 @@ contract('PriceFeed', async accounts => {
 
     await mockChainlink.setPrevPrice(dec(1, 14))
     await mockChainlink.setPrice(dec(1, 14))
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
     price = await priceFeed.lastGoodPrice()
     // Check Kumo PriceFeed gives 0.0001 with 18 digit precision
     assert.isTrue(price.eq(toBN(dec(1, 14))))
@@ -147,7 +151,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setDecimals(5)
     await mockChainlink.setPrevPrice(dec(123456789))
     await mockChainlink.setPrice(dec(123456789))
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
     price = await priceFeed.lastGoodPrice()
     // Check Kumo PriceFeed gives 0.0001 with 18 digit precision
     assert.equal(price, '1234567890000000000000')
@@ -167,7 +171,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(dec(123, 6)))
     await mockChainlink.setUpdateTime(0)
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '1') // status 1: using Tellor, Chainlink untrusted
 
@@ -176,21 +180,21 @@ contract('PriceFeed', async accounts => {
 
     // Tellor price is 10 at 6-digit precision
     await mockTellor.setPrice(uintTob32(dec(10, 6)))
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
     price = await priceFeed.lastGoodPrice()
     // Check Kumo PriceFeed gives 10, with 18 digit precision
     assert.equal(price, dec(10, 18))
 
     // Tellor price is 1e9 at 6-digit precision
     await mockTellor.setPrice(uintTob32(dec(1, 15)))
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
     price = await priceFeed.lastGoodPrice()
     // Check Kumo PriceFeed gives 1e9, with 18 digit precision
     assert.equal(price, dec(1, 27))
 
     // Tellor price is 0.0001 at 6-digit precision
     await mockTellor.setPrice(uintTob32(100))
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
     price = await priceFeed.lastGoodPrice()
     // Check Kumo PriceFeed gives 0.0001 with 18 digit precision
 
@@ -198,7 +202,7 @@ contract('PriceFeed', async accounts => {
 
     // Tellor price is 1234.56789 at 6-digit precision
     await mockTellor.setPrice(uintTob32(dec(1234567890)))
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
     price = await priceFeed.lastGoodPrice()
     // Check Kumo PriceFeed gives 0.0001 with 18 digit precision
     assert.equal(price, '1234567890000000000000')
@@ -216,7 +220,7 @@ contract('PriceFeed', async accounts => {
   //   await mockTellor.setPrice(uintTob32(dec(123, 6)))
   //   await mockChainlink.setLatestRoundId(0)
 
-  //   const priceFetchTx = await priceFeed.fetchPrice()
+  //   const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
   //   const statusAfter = await priceFeed.status()
   //   assert.equal(statusAfter, '1') // status 1: using Tellor, Chainlink untrusted
   // })
@@ -233,7 +237,7 @@ contract('PriceFeed', async accounts => {
   //   await mockTellor.setPrice(uintTob32(dec(123, 6)))
   //   await mockChainlink.setLatestRoundId(0)
 
-  //   const priceFetchTx = await priceFeed.fetchPrice()
+  //   const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
   //   const statusAfter = await priceFeed.status()
   //   assert.equal(statusAfter, '1') // status 1: using Tellor, Chainlink untrusted
   // })
@@ -250,7 +254,7 @@ contract('PriceFeed', async accounts => {
   //   await mockTellor.setPrice(uintTob32(dec(123, 6)))
   //   await mockChainlink.setUpdateTime(0)
 
-  //   const priceFetchTx = await priceFeed.fetchPrice()
+  //   const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
   //   const statusAfter = await priceFeed.status()
   //   assert.equal(statusAfter, '1') // status 1: using Tellor, Chainlink untrusted
   // })
@@ -267,7 +271,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(dec(123, 6)))
     await mockChainlink.setUpdateTime(0)
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
     let price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(123, 18))
@@ -288,7 +292,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(dec(123, 6)))
     await mockChainlink.setUpdateTime(future)
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '1') // status 1: using Tellor, Chainlink untrusted
   })
@@ -308,7 +312,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(dec(123, 6)))
     await mockChainlink.setUpdateTime(future)
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
     let price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(123, 18))
@@ -325,7 +329,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(dec(123, 6)))
     await mockChainlink.setPrice("-5000")
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '1') // status 1: using Tellor, Chainlink untrusted
   })
@@ -341,7 +345,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(dec(123, 6)))
     await mockChainlink.setPrice("-5000")
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
     let price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(123, 18))
@@ -360,7 +364,7 @@ contract('PriceFeed', async accounts => {
   //   await mockTellor.setPrice(uintTob32(dec(123, 6)))
   //   await mockChainlink.setDecimalsRevert()
 
-  //   const priceFetchTx = await priceFeed.fetchPrice()
+  //   const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
   //   const statusAfter = await priceFeed.status()
   //   assert.equal(statusAfter, '1') // status 1: using Tellor, Chainlink untrusted
   // })
@@ -377,7 +381,7 @@ contract('PriceFeed', async accounts => {
   //   await mockTellor.setPrice(uintTob32(dec(123, 6)))
   //   await mockChainlink.setDecimalsRevert()
 
-  //   const priceFetchTx = await priceFeed.fetchPrice()
+  //   const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
   //   let price = await priceFeed.lastGoodPrice()
   //   assert.equal(price, dec(123, 18))
@@ -395,7 +399,7 @@ contract('PriceFeed', async accounts => {
   //   await mockTellor.setPrice(uintTob32(dec(123, 6)))
   //   await mockChainlink.setLatestRevert()
 
-  //   const priceFetchTx = await priceFeed.fetchPrice()
+  //   const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
   //   const statusAfter = await priceFeed.status()
   //   assert.equal(statusAfter, '1') // status 1: using Tellor, Chainlink untrusted
   // })
@@ -412,7 +416,7 @@ contract('PriceFeed', async accounts => {
   //   await mockTellor.setPrice(uintTob32(dec(123, 6)))
   //   await mockChainlink.setLatestRevert()
 
-  //   const priceFetchTx = await priceFeed.fetchPrice()
+  //   const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
   //   let price = await priceFeed.lastGoodPrice()
   //   assert.equal(price, dec(123, 18))
@@ -430,7 +434,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(dec(123, 6)))
     await mockChainlink.setPrevRevert()
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '1') // status 1: using Tellor, Chainlink untrusted
   })
@@ -447,7 +451,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(dec(123, 6)))
     await mockChainlink.setPrevRevert()
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
     let price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(123, 18))
@@ -471,7 +475,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setUpdateTime(now)
     await mockTellor.setPrice(uintTob32(dec(123, 6)))
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '3') // status 3: using Tellor, Chainlink frozen 
   })
@@ -491,7 +495,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setUpdateTime(now)
     await mockTellor.setPrice(uintTob32(dec(123, 6)))
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
     let price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(123, 18))
@@ -515,7 +519,7 @@ contract('PriceFeed', async accounts => {
     const tellorUpdateTime = await mockTellor.getTimestampbyQueryIdandIndex(uintTob32(0), 0)
     assert.isTrue(tellorUpdateTime.lt(toBN(now).sub(toBN(14400))))
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '3') // status 3: using Tellor, Chainlink frozen
   })
@@ -538,7 +542,7 @@ contract('PriceFeed', async accounts => {
     const tellorUpdateTime = await mockTellor.getTimestampbyQueryIdandIndex(uintTob32(0), 0)
     assert.isTrue(tellorUpdateTime.lt(toBN(now).sub(toBN(14400))))
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
     // Expect lastGoodPrice has not updated
     assert.equal(price, dec(999, 18))
@@ -558,7 +562,7 @@ contract('PriceFeed', async accounts => {
     // Tellor breaks by 0 price
     await mockTellor.setPrice(uintTob32(0))
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '4') // status 4: using Chainlink, Tellor untrusted
   })
@@ -576,7 +580,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(0))
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
 
     // Expect lastGoodPrice has not updated
@@ -592,7 +596,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(1234, 8))
     await th.fastForwardTime(10740, web3.currentProvider) // fast forward 2hrs 59 minutes 
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '0') // status 0: Chainlink working
   })
@@ -608,7 +612,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(1234, 8))
     await th.fastForwardTime(10740, web3.currentProvider) // fast forward 2hrs 59 minutes 
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(1234, 18))
   })
@@ -626,7 +630,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrevPrice(dec(2, 8))  // price = 2
     await mockChainlink.setPrice(99999999)  // price drops to 0.99999999: a drop of > 50% from previous
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '1') // status 1: using Tellor, Chainlink untrusted
   })
@@ -642,7 +646,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrevPrice(dec(2, 8))  // price = 2
     await mockChainlink.setPrice(99999999)  // price drops to 0.99999999: a drop of > 50% from previous
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
     let price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(203, 16))
@@ -659,7 +663,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrevPrice(dec(2, 8))  // price = 2
     await mockChainlink.setPrice(dec(1, 8))  // price drops to 1
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '0') // status 0: Chainlink working
   })
@@ -675,7 +679,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrevPrice(dec(2, 8))  // price = 2
     await mockChainlink.setPrice(dec(1, 8))  // price drops to 1
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
     let price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(1, 18))
@@ -692,7 +696,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrevPrice(dec(2, 8))  // price = 2
     await mockChainlink.setPrice(dec(100000001))   // price drops to 1.00000001:  a drop of < 50% from previous
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '0') // status 0: Chainlink working 
   })
@@ -708,7 +712,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrevPrice(dec(2, 8))  // price = 2
     await mockChainlink.setPrice(100000001)   // price drops to 1.00000001:  a drop of < 50% from previous
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
     let price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(100000001, 10))
@@ -726,7 +730,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrevPrice(dec(2, 8))  // price = 2
     await mockChainlink.setPrice(400000001)  // price increases to 4.000000001: an increase of > 100% from previous
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '1') // status 1: using Tellor, Chainlink untrusted
   })
@@ -742,7 +746,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrevPrice(dec(2, 8))  // price = 2
     await mockChainlink.setPrice(400000001)  // price increases to 4.000000001: an increase of > 100% from previous
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(203, 16))
   })
@@ -758,7 +762,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrevPrice(dec(2, 8))  // price = 2
     await mockChainlink.setPrice(dec(4, 8))  // price increases to 4: an increase of 100% from previous
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '0') // status 0: Chainlink working
   })
@@ -774,7 +778,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrevPrice(dec(2, 8))  // price = 2
     await mockChainlink.setPrice(dec(4, 8))  // price increases to 4: an increase of 100% from previous
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(4, 18))
   })
@@ -790,7 +794,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrevPrice(dec(2, 8))  // price = 2
     await mockChainlink.setPrice(399999999)  // price increases to 3.99999999: an increase of < 100% from previous
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '0') // status 0: Chainlink working
   })
@@ -806,7 +810,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrevPrice(dec(2, 8))  // price = 2
     await mockChainlink.setPrice(399999999)  // price increases to 3.99999999: an increase of < 100% from previous
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(399999999, 10))
   })
@@ -822,7 +826,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(99999999)  // price drops to 0.99999999: a drop of > 50% from previous
     await mockTellor.setPrice(uintTob32(999999)) // Tellor price drops to same value (6 ecimals)
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '0') // status 0: Chainlink working
   })
@@ -838,7 +842,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(99999999)  // price drops to 0.99999999: a drop of > 50% from previous
     await mockTellor.setPrice(uintTob32(999999)) // Tellor price drops to same value (at 6 decimals)
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(99999999, 10))
   })
@@ -854,7 +858,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(100, 8))  // price drops to 100: a drop of > 50% from previous
     await mockTellor.setPrice(uintTob32(104999999)) // Tellor price drops to 104.99: price difference with new Chainlink price is now just under 5%
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '0') // status 0: Chainlink working
   })
@@ -870,7 +874,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(100, 8))  // price drops to 100: a drop of > 50% from previous
     await mockTellor.setPrice(uintTob32(104999999)) // Tellor price drops to 104.99: price difference with new Chainlink price is now just under 5%
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(100, 18))
   })
@@ -886,7 +890,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(100, 8))  // price drops to 100: a drop of > 50% from previous
     await mockTellor.setPrice(uintTob32(105000001)) // Tellor price drops to 105.000001: price difference with new Chainlink price is now > 5%
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '1') // status 1: using Tellor, Chainlink untrusted
   })
@@ -902,7 +906,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(100, 8))  // price drops to 100: a drop of > 50% from previous
     await mockTellor.setPrice(uintTob32(105000001)) // Tellor price drops to 105.000001: price difference with new Chainlink price is now > 5%
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
 
     assert.equal(price, dec(105000001, 12)) // return Tellor price
@@ -927,7 +931,7 @@ contract('PriceFeed', async accounts => {
 
      await mockChainlink.setUpdateTime(now)
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '1') // status 1: using Tellor, Chainlink untrusted
@@ -954,7 +958,7 @@ contract('PriceFeed', async accounts => {
 
      await mockChainlink.setUpdateTime(now)
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
 
     // Check that the returned price is the last good price
@@ -974,7 +978,7 @@ contract('PriceFeed', async accounts => {
     // Make mock Tellor return 0 price
     await mockTellor.setPrice(uintTob32(0))
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '2') // status 2: both oracles untrusted
@@ -996,7 +1000,7 @@ contract('PriceFeed', async accounts => {
     // Make mock Tellor return 0 price
     await mockTellor.setPrice(uintTob32(0))
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
 
     // Check that the returned price is in fact the previous price
@@ -1014,7 +1018,7 @@ contract('PriceFeed', async accounts => {
 
     // Make mock Tellor return 0 timestamp
     await mockTellor.setUpdateTime(0)
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '2') // status 2: both oracles untrusted
@@ -1036,7 +1040,7 @@ contract('PriceFeed', async accounts => {
     // Make mock Tellor return 0 timestamp
     await mockTellor.setUpdateTime(0)
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
 
     // Check that the returned price is in fact the previous price
@@ -1055,7 +1059,7 @@ contract('PriceFeed', async accounts => {
     // Make mock Tellor return 0 timestamp
     await mockTellor.setUpdateTime(0)
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '2') // status 2: both oracles untrusted
@@ -1079,7 +1083,7 @@ contract('PriceFeed', async accounts => {
     const future = toBN(now).add(toBN("10000"))
     await mockTellor.setUpdateTime(future)
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
 
     // Check that the returned price is in fact the previous price
@@ -1099,7 +1103,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(dec(103, 18)))
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '0') // status 0: Chainlink working
@@ -1117,7 +1121,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(dec(103, 18)))
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
 
     // Check that the returned price is current Chainlink price
@@ -1146,7 +1150,7 @@ contract('PriceFeed', async accounts => {
 
     await mockChainlink.setUpdateTime(now) // Chainlink's price is current
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
 
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '0') // status 0: Chainlink working
@@ -1174,7 +1178,7 @@ contract('PriceFeed', async accounts => {
   
     await mockChainlink.setUpdateTime(now) // Chainlink's price is current
     
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
 
     // Check that the returned price is current Chainlink price
@@ -1193,7 +1197,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(0))
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
   
     const statusAfter = await priceFeed.status()
     assert.equal(statusAfter, '4') // status 4: Using Tellor, Chainlink untrusted
@@ -1211,7 +1215,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(0))
 
-    const priceFetchTx = await priceFeed.fetchPrice()
+    const priceFetchTx = await priceFeed.fetchPrice(erc20Address)
     let price = await priceFeed.lastGoodPrice()
 
     // Check that the returned price is current Chainlink price
@@ -1234,7 +1238,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setUpdateTime(now)
     await mockTellor.setPrice(uintTob32(0))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 2)  // status 2: both oracles untrusted
@@ -1253,7 +1257,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setUpdateTime(now)
     await mockTellor.setPrice(uintTob32(0))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
     const price = await priceFeed.lastGoodPrice()
 
     assert.equal(price, dec(123, 18))
@@ -1272,7 +1276,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setRevertRequest()
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 2)  // status 2: both oracles untrusted
@@ -1290,7 +1294,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setRevertRequest()
    
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
     const price = await priceFeed.lastGoodPrice()
 
     assert.equal(price, dec(123, 18))
@@ -1309,7 +1313,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setUpdateTime(0)
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 2)  // status 2: both oracles untrusted
@@ -1327,7 +1331,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setUpdateTime(0)
    
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
     const price = await priceFeed.lastGoodPrice()
 
     assert.equal(price, dec(123, 18))
@@ -1354,7 +1358,7 @@ contract('PriceFeed', async accounts => {
 
     await mockChainlink.setUpdateTime(now)
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 1)  // status 1: using Tellor, Chainlink untrusted
@@ -1380,7 +1384,7 @@ contract('PriceFeed', async accounts => {
 
     await mockChainlink.setUpdateTime(now)
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
     const price = await priceFeed.lastGoodPrice()
 
     assert.equal(price, dec(246, 18))
@@ -1395,7 +1399,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(dec(100, 6))) // price = 100
     await mockChainlink.setPrice(dec(105, 8)) // price = 105: 5% difference from Chainlink
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 0)  // status 0: Chainlink working
@@ -1408,7 +1412,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(dec(100, 6))) // price = 100
     await mockChainlink.setPrice(dec(105, 8)) // price = 105: 5% difference from Chainlink
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(105, 18))
@@ -1421,7 +1425,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(dec(100, 6))) // price = 100
     await mockChainlink.setPrice('10500000001') // price = 105.00000001: > 5% difference from Tellor
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
    
     const status = await priceFeed.status()
     assert.equal(status, 1)  // status 1: using Tellor, Chainlink untrusted
@@ -1434,7 +1438,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(dec(100, 6))) // price = 100
     await mockChainlink.setPrice('10500000001') // price = 105.00000001: > 5% difference from Tellor
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(100, 18))
@@ -1465,7 +1469,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(dec(100, 6))) // price = 100
     await mockChainlink.setPrice('10500000001') // price = 105.00000001: > 5% difference from Tellor
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
     const price = await priceFeed.lastGoodPrice()
 
     assert.equal(price, dec(50, 18))
@@ -1478,7 +1482,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(dec(100, 6))) // price = 100
     await mockChainlink.setPrice(dec(105, 8)) // price = 105: 5% difference from Tellor
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 0)  // status 0: Chainlink working
@@ -1491,7 +1495,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(dec(100, 6))) // price = 100
     await mockChainlink.setPrice(dec(105, 8)) // price = 105: 5% difference from Tellor
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(105, 18))
@@ -1508,7 +1512,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(0)
     await mockTellor.setPrice(uintTob32(0))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 2)  // status 2: both oracles untrusted
@@ -1526,7 +1530,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(0))
     await mockTellor.setPrice(uintTob32(dec(0)))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(50, 18))
@@ -1552,7 +1556,7 @@ contract('PriceFeed', async accounts => {
     const tellorUpdateTime = await mockTellor.getTimestampbyQueryIdandIndex(uintTob32(0), 0)
     assert.isTrue(tellorUpdateTime.lt(toBN(now).sub(toBN(14400))))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 1)  // status 1: using Tellor, Chainlink untrusted
@@ -1578,7 +1582,7 @@ contract('PriceFeed', async accounts => {
     const tellorUpdateTime = await mockTellor.getTimestampbyQueryIdandIndex(uintTob32(0), 0)
     assert.isTrue(tellorUpdateTime.lt(toBN(now).sub(toBN(14400))))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(50, 18))
@@ -1599,7 +1603,7 @@ contract('PriceFeed', async accounts => {
 
     await th.fastForwardTime(14400, web3.currentProvider) // Fast forward 4 hours
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 1)  // status 1: using Tellor, Chainlink untrusted
@@ -1618,7 +1622,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(dec(123, 6)))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(123, 18))
@@ -1635,7 +1639,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(dec(998, 6)))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 0)  // status 0: Chainlink working
@@ -1652,7 +1656,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(dec(998, 6)))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(999, 18))  // Chainlink price
@@ -1669,7 +1673,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(dec(123, 6)))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 1)  // status 1: Using Tellor, Chainlink untrusted
@@ -1686,7 +1690,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(dec(123, 6)))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(123, 18))  // Tellor price
@@ -1703,7 +1707,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(dec(998, 6)))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 0)  // status 0: Chainlink working
@@ -1720,7 +1724,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(dec(998, 6)))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(999, 18))  // Chainlink price
@@ -1737,7 +1741,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(0))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 4)  // status 4: Using Chainlink, Tellor untrusted
@@ -1754,7 +1758,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(0))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(999, 18))
@@ -1780,7 +1784,7 @@ contract('PriceFeed', async accounts => {
     await mockTellor.setPrice(uintTob32(0))
     await mockTellor.set
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 4)  // status 4: using Chainlink, Tellor untrusted
@@ -1805,7 +1809,7 @@ contract('PriceFeed', async accounts => {
     // set tellor broken
     await mockTellor.setPrice(uintTob32(0))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(50, 18))
@@ -1832,7 +1836,7 @@ contract('PriceFeed', async accounts => {
     // set Tellor to current time
     await mockTellor.setUpdateTime(now)
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 3)  // status 3: using Tellor, Chainlink frozen
@@ -1859,7 +1863,7 @@ contract('PriceFeed', async accounts => {
     // set Tellor to current time
     await mockTellor.setUpdateTime(now)
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(123, 18))
@@ -1887,7 +1891,7 @@ contract('PriceFeed', async accounts => {
     const tellorUpdateTime = await mockTellor.getTimestampbyQueryIdandIndex(uintTob32(0), 0)
     assert.isTrue(tellorUpdateTime.lt(toBN(now).sub(toBN(14400))))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 3)  // status 3: using Tellor, Chainlink frozen
@@ -1915,7 +1919,7 @@ contract('PriceFeed', async accounts => {
     const tellorUpdateTime = await mockTellor.getTimestampbyQueryIdandIndex(uintTob32(0), 0)
     assert.isTrue(tellorUpdateTime.lt(toBN(now).sub(toBN(14400))))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(50, 18))
@@ -1935,7 +1939,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(dec(123, 6)))  // Greater than 5% difference with chainlink
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 4)  // status 4: using Chainlink, Tellor untrusted
@@ -1952,7 +1956,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(dec(123, 6)))  // Greater than 5% difference with chainlink
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(999, 18))
@@ -1969,7 +1973,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(dec(998, 6)))  // within 5% of Chainlink
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 0)  // status 0: Chainlink working
@@ -1986,7 +1990,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(dec(998, 6)))  // within 5% of Chainlink
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(999, 18))
@@ -2004,7 +2008,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(998, 8))
     await mockTellor.setPrice(uintTob32(dec(123, 6)))  // Tellor not close to current Chainlink
  
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 4)  // status 4: using Chainlink, Tellor untrusted
@@ -2020,7 +2024,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(998, 8))
     await mockTellor.setPrice(uintTob32(dec(123, 6)))  // Tellor not close to current Chainlink
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(998, 18))
@@ -2036,7 +2040,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(99, 8))  // >50% price drop from previous Chainlink price
     await mockTellor.setPrice(uintTob32(dec(123, 6))) // Tellor not close to current Chainlink
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 2)  // status 2: both Oracles untrusted
@@ -2052,7 +2056,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(99, 8))  // >50% price drop from previous Chainlink price
     await mockTellor.setPrice(uintTob32(dec(123, 6)))  // Tellor not close to current Chainlink
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(246, 18)) // last good price 
@@ -2081,7 +2085,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(998, 8))
     await mockChainlink.setUpdateTime(now) // Chainlink is current
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 4)  // status 4: using Chainlink, Tellor untrusted
@@ -2108,7 +2112,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(998, 8))
     await mockChainlink.setUpdateTime(now) // Chainlink is current
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(998, 18))
@@ -2135,7 +2139,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(99, 8)) // >50% price drop from previous Chainlink price
     await mockChainlink.setUpdateTime(now) // Chainlink is current
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 2)  // status 2: both Oracles untrusted
@@ -2162,7 +2166,7 @@ contract('PriceFeed', async accounts => {
     await mockChainlink.setPrice(dec(99, 8))  // > 50% price drop from previous Chainlink price
     await mockChainlink.setUpdateTime(now) // Chainlink is current
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(246, 18)) // last good price 
@@ -2186,7 +2190,7 @@ contract('PriceFeed', async accounts => {
     const chainlinkUpdateTime = (await mockChainlink.latestRoundData())[3] 
     assert.isTrue(chainlinkUpdateTime.lt(toBN(now).sub(toBN(14400))))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 4) // status 4: using Chainlink, Tellor untrusted
@@ -2210,7 +2214,7 @@ contract('PriceFeed', async accounts => {
     const chainlinkUpdateTime = (await mockChainlink.latestRoundData())[3] 
     assert.isTrue(chainlinkUpdateTime.lt(toBN(now).sub(toBN(14400))))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(246, 18))
@@ -2228,7 +2232,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(dec(123, 6)))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const status = await priceFeed.status()
     assert.equal(status, 2)  // status 2: both oracles untrusted
@@ -2246,7 +2250,7 @@ contract('PriceFeed', async accounts => {
 
     await mockTellor.setPrice(uintTob32(dec(123, 6)))
 
-    await priceFeed.fetchPrice()
+    await priceFeed.fetchPrice(erc20Address)
 
     const price = await priceFeed.lastGoodPrice()
     assert.equal(price, dec(246, 18))

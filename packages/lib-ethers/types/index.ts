@@ -14,11 +14,9 @@ import { _TypedKumoContract, _TypedLogDescription } from "../src/contracts";
 interface ActivePoolCalls {
   NAME(_overrides?: CallOverrides): Promise<string>;
   borrowerOperationsAddress(_overrides?: CallOverrides): Promise<string>;
-  collStakingManager(_overrides?: CallOverrides): Promise<string>;
   collSurplusPoolAddress(_overrides?: CallOverrides): Promise<string>;
   defaultPoolAddress(_overrides?: CallOverrides): Promise<string>;
   getAssetBalance(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  getAssetStaked(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getKUSDDebt(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   isOwner(_overrides?: CallOverrides): Promise<boolean>;
   kumoStakingAddress(_overrides?: CallOverrides): Promise<string>;
@@ -29,13 +27,10 @@ interface ActivePoolCalls {
 
 interface ActivePoolTransactions {
   decreaseKUSDDebt(_asset: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
-  forceStake(_asset: string, _overrides?: Overrides): Promise<void>;
-  forceUnstake(_asset: string, _overrides?: Overrides): Promise<void>;
   increaseKUSDDebt(_asset: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   receivedERC20(_asset: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   sendAsset(_asset: string, _account: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   setAddresses(_borrowerOperationsAddress: string, _troveManagerAddress: string, _stabilityPoolAddress: string, _defaultPoolAddress: string, _collSurplusPoolAddress: string, _kumoStakingAddress: string, _overrides?: Overrides): Promise<void>;
-  setCollStakingManagerAddress(_collStakingManagerAddress: string, _overrides?: Overrides): Promise<void>;
 }
 
 export interface ActivePool
@@ -580,37 +575,37 @@ interface PriceFeedCalls {
 }
 
 interface PriceFeedTransactions {
-  fetchPrice(_overrides?: Overrides): Promise<BigNumber>;
+  fetchPrice(_asset: string, _overrides?: Overrides): Promise<BigNumber>;
   setAddresses(_priceAggregatorAddress: string, _tellorCallerAddress: string, _overrides?: Overrides): Promise<void>;
 }
 
 export interface PriceFeed
   extends _TypedKumoContract<PriceFeedCalls, PriceFeedTransactions> {
   readonly filters: {
-    LastGoodPriceUpdated(_lastGoodPrice?: null): EventFilter;
+    LastGoodPriceUpdated(_asset?: null, _lastGoodPrice?: null): EventFilter;
     OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
     PriceFeedStatusChanged(newStatus?: null): EventFilter;
   };
-  extractEvents(logs: Log[], name: "LastGoodPriceUpdated"): _TypedLogDescription<{ _lastGoodPrice: BigNumber }>[];
+  extractEvents(logs: Log[], name: "LastGoodPriceUpdated"): _TypedLogDescription<{ _asset: string; _lastGoodPrice: BigNumber }>[];
   extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
   extractEvents(logs: Log[], name: "PriceFeedStatusChanged"): _TypedLogDescription<{ newStatus: number }>[];
 }
 
 interface PriceFeedTestnetCalls {
-  getPrice(_overrides?: CallOverrides): Promise<BigNumber>;
+  getPrice(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
 }
 
 interface PriceFeedTestnetTransactions {
-  fetchPrice(_overrides?: Overrides): Promise<BigNumber>;
-  setPrice(price: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  fetchPrice(_asset: string, _overrides?: Overrides): Promise<BigNumber>;
+  setPrice(_asset: string, _price: BigNumberish, _overrides?: Overrides): Promise<boolean>;
 }
 
 export interface PriceFeedTestnet
   extends _TypedKumoContract<PriceFeedTestnetCalls, PriceFeedTestnetTransactions> {
   readonly filters: {
-    LastGoodPriceUpdated(_lastGoodPrice?: null): EventFilter;
+    LastGoodPriceUpdated(_asset?: null, _lastGoodPrice?: null): EventFilter;
   };
-  extractEvents(logs: Log[], name: "LastGoodPriceUpdated"): _TypedLogDescription<{ _lastGoodPrice: BigNumber }>[];
+  extractEvents(logs: Log[], name: "LastGoodPriceUpdated"): _TypedLogDescription<{ _asset: string; _lastGoodPrice: BigNumber }>[];
 }
 
 interface SortedTrovesCalls {

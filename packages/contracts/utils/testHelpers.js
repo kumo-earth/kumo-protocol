@@ -240,7 +240,7 @@ class TestHelper {
 
   static async logActiveAccounts(contracts, n) {
     const count = await contracts.sortedTroves.getSize()
-    const price = await contracts.priceFeedTestnet.getPrice()
+    const price = await contracts.priceFeedTestnet.getPrice(asset)
 
     n = (typeof n == 'undefined') ? count : n
 
@@ -296,7 +296,7 @@ class TestHelper {
 
   // --- TCR and Recovery Mode functions ---
 
-  // These functions use the PriceFeedTestNet view price function getPrice() which is sufficient for testing.
+  // These functions use the PriceFeedTestNet view price function getPrice(asset) which is sufficient for testing.
   // the mainnet contract PriceFeed uses fetchPrice, which is non-view and writes to storage.
 
   // To checkRecoveryMode / getTCR from the Kumo mainnet contracts, pass a price value - this can be the lastGoodPrice
@@ -305,13 +305,13 @@ class TestHelper {
 
   static async checkRecoveryMode(contracts, asset) {
 
-    const price = await contracts.priceFeedTestnet.getPrice()
+    const price = await contracts.priceFeedTestnet.getPrice(asset)
     return contracts.troveManager.checkRecoveryMode(asset, price)
   }
 
   static async getTCR(contracts, asset) {
 
-    const price = await contracts.priceFeedTestnet.getPrice()
+    const price = await contracts.priceFeedTestnet.getPrice(asset)
     return contracts.troveManager.getTCR(asset, price)
   }
 
@@ -633,7 +633,7 @@ class TestHelper {
 
   static async openTrove_allAccounts_randomETH_randomKUSD(minETH, maxETH, accounts, contracts, minKUSDProportion, maxKUSDProportion, logging = false) {
     const gasCostList = []
-    const price = await contracts.priceFeedTestnet.getPrice()
+    const price = await contracts.priceFeedTestnet.getPrice(asset)
     const _1e18 = web3.utils.toBN('1000000000000000000')
 
     let i = 0
@@ -732,7 +732,7 @@ class TestHelper {
     const netDebt = await this.getActualDebtFromComposite(totalDebt, contracts, asset)
 
     if (ICR) {
-      const price = await contracts.priceFeedTestnet.getPrice()
+      const price = await contracts.priceFeedTestnet.getPrice(asset)
       tokenAmount = ICR.mul(totalDebt).div(price)
     }
 
@@ -768,7 +768,7 @@ class TestHelper {
     if (ICR) {
       assert(extraParams.from, "A from account is needed")
       const { debt, coll } = await contracts.troveManager.getEntireDebtAndColl(asset, extraParams.from)
-      const price = await contracts.priceFeedTestnet.getPrice()
+      const price = await contracts.priceFeedTestnet.getPrice(asset)
       const targetDebt = coll.mul(price).div(ICR)
       assert(targetDebt > debt, "ICR is already greater than or equal to target")
       increasedTotalDebt = targetDebt.sub(debt)
@@ -974,7 +974,7 @@ class TestHelper {
 
   static async getCurrentICR_allAccounts(accounts, contracts, functionCaller) {
     const gasCostList = []
-    const price = await contracts.priceFeedTestnet.getPrice()
+    const price = await contracts.priceFeedTestnet.getPrice(asset)
 
     for (const account of accounts) {
       const tx = await functionCaller.troveManager_getCurrentICR(account, price)
@@ -987,21 +987,21 @@ class TestHelper {
   // --- Redemption functions ---
 
   static async redeemCollateral(asset, redeemer, contracts, KUSDAmount, gasPrice = 0, maxFee = this._100pct) {
-    const price = await contracts.priceFeedTestnet.getPrice()
+    const price = await contracts.priceFeedTestnet.getPrice(asset)
     const tx = await this.performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee, gasPrice)
     const gas = await this.gasUsed(tx)
     return gas
   }
 
   static async redeemCollateralAndGetTxObject(asset, redeemer, contracts, KUSDAmount, maxFee = this._100pct) {
-    const price = await contracts.priceFeedTestnet.getPrice()
+    const price = await contracts.priceFeedTestnet.getPrice(asset)
     const tx = await this.performRedemptionTx(asset, redeemer, price, contracts, KUSDAmount, maxFee)
     return tx
   }
 
   static async redeemCollateral_allAccounts_randomAmount(min, max, accounts, contracts) {
     const gasCostList = []
-    const price = await contracts.priceFeedTestnet.getPrice()
+    const price = await contracts.priceFeedTestnet.getPrice(asset)
 
     for (const redeemer of accounts) {
       const randKUSDAmount = this.randAmountInWei(min, max)

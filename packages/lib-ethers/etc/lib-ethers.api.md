@@ -152,7 +152,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     // (undocumented)
     getNumberOfTroves(asset: string, overrides?: EthersCallOverrides): Promise<number>;
     // (undocumented)
-    getPrice(overrides?: EthersCallOverrides): Promise<Decimal>;
+    getPrice(asset: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
     getRemainingLiquidityMiningKUMOReward(overrides?: EthersCallOverrides): Promise<Decimal>;
     // @internal (undocumented)
@@ -206,7 +206,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     // (undocumented)
     sendKUSD(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
     // @internal (undocumented)
-    setPrice(price: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
+    setPrice(asset: string, price: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
     // (undocumented)
     stakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
     // (undocumented)
@@ -365,7 +365,7 @@ export class PopulatableEthersKumo implements PopulatableKumo<EthersTransactionR
     // (undocumented)
     sendKUSD(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // @internal (undocumented)
-    setPrice(price: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
+    setPrice(asset: string, price: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
     stakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
@@ -487,7 +487,7 @@ export class ReadableEthersKumo implements ReadableKumo {
     // (undocumented)
     getNumberOfTroves(asset: string, overrides?: EthersCallOverrides): Promise<number>;
     // (undocumented)
-    getPrice(overrides?: EthersCallOverrides): Promise<Decimal>;
+    getPrice(asset: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
     getRemainingLiquidityMiningKUMOReward(overrides?: EthersCallOverrides): Promise<Decimal>;
     // @internal (undocumented)
@@ -568,7 +568,7 @@ export class SendableEthersKumo implements SendableKumo<EthersTransactionReceipt
     // (undocumented)
     sendKUSD(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // @internal (undocumented)
-    setPrice(price: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
+    setPrice(asset: string, price: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)
     stakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)

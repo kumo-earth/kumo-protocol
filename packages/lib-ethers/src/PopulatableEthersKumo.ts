@@ -797,7 +797,7 @@ export class PopulatableEthersKumo
     ]
   > {
     const { hintHelpers } = _getContracts(this._readable.connection);
-    const price = await this._readable.getPrice();
+    const price = await this._readable.getPrice(asset);
 
     const { firstRedemptionHint, partialRedemptionHintNICR, truncatedKUSDamount } =
       await hintHelpers.getRedemptionHints(asset, amount.hex, price.hex, _redeemMaxIterations);
@@ -836,7 +836,7 @@ export class PopulatableEthersKumo
       this._readable._getFeesFactory(asset),
       this._readable._getBlockTimestamp(),
       this._readable.getTotal(asset),
-      this._readable.getPrice()
+      this._readable.getPrice(asset)
     ]);
 
     const recoveryMode = total.collateralRatioIsBelowCritical(price);
@@ -969,7 +969,7 @@ export class PopulatableEthersKumo
         fees: this._readable._getFeesFactory(asset),
         blockTimestamp: this._readable._getBlockTimestamp(),
         total: this._readable.getTotal(asset),
-        price: this._readable.getPrice()
+        price: this._readable.getPrice(asset)
       })
     ]);
 
@@ -1056,6 +1056,7 @@ export class PopulatableEthersKumo
 
   /** @internal */
   async setPrice(
+    asset: string,
     price: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<void>> {
@@ -1066,7 +1067,7 @@ export class PopulatableEthersKumo
     }
 
     return this._wrapSimpleTransaction(
-      await priceFeed.estimateAndPopulate.setPrice({ ...overrides }, id, Decimal.from(price).hex)
+      await priceFeed.estimateAndPopulate.setPrice({ ...overrides }, id, asset, Decimal.from(price).hex)
     );
   }
 
@@ -1180,7 +1181,7 @@ export class PopulatableEthersKumo
       this._readable.getTrove(address),
       this._readable.getStabilityDeposit(address)
     ]);
-
+    PopulatableEthersKumo
     const finalTrove = initialTrove.addCollateral(stabilityDeposit.collateralGain);
 
     return this._wrapCollateralGainTransfer(

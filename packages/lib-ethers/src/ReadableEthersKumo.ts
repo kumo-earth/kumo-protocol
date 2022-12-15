@@ -207,9 +207,9 @@ export class ReadableEthersKumo implements ReadableKumo {
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getPrice} */
-  getPrice(overrides?: EthersCallOverrides): Promise<Decimal> {
+  getPrice(asset: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     const { priceFeed } = _getContracts(this.connection);
-    return priceFeed.callStatic.fetchPrice({ ...overrides }).then(decimalify);
+    return priceFeed.callStatic.fetchPrice(asset, { ...overrides }).then(decimalify);
   }
 
   /** @internal */
@@ -474,7 +474,7 @@ export class ReadableEthersKumo implements ReadableKumo {
     const [createFees, total, price, blockTimestamp] = await Promise.all([
       this._getFeesFactory(asset, overrides),
       this.getTotal(asset, overrides),
-      this.getPrice(overrides),
+      this.getPrice(asset, overrides),
       this._getBlockTimestamp(overrides?.blockTag)
     ]);
 
@@ -623,8 +623,8 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
       : this._readable.getNumberOfTroves(asset, overrides);
   }
 
-  async getPrice(overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._blockHit(overrides) ? this.store.state.price : this._readable.getPrice(overrides);
+  async getPrice(asset: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+    return this._blockHit(overrides) ? this.store.state.price : this._readable.getPrice(asset, overrides);
   }
 
   async getTotal(asset: string, overrides?: EthersCallOverrides): Promise<Trove> {

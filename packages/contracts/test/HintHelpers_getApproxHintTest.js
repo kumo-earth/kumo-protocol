@@ -116,7 +116,7 @@ contract('HintHelpers', async accounts => {
 
     numAccounts = 10
 
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
     await makeTrovesInSequence(accounts, numAccounts, assetAddress1)
     // await makeTrovesInParallel(accounts, numAccounts)  
   })
