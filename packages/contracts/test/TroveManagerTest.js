@@ -146,6 +146,7 @@ contract('TroveManager', async accounts => {
 
     // price drops to 1Asset1:100KUSD, reducing Alice's ICR below MCR
     await priceFeed.setPrice(assetAddress1, '100000000000000000000');
+    await priceFeed.setPrice(assetAddress2, '100000000000000000000');
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));

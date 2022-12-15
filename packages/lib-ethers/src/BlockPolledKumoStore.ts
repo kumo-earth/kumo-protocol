@@ -110,7 +110,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
         totalRedistributed: this._readable.getTotalRedistributed(assetAddress, { blockTag }),
         total: this._readable.getTotal(assetAddress, { blockTag }),
         kusdInStabilityPool: this._readable.getKUSDInStabilityPool(assetToken, { blockTag }),
-        price: this._readable.getPrice({ blockTag }),
+        price: this._readable.getPrice(assetAddress, { blockTag }),
         _riskiestTroveBeforeRedistribution: this._getRiskiestTroveBeforeRedistribution(
           assetAddress,
           {
