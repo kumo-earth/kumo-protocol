@@ -93,7 +93,7 @@ export interface ReadableKumo {
   /**
    * Get the current price of the native currency (e.g. Ether) in USD.
    */
-  getPrice(): Promise<Decimal>;
+  getPrice(asset: string): Promise<Decimal>;
 
   /**
    * Get the total amount of collateral and debt in the Kumo system.

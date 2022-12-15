@@ -39,7 +39,7 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [getLiquidityMiningKUMOReward(address, overrides)](./lib-ethers.readableetherskumo.getliquidityminingkumoreward.md) |  | Get the amount of KUMO earned by an address through mining liquidity. |
 |  [getLiquidityMiningStake(address, overrides)](./lib-ethers.readableetherskumo.getliquidityminingstake.md) |  | Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in liquidity mining. |
 |  [getNumberOfTroves(asset, overrides)](./lib-ethers.readableetherskumo.getnumberoftroves.md) |  | Get number of Troves that are currently open. |
-|  [getPrice(overrides)](./lib-ethers.readableetherskumo.getprice.md) |  | Get the current price of the native currency (e.g. Ether) in USD. |
+|  [getPrice(asset, overrides)](./lib-ethers.readableetherskumo.getprice.md) |  | Get the current price of the native currency (e.g. Ether) in USD. |
 |  [getRemainingLiquidityMiningKUMOReward(overrides)](./lib-ethers.readableetherskumo.getremainingliquidityminingkumoreward.md) |  | Get the remaining KUMO that will be collectively rewarded to liquidity miners. |
 |  [getRemainingStabilityPoolKUMOReward(overrides)](./lib-ethers.readableetherskumo.getremainingstabilitypoolkumoreward.md) |  | Get the remaining KUMO that will be collectively rewarded to stability depositors. |
 |  [getStabilityDeposit(assetName, address, overrides)](./lib-ethers.readableetherskumo.getstabilitydeposit.md) |  | Get the current state of a Stability Deposit. |

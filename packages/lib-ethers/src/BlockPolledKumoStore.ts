@@ -193,7 +193,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
           blockTag
         }),
 
-        price: this._readable.getPrice({ blockTag }),
+        price: this._readable.getPrice(asset, { blockTag }),
         numberOfTroves: this._readable.getNumberOfTroves(asset, { blockTag }),
         totalRedistributed: this._readable.getTotalRedistributed(asset, { blockTag }),
         total: this._readable.getTotal(asset, { blockTag }),

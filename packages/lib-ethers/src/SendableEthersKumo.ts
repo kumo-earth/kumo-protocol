@@ -116,10 +116,11 @@ export class SendableEthersKumo
 
   /** @internal */
   setPrice(
+    asset: string,
     price: Decimalish,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersKumoTransaction<void>> {
-    return this._populate.setPrice(price, overrides).then(sendTransaction);
+    return this._populate.setPrice(asset, price, overrides).then(sendTransaction);
   }
 
   /** {@inheritDoc @kumodao/lib-base#SendableKumo.liquidate} */

@@ -218,7 +218,7 @@ contract('SortedTroves', async accounts => {
     // --- findInsertPosition ---
 
     it("Finds the correct insert position given two addresses that loosely bound the correct position", async () => {
-      await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
       // NICR sorted in descending order
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(500, 18)), extraParams: { from: whale } })
@@ -239,7 +239,7 @@ contract('SortedTroves', async accounts => {
       assert.equal(hints[1], C)
 
       // The price doesn’t affect the hints
-      await priceFeed.setPrice(dec(500, 18))
+      await priceFeed.setPrice(assetAddress1, dec(500, 18))
       const hints2 = await sortedTroves.findInsertPosition(assetAddress1, targetNICR, A, E)
 
       // Expect the exact correct insert hints have been returned
@@ -266,7 +266,7 @@ contract('SortedTroves', async accounts => {
       await borrowerOperations.openTrove(th._100pct, dec(17, 18), I, I, { from: I, value: dec(4, 'ether') })
       await borrowerOperations.openTrove(th._100pct, dec(5, 21), J, J, { from: J, value: dec(1345, 'ether') })
 
-      const price_1 = await priceFeed.getPrice()
+      const price_1 = await priceFeed.getPrice(assetAddress1)
 
       // Check troves are ordered
       await assertSortedListIsOrdered(contracts)
@@ -275,8 +275,8 @@ contract('SortedTroves', async accounts => {
       assert.isTrue(await sortedTroves.contains(assetAddress1, defaulter_1))
 
       // Price drops
-      await priceFeed.setPrice(dec(100, 18))
-      const price_2 = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
+      const price_2 = await priceFeed.getPrice(assetAddress1)
 
       // Liquidate a trove
       await troveManager.liquidate(defaulter_1)

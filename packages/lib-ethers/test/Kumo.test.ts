@@ -202,7 +202,7 @@ describe("EthersKumo", () => {
   });
 
   it("should get the price", async () => {
-    const price = await kumo.getPrice();
+    const price = await kumo.getPrice(mockAssetAddress1);
     expect(price).to.be.an.instanceOf(Decimal);
   });
 
@@ -285,7 +285,7 @@ describe("EthersKumo", () => {
     });
 
     it("should fail to create an undercollateralized Trove", async () => {
-      const price = await kumo.getPrice();
+      const price = await kumo.getPrice(mockAssetAddress1);
       const undercollateralized = new Trove(KUSD_MINIMUM_DEBT.div(price), KUSD_MINIMUM_DEBT);
       await expect(kumo.openTrove(Trove.recreate(undercollateralized), mockAssetAddress1)).to
         .eventually.be.rejected;
@@ -397,7 +397,7 @@ describe("EthersKumo", () => {
     });
 
     it("should close the Trove with some KUSD from another user", async () => {
-      const price = await kumo.getPrice();
+      const price = await kumo.getPrice(mockAssetAddress1);
       const initialTrove = await kumo.getTrove(mockAssetAddress1);
       const kusdBalance = await kumo.getKUMOBalance(mockAssetAddress1);
       const kusdShortage = initialTrove.netDebt.sub(kusdBalance);
@@ -538,16 +538,16 @@ describe("EthersKumo", () => {
         { gasLimit }
       );
 
-      const price = await kumo.getPrice();
+      const price = await kumo.getPrice(mockAssetAddress1);
       expect(Number(`${newTrove.collateralRatio(price)}`)).to.be.below(1.15);
     });
 
     const dippedPrice = Decimal.from(190);
 
     it("the price should take a dip", async () => {
-      await deployerKumo.setPrice(dippedPrice);
+      await deployerKumo.setPrice(mockAssetAddress1, dippedPrice);
 
-      const price = await kumo.getPrice();
+      const price = await kumo.getPrice(mockAssetAddress1);
       expect(`${price}`).to.equal(`${dippedPrice}`);
     });
 
@@ -662,7 +662,7 @@ describe("EthersKumo", () => {
         await sendToEach(otherUsersSubset, 0.1);
 
         let price = Decimal.from(200);
-        await deployerKumo.setPrice(price);
+        await deployerKumo.setPrice(mockAssetAddress1, price);
 
         // Use this account to print KUSD
         await kumo.openTrove(
@@ -698,7 +698,7 @@ describe("EthersKumo", () => {
 
         // Tank the price so we can liquidate
         price = Decimal.from(150);
-        await deployerKumo.setPrice(price);
+        await deployerKumo.setPrice(mockAssetAddress1, price);
 
         // Liquidate first victim
         await kumo.liquidate(mockAssetAddress1, await otherUsers[3].getAddress());
@@ -988,7 +988,7 @@ describe("EthersKumo", () => {
         ...otherUsersSubset
       ]);
 
-      await deployerKumo.setPrice(massivePrice);
+      await deployerKumo.setPrice(mockAssetAddress1, massivePrice);
       await sendToEach(otherUsersSubset, 0.1);
 
       for (const otherKumo of otherKumos) {
@@ -1407,7 +1407,7 @@ describe("EthersKumo", () => {
 
       await deployerKumo.openTrove(creation, mockAssetAddress1, undefined, { gasLimit });
       await deployerKumo.depositKUSDInStabilityPool(creation.borrowKUSD, mockAssetName1);
-      await deployerKumo.setPrice(198);
+      await deployerKumo.setPrice(mockAssetAddress1, 198);
 
       const liquidateTarget = await kumo.populate.liquidate(mockAssetAddress1, await deployer.getAddress());
       const liquidateMultiple = await kumo.populate.liquidateUpTo(mockAssetAddress1, 40);
@@ -1457,7 +1457,7 @@ describe("EthersKumo", () => {
         )
       );
 
-      const price = await kumo.getPrice();
+      const price = await kumo.getPrice(mockAssetAddress1);
 
       // Create a "designated victim" Trove that'll be redeemed
       const redeemedTroveDebt = await kumo

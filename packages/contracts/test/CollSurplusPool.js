@@ -61,7 +61,7 @@ contract('CollSurplusPool', async accounts => {
     assert.equal(ETH_1, '0')
 
     const price = toBN(dec(100, 18))
-    await priceFeed.setPrice(price)
+    await priceFeed.setPrice(assetAddress1, price)
 
     const { collateral: B_coll, netDebt: B_netDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraParams: { from: B } })
     await openTrove({ asset: assetAddress1, tokenAmount: dec(3000, 'ether'), extraKUSDAmount: B_netDebt, extraParams: { from: A } })

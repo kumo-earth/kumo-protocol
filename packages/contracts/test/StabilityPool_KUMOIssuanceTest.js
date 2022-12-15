@@ -119,7 +119,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
 
       await th.fastForwardTime(timeValues.MINUTES_IN_ONE_WEEK, web3.currentProvider)
 
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
 
       // B adjusts, triggering KUMO issuance for all
       await stabilityPool.provideToSP(dec(1, 18), ZERO_ADDRESS, { from: B })
@@ -164,7 +164,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(10000, 18)), defaulter_1, defaulter_1, { from: defaulter_1 })
 
       // ETH drops
-      await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
       await th.fastForwardTime(timeValues.MINUTES_IN_ONE_WEEK, web3.currentProvider)
 
@@ -400,7 +400,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(await stabilityPool.getTotalKUSDDeposits(), dec(60000, 18))
 
       // Price Drops, defaulter1 liquidated. Stability Pool size drops by 50%
-      await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
       await troveManager.liquidate(assetAddress1, defaulter_1)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
@@ -515,7 +515,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await borrowerOperations.openTrove(assetAddress1, dec(200, 'ether'), th._100pct, await getOpenTroveKUSDAmount(assetAddress1, dec(20000, 18)), defaulter_4, defaulter_4, { from: defaulter_4 })
 
       // price drops by 50%: defaulter ICR falls to 100%
-      await priceFeed.setPrice(dec(100, 18));
+      await priceFeed.setPrice(assetAddress1, dec(100, 18));
 
       // Check all would-be depositors have 0 KUMO balance
       for (depositor of allDepositors) {
@@ -749,7 +749,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
         assert.equal(await kumoToken.balanceOf(depositor), '0')
       }
       // price drops by 50%
-      await priceFeed.setPrice(dec(100, 18));
+      await priceFeed.setPrice(assetAddress1, dec(100, 18));
 
       // Check scale is 0
       // assert.equal(await stabilityPool.currentScale(), '0')
@@ -848,7 +848,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(await stabilityPool.P(), dec(1, 18)) // P resets to 1e18 after pool-emptying
 
       // price doubles
-      await priceFeed.setPrice(dec(200, 18));
+      await priceFeed.setPrice(assetAddress1, dec(200, 18));
 
       /* All depositors withdraw fully from SP.  Withdraw in reverse order, so that the largest remaining
       deposit (F) withdraws first, and does not get extra KUMO gains from the periods between withdrawals */
@@ -1068,7 +1068,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       await stabilityPool.provideToSP(dec(40000, 18), ZERO_ADDRESS, { from: D })
 
       // Price Drops, defaulters become undercollateralized
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
       // Check initial frontEnd stakes are correct:
@@ -1435,7 +1435,7 @@ contract('StabilityPool - KUMO Rewards', async accounts => {
       assert.equal(await kumoToken.balanceOf(frontEnd_1), '0')
 
       // price drops by 50%
-      await priceFeed.setPrice(dec(100, 18));
+      await priceFeed.setPrice(assetAddress1, dec(100, 18));
 
       // Check scale is 0
       assert.equal(await stabilityPool.currentScale(), '0')

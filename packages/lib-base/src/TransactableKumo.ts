@@ -293,7 +293,7 @@ export interface TransactableKumo {
   repayKUSD(asset: string, amount: Decimalish): Promise<TroveAdjustmentDetails>;
 
   /** @internal */
-  setPrice(price: Decimalish): Promise<void>;
+  setPrice(asset: string, price: Decimalish): Promise<void>;
 
   /**
    * Liquidate one or more undercollateralized Troves.

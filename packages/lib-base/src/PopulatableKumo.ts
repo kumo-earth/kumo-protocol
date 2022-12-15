@@ -168,6 +168,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
 
   /** @internal */
   setPrice(
+    asset: string,
     price: Decimalish
   ): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
 

@@ -102,8 +102,8 @@ contract('Gas compensation tests', async accounts => {
     ETH:USD price = 1
     coll = 1 ETH: $1 in value
     -> Expect 0.5% of collaterall as gas compensation */
-    await priceFeed.setPrice(dec(1, 18))
-    // const price_1 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(1, 18))
+    // const price_1 = await priceFeed.getPrice(assetAddress1)
     assert.equal((await troveManager.getCollGasCompensation(assetAddress1, dec(1, 'ether'))).toString(), dec(5, 15))
 
 
@@ -111,8 +111,8 @@ contract('Gas compensation tests', async accounts => {
     ETH:USD price = 28.4
     coll = 0.1 ETH: $2.84 in value
     -> Expect 0.5% of collaterall as gas compensation */
-    await priceFeed.setPrice('28400000000000000000')
-    // const price_2 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, '28400000000000000000')
+    // const price_2 = await priceFeed.getPrice(assetAddress1)
     const gasCompensation_2 = (await troveManager.getCollGasCompensation(assetAddress1, dec(100, 'finney'))).toString()
     assert.equal(gasCompensation_2, dec(5, 14))
 
@@ -120,14 +120,14 @@ contract('Gas compensation tests', async accounts => {
     ETH:USD price = 1000000000 (1 billion)
     coll = 0.000000005 ETH (5e9 wei): $5 in value 
     -> Expect 0.5% of collaterall as gas compensation */
-    await priceFeed.setPrice(dec(1, 27))
-    // const price_3 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(1, 27))
+    // const price_3 = await priceFeed.getPrice(assetAddress1)
     const gasCompensation_3 = (await troveManager.getCollGasCompensation(assetAddress1, '5000000000')).toString()
     assert.equal(gasCompensation_3, '25000000')
   })
 
   it('_getCollGasCompensation(): returns 0.5% of collaterall when 0.5% of collateral < $10 in value', async () => {
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.equal(price, dec(200, 18))
 
     /* 
@@ -154,7 +154,7 @@ contract('Gas compensation tests', async accounts => {
   })
 
   it('getCollGasCompensation(assetAddress1, ): returns 0.5% of collaterall when 0.5% of collateral = $10 in value', async () => {
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.equal(price, dec(200, 18))
 
     /* 
@@ -167,7 +167,7 @@ contract('Gas compensation tests', async accounts => {
   })
 
   it('getCollGasCompensation(): returns 0.5% of collaterall when 0.5% of collateral = $10 in value', async () => {
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.equal(price, dec(200, 18))
 
     /* 
@@ -199,7 +199,7 @@ contract('Gas compensation tests', async accounts => {
     coll = 94758.230582309850 ETH  
     0.5% of coll = 473.7911529 ETH. USD value: $21473894.84
     -> Expect $21473894.8385808 gas compensation, i.e.  473.7911529115490  ETH */
-    await priceFeed.setPrice('45323545420000000000000')
+    await priceFeed.setPrice(assetAddress1, '45323545420000000000000')
     const gasCompensation_4 = await troveManager.getCollGasCompensation(assetAddress1, '94758230582309850000000')
     assert.isAtMost(th.getDifference(gasCompensation_4, '473791152911549000000'), 1000000)
 
@@ -208,8 +208,8 @@ contract('Gas compensation tests', async accounts => {
     coll = 300000000 ETH   (300 million)
     0.5% of coll = 1500000 ETH. USD value: $150000000000
     -> Expect $150000000000 gas compensation, i.e. 1500000 ETH */
-    await priceFeed.setPrice(dec(1, 24))
-    const price_2 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(1, 24))
+    const price_2 = await priceFeed.getPrice(assetAddress1)
     const gasCompensation_5 = (await troveManager.getCollGasCompensation(assetAddress1, '300000000000000000000000000')).toString()
     assert.equal(gasCompensation_5, '1500000000000000000000000')
   })
@@ -218,7 +218,7 @@ contract('Gas compensation tests', async accounts => {
 
   // gets debt + 50 when 0.5% of coll < $10
   it('_getCompositeDebt(): returns (debt + 50) when collateral < $10 in value', async () => {
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.equal(price, dec(200, 18))
 
     /* 
@@ -250,7 +250,7 @@ contract('Gas compensation tests', async accounts => {
 
   // returns $10 worth of ETH when 0.5% of coll == $10
   it('getCompositeDebt(): returns (debt + 50) collateral = $10 in value', async () => {
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.equal(price, dec(200, 18))
 
     /* 
@@ -267,7 +267,7 @@ contract('Gas compensation tests', async accounts => {
 
   // gets debt + 50 when 0.5% of coll > 10
   it('getCompositeDebt(): returns (debt + 50) when 0.5% of collateral > $10 in value', async () => {
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.equal(price, dec(200, 18))
 
     /* 
@@ -299,8 +299,8 @@ contract('Gas compensation tests', async accounts => {
     coll = 94758.230582309850 ETH  
     debt = 1 billion KUSD
     -> Expect composite debt = (1000000000 + 200) = 1000000200 KUSD  */
-    await priceFeed.setPrice('45323545420000000000000')
-    const price_2 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, '45323545420000000000000')
+    const price_2 = await priceFeed.getPrice(assetAddress1)
     const compositeDebt_4 = (await troveManager.getCompositeDebt(assetAddress1, dec(1, 27))).toString()
     assert.isAtMost(th.getDifference(compositeDebt_4, '1000000200000000000000000000'), 100000000000)
 
@@ -309,15 +309,15 @@ contract('Gas compensation tests', async accounts => {
     coll = 300000000 ETH   (300 million)
     debt = 54321.123456789 KUSD
    -> Expect composite debt = (54321.123456789 + 200) = 54521.123456789 KUSD */
-    await priceFeed.setPrice(dec(1, 24))
-    const price_3 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(1, 24))
+    const price_3 = await priceFeed.getPrice(assetAddress1)
     const compositeDebt_5 = (await troveManager.getCompositeDebt(assetAddress1, '54321123456789000000000')).toString()
     assert.equal(compositeDebt_5, '54521123456789000000000')
   })
 
   // --- Test ICRs with virtual debt ---
   it('getCurrentICR(): Incorporates virtual debt, and returns the correct ICR for new troves', async () => {
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     await await openTrove({ asset: assetAddress1,ICR: toBN(dec(200, 18)), extraParams: { from: whale } })
 
     // A opens with 1 ETH, 110 KUSD
@@ -382,8 +382,8 @@ contract('Gas compensation tests', async accounts => {
     const KUSDinSP_0 = await stabilityPool.getTotalKUSDDeposits()
 
     // --- Price drops to 9.99 ---
-    await priceFeed.setPrice('9990000000000000000')
-    const price_1 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, '9990000000000000000')
+    const price_1 = await priceFeed.getPrice(assetAddress1)
 
     /* 
     ETH:USD price = 9.99
@@ -413,8 +413,8 @@ contract('Gas compensation tests', async accounts => {
     assert.equal(ETHinSP_A.toString(), aliceColl.sub(_0pt5percent_aliceColl)) // 1 ETH - 0.5%
 
     // --- Price drops to 3 ---
-    await priceFeed.setPrice(dec(3, 18))
-    const price_2 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(3, 18))
+    const price_2 = await priceFeed.getPrice(assetAddress1)
 
     /* 
     ETH:USD price = 3
@@ -444,8 +444,8 @@ contract('Gas compensation tests', async accounts => {
 
 
     // --- Price drops to 3 ---
-    await priceFeed.setPrice('3141592653589793238')
-    const price_3 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, '3141592653589793238')
+    const price_3 = await priceFeed.getPrice(assetAddress1)
 
     /* 
     ETH:USD price = 3.141592653589793238
@@ -476,7 +476,7 @@ contract('Gas compensation tests', async accounts => {
   })
 
   it('gas compensation from pool-offset liquidations: 0.5% collateral < $10 in value. Compensates $10 worth of collateral, liquidates the remainder', async () => {
-    await priceFeed.setPrice(dec(400, 18))
+    await priceFeed.setPrice(assetAddress1, dec(400, 18))
     await await openTrove({ asset: assetAddress1,ICR: toBN(dec(2000, 18)), extraParams: { from: whale } })
 
     // A-E open troves
@@ -494,8 +494,8 @@ contract('Gas compensation tests', async accounts => {
     const ETHinSP_0 = await stabilityPool.getAssetBalance()
 
     // --- Price drops to 199.999 ---
-    await priceFeed.setPrice('199999000000000000000')
-    const price_1 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, '199999000000000000000')
+    const price_1 = await priceFeed.getPrice(assetAddress1)
 
     /* 
     ETH:USD price = 199.999
@@ -536,8 +536,8 @@ contract('Gas compensation tests', async accounts => {
     assert.isAtMost(th.getDifference(SPETHIncrease_A, collRemainder_A), 1000)
 
     // --- Price drops to 15 ---
-    await priceFeed.setPrice(dec(15, 18))
-    const price_2 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(15, 18))
+    const price_2 = await priceFeed.getPrice(assetAddress1)
 
     /* 
     ETH:USD price = 15
@@ -580,7 +580,7 @@ contract('Gas compensation tests', async accounts => {
 
   it('gas compensation from pool-offset liquidations: 0.5% collateral > $10 in value. Compensates 0.5% of  collateral, liquidates the remainder', async () => {
     // open troves
-    await priceFeed.setPrice(dec(400, 18))
+    await priceFeed.setPrice(assetAddress1, dec(400, 18))
     await await openTrove({ asset: assetAddress1,ICR: toBN(dec(200, 18)), extraParams: { from: whale} })
 
     // A-E open troves
@@ -597,8 +597,8 @@ contract('Gas compensation tests', async accounts => {
     const KUSDinSP_0 = await stabilityPool.getTotalKUSDDeposits()
     const ETHinSP_0 = await stabilityPool.getAssetBalance()
 
-    await priceFeed.setPrice(dec(200, 18))
-    const price_1 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
+    const price_1 = await priceFeed.getPrice(assetAddress1)
 
     /* 
     ETH:USD price = 200
@@ -697,10 +697,10 @@ contract('Gas compensation tests', async accounts => {
 
     const KUSDinSP_0 = await stabilityPool.getTotalKUSDDeposits()
 
-    // th.logBN('TCR', await troveManager.getTCR(await priceFeed.getPrice()))
+    // th.logBN('TCR', await troveManager.getTCR(await priceFeed.getPrice(assetAddress1)))
     // --- Price drops to 9.99 ---
-    await priceFeed.setPrice('9990000000000000000')
-    const price_1 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, '9990000000000000000')
+    const price_1 = await priceFeed.getPrice(assetAddress1)
 
     /* 
     ETH:USD price = 9.99
@@ -710,7 +710,7 @@ contract('Gas compensation tests', async accounts => {
     const aliceColl = (await troveManager.Troves(alice, assetAddress1))[2]
     const aliceDebt = (await troveManager.Troves(alice, assetAddress1))[1]
 
-    // th.logBN('TCR', await troveManager.getTCR(await priceFeed.getPrice()))
+    // th.logBN('TCR', await troveManager.getTCR(await priceFeed.getPrice(assetAddress1)))
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
     // Liquidate A (use 0 gas price to easily check the amount the compensation amount the liquidator receives)
@@ -727,8 +727,8 @@ contract('Gas compensation tests', async accounts => {
     assert.isAtMost(th.getDifference(expectedGasComp_A, loggedGasComp_A), 1000)
 
     // --- Price drops to 3 ---
-    await priceFeed.setPrice(dec(3, 18))
-    const price_2 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(3, 18))
+    const price_2 = await priceFeed.getPrice(assetAddress1)
 
     /* 
     ETH:USD price = 3
@@ -755,7 +755,7 @@ contract('Gas compensation tests', async accounts => {
 
 
   it('gas compensation from pool-offset liquidations. Liquidation event emits the correct gas compensation and total liquidated coll and debt', async () => {
-    await priceFeed.setPrice(dec(400, 18))
+    await priceFeed.setPrice(assetAddress1, dec(400, 18))
     await await openTrove({ asset: assetAddress1,ICR: toBN(dec(2000, 18)), extraParams: { from: whale } })
 
     // A-E open troves
@@ -773,8 +773,8 @@ contract('Gas compensation tests', async accounts => {
     const ETHinSP_0 = await stabilityPool.getAssetBalance()
 
     // --- Price drops to 199.999 ---
-    await priceFeed.setPrice('199999000000000000000')
-    const price_1 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, '199999000000000000000')
+    const price_1 = await priceFeed.getPrice(assetAddress1)
 
     /* 
     ETH:USD price = 199.999
@@ -812,8 +812,8 @@ contract('Gas compensation tests', async accounts => {
     assert.isAtMost(th.getDifference(expectedGasComp_A, loggedGasComp_A), 1000)
 
       // --- Price drops to 15 ---
-      await priceFeed.setPrice(dec(15, 18))
-      const price_2 = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(15, 18))
+      const price_2 = await priceFeed.getPrice(assetAddress1)
 
     /* 
     ETH:USD price = 15
@@ -851,7 +851,7 @@ contract('Gas compensation tests', async accounts => {
 
   it('gas compensation from pool-offset liquidations: 0.5% collateral > $10 in value. Liquidation event emits the correct gas compensation and total liquidated coll and debt', async () => {
     // open troves
-    await priceFeed.setPrice(dec(400, 18))
+    await priceFeed.setPrice(assetAddress1, dec(400, 18))
     await await openTrove({ asset: assetAddress1,ICR: toBN(dec(200, 18)), extraParams: { from: whale } })
 
     // A-E open troves
@@ -868,8 +868,8 @@ contract('Gas compensation tests', async accounts => {
     const KUSDinSP_0 = await stabilityPool.getTotalKUSDDeposits()
     const ETHinSP_0 = await stabilityPool.getAssetBalance()
 
-    await priceFeed.setPrice(dec(200, 18))
-    const price_1 = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
+    const price_1 = await priceFeed.getPrice(assetAddress1)
 
     // Check value of 0.5% of collateral in USD is > $10
     const aliceColl = (await troveManager.Troves(alice, assetAddress1))[2]
@@ -930,7 +930,7 @@ contract('Gas compensation tests', async accounts => {
 
   // liquidateTroves - full offset
   it('liquidateTroves(): full offset.  Compensates the correct amount, and liquidates the remainder', async () => {
-    await priceFeed.setPrice(dec(1000, 18))
+    await priceFeed.setPrice(assetAddress1, dec(1000, 18))
 
     await await openTrove({ asset: assetAddress1,ICR: toBN(dec(2000, 18)), extraParams: { from: whale } })
 
@@ -949,8 +949,8 @@ contract('Gas compensation tests', async accounts => {
     const KUSDinSP_0 = await stabilityPool.getTotalKUSDDeposits()
 
     // price drops to 200 
-    await priceFeed.setPrice(dec(200, 18))
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // Check not in Recovery Mode 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
@@ -1018,7 +1018,7 @@ contract('Gas compensation tests', async accounts => {
 
   // liquidateTroves - full redistribution
   it('liquidateTroves(): full redistribution. Compensates the correct amount, and liquidates the remainder', async () => {
-    await priceFeed.setPrice(dec(1000, 18))
+    await priceFeed.setPrice(assetAddress1, dec(1000, 18))
 
     await await openTrove({ asset: assetAddress1,ICR: toBN(dec(200, 18)), extraParams: { from: whale } })
 
@@ -1031,8 +1031,8 @@ contract('Gas compensation tests', async accounts => {
     const KUSDinDefaultPool_0 = await defaultPool.getKUSDDebt(assetAddress1) 
 
     // price drops to 200 
-    await priceFeed.setPrice(dec(200, 18))
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // Check not in Recovery Mode 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
@@ -1095,7 +1095,7 @@ contract('Gas compensation tests', async accounts => {
 
   //  --- event emission in liquidation sequence ---
   it('liquidateTroves(): full offset. Liquidation event emits the correct gas compensation and total liquidated coll and debt', async () => {
-    await priceFeed.setPrice(dec(1000, 18))
+    await priceFeed.setPrice(assetAddress1, dec(1000, 18))
 
     await await openTrove({ asset: assetAddress1,ICR: toBN(dec(2000, 18)), extraParams: { from: whale } })
 
@@ -1114,8 +1114,8 @@ contract('Gas compensation tests', async accounts => {
     const KUSDinSP_0 = await stabilityPool.getTotalKUSDDeposits()
 
     // price drops to 200 
-    await priceFeed.setPrice(dec(200, 18))
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // Check not in Recovery Mode 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
@@ -1177,7 +1177,7 @@ contract('Gas compensation tests', async accounts => {
   })
 
   it('liquidateTroves(): full redistribution. Liquidation event emits the correct gas compensation and total liquidated coll and debt', async () => {
-    await priceFeed.setPrice(dec(1000, 18))
+    await priceFeed.setPrice(assetAddress1, dec(1000, 18))
 
     await await openTrove({ asset: assetAddress1,ICR: toBN(dec(2000, 18)), extraParams: { from: whale } })
 
@@ -1192,8 +1192,8 @@ contract('Gas compensation tests', async accounts => {
     const KUSDinDefaultPool_0 = await defaultPool.getKUSDDebt(assetAddress1) 
 
     // price drops to 200 
-    await priceFeed.setPrice(dec(200, 18))
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // Check not in Recovery Mode 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
@@ -1262,7 +1262,7 @@ contract('Gas compensation tests', async accounts => {
       debt -= 1
     }
 
-    const initialPrice = await priceFeed.getPrice()
+    const initialPrice = await priceFeed.getPrice(assetAddress1)
     const firstColl = (await troveManager.Troves(_10_accounts[0], assetAddress1))[1]
 
     // Vary price 200-210
@@ -1270,7 +1270,7 @@ contract('Gas compensation tests', async accounts => {
     while (price < 210) {
 
       const priceString = price.toString().concat('000000000000000000')
-      await priceFeed.setPrice(priceString)
+      await priceFeed.setPrice(assetAddress1, priceString)
 
       const ICRList = []
       const coll_firstTrove = (await troveManager.Troves(_10_accounts[0], assetAddress1))[0]
@@ -1319,14 +1319,14 @@ contract('Gas compensation tests', async accounts => {
       coll += 5
     }
 
-    const initialPrice = await priceFeed.getPrice()
+    const initialPrice = await priceFeed.getPrice(assetAddress1)
 
     // Vary price 
     let price = 1
     while (price < 300) {
 
       const priceString = price.toString().concat('000000000000000000')
-      await priceFeed.setPrice(priceString)
+      await priceFeed.setPrice(assetAddress1, priceString)
 
       const ICRList = []
 
@@ -1367,14 +1367,14 @@ contract('Gas compensation tests', async accounts => {
       accountIdx += 1
     }
 
-    const initialPrice = await priceFeed.getPrice()
+    const initialPrice = await priceFeed.getPrice(assetAddress1)
 
     // Vary price
     let price = 1
     while (price < 300) {
 
       const priceString = price.toString().concat('000000000000000000')
-      await priceFeed.setPrice(priceString)
+      await priceFeed.setPrice(assetAddress1, priceString)
 
       const ICRList = []
 
