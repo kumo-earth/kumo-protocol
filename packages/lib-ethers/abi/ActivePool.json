@@ -178,11 +178,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_newStabilityPoolAddress",
+        "name": "_newStabilityPoolFactoryAddress",
         "type": "address"
       }
     ],
-    "name": "StabilityPoolAddressChanged",
+    "name": "StabilityPoolFactoryAddressChanged",
     "type": "event"
   },
   {
@@ -217,19 +217,6 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "collStakingManager",
-    "outputs": [
-      {
-        "internalType": "contract ICollStakingManager",
         "name": "",
         "type": "address"
       }
@@ -289,52 +276,7 @@
         "type": "address"
       }
     ],
-    "name": "forceStake",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_asset",
-        "type": "address"
-      }
-    ],
-    "name": "forceUnstake",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_asset",
-        "type": "address"
-      }
-    ],
     "name": "getAssetBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_asset",
-        "type": "address"
-      }
-    ],
-    "name": "getAssetStaked",
     "outputs": [
       {
         "internalType": "uint256",
@@ -476,7 +418,7 @@
       },
       {
         "internalType": "address",
-        "name": "_stabilityPoolAddress",
+        "name": "_stabilityPoolFactoryAddress",
         "type": "address"
       },
       {
@@ -501,24 +443,11 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_collStakingManagerAddress",
-        "type": "address"
-      }
-    ],
-    "name": "setCollStakingManagerAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
-    "name": "stabilityPoolAddress",
+    "name": "stabilityPoolFactory",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract IStabilityPoolFactory",
         "name": "",
         "type": "address"
       }

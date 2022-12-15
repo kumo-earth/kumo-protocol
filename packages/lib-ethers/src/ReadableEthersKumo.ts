@@ -1,3 +1,7 @@
+import { BigNumber, ethers } from "ethers";
+
+import iERC20Abi from "../abi/IERC20.json";
+
 import { BlockTag } from "@ethersproject/abstract-provider";
 
 import {
@@ -12,7 +16,8 @@ import {
   TroveListingParams,
   TroveWithPendingRedistribution,
   UserTrove,
-  UserTroveStatus
+  UserTroveStatus,
+  ASSET_TOKENS
 } from "@kumodao/lib-base";
 
 import { MultiTroveGetter } from "../types";
@@ -28,7 +33,9 @@ import {
   _getBlockTimestamp,
   _getContracts,
   _requireAddress,
-  _requireFrontendAddress
+  _requireFrontendAddress,
+  _requireSigner,
+  _getStabilityPoolByAsset
 } from "./EthersKumoConnection";
 
 import { BlockPolledKumoStore } from "./BlockPolledKumoStore";
@@ -252,13 +259,13 @@ export class ReadableEthersKumo implements ReadableKumo {
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getStabilityDeposit} */
   async getStabilityDeposit(
+    assetName: string,
     address?: string,
     overrides?: EthersCallOverrides
   ): Promise<StabilityDeposit> {
     address ??= _requireAddress(this.connection);
-    const { stabilityPool } = _getContracts(this.connection);
-
-
+    const stabilityPool = _getStabilityPoolByAsset(assetName, this.connection);
+    // const { stabilityPool } = _getContracts(this.connection);
     const [{ frontEndTag, initialValue }, currentKUSD, collateralGain, kumoReward] =
       await Promise.all([
         stabilityPool.deposits(address, { ...overrides }),
@@ -288,9 +295,8 @@ export class ReadableEthersKumo implements ReadableKumo {
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDInStabilityPool} */
-  getKUSDInStabilityPool(overrides?: EthersCallOverrides): Promise<Decimal> {
-    const { stabilityPool } = _getContracts(this.connection);
-
+  async getKUSDInStabilityPool(assetName: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+    const stabilityPool = _getStabilityPoolByAsset(assetName, this.connection);
     return stabilityPool.getTotalKUSDDeposits({ ...overrides }).then(decimalify);
   }
 
@@ -300,6 +306,18 @@ export class ReadableEthersKumo implements ReadableKumo {
     const { kusdToken } = _getContracts(this.connection);
 
     return kusdToken.balanceOf(address, { ...overrides }).then(decimalify);
+  }
+
+  getAssetBalance(
+    address: string,
+    asset: string,
+    provider: EthersProvider,
+    overrides?: EthersCallOverrides
+  ) {
+    address ??= _requireAddress(this.connection);
+
+    const assetTokenContract = new ethers.Contract(asset, iERC20Abi, provider);
+    return assetTokenContract.balanceOf(address, { ...overrides }).then(decimalify);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUMOBalance} */
@@ -386,7 +404,6 @@ export class ReadableEthersKumo implements ReadableKumo {
   ): Promise<Decimal> {
     address ??= _requireAddress(this.connection);
     const { collSurplusPool } = _getContracts(this.connection);
-
     return collSurplusPool.getCollateral(asset, address, { ...overrides }).then(decimalify);
   }
 
@@ -484,7 +501,7 @@ export class ReadableEthersKumo implements ReadableKumo {
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUMOStake} */
   async getKUMOStake(
     asset: string,
-    address?: string,
+    address: string,
     overrides?: EthersCallOverrides
   ): Promise<KUMOStake> {
     address ??= _requireAddress(this.connection);
@@ -510,12 +527,12 @@ export class ReadableEthersKumo implements ReadableKumo {
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getFrontendStatus} */
   async getFrontendStatus(
-    address?: string,
+    assetName: string,
+    address: string,
     overrides?: EthersCallOverrides
   ): Promise<FrontendStatus> {
     address ??= _requireFrontendAddress(this.connection);
-    const { stabilityPool } = _getContracts(this.connection);
-
+    const stabilityPool = _getStabilityPoolByAsset(assetName, this.connection);
     const { registered, kickbackRate } = await stabilityPool.frontEnds(address, { ...overrides });
 
     return registered
@@ -573,14 +590,14 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
     );
   }
 
-  private _userHit(address?: string, overrides?: EthersCallOverrides): boolean {
+  private _userHit(address: string, overrides?: EthersCallOverrides): boolean {
     return (
       this._blockHit(overrides) &&
       (address === undefined || address === this.store.connection.userAddress)
     );
   }
 
-  private _frontendHit(address?: string, overrides?: EthersCallOverrides): boolean {
+  private _frontendHit(address: string, overrides?: EthersCallOverrides): boolean {
     return (
       this._blockHit(overrides) &&
       (address === undefined || address === this.store.connection.frontendTag)
@@ -599,7 +616,7 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
 
   async getTroveBeforeRedistribution(
     asset: string,
-    address?: string,
+    address: string,
     overrides?: EthersCallOverrides
   ): Promise<TroveWithPendingRedistribution> {
     return this._userHit(address, overrides)
@@ -609,7 +626,7 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
 
   async getTrove(
     asset: string,
-    address?: string,
+    address: string,
     overrides?: EthersCallOverrides
   ): Promise<UserTrove> {
     return this._userHit(address, overrides)
@@ -634,12 +651,13 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
   }
 
   async getStabilityDeposit(
-    address?: string,
+    asset: string,
+    address: string,
     overrides?: EthersCallOverrides
   ): Promise<StabilityDeposit> {
     return this._userHit(address, overrides)
       ? this.store.state.stabilityDeposit
-      : this._readable.getStabilityDeposit(address, overrides);
+      : this._readable.getStabilityDeposit(asset, address, overrides);
   }
 
   async getRemainingStabilityPoolKUMOReward(overrides?: EthersCallOverrides): Promise<Decimal> {
@@ -648,31 +666,46 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
       : this._readable.getRemainingStabilityPoolKUMOReward(overrides);
   }
 
-  async getKUSDInStabilityPool(overrides?: EthersCallOverrides): Promise<Decimal> {
+  async getKUSDInStabilityPool(asset: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._blockHit(overrides)
       ? this.store.state.kusdInStabilityPool
-      : this._readable.getKUSDInStabilityPool(overrides);
+      : this._readable.getKUSDInStabilityPool(asset, overrides);
   }
 
-  async getKUSDBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+  async getKUSDBalance(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._userHit(address, overrides)
       ? this.store.state.kusdBalance
       : this._readable.getKUSDBalance(address, overrides);
   }
+  async getAssetBalance(
+    address: string,
+    assetType: string,
+    provider: EthersProvider,
+    overrides?: EthersCallOverrides
+  ) {
+    if (this._userHit(address, overrides)) {
+      const vault = this.store.state.vaults.find(vault => vault.asset === assetType);
+      if (vault) {
+        return vault?.accountBalance;
+      }
+    } else {
+      this._readable.getAssetBalance(address, assetType, provider, overrides);
+    }
+  }
 
-  async getKUMOBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+  async getKUMOBalance(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._userHit(address, overrides)
       ? this.store.state.kumoBalance
       : this._readable.getKUMOBalance(address, overrides);
   }
 
-  async getUniTokenBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+  async getUniTokenBalance(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._userHit(address, overrides)
       ? this.store.state.uniTokenBalance
       : this._readable.getUniTokenBalance(address, overrides);
   }
 
-  async getUniTokenAllowance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+  async getUniTokenAllowance(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._userHit(address, overrides)
       ? this.store.state.uniTokenAllowance
       : this._readable.getUniTokenAllowance(address, overrides);
@@ -684,10 +717,7 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
       : this._readable.getRemainingLiquidityMiningKUMOReward(overrides);
   }
 
-  async getLiquidityMiningStake(
-    address?: string,
-    overrides?: EthersCallOverrides
-  ): Promise<Decimal> {
+  async getLiquidityMiningStake(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._userHit(address, overrides)
       ? this.store.state.liquidityMiningStake
       : this._readable.getLiquidityMiningStake(address, overrides);
@@ -700,7 +730,7 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
   }
 
   async getLiquidityMiningKUMOReward(
-    address?: string,
+    address: string,
     overrides?: EthersCallOverrides
   ): Promise<Decimal> {
     return this._userHit(address, overrides)
@@ -710,7 +740,7 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
 
   async getCollateralSurplusBalance(
     asset: string,
-    address?: string,
+    address: string,
     overrides?: EthersCallOverrides
   ): Promise<Decimal> {
     return this._userHit(address, overrides)
@@ -741,7 +771,7 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
 
   async getKUMOStake(
     asset: string,
-    address?: string,
+    address: string,
     overrides?: EthersCallOverrides
   ): Promise<KUMOStake> {
     return this._userHit(address, overrides)
@@ -756,12 +786,13 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
   }
 
   async getFrontendStatus(
-    address?: string,
+    asset: string,
+    address: string,
     overrides?: EthersCallOverrides
   ): Promise<FrontendStatus> {
     return this._frontendHit(address, overrides)
       ? this.store.state.frontend
-      : this._readable.getFrontendStatus(address, overrides);
+      : this._readable.getFrontendStatus(asset, address, overrides);
   }
 
   getTroves(

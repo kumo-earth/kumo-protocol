@@ -13,8 +13,8 @@ const selectPrice = ({ price }: KumoStoreState) => price;
 
 export const PriceManager: React.FC = () => {
   const {
-    liquity: {
-      send: liquity,
+    kumo: {
+      send: kumo,
       connection: { _priceFeedIsTestnet: canSetPrice }
     }
   } = useKumo();
@@ -27,7 +27,7 @@ export const PriceManager: React.FC = () => {
   }, [price]);
 
   return (
-    <Card>
+    <Card variant="base">
       <Heading>Price feed</Heading>
 
       <Box sx={{ p: [2, 3] }}>
@@ -54,10 +54,19 @@ export const PriceManager: React.FC = () => {
                   if (!editedPrice) {
                     throw new Error("Invalid price");
                   }
-                  return liquity.setPrice(Decimal.from(editedPrice), overrides);
+                  return kumo.setPrice(Decimal.from(editedPrice), overrides);
                 }}
               >
-                <Button variant="icon">
+                <Button
+                  variant="icon"
+                  sx={{
+                    backgroundColor: "rgb(152, 80, 90)",
+                    boxShadow:
+                      "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
+                    border: "none",
+                    color: "white"
+                  }}
+                >
                   <Icon name="chart-line" size="lg" />
                 </Button>
               </Transaction>

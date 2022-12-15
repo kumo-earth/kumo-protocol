@@ -29,7 +29,7 @@ const Balances: React.FC = () => {
 
 const GitHubCommit: React.FC<{ children?: string }> = ({ children }) =>
   children?.match(/[0-9a-f]{40}/) ? (
-    <Link href={`https://github.com/liquity/dev/commit/${children}`}>{children.substr(0, 7)}</Link>
+    <Link href={`https://github.com/kumo/dev/commit/${children}`}>{children.substr(0, 7)}</Link>
   ) : (
     <>unknown</>
   );
@@ -61,7 +61,7 @@ const select = ({
 
 export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", showBalances }) => {
   const {
-    liquity: {
+    kumo: {
       connection: { version: contractsVersion, deploymentDate, frontendTag }
     }
   } = useKumo();
@@ -83,7 +83,9 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
   const kickbackRatePct = frontendTag === AddressZero ? "100" : kickbackRate?.mul(100).prettify();
 
   return (
-    <Card {...{ variant }}>
+    <Card
+      variant="base"
+    >
       {showBalances && <Balances />}
 
       <Heading>Kumo statistics</Heading>
@@ -111,7 +113,7 @@ export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", show
       <Statistic name="Troves" tooltip="The total number of active Troves in the system.">
         {Decimal.from(numberOfTroves).prettify(0)}
       </Statistic>
-      <Statistic name="KUSD supply" tooltip="The total KUSD minted by the Kumo Protocol.">
+      <Statistic name="KUSD supply" tooltip="The total KUSD minted by the kumo Protocol.">
         {total.debt.shorten()}
       </Statistic>
       {kusdInStabilityPoolPct && (

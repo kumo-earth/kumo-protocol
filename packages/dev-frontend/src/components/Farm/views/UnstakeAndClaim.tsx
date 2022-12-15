@@ -10,7 +10,7 @@ export const UnstakeAndClaim: React.FC = () => {
   const { dispatchEvent } = useFarmView();
 
   const {
-    liquity: { send: liquity }
+    kumo: { send: kumo }
   } = useKumo();
 
   const transactionState = useMyTransactionState(transactionId);
@@ -24,7 +24,7 @@ export const UnstakeAndClaim: React.FC = () => {
   return (
     <Transaction
       id={transactionId}
-      send={liquity.exitLiquidityMining.bind(liquity)}
+      send={kumo.exitLiquidityMining.bind(kumo)}
       showFailure="asTooltip"
       tooltipPlacement="bottom"
     >

@@ -29,11 +29,12 @@ import priceFeedAbi from "../abi/PriceFeed.json";
 import priceFeedTestnetAbi from "../abi/PriceFeedTestnet.json";
 import sortedTrovesAbi from "../abi/SortedTroves.json";
 import stabilityPoolAbi from "../abi/StabilityPool.json";
+import stabilityPoolFactoryAbi from "../abi/StabilityPoolFactory.json";
 import gasPoolAbi from "../abi/GasPool.json";
 import unipoolAbi from "../abi/Unipool.json";
 import iERC20Abi from "../abi/IERC20.json";
 import erc20MockAbi from "../abi/ERC20Mock.json";
-import erc20TestAbi from "../abi/ERC20Test.json"
+import erc20TestAbi from "../abi/ERC20Test.json";
 
 import {
   ActivePool,
@@ -52,6 +53,7 @@ import {
   PriceFeedTestnet,
   SortedTroves,
   StabilityPool,
+  StabilityPoolFactory,
   GasPool,
   Unipool,
   ERC20Mock,
@@ -184,11 +186,14 @@ export interface _KumoContracts {
   multiTroveGetter: MultiTroveGetter;
   priceFeed: PriceFeed | PriceFeedTestnet;
   sortedTroves: SortedTroves;
-  stabilityPool: StabilityPool;
+  stabilityPoolAsset1: StabilityPool;
+  stabilityPoolAsset2: StabilityPool;
+  stabilityPoolFactory: StabilityPoolFactory;
   gasPool: GasPool;
   unipool: Unipool;
   uniToken: IERC20 | ERC20Mock;
   mockAsset1: ERC20Test;
+  mockAsset2: ERC20Test;
 }
 
 /** @internal */
@@ -222,12 +227,15 @@ const getAbi = (priceFeedIsTestnet: boolean, uniTokenIsMock: boolean): KumoContr
   multiTroveGetter: multiTroveGetterAbi,
   priceFeed: priceFeedIsTestnet ? priceFeedTestnetAbi : priceFeedAbi,
   sortedTroves: sortedTrovesAbi,
-  stabilityPool: stabilityPoolAbi,
+  stabilityPoolAsset1: stabilityPoolAbi,
+  stabilityPoolAsset2: stabilityPoolAbi,
+  stabilityPoolFactory: stabilityPoolFactoryAbi,
   gasPool: gasPoolAbi,
   collSurplusPool: collSurplusPoolAbi,
   unipool: unipoolAbi,
   uniToken: uniTokenIsMock ? erc20MockAbi : iERC20Abi,
-  mockAsset1: erc20TestAbi
+  mockAsset1: erc20TestAbi,
+  mockAsset2: erc20TestAbi,
 });
 
 const mapKumoContracts = <T, U>(

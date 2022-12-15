@@ -38,4 +38,5 @@ export interface KumoStoreBaseState
 |  [troveBeforeRedistribution](./lib-base.kumostorebasestate.trovebeforeredistribution.md) |  | [TroveWithPendingRedistribution](./lib-base.trovewithpendingredistribution.md) | User's Trove in its state after the last direct modification. |
 |  [uniTokenAllowance](./lib-base.kumostorebasestate.unitokenallowance.md) |  | [Decimal](./lib-base.decimal.md) | The liquidity mining contract's allowance of user's Uniswap ETH/KUSD LP tokens. |
 |  [uniTokenBalance](./lib-base.kumostorebasestate.unitokenbalance.md) |  | [Decimal](./lib-base.decimal.md) | User's Uniswap ETH/KUSD LP token balance. |
+|  [vaults](./lib-base.kumostorebasestate.vaults.md) |  | any\[\] | Total amount of KUMO currently staked. |
 

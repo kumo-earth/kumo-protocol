@@ -701,11 +701,6 @@
         "internalType": "address",
         "name": "_priceFeed",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_stabilityPool",
-        "type": "address"
       }
     ],
     "name": "setAddresses",
@@ -934,19 +929,6 @@
     "name": "setRedemptionFeeFloor",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "stabilityPool",
-    "outputs": [
-      {
-        "internalType": "contract IStabilityPool",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   }
 ]

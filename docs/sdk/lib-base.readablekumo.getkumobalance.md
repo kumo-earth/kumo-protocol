@@ -9,7 +9,7 @@ Get the amount of KUMO held by an address.
 <b>Signature:</b>
 
 ```typescript
-getKUMOBalance(address?: string): Promise<Decimal>;
+getKUMOBalance(address: string): Promise<Decimal>;
 ```
 
 ## Parameters

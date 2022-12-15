@@ -9,13 +9,14 @@ Get a Trove in its state after the last direct modification.
 <b>Signature:</b>
 
 ```typescript
-getTroveBeforeRedistribution(address?: string): Promise<TroveWithPendingRedistribution>;
+getTroveBeforeRedistribution(asset: string, address: string): Promise<TroveWithPendingRedistribution>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  asset | string | Address of the ERC20 Asset |
 |  address | string | Address that owns the Trove. |
 
 <b>Returns:</b>

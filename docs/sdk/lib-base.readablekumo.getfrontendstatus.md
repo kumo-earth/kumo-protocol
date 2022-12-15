@@ -9,13 +9,14 @@ Check whether an address is registered as a Kumo frontend, and what its kickback
 <b>Signature:</b>
 
 ```typescript
-getFrontendStatus(address?: string): Promise<FrontendStatus>;
+getFrontendStatus(asset: string, address: string): Promise<FrontendStatus>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  asset | string |  |
 |  address | string | Address to check. |
 
 <b>Returns:</b>

@@ -333,6 +333,7 @@ export interface TransactableKumo {
    */
   depositKUSDInStabilityPool(
     amount: Decimalish,
+    asset: string
   ): Promise<StabilityDepositChangeDetails>;
 
   /**
@@ -348,7 +349,7 @@ export interface TransactableKumo {
    * {@link @kumodao/lib-base#StabilityDeposit.collateralGain | collateral gain} and
    * {@link @kumodao/lib-base#StabilityDeposit.kumoReward | KUMO reward}.
    */
-  withdrawKUSDFromStabilityPool(amount: Decimalish): Promise<StabilityDepositChangeDetails>;
+  withdrawKUSDFromStabilityPool(amount: Decimalish, asset: string): Promise<StabilityDepositChangeDetails>;
 
   /**
    * Withdraw {@link @kumodao/lib-base#StabilityDeposit.collateralGain | collateral gain} and
@@ -357,7 +358,7 @@ export interface TransactableKumo {
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
    */
-  withdrawGainsFromStabilityPool(): Promise<StabilityPoolGainsWithdrawalDetails>;
+  withdrawGainsFromStabilityPool(asset: string): Promise<StabilityPoolGainsWithdrawalDetails>;
 
   /**
    * Transfer {@link @kumodao/lib-base#StabilityDeposit.collateralGain | collateral gain} from
@@ -372,7 +373,7 @@ export interface TransactableKumo {
    * As a side-effect, the transaction will also pay out the Stability Deposit's
    * {@link @kumodao/lib-base#StabilityDeposit.kumoReward | KUMO reward}.
    */
-  transferCollateralGainToTrove(asset: string): Promise<CollateralGainTransferDetails>;
+  transferCollateralGainToTrove(asset: string, assetName: string): Promise<CollateralGainTransferDetails>;
 
   /**
    * Send KUSD tokens to an address.
@@ -518,11 +519,12 @@ export interface TransactableKumo {
   /**
    * Register current wallet address as a Kumo frontend.
    *
+   * @param assetName - Symbol of the asset token as string
    * @param kickbackRate - The portion of KUMO rewards to pass onto users of the frontend
    *                       (between 0 and 1).
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
    */
-  registerFrontend(kickbackRate: Decimalish): Promise<void>;
+  registerFrontend(assetName: string, kickbackRate: Decimalish): Promise<void>;
 }

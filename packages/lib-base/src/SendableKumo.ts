@@ -204,20 +204,22 @@ export interface SendableKumo<R = unknown, S = unknown>
   /** {@inheritDoc TransactableKumo.depositKUSDInStabilityPool} */
   depositKUSDInStabilityPool(
     amount: Decimalish,
+    asset: string,
   ): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>;
 
   /** {@inheritDoc TransactableKumo.withdrawKUSDFromStabilityPool} */
   withdrawKUSDFromStabilityPool(
-    amount: Decimalish
+    amount: Decimalish,
+    asset: string
   ): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityDepositChangeDetails>>>;
 
   /** {@inheritDoc TransactableKumo.withdrawGainsFromStabilityPool} */
-  withdrawGainsFromStabilityPool(): Promise<
+  withdrawGainsFromStabilityPool(asset: string): Promise<
     SentKumoTransaction<S, KumoReceipt<R, StabilityPoolGainsWithdrawalDetails>>
   >;
 
   /** {@inheritDoc TransactableKumo.transferCollateralGainToTrove} */
-  transferCollateralGainToTrove(asset: string): Promise<
+  transferCollateralGainToTrove(asset: string, assetName: string): Promise<
     SentKumoTransaction<S, KumoReceipt<R, CollateralGainTransferDetails>>
   >;
 
@@ -268,5 +270,5 @@ export interface SendableKumo<R = unknown, S = unknown>
   exitLiquidityMining(): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
 
   /** {@inheritDoc TransactableKumo.registerFrontend} */
-  registerFrontend(kickbackRate: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
+  registerFrontend(assetName: string, kickbackRate: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
 }

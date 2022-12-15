@@ -9,13 +9,14 @@ Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [K
 <b>Signature:</b>
 
 ```typescript
-withdrawGainsFromStabilityPool(overrides?: EthersTransactionOverrides): Promise<StabilityPoolGainsWithdrawalDetails>;
+withdrawGainsFromStabilityPool(asset: string, overrides?: EthersTransactionOverrides): Promise<StabilityPoolGainsWithdrawalDetails>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  asset | string |  |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 
 <b>Returns:</b>

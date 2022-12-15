@@ -418,7 +418,8 @@ export const TransactionMonitor: React.FC = () => {
         position: "fixed",
         width: "100vw",
         bottom: 0,
-        overflow: "hidden"
+        overflow: "hidden",
+        zIndex: 99999
       }}
     >
       <Box sx={{ mr: 3, width: "40px", height: "40px" }}>
