@@ -25,7 +25,7 @@ const FrontendRegistrationAction: React.FC<FrontendRegistrationActionProps> = ({
     </Button>
   ) : myTransactionState.type !== "waitingForConfirmation" &&
     myTransactionState.type !== "confirmed" ? (
-    <Transaction id={myTransactionId} send={kumo.registerFrontend.bind(kumo, kickbackRate)}>
+    <Transaction id={myTransactionId} send={kumo.registerFrontend.bind(kumo, "", kickbackRate)}>
       <Button>Register</Button>
     </Transaction>
   ) : null;
@@ -60,7 +60,7 @@ export const FrontendRegistration: React.FC = () => {
 
                   setKickbackRate(newKickbackRate);
                   setCut(newCut);
-                } catch {}
+                } catch { }
               }}
               onBlur={() => {
                 setKickbackRateString(kickbackRate.mul(100).toString());

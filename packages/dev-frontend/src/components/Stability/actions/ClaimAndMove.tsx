@@ -13,7 +13,7 @@ export const ClaimAndMove: React.FC<ClaimAndMoveProps> = ({ disabled, asset = ""
 
   const [sendTransaction] = useTransactionFunction(
     "stability-deposit",
-    kumo.send.transferCollateralGainToTrove.bind(kumo.send, asset)
+    kumo.send.transferCollateralGainToTrove.bind(kumo.send, "", asset)
   );
 
   return (
