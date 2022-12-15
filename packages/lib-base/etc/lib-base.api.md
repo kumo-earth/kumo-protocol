@@ -287,6 +287,7 @@ export interface KumoStoreBaseState {
     kumoBalance: Decimal;
     kumoStake: KUMOStake;
     kusdBalance: Decimal;
+    kusdToken: string;
     liquidityMiningKUMOReward: Decimal;
     liquidityMiningStake: Decimal;
     ownFrontend: FrontendStatus;
@@ -825,6 +826,8 @@ export class Vault {
     readonly asset: string;
     // (undocumented)
     readonly assetAddress: string;
+    // (undocumented)
+    readonly assetName: string;
     // (undocumented)
     readonly borrowingRate: Decimal;
     // (undocumented)

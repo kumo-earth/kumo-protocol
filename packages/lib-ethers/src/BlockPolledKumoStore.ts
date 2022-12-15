@@ -92,13 +92,13 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
   private async _get(
     blockTag?: number
   ): Promise<[baseState: KumoStoreBaseState, extraState: BlockPolledKumoStoreExtraState]> {
-    const { userAddress, frontendTag, provider } = this.connection;
+    const { userAddress, frontendTag, provider, addresses : { kusdToken } } = this.connection;
     const asset = ASSET_TOKENS.ctx.assetAddress;
 
     const vaultState: Vault[] = [];
-
     Object.keys(ASSET_TOKENS).forEach(async assetToken => {
-      const { assetAddress, KUSD_MINTED_CAP, MIN_NET_DEBT } = ASSET_TOKENS[assetToken];
+      const { assetName, assetAddress, KUSD_MINTED_CAP, MIN_NET_DEBT } = ASSET_TOKENS[assetToken];
+
       const values = await promiseAllValues({
         blockTimestamp: this._readable._getBlockTimestamp(blockTag),
         _feesFactory: this._readable._getFeesFactory(assetAddress, { blockTag }),
@@ -180,6 +180,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
       };
       vaultState.push({
         asset: assetToken,
+        assetName,
         assetAddress,
         kusdMintedCap: KUSD_MINTED_CAP,
         minNetDebt: MIN_NET_DEBT,
@@ -274,6 +275,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
     return [
       {
         ...baseState,
+        kusdToken,
         vaults: [...vaultState],
         // _feesInNormalMode: _feesFactory(blockTimestamp, false),
         remainingLiquidityMiningKUMOReward: calculateRemainingKUMO(blockTimestamp)

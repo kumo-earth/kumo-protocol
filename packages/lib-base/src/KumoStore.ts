@@ -99,8 +99,11 @@ export interface KumoStoreBaseState {
   /** Total amount of KUMO currently staked. */
   totalStakedKUMO: Decimal;
 
-  /** Total amount of KUMO currently staked. */
+  /** Custom Vault Array for each Asset type */
   vaults: Vault[];
+
+  /** Custom Vault Array for each Asset type */
+  kusdToken: string;
 
   /** @internal */
   // _riskiestTroveBeforeRedistribution: TroveWithPendingRedistribution;
@@ -479,6 +482,13 @@ export abstract class KumoStore<T = unknown> {
         "totalStakedKUMO",
         baseState.totalStakedKUMO,
         baseStateUpdate.totalStakedKUMO
+      ),
+
+      kusdToken: this._updateIfChanged(
+        strictEquals,
+        "kusdToken",
+        baseState.kusdToken,
+        baseStateUpdate.kusdToken
       ),
 
       vaults: this._updateIfChanged(strictEquals, "vaults", baseState.vaults, baseStateUpdate.vaults)

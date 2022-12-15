@@ -166,9 +166,9 @@ class DeploymentHelper {
     testerContracts.functionCaller = await FunctionCaller.new()
     testerContracts.hintHelpers = await HintHelpers.new()
     testerContracts.kumoParameters = await KumoParameters.new()
-    testerContracts.erc20Asset1 = await ERC20Test.new()
+    testerContracts.erc20Asset1 = await ERC20Test.new("Carbon Token X", "CTX")
     Asset1Address = testerContracts.erc20Asset1.address
-    testerContracts.erc20Asset2 = await ERC20Test.new()
+    testerContracts.erc20Asset2 = await ERC20Test.new("Carbon Token Y", "CTY")
     Asset2Address = testerContracts.erc20Asset2.address
     testerContracts.stabilityPoolFactory = await StabilityPoolFactory.new()
 

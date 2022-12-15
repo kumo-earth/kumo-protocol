@@ -5,6 +5,7 @@ interface ASSET_TOKENS_TYPES<T> {
 }
 
 interface AssetType {
+  assetName: string,
   assetAddress: string;
   CRITICAL_COLLATERAL_RATIO: Decimal;
   MINIMUM_COLLATERAL_RATIO: Decimal;
@@ -16,14 +17,16 @@ interface AssetType {
  */
 export const ASSET_TOKENS: ASSET_TOKENS_TYPES<AssetType> = {
   ctx: {
-    assetAddress: "0x84A85A35AF520fC2884167Fc62Fb7605a454A102",
+    assetName: "Carbon Token X",
+    assetAddress: "0x213696b6F4d41178D3E7069BAc8fab6fAaD53BF2",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
     MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
     KUSD_MINTED_CAP: Decimal.from(15000000),
     MIN_NET_DEBT: Decimal.from(2000)
   },
   cty: {
-    assetAddress: "0xb0441e9262C2786db98a4A83bc5EF5Eb4A83aA17",
+    assetName: "Carbon Token Y",
+    assetAddress: "0x19027dcD6026AA3251505dc7Af262370Fc26Aa89",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
     MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
     KUSD_MINTED_CAP: Decimal.from(10000000),

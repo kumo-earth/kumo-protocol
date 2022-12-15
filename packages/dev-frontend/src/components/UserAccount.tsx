@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Flex, Box, Button } from "theme-ui";
 import { useWalletView } from "../components/WalletConnect/context/WalletViewContext";
 import { Web3Provider } from "@ethersproject/providers";
@@ -9,7 +9,7 @@ import { WalletModal } from "./WalletConnect/WalletModal";
 import { Tooltip } from "./Tooltip";
 import { SwitchNetworkModal } from "./SwitchNetwork/SwitchNetwork";
 import { useSwitchNetworkView } from "./SwitchNetwork/context/SwitchNetworkViewContext";
-
+import { AddAssetModal } from "./AddAssetModal";
 
 const style = {
   top: "45%",
@@ -24,10 +24,11 @@ const style = {
 };
 
 export const UserAccount: React.FC = () => {
+  const [showAssetModal, setShowAssetModal] = useState(false);
   const { deactivate, active } = useWeb3React<Web3Provider>();
   const dialog = useDialogState();
   const { view, showModal, dispatchEvent } = useWalletView();
-  const { showSwitchModal } = useSwitchNetworkView()
+  const { showSwitchModal } = useSwitchNetworkView();
   const { account } = useWeb3React();
 
   useEffect(() => {
@@ -59,9 +60,30 @@ export const UserAccount: React.FC = () => {
     <Box sx={{ display: ["none", "flex"] }}>
       <Flex sx={{ alignItems: "center" }}>
         {/* <Icon name="user-circle" size="lg" color="#a81f58"/> */}
-        <Flex sx={{ ml: 3, mr: 4, flexDirection: "column" }}>
+        <Flex sx={{ ml: 3, mr: 4 }}>
           {account ? (
             <>
+              {/* <Tooltip message={"Asset Tokens (CTX | CTY | KUSD)"}> */}
+              <Button
+                onClick={() => {
+                  setShowAssetModal(true);
+                  dialog.setVisible(true);
+                }}
+                sx={{
+                  py: 1,
+                  px: 2,
+                  mr: 2,
+
+                  backgroundColor: "primary",
+                  borderRadius: "8px",
+                  fontSize: 1,
+                  outline: "none"
+                }}
+              >
+                {" "}
+                User Asset Tokens
+              </Button>
+              {/* </Tooltip> */}
               <Tooltip message={account}>
                 <Button
                   onClick={() => {
@@ -110,14 +132,20 @@ export const UserAccount: React.FC = () => {
           </Box>
         </Dialog>
       )}
-       {showSwitchModal && (
+      {showSwitchModal && (
         <Dialog {...dialog} hideOnClickOutside={false}>
           <Box sx={{ ...style, position: "absolute" }}>
             <SwitchNetworkModal />
           </Box>
         </Dialog>
       )}
-     
+      {showAssetModal && (
+        <Dialog {...dialog} hideOnClickOutside={false}>
+          <Box sx={{ ...style, position: "absolute" }}>
+            <AddAssetModal onClose={() => setShowAssetModal(false)} />
+          </Box>
+        </Dialog>
+      )}
     </Box>
   );
 };

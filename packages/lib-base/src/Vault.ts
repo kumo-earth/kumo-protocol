@@ -12,6 +12,7 @@ import { Trove, TroveWithPendingRedistribution, UserTrove } from "./Trove";
 export class Vault {
   readonly asset: string;
   readonly assetAddress: string;
+  readonly assetName: string;
   readonly numberOfTroves: number;
   readonly totalRedistributed: Trove;
   readonly total: Trove;
@@ -35,6 +36,7 @@ export class Vault {
   constructor() {
     this.asset = "";
     this.assetAddress = "";
+    this.assetName = "",
     this.numberOfTroves = 0;
     this.totalRedistributed = new Trove();
     this.total = new Trove();
