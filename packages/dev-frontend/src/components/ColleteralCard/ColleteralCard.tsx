@@ -105,7 +105,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             Borrowing Rate
           </Text>
           <Text as="p" variant="normalBold">
-            {`${borrowingRate.mul(100).prettify(1)}%`}
+            {`${borrowingRate.mul(100).prettify(2)}%`}
           </Text>
         </Flex>
       </Box>

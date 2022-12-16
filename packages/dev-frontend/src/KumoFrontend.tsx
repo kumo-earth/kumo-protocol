@@ -61,7 +61,7 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
             <StabilityViewProvider>
               <StakingViewProvider>
                 <FarmViewProvider>
-                  <DomainSafetyBanner />
+                  {/* <DomainSafetyBanner /> */}
                   <Flex variant="layout.app" sx={{ backgroundImage: `url(${appBackground})` }}>
                     <Sidebar />
                     <Flex
