@@ -420,7 +420,9 @@ const addMockAssetsToSystem = async (
 
 // Mint token to each acccount
 const mintMockAssets = async (signers: SignerWithAddress[], { mockAsset1, mockAsset2 }: _KumoContracts) => {
-  for (let i = 0; i < signers.length; ++i) {
+  await mockAsset1.mint((await signers[0].getAddress()), BigNumber.from("10000000000000000000000000000"));
+  await mockAsset2.mint((await signers[0].getAddress()), BigNumber.from("10000000000000000000000000000"));
+  for (let i = 1; i < signers.length; ++i) {
     await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000000"))
     await mockAsset2.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000000"))
   }

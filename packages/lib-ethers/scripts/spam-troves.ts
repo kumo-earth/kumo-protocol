@@ -42,10 +42,10 @@ const BatchedWebSocketAugmentedJsonRpcProvider = Batched(WebSocketAugmented(Json
 
 Object.assign(globalThis, { WebSocket });
 
-const numberOfTrovesToCreate = 50;
+const numberOfTrovesToCreate = 25;
 const collateralRatioStart = Decimal.from(2);
 const collateralRatioStep = Decimal.from(1e-6);
-const funderKey = "0xeaa445c85f7b438dEd6e831d06a4eD0CEBDc2f8527f84Fcda6EBB5fCfAd4C0e9";
+const funderKey = "0x60ddFE7f579aB6867cbE7A2Dc03853dC141d7A4aB6DBEFc0Dae2d2B1Bd4e487F";
 
 let provider: BatchedProvider & WebSocketAugmentedProvider & JsonRpcProvider;
 let funder: Wallet;
