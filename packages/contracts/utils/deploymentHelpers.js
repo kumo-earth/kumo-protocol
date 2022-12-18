@@ -492,5 +492,9 @@ class DeploymentHelper {
     await contracts.troveManager.addNewAsset(asset)
     await contracts.sortedTroves.addNewAsset(asset)
   }
+
+  static async deployERC20Asset() {
+    return await ERC20Test.new();
+  }
 }
 module.exports = DeploymentHelper

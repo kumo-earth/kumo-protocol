@@ -195,6 +195,9 @@
 //     function _getNetKUSDAmount(address _asset, uint256 _collateral) internal returns (uint256) {
 //         uint256 price = priceFeed.fetchPrice();
 //         uint256 ICR = troveManager.getCurrentICR(_asset, address(this), price);
+    function _getNetKUSDAmount(address _asset, uint256 _collateral) internal returns (uint256) {
+        uint256 price = priceFeed.fetchPrice(_asset);
+        uint256 ICR = troveManager.getCurrentICR(_asset, address(this), price);
 
 //         uint256 KUSDAmount = _collateral.mul(price).div(ICR);
 //         uint256 borrowingRate = troveManager.getBorrowingRateWithDecay(_asset);

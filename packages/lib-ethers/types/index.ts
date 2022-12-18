@@ -576,37 +576,37 @@ interface PriceFeedCalls {
 }
 
 interface PriceFeedTransactions {
-  fetchPrice(_overrides?: Overrides): Promise<BigNumber>;
+  fetchPrice(_asset: string, _overrides?: Overrides): Promise<BigNumber>;
   setAddresses(_priceAggregatorAddress: string, _tellorCallerAddress: string, _overrides?: Overrides): Promise<void>;
 }
 
 export interface PriceFeed
   extends _TypedKumoContract<PriceFeedCalls, PriceFeedTransactions> {
   readonly filters: {
-    LastGoodPriceUpdated(_lastGoodPrice?: null): EventFilter;
+    LastGoodPriceUpdated(_asset?: null, _lastGoodPrice?: null): EventFilter;
     OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
     PriceFeedStatusChanged(newStatus?: null): EventFilter;
   };
-  extractEvents(logs: Log[], name: "LastGoodPriceUpdated"): _TypedLogDescription<{ _lastGoodPrice: BigNumber }>[];
+  extractEvents(logs: Log[], name: "LastGoodPriceUpdated"): _TypedLogDescription<{ _asset: string; _lastGoodPrice: BigNumber }>[];
   extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
   extractEvents(logs: Log[], name: "PriceFeedStatusChanged"): _TypedLogDescription<{ newStatus: number }>[];
 }
 
 interface PriceFeedTestnetCalls {
-  getPrice(_overrides?: CallOverrides): Promise<BigNumber>;
+  getPrice(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
 }
 
 interface PriceFeedTestnetTransactions {
-  fetchPrice(_overrides?: Overrides): Promise<BigNumber>;
-  setPrice(price: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  fetchPrice(_asset: string, _overrides?: Overrides): Promise<BigNumber>;
+  setPrice(_asset: string, _price: BigNumberish, _overrides?: Overrides): Promise<boolean>;
 }
 
 export interface PriceFeedTestnet
   extends _TypedKumoContract<PriceFeedTestnetCalls, PriceFeedTestnetTransactions> {
   readonly filters: {
-    LastGoodPriceUpdated(_lastGoodPrice?: null): EventFilter;
+    LastGoodPriceUpdated(_asset?: null, _lastGoodPrice?: null): EventFilter;
   };
-  extractEvents(logs: Log[], name: "LastGoodPriceUpdated"): _TypedLogDescription<{ _lastGoodPrice: BigNumber }>[];
+  extractEvents(logs: Log[], name: "LastGoodPriceUpdated"): _TypedLogDescription<{ _asset: string; _lastGoodPrice: BigNumber }>[];
 }
 
 interface SortedTrovesCalls {

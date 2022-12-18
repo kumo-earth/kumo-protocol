@@ -187,7 +187,10 @@ export interface SendableKumo<R = unknown, S = unknown>
   ): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
 
   /** @internal */
-  setPrice(price: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
+  setPrice(
+    asset: string,
+    price: Decimalish
+  ): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
 
   /** {@inheritDoc TransactableKumo.liquidate} */
   liquidate(

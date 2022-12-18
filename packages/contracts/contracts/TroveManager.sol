@@ -624,7 +624,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
         LiquidationTotals memory totals;
 
-        vars.price = kumoParams.priceFeed().fetchPrice();
+        vars.price = kumoParams.priceFeed().fetchPrice(_asset);
         vars.KUSDInStabPool = stabilityPoolCached.getTotalKUSDDeposits();
         vars.recoveryModeAtStart = _checkRecoveryMode(_asset, vars.price);
 
@@ -839,7 +839,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         LocalVariables_OuterLiquidationFunction memory vars;
         LiquidationTotals memory totals;
 
-        vars.price = kumoParams.priceFeed().fetchPrice();
+        vars.price = kumoParams.priceFeed().fetchPrice(_asset);
         vars.KUSDInStabPool = stabilityPoolCached.getTotalKUSDDeposits();
         vars.recoveryModeAtStart = _checkRecoveryMode(_asset, vars.price);
 
@@ -1287,7 +1287,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
         _requireValidMaxFeePercentage(_asset, _maxFeePercentage);
         _requireAfterBootstrapPeriod();
-        totals.price = kumoParams.priceFeed().fetchPrice();
+        totals.price = kumoParams.priceFeed().fetchPrice(_asset);
         _requireTCRoverMCR(_asset, totals.price);
         _requireAmountGreaterThanZero(_KUSDamount);
         _requireKUSDBalanceCoversRedemption(contractsCache.kusdToken, msg.sender, _KUSDamount);

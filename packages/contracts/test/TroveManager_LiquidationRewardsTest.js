@@ -87,7 +87,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: B_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(210, 16)), extraParams: { from: bob } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Confirm not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
@@ -98,14 +98,14 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, bob))
 
     // Price bounces back to 200 $/E
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
     // C, D open troves
     const { collateral: C_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(400, 16)), extraParams: { from: carol } })
     const { collateral: D_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(210, 16)), extraParams: { from: dennis } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Confirm not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
@@ -151,7 +151,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: C_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(210, 16)), extraParams: { from: carol } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Confirm not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
@@ -162,7 +162,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, carol))
 
     // Price bounces back to 200 $/E
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
     // D, E, F open troves
     const { collateral: D_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(400, 16)), extraParams: { from: dennis } })
@@ -170,7 +170,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: F_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(210, 16)), extraParams: { from: freddy } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Confirm not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
@@ -233,7 +233,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: B_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(400, 16)), extraParams: { from: bob } })
 
     // Price drops to 1 $/E
-    await priceFeed.setPrice(dec(1, 18))
+    await priceFeed.setPrice(assetAddress1, dec(1, 18))
 
     // L1: A liquidated
     const txA = await troveManager.liquidate(assetAddress1, alice)
@@ -241,12 +241,12 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, alice))
 
     // Price bounces back to 200 $/E
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
     // C, opens trove
     const { collateral: C_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(210, 16)), extraParams: { from: carol } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(1, 18))
+    await priceFeed.setPrice(assetAddress1, dec(1, 18))
 
     // L2: B Liquidated
     const txB = await troveManager.liquidate(assetAddress1, bob)
@@ -254,12 +254,12 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, bob))
 
     // Price bounces back to 200 $/E
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
     // D opens trove
     const { collateral: D_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(210, 16)), extraParams: { from: dennis } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(1, 18))
+    await priceFeed.setPrice(assetAddress1, dec(1, 18))
 
     // L3: C Liquidated
     const txC = await troveManager.liquidate(assetAddress1, carol)
@@ -267,12 +267,12 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, carol))
 
     // Price bounces back to 200 $/E
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
     // E opens trove
     const { collateral: E_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(210, 16)), extraParams: { from: erin } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(1, 18))
+    await priceFeed.setPrice(assetAddress1, dec(1, 18))
 
     // L4: D Liquidated
     const txD = await troveManager.liquidate(assetAddress1, dennis)
@@ -280,12 +280,12 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, dennis))
 
     // Price bounces back to 200 $/E
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
     // F opens trove
     const { collateral: F_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(210, 16)), extraParams: { from: freddy } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(1, 18))
+    await priceFeed.setPrice(assetAddress1, dec(1, 18))
 
     // L5: E Liquidated
     const txE = await troveManager.liquidate(assetAddress1, erin)
@@ -353,7 +353,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: E_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100000, 18), extraParams: { from: E } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate A
     // console.log(`ICR A: ${await troveManager.getCurrentICR(A, price)}`)
@@ -432,7 +432,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: E_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100000, 18), extraParams: { from: E } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Check entireColl for each trove:
     const A_entireColl_0 = (await th.getEntireCollAndDebt(contracts, assetAddress1, A)).entireColl
@@ -548,7 +548,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: C_coll, totalDebt: C_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(110, 18), extraParams: { from: carol } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate Carol
     const txC = await troveManager.liquidate(assetAddress1, carol)
@@ -556,7 +556,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, carol))
 
     // Price bounces back to 200 $/E
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
     //Bob adds ETH to his trove
     const addedColl = toBN(dec(1, 'ether'))
@@ -566,7 +566,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     await borrowerOperations.withdrawKUSD(assetAddress1, th._100pct, await getNetBorrowingAmount(A_totalDebt, assetAddress1), alice, alice, { from: alice })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate Alice
     const txA = await troveManager.liquidate(assetAddress1, alice)
@@ -598,7 +598,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: C_coll, totalDebt: C_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(110, 18), extraParams: { from: carol } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate Carol
     const txC = await troveManager.liquidate(assetAddress1, carol)
@@ -606,7 +606,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, carol))
 
     // Price bounces back to 200 $/E
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
     //Bob adds ETH to his trove
     const addedColl = toBN(dec(1, 'ether'))
@@ -616,7 +616,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: D_coll, totalDebt: D_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(110, 18), extraParams: { from: dennis } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate D
     const txA = await troveManager.liquidate(assetAddress1, dennis)
@@ -686,7 +686,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: D_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), tokenAmount: dec(1000, 'ether'), extraKUSDAmount: dec(110, 18), extraParams: { from: dennis } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate Dennis
     const txD = await troveManager.liquidate(assetAddress1, dennis)
@@ -694,7 +694,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, dennis))
 
     // Price bounces back to 200 $/E
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
     // Expected rewards:  alice: 1 ETH, bob: 1 ETH, carol: 998 ETH
     const alice_ETHReward_1 = await troveManager.getPendingReward(assetAddress1, alice)
@@ -722,7 +722,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: E_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraParams: { from: erin, value: entireSystemColl_2 } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate Erin
     const txE = await troveManager.liquidate(assetAddress1, erin)
@@ -784,7 +784,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: D_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), tokenAmount: dec(1000, 'ether'), extraKUSDAmount: dec(110, 18), extraParams: { from: dennis } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate Dennis
     const txD = await troveManager.liquidate(assetAddress1, dennis)
@@ -792,7 +792,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, dennis))
 
     // Price bounces back to 200 $/E
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
     // Expected rewards:  alice: 1 ETH, bob: 1 ETH, carol: 998 ETH (*0.995)
     const alice_ETHReward_1 = await troveManager.getPendingReward(assetAddress1, alice)
@@ -824,7 +824,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: E_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraParams: { from: erin, value: entireSystemColl_2 } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate Erin
     const txE = await troveManager.liquidate(assetAddress1, erin)
@@ -886,7 +886,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: C_coll, totalDebt: C_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(110, 18), extraParams: { from: carol } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate Carol
     const txC = await troveManager.liquidate(assetAddress1, carol)
@@ -894,7 +894,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, carol))
 
     // Price bounces back to 200 $/E
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
     //Bob withdraws 0.5 ETH from his trove
     const withdrawnColl = toBN(dec(500, 'finney'))
@@ -904,7 +904,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     await borrowerOperations.withdrawKUSD(assetAddress1, th._100pct, await getNetBorrowingAmount(A_totalDebt, assetAddress1), alice, alice, { from: alice })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate Alice
     const txA = await troveManager.liquidate(assetAddress1, alice)
@@ -940,7 +940,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: C_coll, totalDebt: C_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(110, 18), extraParams: { from: carol } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate Carol
     const txC = await troveManager.liquidate(assetAddress1, carol)
@@ -948,7 +948,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, carol))
 
     // Price bounces back to 200 $/E
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
     //Bob  withdraws 0.5 ETH from his trove
     const withdrawnColl = toBN(dec(500, 'finney'))
@@ -958,7 +958,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: D_coll, totalDebt: D_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(110, 18), extraParams: { from: dennis } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate D
     const txA = await troveManager.liquidate(assetAddress1, dennis)
@@ -1033,7 +1033,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: D_coll } = await openTrove({ asset: assetAddress1, tokenAmount: dec(1000, 'ether'), ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(110, 18), extraParams: { from: dennis } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate Dennis
     const txD = await troveManager.liquidate(assetAddress1, dennis)
@@ -1041,7 +1041,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, dennis))
 
     // Price bounces back to 200 $/E
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
     // Expected rewards:  alice: 1 ETH, bob: 1 ETH, carol: 998 ETH (*0.995)
     const alice_ETHReward_1 = await troveManager.getPendingReward(assetAddress1, alice)
@@ -1069,7 +1069,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: E_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraParams: { from: erin, value: entireSystemColl_2 } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate Erin
     const txE = await troveManager.liquidate(assetAddress1, erin)
@@ -1131,7 +1131,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: D_coll } = await openTrove({ asset: assetAddress1, tokenAmount: dec(1000, 'ether'), ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(110, 18), extraParams: { from: dennis } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate Dennis
     const txD = await troveManager.liquidate(assetAddress1, dennis)
@@ -1139,7 +1139,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, dennis))
 
     // Price bounces back to 200 $/E
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
     // Expected rewards:  alice: 1 ETH, bob: 1 ETH, carol: 998 ETH (*0.995)
     const alice_ETHReward_1 = await troveManager.getPendingReward(assetAddress1, alice)
@@ -1187,7 +1187,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: E_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraParams: { from: erin, value: entireSystemColl_2 } })
 
     // Price drops to 100 $/E
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Liquidate Erin
     const txE = await troveManager.liquidate(assetAddress1, erin)
@@ -1249,7 +1249,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: C_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100, 18), extraParams: { from: carol } })
 
     // Price drops to 1 $/E
-    await priceFeed.setPrice(dec(1, 18))
+    await priceFeed.setPrice(assetAddress1, dec(1, 18))
 
     // Liquidate A
     const txA = await troveManager.liquidate(assetAddress1, alice)
@@ -1268,7 +1268,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     th.assertIsApproximatelyEqual(await troveManager.totalCollateralSnapshot(assetAddress1), totalCollateralSnapshotAfterL1)
 
     // Price rises to 1000
-    await priceFeed.setPrice(dec(1000, 18))
+    await priceFeed.setPrice(assetAddress1, dec(1000, 18))
 
     // D opens trove
     const { collateral: D_coll, totalDebt: D_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(110, 18), extraParams: { from: dennis } })
@@ -1285,7 +1285,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const C_collAfterL1 = C_coll.add(C_pendingRewardsAfterL1).sub(C_withdrawnColl)
 
     // Price drops
-    await priceFeed.setPrice(dec(1, 18))
+    await priceFeed.setPrice(assetAddress1, dec(1, 18))
 
     // Liquidate B
     const txB = await troveManager.liquidate(assetAddress1, bob)
@@ -1305,7 +1305,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     th.assertIsApproximatelyEqual(await troveManager.totalCollateralSnapshot(assetAddress1), totalCollateralSnapshotAfterL2)
 
     // Price rises to 1000
-    await priceFeed.setPrice(dec(1000, 18))
+    await priceFeed.setPrice(assetAddress1, dec(1000, 18))
 
     // E and F open troves
     const { collateral: E_coll, totalDebt: E_totalDebt } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(110, 18), extraParams: { from: erin } })
@@ -1316,7 +1316,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     await borrowerOperations.addColl(assetAddress1, D_addedColl, dennis, dennis, { from: dennis })
 
     // Price drops to 1
-    await priceFeed.setPrice(dec(1, 18))
+    await priceFeed.setPrice(assetAddress1, dec(1, 18))
 
     // Liquidate F
     const txF = await troveManager.liquidate(assetAddress1, freddy)
@@ -1381,7 +1381,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: C_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(4600, 16)), extraParams: { from: carol, value: toBN('23902000000000000000') } })
 
     // Price drops
-    await priceFeed.setPrice('1')
+    await priceFeed.setPrice(assetAddress1, '1')
 
     // Liquidate A
     const txA = await troveManager.liquidate(assetAddress1, alice)
@@ -1400,7 +1400,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     th.assertIsApproximatelyEqual(await troveManager.totalCollateralSnapshot(assetAddress1), totalCollateralSnapshotAfterL1)
 
     // Price rises
-    await priceFeed.setPrice(dec(1, 27))
+    await priceFeed.setPrice(assetAddress1, dec(1, 27))
 
     // D opens trove: 0.035 ETH
     const { collateral: D_coll, totalDebt: D_totalDebt } = await openTrove({ asset: assetAddress1, extraKUSDAmount: dec(100, 18), extraParams: { from: dennis, value: toBN(dec(35, 15)) } })
@@ -1417,7 +1417,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const C_collAfterL1 = C_coll.add(C_pendingRewardsAfterL1).sub(C_withdrawnColl)
 
     // Price drops
-    await priceFeed.setPrice('1')
+    await priceFeed.setPrice(assetAddress1, '1')
 
     // Liquidate B
     const txB = await troveManager.liquidate(assetAddress1, bob)
@@ -1438,7 +1438,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     th.assertIsApproximatelyEqual(await troveManager.totalCollateralSnapshot(assetAddress1), totalCollateralSnapshotAfterL2)
 
     // Price rises
-    await priceFeed.setPrice(dec(1, 27))
+    await priceFeed.setPrice(assetAddress1, dec(1, 27))
 
     /* E and F open troves.
     E: 10000 ETH
@@ -1454,7 +1454,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const D_collAfterL2 = D_coll.add(D_pendingRewardsAfterL2).add(D_addedColl)
 
     // Price drops 
-    await priceFeed.setPrice('1')
+    await priceFeed.setPrice(assetAddress1, '1')
 
     // Liquidate F
     const txF = await troveManager.liquidate(assetAddress1, freddy)

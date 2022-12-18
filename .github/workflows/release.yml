@@ -4,16 +4,28 @@ env:
   CI: true
   FORCE_COLOR: true
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [ push, pull_request ]
 
 jobs:
-  release:
+  workflow-setup:
+    name: Initialize Workflow
     runs-on: ubuntu-latest
+    outputs: 
+      publish: ${{ steps.build-flags.outputs.publish }}
+    steps:
+      - name: Set builds flags
+        id: build-flags
+        run: |
+          if [[ ${{github.event.repository.full_name}} == 'kumodao/kumo-protocol' && ${{github.event_name}} == 'push' && ( "${{github.base_ref}}" == 'main' || "${{github.ref}}" == 'refs/heads/main' ) ]]; then
+            echo "{publish}={true}" >> $GITHUB_OUTPUT
+          else
+            echo "{publish}={false}" >> $GITHUB_OUTPUT
+          fi
 
+  test:
+    name: Run SDK tests
+    runs-on: ubuntu-latest
+    needs: workflow-setup
     steps:
       - uses: actions/checkout@v3
 
@@ -34,8 +46,25 @@ jobs:
       #   if: ${{ github.ref == 'refs/heads/main' }}
       #   run: yarn test-live
 
+  release:
+    name: Publish SDK to NPM and build Frontend image
+    if: needs.workflow-setup.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    needs: [ workflow-setup, test ]
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-node@v3
+        env:
+          FORCE_COLOR: 0
+        with:
+          node-version: 16.16.0
+          cache: 'yarn'
+
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+
       - name: Release SDK on NPM
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

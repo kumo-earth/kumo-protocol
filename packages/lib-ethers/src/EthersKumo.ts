@@ -182,8 +182,8 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getPrice} */
-  getPrice(overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._readable.getPrice(overrides);
+  getPrice(asset: string, overrides?: EthersCallOverrides): Promise<Decimal> {
+    return this._readable.getPrice(asset, overrides);
   }
 
   /** @internal */
@@ -454,8 +454,8 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /** @internal */
-  setPrice(price: Decimalish, overrides?: EthersTransactionOverrides): Promise<void> {
-    return this.send.setPrice(price, overrides).then(waitForSuccess);
+  setPrice(asset: string, price: Decimalish, overrides?: EthersTransactionOverrides): Promise<void> {
+    return this.send.setPrice(asset, price, overrides).then(waitForSuccess);
   }
 
   /**

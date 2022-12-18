@@ -116,11 +116,7 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(4, 18)), extraParams: { from: alice } })
 
-    await openTrove({ asset: assetAddress2, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
-    await openTrove({ asset: assetAddress2, ICR: toBN(dec(4, 18)), extraParams: { from: alice } })
-
-
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     const ICR_Before_Asset1 = await troveManager.getCurrentICR(assetAddress1, alice, price)
     assert.equal(ICR_Before_Asset1.toString(), dec(4, 18))
 
@@ -148,7 +144,7 @@ contract('TroveManager', async accounts => {
     assert.isAtMost(th.getDifference(ICR_AfterWithdrawal_Asset2, targetICR_Asset2), 100)
 
     // price drops to 1Asset1:100KUSD, reducing Alice's ICR below MCR
-    await priceFeed.setPrice('100000000000000000000');
+    await priceFeed.setPrice(assetAddress1, '100000000000000000000');
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));
@@ -184,7 +180,7 @@ contract('TroveManager', async accounts => {
     th.assertIsApproximatelyEqual(activePool_KUSDDebt_Before_Asset1, A_totalDebt_Asset1.add(B_totalDebt_Asset1))
 
     // price drops to 1Asset1:100KUSD, reducing Bob's ICR below MCR
-    await priceFeed.setPrice('100000000000000000000');
+    await priceFeed.setPrice(assetAddress1, '100000000000000000000');
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -220,7 +216,7 @@ contract('TroveManager', async accounts => {
     assert.equal(defaultPool_KUSDDebt_Before_Asset1, '0')
 
     // price drops to 1Asset1:100KUSD, reducing Bob's ICR below MCR
-    await priceFeed.setPrice('100000000000000000000');
+    await priceFeed.setPrice(assetAddress1, '100000000000000000000');
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -251,7 +247,7 @@ contract('TroveManager', async accounts => {
     assert.equal(totalStakes_Before, A_collateral_Asset1.add(B_collateral_Asset1))
 
     // price drops to 1Asset1:100KUSD, reducing Bob's ICR below MCR
-    await priceFeed.setPrice('100000000000000000000');
+    await priceFeed.setPrice(assetAddress1, '100000000000000000000');
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -278,7 +274,7 @@ contract('TroveManager', async accounts => {
     // At this stage, TroveOwners array should be: [W, A, B, C, D, E] 
 
     // Drop price
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     const arrayLength_Before = await troveManager.getTroveOwnersCount(assetAddress1)
     assert.equal(arrayLength_Before, 6)
@@ -344,7 +340,7 @@ contract('TroveManager', async accounts => {
     assert.equal(totalCollateralSnapshot_Before, '0')
 
     // price drops to 1Asset1:100KUSD, reducing Bob's ICR below MCR
-    await priceFeed.setPrice('100000000000000000000');
+    await priceFeed.setPrice(assetAddress1, '100000000000000000000');
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -373,7 +369,7 @@ contract('TroveManager', async accounts => {
     // --- TEST ---
 
     // price drops to 1Asset1:100KUSD, reducing Carols's ICR below MCR
-    await priceFeed.setPrice('100000000000000000000');
+    await priceFeed.setPrice(assetAddress1, '100000000000000000000');
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -399,8 +395,8 @@ contract('TroveManager', async accounts => {
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
 
     // price drops to 1ETH:50KUSD, reducing Bob's ICR below MCR
-    await priceFeed.setPrice(dec(50, 18));
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(50, 18));
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // close Bob's Trove 
     assert.isTrue(await sortedTroves.contains(assetAddress1, bob))
@@ -437,8 +433,8 @@ contract('TroveManager', async accounts => {
     await stabilityPoolAsset1.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: alice })
 
     // Set ETH:USD price to 105
-    await priceFeed.setPrice('105000000000000000000')
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, '105000000000000000000')
+    const price = await priceFeed.getPrice(assetAddress1)
 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),)
 
@@ -495,7 +491,7 @@ contract('TroveManager', async accounts => {
     assert.isTrue(await sortedTroves.contains(assetAddress1, carol))
 
     // price drops, Carol ICR falls below MCR
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Carol liquidated, and her trove is closed
     const txCarol_L1 = await troveManager.liquidate(assetAddress1, carol)
@@ -525,7 +521,7 @@ contract('TroveManager', async accounts => {
     const TCR_Before = (await th.getTCR(contracts, assetAddress1)).toString()
     const listSize_Before = (await sortedTroves.getSize(assetAddress1)).toString()
 
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // Check Bob's ICR > 110%
     const bob_ICR = await troveManager.getCurrentICR(assetAddress1, bob, price)
@@ -572,7 +568,7 @@ contract('TroveManager', async accounts => {
     assert.isTrue((await sortedTroves.contains(assetAddress1, defaulter_4)))
 
     // Price drop
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -591,7 +587,7 @@ contract('TroveManager', async accounts => {
     assert.isFalse((await sortedTroves.contains(assetAddress1, defaulter_4)))
 
     // Price bounces back
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
     const TCR_After = (await th.getTCR(contracts, assetAddress1)).toString()
     assert.equal(TCR_Before, TCR_After)
@@ -618,7 +614,7 @@ contract('TroveManager', async accounts => {
     assert.isTrue((await sortedTroves.contains(assetAddress1, defaulter_3)))
     assert.isTrue((await sortedTroves.contains(assetAddress1, defaulter_4)))
 
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     const TCR_1 = await th.getTCR(contracts, assetAddress1)
 
@@ -665,8 +661,8 @@ contract('TroveManager', async accounts => {
     assert.isTrue((await sortedTroves.contains(assetAddress1, defaulter_3)))
     assert.isTrue((await sortedTroves.contains(assetAddress1, defaulter_4)))
 
-    await priceFeed.setPrice(dec(100, 18))
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
+    const price = await priceFeed.getPrice(assetAddress1)
 
     const TCR_0 = await th.getTCR(contracts, assetAddress1)
 
@@ -756,7 +752,7 @@ contract('TroveManager', async accounts => {
     await stabilityPoolAsset1.provideToSP(spDeposit, ZERO_ADDRESS, { from: dennis })
 
     // Carol gets liquidated
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
     const liquidationTX_C = await troveManager.liquidate(assetAddress1, carol)
     const [liquidatedDebt, liquidatedColl, gasComp] = th.getEmittedLiquidationValues(liquidationTX_C)
 
@@ -796,14 +792,14 @@ contract('TroveManager', async accounts => {
     await stabilityPoolAsset1.provideToSP(spDeposit, ZERO_ADDRESS, { from: bob })
 
     // Carol gets liquidated
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
     const liquidationTX_C = await troveManager.liquidate(assetAddress1, carol)
     const [liquidatedDebt, liquidatedColl, gasComp] = th.getEmittedLiquidationValues(liquidationTX_C)
     assert.isFalse(await sortedTroves.contains(assetAddress1, carol))
 
     // price bounces back - Bob's trove is >110% ICR again
-    await priceFeed.setPrice(dec(200, 18))
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.isTrue((await troveManager.getCurrentICR(assetAddress1, bob, price)).gt(mv._MCR))
 
     // Check Bob' SP deposit has absorbed Carol's debt, and he has received her liquidated ETH
@@ -840,7 +836,7 @@ contract('TroveManager', async accounts => {
     await stabilityPoolAsset1.provideToSP(B_spDeposit, ZERO_ADDRESS, { from: bob })
 
     // Carol gets liquidated
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
     await troveManager.liquidate(assetAddress1, carol)
 
     // Check Bob' SP deposit has absorbed Carol's debt, and he has received her liquidated ETH
@@ -891,7 +887,7 @@ contract('TroveManager', async accounts => {
     const { kusdAmount: B_kusdAmount } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraKUSDAmount: toBN(dec(200, 18)), extraParams: { from: bob } })
     const { kusdAmount: C_kusdAmount } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraKUSDAmount: toBN(dec(100, 18)), extraParams: { from: carol } })
 
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Check sortedList size
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), '4')
@@ -936,8 +932,8 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
     // Price drops
-    await priceFeed.setPrice(dec(100, 18))
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
+    const price = await priceFeed.getPrice(assetAddress1)
 
     const alice_ICR_Before = await troveManager.getCurrentICR(assetAddress1, alice, price)
     const bob_ICR_Before = await troveManager.getCurrentICR(assetAddress1, bob, price)
@@ -1037,8 +1033,8 @@ contract('TroveManager', async accounts => {
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
     // Price drops to 1Asset1:100KUSD, reducing defaulters to below MCR
-    await priceFeed.setPrice(dec(100, 18));
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18));
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),)
 
     // Liquidate trove
@@ -1079,8 +1075,8 @@ contract('TroveManager', async accounts => {
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
     // Price drops to 1Asset1:100KUSD, reducing defaulters to below MCR
-    await priceFeed.setPrice(dec(100, 18));
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18));
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),)
 
     // liquidate trove
@@ -1104,8 +1100,8 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(3, 18)), extraParams: { from: C } })
 
     // Price drops
-    await priceFeed.setPrice(dec(175, 18))
-    let price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(175, 18))
+    let price = await priceFeed.getPrice(assetAddress1)
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),)
@@ -1119,8 +1115,8 @@ contract('TroveManager', async accounts => {
     await stabilityPoolAsset1.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: A })
 
     // Price drops
-    await priceFeed.setPrice(dec(100, 18))
-    price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
+    price = await priceFeed.getPrice(assetAddress1)
     // Confirm system is now in Recovery Mode
     assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1),)
 
@@ -1166,7 +1162,7 @@ contract('TroveManager', async accounts => {
     await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: D })
     await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: E })
 
-    await priceFeed.setPrice(dec(50, 18))
+    await priceFeed.setPrice(assetAddress1, dec(50, 18))
 
     // Try to liquidate C again. Check it succeeds and closes C's trove
     const liqTx2 = await troveManager.liquidateTroves(assetAddress1, 2)
@@ -1199,8 +1195,8 @@ contract('TroveManager', async accounts => {
     // --- TEST ---
 
     // Price drops to 1Asset1:100KUSD, reducing Bob and Carol's ICR below MCR
-    await priceFeed.setPrice(dec(100, 18));
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18));
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -1255,7 +1251,7 @@ contract('TroveManager', async accounts => {
     // --- TEST ---
 
     // Price drops
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -1305,8 +1301,8 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(222, 16)), extraParams: { from: carol } })
 
     // Price drops, but all troves remain active at 111% ICR
-    await priceFeed.setPrice(dec(100, 18))
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
+    const price = await priceFeed.getPrice(assetAddress1)
 
     assert.isTrue((await sortedTroves.contains(assetAddress1, whale)))
     assert.isTrue((await sortedTroves.contains(assetAddress1, alice)))
@@ -1348,8 +1344,8 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraParams: { from: defaulter_1 } })
 
     // Price drops
-    await priceFeed.setPrice(dec(100, 18))
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
+    const price = await priceFeed.getPrice(assetAddress1)
 
     const alice_ICR_Before = await troveManager.getCurrentICR(assetAddress1, alice, price)
     const bob_ICR_Before = await troveManager.getCurrentICR(assetAddress1, bob, price)
@@ -1416,8 +1412,8 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(218, 16)), extraParams: { from: bob } })
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(206, 16)), extraParams: { from: carol } })
 
-    await priceFeed.setPrice(dec(100, 18))
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
+    const price = await priceFeed.getPrice(assetAddress1)
 
     const TCR_Before = (await th.getTCR(contracts, assetAddress1)).toString()
 
@@ -1464,8 +1460,8 @@ contract('TroveManager', async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), '7')
 
     // Price drops
-    await priceFeed.setPrice(dec(100, 18))
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
+    const price = await priceFeed.getPrice(assetAddress1)
 
     const alice_ICR = await troveManager.getCurrentICR(assetAddress1, alice, price)
     const bob_ICR = await troveManager.getCurrentICR(assetAddress1, bob, price)
@@ -1521,8 +1517,8 @@ contract('TroveManager', async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), '4')
 
     // Price drops
-    await priceFeed.setPrice(dec(100, 18))
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -1570,7 +1566,7 @@ contract('TroveManager', async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), '9')
 
     // Price drops
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     const TCR_Before = await th.getTCR(contracts, assetAddress1)
 
@@ -1626,7 +1622,7 @@ contract('TroveManager', async accounts => {
 
     // Price drops
     const price = toBN(dec(100, 18))
-    await priceFeed.setPrice(price)
+    await priceFeed.setPrice(assetAddress1, price)
 
     const TCR_Before = await th.getTCR(contracts, assetAddress1)
     assert.isAtMost(th.getDifference(TCR_Before, totalColl.mul(price).div(totalDebt)), 1000)
@@ -1679,7 +1675,7 @@ contract('TroveManager', async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), '4')
 
     // Price drops
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     // Check 800 KUSD in Pool
     const totalDeposits = whaleDeposit.add(A_deposit).add(B_deposit)
@@ -1772,8 +1768,8 @@ contract('TroveManager', async accounts => {
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
     // Price drops to 1Asset1:100KUSD, reducing defaulters to below MCR
-    await priceFeed.setPrice(dec(100, 18));
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18));
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),)
 
     // Liquidate troves
@@ -1816,8 +1812,8 @@ contract('TroveManager', async accounts => {
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
     // Price drops to 1Asset1:100KUSD, reducing defaulters to below MCR
-    await priceFeed.setPrice(dec(100, 18));
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18));
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),)
 
     // liquidate troves
@@ -1831,7 +1827,7 @@ contract('TroveManager', async accounts => {
     assert.isTrue(G_After.eq(G_Before))
   })
 
-  //   const price = await priceFeed.getPrice()
+  //   const price = await priceFeed.getPrice(assetAddress1)
   //   const A_surplus = A_collBefore.sub(A_netDebt.mul(mv._1e18BN).div(price))
   //   const B_surplus = B_collBefore.sub(B_netDebt.mul(mv._1e18BN).div(price))
   //   const C_surplus = C_collBefore.sub(C_netDebt.mul(mv._1e18BN).div(price))
@@ -1847,8 +1843,8 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(133, 16)), extraParams: { from: B } })
 
     // Price drops
-    await priceFeed.setPrice(dec(175, 18))
-    let price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(175, 18))
+    let price = await priceFeed.getPrice(assetAddress1)
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),)
@@ -1862,8 +1858,8 @@ contract('TroveManager', async accounts => {
     await stabilityPoolAsset1.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: A })
 
     // Price drops
-    await priceFeed.setPrice(dec(100, 18))
-    price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
+    price = await priceFeed.getPrice(assetAddress1)
     // Confirm system is now in Recovery Mode
     assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1),)
 
@@ -1909,7 +1905,7 @@ contract('TroveManager', async accounts => {
     await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: D })
     await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: E })
 
-    await priceFeed.setPrice(dec(50, 18))
+    await priceFeed.setPrice(assetAddress1, dec(50, 18))
 
     // Try to liquidate C again. Check it succeeds and closes C's trove
     const liqTx2 = await troveManager.batchLiquidateTroves(assetAddress1, [C, D])
@@ -1939,8 +1935,8 @@ contract('TroveManager', async accounts => {
     // --- TEST ---
 
     // Price drops to 1Asset1:100KUSD, reducing A, B, C ICR below MCR
-    await priceFeed.setPrice(dec(100, 18));
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18));
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -1993,8 +1989,8 @@ contract('TroveManager', async accounts => {
     // --- TEST ---
 
     // Price drops to 1Asset1:100KUSD, reducing A, B, C ICR below MCR
-    await priceFeed.setPrice(dec(100, 18));
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18));
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -2050,8 +2046,8 @@ contract('TroveManager', async accounts => {
     // --- TEST ---
 
     // Price drops to 1Asset1:100KUSD, reducing A, B, C ICR below MCR
-    await priceFeed.setPrice(dec(100, 18));
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18));
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -2104,8 +2100,8 @@ contract('TroveManager', async accounts => {
     // --- TEST ---
 
     // Price drops to 1Asset1:100KUSD, reducing A, B, C ICR below MCR
-    await priceFeed.setPrice(dec(100, 18));
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18));
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -2140,8 +2136,8 @@ contract('TroveManager', async accounts => {
     // --- TEST ---
 
     // Price drops to 1Asset1:100KUSD, reducing A, B, C ICR below MCR
-    await priceFeed.setPrice(dec(100, 18));
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18));
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),);
@@ -2208,8 +2204,8 @@ contract('TroveManager', async accounts => {
     // --- TEST ---
 
     // Price drops to 1Asset1:100KUSD, reducing A, B, C ICR below MCR
-    await priceFeed.setPrice(dec(100, 18));
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18));
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // Carol liquidated, and her trove is closed
     const txCarolClose = await borrowerOperations.closeTrove(assetAddress1, { from: carol })
@@ -2277,8 +2273,8 @@ contract('TroveManager', async accounts => {
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
     // Price drops to 1Asset1:100KUSD, reducing defaulters to below MCR
-    await priceFeed.setPrice(dec(100, 18));
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18));
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),)
 
     // Liquidate troves
@@ -2321,8 +2317,8 @@ contract('TroveManager', async accounts => {
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
     // Price drops to 1Asset1:100KUSD, reducing defaulters to below MCR
-    await priceFeed.setPrice(dec(100, 18));
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, dec(100, 18));
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1),)
 
     // liquidate troves
@@ -2350,7 +2346,7 @@ contract('TroveManager', async accounts => {
 
     // Drop the price
     const price = toBN(dec(100, 18))
-    await priceFeed.setPrice(price);
+    await priceFeed.setPrice(assetAddress1, price);
 
     // --- TEST ---
     const redemptionAmount = C_debt.add(B_debt).add(partialRedemptionAmount)
@@ -2371,7 +2367,7 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(250, 16)), extraParams: { from: carol } })
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(180, 16)), extraParams: { from: dennis } })
 
-    const price = await priceFeed.getPrice();
+    const price = await priceFeed.getPrice(assetAddress1);
 
     // --- TEST ---
 
@@ -2398,7 +2394,7 @@ contract('TroveManager', async accounts => {
 
     const dennis_KUSDBalance_Before = await kusdToken.balanceOf(dennis)
 
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.equal(price, dec(200, 18))
 
     // --- TEST ---
@@ -2480,7 +2476,7 @@ contract('TroveManager', async accounts => {
 
     const dennis_KUSDBalance_Before = await kusdToken.balanceOf(dennis)
 
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.equal(price, dec(200, 18))
 
     // --- TEST ---
@@ -2560,7 +2556,7 @@ contract('TroveManager', async accounts => {
 
     const dennis_KUSDBalance_Before = await kusdToken.balanceOf(dennis)
 
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.equal(price, dec(200, 18))
 
     // --- TEST ---
@@ -2640,13 +2636,13 @@ contract('TroveManager', async accounts => {
 
     const dennis_KUSDBalance_Before = await kusdToken.balanceOf(dennis)
 
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.equal(price, dec(200, 18))
 
     // Increase price to start Erin, and decrease it again so its ICR is under MCR
-    await priceFeed.setPrice(price.mul(toBN(2)))
+    await priceFeed.setPrice(assetAddress1, price.mul(toBN(2)))
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: erin } })
-    await priceFeed.setPrice(price)
+    await priceFeed.setPrice(assetAddress1, price)
 
 
     // --- TEST ---
@@ -2887,7 +2883,7 @@ contract('TroveManager', async accounts => {
 
     const dennis_KUSDBalance_Before = await kusdToken.balanceOf(dennis)
 
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.equal(price, dec(200, 18))
 
     // --- TEST ---
@@ -2981,7 +2977,7 @@ contract('TroveManager', async accounts => {
     await kusdToken.transfer(carol, amount, { from: bob })
 
     const price = dec(100, 18)
-    await priceFeed.setPrice(price)
+    await priceFeed.setPrice(assetAddress1, price)
 
     // Liquidate Bob's Trove
     await troveManager.liquidateTroves(assetAddress1, 1)
@@ -3031,7 +3027,7 @@ contract('TroveManager', async accounts => {
 
     // Put Bob's Trove below 110% ICR
     const price = dec(100, 18)
-    await priceFeed.setPrice(price)
+    await priceFeed.setPrice(assetAddress1, price)
 
     // --- TEST ---
 
@@ -3069,7 +3065,7 @@ contract('TroveManager', async accounts => {
 
     // This will put Dennis slightly below 110%, and everyone else exactly at 110%
     const price = '110' + _18_zeros
-    await priceFeed.setPrice(price)
+    await priceFeed.setPrice(assetAddress1, price)
 
     const orderOfTroves = [];
     let current = await sortedTroves.getFirst(assetAddress1);
@@ -3119,8 +3115,8 @@ contract('TroveManager', async accounts => {
 
     // This will put Dennis slightly below 110%, and everyone else exactly at 110%
 
-    await priceFeed.setPrice('110' + _18_zeros)
-    const price = await priceFeed.getPrice()
+    await priceFeed.setPrice(assetAddress1, '110' + _18_zeros)
+    const price = await priceFeed.getPrice(assetAddress1)
 
     const TCR = (await th.getTCR(contracts, assetAddress1))
     assert.isTrue(TCR.lt(toBN('1100000000000000000')))
@@ -3235,7 +3231,7 @@ contract('TroveManager', async accounts => {
     const attemptedKUSDRedemption = expectedTotalSupply.div(toBN(10))
 
     // Attempt with maxFee > 5.5%
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     const ETHDrawn = attemptedKUSDRedemption.mul(mv._1e18BN).div(price)
     const slightlyMoreThanFee = (await troveManager.getRedemptionFeeWithDecay(assetAddress1, ETHDrawn))
     const tx1 = await th.redeemCollateralAndGetTxObject(assetAddress1, A, contracts, attemptedKUSDRedemption, slightlyMoreThanFee)
@@ -3286,13 +3282,13 @@ contract('TroveManager', async accounts => {
     await stabilityPoolAsset1.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: carol })
     await stabilityPoolAsset1.provideToSP(dec(200, 18), ZERO_ADDRESS, { from: dennis })
 
-    let price = await priceFeed.getPrice()
+    let price = await priceFeed.getPrice(assetAddress1)
     const bob_ICR_before = await troveManager.getCurrentICR(assetAddress1, bob, price)
     const carol_ICR_before = await troveManager.getCurrentICR(assetAddress1, carol, price)
     const dennis_ICR_before = await troveManager.getCurrentICR(assetAddress1, dennis, price)
 
     // Price drops
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     assert.isTrue(await sortedTroves.contains(assetAddress1, flyn))
 
@@ -3301,7 +3297,7 @@ contract('TroveManager', async accounts => {
     assert.isFalse(await sortedTroves.contains(assetAddress1, flyn))
 
     // Price bounces back, bringing B, C, D back above MCR
-    await priceFeed.setPrice(dec(200, 18))
+    await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
     const bob_SPDeposit_before = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)).toString()
     const carol_SPDeposit_before = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(carol)).toString()
@@ -3323,7 +3319,7 @@ contract('TroveManager', async accounts => {
     // Erin redeems KUSD
     await th.redeemCollateral(assetAddress1, erin, contracts, redemptionAmount, th._100pct)
 
-    price = await priceFeed.getPrice()
+    price = await priceFeed.getPrice(assetAddress1)
     const bob_ICR_after = await troveManager.getCurrentICR(assetAddress1, bob, price)
     const carol_ICR_after = await troveManager.getCurrentICR(assetAddress1, carol, price)
     const dennis_ICR_after = await troveManager.getCurrentICR(assetAddress1, dennis, price)
@@ -3377,7 +3373,7 @@ contract('TroveManager', async accounts => {
     th.assertIsApproximatelyEqual(activePool_debt_before, totalDebt)
     assert.equal(activePool_coll_before.toString(), totalColl)
 
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
 
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
@@ -3445,7 +3441,7 @@ contract('TroveManager', async accounts => {
     th.assertIsApproximatelyEqual(activePool_debt_before, totalDebt)
     assert.equal(activePool_coll_before, totalColl)
 
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
 
     let firstRedemptionHint
     let partialRedemptionHintNICR
@@ -3578,7 +3574,7 @@ contract('TroveManager', async accounts => {
 
     const totalColl = W_coll.add(A_coll).add(B_coll).add(C_coll).add(D_coll)
 
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
 
     const _120_KUSD = '120000000000000000000'
     const _373_KUSD = '373000000000000000000'
@@ -3692,7 +3688,7 @@ contract('TroveManager', async accounts => {
 
     assert.equal((await kusdToken.balanceOf(bob)), dec(100, 18))
 
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
 
     const {
       firstRedemptionHint,
@@ -3734,7 +3730,7 @@ contract('TroveManager', async accounts => {
     const totalDebt = C_totalDebt.add(D_totalDebt)
     th.assertIsApproximatelyEqual((await activePool.getKUSDDebt(assetAddress1)).toString(), totalDebt)
 
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     const {
       firstRedemptionHint,
       partialRedemptionHintNICR
@@ -4197,7 +4193,7 @@ contract('TroveManager', async accounts => {
 
     /* Expect D to have lost 15 debt and (at ETH price of 200) 15/200 = 0.075 ETH.
     So, expect remaining debt = (85 - 15) = 70, and remaining ETH = 1 - 15/200 = 0.925 remaining. */
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     th.assertIsApproximatelyEqual(D_emittedDebt, D_totalDebt.sub(partialAmount))
     th.assertIsApproximatelyEqual(D_emittedColl, D_coll.sub(partialAmount.mul(mv._1e18BN).div(price)))
   })
@@ -4224,7 +4220,7 @@ contract('TroveManager', async accounts => {
     const B_balanceAfter = toBN(await erc20Asset1.balanceOf(B))
     const C_balanceAfter = toBN(await erc20Asset1.balanceOf(C))
 
-    const price = toBN(await priceFeed.getPrice())
+    const price = toBN(await priceFeed.getPrice(assetAddress1))
 
     th.assertIsApproximatelyEqual(A_balanceAfter, A_balanceBefore.add(A_coll.sub(A_netDebt.mul(mv._1e18BN).div(price))))
     th.assertIsApproximatelyEqual(B_balanceAfter, B_balanceBefore.add(B_coll.sub(B_netDebt.mul(mv._1e18BN).div(price))))
@@ -4238,7 +4234,7 @@ contract('TroveManager', async accounts => {
       C_netDebt, C_coll: C_collBefore,
     } = await redeemCollateral3Full1Partial()
 
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     const A_surplus = A_collBefore.sub(A_netDebt.mul(mv._1e18BN).div(price))
     const B_surplus = B_collBefore.sub(B_netDebt.mul(mv._1e18BN).div(price))
     const C_surplus = C_collBefore.sub(C_netDebt.mul(mv._1e18BN).div(price))
@@ -4277,7 +4273,7 @@ contract('TroveManager', async accounts => {
     const { kusdAmount } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(1, 24), extraParams: { from: alice } })
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
 
-    const price = await priceFeed.getPrice()
+    const price = await priceFeed.getPrice(assetAddress1)
     assert.equal(price, dec(200, 18))
 
     // --- TEST ---
@@ -4344,7 +4340,7 @@ contract('TroveManager', async accounts => {
     await stabilityPoolAsset1.provideToSP(totalDebt, ZERO_ADDRESS, { from: whale })
 
     // Price drops
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     await troveManager.liquidate(assetAddress1, defaulter_1)
 
@@ -4372,7 +4368,7 @@ contract('TroveManager', async accounts => {
     await stabilityPoolAsset1.provideToSP(totalDebt, ZERO_ADDRESS, { from: whale })
 
     // Price drops
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     await troveManager.liquidate(assetAddress1, defaulter_1)
 
@@ -4458,12 +4454,12 @@ contract('TroveManager', async accounts => {
 
   //TCR < 150%
   it("checkRecoveryMode(): Returns true when TCR < 150%", async () => {
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: alice } })
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
 
-    await priceFeed.setPrice('99999999999999999999')
+    await priceFeed.setPrice(assetAddress1, '99999999999999999999')
 
     const TCR = (await th.getTCR(contracts, assetAddress1))
 
@@ -4474,7 +4470,7 @@ contract('TroveManager', async accounts => {
 
   // TCR == 150%
   it("checkRecoveryMode(): Returns false when TCR == 150%", async () => {
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: alice } })
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
@@ -4488,12 +4484,12 @@ contract('TroveManager', async accounts => {
 
   // > 150%
   it("checkRecoveryMode(): Returns false when TCR > 150%", async () => {
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: alice } })
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
 
-    await priceFeed.setPrice('100000000000000000001')
+    await priceFeed.setPrice(assetAddress1, '100000000000000000001')
 
     const TCR = (await th.getTCR(contracts, assetAddress1))
 
@@ -4504,12 +4500,12 @@ contract('TroveManager', async accounts => {
 
   // check 0
   it("checkRecoveryMode(): Returns false when TCR == 0", async () => {
-    await priceFeed.setPrice(dec(100, 18))
+    await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: alice } })
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: bob } })
 
-    await priceFeed.setPrice(0)
+    await priceFeed.setPrice(assetAddress1, 0)
 
     const TCR = (await th.getTCR(contracts, assetAddress1)).toString()
 

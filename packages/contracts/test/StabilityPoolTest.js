@@ -192,7 +192,7 @@ contract('StabilityPool - TEST', async accounts => {
 
 
       // price drops: defaulter's Troves fall below MCR, whale doesn't
-      await priceFeed.setPrice(dec(105, 18));
+      await priceFeed.setPrice(assetAddress1, dec(105, 18));
 
       const SPKUSD_Before = await stabilityPoolAsset1.getTotalKUSDDeposits()
 
@@ -261,7 +261,7 @@ contract('StabilityPool - TEST', async accounts => {
       assert.equal(alice_Snapshot_P_0, '1000000000000000000')
 
       // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
-      await priceFeed.setPrice(dec(105, 18));
+      await priceFeed.setPrice(assetAddress1, dec(105, 18));
 
       // 2 users with Trove with 180 KUSD drawn are closed
       await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })  // 180 KUSD closed
@@ -372,7 +372,7 @@ contract('StabilityPool - TEST', async accounts => {
       assert.isTrue(gain_0.eq(toBN(0)), 'NonPayable should not have accumulated gains')
 
       // price drops: defaulters' Troves fall below MCR, nonPayable and whale Trove remain active
-      await priceFeed.setPrice(dec(105, 18));
+      await priceFeed.setPrice(assetAddress1, dec(105, 18));
 
       // 2 defaulters are closed
       await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })
@@ -406,7 +406,7 @@ contract('StabilityPool - TEST', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
 
       // Price drops
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
 
       // Defaulters are liquidated
       await troveManager.liquidate(assetAddress1, defaulter_1)
@@ -470,7 +470,7 @@ contract('StabilityPool - TEST', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
 
       // Price drops
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
 
       // Defaulters are liquidated
       await troveManager.liquidate(assetAddress1, defaulter_1)
@@ -518,8 +518,8 @@ contract('StabilityPool - TEST', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
 
       // Price drops
-      await priceFeed.setPrice(dec(105, 18))
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
+      const price = await priceFeed.getPrice(assetAddress1)
 
       // Get debt, collateral and ICR of all existing troves
       const whale_Debt_Before = (await troveManager.Troves(whale, assetAddress1))[TroveData.debt].toString()
@@ -601,8 +601,8 @@ contract('StabilityPool - TEST', async accounts => {
       assert.equal((await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)).toString(), dec(1000, 18))
 
       // Price drops
-      await priceFeed.setPrice(dec(105, 18))
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
+      const price = await priceFeed.getPrice(assetAddress1)
 
       // Liquidate bob
       await troveManager.liquidate(assetAddress1, bob)
@@ -796,14 +796,14 @@ contract('StabilityPool - TEST', async accounts => {
       // C deposits. A, and B earn KUMO
       await stabilityPoolAsset1.provideToSP(dec(5, 18), ZERO_ADDRESS, { from: C })
 
-      // Price drops, defaulter is liquidated, A, B and C earn Asset
-      await priceFeed.setPrice(dec(105, 18))
+      // Price drops, defaulter is liquidated, A, B and C earn ETH
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
       await troveManager.liquidate(assetAddress1, defaulter_1)
 
       // price bounces back to 200 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // A and B fully withdraw from the pool
       await stabilityPoolAsset1.withdrawFromSP(initialDeposit_A, { from: A })
@@ -940,7 +940,7 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(2000, 18), ZERO_ADDRESS, { from: D })
 
       // Perform a liquidation to make 0 < P < 1, and S > 0
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
       await troveManager.liquidate(assetAddress1, defaulter_1)
@@ -1076,14 +1076,14 @@ contract('StabilityPool - TEST', async accounts => {
       // B deposits. A,B,C,D earn KUMO
       await stabilityPoolAsset1.provideToSP(dec(5, 18), ZERO_ADDRESS, { from: B })
 
-      // Price drops, defaulter is liquidated, A, B, C, D earn Asset
-      await priceFeed.setPrice(dec(105, 18))
+      // Price drops, defaulter is liquidated, A, B, C, D earn ETH
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
       await troveManager.liquidate(assetAddress1, defaulter_1)
 
       // Price bounces back
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // A B,C, D fully withdraw from the pool
       await stabilityPoolAsset1.withdrawFromSP(dec(105, 18), { from: A })
@@ -1339,7 +1339,7 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(await kusdToken.balanceOf(D), ZERO_ADDRESS, { from: D })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
-      await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
       await troveManager.liquidate(assetAddress1, defaulter_1)
@@ -1500,8 +1500,8 @@ contract('StabilityPool - TEST', async accounts => {
       // defaulter opens trove
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
-      // Asset drops, defaulter is in liquidation range (but not liquidated yet)
-      await priceFeed.setPrice(dec(100, 18))
+      // ETH drops, defaulter is in liquidation range (but not liquidated yet)
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
       await th.assertRevert(stabilityPoolAsset1.withdrawFromSP(dec(100, 18), { from: alice }))
     })
@@ -1523,7 +1523,7 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
 
       // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
-      await priceFeed.setPrice(dec(105, 18));
+      await priceFeed.setPrice(assetAddress1, dec(105, 18));
 
       // 2 users with Trove with 170 KUSD drawn are closed
       const liquidationTX_1 = await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })  // 170 KUSD closed
@@ -1574,7 +1574,7 @@ contract('StabilityPool - TEST', async accounts => {
       assert.equal(SP_KUSD_Before, dec(200000, 18))
 
       // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
-      await priceFeed.setPrice(dec(105, 18));
+      await priceFeed.setPrice(assetAddress1, dec(105, 18));
 
       // 2 users liquidated
       const liquidationTX_1 = await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })
@@ -1618,7 +1618,7 @@ contract('StabilityPool - TEST', async accounts => {
       assert.equal(SP_KUSD_Before, dec(200000, 18))
 
       // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
-      await priceFeed.setPrice(dec(105, 18));
+      await priceFeed.setPrice(assetAddress1, dec(105, 18));
 
       // 2 defaulters liquidated
       const liquidationTX_1 = await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })
@@ -1664,7 +1664,7 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
 
       // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
-      await priceFeed.setPrice(dec(105, 18));
+      await priceFeed.setPrice(assetAddress1, dec(105, 18));
 
       // defaulters liquidated
       await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })
@@ -1721,7 +1721,7 @@ contract('StabilityPool - TEST', async accounts => {
       assert.equal(alice_snapshot_P_Before, '1000000000000000000')
 
       // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
-      await priceFeed.setPrice(dec(105, 18));
+      await priceFeed.setPrice(assetAddress1, dec(105, 18));
 
       // 2 defaulters liquidated
       await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })
@@ -1756,7 +1756,7 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
 
       // price drops: defaulter's Trove falls below MCR, alice and whale Trove remain active
-      await priceFeed.setPrice('100000000000000000000');
+      await priceFeed.setPrice(assetAddress1, '100000000000000000000');
 
       // defaulter's Trove is closed.
       const liquidationTx_1 = await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })  // 180 KUSD closed
@@ -1800,10 +1800,10 @@ contract('StabilityPool - TEST', async accounts => {
         await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: account })
       }
 
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       await troveManager.liquidate(assetAddress1, defaulter_1)
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // All depositors attempt to withdraw
       await stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: alice })
@@ -1840,7 +1840,7 @@ contract('StabilityPool - TEST', async accounts => {
         await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: account })
       }
 
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       await troveManager.liquidate(assetAddress1, defaulter_1)
 
       const aliceBalBefore = await kusdToken.balanceOf(alice)
@@ -1852,8 +1852,8 @@ contract('StabilityPool - TEST', async accounts => {
       and thus with a deposit of 10000 KUSD, each should withdraw 8333.3333333333333333 KUSD (in practice, slightly less due to rounding error)
       */
 
-      // Price bounces back to $200 per Asset
-      await priceFeed.setPrice(dec(200, 18))
+      // Price bounces back to $200 per ETH
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // Bob issues a further 5000 KUSD from his trove 
       await borrowerOperations.withdrawKUSD(assetAddress1, th._100pct, dec(5000, 18), bob, bob, { from: bob })
@@ -1887,7 +1887,7 @@ contract('StabilityPool - TEST', async accounts => {
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
 
       // Price drops
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
 
       // Defaulters are liquidated
       await troveManager.liquidate(assetAddress1, defaulter_1)
@@ -1908,7 +1908,7 @@ contract('StabilityPool - TEST', async accounts => {
       assert.isTrue(AssetinSP.gt(mv._zeroBN))
 
       // Price rises
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // Carol withdraws her Stability deposit 
       assert.equal(((await stabilityPoolAsset1.deposits(carol))[0]).toString(), dec(30000, 18))
@@ -1946,7 +1946,7 @@ contract('StabilityPool - TEST', async accounts => {
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
 
       // Price drops
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
 
       // Defaulters are liquidated
       await troveManager.liquidate(assetAddress1, defaulter_1)
@@ -1955,7 +1955,7 @@ contract('StabilityPool - TEST', async accounts => {
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_2))
 
       // Price rises
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       const activeDebt_Before = (await activePool.getKUSDDebt(assetAddress1)).toString()
       const defaultedDebt_Before = (await defaultPool.getKUSDDebt(assetAddress1)).toString()
@@ -1996,8 +1996,8 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(30000, 18), frontEnd_1, { from: carol })
 
       // Price drops
-      await priceFeed.setPrice(dec(105, 18))
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
+      const price = await priceFeed.getPrice(assetAddress1)
 
       // Get debt, collateral and ICR of all existing troves
       const whale_Debt_Before = (await troveManager.Troves(whale, assetAddress1))[TroveData.debt].toString()
@@ -2016,7 +2016,7 @@ contract('StabilityPool - TEST', async accounts => {
       const carol_ICR_Before = (await troveManager.getCurrentICR(assetAddress1, carol, price)).toString()
 
       // price rises
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // Carol withdraws her Stability deposit 
       assert.equal(((await stabilityPoolAsset1.deposits(carol))[0]).toString(), dec(30000, 18))
@@ -2067,9 +2067,9 @@ contract('StabilityPool - TEST', async accounts => {
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
 
-      // Asset drops, defaulters are in liquidation range
-      await priceFeed.setPrice(dec(105, 18))
-      const price = await priceFeed.getPrice()
+      // ETH drops, defaulters are in liquidation range
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
+      const price = await priceFeed.getPrice(assetAddress1)
       assert.isTrue(await th.ICRbetween100and110(assetAddress1, defaulter_1, troveManager, price))
 
       await th.fastForwardTime(timeValues.MINUTES_IN_ONE_WEEK, web3.currentProvider)
@@ -2149,7 +2149,7 @@ contract('StabilityPool - TEST', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
       // Price drops
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
 
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -2168,7 +2168,7 @@ contract('StabilityPool - TEST', async accounts => {
       const dennis_Collateral_Before = ((await troveManager.Troves(dennis, assetAddress1))[TroveData.coll]).toString()
       const AssetinSP_Before = (await stabilityPoolAsset1.getAssetBalance()).toString()
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // Dennis withdraws his full deposit and AssetGain to his account
       await stabilityPoolAsset1.withdrawFromSP(dec(100, 18), { from: dennis, gasPrice: GAS_PRICE })
@@ -2202,7 +2202,7 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(30000, 18), frontEnd_1, { from: carol })
 
       // Price drops
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
 
       // Liquidate defaulter 1
       await troveManager.liquidate(assetAddress1, defaulter_1)
@@ -2215,7 +2215,7 @@ contract('StabilityPool - TEST', async accounts => {
 
       const KUSDinSP_Before = await stabilityPoolAsset1.getTotalKUSDDeposits()
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // Bob attempts to withdraws 1 wei more than his compounded deposit from the Stability Pool
       await stabilityPoolAsset1.withdrawFromSP(bob_Deposit_Before.add(toBN(1)), { from: bob })
@@ -2262,7 +2262,7 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(30, 18), frontEnd_1, { from: carol })
 
       // Price drops
-      await priceFeed.setPrice(dec(100, 18))
+      await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
       // Liquidate defaulter 1
       await troveManager.liquidate(assetAddress1, defaulter_1)
@@ -2276,7 +2276,7 @@ contract('StabilityPool - TEST', async accounts => {
       const maxBytes32 = web3.utils.toBN("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
 
       // Price drops
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // Bob attempts to withdraws maxBytes32 KUSD from the Stability Pool
       await stabilityPoolAsset1.withdrawFromSP(maxBytes32, { from: bob })
@@ -2296,10 +2296,10 @@ contract('StabilityPool - TEST', async accounts => {
       // --- SETUP ---
 
       // Price doubles
-      await priceFeed.setPrice(dec(400, 18))
+      await priceFeed.setPrice(assetAddress1, dec(400, 18))
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
       // Price halves
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // A, B, C open troves and make Stability Pool deposits
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(4, 18)), extraParams: { from: alice } })
@@ -2314,8 +2314,8 @@ contract('StabilityPool - TEST', async accounts => {
       const C_GAS_Used = th.gasUsed(await stabilityPoolAsset1.provideToSP(dec(3000, 18), frontEnd_1, { from: carol, gasPrice: GAS_PRICE }))
 
       // Price drops
-      await priceFeed.setPrice(dec(105, 18))
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
+      const price = await priceFeed.getPrice(assetAddress1)
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -2343,7 +2343,7 @@ contract('StabilityPool - TEST', async accounts => {
       const KUSDinSP_Before = await stabilityPoolAsset1.getTotalKUSDDeposits()
 
       // Price rises
-      await priceFeed.setPrice(dec(220, 18))
+      await priceFeed.setPrice(assetAddress1, dec(220, 18))
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -2419,7 +2419,7 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(5000, 18), frontEnd_1, { from: bob })
 
       //price drops
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
 
       // Liquidate defaulter 1. Empties the Pool
       await troveManager.liquidate(assetAddress1, defaulter_1)
@@ -2687,7 +2687,7 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(1000, 18), ZERO_ADDRESS, { from: D })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
       await troveManager.liquidate(assetAddress1, defaulter_1)
@@ -2718,7 +2718,7 @@ contract('StabilityPool - TEST', async accounts => {
 
       // --- TEST ---
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // A, B, C top withdraw part of their deposits. Grab G at each stage, as it can increase a bit
       // between topups, because some block.timestamp time passes (and KUMO is issued) between ops
@@ -2812,7 +2812,7 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_3, { from: E })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
       await troveManager.liquidate(assetAddress1, defaulter_1)
@@ -2836,7 +2836,7 @@ contract('StabilityPool - TEST', async accounts => {
       await kusdToken.transfer(A, dec(10000, 18), { from: whale })
       await kusdToken.transfer(B, dec(20000, 18), { from: whale })
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // C, D open troves
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: C } })
@@ -2897,7 +2897,7 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_3, { from: E })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
       await troveManager.liquidate(assetAddress1, defaulter_1)
@@ -2938,7 +2938,7 @@ contract('StabilityPool - TEST', async accounts => {
         assert.equal(snapshot[4], '0')  // epoch
       }
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // All depositors make full withdrawal
       await stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: A })
@@ -2973,13 +2973,13 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: A })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
       await troveManager.liquidate(assetAddress1, defaulter_1)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // A successfully withraws deposit and all gains
       await stabilityPoolAsset1.withdrawFromSP(dec(10100, 18), { from: A })
@@ -3018,7 +3018,7 @@ contract('StabilityPool - TEST', async accounts => {
 
       // Defaulter opens a trove, price drops, defaulter gets liquidated
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
       await troveManager.liquidate(assetAddress1, defaulter_1)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
@@ -3051,7 +3051,7 @@ contract('StabilityPool - TEST', async accounts => {
       assert.isTrue(aliceTrove_Asset_Before.gt(toBN('0')))
 
       // price drops: defaulter's Trove falls below MCR, alice and whale Trove remain active
-      await priceFeed.setPrice(dec(105, 18));
+      await priceFeed.setPrice(assetAddress1, dec(105, 18));
 
       // Defaulter's Trove is closed
       const liquidationTx_1 = await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })
@@ -3104,7 +3104,7 @@ contract('StabilityPool - TEST', async accounts => {
       assert.isTrue(aliceTrove_Asset_Before.gt(toBN('0')))
 
       // price drops: defaulter's Trove falls below MCR
-      await priceFeed.setPrice(dec(10, 18));
+      await priceFeed.setPrice(assetAddress1, dec(10, 18));
 
       // defaulter's Trove is closed.
       await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })
@@ -3135,13 +3135,13 @@ contract('StabilityPool - TEST', async accounts => {
       assert.isTrue(aliceTrove_Asset_Before.gt(toBN('0')))
 
       // price drops: defaulter's Trove falls below MCR
-      await priceFeed.setPrice(dec(105, 18));
+      await priceFeed.setPrice(assetAddress1, dec(105, 18));
 
       // defaulter's Trove is closed.
       await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })
 
       // price bounces back
-      await priceFeed.setPrice(dec(200, 18));
+      await priceFeed.setPrice(assetAddress1, dec(200, 18));
 
       // Alice sends her Asset gains to her Trove
       await stabilityPoolAsset1.withdrawAssetGainToTrove(alice, alice, { from: alice })
@@ -3158,7 +3158,7 @@ contract('StabilityPool - TEST', async accounts => {
       const AssetinSP_1 = (await stabilityPoolAsset1.getAssetBalance()).toString()
       assert.equal(AssetinSP_Before, AssetinSP_1)
 
-      await priceFeed.setPrice(dec(200, 18));
+      await priceFeed.setPrice(assetAddress1, dec(200, 18));
 
       // Alice attempts third withdrawal (this time, from SP to her own account)
       await stabilityPoolAsset1.withdrawFromSP(dec(15000, 18), { from: alice })
@@ -3184,7 +3184,7 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
 
       // price drops: defaulter's Trove falls below MCR
-      await priceFeed.setPrice(dec(100, 18));
+      await priceFeed.setPrice(assetAddress1, dec(100, 18));
 
       // defaulter's Trove is closed.
       const liquidationTx = await troveManager.liquidate(assetAddress1, defaulter_1)
@@ -3196,7 +3196,7 @@ contract('StabilityPool - TEST', async accounts => {
       assert.isTrue(aliceExpectedAssetGain.eq(aliceAssetGain))
 
       // price bounces back
-      await priceFeed.setPrice(dec(200, 18));
+      await priceFeed.setPrice(assetAddress1, dec(200, 18));
 
       //check activePool and StabilityPool Ether before retrieval:
       const active_Asset_Before = await activePool.getAssetBalance(assetAddress1)
@@ -3230,11 +3230,11 @@ contract('StabilityPool - TEST', async accounts => {
         await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: account })
       }
 
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       await troveManager.liquidate(assetAddress1, defaulter_1)
 
       // price bounces back
-      await priceFeed.setPrice(dec(200, 18));
+      await priceFeed.setPrice(assetAddress1, dec(200, 18));
 
       // All depositors attempt to withdraw
       const tx1 = await stabilityPoolAsset1.withdrawAssetGainToTrove(alice, alice, { from: alice })
@@ -3266,7 +3266,7 @@ contract('StabilityPool - TEST', async accounts => {
       }
       const collBefore = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll] // all troves have same coll before
 
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       const liquidationTx = await troveManager.liquidate(assetAddress1, defaulter_1)
       const [, liquidatedColl, ,] = th.getEmittedLiquidationValues(liquidationTx)
 
@@ -3280,7 +3280,7 @@ contract('StabilityPool - TEST', async accounts => {
 
       const expectedCollGain = liquidatedColl.div(toBN('6'))
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       await stabilityPoolAsset1.withdrawAssetGainToTrove(alice, alice, { from: alice })
       const aliceCollAfter = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]
@@ -3326,8 +3326,8 @@ contract('StabilityPool - TEST', async accounts => {
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
       // Price drops to 105, 
-      await priceFeed.setPrice(dec(105, 18))
-      const price = await priceFeed.getPrice()
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
+      const price = await priceFeed.getPrice(assetAddress1)
 
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -3388,13 +3388,13 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: dennis })
 
       //Price drops
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
 
       //Liquidate defaulter 1
       await troveManager.liquidate(assetAddress1, defaulter_1)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // D attempts to withdraw his Asset gain to Trove
       await th.assertRevert(stabilityPoolAsset1.withdrawAssetGainToTrove(dennis, dennis, { from: dennis }), "caller must have an active trove to withdraw AssetGain to")
@@ -3414,7 +3414,7 @@ contract('StabilityPool - TEST', async accounts => {
 
       // Defaulter opens a trove, price drops, defaulter gets liquidated
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
       await troveManager.liquidate(assetAddress1, defaulter_1)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
@@ -3423,7 +3423,7 @@ contract('StabilityPool - TEST', async accounts => {
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // A withdraws from SP
       await stabilityPoolAsset1.withdrawFromSP(dec(50, 18), { from: A })
@@ -3462,7 +3462,7 @@ contract('StabilityPool - TEST', async accounts => {
 
       // Defaulter opens a trove, price drops, defaulter gets liquidated
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
       await troveManager.liquidate(assetAddress1, defaulter_1)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
@@ -3474,7 +3474,7 @@ contract('StabilityPool - TEST', async accounts => {
       assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(B)).gt(ZERO))
       assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(C)).gt(ZERO))
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // A, B, C withdraw to trove
       await stabilityPoolAsset1.withdrawAssetGainToTrove(A, A, { from: A })
@@ -3508,7 +3508,7 @@ contract('StabilityPool - TEST', async accounts => {
 
       // Defaulter opens a trove, price drops, defaulter gets liquidated
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
       await troveManager.liquidate(assetAddress1, defaulter_1)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
@@ -3523,7 +3523,7 @@ contract('StabilityPool - TEST', async accounts => {
       assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(B)).gt(ZERO))
       assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(C)).gt(ZERO))
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // A, B, C withdraw to trove
       await stabilityPoolAsset1.withdrawAssetGainToTrove(A, A, { from: A })
@@ -3558,7 +3558,7 @@ contract('StabilityPool - TEST', async accounts => {
 
       // Defaulter opens a trove, price drops, defaulter gets liquidated
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
       await troveManager.liquidate(assetAddress1, defaulter_1)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
@@ -3568,7 +3568,7 @@ contract('StabilityPool - TEST', async accounts => {
       const F2_KUMOBalance_Before = await kumoToken.balanceOf(frontEnd_2)
       const F3_KUMOBalance_Before = await kumoToken.balanceOf(frontEnd_3)
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // Check A, B, C have non-zero Asset gain
       assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(A)).gt(ZERO))
@@ -3612,7 +3612,7 @@ contract('StabilityPool - TEST', async accounts => {
 
       // Defaulter opens a trove, price drops, defaulter gets liquidated
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
       await troveManager.liquidate(assetAddress1, defaulter_1)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
@@ -3624,7 +3624,7 @@ contract('StabilityPool - TEST', async accounts => {
       const F2_Stake_Before = await stabilityPoolAsset1.frontEndStakes(frontEnd_2)
       const F3_Stake_Before = await stabilityPoolAsset1.frontEndStakes(frontEnd_3)
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // Check A, B, C have non-zero Asset gain
       assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(A)).gt(ZERO))
@@ -3677,7 +3677,7 @@ contract('StabilityPool - TEST', async accounts => {
       await stabilityPoolAsset1.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: D })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
-      await priceFeed.setPrice(dec(105, 18))
+      await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
       await troveManager.liquidate(assetAddress1, defaulter_1)
@@ -3713,7 +3713,7 @@ contract('StabilityPool - TEST', async accounts => {
       assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(B)).gt(ZERO))
       assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(C)).gt(ZERO))
 
-      await priceFeed.setPrice(dec(200, 18))
+      await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // A, B, C withdraw Asset gain to troves. Grab G at each stage, as it can increase a bit
       // between topups, because some block.timestamp time passes (and KUMO is issued) between ops

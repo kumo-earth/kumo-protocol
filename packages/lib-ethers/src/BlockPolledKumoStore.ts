@@ -198,12 +198,14 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
           blockTag
         }),
 
-        // price: this._readable.getPrice({ blockTag }),
+        // price: this._readable.getPrice(asset, { blockTag }),
         // numberOfTroves: this._readable.getNumberOfTroves(asset, { blockTag }),
         // totalRedistributed: this._readable.getTotalRedistributed(asset, { blockTag }),
         // total: this._readable.getTotal(asset, { blockTag }),
-        // kusdInStabilityPool: this._readable.getKUSDInStabilityPool("ctx", { blockTag }),
-        totalStakedKUMO: this._readable.getTotalStakedKUMO({ blockTag }),
+        // kusdInStabilityPool: this._readable.getKUSDInStabilityPool({ blockTag }),
+        // totalStakedKUMO: this._readable.getTotalStakedKUMO({ blockTag }),
+
+        
         // _riskiestTroveBeforeRedistribution: this._getRiskiestTroveBeforeRedistribution(asset, {
         //   blockTag
         // }),

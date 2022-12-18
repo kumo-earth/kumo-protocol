@@ -35,7 +35,7 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     // (undocumented)
     getNumberOfTroves(asset: string, ...extraParams: T): Promise<number>;
     // (undocumented)
-    getPrice(...extraParams: T): Promise<Decimal>;
+    getPrice(asset: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
     getRemainingLiquidityMiningKUMOReward(...extraParams: T): Promise<Decimal>;
     // (undocumented)
@@ -457,7 +457,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown> extends 
     sendKUMO(toAddress: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     sendKUSD(toAddress: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     // @internal (undocumented)
-    setPrice(price: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
+    setPrice(asset: string, price: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     stakeKUMO(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     stakeUniTokens(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     transferCollateralGainToTrove(asset: string, assetName: string): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, CollateralGainTransferDetails>>>>;
@@ -497,7 +497,7 @@ export interface ReadableKumo {
     getLiquidityMiningKUMOReward(address: string): Promise<Decimal>;
     getLiquidityMiningStake(address: string): Promise<Decimal>;
     getNumberOfTroves(asset: string): Promise<number>;
-    getPrice(): Promise<Decimal>;
+    getPrice(asset: string): Promise<Decimal>;
     getRemainingLiquidityMiningKUMOReward(): Promise<Decimal>;
     getRemainingStabilityPoolKUMOReward(): Promise<Decimal>;
     getStabilityDeposit(asset: string, address: string): Promise<StabilityDeposit>;
@@ -565,7 +565,7 @@ export interface SendableKumo<R = unknown, S = unknown> extends _SendableFrom<Tr
     sendKUMO(toAddress: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     sendKUSD(toAddress: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     // @internal (undocumented)
-    setPrice(price: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
+    setPrice(asset: string, price: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     stakeKUMO(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     stakeUniTokens(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     transferCollateralGainToTrove(asset: string, assetName: string): Promise<SentKumoTransaction<S, KumoReceipt<R, CollateralGainTransferDetails>>>;
@@ -655,7 +655,7 @@ export interface TransactableKumo {
     sendKUMO(toAddress: string, amount: Decimalish): Promise<void>;
     sendKUSD(toAddress: string, amount: Decimalish): Promise<void>;
     // @internal (undocumented)
-    setPrice(price: Decimalish): Promise<void>;
+    setPrice(asset: string, price: Decimalish): Promise<void>;
     stakeKUMO(amount: Decimalish): Promise<void>;
     stakeUniTokens(amount: Decimalish): Promise<void>;
     transferCollateralGainToTrove(asset: string, assetName: string): Promise<CollateralGainTransferDetails>;

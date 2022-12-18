@@ -101,7 +101,7 @@ dataSources:
         - name: PriceFeed
           file: ../lib-ethers/abi/PriceFeed.json
       eventHandlers:
-        - event: LastGoodPriceUpdated(uint256)
+        - event: LastGoodPriceUpdated(address,uint256)
           handler: handleLastGoodPriceUpdated
   - name: StabilityPool
     kind: ethereum/contract

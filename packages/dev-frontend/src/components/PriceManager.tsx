@@ -3,6 +3,7 @@ import { Card, Box, Heading, Flex, Button, Label, Input } from "theme-ui";
 
 import { Decimal, KumoStoreState } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
+import { AddressZero } from "@ethersproject/constants";
 
 import { useKumo } from "../hooks/KumoContext";
 
@@ -55,7 +56,7 @@ export const PriceManager: React.FC = () => {
                   if (!editedPrice) {
                     throw new Error("Invalid price");
                   }
-                  return kumo.setPrice(Decimal.from(editedPrice), overrides);
+                  return kumo.setPrice(AddressZero, Decimal.from(editedPrice), overrides);
                 }}
               >
                 <Button
