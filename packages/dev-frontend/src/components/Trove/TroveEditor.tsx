@@ -9,7 +9,7 @@ import {
   Trove,
   KumoStoreState,
   KUSD_LIQUIDATION_RESERVE,
-  Vault
+  Vault,
 } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 
@@ -20,7 +20,6 @@ import { LoadingOverlay } from "../LoadingOverlay";
 import { CollateralRatio } from "./CollateralRatio";
 import { InfoIcon } from "../InfoIcon";
 import { useParams } from "react-router-dom";
-import { useDashboard } from "../../hooks/DashboardContext";
 
 type TroveEditorProps = {
   original: Trove;
@@ -44,12 +43,12 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
   changePending
 }) => {
   const { vaults } = useKumoSelector(select);
-  const { ctx, cty } = useDashboard();
 
   const feePct = new Percent(borrowingRate);
 
   const { collateralType } = useParams<{ collateralType: string }>();
-  const price = collateralType === "ctx" ? ctx : collateralType === "cty" ? cty : Decimal.from(0);
+  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault;
+  const price = vault?.price;
 
   const originalCollateralRatio = !original.isEmpty ? original.collateralRatio(price) : undefined;
   const collateralRatio = !edited.isEmpty ? edited.collateralRatio(price) : undefined;

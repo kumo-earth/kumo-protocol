@@ -106,7 +106,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
         totalRedistributed: this._readable.getTotalRedistributed(assetAddress, { blockTag }),
         total: this._readable.getTotal(assetAddress, { blockTag }),
         kusdInStabilityPool: this._readable.getKUSDInStabilityPool(assetToken, { blockTag }),
-        price: this._readable.getPrice({ blockTag }),
+        price: this._readable.getPrice(assetAddress, { blockTag }),
         _riskiestTroveBeforeRedistribution: this._getRiskiestTroveBeforeRedistribution(
           assetAddress,
           {
@@ -203,9 +203,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
         // totalRedistributed: this._readable.getTotalRedistributed(asset, { blockTag }),
         // total: this._readable.getTotal(asset, { blockTag }),
         // kusdInStabilityPool: this._readable.getKUSDInStabilityPool({ blockTag }),
-        // totalStakedKUMO: this._readable.getTotalStakedKUMO({ blockTag }),
-
-        
+        totalStakedKUMO: this._readable.getTotalStakedKUMO({ blockTag }),
         // _riskiestTroveBeforeRedistribution: this._getRiskiestTroveBeforeRedistribution(asset, {
         //   blockTag
         // }),

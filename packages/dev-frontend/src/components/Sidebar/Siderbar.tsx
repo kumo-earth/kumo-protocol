@@ -9,7 +9,7 @@ export const Sidebar: React.FC = props => {
       <Flex variant="layout.sideBar" sx={{ flex: 1 }}>
         <KumoLogo height={"20px"} variant="layout.sideBarLogo" />
         <Box as="nav" variant="layout.sideBarNav">
-          <Link to="/">Dashboard</Link>
+          <Link to="/dashboard">Dashboard</Link>
           <Link to="/portfolio">Portfolio</Link>
           <Link to="/staking">Staking</Link>
           <Link to="/redemption">Redemption</Link>

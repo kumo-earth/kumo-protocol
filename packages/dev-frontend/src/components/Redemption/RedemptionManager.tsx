@@ -36,9 +36,8 @@ const transactionId = "redemption";
 export const RedemptionManager: React.FC = () => {
   const [assetType, setAssetType] = useState("ctx");
   const { vaults, kusdBalance } = useKumoSelector(select);
-  const { ctx, cty } = useDashboard();
   const vault = vaults.find(vault => vault.asset === assetType) || new Vault();
-  const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
+  const price = vault?.price
   const { fees, total } = vault;
   const [kusdAmount, setKUSDAmount] = useState(Decimal.ZERO);
   const [changePending, setChangePending] = useState(false);

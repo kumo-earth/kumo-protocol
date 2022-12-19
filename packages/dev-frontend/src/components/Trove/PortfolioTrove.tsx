@@ -6,7 +6,6 @@ import { DisabledEditableRow } from "./Editor";
 import { useTroveView } from "./context/TroveViewContext";
 import { COIN } from "../../strings";
 import { CollateralRatio } from "./CollateralRatio";
-import { useDashboard } from "../../hooks/DashboardContext";
 
 
 export const PortfolioTrove: React.FC<{ vault: Vault }> = ({ vault = new Vault() }) => {
@@ -20,10 +19,8 @@ export const PortfolioTrove: React.FC<{ vault: Vault }> = ({ vault = new Vault()
 
   const history = useHistory()
 
-  const { ctx, cty } = useDashboard();
-
   const { trove } = vault;
-  const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
+  const price = vault?.price
   let collateralRatio = trove?.collateralRatio(price);
 
   // console.log("READONLY TROVE", trove.collateral.prettify(4));

@@ -645,8 +645,10 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
   }
 
   async getPrice(asset: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._readable.getPrice(asset, overrides);
-    // return this._blockHit(overrides) ? this.store.state.price : this._readable.getPrice(asset, overrides);
+    const vault = this.store.state.vaults.find(vault => vault.assetAddress === asset);
+    return (this._blockHit(overrides) && vault)
+      ? vault.price
+      : this._readable.getPrice(asset, overrides);
   }
 
   async getTotal(asset: string, overrides?: EthersCallOverrides): Promise<Trove> {

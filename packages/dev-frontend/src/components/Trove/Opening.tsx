@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Flex, Button, Box, Card, Heading, Spinner } from "theme-ui";
 import {
   KumoStoreState,
@@ -31,7 +31,6 @@ import { ExpensiveTroveChangeWarning, GasEstimationState } from "./ExpensiveTrov
 //   validateTroveChange
 // } from "./validation/validateTroveChange";
 import { validateTroveChange } from "./validation/validateTroveChange";
-import { useDashboard } from "../../hooks/DashboardContext";
 
 const EMPTY_TROVE = new Trove(Decimal.ZERO, Decimal.ZERO);
 const TRANSACTION_ID = "trove-creation";
@@ -40,14 +39,12 @@ const GAS_ROOM_ETH = Decimal.from(0.1);
 export const Opening: React.FC = () => {
   const { dispatchEvent } = useTroveView();
   const { collateralType } = useParams<{ collateralType: string }>();
-  const { ctx, cty } = useDashboard();
 
-  const { accountBalance, fees, validationContext } = useKumoSelector((state: KumoStoreState) => {
+  const { accountBalance, fees, price, validationContext } = useKumoSelector((state: KumoStoreState) => {
     const { vaults, kusdBalance } = state;
     const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
-    const { accountBalance, fees, total, numberOfTroves } = vault;
+    const { accountBalance, fees, price, total, numberOfTroves } = vault;
 
-    const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
 
     const validationContext = {
       // ...selectForTroveChangeValidation(state),
@@ -57,7 +54,7 @@ export const Opening: React.FC = () => {
       kusdBalance,
       numberOfTroves
     };
-    return { accountBalance, fees, validationContext };
+    return { accountBalance, fees, price, validationContext };
   });
 
   const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
@@ -69,7 +66,7 @@ export const Opening: React.FC = () => {
   const [borrowAmount, setBorrowAmount] = useState<Decimal>(Decimal.ZERO);
 
   const maxBorrowingRate = borrowingRate.add(0.005);
-  const price = collateralType === "ctx" ? ctx : collateralType === "cty" ? cty : Decimal.from(0);
+ 
   const fee = borrowAmount.mul(borrowingRate);
   const feePct = new Percent(borrowingRate);
   const totalDebt = borrowAmount.add(KUSD_LIQUIDATION_RESERVE).add(fee);

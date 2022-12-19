@@ -15,7 +15,7 @@ const select = ({
 });
 
 export const Dashboard: React.FC = () => {
-  const { totalCollDebt, ctx, cty } = useDashboard();
+  const { totalCollDebt } = useDashboard();
   const { vaults } = useKumoSelector(select);
   return (
     <Flex variant="layout.dashboard">
@@ -27,7 +27,7 @@ export const Dashboard: React.FC = () => {
       <Divider  sx={{ color: "muted" }} />
       <DashboadContent>
         {vaults.map(vault => {
-          const price = vault?.asset === 'ctx' ? ctx : vault?.asset === 'cty' ? cty : Decimal.from(0)
+          const price = vault?.price
           const total = vault.total
           const kusdInStabilityPool = vault.kusdInStabilityPool;
           const borrowingRate = vault.borrowingRate;

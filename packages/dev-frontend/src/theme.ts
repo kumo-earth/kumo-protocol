@@ -364,7 +364,7 @@ const theme: Theme = {
       // maxWidth: "100%",
       display: "flex",
       flexDirection: "column",
-     
+
       borderRadius: "20px",
       // maxHeight: "max-content",
       ":hover": {
@@ -397,7 +397,15 @@ const theme: Theme = {
       ...formCell,
 
       textAlign: "center",
-      bg: "muted"
+      bg: "muted",
+    },
+
+    unitSecondary: {
+      ...formCell,
+      bg: "secondaryHover",
+      outline: 'none',
+      border: 'none',
+      color: 'white'
     },
 
     input: {
@@ -405,7 +413,7 @@ const theme: Theme = {
 
       flex: 1
     },
-   
+
     select: {
       ml: 2,
       p: 1,

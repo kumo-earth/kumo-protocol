@@ -1,15 +1,12 @@
 import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
-import { Decimal, KumoStoreState, Vault } from "@kumodao/lib-base";
+import { KumoStoreState, Vault } from "@kumodao/lib-base";
 import { DisabledEditableRow } from "./Editor";
 import { useTroveView } from "./context/TroveViewContext";
 import { Icon } from "../Icon";
 import { COIN } from "../../strings";
 import { CollateralRatio } from "./CollateralRatio";
-import { useDashboard } from "../../hooks/DashboardContext";
-import { Web3Provider } from "@ethersproject/providers";
-import { useWeb3React } from "@web3-react/core";
 import { useKumoSelector } from "@kumodao/lib-react";
 
 const select = ({ vaults }: KumoStoreState) => ({
@@ -25,15 +22,11 @@ export const ReadOnlyTrove: React.FC = () => {
     dispatchEvent("CLOSE_TROVE_PRESSED");
   }, [dispatchEvent]);
 
-  const { account } = useWeb3React<Web3Provider>();
-
   const { collateralType } = useParams<{ collateralType: string }>();
-
-  const { ctx, cty } = useDashboard();
   const { vaults } = useKumoSelector(select);
   const vault = vaults.find(vault => vault.asset === collateralType) || new Vault;
   const { trove } = vault;
-  const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
+  const price = vault?.price
   let collateralRatio = trove?.collateralRatio(price);
 
   // console.log("READONLY TROVE", trove.collateral.prettify(4));

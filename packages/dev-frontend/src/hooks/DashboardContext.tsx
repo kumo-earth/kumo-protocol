@@ -1,11 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Decimal, KumoStoreState } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
-import { getTokenPrice } from "../tokensPrice";
 
 type DashboardContextValue = {
-  ctx: Decimal;
-  cty: Decimal;
   totalCollDebt: {
     totalColl: Decimal;
     totalCTXColl: Decimal;
@@ -28,8 +25,6 @@ const select = ({ vaults }: KumoStoreState) => ({
 });
 export const DashboardProvider: React.FC = ({ children }) => {
   const { vaults } = useKumoSelector(select);
-  const [ctx, setCTX] = useState<Decimal>(Decimal.ZERO);
-  const [cty, setCTY] = useState<Decimal>(Decimal.ZERO);
   const [totalCollDebt, setTotalCollDebt] = useState({
     totalColl: Decimal.ZERO,
     totalCTXColl: Decimal.ZERO,
@@ -59,7 +54,7 @@ export const DashboardProvider: React.FC = ({ children }) => {
     let troveCarbonCredits = Decimal.ZERO;
 
     vaults.forEach(vault => {
-      const { total, trove } = vault;
+      const { total, trove, price } = vault;
       calcDebt = calcDebt.add(total.debt);
       troveCalcDebt = troveCalcDebt.add(trove.debt);
       calcCarbonCredits = calcCarbonCredits.add(total.collateral);
@@ -69,14 +64,14 @@ export const DashboardProvider: React.FC = ({ children }) => {
       } else if (vault.asset === "cty") {
         totalCTYDebt = totalCTYDebt.add(total.debt);
       }
-      if (vault.asset === "ctx" && total.collateral.nonZero && ctx.nonZero) {
-        calcCollat = calcCollat.add(total.collateral.mul(ctx));
-        totalCTXColl = totalCTXColl.add(total.collateral.mul(ctx));
-        troveCalcCollat = troveCalcCollat.add(trove.collateral.mul(ctx));
-      } else if (vault.asset === "cty" && total.collateral.nonZero && cty.nonZero) {
-        calcCollat = calcCollat.add(total.collateral.mul(cty));
-        totalCTYColl = totalCTYColl.add(total.collateral.mul(cty));
-        troveCalcCollat = troveCalcCollat.add(trove.collateral.mul(cty));
+      if (vault.asset === "ctx" && total.collateral.nonZero && price.nonZero) {
+        calcCollat = calcCollat.add(total.collateral.mul(price));
+        totalCTXColl = totalCTXColl.add(total.collateral.mul(price));
+        troveCalcCollat = troveCalcCollat.add(trove.collateral.mul(price));
+      } else if (vault.asset === "cty" && total.collateral.nonZero && price.nonZero) {
+        calcCollat = calcCollat.add(total.collateral.mul(price));
+        totalCTYColl = totalCTYColl.add(total.collateral.mul(price));
+        troveCalcCollat = troveCalcCollat.add(trove.collateral.mul(price));
       }
       setTotalCollDebt({
         totalColl: calcCollat,
@@ -93,26 +88,13 @@ export const DashboardProvider: React.FC = ({ children }) => {
         troveTotalCarbonCredits: troveCarbonCredits
       });
     });
-  }, [vaults, ctx, cty]);
-
-  useEffect(() => {
-    setPrices();
-  }, []);
-
-  const setPrices = async () => {
-    const ctxResponse = await getTokenPrice("toucan-protocol-base-carbon-tonne");
-    setCTX(ctxResponse.data);
-    const ctyResponse = await getTokenPrice("moss-carbon-credit");
-    setCTY(ctyResponse.data);
-  };
+  }, [vaults]);
 
   return (
     <DashboardContext.Provider
       value={{
         totalCollDebt,
-        totalTroveCollDebt,
-        ctx,
-        cty
+        totalTroveCollDebt
       }}
     >
       {children}

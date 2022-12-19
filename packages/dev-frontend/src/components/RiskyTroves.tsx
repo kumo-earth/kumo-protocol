@@ -16,7 +16,6 @@ import { useKumoSelector } from "@kumodao/lib-react";
 
 import { shortenAddress } from "../utils/shortenAddress";
 import { useKumo } from "../hooks/KumoContext";
-import { useDashboard } from "../hooks/DashboardContext";
 import { COIN } from "../strings";
 
 import { Icon } from "./Icon";
@@ -24,9 +23,9 @@ import { LoadingOverlay } from "./LoadingOverlay";
 import { Transaction } from "./Transaction";
 import { Tooltip } from "./Tooltip";
 import { Abbreviation } from "./Abbreviation";
-import { useParams } from "react-router-dom";
 import CopyToClipboard from "react-copy-to-clipboard";
-import { forEach } from "lodash";
+import { PriceManager } from "./PriceManager";
+import { AddressZero } from "@ethersproject/constants";
 
 const rowHeight = "40px";
 
@@ -53,7 +52,6 @@ const liquidatableInRecoveryMode = (
 
 type RiskyTrovesProps = {
   pageSize: number;
-  asset?: string;
 };
 
 interface UpdatedUserTrove {
@@ -72,13 +70,13 @@ const select = ({ vaults, blockTag }: BlockPolledKumoStoreState) => ({
   blockTag
 });
 
-export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10, asset = "" }) => {
+export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
   const [assetType, setAssetType] = useState("ctx");
   const { vaults, blockTag } = useKumoSelector(select);
   const { kumo } = useKumo();
-  const { ctx, cty } = useDashboard();
-  const { collateralType } = useParams<{ collateralType: string }>();
   let numberOfTroves = 0;
+  let price = Decimal.ZERO;
+  let assetAddress = AddressZero;
 
   if (assetType === "all") {
     vaults.forEach(vault => {
@@ -86,6 +84,10 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10, asset =
     });
   } else if (assetType === "ctx" || assetType === "cty") {
     const vault = vaults.find(vault => vault.asset === assetType);
+    if (vault) {
+      price = vault.price;
+      assetAddress = vault.assetAddress;
+    }
     numberOfTroves = vault?.numberOfTroves || 0;
   }
 
@@ -194,7 +196,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10, asset =
 
   useEffect(() => {
     forceReload();
-  }, [forceReload, numberOfTroves]);
+  }, [forceReload, numberOfTroves, price]);
 
   const [copied, setCopied] = useState<string>();
 
@@ -217,8 +219,6 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10, asset =
   return (
     <Card sx={{ width: "100%", height: "100%", bg: "#f0cfdc", borderRadius: 20 }}>
       <Heading sx={{ display: "flex", justifyContent: "space-between" }}>
-        {/* <Abbreviation short="Troves" sx={{ mr: 2}}>Risky Vaults</Abbreviation> */}
-
         <Flex sx={{ alignItems: "center" }}>
           {numberOfTroves !== 0 && (
             <>
@@ -251,8 +251,11 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10, asset =
             </>
           )}
         </Flex>
+        <Box>
+          <PriceManager price={price} assetAddress={assetAddress} />
+        </Box>
         <Box sx={{ display: "flex", mr: 7 }}>
-          <Text sx={{ fontSize: 4 }}>Riskiest Vaults by Asset: </Text>
+          <Text sx={{ fontSize: 4 }}>Riskiest Vaults:</Text>
           <Select value={assetType} onChange={event => setAssetType(event.target.value)}>
             <option value={"ctx"}>CTX</option>
             <option value={"cty"}>CTY</option>
@@ -389,7 +392,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10, asset =
                           >
                             {new Percent(collateralRatio).prettify()}
                           </Text>
-                        ))(trove.userTrove.collateralRatio(ctx))}
+                        ))(trove.userTrove.collateralRatio(trove?.price))}
                       </td>
                       <td>
                         <Transaction

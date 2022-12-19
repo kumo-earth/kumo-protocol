@@ -8,9 +8,7 @@ import {
   KUSD_LIQUIDATION_RESERVE,
   Percent,
   Difference,
-  UserTrove,
   ASSET_TOKENS,
-  Fees,
   Vault
 } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
@@ -34,7 +32,6 @@ import { ExpensiveTroveChangeWarning, GasEstimationState } from "./ExpensiveTrov
 //   validateTroveChange
 // } from "./validation/validateTroveChange";
 import { validateTroveChange } from "./validation/validateTroveChange";
-import { useDashboard } from "../../hooks/DashboardContext";
 
 // const selector = (state: KumoStoreState) => {
 //   const { vaults, fees, price } = state;
@@ -91,16 +88,14 @@ const applyUnsavedNetDebtChanges = (unsavedChanges: Difference, trove: Trove) =>
 
 export const Adjusting: React.FC = () => {
   const { dispatchEvent } = useTroveView();
-  const { account } = useWeb3React<Web3Provider>();
   const { collateralType } = useParams<{ collateralType: string }>();
-  const { ctx, cty } = useDashboard();
-  const { vault, trove, accountBalance, fees, validationContext } = useKumoSelector(
+  const { vault, price,  trove, accountBalance, fees, validationContext } = useKumoSelector(
     (state: KumoStoreState) => {
       const { vaults, kusdBalance } = state;
       const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
       const { numberOfTroves, total, fees, accountBalance, trove } = vault;
 
-      const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
+      const price = vault?.price
 
       const validationContext = {
         // ...selectForTroveChangeValidation({ price, accountBalance,  }),
@@ -111,7 +106,7 @@ export const Adjusting: React.FC = () => {
         kusdBalance,
         numberOfTroves
       };
-      return { vault, trove, accountBalance, fees, validationContext };
+      return { vault, price, trove, accountBalance, fees, validationContext };
     }
   );
   const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
@@ -171,10 +166,9 @@ export const Adjusting: React.FC = () => {
     : Decimal.ZERO;
   const maxCollateral = trove.collateral.add(availableTokens);
   const collateralMaxedOut = collateral.eq(maxCollateral);
-  const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
   const collateralRatio =
     !collateral.isZero && !netDebt.isZero ? updatedTrove.collateralRatio(price) : undefined;
-  const collateralRatioChange = Difference.between(collateralRatio, trove.collateralRatio(cty));
+  const collateralRatioChange = Difference.between(collateralRatio, trove.collateralRatio(price));
 
   const [troveChange, description] = validateTroveChange(
     trove,

@@ -213,9 +213,7 @@ type TroveManagerProps = {
 };
 
 export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) => {
-  const { account } = useWeb3React<Web3Provider>();
   const { collateralType } = useParams<{ collateralType: string }>();
-  const { ctx, cty } = useDashboard();
   const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
   const [{ original, edited, changePending }, dispatch] = useKumoReducer(
     reduce,
@@ -238,7 +236,7 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
     const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
     const { accountBalance, fees, total, numberOfTroves } = vault;
 
-    const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
+    const price = vault?.price
 
     const validationContext = {
       // ...selectForTroveChangeValidation({ price, accountBalance,  }),
