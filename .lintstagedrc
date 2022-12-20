@@ -1,0 +1,4 @@
+{
+  "*.sol": "npx solhint --config ./packages/contracts/.solhint.json",
+  "*.{js,ts}": "npx prettier --check"
+}
