@@ -26,14 +26,14 @@ export const PriceManager: React.FC<{ price: Decimal; assetAddress: string }> = 
   return (
     <Box sx={{ p: [2, 3] }}>
       <Flex sx={{ alignItems: "stretch" }}>
-        <Label variant="unitSecondary">$</Label>
+        <Label variant="unitSecondary" sx={{ borderTopLeftRadius : '12px', borderBottomLeftRadius : '12px', color: 'white' }}>$</Label>
         <Input
           type={canSetPrice ? "number" : "text"}
           step="any"
           value={editedPrice}
           onChange={e => setEditedPrice(e.target.value)}
           disabled={!canSetPrice}
-          sx={{ ":focus": { outline: "none" } }}
+          sx={{ ":focus": { outline: "none" }, bg: 'transparent', borderTopRightRadius : '12px', borderBottomRightRadius : '12px' }}
         />
 
         {canSetPrice && (

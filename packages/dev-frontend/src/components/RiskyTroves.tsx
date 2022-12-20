@@ -9,7 +9,8 @@ import {
   UserTrove,
   Decimal,
   Vault,
-  Trove
+  Trove,
+  CORE_TEAM_ACCOUNTS,
 } from "@kumodao/lib-base";
 import { BlockPolledKumoStoreState } from "@kumodao/lib-ethers";
 import { useKumoSelector } from "@kumodao/lib-react";
@@ -26,6 +27,8 @@ import { Abbreviation } from "./Abbreviation";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { PriceManager } from "./PriceManager";
 import { AddressZero } from "@ethersproject/constants";
+import { useWeb3React } from "@web3-react/core";
+import { Web3Provider } from "@ethersproject/providers";
 
 const rowHeight = "40px";
 
@@ -71,6 +74,7 @@ const select = ({ vaults, blockTag }: BlockPolledKumoStoreState) => ({
 });
 
 export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
+  const { account } = useWeb3React<Web3Provider>();
   const [assetType, setAssetType] = useState("ctx");
   const { vaults, blockTag } = useKumoSelector(select);
   const { kumo } = useKumo();
@@ -252,7 +256,10 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
           )}
         </Flex>
         <Box>
-          <PriceManager price={price} assetAddress={assetAddress} />
+          {
+            (account && CORE_TEAM_ACCOUNTS.includes(account)) ? <PriceManager price={price} assetAddress={assetAddress} /> : null
+          }
+          
         </Box>
         <Box sx={{ display: "flex", mr: 7 }}>
           <Text sx={{ fontSize: 4 }}>Riskiest Vaults:</Text>

@@ -84,6 +84,9 @@ export type _CollateralWithdrawal<T> = {
     withdrawCollateral: T;
 };
 
+// @public (undocumented)
+export const CORE_TEAM_ACCOUNTS: string[];
+
 // @public
 export const CRITICAL_COLLATERAL_RATIO: Decimal;
 

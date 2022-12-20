@@ -18,7 +18,7 @@ interface AssetType {
 export const ASSET_TOKENS: ASSET_TOKENS_TYPES<AssetType> = {
   ctx: {
     assetName: "Carbon Token X",
-    assetAddress: "0x3dc930324Ad8C08746A5FF0cEF9877398Cb47e60",
+    assetAddress: "0xcBA0d42920ec842Bbc2741F17EBefd1D20855F7B",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
     MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
     KUSD_MINTED_CAP: Decimal.from(15000000),
@@ -26,13 +26,15 @@ export const ASSET_TOKENS: ASSET_TOKENS_TYPES<AssetType> = {
   },
   cty: {
     assetName: "Carbon Token Y",
-    assetAddress: "0xA1343BB009Bd60025C0A59503a30345e3475dB5f",
+    assetAddress: "0xAFc3B32D5b5BdD34AdD5Bb6587Ccf273954c0176",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
     MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
     KUSD_MINTED_CAP: Decimal.from(10000000),
     MIN_NET_DEBT: Decimal.from(2000)
   }
 };
+
+export const CORE_TEAM_ACCOUNTS = ['0x31c57298578f7508B5982062cfEc5ec8BD346247', '0x1b1E98f4912aE9014064a70537025EF338e6aD67', '0x2E7108e381e9ACab03aA1B4819aaCB50D2964532']
 /**
  * Total collateral ratio below which recovery mode is triggered.
  *
