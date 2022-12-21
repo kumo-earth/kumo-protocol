@@ -5,7 +5,6 @@ const { toBN, dec, ZERO_ADDRESS } = th
 
 const TroveManagerTester = artifacts.require("./TroveManagerTester")
 const KUSDToken = artifacts.require("./KUSDToken.sol")
-const StabilityPool = artifacts.require("./StabilityPool.sol")
 
 
 contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async accounts => {
@@ -61,8 +60,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
     await deploymentHelper.mintMockAssets(erc20Asset2, accounts, 25)
 
     // Set StabilityPools
-    stabilityPoolAsset1 = await StabilityPool.at(await stabilityPoolFactory.getStabilityPoolByAsset(assetAddress1))
-    stabilityPoolAsset2 = await StabilityPool.at(await stabilityPoolFactory.getStabilityPoolByAsset(assetAddress2))
+    stabilityPoolAsset1 = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
+    stabilityPoolAsset2 = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress2)
 
   })
 

@@ -7,7 +7,6 @@ const ERC20Test = artifacts.require("./ERC20Test.sol")
 const StabilityPoolFactory = artifacts.require("./StabilityPoolFactory.sol")
 // const KumoParameters = artifacts.require("./KumoParameters.sol")
 const { ZERO_ADDRESS } = require("@openzeppelin/test-helpers/src/constants")
-const deploymentHelper = require("../utils/deploymentHelpers.js")
 const testHelpers = require("../utils/testHelpers.js")
 
 const th = testHelpers.TestHelper

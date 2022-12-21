@@ -81,7 +81,7 @@ contract('BorrowerOperations', async accounts => {
       assetAddress1 = erc20Asset1.address
       
       kumoParams = contracts.kumoParameters
-      await kumoParams.sanitizeParameters(assetAddress1);
+      await kumoParams.setAsDefault(assetAddress1);
       await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
       await deploymentHelper.connectKUMOContracts(KUMOContracts)

@@ -87,7 +87,6 @@ contract('HintHelpers', async accounts => {
     erc20Asset1 = await deploymentHelper.deployERC20Asset()
     assetAddress1 = erc20Asset1.address
 
-    await contracts.kumoParameters.sanitizeParameters(assetAddress1);
     await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
     sortedTroves = contracts.sortedTroves

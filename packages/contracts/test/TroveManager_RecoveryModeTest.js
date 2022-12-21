@@ -12,7 +12,6 @@ const TroveData = testHelpers.TroveData
 
 const TroveManagerTester = artifacts.require("./TroveManagerTester")
 const KUSDToken = artifacts.require("./KUSDToken.sol")
-const StabilityPool = artifacts.require("./StabilityPool.sol")
 
 const GAS_PRICE = 10000000
 
@@ -99,8 +98,8 @@ contract('TroveManager - in Recovery Mode', async accounts => {
         await deploymentHelper.mintMockAssets(erc20Asset2, accounts, 25)
 
         // Set StabilityPools
-        stabilityPoolAsset1 = await StabilityPool.at(await stabilityPoolFactory.getStabilityPoolByAsset(assetAddress1))
-        stabilityPoolAsset2 = await StabilityPool.at(await stabilityPoolFactory.getStabilityPoolByAsset(assetAddress2))
+        stabilityPoolAsset1 = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
+        stabilityPoolAsset2 = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress2)
     })
 
     it("checkRecoveryMode(): Returns true if TCR falls below CCR", async () => {

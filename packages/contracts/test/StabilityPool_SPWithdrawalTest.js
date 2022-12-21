@@ -82,7 +82,6 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       borrowerOperations = contracts.borrowerOperations
 
       await deploymentHelper.connectKUMOContracts(KUMOContracts)
-      await contracts.kumoParameters.sanitizeParameters(assetAddress1);
 
       // Mint token to each acccount
       await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 50)
