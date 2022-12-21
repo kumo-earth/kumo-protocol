@@ -157,7 +157,7 @@
         "type": "address"
       }
     ],
-    "name": "StabilityPoolAddressChanged",
+    "name": "StabilityPoolFactoryAddressChanged",
     "type": "event"
   },
   {
@@ -643,7 +643,7 @@
       },
       {
         "internalType": "address",
-        "name": "_stabilityPoolAddress",
+        "name": "_stabilityPoolFactoryAddress",
         "type": "address"
       },
       {
@@ -701,6 +701,19 @@
     "outputs": [
       {
         "internalType": "contract ISortedTroves",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stabilityPoolFactory",
+    "outputs": [
+      {
+        "internalType": "contract IStabilityPoolFactory",
         "name": "",
         "type": "address"
       }

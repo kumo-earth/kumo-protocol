@@ -17,7 +17,7 @@ const selector = ({
 
 export const Yield: React.FC = () => {
   const {
-    liquity: {
+    kumo: {
       connection: { addresses, liquidityMiningKUMORewardRate }
     }
   } = useKumo();

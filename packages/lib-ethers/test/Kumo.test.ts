@@ -106,6 +106,9 @@ describe("EthersKumo", () => {
   let mockAssetAddress1: string;
   let mockAsset1: any;
 
+  let mockAssetName1: string;
+  mockAssetName1 = "ctx";
+
   const gasLimit = BigNumber.from(2500000);
 
   const connectUsers = (users: Signer[]) =>
@@ -396,7 +399,7 @@ describe("EthersKumo", () => {
     it("should close the Trove with some KUSD from another user", async () => {
       const price = await kumo.getPrice(mockAssetAddress1);
       const initialTrove = await kumo.getTrove(mockAssetAddress1);
-      const kusdBalance = await kumo.getKUMOBalance();
+      const kusdBalance = await kumo.getKUMOBalance(mockAssetAddress1);
       const kusdShortage = initialTrove.netDebt.sub(kusdBalance);
 
       let funderTrove = Trove.create({ depositCollateral: 1, borrowKUSD: kusdShortage });
@@ -438,17 +441,17 @@ describe("EthersKumo", () => {
 
   describe("Frontend", () => {
     it("should have no frontend initially", async () => {
-      const frontend = await kumo.getFrontendStatus(await user.getAddress());
+      const frontend = await kumo.getFrontendStatus(mockAssetName1, await user.getAddress());
 
       assertStrictEqual(frontend.status, "unregistered" as const);
     });
 
     it("should register a frontend", async () => {
-      await kumo.registerFrontend(0.75);
+      await kumo.registerFrontend(mockAssetName1, 0.75);
     });
 
     it("should have a frontend now", async () => {
-      const frontend = await kumo.getFrontendStatus(await user.getAddress());
+      const frontend = await kumo.getFrontendStatus(mockAssetName1, await user.getAddress());
 
       assertStrictEqual(frontend.status, "registered" as const);
       expect(`${frontend.kickbackRate}`).to.equal("0.75");
@@ -470,14 +473,14 @@ describe("EthersKumo", () => {
         { gasLimit }
       );
 
-      await otherKumo.depositKUSDInStabilityPool(KUSD_MINIMUM_DEBT);
+      await otherKumo.depositKUSDInStabilityPool(KUSD_MINIMUM_DEBT, mockAssetName1);
 
-      const deposit = await otherKumo.getStabilityDeposit();
+      const deposit = await otherKumo.getStabilityDeposit(mockAssetName1);
       expect(deposit.frontendTag).to.equal(frontendTag);
     });
   });
 
-  describe("StabilityPool", () => {
+  describe("StabilityPool - TEST", () => {
     before(async () => {
       // Deploy new instances of the contracts, for a clean state
       deployment = await deployKumo(deployer);
@@ -509,7 +512,7 @@ describe("EthersKumo", () => {
       );
       expect(newTrove).to.deep.equal(initialTroveOfDepositor);
 
-      const details = await kumo.depositKUSDInStabilityPool(smallStabilityDeposit);
+      const details = await kumo.depositKUSDInStabilityPool(smallStabilityDeposit, mockAssetName1);
 
       expect(details).to.deep.equal({
         kusdLoss: Decimal.from(0),
@@ -570,7 +573,7 @@ describe("EthersKumo", () => {
     });
 
     it("should have a depleted stability deposit and some collateral gain", async () => {
-      const stabilityDeposit = await kumo.getStabilityDeposit();
+      const stabilityDeposit = await kumo.getStabilityDeposit(mockAssetName1);
 
       expect(stabilityDeposit).to.deep.equal(
         new StabilityDeposit(
@@ -617,7 +620,7 @@ describe("EthersKumo", () => {
     });
 
     it("should transfer the gains to the Trove", async () => {
-      const details = await kumo.transferCollateralGainToTrove(mockAssetAddress1, { gasLimit });
+      const details = await kumo.transferCollateralGainToTrove(mockAssetAddress1, mockAssetName1, { gasLimit });
 
       expect(details).to.deep.equal({
         kusdLoss: smallStabilityDeposit,
@@ -638,7 +641,7 @@ describe("EthersKumo", () => {
           )
       });
 
-      const stabilityDeposit = await kumo.getStabilityDeposit();
+      const stabilityDeposit = await kumo.getStabilityDeposit(mockAssetName1);
       expect(stabilityDeposit.isEmpty).to.be.true;
     });
 
@@ -689,8 +692,8 @@ describe("EthersKumo", () => {
           { gasLimit }
         );
 
-        await otherKumos[0].depositKUSDInStabilityPool(3000);
-        await otherKumos[1].depositKUSDInStabilityPool(1000);
+        await otherKumos[0].depositKUSDInStabilityPool(3000, mockAssetName1);
+        await otherKumos[1].depositKUSDInStabilityPool(1000, mockAssetName1);
         // otherKumos[2] doesn't deposit yet
 
         // Tank the price so we can liquidate
@@ -702,20 +705,20 @@ describe("EthersKumo", () => {
         expect((await otherKumos[3].getTrove(mockAssetAddress1)).isEmpty).to.be.true;
 
         // Now otherKumos[2] makes their deposit too
-        await otherKumos[2].depositKUSDInStabilityPool(1000);
+        await otherKumos[2].depositKUSDInStabilityPool(1000, mockAssetName1);
 
         // Liquidate second victim
         await kumo.liquidate(mockAssetAddress1, await otherUsers[4].getAddress());
         expect((await otherKumos[4].getTrove(mockAssetAddress1)).isEmpty).to.be.true;
 
         // Stability Pool is now empty
-        expect(`${await kumo.getKUSDInStabilityPool()}`).to.equal("0");
+        expect(`${await kumo.getKUSDInStabilityPool(mockAssetName1)}`).to.equal("0");
       });
 
       it("should still be able to withdraw remaining deposit", async () => {
         for (const l of [otherKumos[0], otherKumos[1], otherKumos[2]]) {
-          const stabilityDeposit = await l.getStabilityDeposit();
-          await l.withdrawKUSDFromStabilityPool(stabilityDeposit.currentKUSD);
+          const stabilityDeposit = await l.getStabilityDeposit(mockAssetName1);
+          await l.withdrawKUSDFromStabilityPool(stabilityDeposit.currentKUSD, mockAssetName1);
         }
       });
     });
@@ -1195,7 +1198,7 @@ describe("EthersKumo", () => {
 
       const gasUsed = rawReceipt.gasUsed.toNumber();
       // Higher gas usage due to asset parameter. ToDO: Estimate gas (31000 before asset)
-      expect(gasUsed).to.be.at.most(350000);
+      expect(gasUsed).to.be.at.most(355000);
     });
 
     // Test 3
@@ -1373,18 +1376,18 @@ describe("EthersKumo", () => {
         undefined,
         { gasLimit }
       );
-      await kumo.depositKUSDInStabilityPool(19);
+      await kumo.depositKUSDInStabilityPool(19, mockAssetName1);
 
       await increaseTime(60);
 
       // This will issue KUMO for the first time ever. That uses a whole lotta gas, and we don't
       // want to pack any extra gas to prepare for this case specifically, because it only happens
       // once.
-      await kumo.withdrawGainsFromStabilityPool();
+      await kumo.withdrawGainsFromStabilityPool(mockAssetName1);
 
-      const claim = await kumo.populate.withdrawGainsFromStabilityPool();
-      const deposit = await kumo.populate.depositKUSDInStabilityPool(1);
-      const withdraw = await kumo.populate.withdrawKUSDFromStabilityPool(1);
+      const claim = await kumo.populate.withdrawGainsFromStabilityPool(mockAssetName1);
+      const deposit = await kumo.populate.depositKUSDInStabilityPool(1, mockAssetName1);
+      const withdraw = await kumo.populate.withdrawKUSDFromStabilityPool(1, mockAssetName1);
 
       for (let i = 0; i < 5; ++i) {
         for (const tx of [claim, deposit, withdraw]) {
@@ -1403,7 +1406,7 @@ describe("EthersKumo", () => {
       const creation = Trove.recreate(new Trove(Decimal.from(11.1), Decimal.from(2000.1)));
 
       await deployerKumo.openTrove(creation, mockAssetAddress1, undefined, { gasLimit });
-      await deployerKumo.depositKUSDInStabilityPool(creation.borrowKUSD);
+      await deployerKumo.depositKUSDInStabilityPool(creation.borrowKUSD, mockAssetName1);
       await deployerKumo.setPrice(mockAssetAddress1, 198);
 
       const liquidateTarget = await kumo.populate.liquidate(mockAssetAddress1, await deployer.getAddress());

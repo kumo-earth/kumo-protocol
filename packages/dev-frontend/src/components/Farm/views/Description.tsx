@@ -15,7 +15,7 @@ const transactionId = "farm-stake";
 
 export const Description: React.FC<DescriptionProps> = ({ amount }) => {
   const {
-    liquity: { send: liquity }
+    kumo: { send: kumo }
   } = useKumo();
   const { isValid, hasApproved, isWithdrawing, amountChanged } = useValidationState(amount);
 
@@ -34,14 +34,14 @@ export const Description: React.FC<DescriptionProps> = ({ amount }) => {
   return (
     <ActionDescription>
       {isWithdrawing && (
-        <Transaction id={transactionId} send={liquity.unstakeUniTokens.bind(liquity, amountChanged)}>
+        <Transaction id={transactionId} send={kumo.unstakeUniTokens.bind(kumo, amountChanged)}>
           <Text>
             You are unstaking {amountChanged.prettify(4)} {LP}
           </Text>
         </Transaction>
       )}
       {!isWithdrawing && (
-        <Transaction id={transactionId} send={liquity.stakeUniTokens.bind(liquity, amountChanged)}>
+        <Transaction id={transactionId} send={kumo.stakeUniTokens.bind(kumo, amountChanged)}>
           <Text>
             You are staking {amountChanged.prettify(4)} {LP}
           </Text>

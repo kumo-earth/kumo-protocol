@@ -9,8 +9,15 @@ Get the total amount of KUSD currently deposited in the Stability Pool.
 <b>Signature:</b>
 
 ```typescript
-getKUSDInStabilityPool(): Promise<Decimal>;
+getKUSDInStabilityPool(asset: string): Promise<Decimal>;
 ```
+
+## Parameters
+
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  asset | string |  |
+
 <b>Returns:</b>
 
 Promise&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt;

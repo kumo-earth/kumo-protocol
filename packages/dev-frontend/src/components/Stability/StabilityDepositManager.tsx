@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Button, Flex } from "theme-ui";
 
-import { Decimal, Decimalish, KumoStoreState } from "@kumodao/lib-base";
+import { ASSET_TOKENS, Decimal, Decimalish, KumoStoreState, StabilityDeposit } from "@kumodao/lib-base";
 import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@kumodao/lib-react";
 
 import { COIN } from "../../strings";
@@ -17,11 +18,13 @@ import {
   validateStabilityDepositChange
 } from "./validation/validateStabilityDepositChange";
 
-const init = ({ stabilityDeposit }: KumoStoreState) => ({
-  originalDeposit: stabilityDeposit,
-  editedKUSD: stabilityDeposit.currentKUSD,
-  changePending: false
-});
+const init = ({ stabilityDeposit }: KumoStoreState) => {
+  return {
+    originalDeposit: stabilityDeposit,
+    editedKUSD: stabilityDeposit.currentKUSD,
+    changePending: false
+  };
+};
 
 type StabilityDepositManagerState = ReturnType<typeof init>;
 type StabilityDepositManagerAction =
@@ -29,9 +32,10 @@ type StabilityDepositManagerAction =
   | { type: "startChange" | "finishChange" | "revert" }
   | { type: "setDeposit"; newValue: Decimalish };
 
-const reduceWith = (action: StabilityDepositManagerAction) => (
-  state: StabilityDepositManagerState
-): StabilityDepositManagerState => reduce(state, action);
+const reduceWith =
+  (action: StabilityDepositManagerAction) =>
+  (state: StabilityDepositManagerState): StabilityDepositManagerState =>
+    reduce(state, action);
 
 const finishChange = reduceWith({ type: "finishChange" });
 const revert = reduceWith({ type: "revert" });
@@ -91,8 +95,24 @@ const reduce = (
 
 const transactionId = "stability-deposit";
 
+const select = ({ vaults }: KumoStoreState) => ({
+  vaults
+});
+
 export const StabilityDepositManager: React.FC = () => {
-  const [{ originalDeposit, editedKUSD, changePending }, dispatch] = useKumoReducer(reduce, init);
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const { vaults } = useKumoSelector(select);
+  const vault = vaults.find(vault => vault.asset === collateralType);
+  const stabilityDeposit: StabilityDeposit = vault?.stabilityDeposit && vault.stabilityDeposit;
+  const [{ originalDeposit, editedKUSD, changePending }, dispatch] = useKumoReducer(reduce, () => {
+    return {
+      originalDeposit: stabilityDeposit,
+      editedKUSD: stabilityDeposit?.currentKUSD,
+      changePending: false
+    };
+  });
+
+
   const validationContext = useKumoSelector(selectForStabilityDepositChangeValidation);
   const { dispatchEvent } = useStabilityView();
 
@@ -143,11 +163,11 @@ export const StabilityDepositManager: React.FC = () => {
         </Button>
 
         {validChange ? (
-          <StabilityDepositAction transactionId={transactionId} change={validChange}>
+          <StabilityDepositAction transactionId={transactionId} change={validChange} asset={collateralType}>
             Confirm
           </StabilityDepositAction>
         ) : (
-          <Button disabled>Confirm</Button>
+          <Button>Confirm</Button>
         )}
       </Flex>
     </StabilityDepositEditor>

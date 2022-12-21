@@ -11,6 +11,7 @@ const TroveData = testHelpers.TroveData
 const TroveManagerTester = artifacts.require("TroveManagerTester")
 const KUSDToken = artifacts.require("KUSDToken")
 const NonPayable = artifacts.require('NonPayable.sol')
+const StabilityPool = artifacts.require("./StabilityPool.sol")
 
 const ZERO = toBN('0')
 const maxBytes32 = th.maxBytes32
@@ -40,15 +41,15 @@ contract('StabilityPool', async accounts => {
   let sortedTroves
   let troveManager
   let activePool
-  let stabilityPool
+  let stabilityPoolFactory
   let defaultPool
   let borrowerOperations
   let kumoToken
-  let communityIssuance
-  let kumoParams
   let KUMOContracts
-  let hardhatTester
   let erc20Asset1
+  let erc20Asset2
+  let stabilityPoolAsset1
+  let stabilityPoolAsset2
 
   let gasPriceInWei
 
@@ -67,18 +68,17 @@ contract('StabilityPool', async accounts => {
       contracts.troveManager = await TroveManagerTester.new()
       contracts.kusdToken = await KUSDToken.new(
         contracts.troveManager.address,
-        contracts.stabilityPool.address,
+        contracts.stabilityPoolFactory.address,
         contracts.borrowerOperations.address
       )
       KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
-      hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
 
       priceFeed = contracts.priceFeedTestnet
       kusdToken = contracts.kusdToken
       sortedTroves = contracts.sortedTroves
       troveManager = contracts.troveManager
       activePool = contracts.activePool
-      stabilityPool = contracts.stabilityPool
+      stabilityPoolFactory = contracts.stabilityPoolFactory
       defaultPool = contracts.defaultPool
       borrowerOperations = contracts.borrowerOperations
       hintHelpers = contracts.hintHelpers
@@ -86,29 +86,29 @@ contract('StabilityPool', async accounts => {
 
       kumoToken = KUMOContracts.kumoToken
       communityIssuance = KUMOContracts.communityIssuance
-      erc20Asset1 = hardhatTester.erc20
+      erc20Asset1 = await deploymentHelper.deployERC20Asset()
       assetAddress1 = erc20Asset1.address
+      erc20Asset2 = await deploymentHelper.deployERC20Asset()
+      assetAddress2 = erc20Asset2.address
 
       await deploymentHelper.connectKUMOContracts(KUMOContracts)
       await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
       await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
 
-      // Add asset to the system
+      // Add assets to the system
       await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
+      await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress2)
 
       // Mint token to each acccount
-      let index = 0;
-      for (const acc of accounts) {
-        // await vstaToken.approve(vstaStaking.address, await erc20Asset1.balanceOf(acc), { from: acc })
-        await erc20Asset1.mint(acc, await web3.eth.getBalance(acc))
-        index++;
+      await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 20)
+      await deploymentHelper.mintMockAssets(erc20Asset2, accounts, 20)
 
-        if (index >= 20)
-          break;
-      }
+      // Set StabilityPools
+      stabilityPoolAsset1 = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
+      stabilityPoolAsset2 = await deploymentHelper.getStabilityPoolByAsset(contracts,assetAddress2)
 
       // Register 3 front ends
-      await th.registerFrontEnds(frontEnds, stabilityPool)
+      await th.registerFrontEnds(frontEnds, stabilityPoolAsset1)
     })
 
     // --- provideToSP() ---
@@ -120,10 +120,10 @@ contract('StabilityPool', async accounts => {
       // --- TEST ---
 
       // provideToSP()
-      await stabilityPool.provideToSP(200, ZERO_ADDRESS, { from: alice })
+      await stabilityPoolAsset1.provideToSP(200, ZERO_ADDRESS, { from: alice })
 
       // check KUSD balances after
-      const stabilityPool_KUSD_After = await stabilityPool.getTotalKUSDDeposits()
+      const stabilityPool_KUSD_After = await stabilityPoolAsset1.getTotalKUSDDeposits()
       assert.equal(stabilityPool_KUSD_After, 200)
     })
 
@@ -133,14 +133,14 @@ contract('StabilityPool', async accounts => {
 
       // --- TEST ---
       // check user's deposit record before
-      const alice_depositRecord_Before = await stabilityPool.deposits(alice)
+      const alice_depositRecord_Before = await stabilityPoolAsset1.deposits(alice)
       assert.equal(alice_depositRecord_Before[0], 0)
 
       // provideToSP()
-      await stabilityPool.provideToSP(200, frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(200, frontEnd_1, { from: alice })
 
       // check user's deposit record after
-      const alice_depositRecord_After = (await stabilityPool.deposits(alice))[0]
+      const alice_depositRecord_After = (await stabilityPoolAsset1.deposits(alice))[0]
       assert.equal(alice_depositRecord_After, 200)
     })
 
@@ -153,7 +153,7 @@ contract('StabilityPool', async accounts => {
       const alice_KUSDBalance_Before = await kusdToken.balanceOf(alice)
 
       // provideToSP()
-      await stabilityPool.provideToSP(200, frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(200, frontEnd_1, { from: alice })
 
       // check user's KUSD balance change
       const alice_KUSDBalance_After = await kusdToken.balanceOf(alice)
@@ -163,11 +163,11 @@ contract('StabilityPool', async accounts => {
     it("provideToSP(): increases totalKUSDDeposits by correct amount", async () => {
       // --- SETUP ---
 
-      // Whale opens Trove with 50 ETH, adds 2000 KUSD to StabilityPool
+      // Whale opens Trove with 50 Asset, adds 2000 KUSD to StabilityPool
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-      await stabilityPool.provideToSP(dec(2000, 18), frontEnd_1, { from: whale })
+      await stabilityPoolAsset1.provideToSP(dec(2000, 18), frontEnd_1, { from: whale })
 
-      const totalKUSDDeposits = await stabilityPool.getTotalKUSDDeposits()
+      const totalKUSDDeposits = await stabilityPoolAsset1.getTotalKUSDDeposits()
       assert.equal(totalKUSDDeposits, dec(2000, 18))
     })
 
@@ -177,7 +177,7 @@ contract('StabilityPool', async accounts => {
       // Whale opens Trove and deposits to SP
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
       const whaleKUSD = await kusdToken.balanceOf(whale)
-      await stabilityPool.provideToSP(whaleKUSD, frontEnd_1, { from: whale })
+      await stabilityPoolAsset1.provideToSP(whaleKUSD, frontEnd_1, { from: whale })
 
       // 2 Troves opened, each withdraws minimum debt
       await openTrove({ asset: assetAddress1, extraKUSDAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1, } })
@@ -190,7 +190,7 @@ contract('StabilityPool', async accounts => {
       // price drops: defaulter's Troves fall below MCR, whale doesn't
       await priceFeed.setPrice(assetAddress1, dec(105, 18));
 
-      const SPKUSD_Before = await stabilityPool.getTotalKUSDDeposits()
+      const SPKUSD_Before = await stabilityPoolAsset1.getTotalKUSDDeposits()
 
       // Troves are closed
       await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })
@@ -199,18 +199,18 @@ contract('StabilityPool', async accounts => {
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_2))
 
       // Confirm SP has decreased
-      const SPKUSD_After = await stabilityPool.getTotalKUSDDeposits()
+      const SPKUSD_After = await stabilityPoolAsset1.getTotalKUSDDeposits()
       assert.isTrue(SPKUSD_After.lt(SPKUSD_Before))
 
       // --- TEST ---
-      const P_Before = (await stabilityPool.P())
-      const S_Before = (await stabilityPool.epochToScaleToSum(0, 0))
-      const G_Before = (await stabilityPool.epochToScaleToG(0, 0))
+      const P_Before = (await stabilityPoolAsset1.P())
+      const S_Before = (await stabilityPoolAsset1.epochToScaleToSum(0, 0))
+      const G_Before = (await stabilityPoolAsset1.epochToScaleToG(0, 0))
       assert.isTrue(P_Before.gt(toBN('0')))
       assert.isTrue(S_Before.gt(toBN('0')))
 
       // Check 'Before' snapshots
-      const alice_snapshot_Before = await stabilityPool.depositSnapshots(alice)
+      const alice_snapshot_Before = await stabilityPoolAsset1.depositSnapshots(alice)
       const alice_snapshot_S_Before = alice_snapshot_Before[0].toString()
       const alice_snapshot_P_Before = alice_snapshot_Before[1].toString()
       const alice_snapshot_G_Before = alice_snapshot_Before[2].toString()
@@ -219,10 +219,10 @@ contract('StabilityPool', async accounts => {
       assert.equal(alice_snapshot_G_Before, '0')
 
       // Make deposit
-      await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: alice })
 
       // Check 'After' snapshots
-      const alice_snapshot_After = await stabilityPool.depositSnapshots(alice)
+      const alice_snapshot_After = await stabilityPoolAsset1.depositSnapshots(alice)
       const alice_snapshot_S_After = alice_snapshot_After[0].toString()
       const alice_snapshot_P_After = alice_snapshot_After[1].toString()
       const alice_snapshot_G_After = alice_snapshot_After[2].toString()
@@ -237,7 +237,7 @@ contract('StabilityPool', async accounts => {
       // Whale opens Trove and deposits to SP
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
       const whaleKUSD = await kusdToken.balanceOf(whale)
-      await stabilityPool.provideToSP(whaleKUSD, frontEnd_1, { from: whale })
+      await stabilityPoolAsset1.provideToSP(whaleKUSD, frontEnd_1, { from: whale })
 
       // 3 Troves opened. Two users withdraw 160 KUSD each
       await openTrove({ asset: assetAddress1, extraKUSDAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1, value: dec(50, 'ether') } })
@@ -248,9 +248,9 @@ contract('StabilityPool', async accounts => {
 
       // Alice makes deposit #1: 150 KUSD
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(250, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
-      await stabilityPool.provideToSP(dec(150, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(150, 18), frontEnd_1, { from: alice })
 
-      const alice_Snapshot_0 = await stabilityPool.depositSnapshots(alice)
+      const alice_Snapshot_0 = await stabilityPoolAsset1.depositSnapshots(alice)
       const alice_Snapshot_S_0 = alice_Snapshot_0[0]
       const alice_Snapshot_P_0 = alice_Snapshot_0[1]
       assert.equal(alice_Snapshot_S_0, 0)
@@ -263,23 +263,23 @@ contract('StabilityPool', async accounts => {
       await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })  // 180 KUSD closed
       await troveManager.liquidate(assetAddress1, defaulter_2, { from: owner }) // 180 KUSD closed
 
-      const alice_compoundedDeposit_1 = await stabilityPool.getCompoundedKUSDDeposit(alice)
+      const alice_compoundedDeposit_1 = await stabilityPoolAsset1.getCompoundedKUSDDeposit(alice)
 
       // Alice makes deposit #2
       const alice_topUp_1 = toBN(dec(100, 18))
-      await stabilityPool.provideToSP(alice_topUp_1, frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(alice_topUp_1, frontEnd_1, { from: alice })
 
-      const alice_newDeposit_1 = ((await stabilityPool.deposits(alice))[0]).toString()
+      const alice_newDeposit_1 = ((await stabilityPoolAsset1.deposits(alice))[0]).toString()
       assert.equal(alice_compoundedDeposit_1.add(alice_topUp_1), alice_newDeposit_1)
 
       // get system reward terms
-      const P_1 = await stabilityPool.P()
-      const S_1 = await stabilityPool.epochToScaleToSum(0, 0)
+      const P_1 = await stabilityPoolAsset1.P()
+      const S_1 = await stabilityPoolAsset1.epochToScaleToSum(0, 0)
       assert.isTrue(P_1.lt(toBN(dec(1, 18))))
       assert.isTrue(S_1.gt(toBN('0')))
 
       // check Alice's new snapshot is correct
-      const alice_Snapshot_1 = await stabilityPool.depositSnapshots(alice)
+      const alice_Snapshot_1 = await stabilityPoolAsset1.depositSnapshots(alice)
       const alice_Snapshot_S_1 = alice_Snapshot_1[0]
       const alice_Snapshot_P_1 = alice_Snapshot_1[1]
       assert.isTrue(alice_Snapshot_S_1.eq(S_1))
@@ -287,23 +287,23 @@ contract('StabilityPool', async accounts => {
 
       // Bob withdraws KUSD and deposits to StabilityPool
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await stabilityPool.provideToSP(dec(427, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(427, 18), frontEnd_1, { from: alice })
 
       // Defaulter 3 Trove is closed
       await troveManager.liquidate(assetAddress1, defaulter_3, { from: owner })
 
-      const alice_compoundedDeposit_2 = await stabilityPool.getCompoundedKUSDDeposit(alice)
+      const alice_compoundedDeposit_2 = await stabilityPoolAsset1.getCompoundedKUSDDeposit(alice)
 
-      const P_2 = await stabilityPool.P()
-      const S_2 = await stabilityPool.epochToScaleToSum(0, 0)
+      const P_2 = await stabilityPoolAsset1.P()
+      const S_2 = await stabilityPoolAsset1.epochToScaleToSum(0, 0)
       assert.isTrue(P_2.lt(P_1))
       assert.isTrue(S_2.gt(S_1))
 
       // Alice makes deposit #3:  100KUSD
-      await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: alice })
 
       // check Alice's new snapshot is correct
-      const alice_Snapshot_2 = await stabilityPool.depositSnapshots(alice)
+      const alice_Snapshot_2 = await stabilityPoolAsset1.depositSnapshots(alice)
       const alice_Snapshot_S_2 = alice_Snapshot_2[0]
       const alice_Snapshot_P_2 = alice_Snapshot_2[1]
       assert.isTrue(alice_Snapshot_S_2.eq(S_2))
@@ -320,12 +320,12 @@ contract('StabilityPool', async accounts => {
 
       // Alice, attempts to deposit 1 wei more than her balance
 
-      const aliceTxPromise = stabilityPool.provideToSP(aliceKUSDbal.add(toBN(1)), frontEnd_1, { from: alice })
+      const aliceTxPromise = stabilityPoolAsset1.provideToSP(aliceKUSDbal.add(toBN(1)), frontEnd_1, { from: alice })
       await assertRevert(aliceTxPromise, "revert")
 
       // Bob, attempts to deposit 235534 more than his balance
 
-      const bobTxPromise = stabilityPool.provideToSP(bobKUSDbal.add(toBN(dec(235534, 18))), frontEnd_1, { from: bob })
+      const bobTxPromise = stabilityPoolAsset1.provideToSP(bobKUSDbal.add(toBN(dec(235534, 18))), frontEnd_1, { from: bob })
       await assertRevert(bobTxPromise, "revert")
     })
 
@@ -338,7 +338,7 @@ contract('StabilityPool', async accounts => {
 
       // Alice attempts to deposit 2^256-1 KUSD
       try {
-        aliceTx = await stabilityPool.provideToSP(maxBytes32, frontEnd_1, { from: alice })
+        aliceTx = await stabilityPoolAsset1.provideToSP(maxBytes32, frontEnd_1, { from: alice })
         assert.isFalse(tx.receipt.status)
       } catch (error) {
         assert.include(error.message, "revert")
@@ -349,7 +349,7 @@ contract('StabilityPool', async accounts => {
       // --- SETUP ---
       // Whale deposits 1850 KUSD in StabilityPool
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
-      await stabilityPool.provideToSP(dec(1850, 18), frontEnd_1, { from: whale })
+      await stabilityPoolAsset1.provideToSP(dec(1850, 18), frontEnd_1, { from: whale })
 
       // Defaulter Troves opened
       await openTrove({ asset: assetAddress1, extraKUSDAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -362,9 +362,9 @@ contract('StabilityPool', async accounts => {
 
       // NonPayable makes deposit #1: 150 KUSD
       const txData1 = th.getTransactionData('provideToSP(uint256,address)', [web3.utils.toHex(dec(150, 18)), frontEnd_1])
-      const tx1 = await nonPayable.forward(stabilityPool.address, txData1)
+      const tx1 = await nonPayable.forward(stabilityPoolAsset1.address, txData1)
 
-      const gain_0 = await stabilityPool.getDepositorAssetGain(nonPayable.address)
+      const gain_0 = await stabilityPoolAsset1.getDepositorAssetGain(nonPayable.address)
       assert.isTrue(gain_0.eq(toBN(0)), 'NonPayable should not have accumulated gains')
 
       // price drops: defaulters' Troves fall below MCR, nonPayable and whale Trove remain active
@@ -374,15 +374,15 @@ contract('StabilityPool', async accounts => {
       await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })
       await troveManager.liquidate(assetAddress1, defaulter_2, { from: owner })
 
-      const gain_1 = await stabilityPool.getDepositorAssetGain(nonPayable.address)
+      const gain_1 = await stabilityPoolAsset1.getDepositorAssetGain(nonPayable.address)
       assert.isTrue(gain_1.gt(toBN(0)), 'NonPayable should have some accumulated gains')
 
-      // NonPayable tries to make deposit #2: 100KUSD (which also attempts to withdraw ETH gain)
+      // NonPayable tries to make deposit #2: 100KUSD (which also attempts to withdraw Asset gain)
       const txData2 = th.getTransactionData('provideToSP(uint256,address)', [web3.utils.toHex(dec(100, 18)), frontEnd_1])
-      await th.assertRevert(nonPayable.forward(stabilityPool.address, txData2))
+      await th.assertRevert(nonPayable.forward(stabilityPoolAsset1.address, txData2))
     })
 
-    it("provideToSP(): doesn't impact other users' deposits or ETH gains", async () => {
+    it("provideToSP(): doesn't impact other users' deposits or Asset gains", async () => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
 
       // A, B, C open troves and make Stability Pool deposits
@@ -390,9 +390,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: alice })
-      await stabilityPool.provideToSP(dec(2000, 18), frontEnd_1, { from: bob })
-      await stabilityPool.provideToSP(dec(3000, 18), frontEnd_1, { from: carol })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(2000, 18), frontEnd_1, { from: bob })
+      await stabilityPoolAsset1.provideToSP(dec(3000, 18), frontEnd_1, { from: carol })
 
       // D opens a trove
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(300, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
@@ -410,40 +410,40 @@ contract('StabilityPool', async accounts => {
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_2))
 
-      const alice_KUSDDeposit_Before = (await stabilityPool.getCompoundedKUSDDeposit(alice)).toString()
-      const bob_KUSDDeposit_Before = (await stabilityPool.getCompoundedKUSDDeposit(bob)).toString()
-      const carol_KUSDDeposit_Before = (await stabilityPool.getCompoundedKUSDDeposit(carol)).toString()
+      const alice_KUSDDeposit_Before = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(alice)).toString()
+      const bob_KUSDDeposit_Before = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)).toString()
+      const carol_KUSDDeposit_Before = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(carol)).toString()
 
-      const alice_ETHGain_Before = (await stabilityPool.getDepositorAssetGain(alice)).toString()
-      const bob_ETHGain_Before = (await stabilityPool.getDepositorAssetGain(bob)).toString()
-      const carol_ETHGain_Before = (await stabilityPool.getDepositorAssetGain(carol)).toString()
+      const alice_AssetGain_Before = (await stabilityPoolAsset1.getDepositorAssetGain(alice)).toString()
+      const bob_AssetGain_Before = (await stabilityPoolAsset1.getDepositorAssetGain(bob)).toString()
+      const carol_AssetGain_Before = (await stabilityPoolAsset1.getDepositorAssetGain(carol)).toString()
 
-      //check non-zero KUSD and ETHGain in the Stability Pool
-      const KUSDinSP = await stabilityPool.getTotalKUSDDeposits()
-      const ETHinSP = await stabilityPool.getAssetBalance()
+      //check non-zero KUSD and AssetGain in the Stability Pool
+      const KUSDinSP = await stabilityPoolAsset1.getTotalKUSDDeposits()
+      const AssetinSP = await stabilityPoolAsset1.getAssetBalance()
       assert.isTrue(KUSDinSP.gt(mv._zeroBN))
-      assert.isTrue(ETHinSP.gt(mv._zeroBN))
+      assert.isTrue(AssetinSP.gt(mv._zeroBN))
 
       // D makes an SP deposit
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: dennis })
-      assert.equal((await stabilityPool.getCompoundedKUSDDeposit(dennis)).toString(), dec(1000, 18))
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: dennis })
+      assert.equal((await stabilityPoolAsset1.getCompoundedKUSDDeposit(dennis)).toString(), dec(1000, 18))
 
-      const alice_KUSDDeposit_After = (await stabilityPool.getCompoundedKUSDDeposit(alice)).toString()
-      const bob_KUSDDeposit_After = (await stabilityPool.getCompoundedKUSDDeposit(bob)).toString()
-      const carol_KUSDDeposit_After = (await stabilityPool.getCompoundedKUSDDeposit(carol)).toString()
+      const alice_KUSDDeposit_After = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(alice)).toString()
+      const bob_KUSDDeposit_After = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)).toString()
+      const carol_KUSDDeposit_After = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(carol)).toString()
 
-      const alice_ETHGain_After = (await stabilityPool.getDepositorAssetGain(alice)).toString()
-      const bob_ETHGain_After = (await stabilityPool.getDepositorAssetGain(bob)).toString()
-      const carol_ETHGain_After = (await stabilityPool.getDepositorAssetGain(carol)).toString()
+      const alice_AssetGain_After = (await stabilityPoolAsset1.getDepositorAssetGain(alice)).toString()
+      const bob_AssetGain_After = (await stabilityPoolAsset1.getDepositorAssetGain(bob)).toString()
+      const carol_AssetGain_After = (await stabilityPoolAsset1.getDepositorAssetGain(carol)).toString()
 
-      // Check compounded deposits and ETH gains for A, B and C have not changed
+      // Check compounded deposits and Asset gains for A, B and C have not changed
       assert.equal(alice_KUSDDeposit_Before, alice_KUSDDeposit_After)
       assert.equal(bob_KUSDDeposit_Before, bob_KUSDDeposit_After)
       assert.equal(carol_KUSDDeposit_Before, carol_KUSDDeposit_After)
 
-      assert.equal(alice_ETHGain_Before, alice_ETHGain_After)
-      assert.equal(bob_ETHGain_Before, bob_ETHGain_After)
-      assert.equal(carol_ETHGain_Before, carol_ETHGain_After)
+      assert.equal(alice_AssetGain_Before, alice_AssetGain_After)
+      assert.equal(bob_AssetGain_Before, bob_AssetGain_After)
+      assert.equal(carol_AssetGain_Before, carol_AssetGain_After)
     })
 
     it("provideToSP(): doesn't impact system debt, collateral or TCR", async () => {
@@ -454,9 +454,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: alice })
-      await stabilityPool.provideToSP(dec(2000, 18), frontEnd_1, { from: bob })
-      await stabilityPool.provideToSP(dec(3000, 18), frontEnd_1, { from: carol })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(2000, 18), frontEnd_1, { from: bob })
+      await stabilityPoolAsset1.provideToSP(dec(3000, 18), frontEnd_1, { from: carol })
 
       // D opens a trove
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
@@ -481,8 +481,8 @@ contract('StabilityPool', async accounts => {
       const TCR_Before = (await th.getTCR(contracts, assetAddress1)).toString()
 
       // D makes an SP deposit
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: dennis })
-      assert.equal((await stabilityPool.getCompoundedKUSDDeposit(dennis)).toString(), dec(1000, 18))
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: dennis })
+      assert.equal((await stabilityPoolAsset1.getCompoundedKUSDDeposit(dennis)).toString(), dec(1000, 18))
 
       const activeDebt_After = (await activePool.getKUSDDebt(assetAddress1)).toString()
       const defaultedDebt_After = (await defaultPool.getKUSDDebt(assetAddress1)).toString()
@@ -507,8 +507,8 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // A and B provide to SP
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: alice })
-      await stabilityPool.provideToSP(dec(2000, 18), frontEnd_1, { from: bob })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(2000, 18), frontEnd_1, { from: bob })
 
       // D opens a trove
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
@@ -537,8 +537,8 @@ contract('StabilityPool', async accounts => {
       const dennis_ICR_Before = (await troveManager.getCurrentICR(assetAddress1, dennis, price)).toString()
 
       // D makes an SP deposit
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: dennis })
-      assert.equal((await stabilityPool.getCompoundedKUSDDeposit(dennis)).toString(), dec(1000, 18))
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: dennis })
+      assert.equal((await stabilityPoolAsset1.getCompoundedKUSDDeposit(dennis)).toString(), dec(1000, 18))
 
       const whale_Debt_After = (await troveManager.Troves(whale, assetAddress1))[TroveData.debt].toString()
       const alice_Debt_After = (await troveManager.Troves(alice, assetAddress1))[TroveData.debt].toString()
@@ -586,15 +586,15 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // A, B provide 100 KUSD to SP
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: alice })
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: bob })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: bob })
 
       // Confirm Bob has an active trove in the system
       assert.isTrue(await sortedTroves.contains(assetAddress1, bob))
       assert.equal((await troveManager.getTroveStatus(assetAddress1, bob)).toString(), '1')  // Confirm Bob's trove status is active
 
       // Confirm Bob has a Stability deposit
-      assert.equal((await stabilityPool.getCompoundedKUSDDeposit(bob)).toString(), dec(1000, 18))
+      assert.equal((await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)).toString(), dec(1000, 18))
 
       // Price drops
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
@@ -618,17 +618,17 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // A, B, C provides 100, 50, 30 KUSD to SP
-      await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: alice })
-      await stabilityPool.provideToSP(dec(50, 18), frontEnd_1, { from: bob })
-      await stabilityPool.provideToSP(dec(30, 18), frontEnd_1, { from: carol })
+      await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(50, 18), frontEnd_1, { from: bob })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), frontEnd_1, { from: carol })
 
-      const bob_Deposit_Before = (await stabilityPool.getCompoundedKUSDDeposit(bob)).toString()
-      const KUSDinSP_Before = (await stabilityPool.getTotalKUSDDeposits()).toString()
+      const bob_Deposit_Before = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)).toString()
+      const KUSDinSP_Before = (await stabilityPoolAsset1.getTotalKUSDDeposits()).toString()
 
       assert.equal(KUSDinSP_Before, dec(180, 18))
 
       // Bob provides 0 KUSD to the Stability Pool 
-      const txPromise_B = stabilityPool.provideToSP(0, frontEnd_1, { from: bob })
+      const txPromise_B = stabilityPoolAsset1.provideToSP(0, frontEnd_1, { from: bob })
       await th.assertRevert(txPromise_B)
     })
 
@@ -642,20 +642,20 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A provides to SP
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
 
-      let currentEpoch = await stabilityPool.currentEpoch()
-      let currentScale = await stabilityPool.currentScale()
-      const G_Before = await stabilityPool.epochToScaleToG(currentEpoch, currentScale)
+      let currentEpoch = await stabilityPoolAsset1.currentEpoch()
+      let currentScale = await stabilityPoolAsset1.currentScale()
+      const G_Before = await stabilityPoolAsset1.epochToScaleToG(currentEpoch, currentScale)
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // B provides to SP
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: B })
 
-      currentEpoch = await stabilityPool.currentEpoch()
-      currentScale = await stabilityPool.currentScale()
-      const G_After = await stabilityPool.epochToScaleToG(currentEpoch, currentScale)
+      currentEpoch = await stabilityPoolAsset1.currentEpoch()
+      currentScale = await stabilityPoolAsset1.currentScale()
+      const G_After = await stabilityPoolAsset1.epochToScaleToG(currentEpoch, currentScale)
 
       // Expect G has increased from the KUMO reward event triggered
       assert.isTrue(G_After.gt(G_Before))
@@ -670,31 +670,31 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A provides to SP
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // A withdraws
-      await stabilityPool.withdrawFromSP(dec(1000, 18), { from: A })
+      await stabilityPoolAsset1.withdrawFromSP(dec(1000, 18), { from: A })
 
       // Check SP is empty
-      assert.equal((await stabilityPool.getTotalKUSDDeposits()), '0')
+      assert.equal((await stabilityPoolAsset1.getTotalKUSDDeposits()), '0')
 
       // Check G is non-zero
-      let currentEpoch = await stabilityPool.currentEpoch()
-      let currentScale = await stabilityPool.currentScale()
-      const G_Before = await stabilityPool.epochToScaleToG(currentEpoch, currentScale)
+      let currentEpoch = await stabilityPoolAsset1.currentEpoch()
+      let currentScale = await stabilityPoolAsset1.currentScale()
+      const G_Before = await stabilityPoolAsset1.epochToScaleToG(currentEpoch, currentScale)
 
       assert.isTrue(G_Before.gt(toBN('0')))
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // B provides to SP
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: B })
 
-      currentEpoch = await stabilityPool.currentEpoch()
-      currentScale = await stabilityPool.currentScale()
-      const G_After = await stabilityPool.epochToScaleToG(currentEpoch, currentScale)
+      currentEpoch = await stabilityPoolAsset1.currentEpoch()
+      currentScale = await stabilityPoolAsset1.currentScale()
+      const G_After = await stabilityPoolAsset1.epochToScaleToG(currentEpoch, currentScale)
 
       // Expect G has not changed
       assert.isTrue(G_After.eq(G_Before))
@@ -710,10 +710,10 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Check A, B, C D have no front end tags
-      const A_tagBefore = await getFrontEndTag(stabilityPool, A)
-      const B_tagBefore = await getFrontEndTag(stabilityPool, B)
-      const C_tagBefore = await getFrontEndTag(stabilityPool, C)
-      const D_tagBefore = await getFrontEndTag(stabilityPool, D)
+      const A_tagBefore = await getFrontEndTag(stabilityPoolAsset1, A)
+      const B_tagBefore = await getFrontEndTag(stabilityPoolAsset1, B)
+      const C_tagBefore = await getFrontEndTag(stabilityPoolAsset1, C)
+      const D_tagBefore = await getFrontEndTag(stabilityPoolAsset1, D)
 
       assert.equal(A_tagBefore, ZERO_ADDRESS)
       assert.equal(B_tagBefore, ZERO_ADDRESS)
@@ -721,16 +721,16 @@ contract('StabilityPool', async accounts => {
       assert.equal(D_tagBefore, ZERO_ADDRESS)
 
       // A, B, C, D provides to SP
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(2000, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(3000, 18), frontEnd_3, { from: C })
-      await stabilityPool.provideToSP(dec(4000, 18), ZERO_ADDRESS, { from: D })  // transacts directly, no front end
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(2000, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(3000, 18), frontEnd_3, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(4000, 18), ZERO_ADDRESS, { from: D })  // transacts directly, no front end
 
       // Check A, B, C D have no front end tags
-      const A_tagAfter = await getFrontEndTag(stabilityPool, A)
-      const B_tagAfter = await getFrontEndTag(stabilityPool, B)
-      const C_tagAfter = await getFrontEndTag(stabilityPool, C)
-      const D_tagAfter = await getFrontEndTag(stabilityPool, D)
+      const A_tagAfter = await getFrontEndTag(stabilityPoolAsset1, A)
+      const B_tagAfter = await getFrontEndTag(stabilityPoolAsset1, B)
+      const C_tagAfter = await getFrontEndTag(stabilityPoolAsset1, C)
+      const D_tagAfter = await getFrontEndTag(stabilityPoolAsset1, D)
 
       // Check front end tags are correctly set
       assert.equal(A_tagAfter, frontEnd_1)
@@ -756,8 +756,8 @@ contract('StabilityPool', async accounts => {
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // A, B provide to SP
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(2000, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(2000, 18), ZERO_ADDRESS, { from: B })
 
       // Get A, B, C KUMO balances after, and confirm they're still zero
       const A_KUMOBalance_After = await kumoToken.balanceOf(A)
@@ -783,16 +783,16 @@ contract('StabilityPool', async accounts => {
       const initialDeposit_A = await kusdToken.balanceOf(A)
       const initialDeposit_B = await kusdToken.balanceOf(B)
       // A, B provide to SP
-      await stabilityPool.provideToSP(initialDeposit_A, frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(initialDeposit_B, frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(initialDeposit_A, frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(initialDeposit_B, frontEnd_2, { from: B })
 
       // time passes
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // C deposits. A, and B earn KUMO
-      await stabilityPool.provideToSP(dec(5, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(5, 18), ZERO_ADDRESS, { from: C })
 
-      // Price drops, defaulter is liquidated, A, B and C earn ETH
+      // Price drops, defaulter is liquidated, A, B and C earn Asset
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -802,8 +802,8 @@ contract('StabilityPool', async accounts => {
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // A and B fully withdraw from the pool
-      await stabilityPool.withdrawFromSP(initialDeposit_A, { from: A })
-      await stabilityPool.withdrawFromSP(initialDeposit_B, { from: B })
+      await stabilityPoolAsset1.withdrawFromSP(initialDeposit_A, { from: A })
+      await stabilityPoolAsset1.withdrawFromSP(initialDeposit_B, { from: B })
 
       // --- TEST --- 
 
@@ -816,8 +816,8 @@ contract('StabilityPool', async accounts => {
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // A, B provide to SP
-      await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(200, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(200, 18), ZERO_ADDRESS, { from: B })
 
       // Get A, B, C KUMO balances after, and confirm they have not changed
       const A_KUMOBalance_After = await kumoToken.balanceOf(A)
@@ -839,9 +839,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: F } })
 
       // D, E, F provide to SP
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: D })
-      await stabilityPool.provideToSP(dec(2000, 18), frontEnd_2, { from: E })
-      await stabilityPool.provideToSP(dec(3000, 18), frontEnd_3, { from: F })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: D })
+      await stabilityPoolAsset1.provideToSP(dec(2000, 18), frontEnd_2, { from: E })
+      await stabilityPoolAsset1.provideToSP(dec(3000, 18), frontEnd_3, { from: F })
 
       // Get F1, F2, F3 KUMO balances before, and confirm they're zero
       const frontEnd_1_KUMOBalance_Before = await kumoToken.balanceOf(frontEnd_1)
@@ -859,9 +859,9 @@ contract('StabilityPool', async accounts => {
       // console.log(`KUMO balance of CI before: ${await kumoToken.balanceOf(communityIssuance.address)}`)
 
       // A, B, C provide to SP
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(2000, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(3000, 18), frontEnd_3, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(2000, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(3000, 18), frontEnd_3, { from: C })
 
       // console.log(`KUMOSupplyCap after: ${await communityIssuance.KUMOSupplyCap()}`)
       // console.log(`totalKUMOIssued after: ${await communityIssuance.totalKUMOIssued()}`)
@@ -886,23 +886,23 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Get front ends' stakes before
-      const F1_Stake_Before = await stabilityPool.frontEndStakes(frontEnd_1)
-      const F2_Stake_Before = await stabilityPool.frontEndStakes(frontEnd_2)
-      const F3_Stake_Before = await stabilityPool.frontEndStakes(frontEnd_3)
+      const F1_Stake_Before = await stabilityPoolAsset1.frontEndStakes(frontEnd_1)
+      const F2_Stake_Before = await stabilityPoolAsset1.frontEndStakes(frontEnd_2)
+      const F3_Stake_Before = await stabilityPoolAsset1.frontEndStakes(frontEnd_3)
 
       const deposit_A = dec(1000, 18)
       const deposit_B = dec(2000, 18)
       const deposit_C = dec(3000, 18)
 
       // A, B, C provide to SP
-      await stabilityPool.provideToSP(deposit_A, frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(deposit_B, frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(deposit_C, frontEnd_3, { from: C })
+      await stabilityPoolAsset1.provideToSP(deposit_A, frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(deposit_B, frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(deposit_C, frontEnd_3, { from: C })
 
       // Get front ends' stakes after
-      const F1_Stake_After = await stabilityPool.frontEndStakes(frontEnd_1)
-      const F2_Stake_After = await stabilityPool.frontEndStakes(frontEnd_2)
-      const F3_Stake_After = await stabilityPool.frontEndStakes(frontEnd_3)
+      const F1_Stake_After = await stabilityPoolAsset1.frontEndStakes(frontEnd_1)
+      const F2_Stake_After = await stabilityPoolAsset1.frontEndStakes(frontEnd_2)
+      const F3_Stake_After = await stabilityPoolAsset1.frontEndStakes(frontEnd_3)
 
       const F1_Diff = F1_Stake_After.sub(F1_Stake_Before)
       const F2_Diff = F2_Stake_After.sub(F2_Stake_Before)
@@ -929,11 +929,11 @@ contract('StabilityPool', async accounts => {
 
       // --- SETUP ---
 
-      await stabilityPool.provideToSP(dec(2000, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPoolAsset1.provideToSP(dec(2000, 18), ZERO_ADDRESS, { from: D })
 
       // fastforward time then  make an SP deposit, to make G > 0
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
-      await stabilityPool.provideToSP(dec(2000, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPoolAsset1.provideToSP(dec(2000, 18), ZERO_ADDRESS, { from: D })
 
       // Perform a liquidation to make 0 < P < 1, and S > 0
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
@@ -941,12 +941,12 @@ contract('StabilityPool', async accounts => {
 
       await troveManager.liquidate(assetAddress1, defaulter_1)
 
-      const currentEpoch = await stabilityPool.currentEpoch()
-      const currentScale = await stabilityPool.currentScale()
+      const currentEpoch = await stabilityPoolAsset1.currentEpoch()
+      const currentScale = await stabilityPoolAsset1.currentScale()
 
-      const S_Before = await stabilityPool.epochToScaleToSum(currentEpoch, currentScale)
-      const P_Before = await stabilityPool.P()
-      const G_Before = await stabilityPool.epochToScaleToG(currentEpoch, currentScale)
+      const S_Before = await stabilityPoolAsset1.epochToScaleToSum(currentEpoch, currentScale)
+      const P_Before = await stabilityPoolAsset1.P()
+      const G_Before = await stabilityPoolAsset1.epochToScaleToG(currentEpoch, currentScale)
 
       // Confirm 0 < P < 1
       assert.isTrue(P_Before.gt(toBN('0')) && P_Before.lt(toBN(dec(1, 18))))
@@ -956,9 +956,9 @@ contract('StabilityPool', async accounts => {
 
       // Get front ends' snapshots before
       for (frontEnd of [frontEnd_1, frontEnd_2, frontEnd_3]) {
-        const snapshot = await stabilityPool.frontEndSnapshots(frontEnd)
+        const snapshot = await stabilityPoolAsset1.frontEndSnapshots(frontEnd)
 
-        assert.equal(snapshot[0], '0')  // S (should always be 0 for front ends, since S corresponds to ETH gain)
+        assert.equal(snapshot[0], '0')  // S (should always be 0 for front ends, since S corresponds to Asset gain)
         assert.equal(snapshot[1], '0')  // P 
         assert.equal(snapshot[2], '0')  // G
         assert.equal(snapshot[3], '0')  // scale
@@ -972,14 +972,14 @@ contract('StabilityPool', async accounts => {
       // --- TEST ---
 
       // A, B, C provide to SP
-      const G1 = await stabilityPool.epochToScaleToG(currentScale, currentEpoch)
-      await stabilityPool.provideToSP(deposit_A, frontEnd_1, { from: A })
+      const G1 = await stabilityPoolAsset1.epochToScaleToG(currentScale, currentEpoch)
+      await stabilityPoolAsset1.provideToSP(deposit_A, frontEnd_1, { from: A })
 
-      const G2 = await stabilityPool.epochToScaleToG(currentScale, currentEpoch)
-      await stabilityPool.provideToSP(deposit_B, frontEnd_2, { from: B })
+      const G2 = await stabilityPoolAsset1.epochToScaleToG(currentScale, currentEpoch)
+      await stabilityPoolAsset1.provideToSP(deposit_B, frontEnd_2, { from: B })
 
-      const G3 = await stabilityPool.epochToScaleToG(currentScale, currentEpoch)
-      await stabilityPool.provideToSP(deposit_C, frontEnd_3, { from: C })
+      const G3 = await stabilityPoolAsset1.epochToScaleToG(currentScale, currentEpoch)
+      await stabilityPoolAsset1.provideToSP(deposit_C, frontEnd_3, { from: C })
 
       const frontEnds = [frontEnd_1, frontEnd_2, frontEnd_3]
       const G_Values = [G1, G2, G3]
@@ -989,7 +989,7 @@ contract('StabilityPool', async accounts => {
 
       // Get front ends' snapshots after
       for (const [frontEnd, G] of Object.entries(frontEndToG)) {
-        const snapshot = await stabilityPool.frontEndSnapshots(frontEnd)
+        const snapshot = await stabilityPoolAsset1.frontEndSnapshots(frontEnd)
 
         // Check snapshots are the expected values
         assert.equal(snapshot[0], '0')  // S (should always be 0 for front ends)
@@ -1000,7 +1000,7 @@ contract('StabilityPool', async accounts => {
       }
     })
 
-    it("provideToSP(), new deposit: depositor does not receive ETH gains", async () => {
+    it("provideToSP(), new deposit: depositor does not receive Asset gains", async () => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // Whale transfers KUSD to A, B
@@ -1013,40 +1013,40 @@ contract('StabilityPool', async accounts => {
 
       // --- TEST ---
 
-      // get current ETH balances
-      const A_ETHBalance_Before = await erc20Asset1.balanceOf(A)
-      const B_ETHBalance_Before = await erc20Asset1.balanceOf(B)
-      const C_ETHBalance_Before = await erc20Asset1.balanceOf(C)
-      const D_ETHBalance_Before = await erc20Asset1.balanceOf(D)
+      // get current Asset balances
+      const A_AssetBalance_Before = await erc20Asset1.balanceOf(A)
+      const B_AssetBalance_Before = await erc20Asset1.balanceOf(B)
+      const C_AssetBalance_Before = await erc20Asset1.balanceOf(C)
+      const D_AssetBalance_Before = await erc20Asset1.balanceOf(D)
 
       // A, B, C, D provide to SP
-      const A_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: A, gasPrice: GAS_PRICE }))
-      const B_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(200, 18), ZERO_ADDRESS, { from: B, gasPrice: GAS_PRICE }))
-      const C_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(300, 18), frontEnd_2, { from: C, gasPrice: GAS_PRICE }))
-      const D_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(400, 18), ZERO_ADDRESS, { from: D, gasPrice: GAS_PRICE }))
+      const A_GAS_Used = th.gasUsed(await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: A, gasPrice: GAS_PRICE }))
+      const B_GAS_Used = th.gasUsed(await stabilityPoolAsset1.provideToSP(dec(200, 18), ZERO_ADDRESS, { from: B, gasPrice: GAS_PRICE }))
+      const C_GAS_Used = th.gasUsed(await stabilityPoolAsset1.provideToSP(dec(300, 18), frontEnd_2, { from: C, gasPrice: GAS_PRICE }))
+      const D_GAS_Used = th.gasUsed(await stabilityPoolAsset1.provideToSP(dec(400, 18), ZERO_ADDRESS, { from: D, gasPrice: GAS_PRICE }))
 
 
-      // ETH balances before minus gas used
-      const A_expectedBalance = A_ETHBalance_Before - A_GAS_Used;
-      const B_expectedBalance = B_ETHBalance_Before - B_GAS_Used;
-      const C_expectedBalance = C_ETHBalance_Before - C_GAS_Used;
-      const D_expectedBalance = D_ETHBalance_Before - D_GAS_Used;
+      // Asset balances before minus gas used
+      const A_expectedBalance = A_AssetBalance_Before - A_GAS_Used;
+      const B_expectedBalance = B_AssetBalance_Before - B_GAS_Used;
+      const C_expectedBalance = C_AssetBalance_Before - C_GAS_Used;
+      const D_expectedBalance = D_AssetBalance_Before - D_GAS_Used;
 
 
-      // Get  ETH balances after
-      const A_ETHBalance_After = await erc20Asset1.balanceOf(A)
-      const B_ETHBalance_After = await erc20Asset1.balanceOf(B)
-      const C_ETHBalance_After = await erc20Asset1.balanceOf(C)
-      const D_ETHBalance_After = await erc20Asset1.balanceOf(D)
+      // Get  Asset balances after
+      const A_AssetBalance_After = await erc20Asset1.balanceOf(A)
+      const B_AssetBalance_After = await erc20Asset1.balanceOf(B)
+      const C_AssetBalance_After = await erc20Asset1.balanceOf(C)
+      const D_AssetBalance_After = await erc20Asset1.balanceOf(D)
 
-      // Check ETH balances have not changed
-      assert.equal(A_ETHBalance_After, A_expectedBalance)
-      assert.equal(B_ETHBalance_After, B_expectedBalance)
-      assert.equal(C_ETHBalance_After, C_expectedBalance)
-      assert.equal(D_ETHBalance_After, D_expectedBalance)
+      // Check Asset balances have not changed
+      assert.equal(A_AssetBalance_After, A_expectedBalance)
+      assert.equal(B_AssetBalance_After, B_expectedBalance)
+      assert.equal(C_AssetBalance_After, C_expectedBalance)
+      assert.equal(D_AssetBalance_After, D_expectedBalance)
     })
 
-    it("provideToSP(), new deposit after past full withdrawal: depositor does not receive ETH gains", async () => {
+    it("provideToSP(), new deposit after past full withdrawal: depositor does not receive Asset gains", async () => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // Whale transfers KUSD to A, B
@@ -1061,18 +1061,18 @@ contract('StabilityPool', async accounts => {
 
       // --- SETUP ---
       // A, B, C, D provide to SP
-      await stabilityPool.provideToSP(dec(105, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(105, 18), ZERO_ADDRESS, { from: B })
-      await stabilityPool.provideToSP(dec(105, 18), frontEnd_1, { from: C })
-      await stabilityPool.provideToSP(dec(105, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPoolAsset1.provideToSP(dec(105, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(105, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(105, 18), frontEnd_1, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(105, 18), ZERO_ADDRESS, { from: D })
 
       // time passes
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // B deposits. A,B,C,D earn KUMO
-      await stabilityPool.provideToSP(dec(5, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(5, 18), ZERO_ADDRESS, { from: B })
 
-      // Price drops, defaulter is liquidated, A, B, C, D earn ETH
+      // Price drops, defaulter is liquidated, A, B, C, D earn Asset
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -1082,42 +1082,42 @@ contract('StabilityPool', async accounts => {
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // A B,C, D fully withdraw from the pool
-      await stabilityPool.withdrawFromSP(dec(105, 18), { from: A })
-      await stabilityPool.withdrawFromSP(dec(105, 18), { from: B })
-      await stabilityPool.withdrawFromSP(dec(105, 18), { from: C })
-      await stabilityPool.withdrawFromSP(dec(105, 18), { from: D })
+      await stabilityPoolAsset1.withdrawFromSP(dec(105, 18), { from: A })
+      await stabilityPoolAsset1.withdrawFromSP(dec(105, 18), { from: B })
+      await stabilityPoolAsset1.withdrawFromSP(dec(105, 18), { from: C })
+      await stabilityPoolAsset1.withdrawFromSP(dec(105, 18), { from: D })
 
       // --- TEST ---
 
-      // get current ETH balances
-      const A_ETHBalance_Before = await erc20Asset1.balanceOf(A)
-      const B_ETHBalance_Before = await erc20Asset1.balanceOf(B)
-      const C_ETHBalance_Before = await erc20Asset1.balanceOf(C)
-      const D_ETHBalance_Before = await erc20Asset1.balanceOf(D)
+      // get current Asset balances
+      const A_AssetBalance_Before = await erc20Asset1.balanceOf(A)
+      const B_AssetBalance_Before = await erc20Asset1.balanceOf(B)
+      const C_AssetBalance_Before = await erc20Asset1.balanceOf(C)
+      const D_AssetBalance_Before = await erc20Asset1.balanceOf(D)
 
       // A, B, C, D provide to SP
-      const A_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: A, gasPrice: GAS_PRICE, gasPrice: GAS_PRICE }))
-      const B_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(200, 18), ZERO_ADDRESS, { from: B, gasPrice: GAS_PRICE, gasPrice: GAS_PRICE }))
-      const C_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(300, 18), frontEnd_2, { from: C, gasPrice: GAS_PRICE, gasPrice: GAS_PRICE }))
-      const D_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(400, 18), ZERO_ADDRESS, { from: D, gasPrice: GAS_PRICE, gasPrice: GAS_PRICE }))
+      const A_GAS_Used = th.gasUsed(await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: A, gasPrice: GAS_PRICE, gasPrice: GAS_PRICE }))
+      const B_GAS_Used = th.gasUsed(await stabilityPoolAsset1.provideToSP(dec(200, 18), ZERO_ADDRESS, { from: B, gasPrice: GAS_PRICE, gasPrice: GAS_PRICE }))
+      const C_GAS_Used = th.gasUsed(await stabilityPoolAsset1.provideToSP(dec(300, 18), frontEnd_2, { from: C, gasPrice: GAS_PRICE, gasPrice: GAS_PRICE }))
+      const D_GAS_Used = th.gasUsed(await stabilityPoolAsset1.provideToSP(dec(400, 18), ZERO_ADDRESS, { from: D, gasPrice: GAS_PRICE, gasPrice: GAS_PRICE }))
 
-      // ETH balances before minus gas used
-      const A_expectedBalance = A_ETHBalance_Before - A_GAS_Used;
-      const B_expectedBalance = B_ETHBalance_Before - B_GAS_Used;
-      const C_expectedBalance = C_ETHBalance_Before - C_GAS_Used;
-      const D_expectedBalance = D_ETHBalance_Before - D_GAS_Used;
+      // Asset balances before minus gas used
+      const A_expectedBalance = A_AssetBalance_Before - A_GAS_Used;
+      const B_expectedBalance = B_AssetBalance_Before - B_GAS_Used;
+      const C_expectedBalance = C_AssetBalance_Before - C_GAS_Used;
+      const D_expectedBalance = D_AssetBalance_Before - D_GAS_Used;
 
-      // Get  ETH balances after
-      const A_ETHBalance_After = await erc20Asset1.balanceOf(A)
-      const B_ETHBalance_After = await erc20Asset1.balanceOf(B)
-      const C_ETHBalance_After = await erc20Asset1.balanceOf(C)
-      const D_ETHBalance_After = await erc20Asset1.balanceOf(D)
+      // Get  Asset balances after
+      const A_AssetBalance_After = await erc20Asset1.balanceOf(A)
+      const B_AssetBalance_After = await erc20Asset1.balanceOf(B)
+      const C_AssetBalance_After = await erc20Asset1.balanceOf(C)
+      const D_AssetBalance_After = await erc20Asset1.balanceOf(D)
 
-      // Check ETH balances have not changed
-      assert.equal(A_ETHBalance_After, A_expectedBalance)
-      assert.equal(B_ETHBalance_After, B_expectedBalance)
-      assert.equal(C_ETHBalance_After, C_expectedBalance)
-      assert.equal(D_ETHBalance_After, D_expectedBalance)
+      // Check Asset balances have not changed
+      assert.equal(A_AssetBalance_After, A_expectedBalance)
+      assert.equal(B_AssetBalance_After, B_expectedBalance)
+      assert.equal(C_AssetBalance_After, C_expectedBalance)
+      assert.equal(D_AssetBalance_After, D_expectedBalance)
     })
 
     it("provideToSP(), topup: triggers KUMO reward event - increases the sum G", async () => {
@@ -1129,20 +1129,20 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A, B, C provide to SP
-      await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(50, 18), frontEnd_1, { from: B })
-      await stabilityPool.provideToSP(dec(50, 18), frontEnd_1, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(50, 18), frontEnd_1, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(50, 18), frontEnd_1, { from: C })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-      const G_Before = await stabilityPool.epochToScaleToG(0, 0)
+      const G_Before = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // B tops up
-      await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: B })
 
-      const G_After = await stabilityPool.epochToScaleToG(0, 0)
+      const G_After = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
       // Expect G has increased from the KUMO reward event triggered by B's topup
       assert.isTrue(G_After.gt(G_Before))
@@ -1162,26 +1162,26 @@ contract('StabilityPool', async accounts => {
 
 
       // A, B, C, D, E provide to SP
-      await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30, 18), ZERO_ADDRESS, { from: C })
-      await stabilityPool.provideToSP(dec(40, 18), frontEnd_1, { from: D })
-      await stabilityPool.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: E })
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(40, 18), frontEnd_1, { from: D })
+      await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: E })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // A, B, C, D, E top up, from different front ends
-      await stabilityPool.provideToSP(dec(10, 18), frontEnd_2, { from: A })
-      await stabilityPool.provideToSP(dec(20, 18), frontEnd_1, { from: B })
-      await stabilityPool.provideToSP(dec(15, 18), frontEnd_3, { from: C })
-      await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: D })
-      await stabilityPool.provideToSP(dec(30, 18), frontEnd_3, { from: E })
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_2, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), frontEnd_1, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(15, 18), frontEnd_3, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), frontEnd_2, { from: D })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), frontEnd_3, { from: E })
 
-      const frontEndTag_A = (await stabilityPool.deposits(A))[1]
-      const frontEndTag_B = (await stabilityPool.deposits(B))[1]
-      const frontEndTag_C = (await stabilityPool.deposits(C))[1]
-      const frontEndTag_D = (await stabilityPool.deposits(D))[1]
-      const frontEndTag_E = (await stabilityPool.deposits(E))[1]
+      const frontEndTag_A = (await stabilityPoolAsset1.deposits(A))[1]
+      const frontEndTag_B = (await stabilityPoolAsset1.deposits(B))[1]
+      const frontEndTag_C = (await stabilityPoolAsset1.deposits(C))[1]
+      const frontEndTag_D = (await stabilityPoolAsset1.deposits(D))[1]
+      const frontEndTag_E = (await stabilityPoolAsset1.deposits(E))[1]
 
       // Check deposits are still tagged with their original front end
       assert.equal(frontEndTag_A, frontEnd_1)
@@ -1200,9 +1200,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(300, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A, B, C, provide to SP
-      await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), ZERO_ADDRESS, { from: C })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -1212,9 +1212,9 @@ contract('StabilityPool', async accounts => {
       const C_KUMOBalance_Before = await kumoToken.balanceOf(C)
 
       // A, B, C top up
-      await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), ZERO_ADDRESS, { from: C })
 
       // Get KUMO balance after
       const A_KUMOBalance_After = await kumoToken.balanceOf(A)
@@ -1236,9 +1236,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(300, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A, B, C, provide to SP
-      await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30, 18), frontEnd_3, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), frontEnd_3, { from: C })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -1248,9 +1248,9 @@ contract('StabilityPool', async accounts => {
       const F3_KUMOBalance_Before = await kumoToken.balanceOf(frontEnd_3)
 
       // A, B, C top up  (front end param passed here is irrelevant)
-      await stabilityPool.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: A })  // provides no front end param
-      await stabilityPool.provideToSP(dec(20, 18), frontEnd_1, { from: B })  // provides front end that doesn't match his tag
-      await stabilityPool.provideToSP(dec(30, 18), frontEnd_3, { from: C }) // provides front end that matches his tag
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: A })  // provides no front end param
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), frontEnd_1, { from: B })  // provides front end that doesn't match his tag
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), frontEnd_3, { from: C }) // provides front end that matches his tag
 
       // Get front ends' KUMO balance after
       const F1_KUMOBalance_After = await kumoToken.balanceOf(A)
@@ -1275,29 +1275,29 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(300, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: F } })
 
       // A, B, C, D, E, F provide to SP
-      await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30, 18), frontEnd_3, { from: C })
-      await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: D })
-      await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: E })
-      await stabilityPool.provideToSP(dec(30, 18), frontEnd_3, { from: F })
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), frontEnd_3, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_1, { from: D })
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), frontEnd_2, { from: E })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), frontEnd_3, { from: F })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // Get front ends' stake before
-      const F1_Stake_Before = await stabilityPool.frontEndStakes(frontEnd_1)
-      const F2_Stake_Before = await stabilityPool.frontEndStakes(frontEnd_2)
-      const F3_Stake_Before = await stabilityPool.frontEndStakes(frontEnd_3)
+      const F1_Stake_Before = await stabilityPoolAsset1.frontEndStakes(frontEnd_1)
+      const F2_Stake_Before = await stabilityPoolAsset1.frontEndStakes(frontEnd_2)
+      const F3_Stake_Before = await stabilityPoolAsset1.frontEndStakes(frontEnd_3)
 
       // A, B, C top up  (front end param passed here is irrelevant)
-      await stabilityPool.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: A })  // provides no front end param
-      await stabilityPool.provideToSP(dec(20, 18), frontEnd_1, { from: B })  // provides front end that doesn't match his tag
-      await stabilityPool.provideToSP(dec(30, 18), frontEnd_3, { from: C }) // provides front end that matches his tag
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: A })  // provides no front end param
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), frontEnd_1, { from: B })  // provides front end that doesn't match his tag
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), frontEnd_3, { from: C }) // provides front end that matches his tag
 
       // Get front ends' stakes after
-      const F1_Stake_After = await stabilityPool.frontEndStakes(frontEnd_1)
-      const F2_Stake_After = await stabilityPool.frontEndStakes(frontEnd_2)
-      const F3_Stake_After = await stabilityPool.frontEndStakes(frontEnd_3)
+      const F1_Stake_After = await stabilityPoolAsset1.frontEndStakes(frontEnd_1)
+      const F2_Stake_After = await stabilityPoolAsset1.frontEndStakes(frontEnd_2)
+      const F3_Stake_After = await stabilityPoolAsset1.frontEndStakes(frontEnd_3)
 
       // Check front ends' stakes have increased
       assert.isTrue(F1_Stake_After.gt(F1_Stake_Before))
@@ -1325,14 +1325,14 @@ contract('StabilityPool', async accounts => {
       const deposit_C = dec(300, 18)
 
       // A, B, C make their initial deposits
-      await stabilityPool.provideToSP(deposit_A, frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(deposit_B, frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(deposit_C, frontEnd_3, { from: C })
+      await stabilityPoolAsset1.provideToSP(deposit_A, frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(deposit_B, frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(deposit_C, frontEnd_3, { from: C })
 
       // fastforward time then make an SP deposit, to make G > 0
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-      await stabilityPool.provideToSP(await kusdToken.balanceOf(D), ZERO_ADDRESS, { from: D })
+      await stabilityPoolAsset1.provideToSP(await kusdToken.balanceOf(D), ZERO_ADDRESS, { from: D })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
       await priceFeed.setPrice(assetAddress1, dec(100, 18))
@@ -1340,12 +1340,12 @@ contract('StabilityPool', async accounts => {
 
       await troveManager.liquidate(assetAddress1, defaulter_1)
 
-      const currentEpoch = await stabilityPool.currentEpoch()
-      const currentScale = await stabilityPool.currentScale()
+      const currentEpoch = await stabilityPoolAsset1.currentEpoch()
+      const currentScale = await stabilityPoolAsset1.currentScale()
 
-      const S_Before = await stabilityPool.epochToScaleToSum(currentEpoch, currentScale)
-      const P_Before = await stabilityPool.P()
-      const G_Before = await stabilityPool.epochToScaleToG(currentEpoch, currentScale)
+      const S_Before = await stabilityPoolAsset1.epochToScaleToSum(currentEpoch, currentScale)
+      const P_Before = await stabilityPoolAsset1.P()
+      const G_Before = await stabilityPoolAsset1.epochToScaleToG(currentEpoch, currentScale)
 
       // Confirm 0 < P < 1
       assert.isTrue(P_Before.gt(toBN('0')) && P_Before.lt(toBN(dec(1, 18))))
@@ -1355,9 +1355,9 @@ contract('StabilityPool', async accounts => {
 
       // Get front ends' snapshots before
       for (frontEnd of [frontEnd_1, frontEnd_2, frontEnd_3]) {
-        const snapshot = await stabilityPool.frontEndSnapshots(frontEnd)
+        const snapshot = await stabilityPoolAsset1.frontEndSnapshots(frontEnd)
 
-        assert.equal(snapshot[0], '0')  // S (should always be 0 for front ends, since S corresponds to ETH gain)
+        assert.equal(snapshot[0], '0')  // S (should always be 0 for front ends, since S corresponds to Asset gain)
         assert.equal(snapshot[1], dec(1, 18))  // P 
         assert.equal(snapshot[2], '0')  // G
         assert.equal(snapshot[3], '0')  // scale
@@ -1368,14 +1368,14 @@ contract('StabilityPool', async accounts => {
 
       // A, B, C top up their deposits. Grab G at each stage, as it can increase a bit
       // between topups, because some block.timestamp time passes (and KUMO is issued) between ops
-      const G1 = await stabilityPool.epochToScaleToG(currentScale, currentEpoch)
-      await stabilityPool.provideToSP(deposit_A, frontEnd_1, { from: A })
+      const G1 = await stabilityPoolAsset1.epochToScaleToG(currentScale, currentEpoch)
+      await stabilityPoolAsset1.provideToSP(deposit_A, frontEnd_1, { from: A })
 
-      const G2 = await stabilityPool.epochToScaleToG(currentScale, currentEpoch)
-      await stabilityPool.provideToSP(deposit_B, frontEnd_2, { from: B })
+      const G2 = await stabilityPoolAsset1.epochToScaleToG(currentScale, currentEpoch)
+      await stabilityPoolAsset1.provideToSP(deposit_B, frontEnd_2, { from: B })
 
-      const G3 = await stabilityPool.epochToScaleToG(currentScale, currentEpoch)
-      await stabilityPool.provideToSP(deposit_C, frontEnd_3, { from: C })
+      const G3 = await stabilityPoolAsset1.epochToScaleToG(currentScale, currentEpoch)
+      await stabilityPoolAsset1.provideToSP(deposit_C, frontEnd_3, { from: C })
 
       const frontEnds = [frontEnd_1, frontEnd_2, frontEnd_3]
       const G_Values = [G1, G2, G3]
@@ -1385,7 +1385,7 @@ contract('StabilityPool', async accounts => {
 
       // Get front ends' snapshots after
       for (const [frontEnd, G] of Object.entries(frontEndToG)) {
-        const snapshot = await stabilityPool.frontEndSnapshots(frontEnd)
+        const snapshot = await stabilityPoolAsset1.frontEndSnapshots(frontEnd)
 
         // Check snapshots are the expected values
         assert.equal(snapshot[0], '0')  // S (should always be 0 for front ends)
@@ -1406,10 +1406,10 @@ contract('StabilityPool', async accounts => {
       await kusdToken.transfer(C, dec(100, 18), { from: whale })
       await kusdToken.transfer(D, dec(100, 18), { from: whale })
 
-      txPromise_A = stabilityPool.provideToSP(0, frontEnd_1, { from: A })
-      txPromise_B = stabilityPool.provideToSP(0, ZERO_ADDRESS, { from: B })
-      txPromise_C = stabilityPool.provideToSP(0, frontEnd_2, { from: C })
-      txPromise_D = stabilityPool.provideToSP(0, ZERO_ADDRESS, { from: D })
+      txPromise_A = stabilityPoolAsset1.provideToSP(0, frontEnd_1, { from: A })
+      txPromise_B = stabilityPoolAsset1.provideToSP(0, ZERO_ADDRESS, { from: B })
+      txPromise_C = stabilityPoolAsset1.provideToSP(0, frontEnd_2, { from: C })
+      txPromise_D = stabilityPoolAsset1.provideToSP(0, ZERO_ADDRESS, { from: D })
 
       await th.assertRevert(txPromise_A, 'StabilityPool: Amount must be non-zero')
       await th.assertRevert(txPromise_B, 'StabilityPool: Amount must be non-zero')
@@ -1425,18 +1425,18 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: F } })
 
       // C, E, F registers as front end
-      await stabilityPool.registerFrontEnd(dec(1, 18), { from: C })
-      await stabilityPool.registerFrontEnd(dec(1, 18), { from: E })
-      await stabilityPool.registerFrontEnd(dec(1, 18), { from: F })
+      await stabilityPoolAsset1.registerFrontEnd(dec(1, 18), { from: C })
+      await stabilityPoolAsset1.registerFrontEnd(dec(1, 18), { from: E })
+      await stabilityPoolAsset1.registerFrontEnd(dec(1, 18), { from: F })
 
-      const txPromise_C = stabilityPool.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: C })
-      const txPromise_E = stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: E })
-      const txPromise_F = stabilityPool.provideToSP(dec(10, 18), F, { from: F })
+      const txPromise_C = stabilityPoolAsset1.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: C })
+      const txPromise_E = stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_1, { from: E })
+      const txPromise_F = stabilityPoolAsset1.provideToSP(dec(10, 18), F, { from: F })
       await th.assertRevert(txPromise_C, "StabilityPool: must not already be a registered front end")
       await th.assertRevert(txPromise_E, "StabilityPool: must not already be a registered front end")
       await th.assertRevert(txPromise_F, "StabilityPool: must not already be a registered front end")
 
-      const txD = await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: D })
+      const txD = await stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_1, { from: D })
       assert.isTrue(txD.receipt.status)
     })
 
@@ -1445,10 +1445,10 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
-      const txPromise_C = stabilityPool.provideToSP(dec(10, 18), A, { from: C })  // passes another EOA
-      const txPromise_D = stabilityPool.provideToSP(dec(10, 18), troveManager.address, { from: D })
-      const txPromise_E = stabilityPool.provideToSP(dec(10, 18), stabilityPool.address, { from: E })
-      const txPromise_F = stabilityPool.provideToSP(dec(10, 18), F, { from: F }) // passes itself
+      const txPromise_C = stabilityPoolAsset1.provideToSP(dec(10, 18), A, { from: C })  // passes another EOA
+      const txPromise_D = stabilityPoolAsset1.provideToSP(dec(10, 18), troveManager.address, { from: D })
+      const txPromise_E = stabilityPoolAsset1.provideToSP(dec(10, 18), stabilityPoolAsset1.address, { from: E })
+      const txPromise_F = stabilityPoolAsset1.provideToSP(dec(10, 18), F, { from: F }) // passes itself
 
       await th.assertRevert(txPromise_C, "StabilityPool: Tag must be a registered front end, or the zero address")
       await th.assertRevert(txPromise_D, "StabilityPool: Tag must be a registered front end, or the zero address")
@@ -1462,20 +1462,20 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: alice })
 
-      const alice_initialDeposit = ((await stabilityPool.deposits(alice))[0]).toString()
-      const bob_initialDeposit = ((await stabilityPool.deposits(bob))[0]).toString()
+      const alice_initialDeposit = ((await stabilityPoolAsset1.deposits(alice))[0]).toString()
+      const bob_initialDeposit = ((await stabilityPoolAsset1.deposits(bob))[0]).toString()
 
       assert.equal(alice_initialDeposit, dec(100, 18))
       assert.equal(bob_initialDeposit, '0')
 
-      const txAlice = await stabilityPool.withdrawFromSP(dec(100, 18), { from: alice })
+      const txAlice = await stabilityPoolAsset1.withdrawFromSP(dec(100, 18), { from: alice })
       assert.isTrue(txAlice.receipt.status)
 
 
       try {
-        const txBob = await stabilityPool.withdrawFromSP(dec(100, 18), { from: bob })
+        const txBob = await stabilityPoolAsset1.withdrawFromSP(dec(100, 18), { from: bob })
         assert.isFalse(txBob.receipt.status)
       } catch (err) {
         assert.include(err.message, "revert")
@@ -1488,25 +1488,25 @@ contract('StabilityPool', async accounts => {
     it("withdrawFromSP(): reverts when amount > 0 and system has an undercollateralized trove", async () => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
-      await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: alice })
 
-      const alice_initialDeposit = ((await stabilityPool.deposits(alice))[0]).toString()
+      const alice_initialDeposit = ((await stabilityPoolAsset1.deposits(alice))[0]).toString()
       assert.equal(alice_initialDeposit, dec(100, 18))
 
       // defaulter opens trove
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
-      // ETH drops, defaulter is in liquidation range (but not liquidated yet)
+      // Asset drops, defaulter is in liquidation range (but not liquidated yet)
       await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
-      await th.assertRevert(stabilityPool.withdrawFromSP(dec(100, 18), { from: alice }))
+      await th.assertRevert(stabilityPoolAsset1.withdrawFromSP(dec(100, 18), { from: alice }))
     })
 
-    it("withdrawFromSP(): partial retrieval - retrieves correct KUSD amount and the entire ETH Gain, and updates deposit", async () => {
+    it("withdrawFromSP(): partial retrieval - retrieves correct KUSD amount and the entire Asset gain, and updates deposit", async () => {
       // --- SETUP ---
       // Whale deposits 185000 KUSD in StabilityPool
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await stabilityPool.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
+      await stabilityPoolAsset1.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
 
       // 2 Troves opened
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -1516,7 +1516,7 @@ contract('StabilityPool', async accounts => {
 
       // Alice makes deposit #1: 15000 KUSD
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
-      await stabilityPool.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
 
       // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
       await priceFeed.setPrice(assetAddress1, dec(105, 18));
@@ -1533,29 +1533,29 @@ contract('StabilityPool', async accounts => {
         .add(liquidatedDebt_2.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
 
       const expectedCompoundedKUSDDeposit_A = toBN(dec(15000, 18)).sub(expectedkusdLoss_A)
-      const compoundedKUSDDeposit_A = await stabilityPool.getCompoundedKUSDDeposit(alice)
+      const compoundedKUSDDeposit_A = await stabilityPoolAsset1.getCompoundedKUSDDeposit(alice)
 
       assert.isAtMost(th.getDifference(expectedCompoundedKUSDDeposit_A, compoundedKUSDDeposit_A), 100000)
 
       // Alice retrieves part of her entitled KUSD: 9000 KUSD
-      await stabilityPool.withdrawFromSP(dec(9000, 18), { from: alice })
+      await stabilityPoolAsset1.withdrawFromSP(dec(9000, 18), { from: alice })
 
       const expectedNewDeposit_A = (compoundedKUSDDeposit_A.sub(toBN(dec(9000, 18))))
 
       // check Alice's deposit has been updated to equal her compounded deposit minus her withdrawal */
-      const newDeposit = ((await stabilityPool.deposits(alice))[0]).toString()
+      const newDeposit = ((await stabilityPoolAsset1.deposits(alice))[0]).toString()
       assert.isAtMost(th.getDifference(newDeposit, expectedNewDeposit_A), 100000)
 
-      // Expect Alice has withdrawn all ETH gain
-      const alice_pendingETHGain = await stabilityPool.getDepositorAssetGain(alice)
-      assert.equal(alice_pendingETHGain, 0)
+      // Expect Alice has withdrawn all Asset gain
+      const alice_pendingAssetGain = await stabilityPoolAsset1.getDepositorAssetGain(alice)
+      assert.equal(alice_pendingAssetGain, 0)
     })
 
     it("withdrawFromSP(): partial retrieval - leaves the correct amount of KUSD in the Stability Pool", async () => {
       // --- SETUP ---
       // Whale deposits 185000 KUSD in StabilityPool
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await stabilityPool.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
+      await stabilityPoolAsset1.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
 
       // 2 Troves opened
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -1564,9 +1564,9 @@ contract('StabilityPool', async accounts => {
 
       // Alice makes deposit #1: 15000 KUSD
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
-      await stabilityPool.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
 
-      const SP_KUSD_Before = await stabilityPool.getTotalKUSDDeposits()
+      const SP_KUSD_Before = await stabilityPoolAsset1.getTotalKUSDDeposits()
       assert.equal(SP_KUSD_Before, dec(200000, 18))
 
       // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
@@ -1580,7 +1580,7 @@ contract('StabilityPool', async accounts => {
       const [liquidatedDebt_2] = await th.getEmittedLiquidationValues(liquidationTX_2)
 
       // Alice retrieves part of her entitled KUSD: 9000 KUSD
-      await stabilityPool.withdrawFromSP(dec(9000, 18), { from: alice })
+      await stabilityPoolAsset1.withdrawFromSP(dec(9000, 18), { from: alice })
 
       /* Check SP has reduced from 2 liquidations and Alice's withdrawal
       Expect KUSD in SP = (200000 - liquidatedDebt_1 - liquidatedDebt_2 - 9000) */
@@ -1589,7 +1589,7 @@ contract('StabilityPool', async accounts => {
         .sub(toBN(liquidatedDebt_2))
         .sub(toBN(dec(9000, 18)))
 
-      const SP_KUSD_After = (await stabilityPool.getTotalKUSDDeposits()).toString()
+      const SP_KUSD_After = (await stabilityPoolAsset1.getTotalKUSDDeposits()).toString()
 
       th.assertIsApproximatelyEqual(SP_KUSD_After, expectedSPKUSD)
     })
@@ -1598,7 +1598,7 @@ contract('StabilityPool', async accounts => {
       // --- SETUP ---
       // Whale deposits 185000 KUSD in StabilityPool
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await stabilityPool.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
+      await stabilityPoolAsset1.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
 
       // 2 Troves opened
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -1608,9 +1608,9 @@ contract('StabilityPool', async accounts => {
 
       // Alice makes deposit #1
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
-      await stabilityPool.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
 
-      const SP_KUSD_Before = await stabilityPool.getTotalKUSDDeposits()
+      const SP_KUSD_Before = await stabilityPoolAsset1.getTotalKUSDDeposits()
       assert.equal(SP_KUSD_Before, dec(200000, 18))
 
       // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
@@ -1628,26 +1628,26 @@ contract('StabilityPool', async accounts => {
         .add(liquidatedDebt_2.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
 
       const expectedCompoundedKUSDDeposit_A = toBN(dec(15000, 18)).sub(expectedkusdLoss_A)
-      const compoundedKUSDDeposit_A = await stabilityPool.getCompoundedKUSDDeposit(alice)
+      const compoundedKUSDDeposit_A = await stabilityPoolAsset1.getCompoundedKUSDDeposit(alice)
 
       assert.isAtMost(th.getDifference(expectedCompoundedKUSDDeposit_A, compoundedKUSDDeposit_A), 100000)
 
-      const KUSDinSPBefore = await stabilityPool.getTotalKUSDDeposits()
+      const KUSDinSPBefore = await stabilityPoolAsset1.getTotalKUSDDeposits()
 
       // Alice retrieves all of her entitled KUSD:
-      await stabilityPool.withdrawFromSP(dec(15000, 18), { from: alice })
+      await stabilityPoolAsset1.withdrawFromSP(dec(15000, 18), { from: alice })
 
       const expectedKUSDinSPAfter = KUSDinSPBefore.sub(compoundedKUSDDeposit_A)
 
-      const KUSDinSPAfter = await stabilityPool.getTotalKUSDDeposits()
+      const KUSDinSPAfter = await stabilityPoolAsset1.getTotalKUSDDeposits()
       assert.isAtMost(th.getDifference(expectedKUSDinSPAfter, KUSDinSPAfter), 100000)
     })
 
-    it("withdrawFromSP(): Subsequent deposit and withdrawal attempt from same account, with no intermediate liquidations, withdraws zero ETH", async () => {
+    it("withdrawFromSP(): Subsequent deposit and withdrawal attempt from same account, with no intermediate liquidations, withdraws zero Asset", async () => {
       // --- SETUP ---
       // Whale deposits 1850 KUSD in StabilityPool
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await stabilityPool.provideToSP(dec(18500, 18), frontEnd_1, { from: whale })
+      await stabilityPoolAsset1.provideToSP(dec(18500, 18), frontEnd_1, { from: whale })
 
       // 2 defaulters open
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -1657,7 +1657,7 @@ contract('StabilityPool', async accounts => {
 
       // Alice makes deposit #1: 15000 KUSD
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
-      await stabilityPool.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
 
       // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
       await priceFeed.setPrice(assetAddress1, dec(105, 18));
@@ -1667,37 +1667,37 @@ contract('StabilityPool', async accounts => {
       await troveManager.liquidate(assetAddress1, defaulter_2, { from: owner })
 
       // Alice retrieves all of her entitled KUSD:
-      await stabilityPool.withdrawFromSP(dec(15000, 18), { from: alice })
-      assert.equal(await stabilityPool.getDepositorAssetGain(alice), 0)
+      await stabilityPoolAsset1.withdrawFromSP(dec(15000, 18), { from: alice })
+      assert.equal(await stabilityPoolAsset1.getDepositorAssetGain(alice), 0)
 
       // Alice makes second deposit
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
-      assert.equal(await stabilityPool.getDepositorAssetGain(alice), 0)
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
+      assert.equal(await stabilityPoolAsset1.getDepositorAssetGain(alice), 0)
 
-      const ETHinSP_Before = (await stabilityPool.getAssetBalance()).toString()
+      const AssetinSP_Before = (await stabilityPoolAsset1.getAssetBalance()).toString()
 
       // Alice attempts second withdrawal
-      await stabilityPool.withdrawFromSP(dec(10000, 18), { from: alice })
-      assert.equal(await stabilityPool.getDepositorAssetGain(alice), 0)
+      await stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: alice })
+      assert.equal(await stabilityPoolAsset1.getDepositorAssetGain(alice), 0)
 
-      // Check ETH in pool does not change
-      const ETHinSP_1 = (await stabilityPool.getAssetBalance()).toString()
-      assert.equal(ETHinSP_Before, ETHinSP_1)
+      // Check Asset in pool does not change
+      const AssetinSP_1 = (await stabilityPoolAsset1.getAssetBalance()).toString()
+      assert.equal(AssetinSP_Before, AssetinSP_1)
 
       // Third deposit
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
-      assert.equal(await stabilityPool.getDepositorAssetGain(alice), 0)
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
+      assert.equal(await stabilityPoolAsset1.getDepositorAssetGain(alice), 0)
 
       // Alice attempts third withdrawal (this time, frm SP to Trove)
-      const txPromise_A = stabilityPool.withdrawAssetGainToTrove(alice, alice, { from: alice })
+      const txPromise_A = stabilityPoolAsset1.withdrawAssetGainToTrove(alice, alice, { from: alice })
       await th.assertRevert(txPromise_A)
     })
 
-    it("withdrawFromSP(): it correctly updates the user's KUSD and ETH snapshots of entitled reward per unit staked", async () => {
+    it("withdrawFromSP(): it correctly updates the user's KUSD and Asset snapshots of entitled reward per unit staked", async () => {
       // --- SETUP ---
       // Whale deposits 185000 KUSD in StabilityPool
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await stabilityPool.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
+      await stabilityPoolAsset1.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
 
       // 2 defaulters open
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -1707,10 +1707,10 @@ contract('StabilityPool', async accounts => {
 
       // Alice makes deposit #1: 15000 KUSD
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
-      await stabilityPool.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
 
       // check 'Before' snapshots
-      const alice_snapshot_Before = await stabilityPool.depositSnapshots(alice)
+      const alice_snapshot_Before = await stabilityPoolAsset1.depositSnapshots(alice)
       const alice_snapshot_S_Before = alice_snapshot_Before[0].toString()
       const alice_snapshot_P_Before = alice_snapshot_Before[1].toString()
       assert.equal(alice_snapshot_S_Before, 0)
@@ -1724,23 +1724,23 @@ contract('StabilityPool', async accounts => {
       await troveManager.liquidate(assetAddress1, defaulter_2, { from: owner });
 
       // Alice retrieves part of her entitled KUSD: 9000 KUSD
-      await stabilityPool.withdrawFromSP(dec(9000, 18), { from: alice })
+      await stabilityPoolAsset1.withdrawFromSP(dec(9000, 18), { from: alice })
 
-      const P = (await stabilityPool.P()).toString()
-      const S = (await stabilityPool.epochToScaleToSum(0, 0)).toString()
+      const P = (await stabilityPoolAsset1.P()).toString()
+      const S = (await stabilityPoolAsset1.epochToScaleToSum(0, 0)).toString()
       // check 'After' snapshots
-      const alice_snapshot_After = await stabilityPool.depositSnapshots(alice)
+      const alice_snapshot_After = await stabilityPoolAsset1.depositSnapshots(alice)
       const alice_snapshot_S_After = alice_snapshot_After[0].toString()
       const alice_snapshot_P_After = alice_snapshot_After[1].toString()
       assert.equal(alice_snapshot_S_After, S)
       assert.equal(alice_snapshot_P_After, P)
     })
 
-    it("withdrawFromSP(): decreases StabilityPool ETH", async () => {
+    it("withdrawFromSP(): decreases StabilityPool Asset", async () => {
       // --- SETUP ---
       // Whale deposits 185000 KUSD in StabilityPool
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await stabilityPool.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
+      await stabilityPoolAsset1.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
 
       // 1 defaulter opens
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -1749,7 +1749,7 @@ contract('StabilityPool', async accounts => {
 
       // Alice makes deposit #1: 15000 KUSD
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
-      await stabilityPool.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
 
       // price drops: defaulter's Trove falls below MCR, alice and whale Trove remain active
       await priceFeed.setPrice(assetAddress1, '100000000000000000000');
@@ -1759,27 +1759,27 @@ contract('StabilityPool', async accounts => {
       const [, liquidatedColl,] = th.getEmittedLiquidationValues(liquidationTx_1)
 
       //Get ActivePool and StabilityPool Ether before retrieval:
-      const active_ETH_Before = await activePool.getAssetBalance(assetAddress1)
-      const stability_ETH_Before = await stabilityPool.getAssetBalance()
+      const active_Asset_Before = await activePool.getAssetBalance(assetAddress1)
+      const stability_Asset_Before = await stabilityPoolAsset1.getAssetBalance()
 
       // Expect alice to be entitled to 15000/200000 of the liquidated coll
-      const aliceExpectedETHGain = liquidatedColl.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
-      const aliceETHGain = await stabilityPool.getDepositorAssetGain(alice)
-      assert.isTrue(aliceExpectedETHGain.eq(aliceETHGain))
+      const aliceExpectedAssetGain = liquidatedColl.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
+      const aliceAssetGain = await stabilityPoolAsset1.getDepositorAssetGain(alice)
+      assert.isTrue(aliceExpectedAssetGain.eq(aliceAssetGain))
 
       // Alice retrieves all of her deposit
-      await stabilityPool.withdrawFromSP(dec(15000, 18), { from: alice })
+      await stabilityPoolAsset1.withdrawFromSP(dec(15000, 18), { from: alice })
 
-      const active_ETH_After = await activePool.getAssetBalance(assetAddress1)
-      const stability_ETH_After = await stabilityPool.getAssetBalance()
+      const active_Asset_After = await activePool.getAssetBalance(assetAddress1)
+      const stability_Asset_After = await stabilityPoolAsset1.getAssetBalance()
 
-      const active_ETH_Difference = (active_ETH_Before.sub(active_ETH_After))
-      const stability_ETH_Difference = (stability_ETH_Before.sub(stability_ETH_After))
+      const active_Asset_Difference = (active_Asset_Before.sub(active_Asset_After))
+      const stability_Asset_Difference = (stability_Asset_Before.sub(stability_Asset_After))
 
-      assert.equal(active_ETH_Difference, '0')
+      assert.equal(active_Asset_Difference, '0')
 
-      // Expect StabilityPool to have decreased by Alice's ETHGain
-      assert.isAtMost(th.getDifference(stability_ETH_Difference, aliceETHGain), 10000)
+      // Expect StabilityPool to have decreased by Alice's AssetGain
+      assert.isAtMost(th.getDifference(stability_Asset_Difference, aliceAssetGain), 10000)
     })
 
     it("withdrawFromSP(): All depositors are able to withdraw from the SP to their account", async () => {
@@ -1793,7 +1793,7 @@ contract('StabilityPool', async accounts => {
       const depositors = [alice, bob, carol, dennis, erin, flyn]
       for (account of depositors) {
         await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
-        await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: account })
+        await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: account })
       }
 
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
@@ -1802,20 +1802,20 @@ contract('StabilityPool', async accounts => {
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // All depositors attempt to withdraw
-      await stabilityPool.withdrawFromSP(dec(10000, 18), { from: alice })
-      assert.equal(((await stabilityPool.deposits(alice))[0]).toString(), '0')
-      await stabilityPool.withdrawFromSP(dec(10000, 18), { from: bob })
-      assert.equal(((await stabilityPool.deposits(alice))[0]).toString(), '0')
-      await stabilityPool.withdrawFromSP(dec(10000, 18), { from: carol })
-      assert.equal(((await stabilityPool.deposits(alice))[0]).toString(), '0')
-      await stabilityPool.withdrawFromSP(dec(10000, 18), { from: dennis })
-      assert.equal(((await stabilityPool.deposits(alice))[0]).toString(), '0')
-      await stabilityPool.withdrawFromSP(dec(10000, 18), { from: erin })
-      assert.equal(((await stabilityPool.deposits(alice))[0]).toString(), '0')
-      await stabilityPool.withdrawFromSP(dec(10000, 18), { from: flyn })
-      assert.equal(((await stabilityPool.deposits(alice))[0]).toString(), '0')
+      await stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: alice })
+      assert.equal(((await stabilityPoolAsset1.deposits(alice))[0]).toString(), '0')
+      await stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: bob })
+      assert.equal(((await stabilityPoolAsset1.deposits(alice))[0]).toString(), '0')
+      await stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: carol })
+      assert.equal(((await stabilityPoolAsset1.deposits(alice))[0]).toString(), '0')
+      await stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: dennis })
+      assert.equal(((await stabilityPoolAsset1.deposits(alice))[0]).toString(), '0')
+      await stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: erin })
+      assert.equal(((await stabilityPoolAsset1.deposits(alice))[0]).toString(), '0')
+      await stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: flyn })
+      assert.equal(((await stabilityPoolAsset1.deposits(alice))[0]).toString(), '0')
 
-      const totalDeposits = (await stabilityPool.getTotalKUSDDeposits()).toString()
+      const totalDeposits = (await stabilityPoolAsset1.getTotalKUSDDeposits()).toString()
 
       assert.isAtMost(th.getDifference(totalDeposits, '0'), 100000)
     })
@@ -1833,7 +1833,7 @@ contract('StabilityPool', async accounts => {
       const depositors = [alice, bob, carol, dennis, erin, flyn]
       for (account of depositors) {
         await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
-        await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: account })
+        await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: account })
       }
 
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
@@ -1848,25 +1848,25 @@ contract('StabilityPool', async accounts => {
       and thus with a deposit of 10000 KUSD, each should withdraw 8333.3333333333333333 KUSD (in practice, slightly less due to rounding error)
       */
 
-      // Price bounces back to $200 per ETH
+      // Price bounces back to $200 per Asset
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // Bob issues a further 5000 KUSD from his trove 
       await borrowerOperations.withdrawKUSD(assetAddress1, th._100pct, dec(5000, 18), bob, bob, { from: bob })
 
       // Expect Alice's KUSD balance increase be very close to 8333.3333333333333333 KUSD
-      await stabilityPool.withdrawFromSP(dec(10000, 18), { from: alice })
+      await stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: alice })
       const aliceBalance = (await kusdToken.balanceOf(alice))
 
       assert.isAtMost(th.getDifference(aliceBalance.sub(aliceBalBefore), '8333333333333333333333'), 100000)
 
       // expect Bob's KUSD balance increase to be very close to  13333.33333333333333333 KUSD
-      await stabilityPool.withdrawFromSP(dec(10000, 18), { from: bob })
+      await stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: bob })
       const bobBalance = (await kusdToken.balanceOf(bob))
       assert.isAtMost(th.getDifference(bobBalance.sub(bobBalBefore), '13333333333333333333333'), 100000)
     })
 
-    it("withdrawFromSP(): doesn't impact other users Stability deposits or ETH gains", async () => {
+    it("withdrawFromSP(): doesn't impact other users Stability deposits or Asset gains", async () => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves and make Stability Pool deposits
@@ -1874,9 +1874,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
-      await stabilityPool.provideToSP(dec(20000, 18), frontEnd_1, { from: bob })
-      await stabilityPool.provideToSP(dec(30000, 18), frontEnd_1, { from: carol })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(20000, 18), frontEnd_1, { from: bob })
+      await stabilityPoolAsset1.provideToSP(dec(30000, 18), frontEnd_1, { from: carol })
 
       // Would-be defaulters open troves
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -1891,38 +1891,38 @@ contract('StabilityPool', async accounts => {
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_2))
 
-      const alice_KUSDDeposit_Before = (await stabilityPool.getCompoundedKUSDDeposit(alice)).toString()
-      const bob_KUSDDeposit_Before = (await stabilityPool.getCompoundedKUSDDeposit(bob)).toString()
+      const alice_KUSDDeposit_Before = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(alice)).toString()
+      const bob_KUSDDeposit_Before = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)).toString()
 
-      const alice_ETHGain_Before = (await stabilityPool.getDepositorAssetGain(alice)).toString()
-      const bob_ETHGain_Before = (await stabilityPool.getDepositorAssetGain(bob)).toString()
+      const alice_AssetGain_Before = (await stabilityPoolAsset1.getDepositorAssetGain(alice)).toString()
+      const bob_AssetGain_Before = (await stabilityPoolAsset1.getDepositorAssetGain(bob)).toString()
 
-      //check non-zero KUSD and ETHGain in the Stability Pool
-      const KUSDinSP = await stabilityPool.getTotalKUSDDeposits()
-      const ETHinSP = await stabilityPool.getAssetBalance()
+      //check non-zero KUSD and AssetGain in the Stability Pool
+      const KUSDinSP = await stabilityPoolAsset1.getTotalKUSDDeposits()
+      const AssetinSP = await stabilityPoolAsset1.getAssetBalance()
       assert.isTrue(KUSDinSP.gt(mv._zeroBN))
-      assert.isTrue(ETHinSP.gt(mv._zeroBN))
+      assert.isTrue(AssetinSP.gt(mv._zeroBN))
 
       // Price rises
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // Carol withdraws her Stability deposit 
-      assert.equal(((await stabilityPool.deposits(carol))[0]).toString(), dec(30000, 18))
-      await stabilityPool.withdrawFromSP(dec(30000, 18), { from: carol })
-      assert.equal(((await stabilityPool.deposits(carol))[0]).toString(), '0')
+      assert.equal(((await stabilityPoolAsset1.deposits(carol))[0]).toString(), dec(30000, 18))
+      await stabilityPoolAsset1.withdrawFromSP(dec(30000, 18), { from: carol })
+      assert.equal(((await stabilityPoolAsset1.deposits(carol))[0]).toString(), '0')
 
-      const alice_KUSDDeposit_After = (await stabilityPool.getCompoundedKUSDDeposit(alice)).toString()
-      const bob_KUSDDeposit_After = (await stabilityPool.getCompoundedKUSDDeposit(bob)).toString()
+      const alice_KUSDDeposit_After = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(alice)).toString()
+      const bob_KUSDDeposit_After = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)).toString()
 
-      const alice_ETHGain_After = (await stabilityPool.getDepositorAssetGain(alice)).toString()
-      const bob_ETHGain_After = (await stabilityPool.getDepositorAssetGain(bob)).toString()
+      const alice_AssetGain_After = (await stabilityPoolAsset1.getDepositorAssetGain(alice)).toString()
+      const bob_AssetGain_After = (await stabilityPoolAsset1.getDepositorAssetGain(bob)).toString()
 
-      // Check compounded deposits and ETH gains for A and B have not changed
+      // Check compounded deposits and Asset gains for A and B have not changed
       assert.equal(alice_KUSDDeposit_Before, alice_KUSDDeposit_After)
       assert.equal(bob_KUSDDeposit_Before, bob_KUSDDeposit_After)
 
-      assert.equal(alice_ETHGain_Before, alice_ETHGain_After)
-      assert.equal(bob_ETHGain_Before, bob_ETHGain_After)
+      assert.equal(alice_AssetGain_Before, alice_AssetGain_After)
+      assert.equal(bob_AssetGain_Before, bob_AssetGain_After)
     })
 
     it("withdrawFromSP(): doesn't impact system debt, collateral or TCR ", async () => {
@@ -1933,9 +1933,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
-      await stabilityPool.provideToSP(dec(20000, 18), frontEnd_1, { from: bob })
-      await stabilityPool.provideToSP(dec(30000, 18), frontEnd_1, { from: carol })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(20000, 18), frontEnd_1, { from: bob })
+      await stabilityPoolAsset1.provideToSP(dec(30000, 18), frontEnd_1, { from: carol })
 
       // Would-be defaulters open troves
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -1960,9 +1960,9 @@ contract('StabilityPool', async accounts => {
       const TCR_Before = (await th.getTCR(contracts, assetAddress1)).toString()
 
       // Carol withdraws her Stability deposit 
-      assert.equal(((await stabilityPool.deposits(carol))[0]).toString(), dec(30000, 18))
-      await stabilityPool.withdrawFromSP(dec(30000, 18), { from: carol })
-      assert.equal(((await stabilityPool.deposits(carol))[0]).toString(), '0')
+      assert.equal(((await stabilityPoolAsset1.deposits(carol))[0]).toString(), dec(30000, 18))
+      await stabilityPoolAsset1.withdrawFromSP(dec(30000, 18), { from: carol })
+      assert.equal(((await stabilityPoolAsset1.deposits(carol))[0]).toString(), '0')
 
       const activeDebt_After = (await activePool.getKUSDDebt(assetAddress1)).toString()
       const defaultedDebt_After = (await defaultPool.getKUSDDebt(assetAddress1)).toString()
@@ -1987,9 +1987,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // A, B and C provide to SP
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
-      await stabilityPool.provideToSP(dec(20000, 18), frontEnd_1, { from: bob })
-      await stabilityPool.provideToSP(dec(30000, 18), frontEnd_1, { from: carol })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(20000, 18), frontEnd_1, { from: bob })
+      await stabilityPoolAsset1.provideToSP(dec(30000, 18), frontEnd_1, { from: carol })
 
       // Price drops
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
@@ -2015,9 +2015,9 @@ contract('StabilityPool', async accounts => {
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // Carol withdraws her Stability deposit 
-      assert.equal(((await stabilityPool.deposits(carol))[0]).toString(), dec(30000, 18))
-      await stabilityPool.withdrawFromSP(dec(30000, 18), { from: carol })
-      assert.equal(((await stabilityPool.deposits(carol))[0]).toString(), '0')
+      assert.equal(((await stabilityPoolAsset1.deposits(carol))[0]).toString(), dec(30000, 18))
+      await stabilityPoolAsset1.withdrawFromSP(dec(30000, 18), { from: carol })
+      assert.equal(((await stabilityPoolAsset1.deposits(carol))[0]).toString(), '0')
 
       const whale_Debt_After = (await troveManager.Troves(whale, assetAddress1))[TroveData.debt].toString()
       const alice_Debt_After = (await troveManager.Troves(alice, assetAddress1))[TroveData.debt].toString()
@@ -2054,16 +2054,16 @@ contract('StabilityPool', async accounts => {
     it("withdrawFromSP(): succeeds when amount is 0 and system has an undercollateralized trove", async () => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
 
-      await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: A })
 
-      const A_initialDeposit = ((await stabilityPool.deposits(A))[0]).toString()
+      const A_initialDeposit = ((await stabilityPoolAsset1.deposits(A))[0]).toString()
       assert.equal(A_initialDeposit, dec(100, 18))
 
       // defaulters opens trove
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
 
-      // ETH drops, defaulters are in liquidation range
+      // Asset drops, defaulters are in liquidation range
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
       const price = await priceFeed.getPrice(assetAddress1)
       assert.isTrue(await th.ICRbetween100and110(assetAddress1, defaulter_1, troveManager, price))
@@ -2078,28 +2078,28 @@ contract('StabilityPool', async accounts => {
       assert.isTrue(await th.ICRbetween100and110(assetAddress1, defaulter_2, troveManager, price))
       assert.isTrue(await sortedTroves.contains(assetAddress1, defaulter_2))
 
-      const A_ETHBalBefore = toBN(await erc20Asset1.balanceOf(A))
+      const A_AssetBalBefore = toBN(await erc20Asset1.balanceOf(A))
       const A_KUMOBalBefore = await kumoToken.balanceOf(A)
 
       // Check Alice has gains to withdraw
-      const A_pendingETHGain = await stabilityPool.getDepositorAssetGain(A)
-      const A_pendingKUMOGain = await stabilityPool.getDepositorKUMOGain(A)
-      assert.isTrue(A_pendingETHGain.gt(toBN('0')))
+      const A_pendingAssetGain = await stabilityPoolAsset1.getDepositorAssetGain(A)
+      const A_pendingKUMOGain = await stabilityPoolAsset1.getDepositorKUMOGain(A)
+      assert.isTrue(A_pendingAssetGain.gt(toBN('0')))
       assert.isTrue(A_pendingKUMOGain.gt(toBN('0')))
 
       // Check withdrawal of 0 succeeds
-      const tx = await stabilityPool.withdrawFromSP(0, { from: A, gasPrice: GAS_PRICE })
+      const tx = await stabilityPoolAsset1.withdrawFromSP(0, { from: A, gasPrice: GAS_PRICE })
       assert.isTrue(tx.receipt.status)
 
-      const A_expectedBalance = A_ETHBalBefore.sub((toBN(th.gasUsed(tx) * GAS_PRICE)))
+      const A_expectedBalance = A_AssetBalBefore.sub((toBN(th.gasUsed(tx) * GAS_PRICE)))
 
-      const A_ETHBalAfter = toBN(await erc20Asset1.balanceOf(A))
+      const A_AssetBalAfter = toBN(await erc20Asset1.balanceOf(A))
 
       const A_KUMOBalAfter = await kumoToken.balanceOf(A)
       const A_KUMOBalDiff = A_KUMOBalAfter.sub(A_KUMOBalBefore)
 
-      // Check A's ETH and KUMO balances have increased correctly
-      assert.isTrue(A_ETHBalAfter.sub(A_ETHBalBefore).eq(A_pendingETHGain))
+      // Check A's Asset and KUMO balances have increased correctly
+      assert.isTrue(A_AssetBalAfter.sub(A_AssetBalBefore).eq(A_pendingAssetGain))
       assert.isAtMost(th.getDifference(A_KUMOBalDiff, A_pendingKUMOGain), 1000)
     })
 
@@ -2113,27 +2113,27 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // A, B, C provides 100, 50, 30 KUSD to SP
-      await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: alice })
-      await stabilityPool.provideToSP(dec(50, 18), frontEnd_1, { from: bob })
-      await stabilityPool.provideToSP(dec(30, 18), frontEnd_1, { from: carol })
+      await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(50, 18), frontEnd_1, { from: bob })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), frontEnd_1, { from: carol })
 
-      const bob_Deposit_Before = (await stabilityPool.getCompoundedKUSDDeposit(bob)).toString()
-      const KUSDinSP_Before = (await stabilityPool.getTotalKUSDDeposits()).toString()
+      const bob_Deposit_Before = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)).toString()
+      const KUSDinSP_Before = (await stabilityPoolAsset1.getTotalKUSDDeposits()).toString()
 
       assert.equal(KUSDinSP_Before, dec(180, 18))
 
       // Bob withdraws 0 KUSD from the Stability Pool 
-      await stabilityPool.withdrawFromSP(0, { from: bob })
+      await stabilityPoolAsset1.withdrawFromSP(0, { from: bob })
 
       // check Bob's deposit and total KUSD in Stability Pool has not changed
-      const bob_Deposit_After = (await stabilityPool.getCompoundedKUSDDeposit(bob)).toString()
-      const KUSDinSP_After = (await stabilityPool.getTotalKUSDDeposits()).toString()
+      const bob_Deposit_After = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)).toString()
+      const KUSDinSP_After = (await stabilityPoolAsset1.getTotalKUSDDeposits()).toString()
 
       assert.equal(bob_Deposit_Before, bob_Deposit_After)
       assert.equal(KUSDinSP_Before, KUSDinSP_After)
     })
 
-    it("withdrawFromSP(): withdrawing 0 ETH Gain does not alter the caller's ETH balance, their trove collateral, or the ETH  in the Stability Pool", async () => {
+    it("withdrawFromSP(): withdrawing 0 Asset gain does not alter the caller's Asset balance, their trove collateral, or the Asset  in the Stability Pool", async () => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves and make Stability Pool deposits
@@ -2154,31 +2154,31 @@ contract('StabilityPool', async accounts => {
 
       // Dennis opens trove and deposits to Stability Pool
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: dennis })
+      await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: dennis })
 
-      // Check Dennis has 0 ETHGain
-      const dennis_ETHGain = (await stabilityPool.getDepositorAssetGain(dennis)).toString()
-      assert.equal(dennis_ETHGain, '0')
+      // Check Dennis has 0 AssetGain
+      const dennis_AssetGain = (await stabilityPoolAsset1.getDepositorAssetGain(dennis)).toString()
+      assert.equal(dennis_AssetGain, '0')
 
-      const dennis_ETHBalance_Before = (erc20Asset1.balanceOf(dennis)).toString()
+      const dennis_AssetBalance_Before = (erc20Asset1.balanceOf(dennis)).toString()
       const dennis_Collateral_Before = ((await troveManager.Troves(dennis, assetAddress1))[TroveData.coll]).toString()
-      const ETHinSP_Before = (await stabilityPool.getAssetBalance()).toString()
+      const AssetinSP_Before = (await stabilityPoolAsset1.getAssetBalance()).toString()
 
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
-      // Dennis withdraws his full deposit and ETHGain to his account
-      await stabilityPool.withdrawFromSP(dec(100, 18), { from: dennis, gasPrice: GAS_PRICE })
+      // Dennis withdraws his full deposit and AssetGain to his account
+      await stabilityPoolAsset1.withdrawFromSP(dec(100, 18), { from: dennis, gasPrice: GAS_PRICE })
 
-      // Check withdrawal does not alter Dennis' ETH balance or his trove's collateral
-      const dennis_ETHBalance_After = (erc20Asset1.balanceOf(dennis)).toString()
+      // Check withdrawal does not alter Dennis' Asset balance or his trove's collateral
+      const dennis_AssetBalance_After = (erc20Asset1.balanceOf(dennis)).toString()
       const dennis_Collateral_After = ((await troveManager.Troves(dennis, assetAddress1))[TroveData.coll]).toString()
-      const ETHinSP_After = (await stabilityPool.getAssetBalance()).toString()
+      const AssetinSP_After = (await stabilityPoolAsset1.getAssetBalance()).toString()
 
-      assert.equal(dennis_ETHBalance_Before, dennis_ETHBalance_After)
+      assert.equal(dennis_AssetBalance_Before, dennis_AssetBalance_After)
       assert.equal(dennis_Collateral_Before, dennis_Collateral_After)
 
-      // Check withdrawal has not altered the ETH in the Stability Pool
-      assert.equal(ETHinSP_Before, ETHinSP_After)
+      // Check withdrawal has not altered the Asset in the Stability Pool
+      assert.equal(AssetinSP_Before, AssetinSP_After)
     })
 
     it("withdrawFromSP(): Request to withdraw > caller's deposit only withdraws the caller's compounded deposit", async () => {
@@ -2193,9 +2193,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
       // A, B, C provide KUSD to SP
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
-      await stabilityPool.provideToSP(dec(20000, 18), frontEnd_1, { from: bob })
-      await stabilityPool.provideToSP(dec(30000, 18), frontEnd_1, { from: carol })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(20000, 18), frontEnd_1, { from: bob })
+      await stabilityPoolAsset1.provideToSP(dec(30000, 18), frontEnd_1, { from: carol })
 
       // Price drops
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
@@ -2206,15 +2206,15 @@ contract('StabilityPool', async accounts => {
       const alice_KUSD_Balance_Before = await kusdToken.balanceOf(alice)
       const bob_KUSD_Balance_Before = await kusdToken.balanceOf(bob)
 
-      const alice_Deposit_Before = await stabilityPool.getCompoundedKUSDDeposit(alice)
-      const bob_Deposit_Before = await stabilityPool.getCompoundedKUSDDeposit(bob)
+      const alice_Deposit_Before = await stabilityPoolAsset1.getCompoundedKUSDDeposit(alice)
+      const bob_Deposit_Before = await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)
 
-      const KUSDinSP_Before = await stabilityPool.getTotalKUSDDeposits()
+      const KUSDinSP_Before = await stabilityPoolAsset1.getTotalKUSDDeposits()
 
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // Bob attempts to withdraws 1 wei more than his compounded deposit from the Stability Pool
-      await stabilityPool.withdrawFromSP(bob_Deposit_Before.add(toBN(1)), { from: bob })
+      await stabilityPoolAsset1.withdrawFromSP(bob_Deposit_Before.add(toBN(1)), { from: bob })
 
       // Check Bob's KUSD balance has risen by only the value of his compounded deposit
       const bob_expectedKUSDBalance = (bob_KUSD_Balance_Before.add(bob_Deposit_Before)).toString()
@@ -2222,7 +2222,7 @@ contract('StabilityPool', async accounts => {
       assert.equal(bob_KUSD_Balance_After, bob_expectedKUSDBalance)
 
       // Alice attempts to withdraws 2309842309.000000000000000000 KUSD from the Stability Pool 
-      await stabilityPool.withdrawFromSP('2309842309000000000000000000', { from: alice })
+      await stabilityPoolAsset1.withdrawFromSP('2309842309000000000000000000', { from: alice })
 
       // Check Alice's KUSD balance has risen by only the value of her compounded deposit
       const alice_expectedKUSDBalance = (alice_KUSD_Balance_Before.add(alice_Deposit_Before)).toString()
@@ -2231,7 +2231,7 @@ contract('StabilityPool', async accounts => {
 
       // Check KUSD in Stability Pool has been reduced by only Alice's compounded deposit and Bob's compounded deposit
       const expectedKUSDinSP = (KUSDinSP_Before.sub(alice_Deposit_Before).sub(bob_Deposit_Before)).toString()
-      const KUSDinSP_After = (await stabilityPool.getTotalKUSDDeposits()).toString()
+      const KUSDinSP_After = (await stabilityPoolAsset1.getTotalKUSDDeposits()).toString()
       assert.equal(KUSDinSP_After, expectedKUSDinSP)
     })
 
@@ -2253,9 +2253,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
       // A, B, C provides 100, 50, 30 KUSD to SP
-      await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: alice })
-      await stabilityPool.provideToSP(dec(50, 18), frontEnd_1, { from: bob })
-      await stabilityPool.provideToSP(dec(30, 18), frontEnd_1, { from: carol })
+      await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(50, 18), frontEnd_1, { from: bob })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), frontEnd_1, { from: carol })
 
       // Price drops
       await priceFeed.setPrice(assetAddress1, dec(100, 18))
@@ -2265,9 +2265,9 @@ contract('StabilityPool', async accounts => {
 
       const bob_KUSD_Balance_Before = await kusdToken.balanceOf(bob)
 
-      const bob_Deposit_Before = await stabilityPool.getCompoundedKUSDDeposit(bob)
+      const bob_Deposit_Before = await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)
 
-      const KUSDinSP_Before = await stabilityPool.getTotalKUSDDeposits()
+      const KUSDinSP_Before = await stabilityPoolAsset1.getTotalKUSDDeposits()
 
       const maxBytes32 = web3.utils.toBN("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
 
@@ -2275,7 +2275,7 @@ contract('StabilityPool', async accounts => {
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // Bob attempts to withdraws maxBytes32 KUSD from the Stability Pool
-      await stabilityPool.withdrawFromSP(maxBytes32, { from: bob })
+      await stabilityPoolAsset1.withdrawFromSP(maxBytes32, { from: bob })
 
       // Check Bob's KUSD balance has risen by only the value of his compounded deposit
       const bob_expectedKUSDBalance = (bob_KUSD_Balance_Before.add(bob_Deposit_Before)).toString()
@@ -2284,11 +2284,11 @@ contract('StabilityPool', async accounts => {
 
       // Check KUSD in Stability Pool has been reduced by only  Bob's compounded deposit
       const expectedKUSDinSP = (KUSDinSP_Before.sub(bob_Deposit_Before)).toString()
-      const KUSDinSP_After = (await stabilityPool.getTotalKUSDDeposits()).toString()
+      const KUSDinSP_After = (await stabilityPoolAsset1.getTotalKUSDDeposits()).toString()
       assert.equal(KUSDinSP_After, expectedKUSDinSP)
     })
 
-    it("withdrawFromSP(): caller can withdraw full deposit and ETH gain during Recovery Mode", async () => {
+    it("withdrawFromSP(): caller can withdraw full deposit and Asset gain during Recovery Mode", async () => {
       // --- SETUP ---
 
       // Price doubles
@@ -2305,9 +2305,9 @@ contract('StabilityPool', async accounts => {
       await borrowerOperations.openTrove(assetAddress1, dec(100, 'ether'), th._100pct, await getOpenTroveKUSDAmount(dec(10000, 18), assetAddress1), defaulter_1, defaulter_1, { from: defaulter_1 })
 
       // A, B, C provides 10000, 5000, 3000 KUSD to SP
-      const A_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: alice, gasPrice: GAS_PRICE }))
-      const B_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(5000, 18), frontEnd_1, { from: bob, gasPrice: GAS_PRICE }))
-      const C_GAS_Used = th.gasUsed(await stabilityPool.provideToSP(dec(3000, 18), frontEnd_1, { from: carol, gasPrice: GAS_PRICE }))
+      const A_GAS_Used = th.gasUsed(await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: alice, gasPrice: GAS_PRICE }))
+      const B_GAS_Used = th.gasUsed(await stabilityPoolAsset1.provideToSP(dec(5000, 18), frontEnd_1, { from: bob, gasPrice: GAS_PRICE }))
+      const C_GAS_Used = th.gasUsed(await stabilityPoolAsset1.provideToSP(dec(3000, 18), frontEnd_1, { from: carol, gasPrice: GAS_PRICE }))
 
       // Price drops
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
@@ -2323,20 +2323,20 @@ contract('StabilityPool', async accounts => {
       const bob_KUSD_Balance_Before = await kusdToken.balanceOf(bob)
       const carol_KUSD_Balance_Before = await kusdToken.balanceOf(carol)
 
-      const alice_ETH_Balance_Before = web3.utils.toBN(await erc20Asset1.balanceOf(alice))
+      const alice_Asset_Balance_Before = web3.utils.toBN(await erc20Asset1.balanceOf(alice))
 
-      const bob_ETH_Balance_Before = web3.utils.toBN(await erc20Asset1.balanceOf(bob))
-      const carol_ETH_Balance_Before = web3.utils.toBN(await erc20Asset1.balanceOf(carol))
+      const bob_Asset_Balance_Before = web3.utils.toBN(await erc20Asset1.balanceOf(bob))
+      const carol_Asset_Balance_Before = web3.utils.toBN(await erc20Asset1.balanceOf(carol))
 
-      const alice_Deposit_Before = await stabilityPool.getCompoundedKUSDDeposit(alice)
-      const bob_Deposit_Before = await stabilityPool.getCompoundedKUSDDeposit(bob)
-      const carol_Deposit_Before = await stabilityPool.getCompoundedKUSDDeposit(carol)
+      const alice_Deposit_Before = await stabilityPoolAsset1.getCompoundedKUSDDeposit(alice)
+      const bob_Deposit_Before = await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)
+      const carol_Deposit_Before = await stabilityPoolAsset1.getCompoundedKUSDDeposit(carol)
 
-      const alice_ETHGain_Before = await stabilityPool.getDepositorAssetGain(alice)
-      const bob_ETHGain_Before = await stabilityPool.getDepositorAssetGain(bob)
-      const carol_ETHGain_Before = await stabilityPool.getDepositorAssetGain(carol)
+      const alice_AssetGain_Before = await stabilityPoolAsset1.getDepositorAssetGain(alice)
+      const bob_AssetGain_Before = await stabilityPoolAsset1.getDepositorAssetGain(bob)
+      const carol_AssetGain_Before = await stabilityPoolAsset1.getDepositorAssetGain(carol)
 
-      const KUSDinSP_Before = await stabilityPool.getTotalKUSDDeposits()
+      const KUSDinSP_Before = await stabilityPoolAsset1.getTotalKUSDDeposits()
 
       // Price rises
       await priceFeed.setPrice(assetAddress1, dec(220, 18))
@@ -2344,9 +2344,9 @@ contract('StabilityPool', async accounts => {
       assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1))
 
       // A, B, C withdraw their full deposits from the Stability Pool
-      const A_GAS_Deposit = th.gasUsed(await stabilityPool.withdrawFromSP(dec(10000, 18), { from: alice, gasPrice: GAS_PRICE }))
-      const B_GAS_Deposit = th.gasUsed(await stabilityPool.withdrawFromSP(dec(5000, 18), { from: bob, gasPrice: GAS_PRICE }))
-      const C_GAS_Deposit = th.gasUsed(await stabilityPool.withdrawFromSP(dec(3000, 18), { from: carol, gasPrice: GAS_PRICE }))
+      const A_GAS_Deposit = th.gasUsed(await stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: alice, gasPrice: GAS_PRICE }))
+      const B_GAS_Deposit = th.gasUsed(await stabilityPoolAsset1.withdrawFromSP(dec(5000, 18), { from: bob, gasPrice: GAS_PRICE }))
+      const C_GAS_Deposit = th.gasUsed(await stabilityPoolAsset1.withdrawFromSP(dec(3000, 18), { from: carol, gasPrice: GAS_PRICE }))
 
       // Check KUSD balances of A, B, C have risen by the value of their compounded deposits, respectively
       const alice_expectedKUSDBalance = (alice_KUSD_Balance_Before.add(alice_Deposit_Before)).toString()
@@ -2365,23 +2365,23 @@ contract('StabilityPool', async accounts => {
       assert.equal(bob_KUSD_Balance_After, bob_expectedKUSDBalance)
       assert.equal(carol_KUSD_Balance_After, carol_expectedKUSDBalance)
 
-      // Check ETH balances of A, B, C have increased by the value of their ETH gain from liquidations, respectively
-      const alice_expectedETHBalance = (alice_ETH_Balance_Before.add(alice_ETHGain_Before)).toString()
-      const bob_expectedETHBalance = (bob_ETH_Balance_Before.add(bob_ETHGain_Before)).toString()
-      const carol_expectedETHBalance = (carol_ETH_Balance_Before.add(carol_ETHGain_Before)).toString()
+      // Check Asset balances of A, B, C have increased by the value of their Asset gain from liquidations, respectively
+      const alice_expectedAssetBalance = (alice_Asset_Balance_Before.add(alice_AssetGain_Before)).toString()
+      const bob_expectedAssetBalance = (bob_Asset_Balance_Before.add(bob_AssetGain_Before)).toString()
+      const carol_expectedAssetBalance = (carol_Asset_Balance_Before.add(carol_AssetGain_Before)).toString()
 
-      const alice_ETHBalance_After = (await erc20Asset1.balanceOf(alice)).toString()
-      const bob_ETHBalance_After = (await erc20Asset1.balanceOf(bob)).toString()
-      const carol_ETHBalance_After = (await erc20Asset1.balanceOf(carol)).toString()
+      const alice_AssetBalance_After = (await erc20Asset1.balanceOf(alice)).toString()
+      const bob_AssetBalance_After = (await erc20Asset1.balanceOf(bob)).toString()
+      const carol_AssetBalance_After = (await erc20Asset1.balanceOf(carol)).toString()
 
-      // ETH balances before minus gas used
-      const alice_ETHBalance_After_Gas = alice_ETHBalance_After - A_GAS_Used;
-      const bob_ETHBalance_After_Gas = bob_ETHBalance_After - B_GAS_Used;
-      const carol_ETHBalance_After_Gas = carol_ETHBalance_After - C_GAS_Used;
+      // Asset balances before minus gas used
+      const alice_AssetBalance_After_Gas = alice_AssetBalance_After - A_GAS_Used;
+      const bob_AssetBalance_After_Gas = bob_AssetBalance_After - B_GAS_Used;
+      const carol_AssetBalance_After_Gas = carol_AssetBalance_After - C_GAS_Used;
 
-      assert.equal(alice_expectedETHBalance, alice_ETHBalance_After_Gas)
-      assert.equal(bob_expectedETHBalance, bob_ETHBalance_After_Gas)
-      assert.equal(carol_expectedETHBalance, carol_ETHBalance_After_Gas)
+      assert.equal(alice_expectedAssetBalance, alice_AssetBalance_After_Gas)
+      assert.equal(bob_expectedAssetBalance, bob_AssetBalance_After_Gas)
+      assert.equal(carol_expectedAssetBalance, carol_AssetBalance_After_Gas)
 
       // Check KUSD in Stability Pool has been reduced by A, B and C's compounded deposit
       const expectedKUSDinSP = (KUSDinSP_Before
@@ -2389,15 +2389,15 @@ contract('StabilityPool', async accounts => {
         .sub(bob_Deposit_Before)
         .sub(carol_Deposit_Before))
         .toString()
-      const KUSDinSP_After = (await stabilityPool.getTotalKUSDDeposits()).toString()
+      const KUSDinSP_After = (await stabilityPoolAsset1.getTotalKUSDDeposits()).toString()
       assert.equal(KUSDinSP_After, expectedKUSDinSP)
 
-      // Check ETH in SP has reduced to zero
-      const ETHinSP_After = (await stabilityPool.getAssetBalance()).toString()
-      assert.isAtMost(th.getDifference(ETHinSP_After, '0'), 100000)
+      // Check Asset in SP has reduced to zero
+      const AssetinSP_After = (await stabilityPoolAsset1.getAssetBalance()).toString()
+      assert.isAtMost(th.getDifference(AssetinSP_After, '0'), 100000)
     })
 
-    it("getDepositorETHGain(): depositor does not earn further ETH gains from liquidations while their compounded deposit == 0: ", async () => {
+    it("getDepositorAssetGain(): depositor does not earn further Asset gains from liquidations while their compounded deposit == 0: ", async () => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves
@@ -2411,8 +2411,8 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_3 } })
 
       // A, B, provide 10000, 5000 KUSD to SP
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
-      await stabilityPool.provideToSP(dec(5000, 18), frontEnd_1, { from: bob })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(5000, 18), frontEnd_1, { from: bob })
 
       //price drops
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
@@ -2421,44 +2421,44 @@ contract('StabilityPool', async accounts => {
       await troveManager.liquidate(assetAddress1, defaulter_1)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
 
-      const KUSDinSP = (await stabilityPool.getTotalKUSDDeposits()).toString()
+      const KUSDinSP = (await stabilityPoolAsset1.getTotalKUSDDeposits()).toString()
       assert.equal(KUSDinSP, '0')
 
       // Check Stability deposits have been fully cancelled with debt, and are now all zero
-      const alice_Deposit = (await stabilityPool.getCompoundedKUSDDeposit(alice)).toString()
-      const bob_Deposit = (await stabilityPool.getCompoundedKUSDDeposit(bob)).toString()
+      const alice_Deposit = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(alice)).toString()
+      const bob_Deposit = (await stabilityPoolAsset1.getCompoundedKUSDDeposit(bob)).toString()
 
       assert.equal(alice_Deposit, '0')
       assert.equal(bob_Deposit, '0')
 
-      // Get ETH gain for A and B
-      const alice_ETHGain_1 = (await stabilityPool.getDepositorAssetGain(alice)).toString()
-      const bob_ETHGain_1 = (await stabilityPool.getDepositorAssetGain(bob)).toString()
+      // Get Asset gain for A and B
+      const alice_AssetGain_1 = (await stabilityPoolAsset1.getDepositorAssetGain(alice)).toString()
+      const bob_AssetGain_1 = (await stabilityPoolAsset1.getDepositorAssetGain(bob)).toString()
 
       // Whale deposits 10000 KUSD to Stability Pool
-      await stabilityPool.provideToSP(dec(1, 24), frontEnd_1, { from: whale })
+      await stabilityPoolAsset1.provideToSP(dec(1, 24), frontEnd_1, { from: whale })
 
       // Liquidation 2
       await troveManager.liquidate(assetAddress1, defaulter_2)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_2))
 
-      // Check Alice and Bob have not received ETH gain from liquidation 2 while their deposit was 0
-      const alice_ETHGain_2 = (await stabilityPool.getDepositorAssetGain(alice)).toString()
-      const bob_ETHGain_2 = (await stabilityPool.getDepositorAssetGain(bob)).toString()
+      // Check Alice and Bob have not received Asset gain from liquidation 2 while their deposit was 0
+      const alice_AssetGain_2 = (await stabilityPoolAsset1.getDepositorAssetGain(alice)).toString()
+      const bob_AssetGain_2 = (await stabilityPoolAsset1.getDepositorAssetGain(bob)).toString()
 
-      assert.equal(alice_ETHGain_1, alice_ETHGain_2)
-      assert.equal(bob_ETHGain_1, bob_ETHGain_2)
+      assert.equal(alice_AssetGain_1, alice_AssetGain_2)
+      assert.equal(bob_AssetGain_1, bob_AssetGain_2)
 
       // Liquidation 3
       await troveManager.liquidate(assetAddress1, defaulter_3)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_3))
 
-      // Check Alice and Bob have not received ETH gain from liquidation 3 while their deposit was 0
-      const alice_ETHGain_3 = (await stabilityPool.getDepositorAssetGain(alice)).toString()
-      const bob_ETHGain_3 = (await stabilityPool.getDepositorAssetGain(bob)).toString()
+      // Check Alice and Bob have not received Asset gain from liquidation 3 while their deposit was 0
+      const alice_AssetGain_3 = (await stabilityPoolAsset1.getDepositorAssetGain(alice)).toString()
+      const bob_AssetGain_3 = (await stabilityPoolAsset1.getDepositorAssetGain(bob)).toString()
 
-      assert.equal(alice_ETHGain_1, alice_ETHGain_3)
-      assert.equal(bob_ETHGain_1, bob_ETHGain_3)
+      assert.equal(alice_AssetGain_1, alice_AssetGain_3)
+      assert.equal(bob_AssetGain_1, bob_AssetGain_3)
     })
 
     //--- KUMO functionality ---
@@ -2471,17 +2471,17 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A and B provide to SP
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: B })
 
-      const G_Before = await stabilityPool.epochToScaleToG(0, 0)
+      const G_Before = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // A withdraws from SP
-      await stabilityPool.withdrawFromSP(dec(5000, 18), { from: A })
+      await stabilityPoolAsset1.withdrawFromSP(dec(5000, 18), { from: A })
 
-      const G_1 = await stabilityPool.epochToScaleToG(0, 0)
+      const G_1 = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
       // Expect G has increased from the KUMO reward event triggered
       assert.isTrue(G_1.gt(G_Before))
@@ -2489,9 +2489,9 @@ contract('StabilityPool', async accounts => {
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // A withdraws from SP
-      await stabilityPool.withdrawFromSP(dec(5000, 18), { from: B })
+      await stabilityPoolAsset1.withdrawFromSP(dec(5000, 18), { from: B })
 
-      const G_2 = await stabilityPool.epochToScaleToG(0, 0)
+      const G_2 = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
       // Expect G has increased from the KUMO reward event triggered
       assert.isTrue(G_2.gt(G_1))
@@ -2510,26 +2510,26 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A, B, C, D, E provide to SP
-      await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30, 18), ZERO_ADDRESS, { from: C })
-      await stabilityPool.provideToSP(dec(40, 18), frontEnd_1, { from: D })
-      await stabilityPool.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: E })
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(40, 18), frontEnd_1, { from: D })
+      await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: E })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // A, B, C, D, E withdraw, from different front ends
-      await stabilityPool.withdrawFromSP(dec(5, 18), { from: A })
-      await stabilityPool.withdrawFromSP(dec(10, 18), { from: B })
-      await stabilityPool.withdrawFromSP(dec(15, 18), { from: C })
-      await stabilityPool.withdrawFromSP(dec(20, 18), { from: D })
-      await stabilityPool.withdrawFromSP(dec(25, 18), { from: E })
+      await stabilityPoolAsset1.withdrawFromSP(dec(5, 18), { from: A })
+      await stabilityPoolAsset1.withdrawFromSP(dec(10, 18), { from: B })
+      await stabilityPoolAsset1.withdrawFromSP(dec(15, 18), { from: C })
+      await stabilityPoolAsset1.withdrawFromSP(dec(20, 18), { from: D })
+      await stabilityPoolAsset1.withdrawFromSP(dec(25, 18), { from: E })
 
-      const frontEndTag_A = (await stabilityPool.deposits(A))[1]
-      const frontEndTag_B = (await stabilityPool.deposits(B))[1]
-      const frontEndTag_C = (await stabilityPool.deposits(C))[1]
-      const frontEndTag_D = (await stabilityPool.deposits(D))[1]
-      const frontEndTag_E = (await stabilityPool.deposits(E))[1]
+      const frontEndTag_A = (await stabilityPoolAsset1.deposits(A))[1]
+      const frontEndTag_B = (await stabilityPoolAsset1.deposits(B))[1]
+      const frontEndTag_C = (await stabilityPoolAsset1.deposits(C))[1]
+      const frontEndTag_D = (await stabilityPoolAsset1.deposits(D))[1]
+      const frontEndTag_E = (await stabilityPoolAsset1.deposits(E))[1]
 
       // Check deposits are still tagged with their original front end
       assert.equal(frontEndTag_A, frontEnd_1)
@@ -2548,9 +2548,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A, B, C, provide to SP
-      await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), ZERO_ADDRESS, { from: C })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -2560,9 +2560,9 @@ contract('StabilityPool', async accounts => {
       const C_KUMOBalance_Before = await kumoToken.balanceOf(C)
 
       // A, B, C withdraw
-      await stabilityPool.withdrawFromSP(dec(1, 18), { from: A })
-      await stabilityPool.withdrawFromSP(dec(2, 18), { from: B })
-      await stabilityPool.withdrawFromSP(dec(3, 18), { from: C })
+      await stabilityPoolAsset1.withdrawFromSP(dec(1, 18), { from: A })
+      await stabilityPoolAsset1.withdrawFromSP(dec(2, 18), { from: B })
+      await stabilityPoolAsset1.withdrawFromSP(dec(3, 18), { from: C })
 
       // Get KUMO balance after
       const A_KUMOBalance_After = await kumoToken.balanceOf(A)
@@ -2584,9 +2584,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A, B, C, provide to SP
-      await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30, 18), frontEnd_3, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), frontEnd_3, { from: C })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -2596,9 +2596,9 @@ contract('StabilityPool', async accounts => {
       const F3_KUMOBalance_Before = await kumoToken.balanceOf(frontEnd_3)
 
       // A, B, C withdraw
-      await stabilityPool.withdrawFromSP(dec(1, 18), { from: A })
-      await stabilityPool.withdrawFromSP(dec(2, 18), { from: B })
-      await stabilityPool.withdrawFromSP(dec(3, 18), { from: C })
+      await stabilityPoolAsset1.withdrawFromSP(dec(1, 18), { from: A })
+      await stabilityPoolAsset1.withdrawFromSP(dec(2, 18), { from: B })
+      await stabilityPoolAsset1.withdrawFromSP(dec(3, 18), { from: C })
 
       // Get front ends' KUMO balance after
       const F1_KUMOBalance_After = await kumoToken.balanceOf(A)
@@ -2623,29 +2623,29 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: F } })
 
       // A, B, C, D, E, F provide to SP
-      await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30, 18), frontEnd_3, { from: C })
-      await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: D })
-      await stabilityPool.provideToSP(dec(20, 18), frontEnd_2, { from: E })
-      await stabilityPool.provideToSP(dec(30, 18), frontEnd_3, { from: F })
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), frontEnd_3, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_1, { from: D })
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), frontEnd_2, { from: E })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), frontEnd_3, { from: F })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // Get front ends' stake before
-      const F1_Stake_Before = await stabilityPool.frontEndStakes(frontEnd_1)
-      const F2_Stake_Before = await stabilityPool.frontEndStakes(frontEnd_2)
-      const F3_Stake_Before = await stabilityPool.frontEndStakes(frontEnd_3)
+      const F1_Stake_Before = await stabilityPoolAsset1.frontEndStakes(frontEnd_1)
+      const F2_Stake_Before = await stabilityPoolAsset1.frontEndStakes(frontEnd_2)
+      const F3_Stake_Before = await stabilityPoolAsset1.frontEndStakes(frontEnd_3)
 
       // A, B, C withdraw 
-      await stabilityPool.withdrawFromSP(dec(1, 18), { from: A })
-      await stabilityPool.withdrawFromSP(dec(2, 18), { from: B })
-      await stabilityPool.withdrawFromSP(dec(3, 18), { from: C })
+      await stabilityPoolAsset1.withdrawFromSP(dec(1, 18), { from: A })
+      await stabilityPoolAsset1.withdrawFromSP(dec(2, 18), { from: B })
+      await stabilityPoolAsset1.withdrawFromSP(dec(3, 18), { from: C })
 
       // Get front ends' stakes after
-      const F1_Stake_After = await stabilityPool.frontEndStakes(frontEnd_1)
-      const F2_Stake_After = await stabilityPool.frontEndStakes(frontEnd_2)
-      const F3_Stake_After = await stabilityPool.frontEndStakes(frontEnd_3)
+      const F1_Stake_After = await stabilityPoolAsset1.frontEndStakes(frontEnd_1)
+      const F2_Stake_After = await stabilityPoolAsset1.frontEndStakes(frontEnd_2)
+      const F3_Stake_After = await stabilityPoolAsset1.frontEndStakes(frontEnd_3)
 
       // Check front ends' stakes have decreased
       assert.isTrue(F1_Stake_After.lt(F1_Stake_Before))
@@ -2673,14 +2673,14 @@ contract('StabilityPool', async accounts => {
       const deposit_C = dec(30000, 18)
 
       // A, B, C make their initial deposits
-      await stabilityPool.provideToSP(deposit_A, frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(deposit_B, frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(deposit_C, frontEnd_3, { from: C })
+      await stabilityPoolAsset1.provideToSP(deposit_A, frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(deposit_B, frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(deposit_C, frontEnd_3, { from: C })
 
       // fastforward time then make an SP deposit, to make G > 0
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-      await stabilityPool.provideToSP(dec(1000, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), ZERO_ADDRESS, { from: D })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
@@ -2688,12 +2688,12 @@ contract('StabilityPool', async accounts => {
 
       await troveManager.liquidate(assetAddress1, defaulter_1)
 
-      const currentEpoch = await stabilityPool.currentEpoch()
-      const currentScale = await stabilityPool.currentScale()
+      const currentEpoch = await stabilityPoolAsset1.currentEpoch()
+      const currentScale = await stabilityPoolAsset1.currentScale()
 
-      const S_Before = await stabilityPool.epochToScaleToSum(currentEpoch, currentScale)
-      const P_Before = await stabilityPool.P()
-      const G_Before = await stabilityPool.epochToScaleToG(currentEpoch, currentScale)
+      const S_Before = await stabilityPoolAsset1.epochToScaleToSum(currentEpoch, currentScale)
+      const P_Before = await stabilityPoolAsset1.P()
+      const G_Before = await stabilityPoolAsset1.epochToScaleToG(currentEpoch, currentScale)
 
       // Confirm 0 < P < 1
       assert.isTrue(P_Before.gt(toBN('0')) && P_Before.lt(toBN(dec(1, 18))))
@@ -2703,9 +2703,9 @@ contract('StabilityPool', async accounts => {
 
       // Get front ends' snapshots before
       for (frontEnd of [frontEnd_1, frontEnd_2, frontEnd_3]) {
-        const snapshot = await stabilityPool.frontEndSnapshots(frontEnd)
+        const snapshot = await stabilityPoolAsset1.frontEndSnapshots(frontEnd)
 
-        assert.equal(snapshot[0], '0')  // S (should always be 0 for front ends, since S corresponds to ETH gain)
+        assert.equal(snapshot[0], '0')  // S (should always be 0 for front ends, since S corresponds to Asset gain)
         assert.equal(snapshot[1], dec(1, 18))  // P 
         assert.equal(snapshot[2], '0')  // G
         assert.equal(snapshot[3], '0')  // scale
@@ -2718,14 +2718,14 @@ contract('StabilityPool', async accounts => {
 
       // A, B, C top withdraw part of their deposits. Grab G at each stage, as it can increase a bit
       // between topups, because some block.timestamp time passes (and KUMO is issued) between ops
-      const G1 = await stabilityPool.epochToScaleToG(currentScale, currentEpoch)
-      await stabilityPool.withdrawFromSP(dec(1, 18), { from: A })
+      const G1 = await stabilityPoolAsset1.epochToScaleToG(currentScale, currentEpoch)
+      await stabilityPoolAsset1.withdrawFromSP(dec(1, 18), { from: A })
 
-      const G2 = await stabilityPool.epochToScaleToG(currentScale, currentEpoch)
-      await stabilityPool.withdrawFromSP(dec(2, 18), { from: B })
+      const G2 = await stabilityPoolAsset1.epochToScaleToG(currentScale, currentEpoch)
+      await stabilityPoolAsset1.withdrawFromSP(dec(2, 18), { from: B })
 
-      const G3 = await stabilityPool.epochToScaleToG(currentScale, currentEpoch)
-      await stabilityPool.withdrawFromSP(dec(3, 18), { from: C })
+      const G3 = await stabilityPoolAsset1.epochToScaleToG(currentScale, currentEpoch)
+      await stabilityPoolAsset1.withdrawFromSP(dec(3, 18), { from: C })
 
       const frontEnds = [frontEnd_1, frontEnd_2, frontEnd_3]
       const G_Values = [G1, G2, G3]
@@ -2735,7 +2735,7 @@ contract('StabilityPool', async accounts => {
 
       // Get front ends' snapshots after
       for (const [frontEnd, G] of Object.entries(frontEndToG)) {
-        const snapshot = await stabilityPool.frontEndSnapshots(frontEnd)
+        const snapshot = await stabilityPoolAsset1.frontEndSnapshots(frontEnd)
 
         // Check snapshots are the expected values
         assert.equal(snapshot[0], '0')  // S (should always be 0 for front ends)
@@ -2758,16 +2758,16 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // A, B, C, D make their initial deposits
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20000, 18), ZERO_ADDRESS, { from: B })
-      await stabilityPool.provideToSP(dec(30000, 18), frontEnd_2, { from: C })
-      await stabilityPool.provideToSP(dec(40000, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(20000, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(30000, 18), frontEnd_2, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(40000, 18), ZERO_ADDRESS, { from: D })
 
       // Check deposits are tagged with correct front end 
-      const A_tagBefore = await getFrontEndTag(stabilityPool, A)
-      const B_tagBefore = await getFrontEndTag(stabilityPool, B)
-      const C_tagBefore = await getFrontEndTag(stabilityPool, C)
-      const D_tagBefore = await getFrontEndTag(stabilityPool, D)
+      const A_tagBefore = await getFrontEndTag(stabilityPoolAsset1, A)
+      const B_tagBefore = await getFrontEndTag(stabilityPoolAsset1, B)
+      const C_tagBefore = await getFrontEndTag(stabilityPoolAsset1, C)
+      const D_tagBefore = await getFrontEndTag(stabilityPoolAsset1, D)
 
       assert.equal(A_tagBefore, frontEnd_1)
       assert.equal(B_tagBefore, ZERO_ADDRESS)
@@ -2775,16 +2775,16 @@ contract('StabilityPool', async accounts => {
       assert.equal(D_tagBefore, ZERO_ADDRESS)
 
       // All depositors make full withdrawal
-      await stabilityPool.withdrawFromSP(dec(10000, 18), { from: A })
-      await stabilityPool.withdrawFromSP(dec(20000, 18), { from: B })
-      await stabilityPool.withdrawFromSP(dec(30000, 18), { from: C })
-      await stabilityPool.withdrawFromSP(dec(40000, 18), { from: D })
+      await stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: A })
+      await stabilityPoolAsset1.withdrawFromSP(dec(20000, 18), { from: B })
+      await stabilityPoolAsset1.withdrawFromSP(dec(30000, 18), { from: C })
+      await stabilityPoolAsset1.withdrawFromSP(dec(40000, 18), { from: D })
 
       // Check all deposits now have no front end tag
-      const A_tagAfter = await getFrontEndTag(stabilityPool, A)
-      const B_tagAfter = await getFrontEndTag(stabilityPool, B)
-      const C_tagAfter = await getFrontEndTag(stabilityPool, C)
-      const D_tagAfter = await getFrontEndTag(stabilityPool, D)
+      const A_tagAfter = await getFrontEndTag(stabilityPoolAsset1, A)
+      const B_tagAfter = await getFrontEndTag(stabilityPoolAsset1, B)
+      const C_tagAfter = await getFrontEndTag(stabilityPoolAsset1, C)
+      const D_tagAfter = await getFrontEndTag(stabilityPoolAsset1, D)
 
       assert.equal(A_tagAfter, ZERO_ADDRESS)
       assert.equal(B_tagAfter, ZERO_ADDRESS)
@@ -2801,11 +2801,11 @@ contract('StabilityPool', async accounts => {
 
       // E opens trove and makes a deposit
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(20000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: E } })
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_3, { from: E })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_3, { from: E })
 
       // Fast-forward time and make a second deposit, to trigger KUMO reward and make G > 0
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_3, { from: E })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_3, { from: E })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
@@ -2813,12 +2813,12 @@ contract('StabilityPool', async accounts => {
 
       await troveManager.liquidate(assetAddress1, defaulter_1)
 
-      const currentEpoch = await stabilityPool.currentEpoch()
-      const currentScale = await stabilityPool.currentScale()
+      const currentEpoch = await stabilityPoolAsset1.currentEpoch()
+      const currentScale = await stabilityPoolAsset1.currentScale()
 
-      const S_Before = await stabilityPool.epochToScaleToSum(currentEpoch, currentScale)
-      const P_Before = await stabilityPool.P()
-      const G_Before = await stabilityPool.epochToScaleToG(currentEpoch, currentScale)
+      const S_Before = await stabilityPoolAsset1.epochToScaleToSum(currentEpoch, currentScale)
+      const P_Before = await stabilityPoolAsset1.P()
+      const G_Before = await stabilityPoolAsset1.epochToScaleToG(currentEpoch, currentScale)
 
       // Confirm 0 < P < 1
       assert.isTrue(P_Before.gt(toBN('0')) && P_Before.lt(toBN(dec(1, 18))))
@@ -2839,15 +2839,15 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(40000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: D } })
 
       // A, B, C, D make their initial deposits
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20000, 18), ZERO_ADDRESS, { from: B })
-      await stabilityPool.provideToSP(dec(30000, 18), frontEnd_2, { from: C })
-      await stabilityPool.provideToSP(dec(40000, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(20000, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(30000, 18), frontEnd_2, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(40000, 18), ZERO_ADDRESS, { from: D })
 
       // Check deposits snapshots are non-zero
 
       for (depositor of [A, B, C, D]) {
-        const snapshot = await stabilityPool.depositSnapshots(depositor)
+        const snapshot = await stabilityPoolAsset1.depositSnapshots(depositor)
 
         const ZERO = toBN('0')
         // Check S,P, G snapshots are non-zero
@@ -2859,14 +2859,14 @@ contract('StabilityPool', async accounts => {
       }
 
       // All depositors make full withdrawal
-      await stabilityPool.withdrawFromSP(dec(10000, 18), { from: A })
-      await stabilityPool.withdrawFromSP(dec(20000, 18), { from: B })
-      await stabilityPool.withdrawFromSP(dec(30000, 18), { from: C })
-      await stabilityPool.withdrawFromSP(dec(40000, 18), { from: D })
+      await stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: A })
+      await stabilityPoolAsset1.withdrawFromSP(dec(20000, 18), { from: B })
+      await stabilityPoolAsset1.withdrawFromSP(dec(30000, 18), { from: C })
+      await stabilityPoolAsset1.withdrawFromSP(dec(40000, 18), { from: D })
 
       // Check all depositors' snapshots have been zero'd
       for (depositor of [A, B, C, D]) {
-        const snapshot = await stabilityPool.depositSnapshots(depositor)
+        const snapshot = await stabilityPoolAsset1.depositSnapshots(depositor)
 
         // Check S, P, G snapshots are now zero
         assert.equal(snapshot[0], '0')  // S 
@@ -2886,11 +2886,11 @@ contract('StabilityPool', async accounts => {
 
       // E opens trove and makes a deposit
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_3, { from: E })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_3, { from: E })
 
       // Fast-forward time and make a second deposit, to trigger KUMO reward and make G > 0
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_3, { from: E })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_3, { from: E })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
@@ -2898,12 +2898,12 @@ contract('StabilityPool', async accounts => {
 
       await troveManager.liquidate(assetAddress1, defaulter_1)
 
-      const currentEpoch = await stabilityPool.currentEpoch()
-      const currentScale = await stabilityPool.currentScale()
+      const currentEpoch = await stabilityPoolAsset1.currentEpoch()
+      const currentScale = await stabilityPoolAsset1.currentScale()
 
-      const S_Before = await stabilityPool.epochToScaleToSum(currentEpoch, currentScale)
-      const P_Before = await stabilityPool.P()
-      const G_Before = await stabilityPool.epochToScaleToG(currentEpoch, currentScale)
+      const S_Before = await stabilityPoolAsset1.epochToScaleToSum(currentEpoch, currentScale)
+      const P_Before = await stabilityPoolAsset1.P()
+      const G_Before = await stabilityPoolAsset1.epochToScaleToG(currentEpoch, currentScale)
 
       // Confirm 0 < P < 1
       assert.isTrue(P_Before.gt(toBN('0')) && P_Before.lt(toBN(dec(1, 18))))
@@ -2918,12 +2918,12 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
       // A, B, make their initial deposits
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20000, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(20000, 18), frontEnd_2, { from: B })
 
       // Check frontend snapshots are non-zero
       for (frontEnd of [frontEnd_1, frontEnd_2]) {
-        const snapshot = await stabilityPool.frontEndSnapshots(frontEnd)
+        const snapshot = await stabilityPoolAsset1.frontEndSnapshots(frontEnd)
 
         const ZERO = toBN('0')
         // Check S,P, G snapshots are non-zero
@@ -2937,12 +2937,12 @@ contract('StabilityPool', async accounts => {
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // All depositors make full withdrawal
-      await stabilityPool.withdrawFromSP(dec(10000, 18), { from: A })
-      await stabilityPool.withdrawFromSP(dec(20000, 18), { from: B })
+      await stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: A })
+      await stabilityPoolAsset1.withdrawFromSP(dec(20000, 18), { from: B })
 
       // Check all front ends' snapshots have been zero'd
       for (frontEnd of [frontEnd_1, frontEnd_2]) {
-        const snapshot = await stabilityPool.frontEndSnapshots(frontEnd)
+        const snapshot = await stabilityPoolAsset1.frontEndSnapshots(frontEnd)
 
         // Check S, P, G snapshots are now zero
         assert.equal(snapshot[0], '0')  // S  (always zero for front-end)
@@ -2958,15 +2958,15 @@ contract('StabilityPool', async accounts => {
 
       // A opens trove and join the Stability Pool
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
 
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
-      //  SETUP: Execute a series of operations to trigger KUMO and ETH rewards for depositor A
+      //  SETUP: Execute a series of operations to trigger KUMO and Asset rewards for depositor A
 
       // Fast-forward time and make a second deposit, to trigger KUMO reward and make G > 0
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
-      await stabilityPool.provideToSP(dec(100, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(100, 18), frontEnd_1, { from: A })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
@@ -2978,21 +2978,21 @@ contract('StabilityPool', async accounts => {
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // A successfully withraws deposit and all gains
-      await stabilityPool.withdrawFromSP(dec(10100, 18), { from: A })
+      await stabilityPoolAsset1.withdrawFromSP(dec(10100, 18), { from: A })
 
       // Confirm A's recorded deposit is 0
-      const A_deposit = (await stabilityPool.deposits(A))[0]  // get initialValue property on deposit struct
+      const A_deposit = (await stabilityPoolAsset1.deposits(A))[0]  // get initialValue property on deposit struct
       assert.equal(A_deposit, '0')
 
       // --- TEST ---
       const expectedRevertMessage = "StabilityPool: User must have a non-zero deposit"
 
       // Further withdrawal attempt from A
-      const withdrawalPromise_A = stabilityPool.withdrawFromSP(dec(10000, 18), { from: A })
+      const withdrawalPromise_A = stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: A })
       await th.assertRevert(withdrawalPromise_A, expectedRevertMessage)
 
       // Withdrawal attempt of a non-existent deposit, from C
-      const withdrawalPromise_C = stabilityPool.withdrawFromSP(dec(10000, 18), { from: C })
+      const withdrawalPromise_C = stabilityPoolAsset1.withdrawFromSP(dec(10000, 18), { from: C })
       await th.assertRevert(withdrawalPromise_C, expectedRevertMessage)
     })
 
@@ -3004,10 +3004,10 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
 
-      const alice_initialDeposit = ((await stabilityPool.deposits(alice))[0]).toString()
-      const bob_initialDeposit = ((await stabilityPool.deposits(bob))[0]).toString()
+      const alice_initialDeposit = ((await stabilityPoolAsset1.deposits(alice))[0]).toString()
+      const bob_initialDeposit = ((await stabilityPoolAsset1.deposits(bob))[0]).toString()
 
       assert.equal(alice_initialDeposit, dec(10000, 18))
       assert.equal(bob_initialDeposit, '0')
@@ -3019,10 +3019,10 @@ contract('StabilityPool', async accounts => {
       await troveManager.liquidate(assetAddress1, defaulter_1)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
 
-      const txAlice = await stabilityPool.withdrawAssetGainToTrove(alice, alice, { from: alice })
+      const txAlice = await stabilityPoolAsset1.withdrawAssetGainToTrove(alice, alice, { from: alice })
       assert.isTrue(txAlice.receipt.status)
 
-      const txPromise_B = stabilityPool.withdrawAssetGainToTrove(bob, bob, { from: bob })
+      const txPromise_B = stabilityPoolAsset1.withdrawAssetGainToTrove(bob, bob, { from: bob })
       await th.assertRevert(txPromise_B)
     })
 
@@ -3030,7 +3030,7 @@ contract('StabilityPool', async accounts => {
       // --- SETUP ---
       // Whale deposits 185000 KUSD in StabilityPool
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await stabilityPool.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
+      await stabilityPoolAsset1.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
 
       // Defaulter opens trove
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -3039,12 +3039,12 @@ contract('StabilityPool', async accounts => {
 
       // Alice makes deposit #1: 15000 KUSD
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
-      await stabilityPool.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
 
-      // check Alice's Trove recorded ETH Before:
+      // check Alice's Trove recorded Asset Before:
       const aliceTrove_Before = await troveManager.Troves(alice, assetAddress1)
-      const aliceTrove_ETH_Before = aliceTrove_Before[TroveData.coll]
-      assert.isTrue(aliceTrove_ETH_Before.gt(toBN('0')))
+      const aliceTrove_Asset_Before = aliceTrove_Before[TroveData.coll]
+      assert.isTrue(aliceTrove_Asset_Before.gt(toBN('0')))
 
       // price drops: defaulter's Trove falls below MCR, alice and whale Trove remain active
       await priceFeed.setPrice(assetAddress1, dec(105, 18));
@@ -3053,37 +3053,37 @@ contract('StabilityPool', async accounts => {
       const liquidationTx_1 = await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })
       const [liquidatedDebt, liquidatedColl, ,] = th.getEmittedLiquidationValues(liquidationTx_1)
 
-      const ETHGain_A = await stabilityPool.getDepositorAssetGain(alice)
-      const compoundedDeposit_A = await stabilityPool.getCompoundedKUSDDeposit(alice)
+      const AssetGain_A = await stabilityPoolAsset1.getDepositorAssetGain(alice)
+      const compoundedDeposit_A = await stabilityPoolAsset1.getCompoundedKUSDDeposit(alice)
 
       // Alice should receive rewards proportional to her deposit as share of total deposits
-      const expectedETHGain_A = liquidatedColl.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
+      const expectedAssetGain_A = liquidatedColl.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
       const expectedkusdLoss_A = liquidatedDebt.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
       const expectedCompoundedDeposit_A = toBN(dec(15000, 18)).sub(expectedkusdLoss_A)
 
       assert.isAtMost(th.getDifference(expectedCompoundedDeposit_A, compoundedDeposit_A), 100000)
 
-      // Alice sends her ETH Gains to her Trove
-      await stabilityPool.withdrawAssetGainToTrove(alice, alice, { from: alice })
+      // Alice sends her Asset gains to her Trove
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(alice, alice, { from: alice })
 
       // check Alice's kusdLoss has been applied to her deposit expectedCompoundedDeposit_A
-      alice_deposit_afterDefault = ((await stabilityPool.deposits(alice))[0])
+      alice_deposit_afterDefault = ((await stabilityPoolAsset1.deposits(alice))[0])
       assert.isAtMost(th.getDifference(alice_deposit_afterDefault, expectedCompoundedDeposit_A), 100000)
 
-      // check alice's Trove recorded ETH has increased by the expected reward amount
+      // check alice's Trove recorded Asset has increased by the expected reward amount
       const aliceTrove_After = await troveManager.Troves(alice, assetAddress1)
-      const aliceTrove_ETH_After = aliceTrove_After[TroveData.coll]
+      const aliceTrove_Asset_After = aliceTrove_After[TroveData.coll]
 
-      const Trove_ETH_Increase = (aliceTrove_ETH_After.sub(aliceTrove_ETH_Before)).toString()
+      const Trove_Asset_Increase = (aliceTrove_Asset_After.sub(aliceTrove_Asset_Before)).toString()
 
-      assert.equal(Trove_ETH_Increase, ETHGain_A)
+      assert.equal(Trove_Asset_Increase, AssetGain_A)
     })
 
     it("withdrawAssetGainToTrove(): reverts if it would leave trove with ICR < MCR", async () => {
       // --- SETUP ---
       // Whale deposits 1850 KUSD in StabilityPool
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await stabilityPool.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
+      await stabilityPoolAsset1.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
 
       // defaulter opened
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -3092,12 +3092,12 @@ contract('StabilityPool', async accounts => {
 
       // Alice makes deposit #1: 15000 KUSD
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await stabilityPool.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
 
-      // check alice's Trove recorded ETH Before:
+      // check alice's Trove recorded Asset Before:
       const aliceTrove_Before = await troveManager.Troves(alice, assetAddress1)
-      const aliceTrove_ETH_Before = aliceTrove_Before[TroveData.coll]
-      assert.isTrue(aliceTrove_ETH_Before.gt(toBN('0')))
+      const aliceTrove_Asset_Before = aliceTrove_Before[TroveData.coll]
+      assert.isTrue(aliceTrove_Asset_Before.gt(toBN('0')))
 
       // price drops: defaulter's Trove falls below MCR
       await priceFeed.setPrice(assetAddress1, dec(10, 18));
@@ -3105,16 +3105,16 @@ contract('StabilityPool', async accounts => {
       // defaulter's Trove is closed.
       await troveManager.liquidate(assetAddress1, defaulter_1, { from: owner })
 
-      // Alice attempts to  her ETH Gains to her Trove
-      await assertRevert(stabilityPool.withdrawAssetGainToTrove(alice, alice, { from: alice }),
+      // Alice attempts to  her Asset gains to her Trove
+      await assertRevert(stabilityPoolAsset1.withdrawAssetGainToTrove(alice, alice, { from: alice }),
         "BorrowerOps: An operation that would result in ICR < MCR is not permitted")
     })
 
-    it("withdrawAssetGainToTrove(): Subsequent deposit and withdrawal attempt from same account, with no intermediate liquidations, withdraws zero ETH", async () => {
+    it("withdrawAssetGainToTrove(): Subsequent deposit and withdrawal attempt from same account, with no intermediate liquidations, withdraws zero Asset", async () => {
       // --- SETUP ---
       // Whale deposits 1850 KUSD in StabilityPool
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await stabilityPool.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
+      await stabilityPoolAsset1.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
 
       // defaulter opened
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -3123,12 +3123,12 @@ contract('StabilityPool', async accounts => {
 
       // Alice makes deposit #1: 15000 KUSD
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await stabilityPool.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
 
-      // check alice's Trove recorded ETH Before:
+      // check alice's Trove recorded Asset Before:
       const aliceTrove_Before = await troveManager.Troves(alice, assetAddress1)
-      const aliceTrove_ETH_Before = aliceTrove_Before[TroveData.coll]
-      assert.isTrue(aliceTrove_ETH_Before.gt(toBN('0')))
+      const aliceTrove_Asset_Before = aliceTrove_Before[TroveData.coll]
+      assert.isTrue(aliceTrove_Asset_Before.gt(toBN('0')))
 
       // price drops: defaulter's Trove falls below MCR
       await priceFeed.setPrice(assetAddress1, dec(105, 18));
@@ -3139,36 +3139,36 @@ contract('StabilityPool', async accounts => {
       // price bounces back
       await priceFeed.setPrice(assetAddress1, dec(200, 18));
 
-      // Alice sends her ETH Gains to her Trove
-      await stabilityPool.withdrawAssetGainToTrove(alice, alice, { from: alice })
+      // Alice sends her Asset gains to her Trove
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(alice, alice, { from: alice })
 
-      assert.equal(await stabilityPool.getDepositorAssetGain(alice), 0)
+      assert.equal(await stabilityPoolAsset1.getDepositorAssetGain(alice), 0)
 
-      const ETHinSP_Before = (await stabilityPool.getAssetBalance()).toString()
+      const AssetinSP_Before = (await stabilityPoolAsset1.getAssetBalance()).toString()
 
-      // Alice attempts second withdrawal from SP to Trove - reverts, due to 0 ETH Gain
-      const txPromise_A = stabilityPool.withdrawAssetGainToTrove(alice, alice, { from: alice })
+      // Alice attempts second withdrawal from SP to Trove - reverts, due to 0 Asset gain
+      const txPromise_A = stabilityPoolAsset1.withdrawAssetGainToTrove(alice, alice, { from: alice })
       await th.assertRevert(txPromise_A)
 
-      // Check ETH in pool does not change
-      const ETHinSP_1 = (await stabilityPool.getAssetBalance()).toString()
-      assert.equal(ETHinSP_Before, ETHinSP_1)
+      // Check Asset in pool does not change
+      const AssetinSP_1 = (await stabilityPoolAsset1.getAssetBalance()).toString()
+      assert.equal(AssetinSP_Before, AssetinSP_1)
 
       await priceFeed.setPrice(assetAddress1, dec(200, 18));
 
       // Alice attempts third withdrawal (this time, from SP to her own account)
-      await stabilityPool.withdrawFromSP(dec(15000, 18), { from: alice })
+      await stabilityPoolAsset1.withdrawFromSP(dec(15000, 18), { from: alice })
 
-      // Check ETH in pool does not change
-      const ETHinSP_2 = (await stabilityPool.getAssetBalance()).toString()
-      assert.equal(ETHinSP_Before, ETHinSP_2)
+      // Check Asset in pool does not change
+      const AssetinSP_2 = (await stabilityPoolAsset1.getAssetBalance()).toString()
+      assert.equal(AssetinSP_Before, AssetinSP_2)
     })
 
-    it("withdrawAssetGainToTrove(): decreases StabilityPool ETH and increases activePool ETH", async () => {
+    it("withdrawAssetGainToTrove(): decreases StabilityPool Asset and increases activePool Asset", async () => {
       // --- SETUP ---
       // Whale deposits 185000 KUSD in StabilityPool
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await stabilityPool.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
+      await stabilityPoolAsset1.provideToSP(dec(185000, 18), frontEnd_1, { from: whale })
 
       // defaulter opened
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -3177,7 +3177,7 @@ contract('StabilityPool', async accounts => {
 
       // Alice makes deposit #1: 15000 KUSD
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await stabilityPool.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(15000, 18), frontEnd_1, { from: alice })
 
       // price drops: defaulter's Trove falls below MCR
       await priceFeed.setPrice(assetAddress1, dec(100, 18));
@@ -3187,32 +3187,32 @@ contract('StabilityPool', async accounts => {
       const [liquidatedDebt, liquidatedColl, gasComp] = th.getEmittedLiquidationValues(liquidationTx)
 
       // Expect alice to be entitled to 15000/200000 of the liquidated coll
-      const aliceExpectedETHGain = liquidatedColl.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
-      const aliceETHGain = await stabilityPool.getDepositorAssetGain(alice)
-      assert.isTrue(aliceExpectedETHGain.eq(aliceETHGain))
+      const aliceExpectedAssetGain = liquidatedColl.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
+      const aliceAssetGain = await stabilityPoolAsset1.getDepositorAssetGain(alice)
+      assert.isTrue(aliceExpectedAssetGain.eq(aliceAssetGain))
 
       // price bounces back
       await priceFeed.setPrice(assetAddress1, dec(200, 18));
 
       //check activePool and StabilityPool Ether before retrieval:
-      const active_ETH_Before = await activePool.getAssetBalance(assetAddress1)
-      const stability_ETH_Before = await stabilityPool.getAssetBalance()
+      const active_Asset_Before = await activePool.getAssetBalance(assetAddress1)
+      const stability_Asset_Before = await stabilityPoolAsset1.getAssetBalance()
 
-      // Alice retrieves redirects ETH gain to her Trove
-      await stabilityPool.withdrawAssetGainToTrove(alice, alice, { from: alice })
+      // Alice retrieves redirects Asset gain to her Trove
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(alice, alice, { from: alice })
 
-      const active_ETH_After = await activePool.getAssetBalance(assetAddress1)
-      const stability_ETH_After = await stabilityPool.getAssetBalance()
+      const active_Asset_After = await activePool.getAssetBalance(assetAddress1)
+      const stability_Asset_After = await stabilityPoolAsset1.getAssetBalance()
 
-      const active_ETH_Difference = (active_ETH_After.sub(active_ETH_Before)) // AP ETH should increase
-      const stability_ETH_Difference = (stability_ETH_Before.sub(stability_ETH_After)) // SP ETH should decrease
+      const active_Asset_Difference = (active_Asset_After.sub(active_Asset_Before)) // AP Asset should increase
+      const stability_Asset_Difference = (stability_Asset_Before.sub(stability_Asset_After)) // SP Asset should decrease
 
-      // check Pool ETH values change by Alice's ETHGain, i.e 0.075 ETH
-      assert.isAtMost(th.getDifference(active_ETH_Difference, aliceETHGain), 10000)
-      assert.isAtMost(th.getDifference(stability_ETH_Difference, aliceETHGain), 10000)
+      // check Pool Asset values change by Alice's AssetGain, i.e 0.075 Asset
+      assert.isAtMost(th.getDifference(active_Asset_Difference, aliceAssetGain), 10000)
+      assert.isAtMost(th.getDifference(stability_Asset_Difference, aliceAssetGain), 10000)
     })
 
-    it("withdrawAssetGainToTrove(): All depositors are able to withdraw their ETH gain from the SP to their Trove", async () => {
+    it("withdrawAssetGainToTrove(): All depositors are able to withdraw their Asset gain from the SP to their Trove", async () => {
       // Whale opens trove 
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
@@ -3223,7 +3223,7 @@ contract('StabilityPool', async accounts => {
       const depositors = [alice, bob, carol, dennis, erin, flyn]
       for (account of depositors) {
         await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
-        await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: account })
+        await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: account })
       }
 
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
@@ -3233,17 +3233,17 @@ contract('StabilityPool', async accounts => {
       await priceFeed.setPrice(assetAddress1, dec(200, 18));
 
       // All depositors attempt to withdraw
-      const tx1 = await stabilityPool.withdrawAssetGainToTrove(alice, alice, { from: alice })
+      const tx1 = await stabilityPoolAsset1.withdrawAssetGainToTrove(alice, alice, { from: alice })
       assert.isTrue(tx1.receipt.status)
-      const tx2 = await stabilityPool.withdrawAssetGainToTrove(bob, bob, { from: bob })
+      const tx2 = await stabilityPoolAsset1.withdrawAssetGainToTrove(bob, bob, { from: bob })
       assert.isTrue(tx1.receipt.status)
-      const tx3 = await stabilityPool.withdrawAssetGainToTrove(carol, carol, { from: carol })
+      const tx3 = await stabilityPoolAsset1.withdrawAssetGainToTrove(carol, carol, { from: carol })
       assert.isTrue(tx1.receipt.status)
-      const tx4 = await stabilityPool.withdrawAssetGainToTrove(dennis, dennis, { from: dennis })
+      const tx4 = await stabilityPoolAsset1.withdrawAssetGainToTrove(dennis, dennis, { from: dennis })
       assert.isTrue(tx1.receipt.status)
-      const tx5 = await stabilityPool.withdrawAssetGainToTrove(erin, erin, { from: erin })
+      const tx5 = await stabilityPoolAsset1.withdrawAssetGainToTrove(erin, erin, { from: erin })
       assert.isTrue(tx1.receipt.status)
-      const tx6 = await stabilityPool.withdrawAssetGainToTrove(flyn, flyn, { from: flyn })
+      const tx6 = await stabilityPoolAsset1.withdrawAssetGainToTrove(flyn, flyn, { from: flyn })
       assert.isTrue(tx1.receipt.status)
     })
 
@@ -3258,7 +3258,7 @@ contract('StabilityPool', async accounts => {
       const depositors = [alice, bob, carol, dennis, erin, flyn]
       for (account of depositors) {
         await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
-        await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: account })
+        await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: account })
       }
       const collBefore = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll] // all troves have same coll before
 
@@ -3267,7 +3267,7 @@ contract('StabilityPool', async accounts => {
       const [, liquidatedColl, ,] = th.getEmittedLiquidationValues(liquidationTx)
 
 
-      /* All depositors attempt to withdraw their ETH gain to their Trove. Each depositor 
+      /* All depositors attempt to withdraw their Asset gain to their Trove. Each depositor 
       receives (liquidatedColl/ 6).
 
       Thus, expected new collateral for each depositor with 1 Ether in their trove originally, is 
@@ -3278,32 +3278,32 @@ contract('StabilityPool', async accounts => {
 
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
-      await stabilityPool.withdrawAssetGainToTrove(alice, alice, { from: alice })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(alice, alice, { from: alice })
       const aliceCollAfter = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]
       assert.isAtMost(th.getDifference(aliceCollAfter.sub(collBefore), expectedCollGain), 10000)
 
-      await stabilityPool.withdrawAssetGainToTrove(bob, bob, { from: bob })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(bob, bob, { from: bob })
       const bobCollAfter = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll]
       assert.isAtMost(th.getDifference(bobCollAfter.sub(collBefore), expectedCollGain), 10000)
 
-      await stabilityPool.withdrawAssetGainToTrove(carol, carol, { from: carol })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(carol, carol, { from: carol })
       const carolCollAfter = (await troveManager.Troves(carol, assetAddress1))[TroveData.coll]
       assert.isAtMost(th.getDifference(carolCollAfter.sub(collBefore), expectedCollGain), 10000)
 
-      await stabilityPool.withdrawAssetGainToTrove(dennis, dennis, { from: dennis })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(dennis, dennis, { from: dennis })
       const dennisCollAfter = (await troveManager.Troves(dennis, assetAddress1))[TroveData.coll]
       assert.isAtMost(th.getDifference(dennisCollAfter.sub(collBefore), expectedCollGain), 10000)
 
-      await stabilityPool.withdrawAssetGainToTrove(erin, erin, { from: erin })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(erin, erin, { from: erin })
       const erinCollAfter = (await troveManager.Troves(erin, assetAddress1))[TroveData.coll]
       assert.isAtMost(th.getDifference(erinCollAfter.sub(collBefore), expectedCollGain), 10000)
 
-      await stabilityPool.withdrawAssetGainToTrove(flyn, flyn, { from: flyn })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(flyn, flyn, { from: flyn })
       const flynCollAfter = (await troveManager.Troves(flyn, assetAddress1))[TroveData.coll]
       assert.isAtMost(th.getDifference(flynCollAfter.sub(collBefore), expectedCollGain), 10000)
     })
 
-    it("withdrawAssetGainToTrove(): caller can withdraw full deposit and ETH gain to their trove during Recovery Mode", async () => {
+    it("withdrawAssetGainToTrove(): caller can withdraw full deposit and Asset gain to their trove during Recovery Mode", async () => {
       // --- SETUP ---
 
       // Defaulter opens
@@ -3315,9 +3315,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // A, B, C provides 10000, 5000, 3000 KUSD to SP
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
-      await stabilityPool.provideToSP(dec(5000, 18), frontEnd_1, { from: bob })
-      await stabilityPool.provideToSP(dec(3000, 18), frontEnd_1, { from: carol })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: alice })
+      await stabilityPoolAsset1.provideToSP(dec(5000, 18), frontEnd_1, { from: bob })
+      await stabilityPoolAsset1.provideToSP(dec(3000, 18), frontEnd_1, { from: carol })
 
       assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1))
 
@@ -3339,19 +3339,19 @@ contract('StabilityPool', async accounts => {
       await troveManager.liquidate(assetAddress1, defaulter_1)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
 
-      const alice_ETHGain_Before = await stabilityPool.getDepositorAssetGain(alice)
-      const bob_ETHGain_Before = await stabilityPool.getDepositorAssetGain(bob)
-      const carol_ETHGain_Before = await stabilityPool.getDepositorAssetGain(carol)
+      const alice_AssetGain_Before = await stabilityPoolAsset1.getDepositorAssetGain(alice)
+      const bob_AssetGain_Before = await stabilityPoolAsset1.getDepositorAssetGain(bob)
+      const carol_AssetGain_Before = await stabilityPoolAsset1.getDepositorAssetGain(carol)
 
-      // A, B, C withdraw their full ETH gain from the Stability Pool to their trove
-      await stabilityPool.withdrawAssetGainToTrove(alice, alice, { from: alice })
-      await stabilityPool.withdrawAssetGainToTrove(bob, bob, { from: bob })
-      await stabilityPool.withdrawAssetGainToTrove(carol, carol, { from: carol })
+      // A, B, C withdraw their full Asset gain from the Stability Pool to their trove
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(alice, alice, { from: alice })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(bob, bob, { from: bob })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(carol, carol, { from: carol })
 
-      // Check collateral of troves A, B, C has increased by the value of their ETH gain from liquidations, respectively
-      const alice_expectedCollateral = (alice_Collateral_Before.add(alice_ETHGain_Before)).toString()
-      const bob_expectedColalteral = (bob_Collateral_Before.add(bob_ETHGain_Before)).toString()
-      const carol_expectedCollateral = (carol_Collateral_Before.add(carol_ETHGain_Before)).toString()
+      // Check collateral of troves A, B, C has increased by the value of their Asset gain from liquidations, respectively
+      const alice_expectedCollateral = (alice_Collateral_Before.add(alice_AssetGain_Before)).toString()
+      const bob_expectedColalteral = (bob_Collateral_Before.add(bob_AssetGain_Before)).toString()
+      const carol_expectedCollateral = (carol_Collateral_Before.add(carol_AssetGain_Before)).toString()
 
       const alice_Collateral_After = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]
       const bob_Collateral_After = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll]
@@ -3361,9 +3361,9 @@ contract('StabilityPool', async accounts => {
       assert.equal(bob_expectedColalteral, bob_Collateral_After)
       assert.equal(carol_expectedCollateral, carol_Collateral_After)
 
-      // Check ETH in SP has reduced to zero
-      const ETHinSP_After = (await stabilityPool.getAssetBalance()).toString()
-      assert.isAtMost(th.getDifference(ETHinSP_After, '0'), 100000)
+      // Check Asset in SP has reduced to zero
+      const AssetinSP_After = (await stabilityPoolAsset1.getAssetBalance()).toString()
+      assert.isAtMost(th.getDifference(AssetinSP_After, '0'), 100000)
     })
 
     it("withdrawAssetGainToTrove(): reverts if user has no trove", async () => {
@@ -3381,7 +3381,7 @@ contract('StabilityPool', async accounts => {
       await kusdToken.transfer(dennis, dec(10000, 18), { from: alice })
 
       // D deposits to Stability Pool
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: dennis })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: dennis })
 
       //Price drops
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
@@ -3392,8 +3392,8 @@ contract('StabilityPool', async accounts => {
 
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
-      // D attempts to withdraw his ETH gain to Trove
-      await th.assertRevert(stabilityPool.withdrawAssetGainToTrove(dennis, dennis, { from: dennis }), "caller must have an active trove to withdraw ETHGain to")
+      // D attempts to withdraw his Asset gain to Trove
+      await th.assertRevert(stabilityPoolAsset1.withdrawAssetGainToTrove(dennis, dennis, { from: dennis }), "caller must have an active trove to withdraw AssetGain to")
     })
 
     it("withdrawAssetGainToTrove(): triggers KUMO reward event - increases the sum G", async () => {
@@ -3405,8 +3405,8 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A and B provide to SP
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: B })
 
       // Defaulter opens a trove, price drops, defaulter gets liquidated
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -3415,29 +3415,29 @@ contract('StabilityPool', async accounts => {
       await troveManager.liquidate(assetAddress1, defaulter_1)
       assert.isFalse(await sortedTroves.contains(assetAddress1, defaulter_1))
 
-      const G_Before = await stabilityPool.epochToScaleToG(0, 0)
+      const G_Before = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // A withdraws from SP
-      await stabilityPool.withdrawFromSP(dec(50, 18), { from: A })
+      await stabilityPoolAsset1.withdrawFromSP(dec(50, 18), { from: A })
 
-      const G_1 = await stabilityPool.epochToScaleToG(0, 0)
+      const G_1 = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
       // Expect G has increased from the KUMO reward event triggered
       assert.isTrue(G_1.gt(G_Before))
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-      // Check B has non-zero ETH gain
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(B)).gt(ZERO))
+      // Check B has non-zero Asset gain
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(B)).gt(ZERO))
 
       // B withdraws to trove
-      await stabilityPool.withdrawAssetGainToTrove(B, B, { from: B })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(B, B, { from: B })
 
-      const G_2 = await stabilityPool.epochToScaleToG(0, 0)
+      const G_2 = await stabilityPoolAsset1.epochToScaleToG(0, 0)
 
       // Expect G has increased from the KUMO reward event triggered
       assert.isTrue(G_2.gt(G_1))
@@ -3452,9 +3452,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A, B, C, D, E provide to SP
-      await stabilityPool.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20000, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(30000, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(20000, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(30000, 18), ZERO_ADDRESS, { from: C })
 
       // Defaulter opens a trove, price drops, defaulter gets liquidated
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -3465,21 +3465,21 @@ contract('StabilityPool', async accounts => {
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-      // Check A, B, C have non-zero ETH gain
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(A)).gt(ZERO))
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(B)).gt(ZERO))
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(C)).gt(ZERO))
+      // Check A, B, C have non-zero Asset gain
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(A)).gt(ZERO))
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(B)).gt(ZERO))
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(C)).gt(ZERO))
 
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // A, B, C withdraw to trove
-      await stabilityPool.withdrawAssetGainToTrove(A, A, { from: A })
-      await stabilityPool.withdrawAssetGainToTrove(B, B, { from: B })
-      await stabilityPool.withdrawAssetGainToTrove(C, C, { from: C })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(A, A, { from: A })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(B, B, { from: B })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(C, C, { from: C })
 
-      const frontEndTag_A = (await stabilityPool.deposits(A))[1]
-      const frontEndTag_B = (await stabilityPool.deposits(B))[1]
-      const frontEndTag_C = (await stabilityPool.deposits(C))[1]
+      const frontEndTag_A = (await stabilityPoolAsset1.deposits(A))[1]
+      const frontEndTag_B = (await stabilityPoolAsset1.deposits(B))[1]
+      const frontEndTag_C = (await stabilityPoolAsset1.deposits(C))[1]
 
       // Check deposits are still tagged with their original front end
       assert.equal(frontEndTag_A, frontEnd_1)
@@ -3496,9 +3496,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A, B, C, provide to SP
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(2000, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(3000, 18), ZERO_ADDRESS, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(2000, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(3000, 18), ZERO_ADDRESS, { from: C })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -3514,17 +3514,17 @@ contract('StabilityPool', async accounts => {
       const B_KUMOBalance_Before = await kumoToken.balanceOf(B)
       const C_KUMOBalance_Before = await kumoToken.balanceOf(C)
 
-      // Check A, B, C have non-zero ETH gain
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(A)).gt(ZERO))
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(B)).gt(ZERO))
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(C)).gt(ZERO))
+      // Check A, B, C have non-zero Asset gain
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(A)).gt(ZERO))
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(B)).gt(ZERO))
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(C)).gt(ZERO))
 
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
       // A, B, C withdraw to trove
-      await stabilityPool.withdrawAssetGainToTrove(A, A, { from: A })
-      await stabilityPool.withdrawAssetGainToTrove(B, B, { from: B })
-      await stabilityPool.withdrawAssetGainToTrove(C, C, { from: C })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(A, A, { from: A })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(B, B, { from: B })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(C, C, { from: C })
 
       // Get KUMO balance after
       const A_KUMOBalance_After = await kumoToken.balanceOf(A)
@@ -3546,9 +3546,9 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A, B, C, provide to SP
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(2000, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(3000, 18), frontEnd_3, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(2000, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(3000, 18), frontEnd_3, { from: C })
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -3566,15 +3566,15 @@ contract('StabilityPool', async accounts => {
 
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
-      // Check A, B, C have non-zero ETH gain
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(A)).gt(ZERO))
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(B)).gt(ZERO))
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(C)).gt(ZERO))
+      // Check A, B, C have non-zero Asset gain
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(A)).gt(ZERO))
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(B)).gt(ZERO))
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(C)).gt(ZERO))
 
       // A, B, C withdraw
-      await stabilityPool.withdrawAssetGainToTrove(A, A, { from: A })
-      await stabilityPool.withdrawAssetGainToTrove(B, B, { from: B })
-      await stabilityPool.withdrawAssetGainToTrove(C, C, { from: C })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(A, A, { from: A })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(B, B, { from: B })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(C, C, { from: C })
 
       // Get front ends' KUMO balance after
       const F1_KUMOBalance_After = await kumoToken.balanceOf(frontEnd_1)
@@ -3599,12 +3599,12 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: F } })
 
       // A, B, C, D, E, F provide to SP
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(2000, 18), frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(dec(3000, 18), frontEnd_3, { from: C })
-      await stabilityPool.provideToSP(dec(1000, 18), frontEnd_1, { from: D })
-      await stabilityPool.provideToSP(dec(2000, 18), frontEnd_2, { from: E })
-      await stabilityPool.provideToSP(dec(3000, 18), frontEnd_3, { from: F })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(2000, 18), frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(3000, 18), frontEnd_3, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(1000, 18), frontEnd_1, { from: D })
+      await stabilityPoolAsset1.provideToSP(dec(2000, 18), frontEnd_2, { from: E })
+      await stabilityPoolAsset1.provideToSP(dec(3000, 18), frontEnd_3, { from: F })
 
       // Defaulter opens a trove, price drops, defaulter gets liquidated
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -3616,26 +3616,26 @@ contract('StabilityPool', async accounts => {
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
       // Get front ends' stake before
-      const F1_Stake_Before = await stabilityPool.frontEndStakes(frontEnd_1)
-      const F2_Stake_Before = await stabilityPool.frontEndStakes(frontEnd_2)
-      const F3_Stake_Before = await stabilityPool.frontEndStakes(frontEnd_3)
+      const F1_Stake_Before = await stabilityPoolAsset1.frontEndStakes(frontEnd_1)
+      const F2_Stake_Before = await stabilityPoolAsset1.frontEndStakes(frontEnd_2)
+      const F3_Stake_Before = await stabilityPoolAsset1.frontEndStakes(frontEnd_3)
 
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
-      // Check A, B, C have non-zero ETH gain
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(A)).gt(ZERO))
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(B)).gt(ZERO))
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(C)).gt(ZERO))
+      // Check A, B, C have non-zero Asset gain
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(A)).gt(ZERO))
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(B)).gt(ZERO))
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(C)).gt(ZERO))
 
       // A, B, C withdraw to trove
-      await stabilityPool.withdrawAssetGainToTrove(A, A, { from: A })
-      await stabilityPool.withdrawAssetGainToTrove(B, B, { from: B })
-      await stabilityPool.withdrawAssetGainToTrove(C, C, { from: C })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(A, A, { from: A })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(B, B, { from: B })
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(C, C, { from: C })
 
       // Get front ends' stakes after
-      const F1_Stake_After = await stabilityPool.frontEndStakes(frontEnd_1)
-      const F2_Stake_After = await stabilityPool.frontEndStakes(frontEnd_2)
-      const F3_Stake_After = await stabilityPool.frontEndStakes(frontEnd_3)
+      const F1_Stake_After = await stabilityPoolAsset1.frontEndStakes(frontEnd_1)
+      const F2_Stake_After = await stabilityPoolAsset1.frontEndStakes(frontEnd_2)
+      const F3_Stake_After = await stabilityPoolAsset1.frontEndStakes(frontEnd_3)
 
       // Check front ends' stakes have decreased
       assert.isTrue(F1_Stake_After.lt(F1_Stake_Before))
@@ -3663,14 +3663,14 @@ contract('StabilityPool', async accounts => {
       const deposit_C = dec(300, 18)
 
       // A, B, C make their initial deposits
-      await stabilityPool.provideToSP(deposit_A, frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(deposit_B, frontEnd_2, { from: B })
-      await stabilityPool.provideToSP(deposit_C, frontEnd_3, { from: C })
+      await stabilityPoolAsset1.provideToSP(deposit_A, frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(deposit_B, frontEnd_2, { from: B })
+      await stabilityPoolAsset1.provideToSP(deposit_C, frontEnd_3, { from: C })
 
       // fastforward time then make an SP deposit, to make G > 0
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-      await stabilityPool.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPoolAsset1.provideToSP(dec(10000, 18), ZERO_ADDRESS, { from: D })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
       await priceFeed.setPrice(assetAddress1, dec(105, 18))
@@ -3678,12 +3678,12 @@ contract('StabilityPool', async accounts => {
 
       await troveManager.liquidate(assetAddress1, defaulter_1)
 
-      const currentEpoch = await stabilityPool.currentEpoch()
-      const currentScale = await stabilityPool.currentScale()
+      const currentEpoch = await stabilityPoolAsset1.currentEpoch()
+      const currentScale = await stabilityPoolAsset1.currentScale()
 
-      const S_Before = await stabilityPool.epochToScaleToSum(currentEpoch, currentScale)
-      const P_Before = await stabilityPool.P()
-      const G_Before = await stabilityPool.epochToScaleToG(currentEpoch, currentScale)
+      const S_Before = await stabilityPoolAsset1.epochToScaleToSum(currentEpoch, currentScale)
+      const P_Before = await stabilityPoolAsset1.P()
+      const G_Before = await stabilityPoolAsset1.epochToScaleToG(currentEpoch, currentScale)
 
       // Confirm 0 < P < 1
       assert.isTrue(P_Before.gt(toBN('0')) && P_Before.lt(toBN(dec(1, 18))))
@@ -3693,9 +3693,9 @@ contract('StabilityPool', async accounts => {
 
       // Get front ends' snapshots before
       for (frontEnd of [frontEnd_1, frontEnd_2, frontEnd_3]) {
-        const snapshot = await stabilityPool.frontEndSnapshots(frontEnd)
+        const snapshot = await stabilityPoolAsset1.frontEndSnapshots(frontEnd)
 
-        assert.equal(snapshot[0], '0')  // S (should always be 0 for front ends, since S corresponds to ETH gain)
+        assert.equal(snapshot[0], '0')  // S (should always be 0 for front ends, since S corresponds to Asset gain)
         assert.equal(snapshot[1], dec(1, 18))  // P 
         assert.equal(snapshot[2], '0')  // G
         assert.equal(snapshot[3], '0')  // scale
@@ -3704,23 +3704,23 @@ contract('StabilityPool', async accounts => {
 
       // --- TEST ---
 
-      // Check A, B, C have non-zero ETH gain
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(A)).gt(ZERO))
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(B)).gt(ZERO))
-      assert.isTrue((await stabilityPool.getDepositorAssetGain(C)).gt(ZERO))
+      // Check A, B, C have non-zero Asset gain
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(A)).gt(ZERO))
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(B)).gt(ZERO))
+      assert.isTrue((await stabilityPoolAsset1.getDepositorAssetGain(C)).gt(ZERO))
 
       await priceFeed.setPrice(assetAddress1, dec(200, 18))
 
-      // A, B, C withdraw ETH gain to troves. Grab G at each stage, as it can increase a bit
+      // A, B, C withdraw Asset gain to troves. Grab G at each stage, as it can increase a bit
       // between topups, because some block.timestamp time passes (and KUMO is issued) between ops
-      const G1 = await stabilityPool.epochToScaleToG(currentScale, currentEpoch)
-      await stabilityPool.withdrawAssetGainToTrove(A, A, { from: A })
+      const G1 = await stabilityPoolAsset1.epochToScaleToG(currentScale, currentEpoch)
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(A, A, { from: A })
 
-      const G2 = await stabilityPool.epochToScaleToG(currentScale, currentEpoch)
-      await stabilityPool.withdrawAssetGainToTrove(B, B, { from: B })
+      const G2 = await stabilityPoolAsset1.epochToScaleToG(currentScale, currentEpoch)
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(B, B, { from: B })
 
-      const G3 = await stabilityPool.epochToScaleToG(currentScale, currentEpoch)
-      await stabilityPool.withdrawAssetGainToTrove(C, C, { from: C })
+      const G3 = await stabilityPoolAsset1.epochToScaleToG(currentScale, currentEpoch)
+      await stabilityPoolAsset1.withdrawAssetGainToTrove(C, C, { from: C })
 
       const frontEnds = [frontEnd_1, frontEnd_2, frontEnd_3]
       const G_Values = [G1, G2, G3]
@@ -3730,7 +3730,7 @@ contract('StabilityPool', async accounts => {
 
       // Get front ends' snapshots after
       for (const [frontEnd, G] of Object.entries(frontEndToG)) {
-        const snapshot = await stabilityPool.frontEndSnapshots(frontEnd)
+        const snapshot = await stabilityPoolAsset1.frontEndSnapshots(frontEnd)
 
         // Check snapshots are the expected values
         assert.equal(snapshot[0], '0')  // S (should always be 0 for front ends)
@@ -3741,7 +3741,7 @@ contract('StabilityPool', async accounts => {
       }
     })
 
-    it("withdrawAssetGainToTrove(): reverts when depositor has no ETH gain", async () => {
+    it("withdrawAssetGainToTrove(): reverts when depositor has no Asset gain", async () => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // Whale transfers KUSD to A, B
@@ -3753,26 +3753,26 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // A, B, C, D provide to SP
-      await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: A })
-      await stabilityPool.provideToSP(dec(20, 18), ZERO_ADDRESS, { from: B })
-      await stabilityPool.provideToSP(dec(30, 18), frontEnd_2, { from: C })
-      await stabilityPool.provideToSP(dec(40, 18), ZERO_ADDRESS, { from: D })
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_1, { from: A })
+      await stabilityPoolAsset1.provideToSP(dec(20, 18), ZERO_ADDRESS, { from: B })
+      await stabilityPoolAsset1.provideToSP(dec(30, 18), frontEnd_2, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(40, 18), ZERO_ADDRESS, { from: D })
 
       // fastforward time, and E makes a deposit, creating KUMO rewards for all
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
-      await stabilityPool.provideToSP(dec(3000, 18), ZERO_ADDRESS, { from: E })
+      await stabilityPoolAsset1.provideToSP(dec(3000, 18), ZERO_ADDRESS, { from: E })
 
-      // Confirm A, B, C have zero ETH gain
-      assert.equal(await stabilityPool.getDepositorAssetGain(A), '0')
-      assert.equal(await stabilityPool.getDepositorAssetGain(B), '0')
-      assert.equal(await stabilityPool.getDepositorAssetGain(C), '0')
+      // Confirm A, B, C have zero Asset gain
+      assert.equal(await stabilityPoolAsset1.getDepositorAssetGain(A), '0')
+      assert.equal(await stabilityPoolAsset1.getDepositorAssetGain(B), '0')
+      assert.equal(await stabilityPoolAsset1.getDepositorAssetGain(C), '0')
 
       // Check withdrawAssetGainToTrove reverts for A, B, C
-      const txPromise_A = stabilityPool.withdrawAssetGainToTrove(A, A, { from: A })
-      const txPromise_B = stabilityPool.withdrawAssetGainToTrove(B, B, { from: B })
-      const txPromise_C = stabilityPool.withdrawAssetGainToTrove(C, C, { from: C })
-      const txPromise_D = stabilityPool.withdrawAssetGainToTrove(D, D, { from: D })
+      const txPromise_A = stabilityPoolAsset1.withdrawAssetGainToTrove(A, A, { from: A })
+      const txPromise_B = stabilityPoolAsset1.withdrawAssetGainToTrove(B, B, { from: B })
+      const txPromise_C = stabilityPoolAsset1.withdrawAssetGainToTrove(C, C, { from: C })
+      const txPromise_D = stabilityPoolAsset1.withdrawAssetGainToTrove(D, D, { from: D })
 
 
       await th.assertRevert(txPromise_A)
@@ -3785,42 +3785,42 @@ contract('StabilityPool', async accounts => {
       const unregisteredFrontEnds = [A, B, C, D, E]
 
       for (const frontEnd of unregisteredFrontEnds) {
-        assert.isFalse((await stabilityPool.frontEnds(frontEnd))[1])  // check inactive
-        assert.equal((await stabilityPool.frontEnds(frontEnd))[0], '0') // check no chosen kickback rate
+        assert.isFalse((await stabilityPoolAsset1.frontEnds(frontEnd))[1])  // check inactive
+        assert.equal((await stabilityPoolAsset1.frontEnds(frontEnd))[0], '0') // check no chosen kickback rate
       }
 
-      await stabilityPool.registerFrontEnd(dec(1, 18), { from: A })
-      await stabilityPool.registerFrontEnd('897789897897897', { from: B })
-      await stabilityPool.registerFrontEnd('99990098', { from: C })
-      await stabilityPool.registerFrontEnd('37', { from: D })
-      await stabilityPool.registerFrontEnd('0', { from: E })
+      await stabilityPoolAsset1.registerFrontEnd(dec(1, 18), { from: A })
+      await stabilityPoolAsset1.registerFrontEnd('897789897897897', { from: B })
+      await stabilityPoolAsset1.registerFrontEnd('99990098', { from: C })
+      await stabilityPoolAsset1.registerFrontEnd('37', { from: D })
+      await stabilityPoolAsset1.registerFrontEnd('0', { from: E })
 
       // Check front ends are registered as active, and have correct kickback rates
-      assert.isTrue((await stabilityPool.frontEnds(A))[1])
-      assert.equal((await stabilityPool.frontEnds(A))[0], dec(1, 18))
+      assert.isTrue((await stabilityPoolAsset1.frontEnds(A))[1])
+      assert.equal((await stabilityPoolAsset1.frontEnds(A))[0], dec(1, 18))
 
-      assert.isTrue((await stabilityPool.frontEnds(B))[1])
-      assert.equal((await stabilityPool.frontEnds(B))[0], '897789897897897')
+      assert.isTrue((await stabilityPoolAsset1.frontEnds(B))[1])
+      assert.equal((await stabilityPoolAsset1.frontEnds(B))[0], '897789897897897')
 
-      assert.isTrue((await stabilityPool.frontEnds(C))[1])
-      assert.equal((await stabilityPool.frontEnds(C))[0], '99990098')
+      assert.isTrue((await stabilityPoolAsset1.frontEnds(C))[1])
+      assert.equal((await stabilityPoolAsset1.frontEnds(C))[0], '99990098')
 
-      assert.isTrue((await stabilityPool.frontEnds(D))[1])
-      assert.equal((await stabilityPool.frontEnds(D))[0], '37')
+      assert.isTrue((await stabilityPoolAsset1.frontEnds(D))[1])
+      assert.equal((await stabilityPoolAsset1.frontEnds(D))[0], '37')
 
-      assert.isTrue((await stabilityPool.frontEnds(E))[1])
-      assert.equal((await stabilityPool.frontEnds(E))[0], '0')
+      assert.isTrue((await stabilityPoolAsset1.frontEnds(E))[1])
+      assert.equal((await stabilityPoolAsset1.frontEnds(E))[0], '0')
     })
 
     it("registerFrontEnd(): reverts if the front end is already registered", async () => {
 
-      await stabilityPool.registerFrontEnd(dec(1, 18), { from: A })
-      await stabilityPool.registerFrontEnd('897789897897897', { from: B })
-      await stabilityPool.registerFrontEnd('99990098', { from: C })
+      await stabilityPoolAsset1.registerFrontEnd(dec(1, 18), { from: A })
+      await stabilityPoolAsset1.registerFrontEnd('897789897897897', { from: B })
+      await stabilityPoolAsset1.registerFrontEnd('99990098', { from: C })
 
-      const _2ndAttempt_A = stabilityPool.registerFrontEnd(dec(1, 18), { from: A })
-      const _2ndAttempt_B = stabilityPool.registerFrontEnd('897789897897897', { from: B })
-      const _2ndAttempt_C = stabilityPool.registerFrontEnd('99990098', { from: C })
+      const _2ndAttempt_A = stabilityPoolAsset1.registerFrontEnd(dec(1, 18), { from: A })
+      const _2ndAttempt_B = stabilityPoolAsset1.registerFrontEnd('897789897897897', { from: B })
+      const _2ndAttempt_C = stabilityPoolAsset1.registerFrontEnd('99990098', { from: C })
 
       await th.assertRevert(_2ndAttempt_A, "StabilityPool: must not already be a registered front end")
       await th.assertRevert(_2ndAttempt_B, "StabilityPool: must not already be a registered front end")
@@ -3829,10 +3829,10 @@ contract('StabilityPool', async accounts => {
 
     it("registerFrontEnd(): reverts if the kickback rate >1", async () => {
 
-      const invalidKickbackTx_A = stabilityPool.registerFrontEnd(dec(1, 19), { from: A })
-      const invalidKickbackTx_B = stabilityPool.registerFrontEnd('1000000000000000001', { from: A })
-      const invalidKickbackTx_C = stabilityPool.registerFrontEnd(dec(23423, 45), { from: A })
-      const invalidKickbackTx_D = stabilityPool.registerFrontEnd(maxBytes32, { from: A })
+      const invalidKickbackTx_A = stabilityPoolAsset1.registerFrontEnd(dec(1, 19), { from: A })
+      const invalidKickbackTx_B = stabilityPoolAsset1.registerFrontEnd('1000000000000000001', { from: A })
+      const invalidKickbackTx_C = stabilityPoolAsset1.registerFrontEnd(dec(23423, 45), { from: A })
+      const invalidKickbackTx_D = stabilityPoolAsset1.registerFrontEnd(maxBytes32, { from: A })
 
       await th.assertRevert(invalidKickbackTx_A, "StabilityPool: Kickback rate must be in range [0,1]")
       await th.assertRevert(invalidKickbackTx_B, "StabilityPool: Kickback rate must be in range [0,1]")
@@ -3847,16 +3847,16 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: assetAddress1, extraKUSDAmount: toBN(dec(10, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
       // C, E provides to SP
-      await stabilityPool.provideToSP(dec(10, 18), frontEnd_1, { from: C })
-      await stabilityPool.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: E })
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), frontEnd_1, { from: C })
+      await stabilityPoolAsset1.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: E })
 
-      const txPromise_C = stabilityPool.registerFrontEnd(dec(1, 18), { from: C })
-      const txPromise_E = stabilityPool.registerFrontEnd(dec(1, 18), { from: E })
+      const txPromise_C = stabilityPoolAsset1.registerFrontEnd(dec(1, 18), { from: C })
+      const txPromise_E = stabilityPoolAsset1.registerFrontEnd(dec(1, 18), { from: E })
       await th.assertRevert(txPromise_C, "StabilityPool: User must have no deposit")
       await th.assertRevert(txPromise_E, "StabilityPool: User must have no deposit")
 
       // D, with no deposit, successfully registers a front end
-      const txD = await stabilityPool.registerFrontEnd(dec(1, 18), { from: D })
+      const txD = await stabilityPoolAsset1.registerFrontEnd(dec(1, 18), { from: D })
       assert.isTrue(txD.receipt.status)
     })
   })

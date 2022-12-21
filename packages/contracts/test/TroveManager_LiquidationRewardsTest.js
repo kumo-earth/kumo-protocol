@@ -27,13 +27,12 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
   let troveManager
   let nameRegistry
   let activePool
-  let stabilityPool
   let defaultPool
   let functionCaller
   let borrowerOperations
   let KUMOContracts
-  let hardhatTester
   let erc20Asset1
+  let erc20Asset2
 
   let contracts
 
@@ -46,11 +45,10 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     contracts.troveManager = await TroveManagerTester.new()
     contracts.kusdToken = await KUSDToken.new(
       contracts.troveManager.address,
-      contracts.stabilityPool.address,
+      contracts.stabilityPoolFactory.address,
       contracts.borrowerOperations.address
     )
     KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
-    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
 
     priceFeed = contracts.priceFeedTestnet
     kusdToken = contracts.kusdToken
@@ -58,31 +56,25 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     troveManager = contracts.troveManager
     nameRegistry = contracts.nameRegistry
     activePool = contracts.activePool
-    stabilityPool = contracts.stabilityPool
     defaultPool = contracts.defaultPool
     functionCaller = contracts.functionCaller
     borrowerOperations = contracts.borrowerOperations
-    kumoParams = contracts.kumoParameters
-    erc20Asset1 = hardhatTester.erc20
+    erc20Asset1 = await deploymentHelper.deployERC20Asset()
     assetAddress1 = erc20Asset1.address
+    erc20Asset2 = await deploymentHelper.deployERC20Asset()
+    assetAddress2 = erc20Asset2.address
 
     await deploymentHelper.connectKUMOContracts(KUMOContracts)
     await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
 
-    // Add asset to the system
+    // Add assets to the system
     await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
+    await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress2)
 
     // Mint token to each acccount
-    let index = 0;
-    for (const acc of accounts) {
-      // await vstaToken.approve(vstaStaking.address, await erc20Asset1.balanceOf(acc), { from: acc })
-      await erc20Asset1.mint(acc, await web3.eth.getBalance(acc))
-      index++;
-
-      if (index >= 20)
-        break;
-    }
+    await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 25)
+    await deploymentHelper.mintMockAssets(erc20Asset2, accounts, 25)
   })
 
   it("redistribution: A, B Open. B Liquidated. C, D Open. D Liquidated. Distributes correct rewards", async () => {
@@ -355,7 +347,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: C_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100000, 18), extraParams: { from: C } })
     const { collateral: D_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(20000, 16)), extraKUSDAmount: dec(10, 18), extraParams: { from: D } })
     const { collateral: E_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(100000, 18), extraParams: { from: E } })
-    
+
     // Price drops to 100 $/E
     await priceFeed.setPrice(assetAddress1, dec(100, 18))
 
@@ -393,7 +385,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const B_entireColl_2 = (await th.getEntireCollAndDebt(contracts, assetAddress1, B)).entireColl
     const D_entireColl_2 = (await th.getEntireCollAndDebt(contracts, assetAddress1, D)).entireColl
     const E_entireColl_2 = (await th.getEntireCollAndDebt(contracts, assetAddress1, E)).entireColl
-    
+
     const totalCollAfterL2 = B_collAfterL1.add(addedColl1).add(D_collAfterL1).add(E_collAfterL1)
     const B_collAfterL2 = B_collAfterL1.add(addedColl1).add(th.applyLiquidationFee(C_collAfterL1).mul(B_collAfterL1.add(addedColl1)).div(totalCollAfterL2))
     const D_collAfterL2 = D_collAfterL1.add(th.applyLiquidationFee(C_collAfterL1).mul(D_collAfterL1).div(totalCollAfterL2))
@@ -686,7 +678,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     // A, B, C, D open troves
     const { collateral: A_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(400, 16)), extraParams: { from: alice } })
     const { collateral: B_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(400, 16)), extraKUSDAmount: dec(110, 18), extraParams: { from: bob } })
-    const { collateral: C_coll } = await openTrove({ asset: assetAddress1, tokenAmount: _998_Ether , extraKUSDAmount: dec(110, 18), extraParams: { from: carol } })
+    const { collateral: C_coll } = await openTrove({ asset: assetAddress1, tokenAmount: _998_Ether, extraKUSDAmount: dec(110, 18), extraParams: { from: carol } })
     const { collateral: D_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), tokenAmount: dec(1000, 'ether'), extraKUSDAmount: dec(110, 18), extraParams: { from: dennis } })
 
     // Price drops to 100 $/E
@@ -785,7 +777,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: A_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(400, 16)), extraParams: { from: alice } })
     const { collateral: B_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(400, 16)), extraKUSDAmount: dec(110, 18), extraParams: { from: bob } })
     const { collateral: C_coll } = await openTrove({ asset: assetAddress1, tokenAmount: _998_Ether, extraKUSDAmount: dec(110, 18), extraParams: { from: carol } })
-    const { collateral: D_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), tokenAmount: dec(1000, 'ether'), extraKUSDAmount: dec(110, 18), extraParams: { from: dennis} })
+    const { collateral: D_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(200, 16)), tokenAmount: dec(1000, 'ether'), extraKUSDAmount: dec(110, 18), extraParams: { from: dennis } })
 
     // Price drops to 100 $/E
     await priceFeed.setPrice(assetAddress1, dec(100, 18))
@@ -1132,7 +1124,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     const { collateral: A_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(400, 16)), extraParams: { from: alice } })
     const { collateral: B_coll } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(400, 16)), extraKUSDAmount: dec(110, 18), extraParams: { from: bob } })
     const { collateral: C_coll } = await openTrove({ asset: assetAddress1, tokenAmount: _998_Ether, extraKUSDAmount: dec(110, 18), extraParams: { from: carol } })
-    const { collateral: D_coll } = await openTrove({ asset: assetAddress1, tokenAmount: dec(1000, 'ether'),ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(110, 18), extraParams: { from: dennis } })
+    const { collateral: D_coll } = await openTrove({ asset: assetAddress1, tokenAmount: dec(1000, 'ether'), ICR: toBN(dec(200, 16)), extraKUSDAmount: dec(110, 18), extraParams: { from: dennis } })
 
     // Price drops to 100 $/E
     await priceFeed.setPrice(assetAddress1, dec(100, 18))
@@ -1449,7 +1441,7 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     F: 0.0007 ETH
     */
     const { collateral: E_coll, totalDebt: E_totalDebt } = await openTrove({ asset: assetAddress1, tokenAmount: toBN(dec(1, 22)), extraKUSDAmount: dec(100, 18), extraParams: { from: erin } })
-    const { collateral: F_coll, totalDebt: F_totalDebt } = await openTrove({ asset: assetAddress1, tokenAmount: toBN('700000000000000') , extraKUSDAmount: dec(100, 18), extraParams: { from: freddy } })
+    const { collateral: F_coll, totalDebt: F_totalDebt } = await openTrove({ asset: assetAddress1, tokenAmount: toBN('700000000000000'), extraKUSDAmount: dec(100, 18), extraParams: { from: freddy } })
 
     // D tops up
     const D_addedColl = toBN(dec(1, 'ether'))

@@ -84,7 +84,7 @@
 //     const users = [alice, bob, carol, dennis, whale, A, B, C, D, E, defaulter_1, defaulter_2]
 
 
-//     erc20Asset1 = hardhatTester.erc20
+//     erc20Asset1 = hardhatTester.erc20Asset1
 //     assetAddress1 = erc20Asset1.address
 
 //     // Add asset to the system
@@ -108,7 +108,7 @@
 //     sortedTroves = contracts.sortedTroves
 //     troveManager = contracts.troveManager
 //     activePool = contracts.activePool
-//     stabilityPool = contracts.stabilityPool
+//     stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
 //     defaultPool = contracts.defaultPool
 //     collSurplusPool = contracts.collSurplusPool
 //     borrowerOperations = contracts.borrowerOperations

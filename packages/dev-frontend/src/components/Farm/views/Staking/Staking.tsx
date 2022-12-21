@@ -23,6 +23,7 @@ export const Staking: React.FC = () => {
 
   const [amount, setAmount] = useState<Decimal>(Decimal.from(0));
   const editingState = useState<string>();
+
   const isDirty = !amount.isZero;
 
   const { maximumStake, hasSetMaximumStake } = useValidationState(amount);

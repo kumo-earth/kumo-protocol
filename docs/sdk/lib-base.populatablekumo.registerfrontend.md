@@ -9,13 +9,14 @@ Register current wallet address as a Kumo frontend.
 <b>Signature:</b>
 
 ```typescript
-registerFrontend(kickbackRate: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
+registerFrontend(assetName: string, kickbackRate: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  assetName | string | Symbol of the asset token as string |
 |  kickbackRate | [Decimalish](./lib-base.decimalish.md) | The portion of KUMO rewards to pass onto users of the frontend (between 0 and 1). |
 
 <b>Returns:</b>

@@ -13,7 +13,7 @@ export const Inactive: React.FC = () => {
   const { dispatchEvent } = useFarmView();
 
   const {
-    liquity: {
+    kumo: {
       connection: { addresses }
     }
   } = useKumo();

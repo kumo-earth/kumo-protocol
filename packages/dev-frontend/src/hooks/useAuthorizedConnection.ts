@@ -21,7 +21,7 @@ export function useAuthorizedConnection(): boolean {
   useEffect(() => {
     const tryToActivateIfAuthorized = async () => {
       try {
-        if (await injectedConnector.isAuthorized()) {
+        if ((await injectedConnector.isAuthorized()) && sessionStorage.getItem("account")) {
           await activate(injectedConnector, undefined, true);
         } else {
           throw new Error("Unauthorized");

@@ -126,7 +126,7 @@ contract('Deploying the KUMO contracts: LCF, CI, KUMOStaking, and KUMOToken ', a
 
       const tx = await communityIssuance.setAddresses(
         kumoToken.address,
-        coreContracts.stabilityPool.address,
+        coreContracts.stabilityPoolFactory.address,
         { from: liquityAG }
       );
       assert.isTrue(tx.receipt.status)
@@ -147,7 +147,7 @@ contract('Deploying the KUMO contracts: LCF, CI, KUMOStaking, and KUMOToken ', a
       try {
         const tx = await newCI.setAddresses(
           kumoToken.address,
-          coreContracts.stabilityPool.address,
+          coreContracts.stabilityPoolFactory.address,
           { from: liquityAG }
         );
         // Check it gives the expected error message for a failed Solidity 'assert'

@@ -1,8 +1,14 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { useKumoSelector } from "@kumodao/lib-react";
-import { KumoStoreState, UserTroveStatus } from "@kumodao/lib-base";
+import { useLocation, useParams } from "react-router-dom";
+import { KumoStoreState, UserTroveStatus, Decimal, UserTrove } from "@kumodao/lib-base";
+import { AddressZero } from "@ethersproject/constants";
+import { Web3Provider } from "@ethersproject/providers";
+import { useWeb3React } from "@web3-react/core";
+
 import { TroveViewContext } from "./TroveViewContext";
 import type { TroveView, TroveEvent } from "./types";
+import { useDashboard } from "../../../hooks/DashboardContext";
+import { useKumoSelector } from "@kumodao/lib-react";
 
 type TroveEventTransitions = Record<TroveView, Partial<Record<TroveEvent, TroveView>>>;
 
@@ -57,6 +63,10 @@ const troveStatusEvents: TroveStateEvents = {
   closedByRedemption: "TROVE_REDEEMED"
 };
 
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
+
 const transition = (view: TroveView, event: TroveEvent): TroveView => {
   const nextView = transitions[view][event] ?? view;
   return nextView;
@@ -75,15 +85,21 @@ const getInitialView = (troveStatus: UserTroveStatus): TroveView => {
   return "NONE";
 };
 
-const select = ({ trove: { status } }: KumoStoreState) => status;
+const select = ({ vaults }: KumoStoreState) => ({
+  vaults
+});
 
 export const TroveViewProvider: React.FC = props => {
   const { children } = props;
-  const troveStatus = useKumoSelector(select);
+  const { vaults } = useKumoSelector(select);
+  const location = useLocation();
+  const { account } = useWeb3React<Web3Provider>();
 
-  const [view, setView] = useState<TroveView>(getInitialView(troveStatus));
+  const vault = vaults.find(vault => vault.asset === getPathName(location));
+  const trove: UserTrove = vault?.trove && vault.trove;
+
+  const [view, setView] = useState<TroveView>(getInitialView(trove?.status));
   const viewRef = useRef<TroveView>(view);
-
   const dispatchEvent = useCallback((event: TroveEvent) => {
     const nextView = transition(viewRef.current, event);
 
@@ -101,11 +117,17 @@ export const TroveViewProvider: React.FC = props => {
   }, [view]);
 
   useEffect(() => {
-    const event = troveStatusEvents[troveStatus] ?? null;
+    if (view !== "OPENING") {
+      setView(getInitialView(trove?.status));
+    }
+  }, [trove?.status]);
+
+  useEffect(() => {
+    const event = troveStatusEvents[trove?.status] ?? null;
     if (event !== null) {
       dispatchEvent(event);
     }
-  }, [troveStatus, dispatchEvent]);
+  }, [trove?.status, dispatchEvent]);
 
   const provider = {
     view,
