@@ -23,7 +23,7 @@ export const Row: React.FC<RowProps> = ({ sx, label, labelId, labelFor, children
           position: "absolute",
 
           fontSize: 1,
-          fontWeight: 'bold',
+          fontWeight: "bold",
           border: 1,
           borderColor: "transparent"
         }}
@@ -41,12 +41,14 @@ export const Row: React.FC<RowProps> = ({ sx, label, labelId, labelFor, children
 type TokenUsdProps = SxProp & {
   tokenPrice: Decimal;
   editedVal: Decimal;
+  right?: string;
 };
 
 export const TokenUsd: React.FC<TokenUsdProps> = ({
   sx,
   tokenPrice = Decimal.ZERO,
   editedVal = Decimal.ZERO,
+  right = "50px",
   children
 }) => {
   return (
@@ -56,7 +58,7 @@ export const TokenUsd: React.FC<TokenUsdProps> = ({
         pl: 0,
         position: "absolute",
         pt: "12px",
-        right: "50px",
+        right: right,
         top: "25px",
         zIndex: 9999,
         fontSize: 2,
@@ -104,6 +106,7 @@ type StaticAmountsProps = {
   color?: string;
   pendingAmount?: string;
   pendingColor?: string;
+  tokenPrice?: Decimal;
   onClick?: () => void;
 };
 
@@ -116,6 +119,7 @@ export const StaticAmounts: React.FC<StaticAmountsProps & SxProp> = ({
   color,
   pendingAmount,
   pendingColor,
+  tokenPrice,
   onClick,
   children
 }) => {
@@ -136,7 +140,9 @@ export const StaticAmounts: React.FC<StaticAmountsProps & SxProp> = ({
     >
       <Flex sx={{ alignItems: "center" }}>
         <Text sx={{ color, fontWeight: "medium" }}>{amount}</Text>
-
+        {tokenPrice && (
+          <TokenUsd tokenPrice={tokenPrice} editedVal={Decimal.from(amount)} right="20px" />
+        )}
         {unit && (
           <>
             &nbsp;
@@ -188,7 +194,7 @@ const editableStyle: ThemeUICSSProperties = {
 
   boxShadow: [1, 2],
   border: 1,
-  borderColor: "muted",
+  borderColor: "muted"
 };
 
 type StaticRowProps = RowProps & StaticAmountsProps;
@@ -207,6 +213,7 @@ export const StaticRow: React.FC<StaticRowProps> = ({
 
 type DisabledEditableRowProps = Omit<StaticAmountsProps, "labelledBy" | "onClick"> & {
   label: string;
+  tokenPrice?: Decimal;
 };
 
 export const DisabledEditableRow: React.FC<DisabledEditableRowProps> = ({
@@ -216,13 +223,14 @@ export const DisabledEditableRow: React.FC<DisabledEditableRowProps> = ({
   amount,
   color,
   pendingAmount,
-  pendingColor
+  pendingColor,
+  tokenPrice
 }) => (
   <Row labelId={`${inputId}-label`} {...{ label, unit }}>
     <StaticAmounts
-      sx={{ ...editableStyle, boxShadow: 0 }}
+      sx={{ ...editableStyle, boxShadow: 0, position: "relative" }}
       labelledBy={`${inputId}-label`}
-      {...{ inputId, amount, unit, color, pendingAmount, pendingColor }}
+      {...{ inputId, amount, unit, color, pendingAmount, pendingColor, tokenPrice }}
     />
   </Row>
 );
@@ -296,6 +304,9 @@ export const EditableRow: React.FC<EditableRowProps> = ({
         onClick={() => setEditing(inputId)}
         {...{ inputId, amount, unit, color, pendingAmount, pendingColor, invalid }}
       >
+        {tokenPrice && (
+          <TokenUsd tokenPrice={tokenPrice} editedVal={Decimal.from(editedAmount)} right="80px" />
+        )}
         {maxAmount && (
           <Button
             sx={{
