@@ -130,7 +130,7 @@ const formBase: ThemeUIStyleObject = {
 const formCell: ThemeUIStyleObject = {
   ...formBase,
 
-  bg: "background",
+  // bg: "background",
   border: 1,
   borderColor: "muted",
   borderRadius: 0,
@@ -290,22 +290,20 @@ const theme: Theme = {
       ...card,
       padding: 0,
       borderColor: "muted",
-      bg: "background",
+      background: "linear-gradient(128.29deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 127.78%)",
       "> h2": {
         display: "flex",
         alignItems: "center",
         height: "60px",
-        borderRadius: "20px 20px 0 0",
-        pl: 4,
-        py: 2,
-        pr: 2
+        borderRadius: "50px 50px 0 0",
+        px: 5,
+        py: 2
       }
     },
     base: {
       variant: "cards.primary",
-      bg: "transparent",
       boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
-      borderRadius: "20px",
+      borderRadius: "50px",
       width: "100%",
       maxWidth: "100%",
       position: "relative",
@@ -343,9 +341,8 @@ const theme: Theme = {
 
     collateralCard: {
       variant: "cards.primary",
-      bg: "transparent",
       boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
-      borderRadius: "20px",
+      borderRadius: "50px",
       width: "97%",
       maxWidth: "100%",
       position: "relative",
@@ -357,16 +354,26 @@ const theme: Theme = {
         ...cardHoverEffects
       }
     },
+    modalCard: {
+      variant: "cards.primary",
+      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
+      borderRadius: "50px",
+      width: "100%",
+      background: 'linear-gradient(128.29deg, rgb(248 213 228 / 37%) 0%, rgba(255, 255, 255, 0) 127.78%)',
+      maxWidth: "100%",
+      position: "relative",
+      "> h2": {
+        variant: "cards.base.> h2",
+        height: "60px"
+      },
+    },
     StabilityPoolStakingCard: {
       variant: "cards.base",
       border: "none",
-      // width: "100%",
-      // maxWidth: "100%",
       display: "flex",
       flexDirection: "column",
 
-      borderRadius: "20px",
-      // maxHeight: "max-content",
+      borderRadius: "50px",
       ":hover": {
         ...cardHoverEffects
       }
@@ -402,7 +409,7 @@ const theme: Theme = {
 
     unitSecondary: {
       ...formCell,
-      bg: "secondaryHover",
+      // bg: "secondaryHover",
       outline: 'none',
       border: 'none',
       color: 'white'
@@ -418,15 +425,15 @@ const theme: Theme = {
       ml: 2,
       p: 1,
       border: "none",
-      borderRadius: 6,
+      borderRadius: '20px',
       minWidth: 90,
       maxWidth: "max-content",
       backgroundColor: "secondaryHover",
       borderColor: "muted",
       fontSize: 2,
+      color: 'white',
       ":focus": {
         borderColor: "primary",
-        // boxShadow: t => `0 0 0 2px `,
         outline: "none"
       }
     },
@@ -491,14 +498,19 @@ const theme: Theme = {
     },
 
     actions: {
-      justifyContent: "flex-end",
+      // justifyContent: "flex-end",
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
       mt: 2,
+      fontFamily: 'Lato',
 
       button: {
-        p: 2,
         minWidth: "64px",
-        ml: 2
+        width: '95%',
+        borderRadius: '72px',
       }
+
     },
 
     disabledOverlay: {

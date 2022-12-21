@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Card, Container, Link, Paragraph } from "theme-ui";
+import { Box, Card, Container, Flex, Link, Paragraph } from "theme-ui";
 import { SystemStats } from "../components/SystemStats";
 import { Redemption } from "../components/Redemption/Redemption";
 import { InfoMessage } from "../components/InfoMessage";
@@ -48,8 +48,8 @@ export const RedemptionPage: React.FC = () => {
     //     <SystemStats />
     //   </Container>
     // </Container>
-    <DashboadContent>
+    <Flex sx={{ width: "100%", mt: 5, px: 5, justifyContent: "center" }}>
       <Redemption />
-    </DashboadContent>
+    </Flex>
   );
 };

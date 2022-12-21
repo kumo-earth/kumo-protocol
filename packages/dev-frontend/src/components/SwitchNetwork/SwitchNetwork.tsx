@@ -11,7 +11,7 @@ export const SwitchNetworkModal: React.FC = () => {
 
 
   return (
-    <Card variant="base" sx={{ background: "#ebd8df" }}>
+    <Card variant="modalCard">
       <Heading as={"h2"} sx={{ mr: 2 }}>
         Connect to Wallet{" "}
         <span

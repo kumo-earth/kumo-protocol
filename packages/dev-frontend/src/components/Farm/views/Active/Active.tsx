@@ -88,6 +88,7 @@ export const Active: React.FC = () => {
 
         <Flex variant="layout.actions">
           <Button
+            sx={{ mb: 2 }}
             variant={!liquidityMiningKUMOReward.isZero ? "outline" : "primary"}
             onClick={handleAdjustPressed}
           >

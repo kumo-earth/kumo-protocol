@@ -101,7 +101,7 @@ export const RedemptionManager: React.FC = () => {
       ];
 
   return (
-    <Card variant="collateralCard">
+    <Card variant="collateralCard" sx={{ width: '70%' }}>
       <Heading
         as="h2"
         sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}

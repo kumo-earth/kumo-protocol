@@ -53,7 +53,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
       )} */}
       <Heading as="h2">{toUpper(collateralType)} Vault</Heading>
 
-      <Box sx={{ px: 4, mt: 5 }}>
+      <Box sx={{ px: 5, mt: 5 }}>
         <Text as="p" variant="normalBold">
           TOTAL COLLATERAL RATIO{" "}
           <InfoIcon

@@ -16,7 +16,7 @@ export const DashboadHeaderItem: React.FC<DashboadHeaderItemProps> = ({
       <Text as="p" variant="normalBold">
         {title}
       </Text>
-      <Text as="p" variant="xlarge" sx={{ mt: 1, fontSize }}>
+      <Text as="p" variant="xlarge" sx={{ fontSize }}>
         {value}
       </Text>
       {/* <Heading as="h1" sx={{ mt: 1, fontSize }}>

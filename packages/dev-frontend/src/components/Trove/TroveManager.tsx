@@ -318,7 +318,9 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
       <Flex variant="layout.actions">
         <Button
           sx={{
-            border: "none"
+            border: "none",
+            mt:3,
+            mb: 2
           }}
           variant="cancel"
           onClick={handleCancel}
@@ -339,7 +341,8 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
         ) : (
           <Button
             sx={{
-              border: "none"
+              border: "none",
+              mb: 2
             }}
             disabled
           >

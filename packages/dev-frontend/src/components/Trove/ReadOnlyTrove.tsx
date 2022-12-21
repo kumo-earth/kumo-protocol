@@ -58,7 +58,9 @@ export const ReadOnlyTrove: React.FC = () => {
             variant="cancel"
             onClick={handleCloseTrove}
             sx={{
-              border: "none"
+              border: "none",
+              mt: 3,
+              mb: 2
             }}
           >
             Close Vault
@@ -66,7 +68,8 @@ export const ReadOnlyTrove: React.FC = () => {
           <Button
             onClick={handleAdjustTrove}
             sx={{
-              border: "none"
+              border: "none",
+              m: 2
             }}
           >
             <Icon name="pen" size="sm" />

@@ -20,6 +20,8 @@ export const UserViewAlert: React.FC<UserViewAlertProps> = ({ onClose }) => {
         flexDirection: "column",
         borderRadius: 12,
         alignItems: "flex-start",
+        backgroundColor: 'secondaryHover',
+        color: 'black',
         zIndex: "99999"
       }}
     >

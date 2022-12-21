@@ -306,7 +306,9 @@ export const Adjusting: React.FC = () => {
               boxShadow:
                 "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
               border: "none",
-              color: "white"
+              color: "white",
+              mt: 3,
+              mb: 3
             }}
             variant="cancel"
             onClick={handleCancelPressed}
@@ -327,11 +329,11 @@ export const Adjusting: React.FC = () => {
           ) : (
             <Button
               sx={{
-                backgroundColor: "rgb(152, 80, 90)",
                 boxShadow:
                   "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
                 border: "none",
-                color: "white"
+                color: "white",
+                mb: 2
               }}
               disabled
             >

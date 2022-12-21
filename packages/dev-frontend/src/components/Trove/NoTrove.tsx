@@ -15,16 +15,16 @@ export const NoTrove: React.FC = props => {
 
   return (
     <Card variant="base" sx={{ width: "100%" }}>
-      <Heading as="h2">
-        {collateralType?.toUpperCase()} Vault
-      </Heading>
+      <Heading as="h2">{collateralType?.toUpperCase()} Vault</Heading>
       <Box sx={{ p: [2, 3] }}>
         <InfoMessage title="You haven't borrowed any KUSD yet.">
           You can borrow KUSD by opening a Vault.
         </InfoMessage>
 
         <Flex variant="layout.actions">
-          <Button onClick={handleOpenTrove}>Open Vault</Button>
+          <Button sx={{ mt: 3, mb: 2 }} onClick={handleOpenTrove}>
+            Open Vault
+          </Button>
         </Flex>
       </Box>
     </Card>

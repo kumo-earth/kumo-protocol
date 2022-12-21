@@ -20,18 +20,8 @@ export const WalletModal: React.FC = () => {
     }
   }, [dialog.visible]);
 
-  const style = {
-    top: "45%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 470,
-    bgcolor: "background.paper",
-    border: "none",
-    boxShadow: 24,
-    p: 0
-  };
   return (
-    <Card variant="base" sx={{ background: "#ebd8df" }}>
+    <Card variant="modalCard">
       <Heading as="h2" sx={{ mr: 2 }}>
         Connect to Wallet{" "}
         <span

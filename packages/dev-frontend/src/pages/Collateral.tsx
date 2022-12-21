@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { KumoStoreState, Vault } from "@kumodao/lib-base";
+import { Decimal, KumoStoreState, Percent, Vault } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { Grid, Flex, Text, Box } from "theme-ui";
 
@@ -21,7 +21,7 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 470,
   // bgcolor: "background.paper",
-  bgcolor: "white",
+  // bgcolor: "white",
   border: "none",
   boxShadow: 24,
   p: 0
@@ -33,7 +33,7 @@ export const Collateral: React.FC = () => {
   const { vaults } = useKumoSelector(select);
   const { collateralType } = useParams<{ collateralType: string }>();
   const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
-
+  const totalCollateralRatioPct = !vault?.total?.isEmpty ? new Percent(vault.total.collateralRatio(vault?.price)).toString(0) : `${Decimal.from(0).prettify(0)} %`;
 
   useEffect(() => {
     if (!dialog.visible) {
@@ -81,6 +81,7 @@ export const Collateral: React.FC = () => {
         </Text>
         <AssetStats
           total={vault.total}
+          totalCollateralRatioPct={totalCollateralRatioPct}
           kusdMintedCap={vault?.kusdMintedCap}
           minNetDebt={vault?.minNetDebt}
           collateralType={collateralType}
@@ -100,7 +101,7 @@ export const Collateral: React.FC = () => {
       </Flex>
       {showModal && (
         <Dialog {...dialog}>
-          <Box sx={{ ...style, position: "absolute" }}>
+          <Box sx={{ ...style, position: "absolute", borderRadius: "50px", background: "linear-gradient(128.29deg, #FFFFFF 0%, rgba(255, 255, 255, 1) 127.78%)" }}>
             <Stability />
           </Box>
         </Dialog>

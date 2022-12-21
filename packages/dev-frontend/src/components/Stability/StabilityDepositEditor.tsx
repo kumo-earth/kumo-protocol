@@ -69,13 +69,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
     Difference.between(newPoolShare, originalPoolShare).nonZero;
 
   return (
-    <Card
-      sx={{
-        width: "90%",
-        background: "#ebd8df"
-      }}
-      variant="base"
-    >
+    <Card variant="modalCard">
       <Heading as="h2">
         {getPathName(location).toUpperCase()} Stability Pool
         {edited && !changePending && (
@@ -87,9 +81,12 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
             <Icon name="history" size="sm" />
           </Button>
         )}
-         <span
+        <span
           style={{ marginLeft: "auto", cursor: "pointer" }}
-          onClick={() => {dispatchEvent("CLOSE_MODAL_PRESSED");  dispatchEvent("CANCEL_PRESSED")}}
+          onClick={() => {
+            dispatchEvent("CLOSE_MODAL_PRESSED");
+            dispatchEvent("CANCEL_PRESSED");
+          }}
         >
           <Icon name="window-close" size={"1x"} color="#da357a" />
         </span>

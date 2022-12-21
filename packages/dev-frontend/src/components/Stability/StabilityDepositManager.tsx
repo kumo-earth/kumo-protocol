@@ -25,9 +25,7 @@ import { useStabilityView } from "./context/StabilityViewContext";
 //   selectForStabilityDepositChangeValidation,
 //   validateStabilityDepositChange
 // } from "./validation/validateStabilityDepositChange";
-import {
-  validateStabilityDepositChange
-} from "./validation/validateStabilityDepositChange";
+import { validateStabilityDepositChange } from "./validation/validateStabilityDepositChange";
 
 // const init = ({ stabilityDeposit, vaults }: KumoStoreState) => {
 //   return {
@@ -39,7 +37,7 @@ import {
 
 // type StabilityDepositManagerState = ReturnType<typeof init>;
 type StabilityDepositManagerState = {
-  collateralType: string,
+  collateralType: string;
   originalDeposit: StabilityDeposit;
   editedKUSD: Decimal;
   changePending: boolean;
@@ -82,9 +80,8 @@ const reduce = (
       return { ...state, editedKUSD: originalDeposit.currentKUSD };
 
     case "updateStore": {
-
-      const vault = action.stateChange.vaults?.find(vault => vault.asset === state.collateralType)
-      const updatedStabilityDeposit = vault?.stabilityDeposit
+      const vault = action.stateChange.vaults?.find(vault => vault.asset === state.collateralType);
+      const updatedStabilityDeposit = vault?.stabilityDeposit;
       // const {
       //   stateChange: { stabilityDeposit: updatedDeposit }
       // } = action;
@@ -135,25 +132,25 @@ const reduce = (
 
 const transactionId = "stability-deposit";
 
-const select = ({ vaults, kusdBalance, ownFrontend  }: KumoStoreState) => ({
+const select = ({ vaults, kusdBalance, ownFrontend }: KumoStoreState) => ({
   vaults,
-  kusdBalance, 
-  ownFrontend 
+  kusdBalance,
+  ownFrontend
 });
 
 export const StabilityDepositManager: React.FC = () => {
   const { collateralType } = useParams<{ collateralType: string }>();
   const { vaults, kusdBalance, ownFrontend } = useKumoSelector(select);
-  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault;
-  const {stabilityDeposit, trove, haveUndercollateralizedTroves } = vault;
+  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
+  const { stabilityDeposit, trove, haveUndercollateralizedTroves } = vault;
 
   const validationContext = {
     trove,
     kusdBalance,
     haveOwnFrontend: ownFrontend.status === "registered",
     haveUndercollateralizedTroves
-  }
-  
+  };
+
   const [{ originalDeposit, editedKUSD, changePending }, dispatch] = useKumoReducer(reduce, () => {
     return {
       collateralType,
@@ -165,13 +162,12 @@ export const StabilityDepositManager: React.FC = () => {
 
   // const validationContext = useKumoSelector(selectForStabilityDepositChangeValidation);
   // const validationContext = useKumoSelector((state: KumoStoreState) => {
-    
-    
+
   // });
   const { dispatchEvent } = useStabilityView();
 
   const handleCancel = useCallback(() => {
-    dispatchEvent("CLOSE_MODAL_PRESSED")
+    dispatchEvent("CLOSE_MODAL_PRESSED");
     dispatchEvent("CANCEL_PRESSED");
   }, [dispatchEvent]);
 
@@ -213,7 +209,7 @@ export const StabilityDepositManager: React.FC = () => {
         ))}
 
       <Flex variant="layout.actions">
-        <Button variant="cancel" onClick={handleCancel}>
+        <Button sx={{ m: 3 }} variant="cancel" onClick={handleCancel}>
           Cancel
         </Button>
 
@@ -226,7 +222,7 @@ export const StabilityDepositManager: React.FC = () => {
             Confirm
           </StabilityDepositAction>
         ) : (
-          <Button>Confirm</Button>
+          <Button sx={{ mb: 2 }}>Confirm</Button>
         )}
       </Flex>
     </StabilityDepositEditor>

@@ -16,12 +16,13 @@ export const NoDeposit: React.FC = props => {
   }, [dispatchEvent]);
 
   return (
-    <Card variant="base" sx={{ background: "#ebd8df" }}>
+    <Card variant="modalCard">
       <Heading as="h2" sx={{ display: "flex", justifyContent: "space-between", mr: 2 }}>
         {collateralType?.toUpperCase()} Stability Pool
         <span
           style={{ marginLeft: "auto", cursor: "pointer" }}
           onClick={() => dispatchEvent("CLOSE_MODAL_PRESSED")}
+
         >
           <Icon name="window-close" size={"1x"} color="#da357a" />
         </span>
@@ -35,7 +36,7 @@ export const NoDeposit: React.FC = props => {
           <Flex sx={{ justifyContent: "flex-start", flex: 1, alignItems: "center" }}>
             <Yield />
           </Flex>
-          <Button onClick={handleOpenTrove}>Deposit</Button>
+          <Button sx={{ mt: 3, mb: 2 }} onClick={handleOpenTrove}>Deposit</Button>
         </Flex>
       </Box>
     </Card>

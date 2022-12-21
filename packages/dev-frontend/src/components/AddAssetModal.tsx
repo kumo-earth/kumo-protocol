@@ -14,7 +14,7 @@ export const AddAssetModal: React.FC<AddAssetModalProps> = ({ onClose }) => {
   const kusdToken = useKumoSelector(state => state.kusdToken);
 
   return (
-    <Card variant="base" sx={{ background: "#ebd8df" }}>
+    <Card variant="modalCard">
       <Heading as="h2" sx={{ mr: 2 }}>
         Please Add the Tokens to Wallet{" "}
         <span style={{ marginLeft: "auto", cursor: "pointer" }} onClick={e => onClose(e)}>

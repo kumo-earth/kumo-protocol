@@ -20,7 +20,7 @@ const style = {
   bgcolor: "white",
   border: "none",
   boxShadow: 24,
-  p: 0
+  p: 0,
 };
 
 export const UserAccount: React.FC = () => {
@@ -126,22 +126,22 @@ export const UserAccount: React.FC = () => {
         </Flex>
       </Flex>
       {showModal && (
-        <Dialog {...dialog} hideOnClickOutside={false}>
-          <Box sx={{ ...style, position: "absolute" }}>
+        <Dialog {...dialog} hideOnClickOutside={false} preventBodyScroll={true}>
+          <Box sx={{ ...style, position: "absolute", borderRadius: "50px", background: "linear-gradient(128.29deg, #FFFFFF 0%, rgba(255, 255, 255, 1) 127.78%)" }}>
             <WalletModal />
           </Box>
         </Dialog>
       )}
       {showSwitchModal && (
-        <Dialog {...dialog} hideOnClickOutside={false}>
-          <Box sx={{ ...style, position: "absolute" }}>
+        <Dialog {...dialog} hideOnClickOutside={false} >
+          <Box sx={{ ...style, position: "absolute", borderRadius: "50px", background: "linear-gradient(128.29deg, #FFFFFF 0%, rgba(255, 255, 255, 1) 127.78%)" }}>
             <SwitchNetworkModal />
           </Box>
         </Dialog>
       )}
       {showAssetModal && (
         <Dialog {...dialog} hideOnClickOutside={false}>
-          <Box sx={{ ...style, position: "absolute" }}>
+          <Box sx={{ ...style, position: "absolute", borderRadius: "50px", background: "linear-gradient(128.29deg, #FFFFFF 0%, rgba(255, 255, 255, 1) 127.78%)" }}>
             <AddAssetModal onClose={() => setShowAssetModal(false)} />
           </Box>
         </Dialog>
