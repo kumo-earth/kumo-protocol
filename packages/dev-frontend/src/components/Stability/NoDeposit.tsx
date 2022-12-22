@@ -2,10 +2,8 @@ import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 import { Icon } from "../Icon";
-
 import { InfoMessage } from "../InfoMessage";
 import { useStabilityView } from "./context/StabilityViewContext";
-import { RemainingKUMO } from "./RemainingKUMO";
 import { Yield } from "./Yield";
 
 export const NoDeposit: React.FC = props => {

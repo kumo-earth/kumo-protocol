@@ -425,7 +425,7 @@ const theme: Theme = {
       ml: 2,
       p: 1,
       border: "none",
-      borderRadius: '20px',
+      borderRadius: 8,
       minWidth: 90,
       maxWidth: "max-content",
       backgroundColor: "secondaryHover",

@@ -85,7 +85,7 @@ export const StakingType: React.FC = () => {
       })}
       {showModal && (
         <Dialog {...dialog}>
-          <Box sx={{ ...style, position: "absolute" }}>
+          <Box sx={{ ...style, position: "absolute", borderRadius: "50px", background: "linear-gradient(128.29deg, #FFFFFF 0%, rgba(255, 255, 255, 1) 127.78%)" }}>
             <Stability />
           </Box>
         </Dialog>
