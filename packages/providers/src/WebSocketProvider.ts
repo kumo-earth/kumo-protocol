@@ -1,5 +1,7 @@
 import { WebSocketProvider as EthersWebSocketProvider } from "@ethersproject/providers";
-
+let NextId = 1;
+let delay = 0; 
+const delayIncrement = 7000;
 export class WebSocketProvider extends EthersWebSocketProvider {
   get isReady() {
     return (this._websocket as WebSocket).readyState === WebSocket.OPEN;
@@ -15,5 +17,41 @@ export class WebSocketProvider extends EthersWebSocketProvider {
 
   async detectNetwork() {
     return this.network;
+  }
+
+  
+  send(method: string, params?: Array<any>): Promise<any> {
+    const rid = NextId++;
+    delay += delayIncrement
+    return new Promise((resolve, reject) => { 
+      return new Promise((resolve) => setTimeout(resolve, delay)).then(() => {
+        function callback(error: Error, result: any) {
+          if (error) {
+            return reject(error);
+          }
+          return resolve(result);
+        }
+  
+        const payload = JSON.stringify({
+          method: method,
+          params: params,
+          id: rid,
+          jsonrpc: "2.0"
+        });
+  
+        this.emit("debug", {
+          action: "request",
+          request: JSON.parse(payload),
+          provider: this
+        });
+  
+        this._requests[String(rid)] = { callback, payload };
+  
+        if (this._wsReady) {
+          this._websocket.send(payload);
+        }
+      })
+      
+    });
   }
 }

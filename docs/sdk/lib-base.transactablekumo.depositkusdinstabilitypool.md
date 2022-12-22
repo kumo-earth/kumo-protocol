@@ -9,7 +9,7 @@ Make a new Stability Deposit, or top up existing one.
 <b>Signature:</b>
 
 ```typescript
-depositKUSDInStabilityPool(amount: Decimalish): Promise<StabilityDepositChangeDetails>;
+depositKUSDInStabilityPool(amount: Decimalish, asset: string): Promise<StabilityDepositChangeDetails>;
 ```
 
 ## Parameters
@@ -17,6 +17,7 @@ depositKUSDInStabilityPool(amount: Decimalish): Promise<StabilityDepositChangeDe
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUSD to add to new or existing deposit. |
+|  asset | string |  |
 
 <b>Returns:</b>
 

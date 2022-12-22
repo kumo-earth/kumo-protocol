@@ -1,4 +1,5 @@
-
+// TODO: rewrite with hardhat helpers and multi-asset StabilityPool
+// https://github.com/kumodao/kumo-protocol/issues/286
 const deploymentHelpers = require("../utils/truffleDeploymentHelpers.js")
 const deploymentHelper = require("../utils/deploymentHelpers")
 const testHelpers = require("../utils/testHelpers.js")
@@ -28,7 +29,7 @@ contract('Pool Manager: Sum-Product rounding errors', async accounts => {
     
     priceFeed = contracts.priceFeedTestnet
     kusdToken = contracts.kusdToken
-    stabilityPool = contracts.stabilityPool
+    stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
     troveManager = contracts.troveManager
     borrowerOperations = contracts.borrowerOperations
     assetAddress1 = (await deploymentHelper.deployERC20Asset()).address

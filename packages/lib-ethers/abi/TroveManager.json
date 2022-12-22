@@ -285,11 +285,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_stabilityPoolAddress",
+        "name": "_stabilityPoolFactoryAddress",
         "type": "address"
       }
     ],
-    "name": "StabilityPoolAddressChanged",
+    "name": "StabilityPoolFactoryAddressChanged",
     "type": "event"
   },
   {
@@ -1777,7 +1777,7 @@
       },
       {
         "internalType": "address",
-        "name": "_stabilityPoolAddress",
+        "name": "_stabilityPoolFactoryAddress",
         "type": "address"
       },
       {
@@ -1872,10 +1872,10 @@
   },
   {
     "inputs": [],
-    "name": "stabilityPool",
+    "name": "stabilityPoolFactory",
     "outputs": [
       {
-        "internalType": "contract IStabilityPool",
+        "internalType": "contract IStabilityPoolFactory",
         "name": "",
         "type": "address"
       }

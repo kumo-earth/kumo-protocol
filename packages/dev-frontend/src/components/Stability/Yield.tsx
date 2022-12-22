@@ -14,7 +14,7 @@ const selector = ({ kusdInStabilityPool, remainingStabilityPoolKUMOReward }: Kum
 
 export const Yield: React.FC = () => {
   const {
-    liquity: {
+    kumo: {
       connection: { addresses }
     }
   } = useKumo();

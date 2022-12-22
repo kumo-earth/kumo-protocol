@@ -40,8 +40,6 @@ contract('KUMO Token', async accounts => {
   let kumoTokenTester
   let kumoStaking
   let communityIssuance
-  let hardhatTester
-  let erc20
 
   let tokenName
   let tokenVersion
@@ -112,8 +110,6 @@ contract('KUMO Token', async accounts => {
   beforeEach(async () => {
     contracts = await deploymentHelper.deployKumoCore()
     const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
-    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-    erc20 = hardhatTester.erc20
 
     kumoStaking = KUMOContracts.kumoStaking
     kumoTokenTester = KUMOContracts.kumoToken
@@ -142,7 +138,7 @@ contract('KUMO Token', async accounts => {
 
   it('totalSupply(): gets the total supply', async () => {
     const total = (await kumoTokenTester.totalSupply()).toString()
-   
+
     assert.equal(total, dec(100, 24))
   })
 

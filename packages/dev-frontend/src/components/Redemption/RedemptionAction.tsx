@@ -21,12 +21,12 @@ export const RedemptionAction: React.FC<RedemptionActionProps> = ({
   maxRedemptionRate
 }) => {
   const {
-    liquity: { send: liquity }
+    kumo: { send: kumo }
   } = useKumo();
 
   const [sendTransaction] = useTransactionFunction(
     transactionId,
-    liquity.redeemKUSD.bind(liquity, asset, kusdAmount, maxRedemptionRate)
+    kumo.redeemKUSD.bind(kumo, asset, kusdAmount, maxRedemptionRate)
   );
 
   return (

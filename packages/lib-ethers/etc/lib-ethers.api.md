@@ -76,14 +76,14 @@ export interface BorrowingOperationOptionalParams {
 }
 
 // @internal (undocumented)
-export function _connectByChainId<T>(provider: EthersProvider, signer: EthersSigner | undefined, chainId: number, optionalParams: EthersKumoConnectionOptionalParams & {
+export function _connectByChainId<T>(provider: EthersProvider, chainId: number, optionalParams: EthersKumoConnectionOptionalParams & {
     useStore: T;
-}): EthersKumoConnection & {
+}, signer?: EthersSigner | undefined): EthersKumoConnection & {
     useStore: T;
 };
 
 // @internal (undocumented)
-export function _connectByChainId(provider: EthersProvider, signer: EthersSigner | undefined, chainId: number, optionalParams?: EthersKumoConnectionOptionalParams): EthersKumoConnection;
+export function _connectByChainId(provider: EthersProvider, chainId: number, optionalParams?: EthersKumoConnectionOptionalParams, signer?: EthersSigner | undefined): EthersKumoConnection;
 
 // @public
 export interface EthersCallOverrides {
@@ -114,7 +114,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     // (undocumented)
     depositCollateral(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<TroveAdjustmentDetails>;
     // (undocumented)
-    depositKUSDInStabilityPool(amount: Decimalish, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<StabilityDepositChangeDetails>;
+    depositKUSDInStabilityPool(amount: Decimalish, asset: string, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<StabilityDepositChangeDetails>;
     // (undocumented)
     exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<void>;
     // @internal (undocumented)
@@ -125,6 +125,8 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     static _from(connection: EthersKumoConnection): EthersKumo;
     // @internal (undocumented)
     _getActivePool(asset: string, overrides?: EthersCallOverrides): Promise<Trove>;
+    // (undocumented)
+    getAssetBalance(address: string, assetType: string, provider: EthersProvider, overrides?: EthersCallOverrides): Promise<Decimal>;
     // @internal (undocumented)
     _getBlockTimestamp(blockTag?: BlockTag): Promise<number>;
     // (undocumented)
@@ -136,15 +138,15 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     // @internal (undocumented)
     _getFeesFactory(asset: string, overrides?: EthersCallOverrides): Promise<(blockTimestamp: number, recoveryMode: boolean) => Fees>;
     // (undocumented)
-    getFrontendStatus(address?: string, overrides?: EthersCallOverrides): Promise<FrontendStatus>;
+    getFrontendStatus(asset: string, address: string, overrides?: EthersCallOverrides): Promise<FrontendStatus>;
     // (undocumented)
     getKUMOBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
-    getKUMOStake(asset: string, address?: string, overrides?: EthersCallOverrides): Promise<KUMOStake>;
+    getKUMOStake(asset: string, address: string, overrides?: EthersCallOverrides): Promise<KUMOStake>;
     // (undocumented)
     getKUSDBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
-    getKUSDInStabilityPool(overrides?: EthersCallOverrides): Promise<Decimal>;
+    getKUSDInStabilityPool(asset: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
     getLiquidityMiningKUMOReward(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
@@ -160,7 +162,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     // (undocumented)
     getRemainingStabilityPoolKUMOReward(overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
-    getStabilityDeposit(address?: string, overrides?: EthersCallOverrides): Promise<StabilityDeposit>;
+    getStabilityDeposit(assetName: string, address?: string, overrides?: EthersCallOverrides): Promise<StabilityDeposit>;
     // (undocumented)
     getTotal(asset: string, overrides?: EthersCallOverrides): Promise<Trove>;
     // (undocumented)
@@ -172,7 +174,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     // (undocumented)
     getTrove(asset: string, address?: string, overrides?: EthersCallOverrides): Promise<UserTrove>;
     // (undocumented)
-    getTroveBeforeRedistribution(asset: string, address?: string, overrides?: EthersCallOverrides): Promise<TroveWithPendingRedistribution>;
+    getTroveBeforeRedistribution(asset: string, address: string, overrides?: EthersCallOverrides): Promise<TroveWithPendingRedistribution>;
     // @internal (undocumented)
     getTroves(asset: string, params: TroveListingParams & {
         beforeRedistribution: true;
@@ -197,7 +199,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     // (undocumented)
     redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<RedemptionDetails>;
     // (undocumented)
-    registerFrontend(kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
+    registerFrontend(assetName: string, kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
     // (undocumented)
     repayKUSD(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<TroveAdjustmentDetails>;
     readonly send: SendableEthersKumo;
@@ -212,7 +214,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     // (undocumented)
     stakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
     // (undocumented)
-    transferCollateralGainToTrove(asset: string, overrides?: EthersTransactionOverrides): Promise<CollateralGainTransferDetails>;
+    transferCollateralGainToTrove(asset: string, assetName: string, overrides?: EthersTransactionOverrides): Promise<CollateralGainTransferDetails>;
     // (undocumented)
     unstakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
     // (undocumented)
@@ -220,13 +222,13 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     // (undocumented)
     withdrawCollateral(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<TroveAdjustmentDetails>;
     // (undocumented)
-    withdrawGainsFromStabilityPool(overrides?: EthersTransactionOverrides): Promise<StabilityPoolGainsWithdrawalDetails>;
+    withdrawGainsFromStabilityPool(asset: string, overrides?: EthersTransactionOverrides): Promise<StabilityPoolGainsWithdrawalDetails>;
     // (undocumented)
     withdrawGainsFromStaking(overrides?: EthersTransactionOverrides): Promise<void>;
     // (undocumented)
     withdrawKUMORewardFromLiquidityMining(overrides?: EthersTransactionOverrides): Promise<void>;
     // (undocumented)
-    withdrawKUSDFromStabilityPool(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<StabilityDepositChangeDetails>;
+    withdrawKUSDFromStabilityPool(amount: Decimalish, asset: string, overrides?: EthersTransactionOverrides): Promise<StabilityDepositChangeDetails>;
 }
 
 // @public
@@ -310,21 +312,21 @@ export type EthersTransactionResponse = TransactionResponse;
 export class ObservableEthersKumo implements ObservableKumo {
     constructor(readable: ReadableEthersKumo);
     // (undocumented)
-    watchKUSDBalance(onKUSDBalanceChanged: (balance: Decimal) => void, address?: string): () => void;
+    watchKUSDBalance(onKUSDBalanceChanged: (balance: Decimal) => void, address: string): () => void;
     // (undocumented)
-    watchKUSDInStabilityPool(onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void): () => void;
+    watchKUSDInStabilityPool(assetName: string, onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void): () => void;
     // (undocumented)
     watchNumberOfTroves(onNumberOfTrovesChanged: (numberOfTroves: number) => void): () => void;
     // (undocumented)
     watchPrice(onPriceChanged: (price: Decimal) => void): () => void;
     // (undocumented)
-    watchStabilityDeposit(onStabilityDepositChanged: (stabilityDeposit: StabilityDeposit) => void, address?: string): () => void;
+    watchStabilityDeposit(onStabilityDepositChanged: (stabilityDeposit: StabilityDeposit) => void, assetName: string, address: string): () => void;
     // (undocumented)
     watchTotal(onTotalChanged: (total: Trove) => void): () => void;
     // (undocumented)
     watchTotalRedistributed(onTotalRedistributedChanged: (totalRedistributed: Trove) => void): () => void;
     // (undocumented)
-    watchTroveWithoutRewards(onTroveChanged: (trove: TroveWithPendingRedistribution) => void, address?: string): () => void;
+    watchTroveWithoutRewards(onTroveChanged: (trove: TroveWithPendingRedistribution) => void, address: string): () => void;
 }
 
 // @public
@@ -343,7 +345,7 @@ export class PopulatableEthersKumo implements PopulatableKumo<EthersTransactionR
     // (undocumented)
     depositCollateral(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    depositKUSDInStabilityPool(amount: Decimalish, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>>;
+    depositKUSDInStabilityPool(amount: Decimalish, assetName: string, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>>;
     // (undocumented)
     exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
@@ -357,7 +359,7 @@ export class PopulatableEthersKumo implements PopulatableKumo<EthersTransactionR
     // (undocumented)
     redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersRedemption>;
     // (undocumented)
-    registerFrontend(kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
+    registerFrontend(assetName: string, kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
     repayKUSD(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
@@ -371,7 +373,7 @@ export class PopulatableEthersKumo implements PopulatableKumo<EthersTransactionR
     // (undocumented)
     stakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
-    transferCollateralGainToTrove(asset: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<CollateralGainTransferDetails>>;
+    transferCollateralGainToTrove(asset: string, assetName: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<CollateralGainTransferDetails>>;
     // (undocumented)
     unstakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
@@ -379,13 +381,13 @@ export class PopulatableEthersKumo implements PopulatableKumo<EthersTransactionR
     // (undocumented)
     withdrawCollateral(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    withdrawGainsFromStabilityPool(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<StabilityPoolGainsWithdrawalDetails>>;
+    withdrawGainsFromStabilityPool(assetName: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<StabilityPoolGainsWithdrawalDetails>>;
     // (undocumented)
     withdrawGainsFromStaking(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
     withdrawKUMORewardFromLiquidityMining(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
-    withdrawKUSDFromStabilityPool(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>>;
+    withdrawKUSDFromStabilityPool(amount: Decimalish, assetName: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>>;
     }
 
 // @public
@@ -460,6 +462,8 @@ export class ReadableEthersKumo implements ReadableKumo {
     static _from(connection: EthersKumoConnection): ReadableEthersKumo;
     // @internal (undocumented)
     _getActivePool(asset: string, overrides?: EthersCallOverrides): Promise<Trove>;
+    // (undocumented)
+    getAssetBalance(address: string, asset: string, provider: EthersProvider, overrides?: EthersCallOverrides): any;
     // @internal (undocumented)
     _getBlockTimestamp(blockTag?: BlockTag): Promise<number>;
     // (undocumented)
@@ -471,15 +475,15 @@ export class ReadableEthersKumo implements ReadableKumo {
     // @internal (undocumented)
     _getFeesFactory(asset: string, overrides?: EthersCallOverrides): Promise<(blockTimestamp: number, recoveryMode: boolean) => Fees>;
     // (undocumented)
-    getFrontendStatus(address?: string, overrides?: EthersCallOverrides): Promise<FrontendStatus>;
+    getFrontendStatus(assetName: string, address: string, overrides?: EthersCallOverrides): Promise<FrontendStatus>;
     // (undocumented)
     getKUMOBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
-    getKUMOStake(asset: string, address?: string, overrides?: EthersCallOverrides): Promise<KUMOStake>;
+    getKUMOStake(asset: string, address: string, overrides?: EthersCallOverrides): Promise<KUMOStake>;
     // (undocumented)
     getKUSDBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
-    getKUSDInStabilityPool(overrides?: EthersCallOverrides): Promise<Decimal>;
+    getKUSDInStabilityPool(assetName: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
     getLiquidityMiningKUMOReward(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
@@ -495,7 +499,7 @@ export class ReadableEthersKumo implements ReadableKumo {
     // (undocumented)
     getRemainingStabilityPoolKUMOReward(overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
-    getStabilityDeposit(address?: string, overrides?: EthersCallOverrides): Promise<StabilityDeposit>;
+    getStabilityDeposit(assetName: string, address?: string, overrides?: EthersCallOverrides): Promise<StabilityDeposit>;
     // (undocumented)
     getTotal(asset: string, overrides?: EthersCallOverrides): Promise<Trove>;
     // (undocumented)
@@ -546,7 +550,7 @@ export class SendableEthersKumo implements SendableKumo<EthersTransactionReceipt
     // (undocumented)
     depositCollateral(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    depositKUSDInStabilityPool(amount: Decimalish, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<StabilityDepositChangeDetails>>;
+    depositKUSDInStabilityPool(amount: Decimalish, asset: string, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<StabilityDepositChangeDetails>>;
     // (undocumented)
     exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)
@@ -560,7 +564,7 @@ export class SendableEthersKumo implements SendableKumo<EthersTransactionReceipt
     // (undocumented)
     redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<RedemptionDetails>>;
     // (undocumented)
-    registerFrontend(kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
+    registerFrontend(assetName: string, kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)
     repayKUSD(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
@@ -574,7 +578,7 @@ export class SendableEthersKumo implements SendableKumo<EthersTransactionReceipt
     // (undocumented)
     stakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)
-    transferCollateralGainToTrove(asset: string, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<CollateralGainTransferDetails>>;
+    transferCollateralGainToTrove(asset: string, assetName: string, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<CollateralGainTransferDetails>>;
     // (undocumented)
     unstakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)
@@ -582,13 +586,13 @@ export class SendableEthersKumo implements SendableKumo<EthersTransactionReceipt
     // (undocumented)
     withdrawCollateral(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    withdrawGainsFromStabilityPool(overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<StabilityPoolGainsWithdrawalDetails>>;
+    withdrawGainsFromStabilityPool(asset: string, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<StabilityPoolGainsWithdrawalDetails>>;
     // (undocumented)
     withdrawGainsFromStaking(overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)
     withdrawKUMORewardFromLiquidityMining(overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)
-    withdrawKUSDFromStabilityPool(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<StabilityDepositChangeDetails>>;
+    withdrawKUSDFromStabilityPool(amount: Decimalish, asset: string, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<StabilityDepositChangeDetails>>;
 }
 
 // @public

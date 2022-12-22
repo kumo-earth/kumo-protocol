@@ -8,7 +8,9 @@ import {
   StabilityDeposit,
   KUMOStake,
   KumoStore,
-  Fees
+  Fees,
+  ASSET_TOKENS,
+  UserTrove
 } from "@kumodao/lib-base";
 
 import { decimalify, promiseAllValues } from "./_utils";
@@ -59,6 +61,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
 
   private readonly _readable: ReadableEthersKumo;
   private readonly _provider: EthersProvider;
+  private _isError: boolean;
 
   constructor(readable: ReadableEthersKumo) {
     super();
@@ -66,6 +69,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
     this.connection = readable.connection;
     this._readable = readable;
     this._provider = _getProvider(readable.connection);
+    this._isError = false;
   }
 
   private async _getRiskiestTroveBeforeRedistribution(
@@ -89,7 +93,97 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
     asset: string,
     blockTag?: number
   ): Promise<[baseState: KumoStoreBaseState, extraState: BlockPolledKumoStoreExtraState]> {
-    const { userAddress, frontendTag } = this.connection;
+    const { userAddress, frontendTag, provider } = this.connection;
+
+    interface VaultStateType extends Partial<KumoStoreBaseState> {
+      asset: string;
+    }
+
+    const vaultState: VaultStateType[] = [];
+
+    Object.keys(ASSET_TOKENS).forEach(async assetToken => {
+      const { assetAddress } = ASSET_TOKENS[assetToken];
+      const values = await promiseAllValues({
+        blockTimestamp: this._readable._getBlockTimestamp(blockTag),
+        _feesFactory: this._readable._getFeesFactory(assetAddress, { blockTag }),
+        numberOfTroves: this._readable.getNumberOfTroves(assetAddress, { blockTag }),
+        totalRedistributed: this._readable.getTotalRedistributed(assetAddress, { blockTag }),
+        total: this._readable.getTotal(assetAddress, { blockTag }),
+        kusdInStabilityPool: this._readable.getKUSDInStabilityPool(assetToken, { blockTag }),
+        price: this._readable.getPrice(assetAddress, { blockTag }),
+        _riskiestTroveBeforeRedistribution: this._getRiskiestTroveBeforeRedistribution(
+          assetAddress,
+          {
+            blockTag
+          }
+        ),
+        ...(userAddress
+          ? {
+              accountBalance: this._readable.getAssetBalance(userAddress, assetAddress, provider, {
+                blockTag
+              }),
+              collateralSurplusBalance: this._readable.getCollateralSurplusBalance(
+                assetAddress,
+                userAddress,
+                {
+                  blockTag
+                }
+              ),
+              // trove: this._readable.getTrove(address, userAddress, {
+              //   blockTag
+              // }),
+
+              troveBeforeRedistribution: this._readable.getTroveBeforeRedistribution(
+                assetAddress,
+                userAddress,
+                {
+                  blockTag
+                }
+              ),
+              stabilityDeposit: this._readable.getStabilityDeposit(assetToken, userAddress, {
+                blockTag
+              }),
+              kumoStake: this._readable.getKUMOStake(assetAddress, userAddress, { blockTag })
+            }
+          : {
+              collateralSurplusBalance: Decimal.ZERO,
+              accountBalance: Decimal.ZERO,
+              troveBeforeRedistribution: new TroveWithPendingRedistribution(
+                AddressZero,
+                "nonExistent"
+              ),
+              stabilityDeposit: new StabilityDeposit(
+                Decimal.ZERO,
+                Decimal.ZERO,
+                Decimal.ZERO,
+                Decimal.ZERO,
+                AddressZero
+              ),
+              kumoStake: new KUMOStake()
+            })
+      });
+      const {
+        _feesFactory,
+        blockTimestamp,
+        total,
+        price,
+        troveBeforeRedistribution,
+        totalRedistributed,
+        _riskiestTroveBeforeRedistribution
+      } = values;
+      const _feesInNormalMode = _feesFactory(blockTimestamp, false);
+      const fees = _feesInNormalMode?._setRecoveryMode(total.collateralRatioIsBelowCritical(price));
+      const derivedValues = {
+        trove: troveBeforeRedistribution?.applyRedistribution(totalRedistributed),
+        fees,
+        borrowingRate: fees.borrowingRate(),
+        redemptionRate: fees.redemptionRate(),
+        haveUndercollateralizedTroves: _riskiestTroveBeforeRedistribution
+          ?.applyRedistribution(totalRedistributed)
+          ?.collateralRatioIsBelowMinimum(price)
+      };
+      vaultState.push({ asset: assetToken, ...derivedValues, ...values });
+    });
 
     const { blockTimestamp, _feesFactory, calculateRemainingKUMO, ...baseState } =
       await promiseAllValues({
@@ -103,7 +197,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
         numberOfTroves: this._readable.getNumberOfTroves(asset, { blockTag }),
         totalRedistributed: this._readable.getTotalRedistributed(asset, { blockTag }),
         total: this._readable.getTotal(asset, { blockTag }),
-        kusdInStabilityPool: this._readable.getKUSDInStabilityPool({ blockTag }),
+        kusdInStabilityPool: this._readable.getKUSDInStabilityPool("ctx", { blockTag }),
         totalStakedKUMO: this._readable.getTotalStakedKUMO({ blockTag }),
         _riskiestTroveBeforeRedistribution: this._getRiskiestTroveBeforeRedistribution(asset, {
           blockTag
@@ -114,7 +208,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
         }),
 
         frontend: frontendTag
-          ? this._readable.getFrontendStatus(frontendTag, { blockTag })
+          ? this._readable.getFrontendStatus("ctx", frontendTag, { blockTag })
           : { status: "unregistered" as const },
 
         ...(userAddress
@@ -144,9 +238,9 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
                   blockTag
                 }
               ),
-              stabilityDeposit: this._readable.getStabilityDeposit(userAddress, { blockTag }),
+              stabilityDeposit: this._readable.getStabilityDeposit("ctx", userAddress, { blockTag }),
               kumoStake: this._readable.getKUMOStake(asset, userAddress, { blockTag }),
-              ownFrontend: this._readable.getFrontendStatus(userAddress, { blockTag })
+              ownFrontend: this._readable.getFrontendStatus("ctx", userAddress, { blockTag })
             }
           : {
               accountBalance: Decimal.ZERO,
@@ -176,6 +270,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
     return [
       {
         ...baseState,
+        vaults: [...vaultState],
         _feesInNormalMode: _feesFactory(blockTimestamp, false),
         remainingLiquidityMiningKUMOReward: calculateRemainingKUMO(blockTimestamp)
       },
@@ -187,9 +282,47 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
     ];
   }
 
+  // /** @internal @override */
+  // protected _doStart(): () => void {
+  //   this._get()
+  //     .then(state => {
+  //       if (!this._loaded) {
+  //         this._load(...state);
+  //       }
+  //     })
+  //     .catch(error => {
+  //       if (!this._isError) {
+  //         this._isError = true;
+  //       }
+  //       console.log(error?.message);
+  //     });
+
+  //   const blockListener = async (blockTag: number) => {
+  //     if (this.connection.signer || this._isError) {
+  //       this._isError = false;
+  //       this._get(blockTag)
+  //         .then(state => {
+  //           if (this._loaded) {
+  //             this._update(...state);
+  //           } else {
+  //             this._load(...state);
+  //           }
+  //         })
+  //         .catch(error => {
+  //           console.log(error?.message);
+  //         });
+  //     }
+  //   };
+
+  //   this._provider.on("block", blockListener);
+
+  //   return () => {
+  //     this._provider.off("block", blockListener);
+  //   };
+  // }
   /** @internal @override */
   protected _doStart(): () => void {
-    const asset = "";
+    const asset = "0xB861c98B465272765c5B2F651471Ea8a65871ACd";
     this._get(asset).then(state => {
       if (!this._loaded) {
         this._load(...state);

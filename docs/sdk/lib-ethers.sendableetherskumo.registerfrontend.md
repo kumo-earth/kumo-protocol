@@ -9,13 +9,14 @@ Register current wallet address as a Kumo frontend.
 <b>Signature:</b>
 
 ```typescript
-registerFrontend(kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
+registerFrontend(assetName: string, kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  assetName | string | Symbol of the asset token as string |
 |  kickbackRate | [Decimalish](./lib-base.decimalish.md) | The portion of KUMO rewards to pass onto users of the frontend (between 0 and 1). |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 

@@ -31,11 +31,16 @@ contract('All Kumo functions with onlyOwner modifier', async accounts => {
     contracts = await deploymentHelper.deployKUSDToken(contracts)
     const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
 
+    erc20Asset = await deploymentHelper.deployERC20Asset()
+    assetAddress1 = erc20Asset.address
+
+    await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
+
     kusdToken = contracts.kusdToken
     sortedTroves = contracts.sortedTroves
     troveManager = contracts.troveManager
     activePool = contracts.activePool
-    stabilityPool = contracts.stabilityPool
+    stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
     defaultPool = contracts.defaultPool
     borrowerOperations = contracts.borrowerOperations
 

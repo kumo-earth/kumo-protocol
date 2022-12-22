@@ -9,7 +9,7 @@ Get the amount of KUMO earned by an address through mining liquidity.
 <b>Signature:</b>
 
 ```typescript
-getLiquidityMiningKUMOReward(address?: string): Promise<Decimal>;
+getLiquidityMiningKUMOReward(address: string): Promise<Decimal>;
 ```
 
 ## Parameters

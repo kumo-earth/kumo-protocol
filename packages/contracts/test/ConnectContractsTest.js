@@ -11,6 +11,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   let troveManager
   let activePool
   let stabilityPool
+  let stabilityPoolFactory
   let defaultPool
   let functionCaller
   let borrowerOperations
@@ -29,7 +30,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     sortedTroves = coreContracts.sortedTroves
     troveManager = coreContracts.troveManager
     activePool = coreContracts.activePool
-    stabilityPool = coreContracts.stabilityPool
+    stabilityPoolFactory = coreContracts.stabilityPoolFactory
     defaultPool = coreContracts.defaultPool
     functionCaller = coreContracts.functionCaller
     borrowerOperations = coreContracts.borrowerOperations
@@ -43,11 +44,13 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     await deploymentHelper.connectKUMOContracts(KUMOContracts)
     await deploymentHelper.connectCoreContracts(coreContracts, KUMOContracts)
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, coreContracts)
-    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-    erc20 = hardhatTester.erc20
-    assetAddress1 = erc20.address
+    
+    erc20Asset1 = await deploymentHelper.deployERC20Asset()
+    assetAddress1 = erc20Asset1.address
 
     await deploymentHelper.addNewAssetToSystem(coreContracts, KUMOContracts, assetAddress1)
+
+    stabilityPool = await deploymentHelper.getStabilityPoolByAsset(coreContracts, assetAddress1)
   })
 
   it('Check if correct Addresses in Vault Parameters', async () => {
@@ -81,12 +84,12 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   })
 
   // StabilityPool in TroveM
-  it('Sets the correct StabilityPool address in TroveManager', async () => {
-    const stabilityPoolAddress = stabilityPool.address
+  it('Sets the correct StabilityPoolFactory address in TroveManager', async () => {
+    const stabilityPoolFactoryAddress = stabilityPoolFactory.address
 
-    const recordedStabilityPoolAddresss = await troveManager.stabilityPool()
+    const recordedStabilityPoolFactoryAddresss = await troveManager.stabilityPoolFactory()
 
-    assert.equal(stabilityPoolAddress, recordedStabilityPoolAddresss)
+    assert.equal(stabilityPoolFactoryAddress, recordedStabilityPoolFactoryAddresss)
   })
 
   // KUMO Staking in TroveM
@@ -100,11 +103,11 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   // Active Pool
 
   it('Sets the correct StabilityPool address in ActivePool', async () => {
-    const stabilityPoolAddress = stabilityPool.address
+    const stabilityPoolFactoryAddress = stabilityPoolFactory.address
 
-    const recordedStabilityPoolAddress = await activePool.stabilityPoolAddress()
+    const recordedStabilityPoolFactoryAddress = await activePool.stabilityPoolFactory()
 
-    assert.equal(stabilityPoolAddress, recordedStabilityPoolAddress)
+    assert.equal(stabilityPoolFactoryAddress, recordedStabilityPoolFactoryAddress)
   })
 
   it('Sets the correct DefaultPool address in ActivePool', async () => {
@@ -321,9 +324,9 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   })
 
   it('Sets the correct StabilityPool address in CommunityIssuance', async () => {
-    const stabilityPoolAddress = stabilityPool.address
+    const stabilityPoolFactoryAddress = stabilityPoolFactory.address
 
-    const recordedStabilityPoolAddress = await communityIssuance.stabilityPoolAddress()
-    assert.equal(stabilityPoolAddress, recordedStabilityPoolAddress)
+    const recordedStabilityPoolFactoryAddress = await communityIssuance.stabilityPoolFactory()
+    assert.equal(stabilityPoolFactoryAddress, recordedStabilityPoolFactoryAddress)
   })
 })
