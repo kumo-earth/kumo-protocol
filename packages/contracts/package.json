@@ -11,7 +11,7 @@
     "prepare": "run-s prepare:*",
     "prepare:compile": "hardhat compile",
     "prepare:set-version": "node scripts/set-version.js",
-    "prettier": "prettier --write 'contracts/**/*.sol'",
+    "prettier:solidity": "prettier --write 'contracts/**/*.sol'",
     "test": "hardhat test",
     "coverage": "hardhat coverage",
     "coveralls": "cat coverage/lcov.info | coveralls"
@@ -36,6 +36,7 @@
     "@openzeppelin/test-helpers": "^0.5.13",
     "eth-gas-reporter": "^0.2.22",
     "hardhat": "^2.9.9",
+    "hardhat-contract-sizer": "^2.6.1",
     "hardhat-gas-reporter": "^1.0.8",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.8.1",
