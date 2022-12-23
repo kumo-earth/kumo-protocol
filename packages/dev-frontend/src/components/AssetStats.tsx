@@ -152,7 +152,7 @@ export const AssetStats: React.FC<SystemStatsProps> = ({
             MIN. COLLATERAL RATIO
           </Text>
           <Text as="p" variant="small">
-            150%
+            110%
           </Text>
         </Flex>
       </Box>
