@@ -35,7 +35,7 @@ export const StabilityPoolStaking: React.FC = () => {
       />
       <StabilityPoolStakingCard
         title="Liquidity Mining"
-        description="Help bootstrap the Vesta ecosystem by providing and staking liquidity to receive rewards."
+        description="Help bootstrap the KUMO ecosystem by providing and staking liquidity to receive rewards."
         stakingType={"liquidity"}
        
       />
