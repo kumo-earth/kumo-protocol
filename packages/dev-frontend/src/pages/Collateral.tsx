@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { Decimal, KumoStoreState, Percent, Vault } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { Grid, Flex, Text, Box } from "theme-ui";
@@ -29,6 +29,7 @@ const style = {
 
 export const Collateral: React.FC = () => {
   const dialog = useDialogState();
+  const history = useHistory();
   const { showModal,view, dispatchEvent } = useStabilityView();
   const { vaults } = useKumoSelector(select);
   const { collateralType } = useParams<{ collateralType: string }>();
@@ -41,6 +42,12 @@ export const Collateral: React.FC = () => {
     }
   }, [dialog.visible]);
 
+  useEffect(() => {
+    const vault = vaults.find(vault => vault.asset === collateralType)
+     if(!vault){
+      history.push('/')
+     }
+  }, [collateralType])
 
   useEffect(() => {
     const keyDownHandler = (event: { key: string; preventDefault: () => void }) => {

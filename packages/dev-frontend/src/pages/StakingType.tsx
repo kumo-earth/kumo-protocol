@@ -20,11 +20,11 @@ export const StakingType: React.FC = () => {
   const history = useHistory();
 
   useEffect(() => {
-    if (!dialog.visible) {
+    if (!dialog.visible || !showModal) {
       dispatchEvent("CLOSE_MODAL_PRESSED");
       history.push("/staking/stability");
     }
-  }, [dialog.visible]);
+  }, [dialog.visible, showModal]);
 
   useEffect(() => {
     const keyDownHandler = (event: { key: string; preventDefault: () => void }) => {

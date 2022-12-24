@@ -1,5 +1,5 @@
 import React from "react";
-import { Flex, Box, Text, Container, Divider } from "theme-ui";
+import { Flex, Box, Container, Divider } from "theme-ui";
 import { KumoLogo } from "../KumoLogo";
 import { Link } from "../Link";
 
@@ -13,7 +13,7 @@ export const Sidebar: React.FC = props => {
           <Link to="/portfolio">Portfolio</Link>
           <Link to="/staking">Staking</Link>
           <Link to="/redemption">Redemption</Link>
-          <Link to="/stats/protocol">Stats</Link>
+          <Link to="/stats">Stats</Link>
         </Box>
       </Flex>
       <Divider sx={{ color: "muted" }} />

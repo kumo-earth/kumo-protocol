@@ -60,9 +60,9 @@ export const KumoProvider: React.FC<KumoProviderProps> = ({
   const triedAuthorizedConnection = useAuthorizedConnection();
   
   const connection = useMemo(() => {
-    if(account !==  sessionStorage.getItem('account')){
-      history.push("/dashboard")
-    }
+    // if(account !==  sessionStorage.getItem('account')){
+    //   history.push("/dashboard")
+    // }
     if (config && provider && account && chainId) {
       sessionStorage.setItem("account", account);
       return _connectByChainId(

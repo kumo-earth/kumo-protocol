@@ -1,4 +1,5 @@
-import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import { Box, Flex } from "theme-ui";
 import { Link } from "../components/Link";
 import { StatsLiquidation } from "../components/StatsLiquidation/StatsLiquidation";
@@ -7,6 +8,13 @@ import { ProtocolStats } from "./ProtocolStats";
 
 export const Stats: React.FC = () => {
   const { statsType } = useParams<{ statsType: string }>();
+  const history = useHistory();
+  
+  useEffect(() => {
+     if(statsType === 'protocol' || statsType !== 'vaults'){
+      history.push('/stats/protocol')
+     }
+  }, [statsType])
   
   const renderStatsView = (view: string) => {
     switch (view) {

@@ -82,9 +82,7 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                       <Container variant="main">
                         <Switch>
                           <Redirect from="/" to="/dashboard" exact />
-                          <Redirect from="/stats" to="/stats/protocol" exact />
-
-                          <Route path="/dashboard" exact>
+                          <Route path="/dashboard" exact >
                             <PageSwitcher />
                           </Route>
                           <Route path="/dashboard/:collateralType" exact>
@@ -105,17 +103,21 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                           <Route path="/staking/:stakingType/:collateralType" exact>
                             <StakingType />
                           </Route>
-                          <Route path="/stats/:statsType" exact>
+                          <Redirect from="/stats" to="/stats/protocol" exact />
+                          <Route path="/stats/:statsType" exact >
                             <Stats />
                           </Route>
-                          <Route path="/farm">
+                          <Route path="/farm" exact>
                             <Farm />
                           </Route>
-                          <Route path="/risky-troves">
+                          <Route path="/risky-troves" exact>
                             <RiskyTrovesPage />
                           </Route>
-                          <Route path="/redemption">
+                          <Route path="/redemption" exact>
                             <RedemptionPage />
+                          </Route>
+                          <Route path="*">
+                            <Redirect from="*" to="/dashboard" exact />
                           </Route>
                         </Switch>
                       </Container>
