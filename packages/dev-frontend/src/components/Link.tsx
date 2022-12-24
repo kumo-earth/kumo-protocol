@@ -4,7 +4,7 @@ import { NavLink as ThemeUINavLink, NavLinkProps as ThemeUILinkProps } from "the
 type CombinedProps = ThemeUILinkProps & RouterLinkProps<{}>;
 
 const ExactLink: React.FC<CombinedProps> = props => {
-  return <RouterLink exact {...props} />;
+  return <RouterLink {...props} />;
 };
 
 export const Link: React.FC<CombinedProps> = props => {
