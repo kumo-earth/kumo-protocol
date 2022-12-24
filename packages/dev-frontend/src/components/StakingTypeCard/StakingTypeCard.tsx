@@ -13,7 +13,6 @@ export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
   handleViewStakeDeposit
 }) => {
   const divdideVal = vault?.stabilityDeposit?.currentKUSD.div(vault?.stabilityDeposit?.currentKUSD);
-
   const aprRatio = divdideVal ? new Percent(divdideVal) : new Percent(Decimal.ZERO);
 
   return (
@@ -41,7 +40,7 @@ export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
             18%
           </Text>
           <Text as="p" variant="large">
-            {vault?.stabilityDeposit.currentKUSD.isZero ? 0 : vault?.stabilityDeposit?.currentKUSD.shorten()}
+            {vault?.kusdInStabilityPool?.isZero ? 0 : vault?.kusdInStabilityPool.prettify(0)}
           </Text>
         </Flex>
         <Divider color="muted" />
