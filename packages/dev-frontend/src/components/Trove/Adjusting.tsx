@@ -302,18 +302,13 @@ export const Adjusting: React.FC = () => {
         <Flex variant="layout.actions">
           <Button
             sx={{
-              backgroundColor: "rgb(152, 80, 90)",
-              boxShadow:
-                "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
-              border: "none",
-              color: "white",
               mt: 3,
               mb: 3
             }}
-            variant="cancel"
+            variant="secondary"
             onClick={handleCancelPressed}
           >
-            Cancel
+            CANCEL
           </Button>
 
           {stableTroveChange ? (
@@ -324,20 +319,17 @@ export const Adjusting: React.FC = () => {
               maxBorrowingRate={maxBorrowingRate}
               borrowingFeeDecayToleranceMinutes={60}
             >
-              Confirm
+              CONFIRM
             </TroveAction>
           ) : (
             <Button
               sx={{
-                boxShadow:
-                  "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
-                border: "none",
-                color: "white",
                 mb: 2
               }}
+              variant="primaryInActive"
               disabled
             >
-              Confirm
+              CONFIRM
             </Button>
           )}
         </Flex>

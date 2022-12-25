@@ -21,12 +21,12 @@ const FrontendRegistrationAction: React.FC<FrontendRegistrationActionProps> = ({
   return myTransactionState.type === "waitingForApproval" ? (
     <Button disabled>
       <Spinner sx={{ mr: 2, color: "white" }} size="20px" />
-      Waiting for your approval
+      WAITING for YOUR APPROVAL
     </Button>
   ) : myTransactionState.type !== "waitingForConfirmation" &&
     myTransactionState.type !== "confirmed" ? (
     <Transaction id={myTransactionId} send={kumo.registerFrontend.bind(kumo, "ctx", kickbackRate)}>
-      <Button>Register</Button>
+      <Button>REGISTER</Button>
     </Transaction>
   ) : null;
 };

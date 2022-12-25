@@ -29,8 +29,8 @@ export const RedemptionAction: React.FC<RedemptionActionProps> = ({
     kumo.redeemKUSD.bind(kumo, asset, kusdAmount, maxRedemptionRate)
   );
   return (
-    <Button sx={{ m: 3 }} disabled={disabled} onClick={sendTransaction}>
-      Confirm
+    <Button sx={{ m: 3 }} disabled={disabled} variant={ disabled ? 'primaryInActive' : 'primary' }  onClick={sendTransaction}>
+      CONFIRM
     </Button>
   );
 };

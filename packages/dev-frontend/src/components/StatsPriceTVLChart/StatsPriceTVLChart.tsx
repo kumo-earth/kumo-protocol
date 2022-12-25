@@ -101,7 +101,6 @@ export const StatsPriceTVLChart: React.FC = () => {
               borderRadius: 6,
               minWidth: 90,
               maxWidth: "max-content",
-              backgroundColor: "#efa7c3",
               ":focus-visible": { outline: "none" }
             }}
           >

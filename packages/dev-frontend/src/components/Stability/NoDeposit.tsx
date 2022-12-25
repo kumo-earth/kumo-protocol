@@ -34,7 +34,7 @@ export const NoDeposit: React.FC = props => {
           <Flex sx={{ justifyContent: "flex-start", flex: 1, alignItems: "center" }}>
             <Yield />
           </Flex>
-          <Button sx={{ mt: 3, mb: 2 }} onClick={handleOpenTrove}>Deposit</Button>
+          <Button sx={{ mt: 3, mb: 2 }} onClick={handleOpenTrove}>DEPOSIT</Button>
         </Flex>
       </Box>
     </Card>

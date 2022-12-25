@@ -318,14 +318,13 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
       <Flex variant="layout.actions">
         <Button
           sx={{
-            border: "none",
             mt:3,
             mb: 2
           }}
-          variant="cancel"
+          variant="secondary"
           onClick={handleCancel}
         >
-          Cancel
+          CANCEL
         </Button>
 
         {validChange ? (
@@ -341,12 +340,12 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
         ) : (
           <Button
             sx={{
-              border: "none",
               mb: 2
             }}
+            variant="primaryInActive"
             disabled
           >
-            Confirm
+            CONFIRM
           </Button>
         )}
       </Flex>

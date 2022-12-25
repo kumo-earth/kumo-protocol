@@ -1,3 +1,4 @@
+import { toUpper } from "lodash";
 import React from "react";
 import { Box, Button, Flex } from "theme-ui";
 
@@ -32,7 +33,7 @@ export const RetryDialog: React.FC<RetryDialogProps> = ({
       }}
     >
       <Button
-        variant="danger"
+        variant="secondary"
         sx={{
           mr: [0, 3],
           mb: [2, 0],
@@ -40,10 +41,10 @@ export const RetryDialog: React.FC<RetryDialogProps> = ({
         }}
         onClick={onCancel}
       >
-        {cancelLabel || "Cancel"}
+        {cancelLabel?.toUpperCase() || "CANCEL"}
       </Button>
       <Button sx={{ width: ["100%", "auto"] }} onClick={onRetry}>
-        {retryLabel || "Retry"}
+        {retryLabel?.toUpperCase() || "RETRY"}
       </Button>
     </Flex>
   </Dialog>

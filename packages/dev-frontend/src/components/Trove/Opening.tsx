@@ -228,8 +228,8 @@ export const Opening: React.FC = () => {
         />
 
         <Flex variant="layout.actions">
-          <Button variant="cancel" sx={{ m: 3 }} onClick={handleCancelPressed}>
-            Cancel
+          <Button variant="secondary" sx={{ m: 3 }} onClick={handleCancelPressed}>
+            CANCEL
           </Button>
 
           {gasEstimationState.type === "inProgress" ? (
@@ -244,10 +244,10 @@ export const Opening: React.FC = () => {
               maxBorrowingRate={maxBorrowingRate}
               borrowingFeeDecayToleranceMinutes={60}
             >
-              Confirm
+              CONFIRM
             </TroveAction>
           ) : (
-            <Button disabled sx={{ mb: 2 }}>Confirm</Button>
+            <Button variant="primaryInActive" disabled sx={{ mb: 2 }}>CONFIRM</Button>
           )}
         </Flex>
       </Box>

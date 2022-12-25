@@ -23,7 +23,7 @@ export const NoTrove: React.FC = props => {
 
         <Flex variant="layout.actions">
           <Button sx={{ mt: 3, mb: 2 }} onClick={handleOpenTrove}>
-            Open Vault
+            OPEN VAULT
           </Button>
         </Flex>
       </Box>

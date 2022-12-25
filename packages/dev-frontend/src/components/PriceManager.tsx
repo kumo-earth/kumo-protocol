@@ -26,7 +26,7 @@ export const PriceManager: React.FC<{ price: Decimal; assetAddress: string }> = 
   return (
     <Box sx={{ p: [2, 3] }}>
       <Flex sx={{ alignItems: "stretch" }}>
-        <Label variant="unitSecondary" sx={{ borderTopLeftRadius : '12px', borderBottomLeftRadius : '12px', color: 'white' }}>$</Label>
+        <Label variant="unitSecondary" sx={{ borderTopLeftRadius : '12px', borderBottomLeftRadius : '12px' }}>$</Label>
         <Input
           type={canSetPrice ? "number" : "text"}
           step="any"
@@ -50,15 +50,9 @@ export const PriceManager: React.FC<{ price: Decimal; assetAddress: string }> = 
               }}
             >
               <Button
-                variant="icon"
                 sx={{
-                  backgroundColor: "secondaryHover",
-                  boxShadow:
-                    "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
-                  border: "none",
-                  color: "white",
-                  height: 36,
-                  width: 36
+                  height: 34,
+                  width: 34
                 }}
               >
                 <Icon name="chart-line" size="xs" />

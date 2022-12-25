@@ -19,7 +19,7 @@ export const StatsTVCard: React.FC<StatsTVCardProps> = ({ title,totalValueLocked
             mb: 4,
             py: 4,
             px: 3,
-            backgroundColor: "#f0cfdc",
+            bg: "secondary",
             borderRadius: 16,
             justifyContent: "center",
             alignItems: "center"

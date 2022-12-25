@@ -50,9 +50,9 @@ const AddAssetButton: React.FC<AddAssetButtonTypes> = ({
       sx={{
         width: 250,
         borderRadius: 8,
-        outline: "none"
       }}
       disabled={!account}
+      variant={!account ? 'primaryInActive' : 'primary'}
     >
       <Box>Add {assetName}</Box>
     </Button>

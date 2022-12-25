@@ -38,8 +38,8 @@ export const SwitchNetworkModal: React.FC = () => {
         >
           <Box sx={{ ml: 2 }}>
             {process.env.NODE_ENV === "development"
-              ? "Switch to Localhost"
-              : "Switch to Polygon Test"}
+              ? "SWITCH to LOCALHOST"
+              : "SWITCH to POLYGON TEST"}
           </Box>
         </Button>
       </Box>

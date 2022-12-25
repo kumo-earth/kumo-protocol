@@ -32,7 +32,7 @@ export const CollateralSurplusAction: React.FC<{ asset?: string }> = ({ asset = 
 
   return myTransactionState.type === "waitingForApproval" ? (
     <Flex variant="layout.actions">
-      <Button disabled sx={{ mx: 2 }}>
+      <Button disabled sx={{ mx: 2 }} variant={'primaryInActive'}>
         <Spinner sx={{ mr: 2, color: "white" }} size="20px" />
         Waiting for your approval
       </Button>

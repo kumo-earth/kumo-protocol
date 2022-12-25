@@ -26,7 +26,7 @@ export const ActiveDeposit: React.FC = () => {
   const { collateralType } = useParams<{ collateralType: string }>();
   const { vaults } = useKumoSelector(select);
   const vault = vaults.find(vault => vault.asset === collateralType) || new Vault;
-  const { stabilityDeposit , trove, kusdInStabilityPool } = vault;
+  const { stabilityDeposit, trove, kusdInStabilityPool } = vault;
 
   const poolShare = stabilityDeposit.currentKUSD.mulDiv(100, kusdInStabilityPool);
 
@@ -118,21 +118,22 @@ export const ActiveDeposit: React.FC = () => {
         </Box>
 
         <Flex variant="layout.actions">
-          <Button variant="outline" onClick={handleAdjustDeposit}>
+          <Button onClick={handleAdjustDeposit} sx={{ mt: 3, mb: 2 }}>
             <Icon name="pen" size="sm" />
-            &nbsp;Adjust
+            &nbsp;ADJUST
           </Button>
 
           <ClaimRewards disabled={!hasGain && !hasReward}>
-            Claim {collateralType?.toUpperCase()} and KUMO
+            CLAIM {collateralType?.toUpperCase()} and KUMO
           </ClaimRewards>
+          {hasTrove && (
+            <ClaimAndMove disabled={!hasGain} asset={vault?.assetAddress} assetName={vault?.asset}>
+              CLAIM KUMO and MOVE {collateralType?.toUpperCase()} to VAULT
+            </ClaimAndMove>
+          )}
         </Flex>
 
-        {hasTrove && (
-          <ClaimAndMove disabled={!hasGain} asset={vault?.assetAddress} assetName={vault?.asset}>
-            Claim KUMO and move {collateralType?.toUpperCase()} to Vault
-          </ClaimAndMove>
-        )}
+
       </Box>
 
       {isWaitingForTransaction && <LoadingOverlay />}

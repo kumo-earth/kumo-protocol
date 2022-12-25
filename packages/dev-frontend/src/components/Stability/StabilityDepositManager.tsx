@@ -209,8 +209,8 @@ export const StabilityDepositManager: React.FC = () => {
         ))}
 
       <Flex variant="layout.actions">
-        <Button sx={{ m: 3 }} variant="cancel" onClick={handleCancel}>
-          Cancel
+        <Button variant="secondary" sx={{ m: 3 }} onClick={handleCancel}>
+          CANCEL
         </Button>
 
         {validChange ? (
@@ -222,7 +222,7 @@ export const StabilityDepositManager: React.FC = () => {
             Confirm
           </StabilityDepositAction>
         ) : (
-          <Button sx={{ mb: 2 }}>Confirm</Button>
+          <Button variant="primaryInActive" disabled sx={{ mb: 2 }}>CONFIRM</Button>
         )}
       </Flex>
     </StabilityDepositEditor>

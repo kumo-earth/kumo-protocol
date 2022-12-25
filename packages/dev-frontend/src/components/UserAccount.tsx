@@ -73,15 +73,13 @@ export const UserAccount: React.FC = () => {
                   py: 1,
                   px: 2,
                   mr: 2,
-
-                  backgroundColor: "primary",
                   borderRadius: "8px",
                   fontSize: 1,
                   outline: "none"
                 }}
               >
                 {" "}
-                User Asset Tokens
+                USER ASSET TOKENS
               </Button>
               {/* </Tooltip> */}
               <Tooltip message={account}>
@@ -94,15 +92,13 @@ export const UserAccount: React.FC = () => {
                     py: 1,
                     px: 2,
                     mr: 2,
-
-                    backgroundColor: "primary",
                     borderRadius: "8px",
                     fontSize: 1,
                     outline: "none"
                   }}
                 >
                   {" "}
-                  Disconnect
+                  DISCONNECT
                 </Button>
               </Tooltip>
             </>
@@ -113,14 +109,12 @@ export const UserAccount: React.FC = () => {
                 py: 1,
                 px: 2,
                 mr: 2,
-                // letterSpacing: "inherit",
-                // backgroundColor: "#f0cfdc",
                 borderRadius: "8px",
                 fontSize: 1,
                 outline: "none"
               }}
             >
-              Connect
+              CONNECT
             </Button>
           )}
         </Flex>

@@ -148,16 +148,16 @@ export const StakingManager: React.FC = () => {
 
       <Flex variant="layout.actions">
         <Button
-          variant="cancel"
+          variant="secondary"
           onClick={() => dispatchStakingViewAction({ type: "cancelAdjusting" })}
         >
-          Cancel
+          CANCEL
         </Button>
 
         {validChange ? (
-          <StakingManagerAction change={validChange}>Confirm</StakingManagerAction>
+          <StakingManagerAction change={validChange}>CONFIRM</StakingManagerAction>
         ) : (
-          <Button disabled>Confirm</Button>
+          <Button variant="primaryInActive" disabled>CONFIRM</Button>
         )}
       </Flex>
     </StakingEditor>

@@ -82,17 +82,20 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
   let price = Decimal.ZERO;
   let assetAddress = AddressZero;
 
-  if (assetType === "all") {
-    vaults.forEach(vault => {
-      numberOfTroves += vault?.numberOfTroves;
-    });
-  } else if (assetType === "ctx" || assetType === "cty") {
+  // if (assetType === "all") {
+  //   vaults.forEach(vault => {
+  //     numberOfTroves += vault?.numberOfTroves;
+  //   });
+  // } else 
+
+  if (assetType === "ctx" || assetType === "cty") {
     const vault = vaults.find(vault => vault.asset === assetType);
     if (vault) {
       price = vault.price;
       assetAddress = vault.assetAddress;
+      numberOfTroves = vault?.numberOfTroves || 0;
     }
-    numberOfTroves = vault?.numberOfTroves || 0;
+
   }
 
   const [loading, setLoading] = useState(true);
@@ -129,41 +132,45 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
     setLoading(true);
 
     if (assetType === "ctx" || assetType === "cty") {
-      const tempVault = vaults.find(vault => vault.asset === assetType) || new Vault();
-      const { asset, assetAddress, price, total, kusdInStabilityPool } = tempVault;
-      const recoveryMode = total.collateralRatioIsBelowCritical(price);
-      const totalCollateralRatio = total.collateralRatio(price);
-      kumo
-        .getTroves(
-          assetAddress,
-          {
-            first: pageSize,
-            sortedBy: "ascendingCollateralRatio",
-            startingAt: clampedPage * pageSize
-          },
-          { blockTag }
-        )
-        .then(trovesVal => {
-          if (mounted) {
-            const userTroves = trovesVal.flat();
-            const updatedUserTroves = userTroves?.map(userTrove => {
-              return {
-                asset,
-                assetAddress,
-                price,
-                total,
-                kusdInStabilityPool,
-                recoveryMode,
-                totalCollateralRatio,
-                userTrove: userTrove
-              };
-            });
-            if (userTroves !== undefined && userTroves.length > 0) {
-              setTroves(updatedUserTroves);
+      const tempVault = vaults.find(vault => vault.asset === assetType);
+      if (tempVault) {
+        const { asset, assetAddress, price, total, kusdInStabilityPool, numberOfTroves } = tempVault;
+        const recoveryMode = total.collateralRatioIsBelowCritical(price);
+        const totalCollateralRatio = total.collateralRatio(price);
+        kumo
+          .getTroves(
+            assetAddress,
+            {
+              first: pageSize,
+              sortedBy: "ascendingCollateralRatio",
+              startingAt: clampedPage * pageSize
+            },
+            { blockTag }
+          )
+          .then(trovesVal => {
+            if (mounted) {
+              const userTroves = trovesVal.flat();
+              const updatedUserTroves = userTroves?.map(userTrove => {
+                return {
+                  asset,
+                  assetAddress,
+                  price,
+                  total,
+                  kusdInStabilityPool,
+                  recoveryMode,
+                  totalCollateralRatio,
+                  userTrove: userTrove
+                };
+              });
+              if (userTroves !== undefined && userTroves.length > 0) {
+                setTroves(updatedUserTroves);
+              } else {
+                setTroves([]);
+              }
+              setLoading(false);
             }
-            setLoading(false);
-          }
-        });
+          });
+      }
     }
 
     // Promise.all(getAllTroves).then(troves => {
@@ -257,9 +264,9 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
         </Flex>
         <Box>
           {
-            (account && CORE_TEAM_ACCOUNTS.includes(account)) ? <PriceManager price={price} assetAddress={assetAddress} /> : null
+            ((account && troves) && (CORE_TEAM_ACCOUNTS.includes(account) && troves?.length > 0)) ? <PriceManager price={price} assetAddress={assetAddress} /> : null
           }
-          
+
         </Box>
         <Box sx={{ display: "flex", mr: 7 }}>
           <Text sx={{ fontSize: 4 }}>Riskiest Vaults:</Text>
@@ -393,8 +400,8 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
                               collateralRatio.gt(CRITICAL_COLLATERAL_RATIO)
                                 ? "success"
                                 : collateralRatio.gt(1.2)
-                                ? "warning"
-                                : "danger"
+                                  ? "warning"
+                                  : "danger"
                             }
                           >
                             {new Percent(collateralRatio).prettify()}
@@ -408,11 +415,11 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
                           requires={[
                             trove?.recoveryMode
                               ? liquidatableInRecoveryMode(
-                                  trove.userTrove,
-                                  trove?.price,
-                                  trove?.totalCollateralRatio,
-                                  trove?.kusdInStabilityPool
-                                )
+                                trove.userTrove,
+                                trove?.price,
+                                trove?.totalCollateralRatio,
+                                trove?.kusdInStabilityPool
+                              )
                               : liquidatableInNormalMode(trove.userTrove, trove?.price)
                           ]}
                           send={kumo.send.liquidate.bind(

@@ -131,12 +131,12 @@ export const WalletConnector: React.FC<WalletConnectorProps> = ({ children, load
           {isMetaMask ? (
             <>
               <MetaMaskIcon />
-              <Box sx={{ ml: 2 }}>Connect to MetaMask</Box>
+              <Box sx={{ ml: 2 }}>CONNECT to METAMASK</Box>
             </>
           ) : (
             <>
               <Icon name="plug" size="lg" />
-              <Box sx={{ ml: 2 }}>Connect wallet</Box>
+              <Box sx={{ ml: 2 }}>CONNECT WALLET</Box>
             </>
           )}
         </Button>

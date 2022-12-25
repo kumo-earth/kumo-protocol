@@ -49,7 +49,7 @@ export const LiquidatedTrove: React.FC = () => {
 
         <Flex variant="layout.actions">
           {hasSurplusCollateral && <CollateralSurplusAction />}
-          {!hasSurplusCollateral && <Button onClick={handleOpenTrove}>Open Vault</Button>}
+          {!hasSurplusCollateral && <Button onClick={handleOpenTrove}>OPEN VAULT</Button>}
         </Flex>
       </Box>
     </Card>

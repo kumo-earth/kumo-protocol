@@ -1,7 +1,7 @@
 import { Theme, ThemeUIStyleObject } from "theme-ui";
 
 const baseColors = {
-  black: "#000",
+  black: "#000000",
   white: "#fff",
   magenta: "#da357a",
   magentaLight: "#f0cfdc",
@@ -21,6 +21,7 @@ const baseColors = {
 
 const colors = {
   text: baseColors.black,
+  textWhite: baseColors.white,
   background: baseColors.white,
   primary: baseColors.magenta,
   secondary: baseColors.magentaLight,
@@ -30,7 +31,7 @@ const colors = {
   secondaryHover: baseColors.magentaMedium,
   transparent: baseColors.transparent,
 
-  success: baseColors.darkBlue,
+  success: baseColors.green,
   warning: baseColors.orange,
   danger: baseColors.red,
   dangerHover: baseColors.lightRed,
@@ -50,8 +51,8 @@ const button: ThemeUIStyleObject = {
   ...buttonBase,
   px: "32px",
   py: "12px",
-  color: "white",
-
+  color: "textWhite",
+  fontStyle: "normal",
   fontWeight: "bold",
 
   ":disabled": {
@@ -81,7 +82,7 @@ const iconButton: ThemeUIStyleObject = {
   background: "none",
 
   ":disabled": {
-    color: "text",
+    color: "primary",
     opacity: 0.25
   }
 };
@@ -239,7 +240,7 @@ const theme: Theme = {
   buttons: {
     primary: {
       ...button,
-
+      borderRadius: '72px',
       bg: "primary",
       borderColor: "primary",
 
@@ -248,23 +249,44 @@ const theme: Theme = {
         borderColor: "primaryHover"
       }
     },
+    primaryInActive: {
+      variant: 'buttons.primary',
+      opacity: 0.5,
+    },
+    secondary: {
+      ...button,
+      borderRadius: '72px',
+      color: 'text',
+      bg: "secondary",
+      borderColor: "secondary",
+
+      ":enabled:hover": {
+        bg: "secondaryHover",
+        borderColor: "secondaryHover"
+      }
+    },
+    secondaryInActive: {
+      variant: 'buttons.secondary',
+      bg: 'rgba(218, 53, 122, 0.2)',
+      opacity: 0.5,
+    },
 
     outline: {
       ...button,
       ...buttonOutline("primary", "secondary")
     },
 
-    cancel: {
-      ...button,
-      color: "text",
-      bg: "secondary",
-      borderColor: "secondary",
-      ":enabled:hover": {
-        bg: "secondaryHover",
-        borderColor: "secondaryHover"
-      },
-      opacity: 0.9
-    },
+    // cancel: {
+    //   ...button,
+    //   color: "text",
+    //   bg: "secondary",
+    //   borderColor: "secondary",
+    //   ":enabled:hover": {
+    //     bg: "secondaryHover",
+    //     borderColor: "secondaryHover"
+    //   },
+    //   opacity: 0.9
+    // },
 
     icon: {
       ...iconButton,
@@ -280,9 +302,10 @@ const theme: Theme = {
 
     titleIcon: {
       ...iconButton,
-      color: "text",
-      ":enabled:hover": { color: "success" }
-    }
+      color: "primary",
+      ":enabled:hover": { color: "primaryHover" }
+    },
+
   },
 
   cards: {
@@ -409,7 +432,7 @@ const theme: Theme = {
 
     unitSecondary: {
       ...formCell,
-      // bg: "secondaryHover",
+      bg: "primary",
       outline: 'none',
       border: 'none',
       color: 'white'
@@ -428,10 +451,10 @@ const theme: Theme = {
       borderRadius: 8,
       minWidth: 90,
       maxWidth: "max-content",
-      backgroundColor: "secondaryHover",
-      borderColor: "muted",
+      bg: "primary",
+      borderColor: "primary",
       fontSize: 2,
-      color: 'white',
+      color: 'textWhite',
       ":focus": {
         borderColor: "primary",
         outline: "none"
@@ -508,7 +531,6 @@ const theme: Theme = {
       button: {
         minWidth: "64px",
         width: '95%',
-        borderRadius: '72px',
       }
 
     },

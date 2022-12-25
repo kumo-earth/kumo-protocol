@@ -93,7 +93,7 @@ export const Active: React.FC = () => {
             onClick={handleAdjustPressed}
           >
             <Icon name="pen" size="sm" />
-            &nbsp;Adjust
+            &nbsp;ADJUST
           </Button>
           {!liquidityMiningKUMOReward.isZero && <ClaimReward />}
         </Flex>

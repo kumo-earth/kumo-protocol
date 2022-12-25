@@ -55,25 +55,23 @@ export const ReadOnlyTrove: React.FC = () => {
 
         <Flex variant="layout.actions">
           <Button
-            variant="cancel"
+            variant="secondary"
             onClick={handleCloseTrove}
             sx={{
-              border: "none",
               mt: 3,
               mb: 2
             }}
           >
-            Close Vault
+           CLOSE VAULT
           </Button>
           <Button
             onClick={handleAdjustTrove}
             sx={{
-              border: "none",
-              m: 2
+              mb: 2
             }}
           >
             <Icon name="pen" size="sm" />
-            &nbsp;Adjust
+            &nbsp;ADJUST
           </Button>
         </Flex>
       </Box>

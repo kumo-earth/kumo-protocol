@@ -61,9 +61,8 @@ export const ReadOnlyStake: React.FC = () => {
         <Flex variant="layout.actions">
           <Button variant="outline" onClick={() => dispatch({ type: "startAdjusting" })}>
             <Icon name="pen" size="sm" />
-            &nbsp;Adjust
+            &nbsp;ADJUST
           </Button>
-
           <StakingGainsAction />
         </Flex>
       </Box>

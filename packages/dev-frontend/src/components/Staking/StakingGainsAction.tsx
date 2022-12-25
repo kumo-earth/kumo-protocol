@@ -19,7 +19,7 @@ export const StakingGainsAction: React.FC = () => {
 
   return (
     <Button onClick={sendTransaction} disabled={collateralGain.isZero && kusdGain.isZero}>
-      Claim gains
+      CLAIM GAINS
     </Button>
   );
 };

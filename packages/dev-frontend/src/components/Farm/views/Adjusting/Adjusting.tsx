@@ -114,8 +114,8 @@ export const Adjusting: React.FC = () => {
         {isDirty && <Description amount={amount} />}
 
         <Flex variant="layout.actions">
-          <Button variant="cancel" onClick={handleCancelPressed}>
-            Cancel
+          <Button variant="secondary" onClick={handleCancelPressed}>
+            CANCEL
           </Button>
           <Approve amount={amount} />
           <Confirm amount={amount} />
