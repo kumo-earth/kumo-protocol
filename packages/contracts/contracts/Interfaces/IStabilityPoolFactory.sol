@@ -11,5 +11,5 @@ interface IStabilityPoolFactory {
 
     function getStabilityPoolByAsset(address _asset) external view returns (IStabilityPool);
 
-    function isRegisteredStabilityPool(address _asset) external view returns (bool);
+    function isRegisteredStabilityPool(address _stabilityPoolAddress) external view returns (bool);
 }

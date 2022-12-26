@@ -60,7 +60,7 @@ export const FrontendRegistration: React.FC = () => {
 
                   setKickbackRate(newKickbackRate);
                   setCut(newCut);
-                } catch {}
+                } catch { }
               }}
               onBlur={() => {
                 setKickbackRateString(kickbackRate.mul(100).toString());

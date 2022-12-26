@@ -181,7 +181,7 @@ const blockNumberDummy = new Query<void, BlockNumberDummy, BlockNumberDummyVaria
       }
     }
   `,
-  () => {}
+  () => { }
 );
 
 export class SubgraphKumo implements ReadableKumo, ObservableKumo {
@@ -271,7 +271,7 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
     return tokensInStabilityPool.get(this.client, undefined);
   }
 
-  watchKUSDInStabilityPool(asset:string, onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void) {
+  watchKUSDInStabilityPool(asset: string, onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void) {
     return tokensInStabilityPool.watch(this.client, onKUSDInStabilityPoolChanged, undefined);
   }
 
@@ -280,6 +280,10 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
   }
 
   watchKUSDBalance(onKUSDBalanceChanged: (balance: Decimal) => void, address?: string): () => void {
+    throw new Error("Method not implemented.");
+  }
+
+  getAssetBalance(address: string, assetType: string, provider: Provider): Promise<Decimal> {
     throw new Error("Method not implemented.");
   }
 
@@ -319,7 +323,7 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
   }
 
   async waitForBlock(blockNumber: number) {
-    for (;;) {
+    for (; ;) {
       try {
         await blockNumberDummy.get(this.client, { blockNumber });
       } catch {

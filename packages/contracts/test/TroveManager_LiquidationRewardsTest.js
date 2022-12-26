@@ -27,12 +27,10 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
   let troveManager
   let nameRegistry
   let activePool
-  let stabilityPool
   let defaultPool
   let functionCaller
   let borrowerOperations
   let KUMOContracts
-  let hardhatTester
   let erc20Asset1
   let erc20Asset2
 
@@ -51,7 +49,6 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
       contracts.borrowerOperations.address
     )
     KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
-    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
 
     priceFeed = contracts.priceFeedTestnet
     kusdToken = contracts.kusdToken
@@ -62,10 +59,9 @@ contract('TroveManager - Redistribution reward calculations', async accounts => 
     defaultPool = contracts.defaultPool
     functionCaller = contracts.functionCaller
     borrowerOperations = contracts.borrowerOperations
-    kumoParams = contracts.kumoParameters
-    erc20Asset1 = hardhatTester.erc20Asset1
+    erc20Asset1 = await deploymentHelper.deployERC20Asset()
     assetAddress1 = erc20Asset1.address
-    erc20Asset2 = hardhatTester.erc20Asset2
+    erc20Asset2 = await deploymentHelper.deployERC20Asset()
     assetAddress2 = erc20Asset2.address
 
     await deploymentHelper.connectKUMOContracts(KUMOContracts)

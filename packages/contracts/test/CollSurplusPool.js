@@ -11,7 +11,7 @@ const timeValues = testHelpers.TimeValues
 const TroveManagerTester = artifacts.require("TroveManagerTester")
 const KUSDToken = artifacts.require("KUSDToken")
 
-contract('CollSurplusPool -TEST', async accounts => {
+contract('CollSurplusPool', async accounts => {
   const [
     owner,
     A, B, C, D, E] = accounts;
@@ -21,12 +21,9 @@ contract('CollSurplusPool -TEST', async accounts => {
   let borrowerOperations
   let priceFeed
   let collSurplusPool
-  let kumoParams
-  let hardhatTester
-  let erc20
+  let erc20Asset1
   let contracts
   let assetAddress1
-  let assetAddress2
 
   const getOpenTroveKUSDAmount = async (totalDebt) => th.getOpenTroveKUSDAmount(contracts, totalDebt)
   const openTrove = async (params) => th.openTrove(contracts, params)
@@ -36,7 +33,7 @@ contract('CollSurplusPool -TEST', async accounts => {
     contracts.troveManager = await TroveManagerTester.new()
     contracts.kusdToken = await KUSDToken.new(
       contracts.troveManager.address,
-      contracts.stabilityPool.address,
+      contracts.stabilityPoolFactory.address,
       contracts.borrowerOperations.address
     )
     const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
@@ -48,26 +45,14 @@ contract('CollSurplusPool -TEST', async accounts => {
     await deploymentHelper.connectKUMOContracts(KUMOContracts)
     await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
-    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-    erc20 = hardhatTester.erc20
-    assetAddress1 = erc20.address
+    
+    erc20Asset1 = await deploymentHelper.deployERC20Asset()
+    assetAddress1 = erc20Asset1.address
 
-    kumoParams = contracts.kumoParameters
-
-    await kumoParams.sanitizeParameters(assetAddress1);
     await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
     // Mint token to each acccount
-    let index = 0;
-    for (const acc of accounts) {
-
-      await erc20.mint(acc, await web3.eth.getBalance(acc))
-      index++;
-
-      if (index >= 23)
-        break;
-    }
-
+    await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 23)
   })
 
   it("CollSurplusPool::getAssetBalance(): Returns the ETH balance of the CollSurplusPool after redemption", async () => {

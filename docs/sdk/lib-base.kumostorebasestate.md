@@ -29,5 +29,5 @@ export interface KumoStoreBaseState
 |  [totalStakedUniTokens](./lib-base.kumostorebasestate.totalstakedunitokens.md) |  | [Decimal](./lib-base.decimal.md) | Total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining. |
 |  [uniTokenAllowance](./lib-base.kumostorebasestate.unitokenallowance.md) |  | [Decimal](./lib-base.decimal.md) | The liquidity mining contract's allowance of user's Uniswap ETH/KUSD LP tokens. |
 |  [uniTokenBalance](./lib-base.kumostorebasestate.unitokenbalance.md) |  | [Decimal](./lib-base.decimal.md) | User's Uniswap ETH/KUSD LP token balance. |
-|  [vaults](./lib-base.kumostorebasestate.vaults.md) |  | [Vault](./lib-base.vault.md)<!-- -->\[\] | Total amount of KUMO currently staked. |
+|  [vaults](./lib-base.kumostorebasestate.vaults.md) |  | any\[\] | Total amount of KUMO currently staked. |
 

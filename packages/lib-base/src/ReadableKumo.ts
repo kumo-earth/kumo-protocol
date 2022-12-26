@@ -105,7 +105,7 @@ export interface ReadableKumo {
    *
    * @param address - Address that owns the Stability Deposit.
    */
-  getStabilityDeposit(asset:string, address: string): Promise<StabilityDeposit>;
+  getStabilityDeposit(asset: string, address: string): Promise<StabilityDeposit>;
 
   /**
    * Get the remaining KUMO that will be collectively rewarded to stability depositors.

@@ -40,7 +40,6 @@ contract('KUMO Token', async accounts => {
   let kumoTokenTester
   let kumoStaking
   let communityIssuance
-  let hardhatTester
 
   let tokenName
   let tokenVersion
@@ -111,7 +110,6 @@ contract('KUMO Token', async accounts => {
   beforeEach(async () => {
     contracts = await deploymentHelper.deployKumoCore()
     const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
-    hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
 
     kumoStaking = KUMOContracts.kumoStaking
     kumoTokenTester = KUMOContracts.kumoToken

@@ -12,7 +12,6 @@ const TroveData = testHelpers.TroveData
 
 const TroveManagerTester = artifacts.require("./TroveManagerTester")
 const KUSDToken = artifacts.require("./KUSDToken.sol")
-const StabilityPool = artifacts.require("./StabilityPool.sol")
 
 const GAS_PRICE = 10000000
 
@@ -48,9 +47,7 @@ contract('TroveManager - in Recovery Mode', async accounts => {
     let functionCaller
     let borrowerOperations
     let collSurplusPool
-    let kumoParams
     let KUMOContracts
-    let hardhatTester
     let erc20Asset1
     let erc20Asset2
     let stabilityPoolAsset1
@@ -71,7 +68,6 @@ contract('TroveManager - in Recovery Mode', async accounts => {
             contracts.borrowerOperations.address
         )
         KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
-        hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
 
         priceFeed = contracts.priceFeedTestnet
         kusdToken = contracts.kusdToken
@@ -83,11 +79,10 @@ contract('TroveManager - in Recovery Mode', async accounts => {
         functionCaller = contracts.functionCaller
         borrowerOperations = contracts.borrowerOperations
         collSurplusPool = contracts.collSurplusPool
-        kumoParams = contracts.kumoParameters
 
-        erc20Asset1 = hardhatTester.erc20Asset1
+        erc20Asset1 = await deploymentHelper.deployERC20Asset()
         assetAddress1 = erc20Asset1.address
-        erc20Asset2 = hardhatTester.erc20Asset2
+        erc20Asset2 = await deploymentHelper.deployERC20Asset()
         assetAddress2 = erc20Asset2.address
 
         await deploymentHelper.connectKUMOContracts(KUMOContracts)
@@ -103,8 +98,8 @@ contract('TroveManager - in Recovery Mode', async accounts => {
         await deploymentHelper.mintMockAssets(erc20Asset2, accounts, 25)
 
         // Set StabilityPools
-        stabilityPoolAsset1 = await StabilityPool.at(await stabilityPoolFactory.getStabilityPoolByAsset(assetAddress1))
-        stabilityPoolAsset2 = await StabilityPool.at(await stabilityPoolFactory.getStabilityPoolByAsset(assetAddress2))
+        stabilityPoolAsset1 = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
+        stabilityPoolAsset2 = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress2)
     })
 
     it("checkRecoveryMode(): Returns true if TCR falls below CCR", async () => {
@@ -3913,9 +3908,9 @@ contract('TroveManager - in Recovery Mode', async accounts => {
         // Whale withdraws entire deposit, and re-deposits 132 KUSD
         // Increasing the price for a moment to avoid pending liquidations to block withdrawal
         await priceFeed.setPrice(assetAddress1, dec(200, 18))
-        await stabilityPool.withdrawFromSP(spDeposit, { from: whale })
+        await stabilityPoolAsset1.withdrawFromSP(spDeposit, { from: whale })
         await priceFeed.setPrice(assetAddress1, dec(110, 18))
-        await stabilityPool.provideToSP(B_totalDebt.add(toBN(dec(50, 18))), ZERO_ADDRESS, { from: whale })
+        await stabilityPoolAsset1.provideToSP(B_totalDebt.add(toBN(dec(50, 18))), ZERO_ADDRESS, { from: whale })
 
         // B and E are still in range 110-TCR.
         // Attempt to liquidate B, G, H, I, E.

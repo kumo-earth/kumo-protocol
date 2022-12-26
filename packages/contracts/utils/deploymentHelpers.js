@@ -33,22 +33,22 @@ const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol")
 const ERC20Test = artifacts.require("./ERC20Test.sol")
 
 // Proxy scripts
-// const BorrowerOperationsScript = artifacts.require('BorrowerOperationsScript')
-// const BorrowerWrappersScript = artifacts.require('BorrowerWrappersScript')
-// const TroveManagerScript = artifacts.require('TroveManagerScript')
-// const StabilityPoolScript = artifacts.require('StabilityPoolScript')
-// const TokenScript = artifacts.require('TokenScript')
-// const KUMOStakingScript = artifacts.require('KUMOStakingScript')
-// const {
-//   buildUserProxies,
-//   BorrowerOperationsProxy,
-//   BorrowerWrappersProxy,
-//   TroveManagerProxy,
-//   StabilityPoolProxy,
-//   SortedTrovesProxy,
-//   TokenProxy,
-//   KUMOStakingProxy
-// } = require('../utils/proxyHelpers.js')
+const BorrowerOperationsScript = artifacts.require('BorrowerOperationsScript')
+const BorrowerWrappersScript = artifacts.require('BorrowerWrappersScript')
+const TroveManagerScript = artifacts.require('TroveManagerScript')
+const StabilityPoolScript = artifacts.require('StabilityPoolScript')
+const TokenScript = artifacts.require('TokenScript')
+const KUMOStakingScript = artifacts.require('KUMOStakingScript')
+const {
+  buildUserProxies,
+  BorrowerOperationsProxy,
+  BorrowerWrappersProxy,
+  TroveManagerProxy,
+  StabilityPoolProxy,
+  SortedTrovesProxy,
+  TokenProxy,
+  KUMOStakingProxy
+} = require('../utils/proxyHelpers.js')
 
 /* "Kumo core" consists of all contracts in the core Kumo system.
 
@@ -299,54 +299,54 @@ class DeploymentHelper {
   //   return KUMOContracts
   // }
 
-  // static async deployKUSDToken(contracts) {
-  //   contracts.kusdToken = await KUSDToken.new(
-  //     contracts.troveManager.address,
-  //     contracts.stabilityPoolFactory.address,
-  //     contracts.borrowerOperations.address
-  //   )
-  //   return contracts
-  // }
+  static async deployKUSDToken(contracts) {
+    contracts.kusdToken = await KUSDToken.new(
+      contracts.troveManager.address,
+      contracts.stabilityPoolFactory.address,
+      contracts.borrowerOperations.address
+    )
+    return contracts
+  }
 
-  // static async deployKUSDTokenTester(contracts) {
-  //   contracts.kusdToken = await KUSDTokenTester.new(
-  //     contracts.troveManager.address,
-  //     contracts.stabilityPoolFactory.address,
-  //     contracts.borrowerOperations.address
-  //   )
-  //   return contracts
-  // }
+  static async deployKUSDTokenTester(contracts) {
+    contracts.kusdToken = await KUSDTokenTester.new(
+      contracts.troveManager.address,
+      contracts.stabilityPoolFactory.address,
+      contracts.borrowerOperations.address
+    )
+    return contracts
+  }
 
-  // static async deployProxyScripts(contracts, KUMOContracts, owner, users) {
-  //   const proxies = await buildUserProxies(users)
+  static async deployProxyScripts(contracts, KUMOContracts, owner, users) {
+    const proxies = await buildUserProxies(users)
 
-  //   const borrowerWrappersScript = await BorrowerWrappersScript.new(
-  //     contracts.borrowerOperations.address,
-  //     contracts.troveManager.address,
-  //     KUMOContracts.kumoStaking.address
-  //   )
-  //   contracts.borrowerWrappers = new BorrowerWrappersProxy(owner, proxies, borrowerWrappersScript.address)
+    const borrowerWrappersScript = await BorrowerWrappersScript.new(
+      contracts.borrowerOperations.address,
+      contracts.troveManager.address,
+      KUMOContracts.kumoStaking.address
+    )
+    contracts.borrowerWrappers = new BorrowerWrappersProxy(owner, proxies, borrowerWrappersScript.address)
 
-  //   const borrowerOperationsScript = await BorrowerOperationsScript.new(contracts.borrowerOperations.address)
-  //   contracts.borrowerOperations = new BorrowerOperationsProxy(owner, proxies, borrowerOperationsScript.address, contracts.borrowerOperations)
+    const borrowerOperationsScript = await BorrowerOperationsScript.new(contracts.borrowerOperations.address)
+    contracts.borrowerOperations = new BorrowerOperationsProxy(owner, proxies, borrowerOperationsScript.address, contracts.borrowerOperations)
 
-  //   const troveManagerScript = await TroveManagerScript.new(contracts.troveManager.address)
-  //   contracts.troveManager = new TroveManagerProxy(owner, proxies, troveManagerScript.address, contracts.troveManager)
+    const troveManagerScript = await TroveManagerScript.new(contracts.troveManager.address)
+    contracts.troveManager = new TroveManagerProxy(owner, proxies, troveManagerScript.address, contracts.troveManager)
 
-  //   const stabilityPoolScript = await StabilityPoolScript.new(contracts.stabilityPoolFactory.address)
-  //   contracts.stabilityPool = new StabilityPoolProxy(owner, proxies, stabilityPoolScript.address, contracts.stabilityPool)
+    const stabilityPoolScript = await StabilityPoolScript.new(contracts.stabilityPoolFactory.address)
+    contracts.stabilityPool = new StabilityPoolProxy(owner, proxies, stabilityPoolScript.address, contracts.stabilityPool)
 
-  //   contracts.sortedTroves = new SortedTrovesProxy(owner, proxies, contracts.sortedTroves)
+    contracts.sortedTroves = new SortedTrovesProxy(owner, proxies, contracts.sortedTroves)
 
-  //   const kusdTokenScript = await TokenScript.new(contracts.kusdToken.address)
-  //   contracts.kusdToken = new TokenProxy(owner, proxies, kusdTokenScript.address, contracts.kusdToken)
+    const kusdTokenScript = await TokenScript.new(contracts.kusdToken.address)
+    contracts.kusdToken = new TokenProxy(owner, proxies, kusdTokenScript.address, contracts.kusdToken)
 
-  //   const kumoTokenScript = await TokenScript.new(KUMOContracts.kumoToken.address)
-  //   KUMOContracts.kumoToken = new TokenProxy(owner, proxies, kumoTokenScript.address, KUMOContracts.kumoToken)
+    const kumoTokenScript = await TokenScript.new(KUMOContracts.kumoToken.address)
+    KUMOContracts.kumoToken = new TokenProxy(owner, proxies, kumoTokenScript.address, KUMOContracts.kumoToken)
 
-  //   const kumoStakingScript = await KUMOStakingScript.new(KUMOContracts.kumoStaking.address)
-  //   KUMOContracts.kumoStaking = new KUMOStakingProxy(owner, proxies, kumoStakingScript.address, KUMOContracts.kumoStaking)
-  // }
+    const kumoStakingScript = await KUMOStakingScript.new(KUMOContracts.kumoStaking.address)
+    KUMOContracts.kumoStaking = new KUMOStakingProxy(owner, proxies, kumoStakingScript.address, KUMOContracts.kumoStaking)
+  }
 
   // Connect contracts to their dependencies
   static async connectCoreContracts(contracts, KUMOContracts) {
@@ -459,12 +459,8 @@ class DeploymentHelper {
   }
 
   static async mintMockAssets(erc20Asset, accounts, numberOfAccounts) {
-    let index = 0;
-    for (const acc of accounts) {
-      await erc20Asset.mint(acc, await web3.eth.getBalance(acc))
-      index++;
-      if (index >= numberOfAccounts)
-        break;
+    for (let index = 0; index < numberOfAccounts; index++) {
+      await erc20Asset.mint(accounts[index], await web3.eth.getBalance(accounts[index]))
     }
   }
 
@@ -493,8 +489,14 @@ class DeploymentHelper {
     await contracts.sortedTroves.addNewAsset(asset)
   }
 
+  static async getStabilityPoolByAsset(contracts, address) {
+    const stabilityPoolAddress = await contracts.stabilityPoolFactory.getStabilityPoolByAsset(address);
+    return await StabilityPool.at(stabilityPoolAddress);
+  }
+
   static async deployERC20Asset() {
     return await ERC20Test.new();
   }
 }
+
 module.exports = DeploymentHelper
