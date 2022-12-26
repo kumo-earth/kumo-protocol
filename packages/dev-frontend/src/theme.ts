@@ -13,7 +13,7 @@ const baseColors = {
   blue: "#00aed6",
   darkBlue: "#4721BD",
   orange: "#f6701f",
-  green: "#28c081",
+  green: "#4BAD79",
   yellow: "#fd9d28",
   red: "#dc2c10",
   lightRed: "#ff755f"
@@ -43,7 +43,7 @@ const buttonBase: ThemeUIStyleObject = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-
+  fontFamily: 'Quicksand',
   ":enabled": { cursor: "pointer" }
 };
 
@@ -64,7 +64,7 @@ const buttonOutline = (color: string, hoverColor: string): ThemeUIStyleObject =>
   color,
   borderColor: color,
   background: "none",
-
+  fontFamily: 'Quicksand',
   ":enabled:hover": {
     color: "background",
     bg: hoverColor,
@@ -125,13 +125,12 @@ const formBase: ThemeUIStyleObject = {
   width: "auto",
   flexShrink: 0,
   padding: 2,
-  fontSize: 3
+  fontSize: 3,
+  fontFamily: 'Quicksand'
 };
 
 const formCell: ThemeUIStyleObject = {
   ...formBase,
-
-  // bg: "background",
   border: 1,
   borderColor: "muted",
   borderRadius: 0,
@@ -167,7 +166,7 @@ const theme: Theme = {
 
   fonts: {
     body: [
-      "Lato",
+      "Quicksand",
       "-apple-system",
       "BlinkMacSystemFont",
       '"Segoe UI"',
@@ -425,7 +424,6 @@ const theme: Theme = {
 
     unit: {
       ...formCell,
-
       textAlign: "center",
       bg: "muted",
     },
@@ -455,12 +453,15 @@ const theme: Theme = {
       borderColor: "primary",
       fontSize: 2,
       color: 'textWhite',
+      fontFamily: 'Quicksand',
       ":focus": {
         borderColor: "primary",
         outline: "none"
       }
     },
-    editor: {}
+    editor: {
+      fontFamily: 'Quicksand',
+    }
   },
 
   layout: {
@@ -526,7 +527,6 @@ const theme: Theme = {
       justifyContent: 'center',
       alignItems: 'center',
       mt: 2,
-      fontFamily: 'Lato',
 
       button: {
         minWidth: "64px",

@@ -310,7 +310,7 @@ export const EditableRow: React.FC<EditableRowProps> = ({
           <Button
             sx={{
               fontSize: 1,
-              p: 1,
+              py: 1,
               px: 3,
               borderRadius: '72px'
             }}

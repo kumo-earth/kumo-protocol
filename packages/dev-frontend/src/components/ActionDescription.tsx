@@ -14,9 +14,8 @@ export const ActionDescription: React.FC = ({ children }) => (
 
       border: 1,
       borderRadius: "8px",
-      borderColor: "accent",
+      borderColor: "muted",
       boxShadow: 2,
-      bg: "rgba(46, 182, 234, 0.05)"
     }}
   >
     <Flex sx={{ alignItems: "center" }}>
