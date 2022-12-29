@@ -3,7 +3,7 @@ import { useKumoSelector } from "@kumodao/lib-react";
 import { useWeb3React } from "@web3-react/core";
 import { Web3Provider } from "@ethersproject/providers";
 import { useState, useEffect } from "react";
-import { Divider, Flex, Alert } from "theme-ui";
+import { Divider, Flex, Box } from "theme-ui";
 import { DashboadContent } from "../components/DashboardContent";
 import { DashboadHeaderItem } from "../components/DashboardHeaderItem";
 import { PortfolioTrove } from "../components/Trove/PortfolioTrove";
@@ -33,7 +33,7 @@ export const Portfolio: React.FC = () => {
   return (
     <Flex sx={{ flexDirection: "column" }}>
       {!account && isView  && <UserViewAlert onClose={() => setIsView(false)} />} 
-      <Flex sx={{ height: "max-content", px: 5, pb: 4 }}>
+      <Box variant="layout.dashboadHeader">
         <DashboadHeaderItem
           title={"MY TOTAL COLLATERAL"}
           value={`$ ${totalTroveCollDebt.totalTroveColl.prettify(0)}`}
@@ -46,7 +46,7 @@ export const Portfolio: React.FC = () => {
           title={"MY TOTAL CARBON TOKENS"}
           value={`${totalTroveCollDebt.troveTotalCarbonCredits.prettify(0)}`}
         />
-      </Flex>
+      </Box>
       <Divider sx={{ color: "muted" }} />
       <DashboadContent>
         {isAnyOpenTrove

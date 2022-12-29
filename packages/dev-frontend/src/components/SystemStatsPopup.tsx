@@ -8,6 +8,8 @@ import { Icon } from "./Icon";
 import { SystemStats } from "./SystemStats";
 import { useParams } from "react-router-dom";
 
+import appBackground from "../asset/images/appBackground.svg";
+
 const select = ({ vaults }: KumoStoreState) => ({ vaults });
 
 export const SystemStatsPopup: React.FC = () => {
@@ -55,15 +57,16 @@ export const SystemStatsPopup: React.FC = () => {
 
       {systemStatsOpen && (
         <Container
-          variant="infoOverlay"
+          variant="systemStatsOverlay"
           ref={systemStatsOverlayRef}
-          onClick={e => {
-            if (e.target === systemStatsOverlayRef.current) {
-              setSystemStatsOpen(false);
-            }
-          }}
+          // onClick={e => {
+          //   if (e.target === systemStatsOverlayRef.current) {
+          //     setSystemStatsOpen(false);
+          //   }
+          // }}
+          sx={{ backgroundImage: `url(${appBackground})` }}
         >
-          <SystemStats variant="infoPopup" showBalances />
+          <SystemStats variant="infoPopup" showBalances  onClose={() => setSystemStatsOpen(false)}/>
         </Container>
       )}
     </>

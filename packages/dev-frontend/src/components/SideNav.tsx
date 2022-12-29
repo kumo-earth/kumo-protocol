@@ -1,7 +1,8 @@
 import React, { useState, useRef } from "react";
-import { Box, Button, Container, Flex } from "theme-ui";
+import { Box, Button, Container, Divider, Flex } from "theme-ui";
 import { Icon } from "./Icon";
 import { KumoLogo } from "./KumoLogo";
+import appBackground from "../asset/images/appBackground.svg";
 import { Link } from "./Link";
 
 const logoHeight = "32px";
@@ -19,29 +20,41 @@ export const SideNav: React.FC = () => {
   }
   return (
     <Container
-      variant="infoOverlay"
+      variant="sideNavOverlay"
       ref={overlay}
       onClick={e => {
         if (e.target === overlay.current) {
           setIsVisible(false);
         }
       }}
+      sx={{ backgroundImage: `url(${appBackground})` }}
     >
       <Flex variant="layout.sidenav">
-        <Button
-          sx={{ position: "fixed", m: 2 }}
-          variant="icon"
-          onClick={() => setIsVisible(false)}
-        >
-          <Icon name="times" size="2x" />
-        </Button>
-        <KumoLogo height={logoHeight} p={2} />
-        <Box as="nav" sx={{ m: 3, mt: 1, p: 0 }} onClick={() => setIsVisible(false)}>
-          <Link to="/">Dashboard</Link>
-          <Link to="/farm">Farm</Link>
-          <Link to="/risky-troves">Risky Vaults</Link>
+        <Flex sx={{ justifyContent: 'space-between', px: 2, pt: 4 }}>
+          <KumoLogo height={logoHeight} p={2} />
+          <Button
+            sx={{ pr: 5 }}
+            variant="icon"
+            onClick={() => setIsVisible(false)}
+          >
+            <Icon name="times" size="2x" />
+          </Button>
+
+        </Flex>
+        <Box as="nav" sx={{ m: 3, mt: 1 }} onClick={() => setIsVisible(false)}>
+          <Link to="/dashboard">Dashboard</Link>
+          <Link to="/portfolio">Portfolio</Link>
+          <Link to="/staking">Staking</Link>
           <Link to="/redemption">Redemption</Link>
+          <Link to="/stats">Stats</Link>
         </Box>
+      </Flex>
+
+      <Divider sx={{ color: "muted" }} />
+      <Flex sx={{ flexDirection: "column", pl: 6 }} variant="layout.newTabLinks">
+        <Link to={{ pathname: " https://docs.kumo.earth" }} target="_blank" style={{ color: 'black' }}>Documentation</Link>
+        <Link to={{ pathname: "https://discord.gg/smxnnmG6" }} target="_blank" style={{ color: 'black' }}>Discord</Link>
+        <Link to={{ pathname: "https://twitter.com/Kumo_DAO" }} target="_blank" style={{ color: 'black' }}>Twitter</Link>
       </Flex>
     </Container>
   );

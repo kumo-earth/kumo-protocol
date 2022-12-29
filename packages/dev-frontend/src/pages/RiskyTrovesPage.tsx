@@ -23,7 +23,7 @@ export const RiskyTrovesPage: React.FC = () => (
     </Container>
 
     <Container variant="right">
-      <SystemStats />
+      {/* <SystemStats /> */}
     </Container>
     <RiskyTroves pageSize={10} />
   </Container>

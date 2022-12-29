@@ -33,6 +33,7 @@ import UserView from "./components/UserView";
 import { Portfolio } from "./pages/Portfolio";
 import { Stats } from "./pages/stats";
 import { LiquidityStaking } from "./pages/LiquidityStaking";
+import { SystemStatsPopup } from "./components/SystemStatsPopup";
 
 type KumoFrontendProps = {
   loader?: React.ReactNode;
@@ -70,13 +71,13 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                         p: 0,
                         flexGrow: 1,
                         height: "100%",
-                        width: "calc(100vw - 20vw)"
+                        width: ["100vw", "calc(100vw - 20vw)"]
                       }}
                     >
                       <Header>
                         <UserView />
                         <UserAccount />
-                        {/* <SystemStatsPopup /> */}
+                        <SystemStatsPopup />
                       </Header>
 
                       <Container variant="main">

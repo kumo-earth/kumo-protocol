@@ -328,7 +328,6 @@ const theme: Theme = {
       borderRadius: "50px",
       width: "100%",
       maxWidth: "100%",
-      position: "relative",
       "> h2": {
         variant: "cards.primary.> h2",
         borderBottom: 1,
@@ -367,7 +366,6 @@ const theme: Theme = {
       borderRadius: "50px",
       width: "97%",
       maxWidth: "100%",
-      position: "relative",
       "> h2": {
         variant: "cards.base.> h2",
         height: "60px"
@@ -383,7 +381,7 @@ const theme: Theme = {
       width: "100%",
       background: 'linear-gradient(128.29deg, rgb(248 213 228 / 37%) 0%, rgba(255, 255, 255, 0) 127.78%)',
       maxWidth: "100%",
-      position: "relative",
+      // position: "relative",
       "> h2": {
         variant: "cards.base.> h2",
         height: "60px"
@@ -401,6 +399,12 @@ const theme: Theme = {
       }
     },
 
+    systemStatsCard: {
+      variant: 'cards.modalCard',
+      height: '90vh',
+      width: '90vw',
+      p: 4,
+    },
     tooltip: {
       padding: 2,
 
@@ -478,7 +482,7 @@ const theme: Theme = {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      pl: 5,
+      px: 5,
       height: "110px",
       borderBottom: 1,
       borderColor: "muted",
@@ -498,6 +502,7 @@ const theme: Theme = {
     },
 
     main: {
+      position: 'relative',
       height: "calc(100vh - 110px)",
       width: "100%",
       overflow: "auto",
@@ -556,12 +561,30 @@ const theme: Theme = {
       width: ["100%", "40em"]
     },
 
-    infoOverlay: {
-      ...modalOverlay,
-
+    sideNavOverlay: {
+      position: "absolute",
+      zIndex: 999999,
+      left: 0,
+      top: 0,
+      width: "100vw",
+      height: "100vh",
+      bg: 'white',
       display: ["block", "none"],
+    },
 
-      bg: "rgba(255, 255, 255, 0.8)"
+    systemStatsOverlay: {
+      position: "absolute",
+      zIndex: 999999,
+      left: 0,
+      top: 0,
+      width: "100vw",
+      height: "100vh",
+      bg: 'white',
+
+      display: ["flex", "none"],
+      justifyContent: 'center',
+      alignItems: 'center'
+
     },
 
     infoMessage: {
@@ -598,21 +621,25 @@ const theme: Theme = {
     sidenav: {
       display: ["flex", "none"],
       flexDirection: "column",
-      p: 0,
+      pl: 4,
       m: 0,
       borderColor: "muted",
-      mr: "25vw",
-      height: "100%",
-      ...headerGradient
+      overflow: 'scroll'
+      // ...headerGradient
     },
 
     dashboard: {
+      // position: 'relative',
       flexDirection: "column",
       height: "100%"
     },
 
-    DashboadHeader: {
-      height: "170px"
+    dashboadHeader: {
+      display: ["none", "flex"],
+      height: 'max-content',
+      px: 5,
+      pb: 4
+      // height: "170px"
     },
 
     badge: {
@@ -624,6 +651,13 @@ const theme: Theme = {
       color: "slate",
       fontSize: 1,
       fontWeight: "body"
+    },
+    newTabLinks: {
+      ".link": {
+        ":hover": {
+          color: '#da357a !important'
+        }
+      }
     }
   },
 

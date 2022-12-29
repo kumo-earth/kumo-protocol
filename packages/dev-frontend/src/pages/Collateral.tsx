@@ -72,7 +72,7 @@ export const Collateral: React.FC = () => {
 
   return (
     <Grid
-      columns={[2, "1fr 1fr"]}
+      columns={[1, "1fr 1fr"]}
       sx={{
         width: "100%",
         gridGap: 2,

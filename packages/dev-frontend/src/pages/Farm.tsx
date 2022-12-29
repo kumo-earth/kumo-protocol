@@ -9,7 +9,7 @@ export const Farm: React.FC = () => (
     </Container>
 
     <Container variant="right">
-      <SystemStats />
+      {/* <SystemStats /> */}
     </Container>
   </Container>
 );

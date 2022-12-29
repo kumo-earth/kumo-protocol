@@ -60,7 +60,7 @@ export const UserAccount: React.FC = () => {
     <Box sx={{ display: ["none", "flex"] }}>
       <Flex sx={{ alignItems: "center" }}>
         {/* <Icon name="user-circle" size="lg" color="#a81f58"/> */}
-        <Flex sx={{ ml: 3, mr: 4 }}>
+        <Flex sx={{ ml: 3}}>
           {account ? (
             <>
               {/* <Tooltip message={"Asset Tokens (CTX | CTY | KUSD)"}> */}

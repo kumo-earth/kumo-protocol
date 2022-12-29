@@ -11,7 +11,7 @@ export const UserViewAlert: React.FC<UserViewAlertProps> = ({ onClose }) => {
       sx={{
         position: "absolute",
         width: "35%",
-        top: 3,
+        top: 0,
         left: 0,
         right: 0,
         m: "auto",
@@ -22,7 +22,7 @@ export const UserViewAlert: React.FC<UserViewAlertProps> = ({ onClose }) => {
         alignItems: "flex-start",
         backgroundColor: 'secondaryHover',
         color: 'black',
-        zIndex: "99999"
+        zIndex: "1"
       }}
     >
       <Heading

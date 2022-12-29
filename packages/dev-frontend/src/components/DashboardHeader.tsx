@@ -1,6 +1,6 @@
 import React from "react";
-import { Flex } from "theme-ui";
+import { Box } from "theme-ui";
 
 export const DashboadHeader: React.FC = ({ children }) => {
-  return <Flex sx={{ height: 'max-content',  px: 5, pb: 4 }}>{children}</Flex>;
+  return <Box variant="layout.dashboadHeader">{children}</Box>;
 };
