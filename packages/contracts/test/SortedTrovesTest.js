@@ -52,13 +52,13 @@ contract('SortedTroves', async accounts => {
   let kusdToken
   let KUMOContracts
   let erc20Asset1
-  let assetAddress1
 
 
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
 
   let contracts
 
+  const getOpenTroveKUSDAmount = async (totalDebt) => th.getOpenTroveKUSDAmount(contracts, totalDebt)
   const openTrove = async (params) => th.openTrove(contracts, params)
 
   describe('SortedTroves', () => {
@@ -88,10 +88,10 @@ contract('SortedTroves', async accounts => {
       await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
       // Mint token to each acccount
-      await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 25)
+    await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 25)
     })
 
-    it.only('contains(): returns true for addresses that have opened troves', async () => {
+    it('contains(): returns true for addresses that have opened troves', async () => {
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: alice } })
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: bob } })
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2000, 18)), extraParams: { from: carol } })
@@ -293,9 +293,6 @@ contract('SortedTroves', async accounts => {
     beforeEach(async () => {
       sortedTroves = await SortedTroves.new()
       sortedTrovesTester = await SortedTrovesTester.new()
-      
-      erc20Asset1 = await deploymentHelper.deployERC20Asset()
-      assetAddress1 = erc20Asset1.address
 
       await sortedTrovesTester.setSortedTroves(sortedTroves.address)
     })
@@ -304,7 +301,6 @@ contract('SortedTroves', async accounts => {
     context('when params are properly set', () => {
       beforeEach('set params', async () => {
         await sortedTroves.setParams(sortedTrovesTester.address, sortedTrovesTester.address)
-        console.log(assetAddress1)
         await sortedTroves.addNewAsset(assetAddress1)
       })
 
