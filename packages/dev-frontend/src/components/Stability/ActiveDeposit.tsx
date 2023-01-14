@@ -53,12 +53,7 @@ export const ActiveDeposit: React.FC = () => {
   }, [transactionState.type, dispatchEvent]);
 
   return (
-    <Card
-      sx={{
-        background: "#ebd8df"
-      }}
-      variant="base"
-    >
+    <Card variant="modalCard">
       <Heading as="h2">
         {collateralType?.toUpperCase()} Stability Pool
         <span

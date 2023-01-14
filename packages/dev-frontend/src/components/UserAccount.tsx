@@ -15,7 +15,7 @@ const style = {
   top: "45%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 470,
+  width: [340, 470],
   // bgcolor: "background.paper",
   bgcolor: "white",
   border: "none",
@@ -57,17 +57,36 @@ export const UserAccount: React.FC = () => {
   // }, []);
 
   return (
-    <Box sx={{ display: ["none", "flex"] }}>
-      <Flex sx={{ alignItems: "center" }}>
+    <Box>
+      {/* <Box sx={{ display: ["none", "flex"] }}></Box> */}
+      <Flex sx={{ alignItems: "center", ml: 3 }}>
         {/* <Icon name="user-circle" size="lg" color="#a81f58"/> */}
-        <Flex sx={{ ml: 3}}>
-          {account ? (
-            <>
-              {/* <Tooltip message={"Asset Tokens (CTX | CTY | KUSD)"}> */}
+        {account ? (
+          <>
+            {/* <Tooltip message={"Asset Tokens (CTX | CTY | KUSD)"}> */}
+            <Button
+              onClick={() => {
+                setShowAssetModal(true);
+                dialog.setVisible(true);
+              }}
+              sx={{
+                py: 1,
+                px: 2,
+                mr: 2,
+                borderRadius: "8px",
+                fontSize: 1,
+                outline: "none"
+              }}
+            >
+              {" "}
+              USER ASSET TOKENS
+            </Button>
+            {/* </Tooltip> */}
+            <Tooltip message={account}>
               <Button
                 onClick={() => {
-                  setShowAssetModal(true);
-                  dialog.setVisible(true);
+                  deactivate();
+                  sessionStorage.removeItem("account");
                 }}
                 sx={{
                   py: 1,
@@ -79,45 +98,26 @@ export const UserAccount: React.FC = () => {
                 }}
               >
                 {" "}
-                USER ASSET TOKENS
+                DISCONNECT
               </Button>
-              {/* </Tooltip> */}
-              <Tooltip message={account}>
-                <Button
-                  onClick={() => {
-                    deactivate();
-                    sessionStorage.removeItem("account");
-                  }}
-                  sx={{
-                    py: 1,
-                    px: 2,
-                    mr: 2,
-                    borderRadius: "8px",
-                    fontSize: 1,
-                    outline: "none"
-                  }}
-                >
-                  {" "}
-                  DISCONNECT
-                </Button>
-              </Tooltip>
-            </>
-          ) : (
-            <Button
-              onClick={() => dispatchEvent("OPEN_WALLET_MODAL_PRESSED")}
-              sx={{
-                py: 1,
-                px: 2,
-                mr: 2,
-                borderRadius: "8px",
-                fontSize: 1,
-                outline: "none"
-              }}
-            >
-              CONNECT
-            </Button>
-          )}
-        </Flex>
+            </Tooltip>
+          </>
+        ) : (
+          <Button
+            onClick={() => dispatchEvent("OPEN_WALLET_MODAL_PRESSED")}
+            sx={{
+              py: 1,
+              px: 2,
+              mr: 2,
+              borderRadius: "8px",
+              fontSize: 1,
+              outline: "none"
+            }}
+          >
+            CONNECT
+          </Button>
+        )}
+
       </Flex>
       {showModal && (
         <Dialog {...dialog} hideOnClickOutside={false} preventBodyScroll={true}>

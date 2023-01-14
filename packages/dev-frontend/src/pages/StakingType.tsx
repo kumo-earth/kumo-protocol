@@ -51,7 +51,7 @@ export const StakingType: React.FC = () => {
     top: "45%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 470,
+    width: [350, 470],
     // bgcolor: "background.paper",
     bgcolor: "white",
     border: "none",

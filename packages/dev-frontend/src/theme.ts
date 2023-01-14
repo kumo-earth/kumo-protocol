@@ -186,6 +186,7 @@ const theme: Theme = {
 
     light: 200,
     medium: 500,
+    mediumBold: 600,
     bold: 700
   },
 
@@ -255,7 +256,7 @@ const theme: Theme = {
     secondary: {
       ...button,
       borderRadius: '72px',
-      color: 'text',
+      color: 'rgba(0, 0, 0, 0.5)',
       bg: "secondary",
       borderColor: "secondary",
 
@@ -380,12 +381,12 @@ const theme: Theme = {
       borderRadius: "50px",
       width: "100%",
       background: 'linear-gradient(128.29deg, rgb(248 213 228 / 37%) 0%, rgba(255, 255, 255, 0) 127.78%)',
-      maxWidth: "100%",
       // position: "relative",
       "> h2": {
         variant: "cards.base.> h2",
         height: "60px"
       },
+      zIndex: 9999999999,
     },
     StabilityPoolStakingCard: {
       variant: "cards.base",

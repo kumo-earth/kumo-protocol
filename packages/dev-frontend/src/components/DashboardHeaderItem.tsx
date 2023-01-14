@@ -11,17 +11,17 @@ export const DashboadHeaderItem: React.FC<DashboadHeaderItemProps> = ({
   value,
   fontSize
 }) => (
-  <Box sx={{ pt: "12px" }}>
-    <Flex sx={{ flexDirection: "column", mr: 5 }}>
-      <Text as="p" variant="normalBold">
-        {title}
-      </Text>
-      <Text as="p" variant="xlarge" sx={{ fontSize }}>
-        {value}
-      </Text>
-      {/* <Heading as="h1" sx={{ mt: 1, fontSize }}>
+
+  <Flex sx={{ flexDirection: "column", ml: 1, mr: 8, pt: "12px" }}>
+    <Text as="p" variant="normalBold">
+      {title}
+    </Text>
+    <Text as="p" variant="xlarge" sx={{ fontSize }}>
+      {value}
+    </Text>
+    {/* <Heading as="h1" sx={{ mt: 1, fontSize }}>
         {value}
       </Heading> */}
-    </Flex>
-  </Box>
+  </Flex>
+
 );

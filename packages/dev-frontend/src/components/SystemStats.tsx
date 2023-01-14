@@ -29,7 +29,8 @@ const Balances: React.FC = () => {
       <Heading as="h3" sx={{ my: 3 }}>My Portfolio</Heading>
       <Statistic name={"MY TOTAL COLLATERAL"}>{`$ ${totalTroveCollDebt.totalTroveColl.prettify(0)}`}</Statistic>
       <Statistic name={"MY MINTED KUSD"}>{`$ ${totalTroveCollDebt.totalTroveDebt.prettify(0)}`}</Statistic>
-      <Statistic name={"MY TOTAL CARBON TOKENS"}>{`${totalTroveCollDebt.troveTotalCarbonCredits.prettify(0)}`}</Statistic>
+      <Statistic name={"MY TOTAL CARBON CREDITS"}>{`${totalTroveCollDebt.troveTotalCarbonCredits.prettify(0)}`}</Statistic>
+      <Statistic name={"KUMO BALANCE"}>{`${kumoBalance.prettify(0)}`}</Statistic>
     </Box>
   );
 };

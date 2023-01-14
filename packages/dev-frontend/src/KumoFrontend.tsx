@@ -1,5 +1,5 @@
 import React from "react";
-import { Flex, Container } from "theme-ui";
+import { Flex, Container, Box } from "theme-ui";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import { Wallet } from "@ethersproject/wallet";
 
@@ -76,7 +76,7 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                     >
                       <Header>
                         <UserView />
-                        <UserAccount />
+                        <Box sx={{ display: ["none", "flex"] }}><UserAccount /></Box>
                         <SystemStatsPopup />
                       </Header>
 

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Box, Button, Container, Divider, Flex } from "theme-ui";
+import { UserAccount } from "../components/UserAccount";
 import { Icon } from "./Icon";
 import { KumoLogo } from "./KumoLogo";
 import appBackground from "../asset/images/appBackground.svg";
@@ -30,7 +31,7 @@ export const SideNav: React.FC = () => {
       sx={{ backgroundImage: `url(${appBackground})` }}
     >
       <Flex variant="layout.sidenav">
-        <Flex sx={{ justifyContent: 'space-between', px: 2, pt: 4 }}>
+        <Flex sx={{ justifyContent: 'space-between', px: 2, pt: 4, alignItems: 'center' }}>
           <KumoLogo height={logoHeight} p={2} />
           <Button
             sx={{ pr: 5 }}
@@ -56,6 +57,7 @@ export const SideNav: React.FC = () => {
         <Link to={{ pathname: "https://discord.gg/smxnnmG6" }} target="_blank" style={{ color: 'black' }}>Discord</Link>
         <Link to={{ pathname: "https://twitter.com/Kumo_DAO" }} target="_blank" style={{ color: 'black' }}>Twitter</Link>
       </Flex>
+      <Box sx={{ display: ["flex", "none"], flexDirection: 'column', pl: 3, mt: 1 }} onClick={() => setIsVisible(false)}><UserAccount /></Box>
     </Container>
   );
 };

@@ -145,7 +145,7 @@ export const StaticAmounts: React.FC<StaticAmountsProps & SxProp> = ({
         {unit && (
           <>
             &nbsp;
-            <Text sx={{ fontWeight: "light", opacity: 0.8 }}>{unit}</Text>
+            <Text sx={{ fontWeight: "mediumBold", opacity: 0.5 }}>{unit}</Text>
           </>
         )}
 
@@ -175,8 +175,8 @@ const staticStyle: ThemeUICSSProperties = {
   pt: "28px",
 
   fontSize: 3,
-
-  border: 1,
+  border: 'none',
+  // border: 1,
   borderColor: "transparent"
 };
 
