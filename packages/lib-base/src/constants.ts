@@ -18,7 +18,7 @@ interface AssetType {
 export const ASSET_TOKENS: ASSET_TOKENS_TYPES<AssetType> = {
   ctx: {
     assetName: "Carbon Token X",
-    assetAddress: "0x7093916BC87f65FF3E52b1Fd2427B67436D0341B",
+    assetAddress: "0x213696b6F4d41178D3E7069BAc8fab6fAaD53BF2",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
     MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
     KUSD_MINTED_CAP: Decimal.from(15000000),
@@ -26,7 +26,7 @@ export const ASSET_TOKENS: ASSET_TOKENS_TYPES<AssetType> = {
   },
   cty: {
     assetName: "Carbon Token Y",
-    assetAddress: "0x9f843047063619214D20bbA2A9EEe14Ff9Aac8Ba",
+    assetAddress: "0x19027dcD6026AA3251505dc7Af262370Fc26Aa89",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
     MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
     KUSD_MINTED_CAP: Decimal.from(10000000),

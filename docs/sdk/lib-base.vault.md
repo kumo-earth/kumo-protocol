@@ -27,6 +27,7 @@ export declare class Vault
 |  [accountBalance](./lib-base.vault.accountbalance.md) |  | [Decimal](./lib-base.decimal.md) |  |
 |  [asset](./lib-base.vault.asset.md) |  | string |  |
 |  [assetAddress](./lib-base.vault.assetaddress.md) |  | string |  |
+|  [assetName](./lib-base.vault.assetname.md) |  | string |  |
 |  [borrowingRate](./lib-base.vault.borrowingrate.md) |  | [Decimal](./lib-base.decimal.md) |  |
 |  [collateralSurplusBalance](./lib-base.vault.collateralsurplusbalance.md) |  | [Decimal](./lib-base.decimal.md) |  |
 |  [fees](./lib-base.vault.fees.md) |  | [Fees](./lib-base.fees.md) |  |

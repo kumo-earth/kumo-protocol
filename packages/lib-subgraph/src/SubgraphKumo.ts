@@ -197,10 +197,7 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
       }
     });
   }
-
-  getAssetBalance(address: string, assetType: string, provider: Provider): any {
-    throw new Error("Method not implemented.");
-  }
+  
   getTotalRedistributed() {
     return totalRedistributed.get(this.client, undefined);
   }

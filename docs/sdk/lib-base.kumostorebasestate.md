@@ -20,6 +20,7 @@ export interface KumoStoreBaseState
 |  [kumoBalance](./lib-base.kumostorebasestate.kumobalance.md) |  | [Decimal](./lib-base.decimal.md) | User's KUMO token balance. |
 |  [kumoStake](./lib-base.kumostorebasestate.kumostake.md) |  | [KUMOStake](./lib-base.kumostake.md) | User's KUMO stake. |
 |  [kusdBalance](./lib-base.kumostorebasestate.kusdbalance.md) |  | [Decimal](./lib-base.decimal.md) | User's KUSD token balance. |
+|  [kusdToken](./lib-base.kumostorebasestate.kusdtoken.md) |  | string | Custom Vault Array for each Asset type |
 |  [liquidityMiningKUMOReward](./lib-base.kumostorebasestate.liquidityminingkumoreward.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUMO the user has earned through mining liquidity. |
 |  [liquidityMiningStake](./lib-base.kumostorebasestate.liquidityminingstake.md) |  | [Decimal](./lib-base.decimal.md) | Amount of Uniswap ETH/KUSD LP tokens the user has staked in liquidity mining. |
 |  [ownFrontend](./lib-base.kumostorebasestate.ownfrontend.md) |  | [FrontendStatus](./lib-base.frontendstatus.md) | Status of user's own frontend. |
@@ -29,5 +30,5 @@ export interface KumoStoreBaseState
 |  [totalStakedUniTokens](./lib-base.kumostorebasestate.totalstakedunitokens.md) |  | [Decimal](./lib-base.decimal.md) | Total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining. |
 |  [uniTokenAllowance](./lib-base.kumostorebasestate.unitokenallowance.md) |  | [Decimal](./lib-base.decimal.md) | The liquidity mining contract's allowance of user's Uniswap ETH/KUSD LP tokens. |
 |  [uniTokenBalance](./lib-base.kumostorebasestate.unitokenbalance.md) |  | [Decimal](./lib-base.decimal.md) | User's Uniswap ETH/KUSD LP token balance. |
-|  [vaults](./lib-base.kumostorebasestate.vaults.md) |  | any\[\] | Total amount of KUMO currently staked. |
+|  [vaults](./lib-base.kumostorebasestate.vaults.md) |  | [Vault](./lib-base.vault.md)<!-- -->\[\] | Custom Vault Array for each Asset type |
 

@@ -4,7 +4,7 @@
 
 ## KumoStoreBaseState.vaults property
 
-Total amount of KUMO currently staked.
+Custom Vault Array for each Asset type
 
 <b>Signature:</b>
 
