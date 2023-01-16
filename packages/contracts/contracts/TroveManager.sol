@@ -10,10 +10,12 @@ import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/IKUMOToken.sol";
 import "./Interfaces/IKUMOStaking.sol";
 import "./Interfaces/IStabilityPoolFactory.sol";
+import "./Interfaces/ITroveRedemptor.sol";
 import "./Dependencies/KumoBase.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
 import "./Dependencies/SafeMath.sol";
+import "./Dependencies/TroveManagerModel.sol";
 
 contract TroveManager is KumoBase, CheckContract, ITroveManager {
     using SafeMath for uint256;
@@ -37,6 +39,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     IKUMOToken public override kumoToken;
 
     IKUMOStaking public override kumoStaking;
+
+    ITroveRedemptor public troveRedemptor;
 
     // A doubly linked list of Troves, sorted by their sorted by their collateral ratios
     ISortedTroves public sortedTroves;
@@ -95,7 +99,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     mapping(address => address[]) public TroveOwners;
 
     // Error trackers for the trove redistribution calculation
-    mapping(address => uint256) public lastETHError_Redistribution;
+    mapping(address => uint256) public lastAssetError_Redistribution;
     mapping(address => uint256) public lastKUSDDebtError_Redistribution;
 
     bool public isInitialized;
@@ -110,54 +114,6 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
      * in order to avoid the error: "CompilerError: Stack too deep".
      **/
 
-    struct LocalVariables_OuterLiquidationFunction {
-        uint256 price;
-        uint256 KUSDInStabPool;
-        bool recoveryModeAtStart;
-        uint256 liquidatedDebt;
-        uint256 liquidatedColl;
-    }
-
-    struct LocalVariables_InnerSingleLiquidateFunction {
-        uint256 collToLiquidate;
-        uint256 pendingDebtReward;
-        uint256 pendingCollReward;
-    }
-
-    struct LocalVariables_LiquidationSequence {
-        uint256 remainingKUSDInStabPool;
-        uint256 i;
-        uint256 ICR;
-        address user;
-        bool backToNormalMode;
-        uint256 entireSystemDebt;
-        uint256 entireSystemColl;
-    }
-
-    struct LiquidationValues {
-        uint256 entireTroveDebt;
-        uint256 entireTroveColl;
-        uint256 collGasCompensation;
-        uint256 kusdGasCompensation;
-        uint256 debtToOffset;
-        uint256 collToSendToSP;
-        uint256 debtToRedistribute;
-        uint256 collToRedistribute;
-        uint256 collSurplus;
-    }
-
-    struct LiquidationTotals {
-        uint256 totalCollInSequence;
-        uint256 totalDebtInSequence;
-        uint256 totalCollGasCompensation;
-        uint256 totalkusdGasCompensation;
-        uint256 totalDebtToOffset;
-        uint256 totalCollToSendToSP;
-        uint256 totalDebtToRedistribute;
-        uint256 totalCollToRedistribute;
-        uint256 totalCollSurplus;
-    }
-
     struct ContractsCache {
         IActivePool activePool;
         IDefaultPool defaultPool;
@@ -166,24 +122,6 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         ISortedTroves sortedTroves;
         ICollSurplusPool collSurplusPool;
         address gasPoolAddress;
-    }
-    // --- Variable container structs for redemptions ---
-
-    struct RedemptionTotals {
-        uint256 remainingKUSD;
-        uint256 totalKUSDToRedeem;
-        uint256 totalETHDrawn;
-        uint256 ETHFee;
-        uint256 ETHToSendToRedeemer;
-        uint256 decayedBaseRate;
-        uint256 price;
-        uint256 totalKUSDSupplyAtStart;
-    }
-
-    struct SingleRedemptionValues {
-        uint256 KUSDLot;
-        uint256 ETHLot;
-        bool cancelledPartial;
     }
 
     // --- Events ---
@@ -1124,12 +1062,12 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
             Troves[_borrower][vars._asset].debt.sub(kumoParams.KUSD_GAS_COMPENSATION(_asset))
         );
 
-        // Get the ETHLot of equivalent value in USD
-        singleRedemption.ETHLot = singleRedemption.KUSDLot.mul(DECIMAL_PRECISION).div(_price);
+        // Get the AssetLot of equivalent value in USD
+        singleRedemption.AssetLot = singleRedemption.KUSDLot.mul(DECIMAL_PRECISION).div(_price);
 
         // Decrease the debt and collateral of the current Trove according to the KUSD lot and corresponding ETH to send
         uint256 newDebt = (Troves[vars._borrower][vars._asset].debt).sub(singleRedemption.KUSDLot);
-        uint256 newColl = (Troves[vars._borrower][vars._asset].coll).sub(singleRedemption.ETHLot);
+        uint256 newColl = (Troves[vars._borrower][vars._asset].coll).sub(singleRedemption.AssetLot);
 
         if (newDebt == kumoParams.KUSD_GAS_COMPENSATION(vars._asset)) {
             // No debt left in the Trove (except for the liquidation reserve), therefore the trove gets closed
@@ -1219,24 +1157,49 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         );
     }
 
-    function _isValidFirstRedemptionHint(
+    function isValidFirstRedemptionHint(
         address _asset,
-        ISortedTroves _sortedTroves,
         address _firstRedemptionHint,
         uint256 _price
-    ) internal view returns (bool) {
+    ) external view returns (bool) {
         if (
             _firstRedemptionHint == address(0) ||
-            !_sortedTroves.contains(_asset, _firstRedemptionHint) ||
+            !sortedTroves.contains(_asset, _firstRedemptionHint) ||
             getCurrentICR(_asset, _firstRedemptionHint, _price) < kumoParams.MCR(_asset)
         ) {
             return false;
         }
 
-        address nextTrove = _sortedTroves.getNext(_asset, _firstRedemptionHint);
+        address nextTrove = sortedTroves.getNext(_asset, _firstRedemptionHint);
         return
             nextTrove == address(0) ||
             getCurrentICR(_asset, nextTrove, _price) < kumoParams.MCR(_asset);
+    }
+
+    function finalizeRedemption(
+        address _asset,
+        address _receiver,
+        uint256 _KUSDamount,
+        uint256 _KUSDToRedeem,
+        uint256 _fee,
+        uint256 _totalRedemptionRewards
+    ) external {
+        _requireCallerIsTroveRedemptor();
+
+        IActivePool activePool = kumoParams.activePool();
+
+        activePool.sendAsset(_asset, address(kumoStaking), _fee);
+        kumoStaking.increaseF_Asset(_asset, _fee);
+
+        uint256 assetToSendToRedeemer = _totalRedemptionRewards.sub(_fee);
+
+        emit Redemption(_asset, _KUSDamount, _KUSDToRedeem, _totalRedemptionRewards, _fee);
+
+        // Burn the total KUSD that is cancelled with debt, and send the redeemed Asset to msg.sender
+        kusdToken.burn(_receiver, _KUSDToRedeem);
+        // Update Active Pool KUSD, and send Asset to account
+        activePool.decreaseKUSDDebt(_asset, _KUSDToRedeem);
+        activePool.sendAsset(_asset, _receiver, assetToSendToRedeemer);
     }
 
     /* Send _KUSDamount KUSD to the system and redeem the corresponding amount of collateral from as many Troves as are needed to fill the redemption
@@ -1270,6 +1233,17 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint256 _maxIterations,
         uint256 _maxFeePercentage
     ) external override {
+        troveRedemptor.redeemCollateral(
+            _asset,
+            msg.sender,
+            _KUSDamount,
+            _firstRedemptionHint,
+            _upperPartialRedemptionHint,
+            _lowerPartialRedemptionHint,
+            _partialRedemptionHintNICR,
+            _maxIterations,
+            _maxFeePercentage
+        );
         // require(
         // 	block.timestamp >= kumoParams.redemptionBlock(_asset),
         // 	"TroveManager: Redemption is blocked"
@@ -1349,50 +1323,50 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
             if (singleRedemption.cancelledPartial) break; // Partial redemption was cancelled (out-of-date hint, or new net debt < minimum), therefore we could not redeem from the last Trove
 
             totals.totalKUSDToRedeem = totals.totalKUSDToRedeem.add(singleRedemption.KUSDLot);
-            totals.totalETHDrawn = totals.totalETHDrawn.add(singleRedemption.ETHLot);
+            totals.totalAssetDrawn = totals.totalAssetDrawn.add(singleRedemption.AssetLot);
 
             totals.remainingKUSD = totals.remainingKUSD.sub(singleRedemption.KUSDLot);
             currentBorrower = nextUserToCheck;
         }
-        require(totals.totalETHDrawn > 0, "TroveManager: Unable to redeem any amount");
+        require(totals.totalAssetDrawn > 0, "TroveManager: Unable to redeem any amount");
 
         // Decay the baseRate due to time passed, and then increase it according to the size of this redemption.
         // Use the saved total KUSD supply value, from before it was reduced by the redemption.
         _updateBaseRateFromRedemption(
             _asset,
-            totals.totalETHDrawn,
+            totals.totalAssetDrawn,
             totals.price,
             totals.totalKUSDSupplyAtStart
         );
 
         // Calculate the ETH fee
-        totals.ETHFee = _getRedemptionFee(_asset, totals.totalETHDrawn);
+        totals.AssetFee = _getRedemptionFee(_asset, totals.totalAssetDrawn);
 
-        _requireUserAcceptsFee(totals.ETHFee, totals.totalETHDrawn, _maxFeePercentage);
+        _requireUserAcceptsFee(totals.AssetFee, totals.totalAssetDrawn, _maxFeePercentage);
 
         // Send the ETH fee to the KUMO staking contract
         contractsCache.activePool.sendAsset(
             _asset,
             address(contractsCache.kumoStaking),
-            totals.ETHFee
+            totals.AssetFee
         );
-        contractsCache.kumoStaking.increaseF_Asset(_asset, totals.ETHFee);
+        contractsCache.kumoStaking.increaseF_Asset(_asset, totals.AssetFee);
 
-        totals.ETHToSendToRedeemer = totals.totalETHDrawn.sub(totals.ETHFee);
+        totals.AssetToSendToRedeemer = totals.totalAssetDrawn.sub(totals.AssetFee);
 
         emit Redemption(
             _asset,
             _KUSDamount,
             totals.totalKUSDToRedeem,
-            totals.totalETHDrawn,
-            totals.ETHFee
+            totals.totalAssetDrawn,
+            totals.AssetFee
         );
 
         // Burn the total KUSD that is cancelled with debt, and send the redeemed ETH to msg.sender
         contractsCache.kusdToken.burn(msg.sender, totals.totalKUSDToRedeem);
         // Update Active Pool KUSD, and send ETH to account
         contractsCache.activePool.decreaseKUSDDebt(_asset, totals.totalKUSDToRedeem);
-        contractsCache.activePool.sendAsset(_asset, msg.sender, totals.ETHToSendToRedeemer);
+        contractsCache.activePool.sendAsset(_asset, msg.sender, totals.AssetToSendToRedeemer);
     }
 
     // --- Helper functions ---
@@ -1437,7 +1411,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     }
 
     function applyPendingRewards(address _asset, address _borrower) external override {
-        _requireCallerIsBorrowerOperations();
+        _requireCallerIsBorrowerOperationsOrTroveRedemptor();
         return
             _applyPendingRewards(
                 _asset,
@@ -1654,7 +1628,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
          * 4) Store these errors for use in the next correction when this function is called.
          * 5) Note: static analysis tools complain about this "division before multiplication", however, it is intended.
          */
-        uint256 ETHNumerator = _coll.mul(DECIMAL_PRECISION).add(lastETHError_Redistribution[_asset]);
+        uint256 ETHNumerator = _coll.mul(DECIMAL_PRECISION).add(
+            lastAssetError_Redistribution[_asset]
+        );
         uint256 KUSDDebtNumerator = _debt.mul(DECIMAL_PRECISION).add(
             lastKUSDDebtError_Redistribution[_asset]
         );
@@ -1663,7 +1639,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint256 ETHRewardPerUnitStaked = ETHNumerator.div(totalStakes[_asset]);
         uint256 KUSDDebtRewardPerUnitStaked = KUSDDebtNumerator.div(totalStakes[_asset]);
 
-        lastETHError_Redistribution[_asset] = ETHNumerator.sub(
+        lastAssetError_Redistribution[_asset] = ETHNumerator.sub(
             ETHRewardPerUnitStaked.mul(totalStakes[_asset])
         );
         lastKUSDDebtError_Redistribution[_asset] = KUSDDebtNumerator.sub(
@@ -1824,12 +1800,14 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
      * then,
      * 2) increases the baseRate based on the amount redeemed, as a proportion of total supply
      */
-    function _updateBaseRateFromRedemption(
+    function updateBaseRateFromRedemption(
         address _asset,
         uint256 _amountDrawn,
         uint256 _price,
         uint256 _totalKUSDSupply
-    ) internal returns (uint256) {
+    ) external returns (uint256) {
+        _requireCallerIsTroveRedemptor();
+
         uint256 decayedBaseRate = _calcDecayedBaseRate(_asset);
 
         /* Convert the drawn ETH back to KUSD at face value rate (1 KUSD:1 USD), in order to get
@@ -1858,7 +1836,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         return _calcRedemptionRate(_asset, baseRate[_asset]);
     }
 
-    function _getRedemptionFee(address _asset, uint256 _assetDraw) internal view returns (uint256) {
+    function getRedemptionFee(address _asset, uint256 _assetDraw) external view returns (uint256) {
         return _calcRedemptionFee(getRedemptionRate(_asset), _assetDraw);
     }
 
@@ -1974,6 +1952,20 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         require(
             msg.sender == borrowerOperationsAddress,
             "TroveManager: Caller is not the BorrowerOperations contract"
+        );
+    }
+
+    function _requireCallerIsBorrowerOperationsOrTroveRedemptor() internal view {
+        require(
+            msg.sender == borrowerOperationsAddress || msg.sender == address(troveRedemptor),
+            "TroveManager: Caller is not the BorrowerOperations nor TroveRedemptor contract"
+        );
+    }
+
+    function _requireCallerIsTroveRedemptor() internal view {
+        require(
+            msg.sender == address(troveRedemptor),
+            "TroveManager: Caller is not the TroveRedemptor contract"
         );
     }
 
