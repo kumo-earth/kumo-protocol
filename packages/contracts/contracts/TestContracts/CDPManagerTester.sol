@@ -8,8 +8,11 @@ import "../TroveManager.sol";
 for testing the parent's internal functions. */
 
 contract TroveManagerTester is TroveManager {
-
-    function computeICR(uint256 _coll, uint256 _debt, uint256 _price) external pure returns (uint256) {
+    function computeICR(
+        uint256 _coll,
+        uint256 _debt,
+        uint256 _price
+    ) external pure returns (uint256) {
         return KumoMath._computeCR(_coll, _debt, _price);
     }
 
@@ -28,7 +31,7 @@ contract TroveManagerTester is TroveManager {
     function unprotectedDecayBaseRateFromBorrowing(address _asset) external returns (uint256) {
         baseRate[_asset] = _calcDecayedBaseRate(_asset);
         assert(baseRate[_asset] >= 0 && baseRate[_asset] <= DECIMAL_PRECISION);
-        
+
         _updateLastFeeOpTime(_asset);
         return baseRate[_asset];
     }
@@ -45,11 +48,19 @@ contract TroveManagerTester is TroveManager {
         baseRate[_asset] = _baseRate;
     }
 
-    function callGetRedemptionFee(address _asset, uint256 _ETHDrawn) external view returns (uint256) {
-        return _getRedemptionFee(_asset, _ETHDrawn);
-    }  
+    function callGetRedemptionFee(address _asset, uint256 _ETHDrawn)
+        external
+        view
+        returns (uint256)
+    {
+        return getRedemptionFee(_asset, _ETHDrawn);
+    }
 
-    function getActualDebtFromComposite(address _asset, uint256 _debtVal) external view returns (uint256) {
+    function getActualDebtFromComposite(address _asset, uint256 _debtVal)
+        external
+        view
+        returns (uint256)
+    {
         return _getNetDebt(_asset, _debtVal);
     }
 

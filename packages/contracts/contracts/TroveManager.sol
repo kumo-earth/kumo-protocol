@@ -1041,94 +1041,6 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     // --- Redemption functions ---
 
     // Redeem as much collateral as possible from _borrower's Trove in exchange for KUSD up to _maxKUSDamount
-    function _redeemCollateralFromTrove(
-        address _asset,
-        ContractsCache memory _contractsCache,
-        address _borrower,
-        uint256 _maxKUSDamount,
-        uint256 _price,
-        address _upperPartialRedemptionHint,
-        address _lowerPartialRedemptionHint,
-        uint256 _partialRedemptionHintNICR
-    ) internal returns (SingleRedemptionValues memory singleRedemption) {
-        LocalVariables_AssetBorrowerPrice memory vars = LocalVariables_AssetBorrowerPrice(
-            _asset,
-            _borrower,
-            _price
-        );
-        // Determine the remaining amount (lot) to be redeemed, capped by the entire debt of the Trove minus the liquidation reserve
-        singleRedemption.KUSDLot = KumoMath._min(
-            _maxKUSDamount,
-            Troves[_borrower][vars._asset].debt.sub(kumoParams.KUSD_GAS_COMPENSATION(_asset))
-        );
-
-        // Get the AssetLot of equivalent value in USD
-        singleRedemption.AssetLot = singleRedemption.KUSDLot.mul(DECIMAL_PRECISION).div(_price);
-
-        // Decrease the debt and collateral of the current Trove according to the KUSD lot and corresponding ETH to send
-        uint256 newDebt = (Troves[vars._borrower][vars._asset].debt).sub(singleRedemption.KUSDLot);
-        uint256 newColl = (Troves[vars._borrower][vars._asset].coll).sub(singleRedemption.AssetLot);
-
-        if (newDebt == kumoParams.KUSD_GAS_COMPENSATION(vars._asset)) {
-            // No debt left in the Trove (except for the liquidation reserve), therefore the trove gets closed
-            _removeStake(vars._asset, vars._borrower);
-            _closeTrove(vars._asset, vars._borrower, Status.closedByRedemption);
-            _redeemCloseTrove(
-                vars._asset,
-                _contractsCache,
-                vars._borrower,
-                kumoParams.KUSD_GAS_COMPENSATION(vars._asset),
-                newColl
-            );
-            emit TroveUpdated(
-                vars._asset,
-                vars._borrower,
-                0,
-                0,
-                0,
-                TroveManagerOperation.redeemCollateral
-            );
-        } else {
-            uint256 newNICR = KumoMath._computeNominalCR(newColl, newDebt);
-
-            /*
-             * If the provided hint is out of date, we bail since trying to reinsert without a good hint will almost
-             * certainly result in running out of gas.
-             *
-             * If the resultant net debt of the partial is less than the minimum, net debt we bail.
-             */
-            if (
-                newNICR != _partialRedemptionHintNICR ||
-                _getNetDebt(vars._asset, newDebt) < kumoParams.MIN_NET_DEBT(vars._asset)
-            ) {
-                singleRedemption.cancelledPartial = true;
-                return singleRedemption;
-            }
-
-            _contractsCache.sortedTroves.reInsert(
-                vars._asset,
-                vars._borrower,
-                newNICR,
-                _upperPartialRedemptionHint,
-                _lowerPartialRedemptionHint
-            );
-
-            Troves[vars._borrower][vars._asset].debt = newDebt;
-            Troves[vars._borrower][vars._asset].coll = newColl;
-            _updateStakeAndTotalStakes(vars._asset, vars._borrower);
-
-            emit TroveUpdated(
-                vars._asset,
-                vars._borrower,
-                newDebt,
-                newColl,
-                Troves[vars._borrower][vars._asset].stake,
-                TroveManagerOperation.redeemCollateral
-            );
-        }
-
-        return singleRedemption;
-    }
 
     /*
      * Called when a full redemption occurs, and closes the trove.
@@ -1139,22 +1051,19 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
      */
     function _redeemCloseTrove(
         address _asset,
-        ContractsCache memory _contractsCache,
         address _borrower,
         uint256 _KUSD,
         uint256 _amount
     ) internal {
-        _contractsCache.kusdToken.burn(gasPoolAddress, _KUSD);
+        IActivePool activePool = kumoParams.activePool();
+
+        kusdToken.burn(gasPoolAddress, _KUSD);
         // Update Active Pool KUSD, and send ETH to account
-        _contractsCache.activePool.decreaseKUSDDebt(_asset, _KUSD);
+        activePool.decreaseKUSDDebt(_asset, _KUSD);
 
         // send ETH from Active Pool to CollSurplus Pool
-        _contractsCache.collSurplusPool.accountSurplus(_asset, _borrower, _amount);
-        _contractsCache.activePool.sendAsset(
-            _asset,
-            address(_contractsCache.collSurplusPool),
-            _amount
-        );
+        collSurplusPool.accountSurplus(_asset, _borrower, _amount);
+        activePool.sendAsset(_asset, address(collSurplusPool), _amount);
     }
 
     function isValidFirstRedemptionHint(
@@ -1233,6 +1142,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint256 _maxIterations,
         uint256 _maxFeePercentage
     ) external override {
+        _requireAfterBootstrapPeriod();
+
         troveRedemptor.redeemCollateral(
             _asset,
             msg.sender,
@@ -1244,129 +1155,44 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
             _maxIterations,
             _maxFeePercentage
         );
-        // require(
-        // 	block.timestamp >= kumoParams.redemptionBlock(_asset),
-        // 	"TroveManager: Redemption is blocked"
-        // );
-        ContractsCache memory contractsCache = ContractsCache(
-            kumoParams.activePool(),
-            kumoParams.defaultPool(),
-            kusdToken,
-            kumoStaking,
-            sortedTroves,
-            collSurplusPool,
-            gasPoolAddress
-        );
-        RedemptionTotals memory totals;
+    }
 
-        _requireValidMaxFeePercentage(_asset, _maxFeePercentage);
-        _requireAfterBootstrapPeriod();
-        totals.price = kumoParams.priceFeed().fetchPrice(_asset);
-        _requireTCRoverMCR(_asset, totals.price);
-        _requireAmountGreaterThanZero(_KUSDamount);
-        _requireKUSDBalanceCoversRedemption(contractsCache.kusdToken, msg.sender, _KUSDamount);
+    function executeFullRedemption(
+        address _asset,
+        address _borrower,
+        uint256 _newColl
+    ) external {
+        _requireCallerIsTroveRedemptor();
+        _removeStake(_asset, _borrower);
+        _closeTrove(_asset, _borrower, Status.closedByRedemption);
+        _redeemCloseTrove(_asset, _borrower, kumoParams.KUSD_GAS_COMPENSATION(_asset), _newColl);
+        emit TroveUpdated(_asset, _borrower, 0, 0, 0, TroveManagerOperation.redeemCollateral);
+    }
 
-        totals.totalKUSDSupplyAtStart = getEntireSystemDebt(_asset);
-        // Confirm redeemer's balance is less than total KUSD supply
-        assert(contractsCache.kusdToken.balanceOf(msg.sender) <= totals.totalKUSDSupplyAtStart);
+    function executePartialRedemption(
+        address _asset,
+        address _borrower,
+        uint256 _newDebt,
+        uint256 _newColl,
+        uint256 _newNICR,
+        address _upperHint,
+        address _lowerHint
+    ) external {
+        _requireCallerIsTroveRedemptor();
+        sortedTroves.reInsert(_asset, _borrower, _newNICR, _upperHint, _lowerHint);
 
-        totals.remainingKUSD = _KUSDamount;
-        address currentBorrower;
+        Troves[_borrower][_asset].debt = _newDebt;
+        Troves[_borrower][_asset].coll = _newColl;
+        _updateStakeAndTotalStakes(_asset, _borrower);
 
-        if (
-            _isValidFirstRedemptionHint(
-                _asset,
-                contractsCache.sortedTroves,
-                _firstRedemptionHint,
-                totals.price
-            )
-        ) {
-            currentBorrower = _firstRedemptionHint;
-        } else {
-            currentBorrower = contractsCache.sortedTroves.getLast(_asset);
-            // Find the first trove with ICR >= MCR
-            while (
-                currentBorrower != address(0) &&
-                getCurrentICR(_asset, currentBorrower, totals.price) < kumoParams.MCR(_asset)
-            ) {
-                currentBorrower = contractsCache.sortedTroves.getPrev(_asset, currentBorrower);
-            }
-        }
-
-        // Loop through the Troves starting from the one with lowest collateral ratio until _amount of KUSD is exchanged for collateral
-        if (_maxIterations == 0) {
-            _maxIterations = type(uint256).max;
-        }
-        while (currentBorrower != address(0) && totals.remainingKUSD > 0 && _maxIterations > 0) {
-            _maxIterations--;
-            // Save the address of the Trove preceding the current one, before potentially modifying the list
-            address nextUserToCheck = contractsCache.sortedTroves.getPrev(_asset, currentBorrower);
-
-            _applyPendingRewards(
-                _asset,
-                contractsCache.activePool,
-                contractsCache.defaultPool,
-                currentBorrower
-            );
-
-            SingleRedemptionValues memory singleRedemption = _redeemCollateralFromTrove(
-                _asset,
-                contractsCache,
-                currentBorrower,
-                totals.remainingKUSD,
-                totals.price,
-                _upperPartialRedemptionHint,
-                _lowerPartialRedemptionHint,
-                _partialRedemptionHintNICR
-            );
-
-            if (singleRedemption.cancelledPartial) break; // Partial redemption was cancelled (out-of-date hint, or new net debt < minimum), therefore we could not redeem from the last Trove
-
-            totals.totalKUSDToRedeem = totals.totalKUSDToRedeem.add(singleRedemption.KUSDLot);
-            totals.totalAssetDrawn = totals.totalAssetDrawn.add(singleRedemption.AssetLot);
-
-            totals.remainingKUSD = totals.remainingKUSD.sub(singleRedemption.KUSDLot);
-            currentBorrower = nextUserToCheck;
-        }
-        require(totals.totalAssetDrawn > 0, "TroveManager: Unable to redeem any amount");
-
-        // Decay the baseRate due to time passed, and then increase it according to the size of this redemption.
-        // Use the saved total KUSD supply value, from before it was reduced by the redemption.
-        _updateBaseRateFromRedemption(
+        emit TroveUpdated(
             _asset,
-            totals.totalAssetDrawn,
-            totals.price,
-            totals.totalKUSDSupplyAtStart
+            _borrower,
+            _newDebt,
+            _newColl,
+            Troves[_borrower][_asset].stake,
+            TroveManagerOperation.redeemCollateral
         );
-
-        // Calculate the ETH fee
-        totals.AssetFee = _getRedemptionFee(_asset, totals.totalAssetDrawn);
-
-        _requireUserAcceptsFee(totals.AssetFee, totals.totalAssetDrawn, _maxFeePercentage);
-
-        // Send the ETH fee to the KUMO staking contract
-        contractsCache.activePool.sendAsset(
-            _asset,
-            address(contractsCache.kumoStaking),
-            totals.AssetFee
-        );
-        contractsCache.kumoStaking.increaseF_Asset(_asset, totals.AssetFee);
-
-        totals.AssetToSendToRedeemer = totals.totalAssetDrawn.sub(totals.AssetFee);
-
-        emit Redemption(
-            _asset,
-            _KUSDamount,
-            totals.totalKUSDToRedeem,
-            totals.totalAssetDrawn,
-            totals.AssetFee
-        );
-
-        // Burn the total KUSD that is cancelled with debt, and send the redeemed ETH to msg.sender
-        contractsCache.kusdToken.burn(msg.sender, totals.totalKUSDToRedeem);
-        // Update Active Pool KUSD, and send ETH to account
-        contractsCache.activePool.decreaseKUSDDebt(_asset, totals.totalKUSDToRedeem);
-        contractsCache.activePool.sendAsset(_asset, msg.sender, totals.AssetToSendToRedeemer);
     }
 
     // --- Helper functions ---
@@ -1836,7 +1662,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         return _calcRedemptionRate(_asset, baseRate[_asset]);
     }
 
-    function getRedemptionFee(address _asset, uint256 _assetDraw) external view returns (uint256) {
+    function getRedemptionFee(address _asset, uint256 _assetDraw) public view returns (uint256) {
         return _calcRedemptionFee(getRedemptionRate(_asset), _assetDraw);
     }
 
