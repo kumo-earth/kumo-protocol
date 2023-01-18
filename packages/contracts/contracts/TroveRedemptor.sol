@@ -6,7 +6,6 @@ import "./TroveManager.sol";
 import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/IKUSDToken.sol";
 import "./Interfaces/ITroveRedemptor.sol";
-import "./Interfaces/IKumoParameters.sol";
 import "./Dependencies/KumoBase.sol";
 import "./Dependencies/TroveManagerModel.sol";
 
@@ -30,7 +29,7 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
     ) external {
         troveManager = TroveManager(_troveManagerAddress);
         kumoParams = IKumoParameters(_kumoParamsAddress);
-        kusdToken = IKUMOToken(_kusdTokenAddress);
+        kusdToken = IKUSDToken(_kusdTokenAddress);
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
     }
 
@@ -51,14 +50,7 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
         require(
             _maxFeePercentage >= kumoParams.REDEMPTION_FEE_FLOOR(_asset) &&
                 _maxFeePercentage <= DECIMAL_PRECISION,
-            "TroveRedemptor: Max fee percentage must be between 0.5% and 100%"
-        );
-
-        // requireAfterBootstrapPeriod
-        uint256 systemDeploymentTime = kusdToken.getDeploymentStartTime();
-        require(
-            block.timestamp >= systemDeploymentTime.add(kumoParams.BOOTSTRAP_PERIOD()),
-            "TroveRedemptor: Redemptions are not allowed during bootstrap phase"
+            "TroveManager: Max fee percentage must be between 0.5% and 100%"
         );
 
         totals.price = kumoParams.priceFeed().fetchPrice(_asset);
@@ -66,17 +58,13 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
         // requireTCRoverMCR
         require(
             _getTCR(_asset, totals.price) >= kumoParams.MCR(_asset),
-            "TroveRedemptor: Cannot redeem when TCR < MCR"
+            "TroveManager: Cannot redeem when TCR < MCR"
         );
 
         // _requireAmountGreaterThanZero
         require(_KUSDamount > 0, "TroveManager: Amount must be greater than zero");
 
-        // _requireKUSDBalanceCoversRedemption(contractsCache.kusdToken, msg.sender, _KUSDamount);
-        require(
-            kusdToken.balanceOf(_caller) >= _KUSDamount,
-            "TroveRedemptor: Requested redemption amount must be <= user's KUSD token balance"
-        );
+        _requireKUSDBalanceCoversRedemption(_caller, _KUSDamount);
 
         totals.totalKUSDSupplyAtStart = getEntireSystemDebt(_asset);
         totals.remainingKUSD = _KUSDamount;
@@ -125,7 +113,7 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
             totals.remainingKUSD = totals.remainingKUSD.sub(singleRedemption.KUSDLot);
             currentBorrower = nextUserToCheck;
         }
-        require(totals.totalAssetDrawn > 0, "TroveRedemptor: Unable to redeem any amount");
+        require(totals.totalAssetDrawn > 0, "TroveManager: Unable to redeem any amount");
 
         // Decay the baseRate due to time passed, and then increase it according to the size of this redemption.
         // Use the saved total KUSD supply value, from before it was reduced by the redemption.
@@ -143,11 +131,83 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
 
         troveManager.finalizeRedemption(
             _asset,
-            msg.sender,
+            _caller,
             _KUSDamount,
             totals.totalKUSDToRedeem,
             totals.AssetFee,
             totals.totalAssetDrawn
+        );
+    }
+
+    function _redeemCollateralFromTrove(
+        address _asset,
+        address _borrower,
+        uint256 _maxKUSDamount,
+        uint256 _price,
+        address _upperPartialRedemptionHint,
+        address _lowerPartialRedemptionHint,
+        uint256 _partialRedemptionHintNICR
+    ) internal returns (SingleRedemptionValues memory singleRedemption) {
+        LocalVariables_AssetBorrowerPrice memory vars = LocalVariables_AssetBorrowerPrice(
+            _asset,
+            _borrower,
+            _price
+        );
+
+        uint256 vaultDebt = troveManager.getTroveDebt(vars._asset, vars._borrower);
+        uint256 vaultColl = troveManager.getTroveColl(vars._asset, vars._borrower);
+
+        // Determine the remaining amount (lot) to be redeemed, capped by the entire debt of the Trove minus the liquidation reserve
+        singleRedemption.KUSDLot = KumoMath._min(
+            _maxKUSDamount,
+            vaultDebt.sub(kumoParams.KUSD_GAS_COMPENSATION(_asset))
+        );
+
+        // Get the AssetLot of equivalent value in USD
+        singleRedemption.AssetLot = singleRedemption.KUSDLot.mul(DECIMAL_PRECISION).div(_price);
+
+        // Decrease the debt and collateral of the current Trove according to the KUSD lot and corresponding ETH to send
+        uint256 newDebt = vaultDebt.sub(singleRedemption.KUSDLot);
+        uint256 newColl = vaultColl.sub(singleRedemption.AssetLot);
+
+        if (newDebt == kumoParams.KUSD_GAS_COMPENSATION(_asset)) {
+            troveManager.executeFullRedemption(vars._asset, vars._borrower, newColl);
+        } else {
+            uint256 newNICR = KumoMath._computeNominalCR(newColl, newDebt);
+
+            /*
+             * If the provided hint is out of date, we bail since trying to reinsert without a good hint will almost
+             * certainly result in running out of gas.
+             *
+             * If the resultant net debt of the partial is less than the minimum, net debt we bail.
+             */
+
+            if (
+                newNICR != _partialRedemptionHintNICR ||
+                _getNetDebt(vars._asset, newDebt) < kumoParams.MIN_NET_DEBT(vars._asset)
+            ) {
+                singleRedemption.cancelledPartial = true;
+                return singleRedemption;
+            }
+
+            troveManager.executePartialRedemption(
+                vars._asset,
+                vars._borrower,
+                newDebt,
+                newColl,
+                newNICR,
+                _upperPartialRedemptionHint,
+                _lowerPartialRedemptionHint
+            );
+        }
+
+        return singleRedemption;
+    }
+
+    function _requireKUSDBalanceCoversRedemption(address _redeemer, uint256 _amount) internal view {
+        require(
+            kusdToken.balanceOf(_redeemer) >= _amount,
+            "TroveManager: Requested redemption amount must be <= user's KUSD token balance"
         );
     }
 }
