@@ -154,21 +154,24 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
             _price
         );
 
-        uint256 vaultDebt = troveManager.getTroveDebt(vars._asset, vars._borrower);
-        uint256 vaultColl = troveManager.getTroveColl(vars._asset, vars._borrower);
-
         // Determine the remaining amount (lot) to be redeemed, capped by the entire debt of the Trove minus the liquidation reserve
         singleRedemption.KUSDLot = KumoMath._min(
             _maxKUSDamount,
-            vaultDebt.sub(kumoParams.KUSD_GAS_COMPENSATION(_asset))
+            (troveManager.getTroveDebt(vars._asset, vars._borrower)).sub(
+                kumoParams.KUSD_GAS_COMPENSATION(_asset)
+            )
         );
 
         // Get the AssetLot of equivalent value in USD
         singleRedemption.AssetLot = singleRedemption.KUSDLot.mul(DECIMAL_PRECISION).div(_price);
 
         // Decrease the debt and collateral of the current Trove according to the KUSD lot and corresponding ETH to send
-        uint256 newDebt = vaultDebt.sub(singleRedemption.KUSDLot);
-        uint256 newColl = vaultColl.sub(singleRedemption.AssetLot);
+        uint256 newDebt = (troveManager.getTroveDebt(vars._asset, vars._borrower)).sub(
+            singleRedemption.KUSDLot
+        );
+        uint256 newColl = (troveManager.getTroveColl(vars._asset, vars._borrower)).sub(
+            singleRedemption.AssetLot
+        );
 
         if (newDebt == kumoParams.KUSD_GAS_COMPENSATION(_asset)) {
             troveManager.executeFullRedemption(vars._asset, vars._borrower, newColl);
