@@ -7,9 +7,10 @@ import "./IStabilityPoolFactory.sol";
 import "./IKUSDToken.sol";
 import "./IKUMOToken.sol";
 import "./IKUMOStaking.sol";
+import "./ITroveEvents.sol";
 
 // Common interface for the Trove Manager.
-interface ITroveManager is IKumoBase {
+interface ITroveManager is IKumoBase, ITroveEvents {
     enum Status {
         nonExistent,
         active,
@@ -52,14 +53,6 @@ interface ITroveManager is IKumoBase {
     event SortedTrovesAddressChanged(address _sortedTrovesAddress);
     event KUMOTokenAddressChanged(address _kumoTokenAddress);
     event KUMOStakingAddressChanged(address _kumoStakingAddress);
-
-    event Liquidation(
-        address indexed _asset,
-        uint256 _liquidatedDebt,
-        uint256 _liquidatedColl,
-        uint256 _collGasCompensation,
-        uint256 _kusdGasCompensation
-    );
     event Redemption(
         address indexed _asset,
         uint256 _attemptedKUSDAmount,
@@ -72,11 +65,6 @@ interface ITroveManager is IKumoBase {
     event LTermsUpdated(uint256 _L_ETH, uint256 _L_KUSDDebt);
     event TroveSnapshotsUpdated(address indexed _asset, uint256 _L_ETH, uint256 _L_KUSDDebt);
     event TotalStakesUpdated(address indexed _asset, uint256 _newTotalStakes);
-    event SystemSnapshotsUpdated(
-        address indexed _asset,
-        uint256 _totalStakesSnapshot,
-        uint256 _totalCollateralSnapshot
-    );
     event BaseRateUpdated(address indexed _asset, uint256 _baseRate);
     event LastFeeOpTimeUpdated(address indexed _asset, uint256 _lastFeeOpTime);
     event TroveIndexUpdated(address indexed _asset, address _borrower, uint256 _newIndex);
