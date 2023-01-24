@@ -591,23 +591,23 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
         // Move liquidated ETH and KUSD to the appropriate pools
         stabilityPoolCached.offset(totals.totalDebtToOffset, totals.totalCollToSendToSP);
-        _redistributeDebtAndColl(
-            _asset,
-            contractsCache.activePool,
-            contractsCache.defaultPool,
-            totals.totalDebtToRedistribute,
-            totals.totalCollToRedistribute
-        );
-        if (totals.totalCollSurplus > 0) {
-            contractsCache.activePool.sendAsset(
-                _asset,
-                address(collSurplusPool),
-                totals.totalCollSurplus
-            );
-        }
+        // _redistributeDebtAndColl(
+        //     _asset,
+        //     contractsCache.activePool,
+        //     contractsCache.defaultPool,
+        //     totals.totalDebtToRedistribute,
+        //     totals.totalCollToRedistribute
+        // );
+        // if (totals.totalCollSurplus > 0) {
+        //     contractsCache.activePool.sendAsset(
+        //         _asset,
+        //         address(collSurplusPool),
+        //         totals.totalCollSurplus
+        //     );
+        // }
 
-        // Update system snapshots
-        _updateSystemSnapshots_excludeCollRemainder(_asset, totals.totalCollGasCompensation);
+        // // Update system snapshots
+        // _updateSystemSnapshots_excludeCollRemainder(_asset, totals.totalCollGasCompensation);
 
         vars.liquidatedDebt = totals.totalDebtInSequence;
         vars.liquidatedColl = totals.totalCollInSequence.sub(totals.totalCollGasCompensation).sub(
@@ -622,13 +622,13 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         );
 
         // Send gas compensation to caller
-        _sendGasCompensation(
-            _asset,
-            contractsCache.activePool,
-            msg.sender,
-            totals.totalkusdGasCompensation,
-            totals.totalCollGasCompensation
-        );
+        // _sendGasCompensation(
+        //     _asset,
+        //     contractsCache.activePool,
+        //     msg.sender,
+        //     totals.totalkusdGasCompensation,
+        //     totals.totalCollGasCompensation
+        // );
     }
 
     /*
@@ -770,91 +770,23 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     function batchLiquidateTroves(address _asset, address[] memory _troveArray) public override {
         require(_troveArray.length != 0, "TroveManager: Calldata address array must not be empty");
 
-        IActivePool activePoolCached = kumoParams.activePool();
-        IDefaultPool defaultPoolCached = kumoParams.defaultPool();
-        IStabilityPool stabilityPoolCached = stabilityPoolFactory.getStabilityPoolByAsset(_asset);
-
-        LocalVariables_OuterLiquidationFunction memory vars;
-        LiquidationTotals memory totals;
-
-        vars.price = kumoParams.priceFeed().fetchPrice(_asset);
-        vars.KUSDInStabPool = stabilityPoolCached.getTotalKUSDDeposits();
-        vars.recoveryModeAtStart = _checkRecoveryMode(_asset, vars.price);
-
-        // Perform the appropriate liquidation sequence - tally values and obtain their totals.
-        if (vars.recoveryModeAtStart) {
-            totals = _getTotalFromBatchLiquidate_RecoveryMode(
-                _asset,
-                activePoolCached,
-                defaultPoolCached,
-                vars.price,
-                vars.KUSDInStabPool,
-                _troveArray
-            );
-        } else {
-            //  if !vars.recoveryModeAtStart
-            totals = _getTotalsFromBatchLiquidate_NormalMode(
-                _asset,
-                activePoolCached,
-                defaultPoolCached,
-                vars.price,
-                vars.KUSDInStabPool,
-                _troveArray
-            );
-        }
-
-        require(totals.totalDebtInSequence > 0, "TroveManager: nothing to liquidate");
-
-        // Move liquidated ETH and KUSD to the appropriate pools
-        stabilityPoolCached.offset(totals.totalDebtToOffset, totals.totalCollToSendToSP);
-        _redistributeDebtAndColl(
-            _asset,
-            activePoolCached,
-            defaultPoolCached,
-            totals.totalDebtToRedistribute,
-            totals.totalCollToRedistribute
-        );
-        if (totals.totalCollSurplus > 0) {
-            activePoolCached.sendAsset(_asset, address(collSurplusPool), totals.totalCollSurplus);
-        }
-
-        // Update system snapshots
-        _updateSystemSnapshots_excludeCollRemainder(_asset, totals.totalCollGasCompensation);
-
-        vars.liquidatedDebt = totals.totalDebtInSequence;
-        vars.liquidatedColl = totals.totalCollInSequence.sub(totals.totalCollGasCompensation).sub(
-            totals.totalCollSurplus
-        );
-        emit Liquidation(
-            _asset,
-            vars.liquidatedDebt,
-            vars.liquidatedColl,
-            totals.totalCollGasCompensation,
-            totals.totalkusdGasCompensation
-        );
-
-        // Send gas compensation to caller
-        _sendGasCompensation(
-            _asset,
-            activePoolCached,
-            msg.sender,
-            totals.totalkusdGasCompensation,
-            totals.totalCollGasCompensation
-        );
+        troveRedemptor.batchLiquidateTroves(_asset, _troveArray);
     }
 
     /*
      * This function is used when the batch liquidation sequence starts during Recovery Mode. However, it
      * handle the case where the system *leaves* Recovery Mode, part way through the liquidation sequence
      */
-    function _getTotalFromBatchLiquidate_RecoveryMode(
+    function getTotalFromBatchLiquidate_RecoveryMode(
         address _asset,
         IActivePool _activePool,
         IDefaultPool _defaultPool,
         uint256 _price,
         uint256 _KUSDInStabPool,
         address[] memory _troveArray
-    ) internal returns (LiquidationTotals memory totals) {
+    ) external returns (LiquidationTotals memory totals) {
+        _requireCallerIsTroveRedemptor();
+
         LocalVariables_LiquidationSequence memory vars;
         LiquidationValues memory singleLiquidation;
 
@@ -932,14 +864,16 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         }
     }
 
-    function _getTotalsFromBatchLiquidate_NormalMode(
+    function getTotalsFromBatchLiquidate_NormalMode(
         address _asset,
         IActivePool _activePool,
         IDefaultPool _defaultPool,
         uint256 _price,
         uint256 _KUSDInStabPool,
         address[] memory _troveArray
-    ) internal returns (LiquidationTotals memory totals) {
+    ) external returns (LiquidationTotals memory totals) {
+        _requireCallerIsTroveRedemptor();
+
         LocalVariables_LiquidationSequence memory vars;
         LiquidationValues memory singleLiquidation;
 
@@ -1003,13 +937,13 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         return newTotals;
     }
 
-    function _sendGasCompensation(
+    function sendGasCompensation(
         address _asset,
         IActivePool _activePool,
         address _liquidator,
         uint256 _KUSD,
         uint256 _amount
-    ) internal {
+    ) external {
         // Before calling this function, we always check that something was liquidated, otherwise revert.
         // KUSD gas compensation could then only be zero if we set to zero that constant, but it’s ok to have this here as a sanity check
         if (_KUSD > 0) {
@@ -1021,7 +955,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         // With the current values of min debt this seems quite unlikely, unless ETH price was in the order of magnitude of $10^19 or more,
         // but it’s ok to have this here as a sanity check
         if (_amount > 0) {
-            _activePool.sendAsset(_asset, _liquidator, _amount);
+            kumoParams.activePool().sendAsset(_asset, _liquidator, _amount);
         }
     }
 
@@ -1432,13 +1366,15 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         return stake;
     }
 
-    function _redistributeDebtAndColl(
+    function redistributeDebtAndColl(
         address _asset,
         IActivePool _activePool,
         IDefaultPool _defaultPool,
         uint256 _debt,
         uint256 _coll
-    ) internal {
+    ) external {
+        _requireCallerIsTroveRedemptor();
+
         if (_debt == 0) {
             return;
         }
@@ -1520,8 +1456,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
      *
      * The ETH as compensation must be excluded as it is always sent out at the very end of the liquidation sequence.
      */
-    function _updateSystemSnapshots_excludeCollRemainder(address _asset, uint256 _collRemainder)
-        internal
+    function updateSystemSnapshots_excludeCollRemainder(address _asset, uint256 _collRemainder)
+        external
     {
         totalStakesSnapshot[_asset] = totalStakes[_asset];
 
@@ -1945,5 +1881,17 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint256 newDebt = Troves[_borrower][_asset].debt.sub(_debtDecrease);
         Troves[_borrower][_asset].debt = newDebt;
         return newDebt;
+    }
+
+    // function setTotalStakes(address _asset) external {
+    //     total
+    // }
+
+    function setTotalStakesSnapshot(address _asset, uint256 _value) external {
+        totalStakesSnapshot[_asset] = _value;
+    }
+
+    function setTotalCollateralSnapshot(address _asset, uint256 _value) external {
+        totalCollateralSnapshot[_asset] = _value;
     }
 }

@@ -2,7 +2,9 @@
 
 pragma solidity 0.8.11;
 
-interface ITroveRedemptor {
+import "./ITroveEvents.sol";
+
+interface ITroveRedemptor is ITroveEvents {
     function redeemCollateral(
         address _asset,
         address _caller,
@@ -14,4 +16,6 @@ interface ITroveRedemptor {
         uint256 _maxIterations,
         uint256 _maxFeePercentage
     ) external;
+
+    function batchLiquidateTroves(address _asset, address[] memory _troveArray) external;
 }
