@@ -80,7 +80,8 @@ interface ITroveManager is IKumoBase, ITroveEvents {
         address _sortedTrovesAddress,
         address _kumoTokenAddress,
         address _kumoStakingAddress,
-        address _kumoParamsAddress
+        address _kumoParamsAddress,
+        address _troveRedemptorAddress
     ) external;
 
     function stabilityPoolFactory() external view returns (IStabilityPoolFactory);

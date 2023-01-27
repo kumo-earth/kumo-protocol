@@ -5,6 +5,15 @@ pragma solidity 0.8.11;
 import "./ITroveEvents.sol";
 
 interface ITroveRedemptor is ITroveEvents {
+    function setAddresses(
+        address _troveManagerAddress,
+        address _sortedTrovesAddress,
+        address _stabilityPoolFactoryAddress,
+        address _kusdTokenAddress,
+        address _collSurplusPoolAddress,
+        address _kumoParamsAddress
+    ) external;
+
     function redeemCollateral(
         address _asset,
         address _caller,
@@ -18,4 +27,6 @@ interface ITroveRedemptor is ITroveEvents {
     ) external;
 
     function batchLiquidateTroves(address _asset, address[] memory _troveArray) external;
+
+    function liquidateTroves(address _asset, uint256 _n) external;
 }

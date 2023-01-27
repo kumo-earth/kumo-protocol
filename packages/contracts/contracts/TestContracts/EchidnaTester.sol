@@ -3,6 +3,7 @@
 pragma solidity 0.8.11;
 
 import "../TroveManager.sol";
+import "../TroveRedemptor.sol";
 import "../BorrowerOperations.sol";
 import "../ActivePool.sol";
 import "../DefaultPool.sol";
@@ -43,6 +44,7 @@ contract EchidnaTester {
     PriceFeedTestnet priceFeedTestnet;
     SortedTroves sortedTroves;
     KumoParameters kumoParams;
+    TroveRedemptor troveRedemptor;
 
     EchidnaProxy[NUMBER_OF_ACTORS] public echidnaProxies;
 
@@ -64,7 +66,7 @@ contract EchidnaTester {
 
         collSurplusPool = new CollSurplusPool();
         priceFeedTestnet = new PriceFeedTestnet();
-
+        troveRedemptor = new TroveRedemptor();
         sortedTroves = new SortedTroves();
 
         troveManager.setAddresses(
@@ -76,6 +78,16 @@ contract EchidnaTester {
             address(sortedTroves),
             address(0),
             address(0),
+            address(kumoParams),
+            address(troveRedemptor)
+        );
+
+        troveRedemptor.setAddresses(
+            address(troveManager),
+            address(sortedTroves),
+            address(stabilityPoolFactory),
+            address(kusdToken),
+            address(collSurplusPool),
             address(kumoParams)
         );
 
@@ -107,7 +119,8 @@ contract EchidnaTester {
             address(kusdToken),
             address(sortedTroves),
             address(0),
-            address(kumoParams)
+            address(kumoParams),
+            address(troveRedemptor)
         );
 
         collSurplusPool.setAddresses(

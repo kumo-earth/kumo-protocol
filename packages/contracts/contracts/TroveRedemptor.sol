@@ -296,7 +296,6 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
         // Send gas compensation to caller
         troveManager.sendGasCompensation(
             _asset,
-            activePoolCached,
             msg.sender,
             totals.totalkusdGasCompensation,
             totals.totalCollGasCompensation
@@ -307,90 +306,78 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
      * Liquidate a sequence of troves. Closes a maximum number of n under-collateralized Troves,
      * starting from the one with the lowest collateral ratio in the system, and moving upwards
      */
-    // function liquidateTroves(address _asset, uint256 _n) external override {
-    //     ContractsCache memory contractsCache = ContractsCache(
-    //         kumoParams.activePool(),
-    //         kumoParams.defaultPool(),
-    //         IKUSDToken(address(0)),
-    //         IKUMOStaking(address(0)),
-    //         sortedTroves,
-    //         ICollSurplusPool(address(0)),
-    //         address(0)
-    //     );
-    //     IStabilityPool stabilityPoolCached = stabilityPoolFactory.getStabilityPoolByAsset(_asset);
+    function liquidateTroves(address _asset, uint256 _n) external {
+        IActivePool activePoolCached = kumoParams.activePool();
+        IDefaultPool defaultPoolCached = kumoParams.defaultPool();
+        IStabilityPool stabilityPoolCached = stabilityPoolFactory.getStabilityPoolByAsset(_asset);
 
-    //     LocalVariables_OuterLiquidationFunction memory vars;
+        LocalVariables_OuterLiquidationFunction memory vars;
 
-    //     LiquidationTotals memory totals;
+        LiquidationTotals memory totals;
 
-    //     vars.price = kumoParams.priceFeed().fetchPrice(_asset);
-    //     vars.KUSDInStabPool = stabilityPoolCached.getTotalKUSDDeposits();
-    //     vars.recoveryModeAtStart = _checkRecoveryMode(_asset, vars.price);
+        vars.price = kumoParams.priceFeed().fetchPrice(_asset);
+        vars.KUSDInStabPool = stabilityPoolCached.getTotalKUSDDeposits();
+        vars.recoveryModeAtStart = _checkRecoveryMode(_asset, vars.price);
 
-    //     // Perform the appropriate liquidation sequence - tally the values, and obtain their totals
-    //     if (vars.recoveryModeAtStart) {
-    //         totals = _getTotalsFromLiquidateTrovesSequence_RecoveryMode(
-    //             _asset,
-    //             contractsCache,
-    //             vars.price,
-    //             vars.KUSDInStabPool,
-    //             _n
-    //         );
-    //     } else {
-    //         // if !vars.recoveryModeAtStart
-    //         totals = _getTotalsFromLiquidateTrovesSequence_NormalMode(
-    //             _asset,
-    //             contractsCache.activePool,
-    //             contractsCache.defaultPool,
-    //             vars.price,
-    //             vars.KUSDInStabPool,
-    //             _n
-    //         );
-    //     }
+        // Perform the appropriate liquidation sequence - tally the values, and obtain their totals
+        if (vars.recoveryModeAtStart) {
+            totals = troveManager.getTotalsFromLiquidateTrovesSequence_RecoveryMode(
+                _asset,
+                vars.price,
+                vars.KUSDInStabPool,
+                _n
+            );
+        } else {
+            // if !vars.recoveryModeAtStart
+            totals = troveManager.getTotalsFromLiquidateTrovesSequence_NormalMode(
+                _asset,
+                vars.price,
+                vars.KUSDInStabPool,
+                _n
+            );
+        }
 
-    //     require(totals.totalDebtInSequence > 0, "TroveManager: nothing to liquidate");
+        require(totals.totalDebtInSequence > 0, "TroveManager: nothing to liquidate");
 
-    //     // Move liquidated ETH and KUSD to the appropriate pools
-    //     stabilityPoolCached.offset(totals.totalDebtToOffset, totals.totalCollToSendToSP);
-    //     _redistributeDebtAndColl(
-    //         _asset,
-    //         contractsCache.activePool,
-    //         contractsCache.defaultPool,
-    //         totals.totalDebtToRedistribute,
-    //         totals.totalCollToRedistribute
-    //     );
-    //     if (totals.totalCollSurplus > 0) {
-    //         contractsCache.activePool.sendAsset(
-    //             _asset,
-    //             address(collSurplusPool),
-    //             totals.totalCollSurplus
-    //         );
-    //     }
+        // Move liquidated ETH and KUSD to the appropriate pools
+        stabilityPoolCached.offset(totals.totalDebtToOffset, totals.totalCollToSendToSP);
+        troveManager.redistributeDebtAndColl(
+            _asset,
+            activePoolCached,
+            defaultPoolCached,
+            totals.totalDebtToRedistribute,
+            totals.totalCollToRedistribute
+        );
+        if (totals.totalCollSurplus > 0) {
+            activePoolCached.sendAsset(_asset, address(collSurplusPool), totals.totalCollSurplus);
+        }
 
-    //     // Update system snapshots
-    //     _updateSystemSnapshots_excludeCollRemainder(_asset, totals.totalCollGasCompensation);
+        // Update system snapshots
+        troveManager.updateSystemSnapshots_excludeCollRemainder(
+            _asset,
+            totals.totalCollGasCompensation
+        );
 
-    //     vars.liquidatedDebt = totals.totalDebtInSequence;
-    //     vars.liquidatedColl = totals.totalCollInSequence.sub(totals.totalCollGasCompensation).sub(
-    //         totals.totalCollSurplus
-    //     );
-    //     emit Liquidation(
-    //         _asset,
-    //         vars.liquidatedDebt,
-    //         vars.liquidatedColl,
-    //         totals.totalCollGasCompensation,
-    //         totals.totalkusdGasCompensation
-    //     );
+        vars.liquidatedDebt = totals.totalDebtInSequence;
+        vars.liquidatedColl = totals.totalCollInSequence.sub(totals.totalCollGasCompensation).sub(
+            totals.totalCollSurplus
+        );
+        emit Liquidation(
+            _asset,
+            vars.liquidatedDebt,
+            vars.liquidatedColl,
+            totals.totalCollGasCompensation,
+            totals.totalkusdGasCompensation
+        );
 
-    //     // Send gas compensation to caller
-    //     _sendGasCompensation(
-    //         _asset,
-    //         contractsCache.activePool,
-    //         msg.sender,
-    //         totals.totalkusdGasCompensation,
-    //         totals.totalCollGasCompensation
-    //     );
-    // }
+        // Send gas compensation to caller
+        troveManager.sendGasCompensation(
+            _asset,
+            msg.sender,
+            totals.totalkusdGasCompensation,
+            totals.totalCollGasCompensation
+        );
+    }
 
     /*
      * Updates snapshots of system total stakes and total collateral, excluding a given collateral remainder from the calculation.
