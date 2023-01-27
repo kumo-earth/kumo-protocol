@@ -186,7 +186,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         address _sortedTrovesAddress,
         address _kumoTokenAddress,
         address _kumoStakingAddress,
-        address _kumoParamsAddress
+        address _kumoParamsAddress,
+        address _troveRedemptorAddress
     ) external override onlyOwner {
         // require(!isInitialized, "Already initialized");
         checkContract(_borrowerOperationsAddress);
@@ -198,6 +199,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         checkContract(_kumoTokenAddress);
         checkContract(_kumoStakingAddress);
         checkContract(_kumoParamsAddress);
+        checkContract(_troveRedemptorAddress);
 
         // isInitialized = true;
         // __Ownable_init();
@@ -210,6 +212,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         kumoToken = IKUMOToken(_kumoTokenAddress);
         kumoStaking = IKUMOStaking(_kumoStakingAddress);
+        troveRedemptor = ITroveRedemptor(_troveRedemptorAddress);
 
         setKumoParameters(_kumoParamsAddress);
 
@@ -547,101 +550,19 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
      * starting from the one with the lowest collateral ratio in the system, and moving upwards
      */
     function liquidateTroves(address _asset, uint256 _n) external override {
-        ContractsCache memory contractsCache = ContractsCache(
-            kumoParams.activePool(),
-            kumoParams.defaultPool(),
-            IKUSDToken(address(0)),
-            IKUMOStaking(address(0)),
-            sortedTroves,
-            ICollSurplusPool(address(0)),
-            address(0)
-        );
-        IStabilityPool stabilityPoolCached = stabilityPoolFactory.getStabilityPoolByAsset(_asset);
-
-        LocalVariables_OuterLiquidationFunction memory vars;
-
-        LiquidationTotals memory totals;
-
-        vars.price = kumoParams.priceFeed().fetchPrice(_asset);
-        vars.KUSDInStabPool = stabilityPoolCached.getTotalKUSDDeposits();
-        vars.recoveryModeAtStart = _checkRecoveryMode(_asset, vars.price);
-
-        // Perform the appropriate liquidation sequence - tally the values, and obtain their totals
-        if (vars.recoveryModeAtStart) {
-            totals = _getTotalsFromLiquidateTrovesSequence_RecoveryMode(
-                _asset,
-                contractsCache,
-                vars.price,
-                vars.KUSDInStabPool,
-                _n
-            );
-        } else {
-            // if !vars.recoveryModeAtStart
-            totals = _getTotalsFromLiquidateTrovesSequence_NormalMode(
-                _asset,
-                contractsCache.activePool,
-                contractsCache.defaultPool,
-                vars.price,
-                vars.KUSDInStabPool,
-                _n
-            );
-        }
-
-        require(totals.totalDebtInSequence > 0, "TroveManager: nothing to liquidate");
-
-        // Move liquidated ETH and KUSD to the appropriate pools
-        stabilityPoolCached.offset(totals.totalDebtToOffset, totals.totalCollToSendToSP);
-        // _redistributeDebtAndColl(
-        //     _asset,
-        //     contractsCache.activePool,
-        //     contractsCache.defaultPool,
-        //     totals.totalDebtToRedistribute,
-        //     totals.totalCollToRedistribute
-        // );
-        // if (totals.totalCollSurplus > 0) {
-        //     contractsCache.activePool.sendAsset(
-        //         _asset,
-        //         address(collSurplusPool),
-        //         totals.totalCollSurplus
-        //     );
-        // }
-
-        // // Update system snapshots
-        // _updateSystemSnapshots_excludeCollRemainder(_asset, totals.totalCollGasCompensation);
-
-        vars.liquidatedDebt = totals.totalDebtInSequence;
-        vars.liquidatedColl = totals.totalCollInSequence.sub(totals.totalCollGasCompensation).sub(
-            totals.totalCollSurplus
-        );
-        emit Liquidation(
-            _asset,
-            vars.liquidatedDebt,
-            vars.liquidatedColl,
-            totals.totalCollGasCompensation,
-            totals.totalkusdGasCompensation
-        );
-
-        // Send gas compensation to caller
-        // _sendGasCompensation(
-        //     _asset,
-        //     contractsCache.activePool,
-        //     msg.sender,
-        //     totals.totalkusdGasCompensation,
-        //     totals.totalCollGasCompensation
-        // );
+        troveRedemptor.liquidateTroves(_asset, _n);
     }
 
     /*
      * This function is used when the liquidateTroves sequence starts during Recovery Mode. However, it
      * handle the case where the system *leaves* Recovery Mode, part way through the liquidation sequence
      */
-    function _getTotalsFromLiquidateTrovesSequence_RecoveryMode(
+    function getTotalsFromLiquidateTrovesSequence_RecoveryMode(
         address _asset,
-        ContractsCache memory _contractsCache,
         uint256 _price,
         uint256 _KUSDInStabPool,
         uint256 _n
-    ) internal returns (LiquidationTotals memory totals) {
+    ) external returns (LiquidationTotals memory totals) {
         LocalVariables_AssetBorrowerPrice memory assetVars = LocalVariables_AssetBorrowerPrice(
             _asset,
             address(0),
@@ -655,11 +576,11 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         vars.entireSystemDebt = getEntireSystemDebt(assetVars._asset);
         vars.entireSystemColl = getEntireSystemColl(assetVars._asset);
 
-        vars.user = _contractsCache.sortedTroves.getLast(assetVars._asset);
-        address firstUser = _contractsCache.sortedTroves.getFirst(assetVars._asset);
+        vars.user = sortedTroves.getLast(assetVars._asset);
+        address firstUser = sortedTroves.getFirst(assetVars._asset);
         for (vars.i = 0; vars.i < _n && vars.user != firstUser; vars.i++) {
             // we need to cache it, because current user is likely going to be deleted
-            address nextUser = _contractsCache.sortedTroves.getPrev(assetVars._asset, vars.user);
+            address nextUser = sortedTroves.getPrev(assetVars._asset, vars.user);
 
             vars.ICR = getCurrentICR(assetVars._asset, vars.user, _price);
 
@@ -677,8 +598,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
                 singleLiquidation = _liquidateRecoveryMode(
                     assetVars._asset,
-                    _contractsCache.activePool,
-                    _contractsCache.defaultPool,
+                    kumoParams.activePool(),
+                    kumoParams.defaultPool(),
                     vars.user,
                     vars.ICR,
                     vars.remainingKUSDInStabPool,
@@ -709,8 +630,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
             } else if (vars.backToNormalMode && vars.ICR < kumoParams.MCR(_asset)) {
                 singleLiquidation = _liquidateNormalMode(
                     assetVars._asset,
-                    _contractsCache.activePool,
-                    _contractsCache.defaultPool,
+                    kumoParams.activePool(),
+                    kumoParams.defaultPool(),
                     vars.user,
                     vars.remainingKUSDInStabPool
                 );
@@ -727,14 +648,12 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         }
     }
 
-    function _getTotalsFromLiquidateTrovesSequence_NormalMode(
+    function getTotalsFromLiquidateTrovesSequence_NormalMode(
         address _asset,
-        IActivePool _activePool,
-        IDefaultPool _defaultPool,
         uint256 _price,
         uint256 _KUSDInStabPool,
         uint256 _n
-    ) internal returns (LiquidationTotals memory totals) {
+    ) external returns (LiquidationTotals memory totals) {
         LocalVariables_LiquidationSequence memory vars;
         LiquidationValues memory singleLiquidation;
         ISortedTroves sortedTrovesCached = sortedTroves;
@@ -748,8 +667,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
             if (vars.ICR < kumoParams.MCR(_asset)) {
                 singleLiquidation = _liquidateNormalMode(
                     _asset,
-                    _activePool,
-                    _defaultPool,
+                    kumoParams.activePool(),
+                    kumoParams.defaultPool(),
                     vars.user,
                     vars.remainingKUSDInStabPool
                 );
@@ -939,7 +858,6 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
     function sendGasCompensation(
         address _asset,
-        IActivePool _activePool,
         address _liquidator,
         uint256 _KUSD,
         uint256 _amount
