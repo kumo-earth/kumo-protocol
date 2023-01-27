@@ -425,8 +425,8 @@ const mintMockAssets = async (signers: SignerWithAddress[], { mockAsset1, mockAs
       await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000000000000000000000"));
       await mockAsset2.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000000000000000000000"));
     } else {
-      await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000000"));
-      await mockAsset2.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000000"));
+      await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("50000000000000000000000"));
+      await mockAsset2.mint((await signers[i].getAddress()), BigNumber.from("50000000000000000000000"));
     }
   }
 };

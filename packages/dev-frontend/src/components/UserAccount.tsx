@@ -135,7 +135,7 @@ export const UserAccount: React.FC = () => {
       )}
       {showAssetModal && (
         <Dialog {...dialog} hideOnClickOutside={false}>
-          <Box sx={{ ...style, position: "absolute", borderRadius: "50px", background: "linear-gradient(128.29deg, #FFFFFF 0%, rgba(255, 255, 255, 1) 127.78%)" }}>
+          <Box sx={{ ...style,  width: [340, 500], position: "absolute", borderRadius: "50px", background: "linear-gradient(128.29deg, #FFFFFF 0%, rgba(255, 255, 255, 1) 127.78%)" }}>
             <AddAssetModal onClose={() => setShowAssetModal(false)} />
           </Box>
         </Dialog>

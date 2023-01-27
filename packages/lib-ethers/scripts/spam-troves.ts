@@ -47,6 +47,8 @@ const collateralRatioStart = Decimal.from(2);
 const collateralRatioStep = Decimal.from(1e-6);
 const funderKey = "0x60ddFE7f579aB6867cbE7A2Dc03853dC141d7A4aB6DBEFc0Dae2d2B1Bd4e487F";
 
+const DEBT_MULITIPLIER = 5
+
 let provider: BatchedProvider & WebSocketAugmentedProvider & JsonRpcProvider;
 let funder: Wallet;
 let kumo: EthersKumoWithStore<BlockPolledKumoStore>;
@@ -62,8 +64,11 @@ const waitForSuccess = (tx: TransactionResponse) =>
 const createTrove = async (nominalCollateralRatio: Decimal, assetAddress: string) => {
   const randomWallet = Wallet.createRandom().connect(provider);
 
-  const debt = KUSD_MINIMUM_DEBT.mul(2);
+  const debt = KUSD_MINIMUM_DEBT.mul(1);
   const collateral = debt.mul(nominalCollateralRatio);
+
+  // debt for base prices 10 and 15 and collateral Ratio 200 and 300
+  const debtForBasePrices = debt.mul(DEBT_MULITIPLIER).mul(nominalCollateralRatio)
 
   var mockERC20contract = new ethers.Contract(assetAddress, contractAbiFragment, funder);
 
@@ -73,7 +78,7 @@ const createTrove = async (nominalCollateralRatio: Decimal, assetAddress: string
 
   await kumo.populate
     .openTrove(
-      Trove.recreate(new Trove(collateral, debt)),
+      Trove.recreate(new Trove(collateral, debtForBasePrices)),
       assetAddress,
       {},
       { from: randomWallet.address }

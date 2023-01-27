@@ -102,8 +102,11 @@ export interface KumoStoreBaseState {
   /** Custom Vault Array for each Asset type */
   vaults: Vault[];
 
-  /** Custom Vault Array for each Asset type */
-  kusdToken: string;
+   /** KUSD token address */
+   kusdToken: string;
+
+   /** KUSD token address */
+   kumoToken: string;
 
   /** @internal */
   // _riskiestTroveBeforeRedistribution: TroveWithPendingRedistribution;
@@ -489,6 +492,12 @@ export abstract class KumoStore<T = unknown> {
         "kusdToken",
         baseState.kusdToken,
         baseStateUpdate.kusdToken
+      ),
+      kumoToken: this._updateIfChanged(
+        strictEquals,
+        "kumoToken",
+        baseState.kumoToken,
+        baseStateUpdate.kumoToken
       ),
 
       vaults: this._updateIfChanged(strictEquals, "vaults", baseState.vaults, baseStateUpdate.vaults)

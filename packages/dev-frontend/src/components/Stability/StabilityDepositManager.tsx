@@ -172,6 +172,7 @@ export const StabilityDepositManager: React.FC = () => {
   }, [dispatchEvent]);
 
   const [validChange, description] = validateStabilityDepositChange(
+    collateralType,
     originalDeposit,
     editedKUSD,
     validationContext

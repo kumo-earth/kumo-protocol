@@ -1,13 +1,27 @@
+import { KumoStoreState, Vault } from "@kumodao/lib-base";
+import { useKumoSelector } from "@kumodao/lib-react";
 import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
-import { Icon } from "../Icon";
 import { InfoMessage } from "../InfoMessage";
 import { useTroveView } from "./context/TroveViewContext";
 
+
+const select = ({
+  vaults
+}: KumoStoreState) => ({
+  vaults
+});
+
 export const NoTrove: React.FC = props => {
+  const { vaults } = useKumoSelector(select);
   const { dispatchEvent } = useTroveView();
+
   const { collateralType } = useParams<{ collateralType: string }>();
+
+  const vault = vaults.find(vlt => vlt.asset === collateralType) || new Vault
+  const { total, kusdMintedCap } = vault
+  const isMintedCapReached = total.debt.gte(kusdMintedCap)
 
   const handleOpenTrove = useCallback(() => {
     dispatchEvent("OPEN_TROVE_PRESSED");
@@ -22,9 +36,13 @@ export const NoTrove: React.FC = props => {
         </InfoMessage>
 
         <Flex variant="layout.actions">
-          <Button sx={{ mt: 3, mb: 2 }} onClick={handleOpenTrove}>
-            OPEN VAULT
-          </Button>
+          {isMintedCapReached ?
+            <Button variant="primaryInActive" disabled sx={{ mt: 3, mb: 2 }}>OPEN VAULT</Button> :
+            <Button sx={{ mt: 3, mb: 2 }} onClick={handleOpenTrove}>
+              OPEN VAULT
+            </Button>
+
+          }
         </Flex>
       </Box>
     </Card>

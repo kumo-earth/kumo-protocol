@@ -26,6 +26,7 @@ import { LoadingOverlay } from "../LoadingOverlay";
 import { CollateralRatio } from "./CollateralRatio";
 import { EditableRow, StaticRow } from "./Editor";
 import { ExpensiveTroveChangeWarning, GasEstimationState } from "./ExpensiveTroveChangeWarning";
+import { ErrorDescription } from "../ErrorDescription";
 // import {
 //   selectForTroveChangeValidation,
 //   validateTroveChange
@@ -40,10 +41,10 @@ export const Opening: React.FC = () => {
   const { dispatchEvent } = useTroveView();
   const { collateralType } = useParams<{ collateralType: string }>();
 
-  const { accountBalance, fees, price, validationContext } = useKumoSelector((state: KumoStoreState) => {
+  const { accountBalance, fees, price, kusdMintedCap, validationContext } = useKumoSelector((state: KumoStoreState) => {
     const { vaults, kusdBalance } = state;
     const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
-    const { accountBalance, fees, price, total, numberOfTroves } = vault;
+    const { accountBalance, fees, price, total, numberOfTroves, kusdMintedCap } = vault;
 
 
     const validationContext = {
@@ -54,7 +55,7 @@ export const Opening: React.FC = () => {
       kusdBalance,
       numberOfTroves
     };
-    return { accountBalance, fees, price, validationContext };
+    return { accountBalance, fees, price, kusdMintedCap, validationContext };
   });
 
   const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
@@ -66,7 +67,7 @@ export const Opening: React.FC = () => {
   const [borrowAmount, setBorrowAmount] = useState<Decimal>(Decimal.ZERO);
 
   const maxBorrowingRate = borrowingRate.add(0.005);
- 
+
   const fee = borrowAmount.mul(borrowingRate);
   const feePct = new Percent(borrowingRate);
   const totalDebt = borrowAmount.add(KUSD_LIQUIDATION_RESERVE).add(fee);
@@ -88,6 +89,7 @@ export const Opening: React.FC = () => {
   );
 
   const stableTroveChange = useStableTroveChange(troveChange);
+  const isDebtLessMintCap = totalDebt.lte(kusdMintedCap)
   const [gasEstimationState, setGasEstimationState] = useState<GasEstimationState>({ type: "idle" });
 
   const transactionState = useMyTransactionState(TRANSACTION_ID);
@@ -217,6 +219,13 @@ export const Opening: React.FC = () => {
             {`Start by entering the amount of ${collateralType.toUpperCase()} you'd like to deposit as collateral.`}
           </ActionDescription>
         )}
+        {
+          !isDebtLessMintCap && (
+            <ErrorDescription>
+              Total debt {totalDebt.prettify(2)} {COIN} must be less than {COIN} Minted Cap {kusdMintedCap.shorten().toString().toLowerCase()} {COIN}
+            </ErrorDescription>
+          )
+        }
 
         <ExpensiveTroveChangeWarning
           asset={assetTokenAddress}
@@ -236,7 +245,7 @@ export const Opening: React.FC = () => {
             <Button disabled sx={{ mb: 2 }}>
               <Spinner size="24px" sx={{ color: "background" }} />
             </Button>
-          ) : stableTroveChange ? (
+          ) : (stableTroveChange && isDebtLessMintCap) ? (
             <TroveAction
               transactionId={TRANSACTION_ID}
               change={stableTroveChange}

@@ -27,6 +27,7 @@ import { LoadingOverlay } from "../LoadingOverlay";
 import { CollateralRatio } from "./CollateralRatio";
 import { EditableRow, StaticRow } from "./Editor";
 import { ExpensiveTroveChangeWarning, GasEstimationState } from "./ExpensiveTroveChangeWarning";
+import { ErrorDescription } from "../ErrorDescription";
 // import {
 //   selectForTroveChangeValidation,
 //   validateTroveChange
@@ -89,7 +90,7 @@ const applyUnsavedNetDebtChanges = (unsavedChanges: Difference, trove: Trove) =>
 export const Adjusting: React.FC = () => {
   const { dispatchEvent } = useTroveView();
   const { collateralType } = useParams<{ collateralType: string }>();
-  const { vault, price,  trove, accountBalance, fees, validationContext } = useKumoSelector(
+  const { vault, price, trove, accountBalance, fees, validationContext } = useKumoSelector(
     (state: KumoStoreState) => {
       const { vaults, kusdBalance } = state;
       const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
@@ -112,6 +113,7 @@ export const Adjusting: React.FC = () => {
   const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
   // const fees = vault?.fees as Fees
 
+  const { kusdMintedCap } = vault
   const editingState = useState<string>();
   const previousTrove = useRef<Trove>(trove);
   const [collateral, setCollateral] = useState<Decimal>(trove.collateral);
@@ -177,6 +179,8 @@ export const Adjusting: React.FC = () => {
     validationContext
   );
   const stableTroveChange = useStableTroveChange(troveChange);
+  const isDebtLessMintCap = totalDebt.lte(kusdMintedCap)
+
   const [gasEstimationState, setGasEstimationState] = useState<GasEstimationState>({ type: "idle" });
 
   const isTransactionPending =
@@ -290,6 +294,14 @@ export const Adjusting: React.FC = () => {
           </ActionDescription>
         )}
 
+        {
+          !isDebtLessMintCap && (
+            <ErrorDescription>
+              Total debt {totalDebt.prettify(2)} {COIN} must be less than {COIN} Minted Cap {kusdMintedCap.shorten().toString().toLowerCase()} {COIN}
+            </ErrorDescription>
+          )
+        }
+
         <ExpensiveTroveChangeWarning
           asset={assetTokenAddress}
           troveChange={stableTroveChange}
@@ -311,7 +323,7 @@ export const Adjusting: React.FC = () => {
             CANCEL
           </Button>
 
-          {stableTroveChange ? (
+          {(stableTroveChange && isDebtLessMintCap) ? (
             <TroveAction
               transactionId={TRANSACTION_ID}
               change={stableTroveChange}

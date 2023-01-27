@@ -12,6 +12,7 @@ type AddAssetModalProps = {
 
 export const AddAssetModal: React.FC<AddAssetModalProps> = ({ onClose }) => {
   const kusdToken = useKumoSelector(state => state.kusdToken);
+  const kumoToken = useKumoSelector(state => state.kumoToken)
 
   return (
     <Card variant="modalCard">
@@ -38,9 +39,16 @@ export const AddAssetModal: React.FC<AddAssetModalProps> = ({ onClose }) => {
         })}
         <Box sx={{ p: [4, 1], mb: 1, display: "flex", justifyContent: "center" }}>
           <AddAssetButton
-            assetName={"Token KUSD"}
+            assetName={"KUSD Token"}
             assetTokenAddress={kusdToken}
             tokenSymbol="KUSD"
+          />
+        </Box>
+        <Box sx={{ p: [4, 1], mb: 1, display: "flex", justifyContent: "center" }}>
+          <AddAssetButton
+            assetName={"KUMO Token"}
+            assetTokenAddress={kumoToken}
+            tokenSymbol="KUMO"
           />
         </Box>
       </Box>

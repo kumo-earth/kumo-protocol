@@ -35,6 +35,7 @@ type SelectForStabilityDepositChangeValidationType = {
 type StabilityDepositChangeValidationContext = SelectForStabilityDepositChangeValidationType;
 
 export const validateStabilityDepositChange = (
+  collateralType: string,
   originalDeposit: StabilityDeposit,
   editedKUSD: Decimal,
   {
@@ -84,5 +85,5 @@ export const validateStabilityDepositChange = (
     ];
   }
 
-  return [change, <StabilityActionDescription originalDeposit={originalDeposit} change={change} />];
+  return [change, <StabilityActionDescription collateralType={collateralType} originalDeposit={originalDeposit} change={change} />];
 };

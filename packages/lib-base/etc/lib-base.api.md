@@ -289,6 +289,7 @@ export interface KumoStoreBaseState {
     frontend: FrontendStatus;
     kumoBalance: Decimal;
     kumoStake: KUMOStake;
+    kumoToken: string;
     kusdBalance: Decimal;
     kusdToken: string;
     liquidityMiningKUMOReward: Decimal;

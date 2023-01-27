@@ -92,7 +92,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
   private async _get(
     blockTag?: number
   ): Promise<[baseState: KumoStoreBaseState, extraState: BlockPolledKumoStoreExtraState]> {
-    const { userAddress, frontendTag, provider, addresses : { kusdToken } } = this.connection;
+    const { userAddress, frontendTag, provider, addresses : { kusdToken, kumoToken } } = this.connection;
     const asset = ASSET_TOKENS.ctx.assetAddress;
 
     const vaultState: Vault[] = [];
@@ -276,6 +276,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
       {
         ...baseState,
         kusdToken,
+        kumoToken,
         vaults: [...vaultState],
         // _feesInNormalMode: _feesFactory(blockTimestamp, false),
         remainingLiquidityMiningKUMOReward: calculateRemainingKUMO(blockTimestamp)
