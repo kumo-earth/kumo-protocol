@@ -550,7 +550,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
      * starting from the one with the lowest collateral ratio in the system, and moving upwards
      */
     function liquidateTroves(address _asset, uint256 _n) external override {
-        troveRedemptor.liquidateTroves(_asset, _n);
+        troveRedemptor.liquidateTroves(_asset, _n, msg.sender);
     }
 
     /*
@@ -689,7 +689,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     function batchLiquidateTroves(address _asset, address[] memory _troveArray) public override {
         require(_troveArray.length != 0, "TroveManager: Calldata address array must not be empty");
 
-        troveRedemptor.batchLiquidateTroves(_asset, _troveArray);
+        troveRedemptor.batchLiquidateTroves(_asset, _troveArray, msg.sender);
     }
 
     /*

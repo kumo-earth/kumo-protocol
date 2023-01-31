@@ -53,7 +53,7 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
         uint256 _partialRedemptionHintNICR,
         uint256 _maxIterations,
         uint256 _maxFeePercentage
-    ) external override onlyTroveManager {
+    ) external onlyTroveManager {
         RedemptionTotals memory totals;
 
         // requireValidMaxFeePercentage
@@ -226,7 +226,11 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
 
     // BATCH LIQUIDATE TROVES STUFF
 
-    function batchLiquidateTroves(address _asset, address[] memory _troveArray) external {
+    function batchLiquidateTroves(
+        address _asset,
+        address[] memory _troveArray,
+        address _caller
+    ) external onlyTroveManager {
         IActivePool activePoolCached = kumoParams.activePool();
         IDefaultPool defaultPoolCached = kumoParams.defaultPool();
         IStabilityPool stabilityPoolCached = stabilityPoolFactory.getStabilityPoolByAsset(_asset);
@@ -296,7 +300,7 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
         // Send gas compensation to caller
         troveManager.sendGasCompensation(
             _asset,
-            msg.sender,
+            _caller,
             totals.totalkusdGasCompensation,
             totals.totalCollGasCompensation
         );
@@ -306,7 +310,11 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
      * Liquidate a sequence of troves. Closes a maximum number of n under-collateralized Troves,
      * starting from the one with the lowest collateral ratio in the system, and moving upwards
      */
-    function liquidateTroves(address _asset, uint256 _n) external {
+    function liquidateTroves(
+        address _asset,
+        uint256 _n,
+        address _caller
+    ) external onlyTroveManager {
         IActivePool activePoolCached = kumoParams.activePool();
         IDefaultPool defaultPoolCached = kumoParams.defaultPool();
         IStabilityPool stabilityPoolCached = stabilityPoolFactory.getStabilityPoolByAsset(_asset);
@@ -373,7 +381,7 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
         // Send gas compensation to caller
         troveManager.sendGasCompensation(
             _asset,
-            msg.sender,
+            _caller,
             totals.totalkusdGasCompensation,
             totals.totalCollGasCompensation
         );

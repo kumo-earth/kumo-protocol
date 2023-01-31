@@ -26,7 +26,15 @@ interface ITroveRedemptor is ITroveEvents {
         uint256 _maxFeePercentage
     ) external;
 
-    function batchLiquidateTroves(address _asset, address[] memory _troveArray) external;
+    function batchLiquidateTroves(
+        address _asset,
+        address[] memory _troveArray,
+        address _sender
+    ) external;
 
-    function liquidateTroves(address _asset, uint256 _n) external;
+    function liquidateTroves(
+        address _asset,
+        uint256 _n,
+        address _caller
+    ) external;
 }
