@@ -35,6 +35,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     address public defaultPoolAddress;
     address public kumoStakingAddress;
     address public collSurplusPoolAddress;
+    address public troveRedemptorAddress;
 
     IStabilityPoolFactory public stabilityPoolFactory;
 
@@ -58,7 +59,8 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         address _stabilityPoolFactoryAddress,
         address _defaultPoolAddress,
         address _collSurplusPoolAddress,
-        address _kumoStakingAddress
+        address _kumoStakingAddress,
+        address _troveRedemptorAddress
     ) external onlyOwner {
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
@@ -66,6 +68,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         checkContract(_defaultPoolAddress);
         checkContract(_collSurplusPoolAddress);
         checkContract(_kumoStakingAddress);
+        checkContract(_troveRedemptorAddress);
 
         // __Ownable_init();
 
@@ -75,6 +78,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         defaultPoolAddress = _defaultPoolAddress;
         collSurplusPoolAddress = _collSurplusPoolAddress;
         kumoStakingAddress = _kumoStakingAddress;
+        troveRedemptorAddress = _troveRedemptorAddress;
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
@@ -107,7 +111,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         address _account,
         uint256 _amount
     ) external override {
-        _requireCallerIsBOorTroveMorSP();
+        _requireCallerIsBOorTroveMorSPorTroveR();
 
         uint256 safetyTransferAmount = SafetyTransfer.decimalsCorrection(_asset, _amount);
         if (safetyTransferAmount == 0) return;
@@ -137,7 +141,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     }
 
     function decreaseKUSDDebt(address _asset, uint256 _amount) external override {
-        _requireCallerIsBOorTroveMorSP();
+        _requireCallerIsBOorTroveMorSPorTroveR();
         KUSDDebts[_asset] = KUSDDebts[_asset].sub(_amount);
         emit ActivePoolKUSDDebtUpdated(_asset, KUSDDebts[_asset]);
     }
@@ -151,12 +155,13 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         );
     }
 
-    function _requireCallerIsBOorTroveMorSP() internal view {
+    function _requireCallerIsBOorTroveMorSPorTroveR() internal view {
         require(
             msg.sender == borrowerOperationsAddress ||
                 msg.sender == troveManagerAddress ||
+                msg.sender == troveRedemptorAddress ||
                 stabilityPoolFactory.isRegisteredStabilityPool(msg.sender),
-            "ActivePool: Caller is neither BorrowerOperations nor TroveManager nor StabilityPool"
+            "ActivePool: Caller is neither BorrowerOperations nor TroveManager nor StabilityPool nor TroveRedemptor"
         );
     }
 

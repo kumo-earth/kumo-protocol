@@ -108,7 +108,8 @@ contract EchidnaTester {
             address(stabilityPoolFactory),
             address(defaultPool),
             address(collSurplusPool),
-            address(0) // kumoStaking
+            address(0), // kumoStaking
+            address(troveRedemptor)
         );
         defaultPool.setAddresses(address(troveManager), address(activePool));
 

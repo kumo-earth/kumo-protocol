@@ -164,6 +164,7 @@ class DeploymentHelper {
     testerContracts.math = await KumoMathTester.new();
     testerContracts.borrowerOperations = await BorrowerOperationsTester.new();
     testerContracts.troveManager = await TroveManagerTester.new();
+    testerContracts.troveRedemptor = await TroveRedemptor.new();
     testerContracts.functionCaller = await FunctionCaller.new();
     testerContracts.hintHelpers = await HintHelpers.new();
     testerContracts.kumoParameters = await KumoParameters.new();
@@ -457,7 +458,8 @@ class DeploymentHelper {
       contracts.stabilityPoolFactory.address,
       contracts.defaultPool.address,
       contracts.collSurplusPool.address,
-      KUMOContracts.kumoStaking.address
+      KUMOContracts.kumoStaking.address,
+      contracts.troveRedemptor.address
     );
 
     await contracts.defaultPool.setAddresses(
