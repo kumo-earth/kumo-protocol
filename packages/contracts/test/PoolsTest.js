@@ -70,6 +70,7 @@ contract("ActivePool", async accounts => {
       stabilityPoolFactory.address,
       dumbContractAddress,
       dumbContractAddress,
+      dumbContractAddress,
       dumbContractAddress
     );
   });
