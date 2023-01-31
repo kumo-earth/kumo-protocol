@@ -9,8 +9,15 @@ Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [K
 <b>Signature:</b>
 
 ```typescript
-withdrawGainsFromStabilityPool(): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, StabilityPoolGainsWithdrawalDetails>>>>;
+withdrawGainsFromStabilityPool(asset: string): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, StabilityPoolGainsWithdrawalDetails>>>>;
 ```
+
+## Parameters
+
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  asset | string |  |
+
 <b>Returns:</b>
 
 Promise&lt;[PopulatedKumoTransaction](./lib-base.populatedkumotransaction.md)<!-- -->&lt;P, [SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, [StabilityPoolGainsWithdrawalDetails](./lib-base.stabilitypoolgainswithdrawaldetails.md)<!-- -->&gt;&gt;&gt;&gt;

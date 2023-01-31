@@ -106,7 +106,13 @@ const deployContracts = async (
     sortedTroves: await deployContract(deployer, getContractFactory, "SortedTroves", {
       ...overrides
     }),
-    stabilityPool: await deployContract(deployer, getContractFactory, "StabilityPool", {
+    stabilityPoolAsset1: await deployContract(deployer, getContractFactory, "StabilityPool", {
+      ...overrides
+    }),
+    stabilityPoolAsset2: await deployContract(deployer, getContractFactory, "StabilityPool", {
+      ...overrides
+    }),
+    stabilityPoolFactory: await deployContract(deployer, getContractFactory, "StabilityPoolFactory", {
       ...overrides
     }),
     gasPool: await deployContract(deployer, getContractFactory, "GasPool", {
@@ -115,7 +121,8 @@ const deployContracts = async (
     unipool: await deployContract(deployer, getContractFactory, "Unipool", { ...overrides }),
 
 
-    mockAsset1: await deployContract(deployer, getContractFactory, "ERC20Test", { ...overrides })
+    mockAsset1: await deployContract(deployer, getContractFactory, "ERC20Test", { ...overrides }),
+    mockAsset2: await deployContract(deployer, getContractFactory, "ERC20Test", { ...overrides })
 
 
 
@@ -129,7 +136,7 @@ const deployContracts = async (
         getContractFactory,
         "KUSDToken",
         addresses.troveManager,
-        addresses.stabilityPool,
+        addresses.stabilityPoolFactory,
         addresses.borrowerOperations,
         { ...overrides }
       ),
@@ -184,7 +191,7 @@ const connectContracts = async (
     kumoStaking,
     priceFeed,
     sortedTroves,
-    stabilityPool,
+    stabilityPoolFactory,
     gasPool,
     unipool,
     uniToken,
@@ -211,7 +218,7 @@ const connectContracts = async (
         borrowerOperations.address,
         // activePool.address,
         // defaultPool.address,
-        stabilityPool.address,
+        stabilityPoolFactory.address,
         gasPool.address,
         collSurplusPool.address,
         // priceFeed.address,
@@ -228,7 +235,7 @@ const connectContracts = async (
         troveManager.address,
         // activePool.address,
         // defaultPool.address,
-        stabilityPool.address,
+        stabilityPoolFactory.address,
         gasPool.address,
         collSurplusPool.address,
         // priceFeed.address,
@@ -255,7 +262,7 @@ const connectContracts = async (
       activePool.setAddresses(
         borrowerOperations.address,
         troveManager.address,
-        stabilityPool.address,
+        stabilityPoolFactory.address,
         defaultPool.address,
         collSurplusPool.address,
         kumoStaking.address,
@@ -299,7 +306,7 @@ const connectContracts = async (
       }),
 
     nonce =>
-      communityIssuance.setAddresses(kumoToken.address, stabilityPool.address, {
+      communityIssuance.setAddresses(kumoToken.address, stabilityPoolFactory.address, {
         ...overrides,
         nonce
       }),
@@ -311,7 +318,7 @@ const connectContracts = async (
       }),
 
     nonce =>
-      kumoParameters.setAddresses(activePool.address, defaultPool.address, priceFeed.address, stabilityPool.address, {
+      kumoParameters.setAddresses(activePool.address, defaultPool.address, priceFeed.address, {
         ...overrides,
         nonce
       })
@@ -351,16 +358,19 @@ const deployMockUniToken = (
 
 
 
-const addNewAssetToSystem = async (
+const addMockAssetsToSystem = async (
   {
     troveManager,
     sortedTroves,
-    stabilityPool,
+    stabilityPoolFactory,
     kumoParameters,
     borrowerOperations,
     communityIssuance,
     kusdToken,
-    mockAsset1
+    stabilityPoolAsset1,
+    stabilityPoolAsset2,
+    mockAsset1,
+    mockAsset2
   }: _KumoContracts,
   deployer: Signer,
   overrides?: Overrides
@@ -369,9 +379,9 @@ const addNewAssetToSystem = async (
     throw new Error("Signer must have a provider.");
   }
 
+  // Add first mock asset
 
-
-  await stabilityPool.setAddresses(
+  await stabilityPoolAsset1.setAddresses(
     mockAsset1.address,
     borrowerOperations.address,
     troveManager.address,
@@ -381,23 +391,38 @@ const addNewAssetToSystem = async (
     kumoParameters.address,
   ),
 
-    await kumoParameters.setAsDefault(mockAsset1.address)
+    await stabilityPoolFactory.createNewStabilityPool(mockAsset1.address, stabilityPoolAsset1.address)
+
+  await kumoParameters.setAsDefault(mockAsset1.address)
   await troveManager.addNewAsset(mockAsset1.address)
   await sortedTroves.addNewAsset(mockAsset1.address)
 
+  // Add second mock asset
+  await stabilityPoolAsset2.setAddresses(
+    mockAsset2.address,
+    borrowerOperations.address,
+    troveManager.address,
+    kusdToken.address,
+    sortedTroves.address,
+    communityIssuance.address,
+    kumoParameters.address,
+  ),
 
-  // let accounts: Signer[];
-  // [...accounts] = await ethers.getSigners();
-  // await mockAsset1.mint(await accounts[0].getAddress(), 10000000000000000000000000000)
+    await stabilityPoolFactory.createNewStabilityPool(mockAsset2.address, stabilityPoolAsset2.address)
+
+  await kumoParameters.setAsDefault(mockAsset2.address)
+  await troveManager.addNewAsset(mockAsset2.address)
+  await sortedTroves.addNewAsset(mockAsset2.address)
 
 
 }
 
 
 // Mint token to each acccount
-const mintMockAsset1 = async (signers: SignerWithAddress[], { mockAsset1 }: _KumoContracts) => {
+const mintMockAssets = async (signers: SignerWithAddress[], { mockAsset1, mockAsset2 }: _KumoContracts) => {
   for (let i = 0; i < signers.length; ++i) {
     await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000"))
+    await mockAsset2.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000"))
   }
 };
 
@@ -453,11 +478,11 @@ export const deployAndSetupContracts = async (
   log("Connecting contracts...");
   await connectContracts(contracts, deployer, overrides);
 
-  log("Add Asset to the system...")
-  await addNewAssetToSystem(contracts, deployer, overrides);
+  log("Add Assets to the system...")
+  await addMockAssetsToSystem(contracts, deployer);
 
-  log("Mint MockAsset token...")
-  await mintMockAsset1(signers, contracts);
+  log("Mint MockAsset tokens...")
+  await mintMockAssets(signers, contracts);
 
 
   const kumoTokenDeploymentTime = await contracts.kumoToken.getDeploymentStartTime();

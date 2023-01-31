@@ -8,6 +8,7 @@ import { useTransactionFunction } from "../Transaction";
 type StabilityDepositActionProps = {
   transactionId: string;
   change: StabilityDepositChange<Decimal>;
+  asset: string,
 };
 
 const selectFrontendRegistered = ({ frontend }: KumoStoreState) =>
@@ -16,9 +17,10 @@ const selectFrontendRegistered = ({ frontend }: KumoStoreState) =>
 export const StabilityDepositAction: React.FC<StabilityDepositActionProps> = ({
   children,
   transactionId,
-  change
+  change,
+  asset,
 }) => {
-  const { config, liquity } = useKumo();
+  const { config, kumo } = useKumo();
   const frontendRegistered = useKumoSelector(selectFrontendRegistered);
 
   const frontendTag = frontendRegistered ? config.frontendTag : undefined;
@@ -26,9 +28,22 @@ export const StabilityDepositAction: React.FC<StabilityDepositActionProps> = ({
   const [sendTransaction] = useTransactionFunction(
     transactionId,
     change.depositKUSD
-      ? liquity.send.depositKUSDInStabilityPool.bind(liquity.send, change.depositKUSD, frontendTag)
-      : liquity.send.withdrawKUSDFromStabilityPool.bind(liquity.send, change.withdrawKUSD)
+      ? kumo.send.depositKUSDInStabilityPool.bind(kumo.send, change.depositKUSD, asset,  frontendTag)
+      : kumo.send.withdrawKUSDFromStabilityPool.bind(kumo.send, change.withdrawKUSD, asset)
   );
 
-  return <Button onClick={sendTransaction}>{children}</Button>;
+  return (
+    <Button
+      sx={{
+        backgroundColor: "rgb(152, 80, 90)",
+        boxShadow:
+          "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
+        border: "none",
+        color: "white"
+      }}
+      onClick={sendTransaction}
+    >
+      {children}
+    </Button>
+  );
 };

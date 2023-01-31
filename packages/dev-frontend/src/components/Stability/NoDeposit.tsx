@@ -1,5 +1,7 @@
 import React, { useCallback } from "react";
+import { useParams } from "react-router-dom";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
+
 import { InfoMessage } from "../InfoMessage";
 import { useStabilityView } from "./context/StabilityViewContext";
 import { RemainingKUMO } from "./RemainingKUMO";
@@ -7,22 +9,22 @@ import { Yield } from "./Yield";
 
 export const NoDeposit: React.FC = props => {
   const { dispatchEvent } = useStabilityView();
-
+  const { collateralType } = useParams<{ collateralType: string }>();
   const handleOpenTrove = useCallback(() => {
     dispatchEvent("DEPOSIT_PRESSED");
   }, [dispatchEvent]);
 
   return (
-    <Card>
+    <Card variant="base" sx={{ background: "#ebd8df" }}>
       <Heading>
-        Stability Pool
-        <Flex sx={{ justifyContent: "flex-end" }}>
+        {collateralType?.toUpperCase()} Stability Pool
+        {/* <Flex sx={{ justifyContent: "flex-end" }}>
           <RemainingKUMO />
-        </Flex>
+        </Flex> */}
       </Heading>
       <Box sx={{ p: [2, 3] }}>
         <InfoMessage title="You have no KUSD in the Stability Pool.">
-          You can earn ETH and KUMO rewards by depositing KUSD.
+          You can earn {collateralType?.toUpperCase()} and KUMO rewards by depositing KUSD.
         </InfoMessage>
 
         <Flex variant="layout.actions">

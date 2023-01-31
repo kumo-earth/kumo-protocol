@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import CopyToClipboard from "react-copy-to-clipboard";
+// import CopyToClipboard from "react-copy-to-clipboard";
 import { Card, Button, Text, Box, Heading, Flex } from "theme-ui";
 
 import {
@@ -14,6 +14,7 @@ import { useKumoSelector } from "@kumodao/lib-react";
 
 import { shortenAddress } from "../utils/shortenAddress";
 import { useKumo } from "../hooks/KumoContext";
+import { useDashboard } from "../hooks/DashboardContext";
 import { COIN } from "../strings";
 
 import { Icon } from "./Icon";
@@ -51,12 +52,14 @@ type RiskyTrovesProps = {
 };
 
 const select = ({
+  vaults,
   numberOfTroves,
   price,
   total,
   kusdInStabilityPool,
   blockTag
 }: BlockPolledKumoStoreState) => ({
+  vaults,
   numberOfTroves,
   price,
   recoveryMode: total.collateralRatioIsBelowCritical(price),
@@ -67,6 +70,7 @@ const select = ({
 
 export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }) => {
   const {
+    vaults,
     blockTag,
     numberOfTroves,
     recoveryMode,
@@ -74,7 +78,8 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
     kusdInStabilityPool,
     price
   } = useKumoSelector(select);
-  const { liquity } = useKumo();
+  const { kumo } = useKumo();
+  const { ctx, cty } = useDashboard();
 
   const [loading, setLoading] = useState(true);
   const [troves, setTroves] = useState<UserTrove[]>();
@@ -109,7 +114,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
 
     setLoading(true);
 
-    liquity
+    kumo
       .getTroves(
         "",
         {
@@ -131,7 +136,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
     };
     // Omit blockTag from deps on purpose
     // eslint-disable-next-line
-  }, [liquity, clampedPage, pageSize, reload]);
+  }, [kumo, clampedPage, pageSize, reload]);
 
   useEffect(() => {
     forceReload();
@@ -280,9 +285,9 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
                           </Text>
                         </Tooltip>
 
-                        <CopyToClipboard
-                          text={trove.ownerAddress}
-                          onCopy={() => setCopied(trove.ownerAddress)}
+                        {/* <CopyToClipboard
+                          text={trove?.ownerAddress}
+                          onCopy={() => setCopied(trove?.ownerAddress)}
                         >
                           <Button variant="icon" sx={{ width: "24px", height: "24px" }}>
                             <Icon
@@ -290,7 +295,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
                               size="sm"
                             />
                           </Button>
-                        </CopyToClipboard>
+                        </CopyToClipboard> */}
                       </td>
                       <td>
                         <Abbreviation short={trove.collateral.shorten()}>
@@ -315,7 +320,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
                           >
                             {new Percent(collateralRatio).prettify()}
                           </Text>
-                        ))(trove.collateralRatio(price))}
+                        )) (trove.collateralRatio(ctx))}
                       </td>
                       <td>
                         <Transaction
@@ -331,7 +336,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize, asset = "" }
                                 )
                               : liquidatableInNormalMode(trove, price)
                           ]}
-                          send={liquity.send.liquidate.bind(liquity.send, asset, trove.ownerAddress)}
+                          send={kumo.send.liquidate.bind(kumo.send, asset, trove.ownerAddress)}
                         >
                           <Button variant="dangerIcon">
                             <Icon name="trash" />

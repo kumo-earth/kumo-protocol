@@ -1,5 +1,29 @@
 import { Decimal } from "./Decimal";
 
+interface ASSET_TOKENS_TYPES<T> {
+  [key: string]: T;
+}
+
+interface AssetType {
+  assetAddress: string;
+  CRITICAL_COLLATERAL_RATIO: Decimal;
+  MINIMUM_COLLATERAL_RATIO: Decimal;
+}
+/**
+ * Assets Types
+ */
+export const ASSET_TOKENS: ASSET_TOKENS_TYPES<AssetType> = {
+  ctx: {
+    assetAddress: "0xB861c98B465272765c5B2F651471Ea8a65871ACd",
+    CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
+    MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1)
+  },
+  cty: {
+    assetAddress: "0x3E474b98BA08CdF37543d6c8aa6F0e9B260F4881",
+    CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
+    MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1)
+  }
+};
 /**
  * Total collateral ratio below which recovery mode is triggered.
  *

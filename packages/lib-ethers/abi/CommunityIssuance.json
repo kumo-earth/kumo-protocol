@@ -42,11 +42,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_stabilityPoolAddress",
+        "name": "_stabilityPoolFactoryAddress",
         "type": "address"
       }
     ],
-    "name": "StabilityPoolAddressSet",
+    "name": "StabilityPoolFactoryAddressSet",
     "type": "event"
   },
   {
@@ -232,7 +232,7 @@
       },
       {
         "internalType": "address",
-        "name": "_stabilityPoolAddress",
+        "name": "_stabilityPoolFactoryAddress",
         "type": "address"
       }
     ],
@@ -243,10 +243,10 @@
   },
   {
     "inputs": [],
-    "name": "stabilityPoolAddress",
+    "name": "stabilityPoolFactory",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "contract IStabilityPoolFactory",
         "name": "",
         "type": "address"
       }

@@ -8,7 +8,7 @@ import { Transaction } from "./Transaction";
 
 export const LiquidationManager: React.FC<{ asset?: string }> = ({ asset = "" }) => {
   const {
-    liquity: { send: liquity }
+    kumo: { send: kumo }
   } = useKumo();
   const [numberOfTrovesToLiquidate, setNumberOfTrovesToLiquidate] = useState("90");
 
@@ -39,7 +39,7 @@ export const LiquidationManager: React.FC<{ asset?: string }> = ({ asset = "" })
                 if (!numberOfTrovesToLiquidate) {
                   throw new Error("Invalid number");
                 }
-                return liquity.liquidateUpTo(
+                return kumo.liquidateUpTo(
                   asset,
                   parseInt(numberOfTrovesToLiquidate, 10),
                   overrides

@@ -49,7 +49,12 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
   const collateralRatioChange = Difference.between(collateralRatio, originalCollateralRatio);
 
   return (
-    <Card>
+    <Card
+      variant="base"
+      sx={{
+        width: "90%"
+      }}
+    >
       <Heading>Trove</Heading>
 
       <Box sx={{ p: [2, 3] }}>

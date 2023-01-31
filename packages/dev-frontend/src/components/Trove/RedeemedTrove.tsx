@@ -19,8 +19,15 @@ export const RedeemedTrove: React.FC = () => {
   }, [dispatchEvent]);
 
   return (
-    <Card>
-      <Heading>Trove</Heading>
+    <Card
+      variant="base"
+      sx={{
+        width: "100%"
+      }}
+    >
+      <Heading>
+        Trove
+      </Heading>
       <Box sx={{ p: [2, 3] }}>
         <InfoMessage title="Your Trove has been redeemed.">
           {hasSurplusCollateral
@@ -30,7 +37,13 @@ export const RedeemedTrove: React.FC = () => {
 
         <Flex variant="layout.actions">
           {hasSurplusCollateral && <CollateralSurplusAction />}
-          {!hasSurplusCollateral && <Button onClick={handleOpenTrove}>Open Trove</Button>}
+          {!hasSurplusCollateral && (
+            <Button
+              onClick={handleOpenTrove}
+            >
+              Open Trove
+            </Button>
+          )}
         </Flex>
       </Box>
     </Card>

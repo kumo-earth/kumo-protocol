@@ -11,7 +11,7 @@ const uniLink = (kusdAddress: string) =>
 
 export const RedemptionPage: React.FC = () => {
   const {
-    liquity: {
+    kumo: {
       connection: { addresses }
     }
   } = useKumo();

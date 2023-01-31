@@ -1,50 +1,53 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, Flex, Box, Heading } from "theme-ui";
 
-import { KumoStoreState } from "@kumodao/lib-base";
-import { useKumoSelector } from "@kumodao/lib-react";
-
-import { COIN, GT } from "../strings";
-import { useKumo } from "../hooks/KumoContext";
+import { useWalletView } from "../components/WalletConnect/context/WalletViewContext";
 import { shortenAddress } from "../utils/shortenAddress";
+import { Web3Provider } from "@ethersproject/providers";
+
 
 import { Icon } from "./Icon";
-
-const select = ({ accountBalance, kusdBalance, kumoBalance }: KumoStoreState) => ({
-  accountBalance,
-  kusdBalance,
-  kumoBalance
-});
+import { useWeb3React } from "@web3-react/core";
 
 export const UserAccount: React.FC = () => {
-  const { account } = useKumo();
-  const { accountBalance, kusdBalance, kumoBalance } = useKumoSelector(select);
+  const { deactivate, active } = useWeb3React<Web3Provider>();
+  // const { account } = useKumo();
+  const { dispatchEvent } = useWalletView();
+  const { account } = useWeb3React();
+
+  useEffect(() => {
+    console.log(active);
+  }, [account]);
 
   return (
     <Box sx={{ display: ["none", "flex"] }}>
-      <Flex sx={{ alignItems: "center" }}>
+      <Flex sx={{ alignItems: "flex-start" }}>
         <Icon name="user-circle" size="lg" />
         <Flex sx={{ ml: 3, mr: 4, flexDirection: "column" }}>
-          <Heading sx={{ fontSize: 1 }}>Connected as</Heading>
-          <Text as="span" sx={{ fontSize: 1 }}>
-            {shortenAddress(account)}
-          </Text>
+          {account ? (
+            <>
+              {/* <Heading sx={{ fontSize: 1 }} onClick={() => dispatchEvent("CLOSE_MODAL_PRESSED")}>
+                Connected as
+              </Heading> */}
+              {/* <Text as="span" sx={{ fontSize: 1 }}>
+                {shortenAddress(account)}
+              </Text> */}
+              <Heading
+                sx={{ fontSize: 1 }}
+                onClick={() => {
+                  deactivate();
+                  sessionStorage.removeItem("account");
+                }}
+              >
+                Disconnect
+              </Heading>
+            </>
+          ) : (
+            <Heading sx={{ fontSize: 1 }} onClick={() => dispatchEvent("OPEN_MODAL_PRESSED")}>
+              Connect
+            </Heading>
+          )}
         </Flex>
-      </Flex>
-
-      <Flex sx={{ alignItems: "center" }}>
-        <Icon name="wallet" size="lg" />
-
-        {([
-          ["ETH", accountBalance],
-          [COIN, kusdBalance],
-          [GT, kumoBalance]
-        ] as const).map(([currency, balance], i) => (
-          <Flex key={i} sx={{ ml: 3, flexDirection: "column" }}>
-            <Heading sx={{ fontSize: 1 }}>{currency}</Heading>
-            <Text sx={{ fontSize: 1 }}>{balance.prettify()}</Text>
-          </Flex>
-        ))}
       </Flex>
     </Box>
   );

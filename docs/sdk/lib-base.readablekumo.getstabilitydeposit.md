@@ -9,13 +9,14 @@ Get the current state of a Stability Deposit.
 <b>Signature:</b>
 
 ```typescript
-getStabilityDeposit(address?: string): Promise<StabilityDeposit>;
+getStabilityDeposit(asset: string, address: string): Promise<StabilityDeposit>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
+|  asset | string |  |
 |  address | string | Address that owns the Stability Deposit. |
 
 <b>Returns:</b>

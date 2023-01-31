@@ -6,12 +6,12 @@ pragma solidity 0.8.11;
 
 import "../Interfaces/IKUMOToken.sol";
 import "../Interfaces/ICommunityIssuance.sol";
+import "../Interfaces/IStabilityPoolFactory.sol";
 import "../Dependencies/BaseMath.sol";
 import "../Dependencies/KumoMath.sol";
 import "../Dependencies/Ownable.sol";
 import "../Dependencies/CheckContract.sol";
 import "../Dependencies/SafeMath.sol";
-
 
 contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMath {
     using SafeMath for uint256;
@@ -19,37 +19,37 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
     bool public isInitialized;
     // --- Data ---
 
-    string constant public NAME = "CommunityIssuance";
+    string public constant NAME = "CommunityIssuance";
 
-    uint256 constant public SECONDS_IN_ONE_MINUTE = 60;
+    uint256 public constant SECONDS_IN_ONE_MINUTE = 60;
 
-   /* The issuance factor F determines the curvature of the issuance curve.
-    *
-    * Minutes in one year: 60*24*365 = 525600
-    *
-    * For 50% of remaining tokens issued each year, with minutes as time units, we have:
-    * 
-    * F ** 525600 = 0.5
-    * 
-    * Re-arranging:
-    * 
-    * 525600 * ln(F) = ln(0.5)
-    * F = 0.5 ** (1/525600)
-    * F = 0.999998681227695000 
-    */
-    uint256 constant public ISSUANCE_FACTOR = 999998681227695000;
+    /* The issuance factor F determines the curvature of the issuance curve.
+     *
+     * Minutes in one year: 60*24*365 = 525600
+     *
+     * For 50% of remaining tokens issued each year, with minutes as time units, we have:
+     *
+     * F ** 525600 = 0.5
+     *
+     * Re-arranging:
+     *
+     * 525600 * ln(F) = ln(0.5)
+     * F = 0.5 ** (1/525600)
+     * F = 0.999998681227695000
+     */
+    uint256 public constant ISSUANCE_FACTOR = 999998681227695000;
 
-    /* 
-    * The community KUMO supply cap is the starting balance of the Community Issuance contract.
-    * It should be minted to this contract by KUMOToken, when the token is deployed.
-    * 
-    * Set to 32M (slightly less than 1/3) of total KUMO supply.
-    */
-    uint256 constant public KUMOSupplyCap = 32e24; // 32 million
+    /*
+     * The community KUMO supply cap is the starting balance of the Community Issuance contract.
+     * It should be minted to this contract by KUMOToken, when the token is deployed.
+     *
+     * Set to 32M (slightly less than 1/3) of total KUMO supply.
+     */
+    uint256 public constant KUMOSupplyCap = 32e24; // 32 million
 
     IKUMOToken public kumoToken;
 
-    address public stabilityPoolAddress;
+    IStabilityPoolFactory public stabilityPoolFactory;
 
     uint256 public totalKUMOIssued;
     uint256 public immutable deploymentTime;
@@ -66,31 +66,27 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
         deploymentTime = block.timestamp;
     }
 
-    function setAddresses
-    (
-        address _kumoTokenAddress, 
-        address _stabilityPoolAddress
-    ) 
-        external 
-        override 
+    function setAddresses(address _kumoTokenAddress, address _stabilityPoolFactoryAddress)
+        external
+        override
         onlyOwner
     {
         // require(!isInitialized, "Already initialized");
         checkContract(_kumoTokenAddress);
-        checkContract(_stabilityPoolAddress);
-        
-		// isInitialized = true;
-		// __Ownable_init();
+        checkContract(_stabilityPoolFactoryAddress);
+
+        // isInitialized = true;
+        // __Ownable_init();
 
         kumoToken = IKUMOToken(_kumoTokenAddress);
-        stabilityPoolAddress = _stabilityPoolAddress;
+        stabilityPoolFactory = IStabilityPoolFactory(_stabilityPoolFactoryAddress);
 
         // When KUMOToken deployed, it should have transferred CommunityIssuance's KUMO entitlement
         uint256 KUMOBalance = kumoToken.balanceOf(address(this));
         assert(KUMOBalance >= KUMOSupplyCap);
 
         emit KUMOTokenAddressSet(_kumoTokenAddress);
-        emit StabilityPoolAddressSet(_stabilityPoolAddress);
+        emit StabilityPoolFactoryAddressSet(_stabilityPoolFactoryAddress);
 
         _renounceOwnership();
     }
@@ -98,12 +94,14 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
     function issueKUMO() external override returns (uint256) {
         _requireCallerIsStabilityPool();
 
-        uint256 latestTotalKUMOIssued = KUMOSupplyCap.mul(_getCumulativeIssuanceFraction()).div(DECIMAL_PRECISION);
+        uint256 latestTotalKUMOIssued = KUMOSupplyCap.mul(_getCumulativeIssuanceFraction()).div(
+            DECIMAL_PRECISION
+        );
         uint256 issuance = latestTotalKUMOIssued.sub(totalKUMOIssued);
 
         totalKUMOIssued = latestTotalKUMOIssued;
         emit TotalKUMOIssuedUpdated(latestTotalKUMOIssued);
-        
+
         return issuance;
     }
 
@@ -134,6 +132,9 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
     // --- 'require' functions ---
 
     function _requireCallerIsStabilityPool() internal view {
-        require(msg.sender == stabilityPoolAddress, "CommunityIssuance: caller is not SP");
+        require(
+            stabilityPoolFactory.isRegisteredStabilityPool(msg.sender),
+            "CommunityIssuance: caller is not SP"
+        );
     }
 }

@@ -47,9 +47,7 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
   let stabilityPool
   let defaultPool
   let borrowerOperations
-  let kumoParams
   let KUMOContracts
-  let hardhatTester
   let erc20Asset1
 
   let gasPriceInWei
@@ -67,37 +65,28 @@ contract('StabilityPool - Withdrawal of stability deposit - Reward calculations'
       KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
       contracts.troveManager = await TroveManagerTester.new()
       contracts = await deploymentHelper.deployKUSDToken(contracts)
+      
+      erc20Asset1 = await deploymentHelper.deployERC20Asset()
+      assetAddress1 = erc20Asset1.address
+
+      await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
       priceFeed = contracts.priceFeedTestnet
       kusdToken = contracts.kusdToken
       sortedTroves = contracts.sortedTroves
       troveManager = contracts.troveManager
       activePool = contracts.activePool
-      stabilityPool = contracts.stabilityPool
+      stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
       defaultPool = contracts.defaultPool
       borrowerOperations = contracts.borrowerOperations
 
       await deploymentHelper.connectKUMOContracts(KUMOContracts)
-      await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
-      await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
-
-      hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
-      erc20Asset1 = hardhatTester.erc20
-      assetAddress1 = erc20Asset1.address
-      kumoParams = contracts.kumoParameters
-
-      await kumoParams.sanitizeParameters(assetAddress1);
-      await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
 
       // Mint token to each acccount
-      let index = 0;
-      for (const acc of accounts) {
-        await erc20Asset1.mint(acc, await web3.eth.getBalance(acc))
-        index++;
+      await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 50)
 
-        if (index >= 50)
-          break;
-      }
+      await deploymentHelper.connectCoreContracts(contracts, KUMOContracts)
+      await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts)
     })
 
     // --- Compounding tests ---

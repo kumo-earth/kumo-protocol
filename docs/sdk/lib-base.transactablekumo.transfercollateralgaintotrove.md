@@ -9,7 +9,7 @@ Transfer [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) from S
 <b>Signature:</b>
 
 ```typescript
-transferCollateralGainToTrove(asset: string): Promise<CollateralGainTransferDetails>;
+transferCollateralGainToTrove(asset: string, assetName: string): Promise<CollateralGainTransferDetails>;
 ```
 
 ## Parameters
@@ -17,6 +17,7 @@ transferCollateralGainToTrove(asset: string): Promise<CollateralGainTransferDeta
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  asset | string |  |
+|  assetName | string |  |
 
 <b>Returns:</b>
 

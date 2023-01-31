@@ -9,7 +9,7 @@ Get the amount of Uniswap ETH/KUSD LP tokens held by an address.
 <b>Signature:</b>
 
 ```typescript
-getUniTokenBalance(address?: string): Promise<Decimal>;
+getUniTokenBalance(address: string): Promise<Decimal>;
 ```
 
 ## Parameters

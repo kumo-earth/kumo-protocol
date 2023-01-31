@@ -1,6 +1,7 @@
 import fetch from "cross-fetch";
 import { ApolloClient, gql, HttpLink, InMemoryCache, NormalizedCacheObject } from "@apollo/client";
 import { getAddress } from "@ethersproject/address";
+import { Provider } from "@ethersproject/abstract-provider";
 
 import {
   Decimal,
@@ -180,7 +181,7 @@ const blockNumberDummy = new Query<void, BlockNumberDummy, BlockNumberDummyVaria
       }
     }
   `,
-  () => {}
+  () => { }
 );
 
 export class SubgraphKumo implements ReadableKumo, ObservableKumo {
@@ -257,6 +258,7 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
 
   watchStabilityDeposit(
     onStabilityDepositChanged: (stabilityDeposit: StabilityDeposit) => void,
+    asset: string,
     address?: string
   ): () => void {
     throw new Error("Method not implemented.");
@@ -266,7 +268,7 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
     return tokensInStabilityPool.get(this.client, undefined);
   }
 
-  watchKUSDInStabilityPool(onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void) {
+  watchKUSDInStabilityPool(asset: string, onKUSDInStabilityPoolChanged: (kusdInStabilityPool: Decimal) => void) {
     return tokensInStabilityPool.watch(this.client, onKUSDInStabilityPoolChanged, undefined);
   }
 
@@ -275,6 +277,10 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
   }
 
   watchKUSDBalance(onKUSDBalanceChanged: (balance: Decimal) => void, address?: string): () => void {
+    throw new Error("Method not implemented.");
+  }
+
+  getAssetBalance(address: string, assetType: string, provider: Provider): Promise<Decimal> {
     throw new Error("Method not implemented.");
   }
 
@@ -313,7 +319,7 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
   }
 
   async waitForBlock(blockNumber: number) {
-    for (;;) {
+    for (; ;) {
       try {
         await blockNumberDummy.get(this.client, { blockNumber });
       } catch {

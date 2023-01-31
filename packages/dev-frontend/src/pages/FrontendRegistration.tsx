@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Card, Heading, Box, Flex, Input, Label, Paragraph, Button, Spinner } from "theme-ui";
 
 import { Decimal } from "@kumodao/lib-base";
-
-import { shortenAddress } from "../utils/shortenAddress";
 import { useKumo } from "../hooks/KumoContext";
 import { Transaction, useMyTransactionState } from "../components/Transaction";
 import { Icon } from "../components/Icon";
@@ -14,7 +12,7 @@ type FrontendRegistrationActionProps = {
 
 const FrontendRegistrationAction: React.FC<FrontendRegistrationActionProps> = ({ kickbackRate }) => {
   const {
-    liquity: { send: liquity }
+    kumo: { send: kumo }
   } = useKumo();
 
   const myTransactionId = "register-frontend";
@@ -27,14 +25,13 @@ const FrontendRegistrationAction: React.FC<FrontendRegistrationActionProps> = ({
     </Button>
   ) : myTransactionState.type !== "waitingForConfirmation" &&
     myTransactionState.type !== "confirmed" ? (
-    <Transaction id={myTransactionId} send={liquity.registerFrontend.bind(liquity, kickbackRate)}>
+    <Transaction id={myTransactionId} send={kumo.registerFrontend.bind(kumo, "", kickbackRate)}>
       <Button>Register</Button>
     </Transaction>
   ) : null;
 };
 
 export const FrontendRegistration: React.FC = () => {
-  const { account } = useKumo();
 
   const [kickbackRate, setKickbackRate] = useState(Decimal.from(0.8));
   const [cut, setCut] = useState(Decimal.from(0.2));
@@ -63,7 +60,7 @@ export const FrontendRegistration: React.FC = () => {
 
                   setKickbackRate(newKickbackRate);
                   setCut(newCut);
-                } catch {}
+                } catch { }
               }}
               onBlur={() => {
                 setKickbackRateString(kickbackRate.mul(100).toString());
@@ -97,7 +94,7 @@ export const FrontendRegistration: React.FC = () => {
         </Flex>
 
         <Paragraph sx={{ fontSize: 1, mt: 3 }}>
-          You are about to register <b>{shortenAddress(account)}</b> to receive{" "}
+          {/* You are about to register <b>{shortenAddress(account)}</b> to receive{" "} */}
           <b>{cut.mul(100).toString()}%</b> of the KUMO rewards earned through this frontend.
         </Paragraph>
 

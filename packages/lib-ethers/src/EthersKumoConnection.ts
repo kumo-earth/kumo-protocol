@@ -131,6 +131,19 @@ const connectionFrom = (
 export const _getContracts = (connection: EthersKumoConnection): _KumoContracts =>
   (connection as _InternalEthersKumoConnection)._contracts;
 
+export const _getStabilityPoolByAsset = (assetName: string, connection: EthersKumoConnection) => {
+  const { stabilityPoolAsset1, stabilityPoolAsset2 } = _getContracts(connection);
+  if (assetName === 'ctx') {
+    return stabilityPoolAsset1
+  } else if (assetName === 'cty') {
+    return stabilityPoolAsset2
+  } else {
+    throw new Error("Can't get the required Stability Pool");
+  }
+
+}
+
+
 const getMulticall = (connection: EthersKumoConnection): _Multicall | undefined =>
   (connection as _InternalEthersKumoConnection)._multicall;
 
@@ -256,7 +269,7 @@ export interface EthersKumoConnectionOptionalParams {
    *
    * @remarks
    * For example
-   * {@link EthersKumo.depositKUSDInStabilityPool | depositKUSDInStabilityPool(amount, frontendTag?)}
+   * {@link EthersKumo.depositKUSDInStabilityPool | depositKUSDInStabilityPool(amount, asset, frontendTag?)}
    * will tag newly made Stability Deposits with this address when its `frontendTag` parameter is
    * omitted.
    */
@@ -281,25 +294,25 @@ export interface EthersKumoConnectionOptionalParams {
 /** @internal */
 export function _connectByChainId<T>(
   provider: EthersProvider,
-  signer: EthersSigner | undefined,
   chainId: number,
-  optionalParams: EthersKumoConnectionOptionalParams & { useStore: T }
+  optionalParams: EthersKumoConnectionOptionalParams & { useStore: T },
+  signer?: EthersSigner | undefined
 ): EthersKumoConnection & { useStore: T };
 
 /** @internal */
 export function _connectByChainId(
   provider: EthersProvider,
-  signer: EthersSigner | undefined,
   chainId: number,
-  optionalParams?: EthersKumoConnectionOptionalParams
+  optionalParams?: EthersKumoConnectionOptionalParams,
+  signer?: EthersSigner | undefined
 ): EthersKumoConnection;
 
 /** @internal */
 export function _connectByChainId(
   provider: EthersProvider,
-  signer: EthersSigner | undefined,
   chainId: number,
-  optionalParams?: EthersKumoConnectionOptionalParams
+  optionalParams?: EthersKumoConnectionOptionalParams,
+  signer?: EthersSigner | undefined
 ): EthersKumoConnection {
   const deployment: _KumoDeploymentJSON =
     deployments[chainId] ?? panic(new UnsupportedNetworkError(chainId));
@@ -332,5 +345,5 @@ export const _connect = async (
     };
   }
 
-  return _connectByChainId(provider, signer, (await provider.getNetwork()).chainId, optionalParams);
+  return _connectByChainId(provider, (await provider.getNetwork()).chainId, optionalParams, signer);
 };

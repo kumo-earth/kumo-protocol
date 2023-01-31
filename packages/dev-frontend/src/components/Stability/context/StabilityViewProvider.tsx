@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { KumoStoreState, StabilityDeposit } from "@kumodao/lib-base";
 import { StabilityViewContext } from "./StabilityViewContext";
@@ -29,23 +30,34 @@ const transitions: StabilityEventTransitions = {
   }
 };
 
+const getPathName = (location: any) => {
+  return location && location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+};
+
 const transition = (view: StabilityView, event: StabilityEvent): StabilityView => {
   const nextView = transitions[view][event] ?? view;
   return nextView;
 };
 
 const getInitialView = (stabilityDeposit: StabilityDeposit): StabilityView => {
-  return stabilityDeposit.isEmpty ? "NONE" : "ACTIVE";
+  return stabilityDeposit?.isEmpty ? "NONE" : "ACTIVE";
 };
 
-const select = ({ stabilityDeposit }: KumoStoreState): StabilityDeposit => stabilityDeposit;
+const select = ({ vaults }: KumoStoreState) => ({
+  vaults
+});
 
 export const StabilityViewProvider: React.FC = props => {
   const { children } = props;
-  const stabilityDeposit = useKumoSelector(select);
+  const { vaults } = useKumoSelector(select);
+  const location = useLocation();
+
+  const vault = vaults.find(vault => vault.asset === getPathName(location));
+  const stabilityDeposit: StabilityDeposit = vault?.stabilityDeposit && vault.stabilityDeposit
 
   const [view, setView] = useState<StabilityView>(getInitialView(stabilityDeposit));
   const viewRef = useRef<StabilityView>(view);
+
 
   const dispatchEvent = useCallback((event: StabilityEvent) => {
     const nextView = transition(viewRef.current, event);
@@ -64,10 +76,10 @@ export const StabilityViewProvider: React.FC = props => {
   }, [view]);
 
   useEffect(() => {
-    if (stabilityDeposit.isEmpty) {
+    if (stabilityDeposit?.isEmpty) {
       dispatchEvent("DEPOSIT_EMPTIED");
     }
-  }, [stabilityDeposit.isEmpty, dispatchEvent]);
+  }, [stabilityDeposit?.isEmpty, dispatchEvent]);
 
   const provider = {
     view,
