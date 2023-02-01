@@ -176,7 +176,7 @@ export class ReadableEthersKumo implements ReadableKumo {
 
     const [trove, snapshot] = await Promise.all([
       troveManager.Troves(address, asset, { ...overrides }),
-      troveManager.rewardSnapshots(asset, address, { ...overrides })
+      troveManager.rewardSnapshots(address, asset, { ...overrides })
     ]);
 
     if (trove.status === BackendTroveStatus.active) {

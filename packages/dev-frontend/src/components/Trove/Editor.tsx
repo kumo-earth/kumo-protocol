@@ -266,6 +266,7 @@ export const EditableRow: React.FC<EditableRowProps> = ({
       <Input
         autoFocus
         id={inputId}
+        aria-label={inputId}
         type="number"
         step="any"
         defaultValue={editedAmount}

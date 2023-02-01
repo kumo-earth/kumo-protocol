@@ -30,6 +30,8 @@ export const ReadOnlyTrove: React.FC = () => {
   let collateralRatio = trove?.collateralRatio(price);
 
   // console.log("READONLY TROVE", trove.collateral.prettify(4));
+  console.log("stableTroveChangeValues",  trove?.collateral?.toString(4), trove?.debt?.prettify() )
+  
   return (
     <Card variant="base">
       <Heading as="h2">{vault?.asset.toUpperCase()} Vault</Heading>
@@ -38,7 +40,7 @@ export const ReadOnlyTrove: React.FC = () => {
           <DisabledEditableRow
             label="Collateral"
             inputId="trove-collateral"
-            amount={trove?.collateral.toString(0) || "0"}
+            amount={trove?.collateral.toString(0)}
             unit={collateralType?.toUpperCase()}
             tokenPrice={price}
           />
@@ -46,7 +48,7 @@ export const ReadOnlyTrove: React.FC = () => {
           <DisabledEditableRow
             label="Debt"
             inputId="trove-debt"
-            amount={trove?.debt.prettify(2) || "0"}
+            amount={trove?.debt.prettify(2)}
             unit={COIN}
           />
 
