@@ -1492,8 +1492,8 @@ describe("EthersKumo", () => {
 
       for (const [borrowingFeeDecayToleranceMinutes, roughGasHeadroom] of [
         [10, 133000],
-        [20, 251000],
-        [30, 335000]
+        [20, 251500],
+        [30, 335500]
       ]) {
         const tx = await kumo.populate.openTrove(
           Trove.recreate(bottomTrove, borrowingRate),

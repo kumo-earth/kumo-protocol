@@ -1191,6 +1191,11 @@
         "internalType": "address",
         "name": "_kumoParamsAddress",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_troveRedemptorAddress",
+        "type": "address"
       }
     ],
     "name": "setAddresses",

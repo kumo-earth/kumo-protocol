@@ -360,30 +360,14 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
             activePoolCached.sendAsset(_asset, address(collSurplusPool), totals.totalCollSurplus);
         }
 
-        // Update system snapshots
-        troveManager.updateSystemSnapshots_excludeCollRemainder(
-            _asset,
-            totals.totalCollGasCompensation
-        );
-
-        vars.liquidatedDebt = totals.totalDebtInSequence;
-        vars.liquidatedColl = totals.totalCollInSequence.sub(totals.totalCollGasCompensation).sub(
-            totals.totalCollSurplus
-        );
-        emit Liquidation(
-            _asset,
-            vars.liquidatedDebt,
-            vars.liquidatedColl,
-            totals.totalCollGasCompensation,
-            totals.totalkusdGasCompensation
-        );
-
-        // Send gas compensation to caller
-        troveManager.sendGasCompensation(
+        troveManager.finalizeLiquidateTroves(
             _asset,
             _caller,
-            totals.totalkusdGasCompensation,
-            totals.totalCollGasCompensation
+            totals.totalCollGasCompensation,
+            totals.totalDebtInSequence,
+            totals.totalCollInSequence,
+            totals.totalCollSurplus,
+            totals.totalkusdGasCompensation
         );
     }
 

@@ -553,6 +553,31 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         troveRedemptor.liquidateTroves(_asset, _n, msg.sender);
     }
 
+    function finalizeLiquidateTroves(
+        address _asset,
+        address _caller,
+        uint256 _totalCollGasCompensation,
+        uint256 _totalDebtInSequence,
+        uint256 _totalCollInSequence,
+        uint256 _totalCollSurplus,
+        uint256 _totalkusdGasCompensation
+    ) external {
+        _requireCallerIsTroveRedemptor();
+
+        updateSystemSnapshots_excludeCollRemainder(_asset, _totalCollGasCompensation);
+
+        emit Liquidation(
+            _asset,
+            _totalDebtInSequence,
+            _totalCollInSequence.sub(_totalCollGasCompensation).sub(_totalCollSurplus),
+            _totalCollGasCompensation,
+            _totalkusdGasCompensation
+        );
+
+        // Send gas compensation to caller
+        sendGasCompensation(_asset, _caller, _totalkusdGasCompensation, _totalCollGasCompensation);
+    }
+
     /*
      * This function is used when the liquidateTroves sequence starts during Recovery Mode. However, it
      * handle the case where the system *leaves* Recovery Mode, part way through the liquidation sequence
@@ -861,7 +886,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         address _liquidator,
         uint256 _KUSD,
         uint256 _amount
-    ) external {
+    ) public {
         // Before calling this function, we always check that something was liquidated, otherwise revert.
         // KUSD gas compensation could then only be zero if we set to zero that constant, but it’s ok to have this here as a sanity check
         if (_KUSD > 0) {
@@ -1375,7 +1400,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
      * The ETH as compensation must be excluded as it is always sent out at the very end of the liquidation sequence.
      */
     function updateSystemSnapshots_excludeCollRemainder(address _asset, uint256 _collRemainder)
-        external
+        public
     {
         totalStakesSnapshot[_asset] = totalStakes[_asset];
 

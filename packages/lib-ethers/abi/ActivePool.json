@@ -435,6 +435,11 @@
         "internalType": "address",
         "name": "_kumoStakingAddress",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_troveRedemptorAddress",
+        "type": "address"
       }
     ],
     "name": "setAddresses",
@@ -458,6 +463,19 @@
   {
     "inputs": [],
     "name": "troveManagerAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "troveRedemptorAddress",
     "outputs": [
       {
         "internalType": "address",

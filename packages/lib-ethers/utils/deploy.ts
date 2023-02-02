@@ -78,6 +78,8 @@ const deployContracts = async (
     troveManager: await deployContract(deployer, getContractFactory, "TroveManager", {
       ...overrides
     }),
+    troveRedemptor: await deployContract(deployer, getContractFactory, "TroveRedemptor", { ...overrides 
+    }),
     collSurplusPool: await deployContract(deployer, getContractFactory, "CollSurplusPool", {
       ...overrides
     }),
@@ -195,7 +197,8 @@ const connectContracts = async (
     gasPool,
     unipool,
     uniToken,
-    kumoParameters
+    kumoParameters,
+    troveRedemptor
   }: _KumoContracts,
   deployer: Signer,
   overrides?: Overrides
@@ -226,6 +229,18 @@ const connectContracts = async (
         sortedTroves.address,
         kumoToken.address,
         kumoStaking.address,
+        kumoParameters.address,
+        troveRedemptor.address,
+        { ...overrides, nonce }
+      ),
+
+    nonce =>
+      troveRedemptor.setAddresses(
+        troveManager.address,
+        sortedTroves.address,
+        stabilityPoolFactory.address,
+        kusdToken.address,
+        collSurplusPool.address,
         kumoParameters.address,
         { ...overrides, nonce }
       ),
@@ -266,6 +281,7 @@ const connectContracts = async (
         defaultPool.address,
         collSurplusPool.address,
         kumoStaking.address,
+        troveRedemptor.address,
         { ...overrides, nonce }
       ),
 
@@ -370,7 +386,8 @@ const addMockAssetsToSystem = async (
     stabilityPoolAsset1,
     stabilityPoolAsset2,
     mockAsset1,
-    mockAsset2
+    mockAsset2,
+    troveRedemptor
   }: _KumoContracts,
   deployer: Signer,
   overrides?: Overrides
@@ -389,6 +406,7 @@ const addMockAssetsToSystem = async (
     sortedTroves.address,
     communityIssuance.address,
     kumoParameters.address,
+    troveRedemptor.address,
   ),
 
     await stabilityPoolFactory.createNewStabilityPool(mockAsset1.address, stabilityPoolAsset1.address)
@@ -406,6 +424,7 @@ const addMockAssetsToSystem = async (
     sortedTroves.address,
     communityIssuance.address,
     kumoParameters.address,
+    troveRedemptor.address,
   ),
 
     await stabilityPoolFactory.createNewStabilityPool(mockAsset2.address, stabilityPoolAsset2.address)

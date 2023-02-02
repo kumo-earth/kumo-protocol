@@ -894,6 +894,153 @@
         "type": "address"
       },
       {
+        "internalType": "address",
+        "name": "_borrower",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_newColl",
+        "type": "uint256"
+      }
+    ],
+    "name": "executeFullRedemption",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_borrower",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_newDebt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_newColl",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_newNICR",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_upperHint",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_lowerHint",
+        "type": "address"
+      }
+    ],
+    "name": "executePartialRedemption",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_caller",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_totalCollGasCompensation",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_totalDebtInSequence",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_totalCollInSequence",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_totalCollSurplus",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_totalkusdGasCompensation",
+        "type": "uint256"
+      }
+    ],
+    "name": "finalizeLiquidateTroves",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_receiver",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_KUSDamount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_KUSDToRedeem",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_fee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_totalRedemptionRewards",
+        "type": "uint256"
+      }
+    ],
+    "name": "finalizeRedemption",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "_KUSDDebt",
         "type": "uint256"
@@ -1163,6 +1310,30 @@
         "type": "uint256"
       }
     ],
+    "name": "getRedemptionFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_assetDraw",
+        "type": "uint256"
+      }
+    ],
     "name": "getRedemptionFeeWithDecay",
     "outputs": [
       {
@@ -1234,6 +1405,350 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IActivePool",
+        "name": "_activePool",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IDefaultPool",
+        "name": "_defaultPool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_price",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_KUSDInStabPool",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_troveArray",
+        "type": "address[]"
+      }
+    ],
+    "name": "getTotalFromBatchLiquidate_RecoveryMode",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalCollInSequence",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalDebtInSequence",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollGasCompensation",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalkusdGasCompensation",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalDebtToOffset",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollToSendToSP",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalDebtToRedistribute",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollToRedistribute",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollSurplus",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct LiquidationTotals",
+        "name": "totals",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IActivePool",
+        "name": "_activePool",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IDefaultPool",
+        "name": "_defaultPool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_price",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_KUSDInStabPool",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_troveArray",
+        "type": "address[]"
+      }
+    ],
+    "name": "getTotalsFromBatchLiquidate_NormalMode",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalCollInSequence",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalDebtInSequence",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollGasCompensation",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalkusdGasCompensation",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalDebtToOffset",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollToSendToSP",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalDebtToRedistribute",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollToRedistribute",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollSurplus",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct LiquidationTotals",
+        "name": "totals",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_price",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_KUSDInStabPool",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_n",
+        "type": "uint256"
+      }
+    ],
+    "name": "getTotalsFromLiquidateTrovesSequence_NormalMode",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalCollInSequence",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalDebtInSequence",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollGasCompensation",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalkusdGasCompensation",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalDebtToOffset",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollToSendToSP",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalDebtToRedistribute",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollToRedistribute",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollSurplus",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct LiquidationTotals",
+        "name": "totals",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_price",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_KUSDInStabPool",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_n",
+        "type": "uint256"
+      }
+    ],
+    "name": "getTotalsFromLiquidateTrovesSequence_RecoveryMode",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalCollInSequence",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalDebtInSequence",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollGasCompensation",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalkusdGasCompensation",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalDebtToOffset",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollToSendToSP",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalDebtToRedistribute",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollToRedistribute",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollSurplus",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct LiquidationTotals",
+        "name": "totals",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1497,6 +2012,35 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_firstRedemptionHint",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_price",
+        "type": "uint256"
+      }
+    ],
+    "name": "isValidFirstRedemptionHint",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "kumoParams",
     "outputs": [
@@ -1556,7 +2100,7 @@
         "type": "address"
       }
     ],
-    "name": "lastETHError_Redistribution",
+    "name": "lastAssetError_Redistribution",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1729,6 +2273,39 @@
         "type": "address"
       },
       {
+        "internalType": "contract IActivePool",
+        "name": "_activePool",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IDefaultPool",
+        "name": "_defaultPool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_debt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_coll",
+        "type": "uint256"
+      }
+    ],
+    "name": "redistributeDebtAndColl",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
         "internalType": "address",
         "name": "_borrower",
         "type": "address"
@@ -1766,6 +2343,34 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_liquidator",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_KUSD",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "sendGasCompensation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1814,6 +2419,11 @@
         "internalType": "address",
         "name": "_kumoParamsAddress",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_troveRedemptorAddress",
+        "type": "address"
       }
     ],
     "name": "setAddresses",
@@ -1830,6 +2440,42 @@
       }
     ],
     "name": "setKumoParameters",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "setTotalCollateralSnapshot",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "setTotalStakesSnapshot",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1941,6 +2587,53 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "troveRedemptor",
+    "outputs": [
+      {
+        "internalType": "contract ITroveRedemptor",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amountDrawn",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_price",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_totalKUSDSupply",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateBaseRateFromRedemption",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -1961,6 +2654,24 @@
         "type": "uint256"
       }
     ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_collRemainder",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateSystemSnapshots_excludeCollRemainder",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
