@@ -14,12 +14,9 @@ import "./Interfaces/ITroveRedemptor.sol";
 import "./Dependencies/KumoBase.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/console.sol";
-import "./Dependencies/SafeMath.sol";
 import "./Dependencies/TroveManagerModel.sol";
 
 contract TroveManager is KumoBase, CheckContract, ITroveManager {
-    using SafeMath for uint256;
-
     // bool public isInitialized;
 
     string public constant NAME = "TroveManager";
@@ -114,15 +111,15 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
      * in order to avoid the error: "CompilerError: Stack too deep".
      **/
 
-    struct ContractsCache {
-        IActivePool activePool;
-        IDefaultPool defaultPool;
-        IKUSDToken kusdToken;
-        IKUMOStaking kumoStaking;
-        ISortedTroves sortedTroves;
-        ICollSurplusPool collSurplusPool;
-        address gasPoolAddress;
-    }
+    // struct ContractsCache {
+    //     IActivePool activePool;
+    //     IDefaultPool defaultPool;
+    //     IKUSDToken kusdToken;
+    //     IKUMOStaking kumoStaking;
+    //     ISortedTroves sortedTroves;
+    //     ICollSurplusPool collSurplusPool;
+    //     address gasPoolAddress;
+    // }
 
     // --- Events ---
 
@@ -177,55 +174,18 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
     // --- Dependency setter ---
 
-    function setAddresses(
-        address _borrowerOperationsAddress,
-        address _stabilityPoolFactoryAddress,
-        address _gasPoolAddress,
-        address _collSurplusPoolAddress,
-        address _kusdTokenAddress,
-        address _sortedTrovesAddress,
-        address _kumoTokenAddress,
-        address _kumoStakingAddress,
-        address _kumoParamsAddress,
-        address _troveRedemptorAddress
-    ) external override onlyOwner {
-        // require(!isInitialized, "Already initialized");
-        checkContract(_borrowerOperationsAddress);
-        checkContract(_stabilityPoolFactoryAddress);
-        checkContract(_gasPoolAddress);
-        checkContract(_collSurplusPoolAddress);
-        checkContract(_kusdTokenAddress);
-        checkContract(_sortedTrovesAddress);
-        checkContract(_kumoTokenAddress);
-        checkContract(_kumoStakingAddress);
-        checkContract(_kumoParamsAddress);
-        checkContract(_troveRedemptorAddress);
-
-        // isInitialized = true;
-        // __Ownable_init();
-
-        borrowerOperationsAddress = _borrowerOperationsAddress;
-        stabilityPoolFactory = IStabilityPoolFactory(_stabilityPoolFactoryAddress);
-        gasPoolAddress = _gasPoolAddress;
-        collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
-        kusdToken = IKUSDToken(_kusdTokenAddress);
-        sortedTroves = ISortedTroves(_sortedTrovesAddress);
-        kumoToken = IKUMOToken(_kumoTokenAddress);
-        kumoStaking = IKUMOStaking(_kumoStakingAddress);
-        troveRedemptor = ITroveRedemptor(_troveRedemptorAddress);
-
+    function setAddresses(address _kumoParamsAddress) external override onlyOwner {
         setKumoParameters(_kumoParamsAddress);
 
-        emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
-        emit StabilityPoolFactoryAddressChanged(_stabilityPoolFactoryAddress);
-        emit GasPoolAddressChanged(_gasPoolAddress);
-        emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
-        emit KUSDTokenAddressChanged(_kusdTokenAddress);
-        emit SortedTrovesAddressChanged(_sortedTrovesAddress);
-        emit KUMOTokenAddressChanged(_kumoTokenAddress);
-        emit KUMOStakingAddressChanged(_kumoStakingAddress);
-
-        // _renounceOwnership(); --> Needs to be paused because of current test deployment with adding an asset to the system
+        borrowerOperationsAddress = address(kumoParams.borrowerOperations());
+        stabilityPoolFactory = kumoParams.stabilityPoolFactory();
+        gasPoolAddress = kumoParams.gasPoolAddress();
+        collSurplusPool = kumoParams.collSurplusPool();
+        kusdToken = kumoParams.kusdToken();
+        sortedTroves = kumoParams.sortedTroves();
+        kumoToken = kumoParams.kumoToken();
+        kumoStaking = kumoParams.kumoStaking();
+        troveRedemptor = kumoParams.troveRedemptor();
     }
 
     function addNewAsset(address _asset) external onlyOwner {
@@ -294,9 +254,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
             singleLiquidation.entireTroveColl
         );
         singleLiquidation.kusdGasCompensation = kumoParams.KUSD_GAS_COMPENSATION(_asset);
-        uint256 collToLiquidate = singleLiquidation.entireTroveColl.sub(
-            singleLiquidation.collGasCompensation
-        );
+        uint256 collToLiquidate = singleLiquidation.entireTroveColl -
+            (singleLiquidation.collGasCompensation);
 
         (
             singleLiquidation.debtToOffset,
@@ -348,9 +307,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
             singleLiquidation.entireTroveColl
         );
         singleLiquidation.kusdGasCompensation = kumoParams.KUSD_GAS_COMPENSATION(_asset);
-        vars.collToLiquidate = singleLiquidation.entireTroveColl.sub(
-            singleLiquidation.collGasCompensation
-        );
+        vars.collToLiquidate =
+            singleLiquidation.entireTroveColl -
+            (singleLiquidation.collGasCompensation);
 
         // If ICR <= 100%, purely redistribute the Trove across all active Troves
         if (_ICR <= kumoParams._100pct()) {
@@ -509,9 +468,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
              *
              */
             debtToOffset = KumoMath._min(_debt, _KUSDInStabPool);
-            collToSendToSP = _coll.mul(debtToOffset).div(_debt);
-            debtToRedistribute = _debt.sub(debtToOffset);
-            collToRedistribute = _coll.sub(collToSendToSP);
+            collToSendToSP = (_coll * (debtToOffset)) / (_debt);
+            debtToRedistribute = _debt - (debtToOffset);
+            collToRedistribute = _coll - (collToSendToSP);
         } else {
             debtToOffset = 0;
             collToSendToSP = 0;
@@ -531,16 +490,16 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     ) internal view returns (LiquidationValues memory singleLiquidation) {
         singleLiquidation.entireTroveDebt = _entireTroveDebt;
         singleLiquidation.entireTroveColl = _entireTroveColl;
-        uint256 cappedCollPortion = _entireTroveDebt.mul(kumoParams.MCR(_asset)).div(_price);
+        uint256 cappedCollPortion = (_entireTroveDebt * (kumoParams.MCR(_asset))) / (_price);
 
         singleLiquidation.collGasCompensation = _getCollGasCompensation(_asset, cappedCollPortion);
         singleLiquidation.kusdGasCompensation = kumoParams.KUSD_GAS_COMPENSATION(_asset);
 
         singleLiquidation.debtToOffset = _entireTroveDebt;
-        singleLiquidation.collToSendToSP = cappedCollPortion.sub(
-            singleLiquidation.collGasCompensation
-        );
-        singleLiquidation.collSurplus = _entireTroveColl.sub(cappedCollPortion);
+        singleLiquidation.collToSendToSP =
+            cappedCollPortion -
+            (singleLiquidation.collGasCompensation);
+        singleLiquidation.collSurplus = _entireTroveColl - (cappedCollPortion);
         singleLiquidation.debtToRedistribute = 0;
         singleLiquidation.collToRedistribute = 0;
     }
@@ -569,7 +528,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         emit Liquidation(
             _asset,
             _totalDebtInSequence,
-            _totalCollInSequence.sub(_totalCollGasCompensation).sub(_totalCollSurplus),
+            _totalCollInSequence - (_totalCollGasCompensation) - (_totalCollSurplus),
             _totalCollGasCompensation,
             _totalkusdGasCompensation
         );
@@ -588,6 +547,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint256 _KUSDInStabPool,
         uint256 _n
     ) external returns (LiquidationTotals memory totals) {
+        _requireCallerIsTroveRedemptor();
+
         LocalVariables_AssetBorrowerPrice memory assetVars = LocalVariables_AssetBorrowerPrice(
             _asset,
             address(0),
@@ -633,15 +594,15 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
                 );
 
                 // Update aggregate trackers
-                vars.remainingKUSDInStabPool = vars.remainingKUSDInStabPool.sub(
-                    singleLiquidation.debtToOffset
-                );
-                vars.entireSystemDebt = vars.entireSystemDebt.sub(singleLiquidation.debtToOffset);
-                vars.entireSystemColl = vars
-                    .entireSystemColl
-                    .sub(singleLiquidation.collToSendToSP)
-                    .sub(singleLiquidation.collGasCompensation)
-                    .sub(singleLiquidation.collSurplus);
+                vars.remainingKUSDInStabPool =
+                    vars.remainingKUSDInStabPool -
+                    (singleLiquidation.debtToOffset);
+                vars.entireSystemDebt = vars.entireSystemDebt - (singleLiquidation.debtToOffset);
+                vars.entireSystemColl =
+                    vars.entireSystemColl -
+                    (singleLiquidation.collToSendToSP) -
+                    (singleLiquidation.collGasCompensation) -
+                    (singleLiquidation.collSurplus);
 
                 // Add liquidation values to their respective running totals
                 totals = _addLiquidationValuesToTotals(totals, singleLiquidation);
@@ -661,9 +622,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
                     vars.remainingKUSDInStabPool
                 );
 
-                vars.remainingKUSDInStabPool = vars.remainingKUSDInStabPool.sub(
-                    singleLiquidation.debtToOffset
-                );
+                vars.remainingKUSDInStabPool =
+                    vars.remainingKUSDInStabPool -
+                    (singleLiquidation.debtToOffset);
 
                 // Add liquidation values to their respective running totals
                 totals = _addLiquidationValuesToTotals(totals, singleLiquidation);
@@ -679,6 +640,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint256 _KUSDInStabPool,
         uint256 _n
     ) external returns (LiquidationTotals memory totals) {
+        _requireCallerIsTroveRedemptor();
+
         LocalVariables_LiquidationSequence memory vars;
         LiquidationValues memory singleLiquidation;
         ISortedTroves sortedTrovesCached = sortedTroves;
@@ -698,9 +661,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
                     vars.remainingKUSDInStabPool
                 );
 
-                vars.remainingKUSDInStabPool = vars.remainingKUSDInStabPool.sub(
-                    singleLiquidation.debtToOffset
-                );
+                vars.remainingKUSDInStabPool =
+                    vars.remainingKUSDInStabPool -
+                    (singleLiquidation.debtToOffset);
 
                 // Add liquidation values to their respective running totals
                 totals = _addLiquidationValuesToTotals(totals, singleLiquidation);
@@ -771,15 +734,15 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
                 );
 
                 // Update aggregate trackers
-                vars.remainingKUSDInStabPool = vars.remainingKUSDInStabPool.sub(
-                    singleLiquidation.debtToOffset
-                );
-                vars.entireSystemDebt = vars.entireSystemDebt.sub(singleLiquidation.debtToOffset);
-                vars.entireSystemColl = vars
-                    .entireSystemColl
-                    .sub(singleLiquidation.collToSendToSP)
-                    .sub(singleLiquidation.collGasCompensation)
-                    .sub(singleLiquidation.collSurplus);
+                vars.remainingKUSDInStabPool =
+                    vars.remainingKUSDInStabPool -
+                    (singleLiquidation.debtToOffset);
+                vars.entireSystemDebt = vars.entireSystemDebt - (singleLiquidation.debtToOffset);
+                vars.entireSystemColl =
+                    vars.entireSystemColl -
+                    (singleLiquidation.collToSendToSP) -
+                    (singleLiquidation.collGasCompensation) -
+                    (singleLiquidation.collSurplus);
 
                 // Add liquidation values to their respective running totals
                 totals = _addLiquidationValuesToTotals(totals, singleLiquidation);
@@ -798,9 +761,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
                     vars.user,
                     vars.remainingKUSDInStabPool
                 );
-                vars.remainingKUSDInStabPool = vars.remainingKUSDInStabPool.sub(
-                    singleLiquidation.debtToOffset
-                );
+                vars.remainingKUSDInStabPool =
+                    vars.remainingKUSDInStabPool -
+                    (singleLiquidation.debtToOffset);
 
                 // Add liquidation values to their respective running totals
                 totals = _addLiquidationValuesToTotals(totals, singleLiquidation);
@@ -835,9 +798,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
                     vars.user,
                     vars.remainingKUSDInStabPool
                 );
-                vars.remainingKUSDInStabPool = vars.remainingKUSDInStabPool.sub(
-                    singleLiquidation.debtToOffset
-                );
+                vars.remainingKUSDInStabPool =
+                    vars.remainingKUSDInStabPool -
+                    (singleLiquidation.debtToOffset);
 
                 // Add liquidation values to their respective running totals
                 totals = _addLiquidationValuesToTotals(totals, singleLiquidation);
@@ -852,31 +815,29 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         LiquidationValues memory singleLiquidation
     ) internal pure returns (LiquidationTotals memory newTotals) {
         // Tally all the values with their respective running totals
-        newTotals.totalCollGasCompensation = oldTotals.totalCollGasCompensation.add(
-            singleLiquidation.collGasCompensation
-        );
-        newTotals.totalkusdGasCompensation = oldTotals.totalkusdGasCompensation.add(
-            singleLiquidation.kusdGasCompensation
-        );
-        newTotals.totalDebtInSequence = oldTotals.totalDebtInSequence.add(
-            singleLiquidation.entireTroveDebt
-        );
-        newTotals.totalCollInSequence = oldTotals.totalCollInSequence.add(
-            singleLiquidation.entireTroveColl
-        );
-        newTotals.totalDebtToOffset = oldTotals.totalDebtToOffset.add(
-            singleLiquidation.debtToOffset
-        );
-        newTotals.totalCollToSendToSP = oldTotals.totalCollToSendToSP.add(
-            singleLiquidation.collToSendToSP
-        );
-        newTotals.totalDebtToRedistribute = oldTotals.totalDebtToRedistribute.add(
-            singleLiquidation.debtToRedistribute
-        );
-        newTotals.totalCollToRedistribute = oldTotals.totalCollToRedistribute.add(
-            singleLiquidation.collToRedistribute
-        );
-        newTotals.totalCollSurplus = oldTotals.totalCollSurplus.add(singleLiquidation.collSurplus);
+        newTotals.totalCollGasCompensation =
+            oldTotals.totalCollGasCompensation +
+            singleLiquidation.collGasCompensation;
+        newTotals.totalkusdGasCompensation =
+            oldTotals.totalkusdGasCompensation +
+            singleLiquidation.kusdGasCompensation;
+        newTotals.totalDebtInSequence =
+            oldTotals.totalDebtInSequence +
+            singleLiquidation.entireTroveDebt;
+        newTotals.totalCollInSequence =
+            oldTotals.totalCollInSequence +
+            singleLiquidation.entireTroveColl;
+        newTotals.totalDebtToOffset = oldTotals.totalDebtToOffset + singleLiquidation.debtToOffset;
+        newTotals.totalCollToSendToSP =
+            oldTotals.totalCollToSendToSP +
+            singleLiquidation.collToSendToSP;
+        newTotals.totalDebtToRedistribute =
+            oldTotals.totalDebtToRedistribute +
+            singleLiquidation.debtToRedistribute;
+        newTotals.totalCollToRedistribute =
+            oldTotals.totalCollToRedistribute +
+            singleLiquidation.collToRedistribute;
+        newTotals.totalCollSurplus = oldTotals.totalCollSurplus + singleLiquidation.collSurplus;
 
         return newTotals;
     }
@@ -886,7 +847,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         address _liquidator,
         uint256 _KUSD,
         uint256 _amount
-    ) public {
+    ) internal {
         // Before calling this function, we always check that something was liquidated, otherwise revert.
         // KUSD gas compensation could then only be zero if we set to zero that constant, but it’s ok to have this here as a sanity check
         if (_KUSD > 0) {
@@ -977,7 +938,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         activePool.sendAsset(_asset, address(kumoStaking), _fee);
         kumoStaking.increaseF_Asset(_asset, _fee);
 
-        uint256 assetToSendToRedeemer = _totalRedemptionRewards.sub(_fee);
+        uint256 assetToSendToRedeemer = _totalRedemptionRewards - (_fee);
 
         emit Redemption(_asset, _KUSDamount, _KUSDToRedeem, _totalRedemptionRewards, _fee);
 
@@ -986,6 +947,24 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         // Update Active Pool KUSD, and send Asset to account
         activePool.decreaseKUSDDebt(_asset, _KUSDToRedeem);
         activePool.sendAsset(_asset, _receiver, assetToSendToRedeemer);
+    }
+
+    function finalizeRedistributeDebtAndColl(
+        address _asset,
+        uint256 _debt,
+        uint256 _coll
+    ) external {
+        _requireCallerIsTroveRedemptor();
+
+        IActivePool activePool = kumoParams.activePool();
+        IDefaultPool defaultPool = kumoParams.defaultPool();
+
+        emit LTermsUpdated(L_ASSETS[_asset], L_KUSDDebts[_asset]);
+
+        // Transfer coll and debt from ActivePool to DefaultPool
+        activePool.decreaseKUSDDebt(_asset, _debt);
+        defaultPool.increaseKUSDDebt(_asset, _debt);
+        activePool.sendAsset(_asset, address(defaultPool), _coll);
     }
 
     /* Send _KUSDamount KUSD to the system and redeem the corresponding amount of collateral from as many Troves as are needed to fill the redemption
@@ -1107,8 +1086,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint256 pendingReward = getPendingReward(_asset, _borrower);
         uint256 pendingKUSDDebtReward = getPendingKUSDDebtReward(_asset, _borrower);
 
-        uint256 currentAsset = Troves[_borrower][_asset].coll.add(pendingReward);
-        uint256 currentKUSDDebt = Troves[_borrower][_asset].debt.add(pendingKUSDDebtReward);
+        uint256 currentAsset = Troves[_borrower][_asset].coll + pendingReward;
+        uint256 currentKUSDDebt = Troves[_borrower][_asset].debt + pendingKUSDDebtReward;
 
         return (currentAsset, currentKUSDDebt);
     }
@@ -1138,10 +1117,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
             uint256 pendingKUSDDebtReward = getPendingKUSDDebtReward(_asset, _borrower);
 
             // Apply pending rewards to trove's state
-            Troves[_borrower][_asset].coll = Troves[_borrower][_asset].coll.add(pendingReward);
-            Troves[_borrower][_asset].debt = Troves[_borrower][_asset].debt.add(
-                pendingKUSDDebtReward
-            );
+            Troves[_borrower][_asset].coll = Troves[_borrower][_asset].coll + pendingReward;
+            Troves[_borrower][_asset].debt = Troves[_borrower][_asset].debt + pendingKUSDDebtReward;
 
             _updateTroveRewardSnapshots(_asset, _borrower);
 
@@ -1185,12 +1162,12 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         returns (uint256)
     {
         uint256 snapshotAsset = rewardSnapshots[_borrower][_asset].asset;
-        uint256 rewardPerUnitStaked = L_ASSETS[_asset].sub(snapshotAsset);
+        uint256 rewardPerUnitStaked = L_ASSETS[_asset] - (snapshotAsset);
         if (rewardPerUnitStaked == 0 || !isTroveActive(_asset, _borrower)) {
             return 0;
         }
         uint256 stake = Troves[_borrower][_asset].stake;
-        uint256 pendingAssetReward = stake.mul(rewardPerUnitStaked).div(DECIMAL_PRECISION);
+        uint256 pendingAssetReward = (stake * (rewardPerUnitStaked)) / (DECIMAL_PRECISION);
         return pendingAssetReward;
     }
 
@@ -1202,7 +1179,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         returns (uint256)
     {
         uint256 snapshotKUSDDebt = rewardSnapshots[_borrower][_asset].KUSDDebt;
-        uint256 rewardPerUnitStaked = L_KUSDDebts[_asset].sub(snapshotKUSDDebt);
+        uint256 rewardPerUnitStaked = L_KUSDDebts[_asset] - (snapshotKUSDDebt);
 
         if (rewardPerUnitStaked == 0 || !isTroveActive(_asset, _borrower)) {
             return 0;
@@ -1210,7 +1187,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
         uint256 stake = Troves[_borrower][_asset].stake;
 
-        uint256 pendingKUSDDebtReward = stake.mul(rewardPerUnitStaked).div(DECIMAL_PRECISION);
+        uint256 pendingKUSDDebtReward = (stake * (rewardPerUnitStaked)) / (DECIMAL_PRECISION);
 
         return pendingKUSDDebtReward;
     }
@@ -1251,8 +1228,8 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         pendingKUSDDebtReward = getPendingKUSDDebtReward(_asset, _borrower);
         pendingReward = getPendingReward(_asset, _borrower);
 
-        debt = debt.add(pendingKUSDDebtReward);
-        coll = coll.add(pendingReward);
+        debt = debt + pendingKUSDDebtReward;
+        coll = coll + pendingReward;
     }
 
     function removeStake(address _asset, address _borrower) external override {
@@ -1263,7 +1240,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     // Remove borrower's stake from the totalStakes sum, and set their stake to 0
     function _removeStake(address _asset, address _borrower) internal {
         uint256 stake = Troves[_borrower][_asset].stake;
-        totalStakes[_asset] = totalStakes[_asset].sub(stake);
+        totalStakes[_asset] = totalStakes[_asset] - (stake);
         Troves[_borrower][_asset].stake = 0;
     }
 
@@ -1285,7 +1262,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint256 oldStake = Troves[_borrower][_asset].stake;
         Troves[_borrower][_asset].stake = newStake;
 
-        totalStakes[_asset] = totalStakes[_asset].sub(oldStake).add(newStake);
+        totalStakes[_asset] = totalStakes[_asset] - (oldStake) + newStake;
         emit TotalStakesUpdated(_asset, totalStakes[_asset]);
 
         return newStake;
@@ -1304,63 +1281,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
              * rewards would’ve been emptied and totalCollateralSnapshot would be zero too.
              */
             assert(totalStakesSnapshot[_asset] > 0);
-            stake = _coll.mul(totalStakesSnapshot[_asset]).div(totalCollateralSnapshot[_asset]);
+            stake = (_coll * (totalStakesSnapshot[_asset])) / (totalCollateralSnapshot[_asset]);
         }
         return stake;
-    }
-
-    function redistributeDebtAndColl(
-        address _asset,
-        IActivePool _activePool,
-        IDefaultPool _defaultPool,
-        uint256 _debt,
-        uint256 _coll
-    ) external {
-        _requireCallerIsTroveRedemptor();
-
-        if (_debt == 0) {
-            return;
-        }
-
-        /*
-         * Add distributed coll and debt rewards-per-unit-staked to the running totals. Division uses a "feedback"
-         * error correction, to keep the cumulative error low in the running totals L_ASSETS and L_KUSDDebt:
-         *
-         * 1) Form numerators which compensate for the floor division errors that occurred the last time this
-         * function was called.
-         * 2) Calculate "per-unit-staked" ratios.
-         * 3) Multiply each ratio back by its denominator, to reveal the current floor division error.
-         * 4) Store these errors for use in the next correction when this function is called.
-         * 5) Note: static analysis tools complain about this "division before multiplication", however, it is intended.
-         */
-        uint256 ETHNumerator = _coll.mul(DECIMAL_PRECISION).add(
-            lastAssetError_Redistribution[_asset]
-        );
-        uint256 KUSDDebtNumerator = _debt.mul(DECIMAL_PRECISION).add(
-            lastKUSDDebtError_Redistribution[_asset]
-        );
-
-        // Get the per-unit-staked terms
-        uint256 ETHRewardPerUnitStaked = ETHNumerator.div(totalStakes[_asset]);
-        uint256 KUSDDebtRewardPerUnitStaked = KUSDDebtNumerator.div(totalStakes[_asset]);
-
-        lastAssetError_Redistribution[_asset] = ETHNumerator.sub(
-            ETHRewardPerUnitStaked.mul(totalStakes[_asset])
-        );
-        lastKUSDDebtError_Redistribution[_asset] = KUSDDebtNumerator.sub(
-            KUSDDebtRewardPerUnitStaked.mul(totalStakes[_asset])
-        );
-
-        // Add per-unit-staked terms to the running totals
-        L_ASSETS[_asset] = L_ASSETS[_asset].add(ETHRewardPerUnitStaked);
-        L_KUSDDebts[_asset] = L_KUSDDebts[_asset].add(KUSDDebtRewardPerUnitStaked);
-
-        emit LTermsUpdated(L_ASSETS[_asset], L_KUSDDebts[_asset]);
-
-        // Transfer coll and debt from ActivePool to DefaultPool
-        _activePool.decreaseKUSDDebt(_asset, _debt);
-        _defaultPool.increaseKUSDDebt(_asset, _debt);
-        _activePool.sendAsset(_asset, address(_defaultPool), _coll);
     }
 
     function closeTrove(address _asset, address _borrower) external override {
@@ -1400,13 +1323,13 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
      * The ETH as compensation must be excluded as it is always sent out at the very end of the liquidation sequence.
      */
     function updateSystemSnapshots_excludeCollRemainder(address _asset, uint256 _collRemainder)
-        public
+        internal
     {
         totalStakesSnapshot[_asset] = totalStakes[_asset];
 
         uint256 activeColl = kumoParams.activePool().getAssetBalance(_asset);
         uint256 liquidatedColl = kumoParams.defaultPool().getAssetBalance(_asset);
-        totalCollateralSnapshot[_asset] = activeColl.sub(_collRemainder).add(liquidatedColl);
+        totalCollateralSnapshot[_asset] = activeColl - (_collRemainder) + liquidatedColl;
 
         emit SystemSnapshotsUpdated(
             _asset,
@@ -1436,7 +1359,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         TroveOwners[_asset].push(_borrower);
 
         // Record the index of the new Troveowner on their Trove struct
-        index = uint128(TroveOwners[_asset].length.sub(1));
+        index = uint128(TroveOwners[_asset].length - (1));
         Troves[_borrower][_asset].arrayIndex = index;
 
         return index;
@@ -1457,7 +1380,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
         uint128 index = Troves[_borrower][_asset].arrayIndex;
         uint256 length = TroveOwnersArrayLength;
-        uint256 idxLast = length.sub(1);
+        uint256 idxLast = length - (1);
 
         assert(index <= idxLast);
 
@@ -1517,9 +1440,9 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
         /* Convert the drawn ETH back to KUSD at face value rate (1 KUSD:1 USD), in order to get
          * the fraction of total supply that was redeemed at face value. */
-        uint256 redeemedKUSDFraction = _amountDrawn.mul(_price).div(_totalKUSDSupply);
+        uint256 redeemedKUSDFraction = (_amountDrawn * (_price)) / (_totalKUSDSupply);
 
-        uint256 newBaseRate = decayedBaseRate.add(redeemedKUSDFraction.div(BETA));
+        uint256 newBaseRate = decayedBaseRate + redeemedKUSDFraction / (BETA);
         newBaseRate = KumoMath._min(newBaseRate, DECIMAL_PRECISION); // cap baseRate at a maximum of 100%
         //assert(newBaseRate <= DECIMAL_PRECISION); // This is already enforced in the line above
         assert(newBaseRate > 0); // Base rate is always non-zero after redemption
@@ -1558,7 +1481,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         pure
         returns (uint256)
     {
-        uint256 redemptionFee = _redemptionRate.mul(_assetDraw).div(DECIMAL_PRECISION);
+        uint256 redemptionFee = (_redemptionRate * (_assetDraw)) / (DECIMAL_PRECISION);
         require(
             redemptionFee < _assetDraw,
             "TroveManager: Fee would eat up all returned collateral"
@@ -1567,8 +1490,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     }
 
     function _calcRedemptionRate(address _asset, uint256 _baseRate) internal view returns (uint256) {
-        return
-            KumoMath._min(kumoParams.REDEMPTION_FEE_FLOOR(_asset).add(_baseRate), DECIMAL_PRECISION);
+        return KumoMath._min(kumoParams.REDEMPTION_FEE_FLOOR(_asset) + _baseRate, DECIMAL_PRECISION);
     }
 
     // --- Borrowing fee functions ---
@@ -1584,7 +1506,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     function _calcBorrowingRate(address _asset, uint256 _baseRate) internal view returns (uint256) {
         return
             KumoMath._min(
-                kumoParams.BORROWING_FEE_FLOOR(_asset).add(_baseRate),
+                kumoParams.BORROWING_FEE_FLOOR(_asset) + _baseRate,
                 kumoParams.MAX_BORROWING_FEE(_asset)
             );
     }
@@ -1612,7 +1534,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         pure
         returns (uint256)
     {
-        return _borrowingRate.mul(_KUSDDebt).div(DECIMAL_PRECISION);
+        return (_borrowingRate * (_KUSDDebt)) / (DECIMAL_PRECISION);
     }
 
     // Updates the baseRate state variable based on time elapsed since the last redemption or KUSD borrowing operation.
@@ -1632,7 +1554,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
 
     // Update the last fee operation time only if time passed >= decay interval. This prevents base rate griefing.
     function _updateLastFeeOpTime(address _asset) internal {
-        uint256 timePassed = block.timestamp.sub(lastFeeOperationTime[_asset]);
+        uint256 timePassed = block.timestamp - (lastFeeOperationTime[_asset]);
 
         if (timePassed >= SECONDS_IN_ONE_MINUTE) {
             lastFeeOperationTime[_asset] = block.timestamp;
@@ -1644,25 +1566,26 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint256 minutesPassed = _minutesPassedSinceLastFeeOp(_asset);
         uint256 decayFactor = KumoMath._decPow(MINUTE_DECAY_FACTOR, minutesPassed);
 
-        return baseRate[_asset].mul(decayFactor).div(DECIMAL_PRECISION);
+        return (baseRate[_asset] * (decayFactor)) / (DECIMAL_PRECISION);
     }
 
     function _minutesPassedSinceLastFeeOp(address _asset) internal view returns (uint256) {
-        return (block.timestamp.sub(lastFeeOperationTime[_asset])).div(SECONDS_IN_ONE_MINUTE);
+        return (block.timestamp - (lastFeeOperationTime[_asset])) / (SECONDS_IN_ONE_MINUTE);
     }
 
     // --- 'require' wrapper functions ---
 
     function _requireCallerIsBorrowerOperations() internal view {
         require(
-            msg.sender == borrowerOperationsAddress,
+            msg.sender == address(borrowerOperationsAddress),
             "TroveManager: Caller is not the BorrowerOperations contract"
         );
     }
 
     function _requireCallerIsBorrowerOperationsOrTroveRedemptor() internal view {
         require(
-            msg.sender == borrowerOperationsAddress || msg.sender == address(troveRedemptor),
+            msg.sender == address(borrowerOperationsAddress) ||
+                msg.sender == address(troveRedemptor),
             "TroveManager: Caller is not the BorrowerOperations nor TroveRedemptor contract"
         );
     }
@@ -1678,17 +1601,6 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         require(
             Troves[_borrower][_asset].status == Status.active,
             "TroveManager: Trove does not exist or is closed"
-        );
-    }
-
-    function _requireKUSDBalanceCoversRedemption(
-        IKUSDToken _kusdToken,
-        address _redeemer,
-        uint256 _amount
-    ) internal view {
-        require(
-            _kusdToken.balanceOf(_redeemer) >= _amount,
-            "TroveManager: Requested redemption amount must be <= user's KUSD token balance"
         );
     }
 
@@ -1716,7 +1628,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     function _requireAfterBootstrapPeriod() internal view {
         uint256 systemDeploymentTime = kumoToken.getDeploymentStartTime();
         require(
-            block.timestamp >= systemDeploymentTime.add(kumoParams.BOOTSTRAP_PERIOD()),
+            block.timestamp >= systemDeploymentTime + kumoParams.BOOTSTRAP_PERIOD(),
             "TroveManager: Redemptions are not allowed during bootstrap phase"
         );
     }
@@ -1788,7 +1700,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint256 _collIncrease
     ) external override returns (uint256) {
         _requireCallerIsBorrowerOperations();
-        uint256 newColl = Troves[_borrower][_asset].coll.add(_collIncrease);
+        uint256 newColl = Troves[_borrower][_asset].coll + _collIncrease;
         Troves[_borrower][_asset].coll = newColl;
         return newColl;
     }
@@ -1799,7 +1711,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint256 _collDecrease
     ) external override returns (uint256) {
         _requireCallerIsBorrowerOperations();
-        uint256 newColl = Troves[_borrower][_asset].coll.sub(_collDecrease);
+        uint256 newColl = Troves[_borrower][_asset].coll - (_collDecrease);
         Troves[_borrower][_asset].coll = newColl;
         return newColl;
     }
@@ -1810,7 +1722,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint256 _debtIncrease
     ) external override returns (uint256) {
         _requireCallerIsBorrowerOperations();
-        uint256 newDebt = Troves[_borrower][_asset].debt.add(_debtIncrease);
+        uint256 newDebt = Troves[_borrower][_asset].debt + _debtIncrease;
         Troves[_borrower][_asset].debt = newDebt;
         return newDebt;
     }
@@ -1821,7 +1733,7 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
         uint256 _debtDecrease
     ) external override returns (uint256) {
         _requireCallerIsBorrowerOperations();
-        uint256 newDebt = Troves[_borrower][_asset].debt.sub(_debtDecrease);
+        uint256 newDebt = Troves[_borrower][_asset].debt - (_debtDecrease);
         Troves[_borrower][_asset].debt = newDebt;
         return newDebt;
     }
@@ -1831,10 +1743,26 @@ contract TroveManager is KumoBase, CheckContract, ITroveManager {
     // }
 
     function setTotalStakesSnapshot(address _asset, uint256 _value) external {
+        _requireCallerIsTroveRedemptor();
         totalStakesSnapshot[_asset] = _value;
     }
 
     function setTotalCollateralSnapshot(address _asset, uint256 _value) external {
+        _requireCallerIsTroveRedemptor();
         totalCollateralSnapshot[_asset] = _value;
+    }
+
+    function setRedistributeDebtAndCollVars(
+        address _asset,
+        uint256 _lastAssetError,
+        uint256 _lastKUSDDebtError,
+        uint256 _assetRewardPerUnitStaked,
+        uint256 _KUSDDebtRewardPerUnitStaked
+    ) external {
+        _requireCallerIsTroveRedemptor();
+        lastAssetError_Redistribution[_asset] = _lastAssetError;
+        lastKUSDDebtError_Redistribution[_asset] = _lastKUSDDebtError;
+        L_ASSETS[_asset] = L_ASSETS[_asset] + _assetRewardPerUnitStaked;
+        L_KUSDDebts[_asset] = L_KUSDDebts[_asset] + _KUSDDebtRewardPerUnitStaked;
     }
 }

@@ -71,18 +71,7 @@ interface ITroveManager is IKumoBase, ITroveEvents {
 
     // --- Functions ---
 
-    function setAddresses(
-        address _borrowerOperationsAddress,
-        address _stabilityPoolFactoryAddress,
-        address _gasPoolAddress,
-        address _collSurplusPoolAddress,
-        address _kusdTokenAddress,
-        address _sortedTrovesAddress,
-        address _kumoTokenAddress,
-        address _kumoStakingAddress,
-        address _kumoParamsAddress,
-        address _troveRedemptorAddress
-    ) external;
+    function setAddresses(address _kumoParamsAddress) external;
 
     function stabilityPoolFactory() external view returns (IStabilityPoolFactory);
 

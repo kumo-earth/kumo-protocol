@@ -69,18 +69,7 @@ contract EchidnaTester {
         troveRedemptor = new TroveRedemptor();
         sortedTroves = new SortedTroves();
 
-        troveManager.setAddresses(
-            address(borrowerOperations),
-            address(stabilityPoolFactory),
-            address(gasPool),
-            address(collSurplusPool),
-            address(kusdToken),
-            address(sortedTroves),
-            address(0),
-            address(0),
-            address(kumoParams),
-            address(troveRedemptor)
-        );
+        troveManager.setAddresses(address(kumoParams));
 
         troveRedemptor.setAddresses(
             address(troveManager),

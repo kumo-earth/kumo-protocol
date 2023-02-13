@@ -3,10 +3,17 @@
 pragma solidity ^0.8.11;
 
 import "./IActivePool.sol";
+import "./IBorrowerOperations.sol";
+import "./ICollSurplusPool.sol";
 import "./IDefaultPool.sol";
 import "./IPriceFeed.sol";
 import "./IKumoBase.sol";
-import "./IStabilityPool.sol";
+import "./IKUSDToken.sol";
+import "./IStabilityPoolFactory.sol";
+import "./ISortedTroves.sol";
+import "./IKUMOToken.sol";
+import "./IKUMOStaking.sol";
+import "./ITroveRedemptor.sol";
 
 interface IKumoParameters {
     error SafeCheckError(string parameter, uint256 valueEntered, uint256 minValue, uint256 maxValue);
@@ -21,6 +28,19 @@ interface IKumoParameters {
     event RedemptionFeeFloorChanged(uint256 oldRedemptionFeeFloor, uint256 newRedemptionFeeFloor);
     event RedemptionBlockRemoved(address _asset);
     event PriceFeedChanged(address indexed addr);
+
+    event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
+    event PriceFeedAddressChanged(address _newPriceFeedAddress);
+    event KUSDTokenAddressChanged(address _newKUSDTokenAddress);
+    event ActivePoolAddressChanged(address _activePoolAddress);
+    event DefaultPoolAddressChanged(address _defaultPoolAddress);
+    event StabilityPoolFactoryAddressChanged(address _stabilityPoolFactoryAddress);
+    event GasPoolAddressChanged(address _gasPoolAddress);
+    event CollSurplusPoolAddressChanged(address _collSurplusPoolAddress);
+    event SortedTrovesAddressChanged(address _sortedTrovesAddress);
+    event KUMOTokenAddressChanged(address _kumoTokenAddress);
+    event KUMOStakingAddressChanged(address _kumoStakingAddress);
+    event TroveRedemptorAddressChanged(address _troveRedemptorAddress);
 
     function BOOTSTRAP_PERIOD() external view returns (uint256);
 
@@ -54,10 +74,37 @@ interface IKumoParameters {
 
     function priceFeed() external view returns (IPriceFeed);
 
+    function borrowerOperations() external view returns (IBorrowerOperations);
+
+    function collSurplusPool() external view returns (ICollSurplusPool);
+
+    function kusdToken() external view returns (IKUSDToken);
+
+    function stabilityPoolFactory() external view returns (IStabilityPoolFactory);
+
+    function gasPoolAddress() external view returns (address);
+
+    function sortedTroves() external view returns (ISortedTroves);
+
+    function kumoToken() external view returns (IKUMOToken);
+
+    function kumoStaking() external view returns (IKUMOStaking);
+
+    function troveRedemptor() external view returns (ITroveRedemptor);
+
     function setAddresses(
         address _activePool,
         address _defaultPool,
-        address _priceFeed
+        address _gasPoolAddress,
+        address _priceFeed,
+        address _borrowerOperationsAddress,
+        address _collSurplusPoolAddress,
+        address _kusdTokenAddress,
+        address _stabilityPoolFactoryAddress,
+        address _sortedTrovesAddress,
+        address _kumoTokenAddress,
+        address _kumoStakingAddress,
+        address _troveRedemptorAddress
     ) external;
 
     function setPriceFeed(address _priceFeed) external;

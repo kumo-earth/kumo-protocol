@@ -12,8 +12,6 @@ import "./Dependencies/KumoBase.sol";
 import "./Dependencies/TroveManagerModel.sol";
 
 contract TroveRedemptor is KumoBase, ITroveRedemptor {
-    using SafeMath for uint256;
-
     TroveManager private troveManager;
     ISortedTroves private sortedTroves;
     IKUSDToken private kusdToken;
@@ -32,7 +30,7 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
         address _kusdTokenAddress,
         address _collSurplusPoolAddress,
         address _kumoParamsAddress
-    ) external {
+    ) external onlyOwner {
         troveManager = TroveManager(_troveManagerAddress);
         kumoParams = IKumoParameters(_kumoParamsAddress);
         kusdToken = IKUSDToken(_kusdTokenAddress);
@@ -117,10 +115,10 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
 
             if (singleRedemption.cancelledPartial) break; // Partial redemption was cancelled (out-of-date hint, or new net debt < minimum), therefore we could not redeem from the last Trove
 
-            totals.totalKUSDToRedeem = totals.totalKUSDToRedeem.add(singleRedemption.KUSDLot);
-            totals.totalAssetDrawn = totals.totalAssetDrawn.add(singleRedemption.AssetLot);
+            totals.totalKUSDToRedeem = totals.totalKUSDToRedeem + (singleRedemption.KUSDLot);
+            totals.totalAssetDrawn = totals.totalAssetDrawn + (singleRedemption.AssetLot);
 
-            totals.remainingKUSD = totals.remainingKUSD.sub(singleRedemption.KUSDLot);
+            totals.remainingKUSD = totals.remainingKUSD - (singleRedemption.KUSDLot);
             currentBorrower = nextUserToCheck;
         }
         require(totals.totalAssetDrawn > 0, "TroveManager: Unable to redeem any amount");
@@ -167,21 +165,18 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
         // Determine the remaining amount (lot) to be redeemed, capped by the entire debt of the Trove minus the liquidation reserve
         singleRedemption.KUSDLot = KumoMath._min(
             _maxKUSDamount,
-            (troveManager.getTroveDebt(vars._asset, vars._borrower)).sub(
-                kumoParams.KUSD_GAS_COMPENSATION(_asset)
-            )
+            (troveManager.getTroveDebt(vars._asset, vars._borrower)) -
+                (kumoParams.KUSD_GAS_COMPENSATION(_asset))
         );
 
         // Get the AssetLot of equivalent value in USD
-        singleRedemption.AssetLot = singleRedemption.KUSDLot.mul(DECIMAL_PRECISION).div(_price);
+        singleRedemption.AssetLot = (singleRedemption.KUSDLot * (DECIMAL_PRECISION)) / (_price);
 
         // Decrease the debt and collateral of the current Trove according to the KUSD lot and corresponding ETH to send
-        uint256 newDebt = (troveManager.getTroveDebt(vars._asset, vars._borrower)).sub(
-            singleRedemption.KUSDLot
-        );
-        uint256 newColl = (troveManager.getTroveColl(vars._asset, vars._borrower)).sub(
-            singleRedemption.AssetLot
-        );
+        uint256 newDebt = (troveManager.getTroveDebt(vars._asset, vars._borrower)) -
+            (singleRedemption.KUSDLot);
+        uint256 newColl = (troveManager.getTroveColl(vars._asset, vars._borrower)) -
+            (singleRedemption.AssetLot);
 
         if (newDebt == kumoParams.KUSD_GAS_COMPENSATION(_asset)) {
             troveManager.executeFullRedemption(vars._asset, vars._borrower, newColl);
@@ -268,10 +263,8 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
 
         // Move liquidated ETH and KUSD to the appropriate pools
         stabilityPoolCached.offset(totals.totalDebtToOffset, totals.totalCollToSendToSP);
-        troveManager.redistributeDebtAndColl(
+        _redistributeDebtAndColl(
             _asset,
-            activePoolCached,
-            defaultPoolCached,
             totals.totalDebtToRedistribute,
             totals.totalCollToRedistribute
         );
@@ -279,30 +272,14 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
             activePoolCached.sendAsset(_asset, address(collSurplusPool), totals.totalCollSurplus);
         }
 
-        // Update system snapshots
-        troveManager.updateSystemSnapshots_excludeCollRemainder(
-            _asset,
-            totals.totalCollGasCompensation
-        );
-
-        vars.liquidatedDebt = totals.totalDebtInSequence;
-        vars.liquidatedColl = totals.totalCollInSequence.sub(totals.totalCollGasCompensation).sub(
-            totals.totalCollSurplus
-        );
-        emit Liquidation(
-            _asset,
-            vars.liquidatedDebt,
-            vars.liquidatedColl,
-            totals.totalCollGasCompensation,
-            totals.totalkusdGasCompensation
-        );
-
-        // Send gas compensation to caller
-        troveManager.sendGasCompensation(
+        troveManager.finalizeLiquidateTroves(
             _asset,
             _caller,
-            totals.totalkusdGasCompensation,
-            totals.totalCollGasCompensation
+            totals.totalCollGasCompensation,
+            totals.totalDebtInSequence,
+            totals.totalCollInSequence,
+            totals.totalCollSurplus,
+            totals.totalkusdGasCompensation
         );
     }
 
@@ -316,7 +293,6 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
         address _caller
     ) external onlyTroveManager {
         IActivePool activePoolCached = kumoParams.activePool();
-        IDefaultPool defaultPoolCached = kumoParams.defaultPool();
         IStabilityPool stabilityPoolCached = stabilityPoolFactory.getStabilityPoolByAsset(_asset);
 
         LocalVariables_OuterLiquidationFunction memory vars;
@@ -349,10 +325,8 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
 
         // Move liquidated ETH and KUSD to the appropriate pools
         stabilityPoolCached.offset(totals.totalDebtToOffset, totals.totalCollToSendToSP);
-        troveManager.redistributeDebtAndColl(
+        _redistributeDebtAndColl(
             _asset,
-            activePoolCached,
-            defaultPoolCached,
             totals.totalDebtToRedistribute,
             totals.totalCollToRedistribute
         );
@@ -371,32 +345,45 @@ contract TroveRedemptor is KumoBase, ITroveRedemptor {
         );
     }
 
-    /*
-     * Updates snapshots of system total stakes and total collateral, excluding a given collateral remainder from the calculation.
-     * Used in a liquidation sequence.
-     *
-     * The calculation excludes a portion of collateral that is in the ActivePool:
-     *
-     * the total ETH gas compensation from the liquidation sequence
-     *
-     * The ETH as compensation must be excluded as it is always sent out at the very end of the liquidation sequence.
-     */
-    // function updateSystemSnapshots_excludeCollRemainder(address _asset, uint256 _collRemainder)
-    //     external
-    // {
-    //     troveManager.setTotalStakesSnapshot(_asset, troveManager.totalStakes(_asset));
+    function _redistributeDebtAndColl(
+        address _asset,
+        uint256 _debt,
+        uint256 _coll
+    ) internal {
+        if (_debt == 0) {
+            return;
+        }
 
-    //     uint256 activeColl = kumoParams.activePool().getAssetBalance(_asset);
-    //     uint256 liquidatedColl = kumoParams.defaultPool().getAssetBalance(_asset);
-    //     troveManager.setTotalCollateralSnapshot(
-    //         _asset,
-    //         activeColl.sub(_collRemainder).add(liquidatedColl)
-    //     );
+        /*
+         * Add distributed coll and debt rewards-per-unit-staked to the running totals. Division uses a "feedback"
+         * error correction, to keep the cumulative error low in the running totals L_ASSETS and L_KUSDDebt:
+         *
+         * 1) Form numerators which compensate for the floor division errors that occurred the last time this
+         * function was called.
+         * 2) Calculate "per-unit-staked" ratios.
+         * 3) Multiply each ratio back by its denominator, to reveal the current floor division error.
+         * 4) Store these errors for use in the next correction when this function is called.
+         * 5) Note: static analysis tools complain about this "division before multiplication", however, it is intended.
+         */
+        uint256 ETHNumerator = _coll *
+            (DECIMAL_PRECISION) +
+            (troveManager.lastAssetError_Redistribution(_asset));
+        uint256 KUSDDebtNumerator = _debt *
+            (DECIMAL_PRECISION) +
+            (troveManager.lastKUSDDebtError_Redistribution(_asset));
 
-    //     emit SystemSnapshotsUpdated(
-    //         _asset,
-    //         troveManager.totalStakesSnapshot(_asset),
-    //         troveManager.totalCollateralSnapshot(_asset)
-    //     );
-    // }
+        // Get the per-unit-staked terms
+        uint256 AssetRewardPerUnitStaked = ETHNumerator / (troveManager.totalStakes(_asset));
+        uint256 KUSDDebtRewardPerUnitStaked = KUSDDebtNumerator / (troveManager.totalStakes(_asset));
+
+        troveManager.setRedistributeDebtAndCollVars(
+            _asset,
+            ETHNumerator - (AssetRewardPerUnitStaked * (troveManager.totalStakes(_asset))),
+            KUSDDebtNumerator - (KUSDDebtRewardPerUnitStaked * (troveManager.totalStakes(_asset))),
+            AssetRewardPerUnitStaked,
+            KUSDDebtRewardPerUnitStaked
+        );
+
+        troveManager.finalizeRedistributeDebtAndColl(_asset, _debt, _coll);
+    }
 }
