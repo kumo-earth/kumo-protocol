@@ -2,9 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import "./ITroveEvents.sol";
-
-interface ITroveRedemptor is ITroveEvents {
+interface ITroveRedemptor {
     function setAddresses(
         address _troveManagerAddress,
         address _sortedTrovesAddress,

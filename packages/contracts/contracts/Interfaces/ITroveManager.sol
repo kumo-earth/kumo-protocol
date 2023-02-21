@@ -7,10 +7,9 @@ import "./IStabilityPoolFactory.sol";
 import "./IKUSDToken.sol";
 import "./IKUMOToken.sol";
 import "./IKUMOStaking.sol";
-import "./ITroveEvents.sol";
 
 // Common interface for the Trove Manager.
-interface ITroveManager is IKumoBase, ITroveEvents {
+interface ITroveManager is IKumoBase {
     enum Status {
         nonExistent,
         active,

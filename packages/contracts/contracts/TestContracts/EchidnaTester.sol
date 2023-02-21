@@ -2,8 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import "../TroveManager.sol";
-import "../TroveRedemptor.sol";
+import "../TroveManagerDiamond.sol";
 import "../BorrowerOperations.sol";
 import "../ActivePool.sol";
 import "../DefaultPool.sol";
@@ -16,6 +15,8 @@ import "../SortedTroves.sol";
 import "./EchidnaProxy.sol";
 import "../KumoParameters.sol";
 import "../Interfaces/IStabilityPool.sol";
+import "../Interfaces/IDiamond.sol";
+import "../Interfaces/ITroveManagerDiamond.sol";
 
 //import "../Dependencies/console.sol";
 
@@ -32,7 +33,7 @@ contract EchidnaTester {
     uint256 private CCR;
     uint256 private KUSD_GAS_COMPENSATION;
 
-    TroveManager public troveManager;
+    TroveManagerDiamond public troveManager;
     BorrowerOperations public borrowerOperations;
     ActivePool public activePool;
     DefaultPool public defaultPool;
@@ -44,14 +45,13 @@ contract EchidnaTester {
     PriceFeedTestnet priceFeedTestnet;
     SortedTroves sortedTroves;
     KumoParameters kumoParams;
-    TroveRedemptor troveRedemptor;
 
     EchidnaProxy[NUMBER_OF_ACTORS] public echidnaProxies;
 
     uint256 private numberOfTroves;
 
-    constructor(address _asset) payable {
-        troveManager = new TroveManager();
+    constructor(address _asset, IDiamond.FacetCut[] memory _diamondCut, DiamondArgs memory _args) payable {  
+        troveManager = new TroveManagerDiamond(_diamondCut, _args);
         borrowerOperations = new BorrowerOperations();
         activePool = new ActivePool();
         defaultPool = new DefaultPool();
@@ -66,18 +66,10 @@ contract EchidnaTester {
 
         collSurplusPool = new CollSurplusPool();
         priceFeedTestnet = new PriceFeedTestnet();
-        troveRedemptor = new TroveRedemptor();
         sortedTroves = new SortedTroves();
 
-        troveManager.setAddresses(address(kumoParams));
-
-        troveRedemptor.setAddresses(
-            address(troveManager),
-            address(sortedTroves),
-            address(stabilityPoolFactory),
-            address(kusdToken),
-            address(collSurplusPool),
-            address(kumoParams)
+        address(troveManager).call(
+            abi.encodeWithSignature("setAddresses(address)", address(kumoParams))
         );
 
         borrowerOperations.setAddresses(
@@ -97,8 +89,7 @@ contract EchidnaTester {
             address(stabilityPoolFactory),
             address(defaultPool),
             address(collSurplusPool),
-            address(0), // kumoStaking
-            address(troveRedemptor)
+            address(0)
         );
         defaultPool.setAddresses(address(troveManager), address(activePool));
 
@@ -109,8 +100,7 @@ contract EchidnaTester {
             address(kusdToken),
             address(sortedTroves),
             address(0),
-            address(kumoParams),
-            address(troveRedemptor)
+            address(kumoParams)
         );
 
         collSurplusPool.setAddresses(
@@ -123,7 +113,7 @@ contract EchidnaTester {
 
         for (uint256 i = 0; i < NUMBER_OF_ACTORS; i++) {
             echidnaProxies[i] = new EchidnaProxy(
-                troveManager,
+                address(troveManager),
                 borrowerOperations,
                 stabilityPoolFactory,
                 kusdToken
@@ -245,7 +235,11 @@ contract EchidnaTester {
 
         echidnaProxy.openTrovePrx(_asset, ASSET, KUSDAmount, address(0), address(0), 0);
 
-        numberOfTroves = troveManager.getTroveOwnersCount(_asset);
+        // numberOfTroves = troveManager.getTroveOwnersCount(_asset);
+        (, bytes memory _data) = address(troveManager).call(
+            abi.encodeWithSignature("getTroveOwnersCount(address)", _asset)
+        );
+        numberOfTroves = abi.decode(_data, (uint));
         assert(numberOfTroves > 0);
         // canary
         //assert(numberOfTroves == 0);
@@ -485,14 +479,14 @@ contract EchidnaTester {
         return true;
     }
 
-    function echidna_troves_order(address _asset) external view returns (bool) {
+    function echidna_troves_order(address _asset) external returns (bool) {
         address currentTrove = sortedTroves.getFirst(_asset);
         address nextTrove = sortedTroves.getNext(_asset, currentTrove);
 
         while (currentTrove != address(0) && nextTrove != address(0)) {
             if (
-                troveManager.getNominalICR(_asset, nextTrove) >
-                troveManager.getNominalICR(_asset, currentTrove)
+                tmGetNominalICR(_asset, nextTrove) >
+                tmGetNominalICR(_asset, currentTrove)
             ) {
                 return false;
             }
@@ -511,7 +505,7 @@ contract EchidnaTester {
      * Minimum debt (gas compensation)
      * Stake > 0
      */
-    function echidna_trove_properties(address _asset) public view returns (bool) {
+    function echidna_trove_properties(address _asset) public returns (bool) {
         address currentTrove = sortedTroves.getFirst(_asset);
         while (currentTrove != address(0)) {
             // Status
@@ -523,7 +517,7 @@ contract EchidnaTester {
 
             // Minimum debt (gas compensation)
             if (
-                troveManager.getTroveDebt(_asset, currentTrove) <
+                tmGetTroveDebt(_asset, currentTrove) <
                 kumoParams.KUSD_GAS_COMPENSATION(_asset)
             ) {
                 return false;
@@ -532,7 +526,7 @@ contract EchidnaTester {
             //else return false;
 
             // Stake > 0
-            if (troveManager.getTroveStake(_asset, currentTrove) == 0) {
+            if (tmGetTroveStake(_asset, currentTrove) == 0) {
                 return false;
             }
             // Uncomment to check that the condition is meaningful
@@ -627,4 +621,28 @@ contract EchidnaTester {
         return true;
     }
     */
+
+    function tmGetNominalICR(address _asset, address _borrower) internal returns(uint256 _result) {
+        (, bytes memory _data) = address(troveManager).call(
+            abi.encodeWithSignature("getNominalICR(address,address)", _asset, _borrower)
+        );
+
+        _result = abi.decode(_data, (uint));
+    }
+
+    function tmGetTroveDebt(address _asset, address _borrower) internal returns(uint256 _result) {
+        (, bytes memory _data) = address(troveManager).call(
+            abi.encodeWithSignature("getTroveDebt(address,address)", _asset, _borrower)
+        );
+
+        _result = abi.decode(_data, (uint));
+    }
+
+    function tmGetTroveStake(address _asset, address _borrower) internal returns(uint256 _result) {
+        (, bytes memory _data) = address(troveManager).call(
+            abi.encodeWithSignature("getTroveStake(address,address)", _asset, _borrower)
+        );
+
+        _result = abi.decode(_data, (uint));
+    }
 }

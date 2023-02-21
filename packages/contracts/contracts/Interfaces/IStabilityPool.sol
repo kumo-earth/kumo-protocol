@@ -90,8 +90,7 @@ interface IStabilityPool is IDeposit {
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
         address _communityIssuanceAddress,
-        address _kumoParamsAddress,
-        address _troveRedemptorAddress
+        address _kumoParamsAddress
     ) external;
 
     /*

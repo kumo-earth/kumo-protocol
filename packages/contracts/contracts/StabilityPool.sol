@@ -8,7 +8,6 @@ import "./Interfaces/IBorrowerOperations.sol";
 import "./Interfaces/IStabilityPool.sol";
 import "./Interfaces/IBorrowerOperations.sol";
 import "./Interfaces/ITroveManager.sol";
-import "./Interfaces/ITroveRedemptor.sol";
 import "./Interfaces/IKUSDToken.sol";
 import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/ICommunityIssuance.sol";
@@ -163,8 +162,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
     ITroveManager public troveManager;
 
-    ITroveRedemptor troveRedemptor;
-
     IKUSDToken public kusdToken;
 
     // Needed to check if there are pending liquidations
@@ -263,8 +260,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
         address _communityIssuanceAddress,
-        address _kumoParamsAddress,
-        address _troveRedemptorAddress
+        address _kumoParamsAddress
     ) external override onlyOwner {
         // require(!isInitialized, "Already initialized");
         checkContract(_borrowerOperationsAddress);
@@ -273,7 +269,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         checkContract(_sortedTrovesAddress);
         checkContract(_communityIssuanceAddress);
         checkContract(_kumoParamsAddress);
-        checkContract(_troveRedemptorAddress);
 
         // isInitialized = true;
         // __Ownable_init();
@@ -284,7 +279,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
         borrowerOperations = IBorrowerOperations(_borrowerOperationsAddress);
         troveManager = ITroveManager(_troveManagerAddress);
-        troveRedemptor = ITroveRedemptor(_troveRedemptorAddress);
         kusdToken = IKUSDToken(_kusdTokenAddress);
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         communityIssuance = ICommunityIssuance(_communityIssuanceAddress);
@@ -520,7 +514,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
      * Only called by liquidation functions in the TroveManager.
      */
     function offset(uint256 _debtToOffset, uint256 _collToAdd) external override {
-        _requireCallerIsTroveManagerorTroveRedemptor();
+        _requireCallerIsTroveManager();
         uint256 totalKUSD = totalKUSDDeposits; // cached to save an SLOAD
         if (totalKUSD == 0 || _debtToOffset == 0) {
             return;
@@ -1043,9 +1037,9 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         );
     }
 
-    function _requireCallerIsTroveManagerorTroveRedemptor() internal view {
+    function _requireCallerIsTroveManager() internal view {
         require(
-            msg.sender == address(troveManager) || msg.sender == address(troveRedemptor),
+            msg.sender == address(troveManager),
             "StabilityPool: Caller is not TroveManager"
         );
     }

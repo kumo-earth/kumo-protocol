@@ -59,8 +59,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         address _stabilityPoolFactoryAddress,
         address _defaultPoolAddress,
         address _collSurplusPoolAddress,
-        address _kumoStakingAddress,
-        address _troveRedemptorAddress
+        address _kumoStakingAddress
     ) external onlyOwner {
         checkContract(_borrowerOperationsAddress);
         checkContract(_troveManagerAddress);
@@ -68,7 +67,6 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         checkContract(_defaultPoolAddress);
         checkContract(_collSurplusPoolAddress);
         checkContract(_kumoStakingAddress);
-        checkContract(_troveRedemptorAddress);
 
         // __Ownable_init();
 
@@ -78,7 +76,6 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         defaultPoolAddress = _defaultPoolAddress;
         collSurplusPoolAddress = _collSurplusPoolAddress;
         kumoStakingAddress = _kumoStakingAddress;
-        troveRedemptorAddress = _troveRedemptorAddress;
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit TroveManagerAddressChanged(_troveManagerAddress);
