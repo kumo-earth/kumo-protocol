@@ -34,7 +34,7 @@ chai.use(chaiSpies);
 // Extra ETH sent to users to be spent on gas
 const GAS_BUDGET = Decimal.from(0.1); // ETH
 
-const STARTING_BALANCE = Decimal.from(100);
+const STARTING_BALANCE = Decimal.from(1000);
 
 
 const connectToDeployment = async (
@@ -212,6 +212,7 @@ describe("EthersKumoGasChecks", async () => {
                         });
                     }
                 }
+
                 expect(`${await user.getBalance()}`).to.equal(`${targetBalance}`);
             });
             it(`should redeem using the maximum iterations and almost all gas ${mockAssetContract.name}`, async () => {

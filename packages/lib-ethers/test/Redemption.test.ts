@@ -33,7 +33,7 @@ const provider = ethers.provider;
 chai.use(chaiAsPromised);
 chai.use(chaiSpies);
 
-const STARTING_BALANCE = Decimal.from(100);
+const STARTING_BALANCE = Decimal.from(1000);
 
 // Extra ETH sent to users to be spent on gas
 const GAS_BUDGET = Decimal.from(0.1); // ETH
@@ -237,7 +237,7 @@ describe("EthersKumoRedemption", async () => {
 
                 // const balance = Decimal.fromBigNumberString(`${await user.getBalance()}`);
                 const asset1Balance = await mockAsset.balanceOf(user.getAddress())
-                const expectedBalance = BigNumber.from(STARTING_BALANCE.sub(99).add(expectedDetails.collateralTaken).sub(expectedDetails.fee).hex);
+                const expectedBalance = BigNumber.from(STARTING_BALANCE.sub(999).add(expectedDetails.collateralTaken).sub(expectedDetails.fee).hex);
                 expect(`${asset1Balance}`).to.equal(`${expectedBalance}`);
 
                 // BigNumber.from(STARTING_BALANCE.sub(50).sub(1).add(0.5).hex)

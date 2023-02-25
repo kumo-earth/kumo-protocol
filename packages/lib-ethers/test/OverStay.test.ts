@@ -30,7 +30,7 @@ chai.use(chaiSpies);
 const GAS_BUDGET = Decimal.from(0.1); // ETH
 
 
-const STARTING_BALANCE = Decimal.from(100);
+const STARTING_BALANCE = Decimal.from(1000);
 
 
 const connectToDeployment = async (

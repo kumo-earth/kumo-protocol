@@ -36,7 +36,7 @@ chai.use(chaiSpies);
 // Extra ETH sent to users to be spent on gas
 const GAS_BUDGET = Decimal.from(0.1); // ETH
 
-const STARTING_BALANCE = Decimal.from(100);
+const STARTING_BALANCE = Decimal.from(1000);
 
 
 const connectToDeployment = async (
@@ -146,6 +146,7 @@ describe("EthersKumoRedemptionTruncation", async () => {
                     ...otherUsersSubset
                 ]);
                 await sendToEach(otherUsersSubset, 0.1);
+
                 await kumo.openTrove(
                     { depositCollateral: 99, borrowKUSD: 5000 },
                     mockAssetAddress,
@@ -163,6 +164,49 @@ describe("EthersKumoRedemptionTruncation", async () => {
                 });
 
                 await increaseTime(60 * 60 * 24 * 15);
+                const targetBalance = BigNumber.from(STARTING_BALANCE.hex);
+
+                const gasPrice = BigNumber.from(100e9); // 100 Gwei
+
+                const balance = await user.getBalance();
+                const txCost = gasLimit.mul(gasPrice);
+
+                if (balance.eq(targetBalance)) {
+                    return;
+                }
+
+                if (balance.gt(targetBalance) && balance.lte(targetBalance.add(txCost))) {
+                    await funder.sendTransaction({
+                        to: user.getAddress(),
+                        value: targetBalance.add(txCost).sub(balance).add(1),
+                        gasLimit,
+                        gasPrice
+                    });
+
+                    await user.sendTransaction({
+                        to: funder.getAddress(),
+                        value: 1,
+                        gasLimit,
+                        gasPrice
+                    });
+                } else {
+                    if (balance.lt(targetBalance)) {
+                        await funder.sendTransaction({
+                            to: user.getAddress(),
+                            value: targetBalance.sub(balance),
+                            gasLimit,
+                            gasPrice
+                        });
+                    } else {
+                        await user.sendTransaction({
+                            to: funder.getAddress(),
+                            value: balance.sub(targetBalance).sub(txCost),
+                            gasLimit,
+                            gasPrice
+                        });
+                    }
+                }
+                expect(`${await user.getBalance()}`).to.equal(`${targetBalance}`);
             });
 
             

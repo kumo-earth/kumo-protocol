@@ -32,7 +32,7 @@ const provider = ethers.provider;
 chai.use(chaiAsPromised);
 chai.use(chaiSpies);
 
-const STARTING_BALANCE = Decimal.from(100);
+const STARTING_BALANCE = Decimal.from(1000);
 
 
 
@@ -293,4 +293,3 @@ describe("EthersKumoStabilityPool", async () => {
 
     })
 });
-
