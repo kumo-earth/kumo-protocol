@@ -81,63 +81,7 @@ describe("EthersKumoStabilityPool", async () => {
     const connectUsers = (users: Signer[]) =>
         Promise.all(users.map(user => connectToDeployment(deployment, user)));
 
-    // before(async () => {
-    //     [deployer, funder, user, ...otherUsers] = await ethers.getSigners();
-    //     deployment = await deployKumo(deployer);
-    //     kumo = await connectToDeployment(deployment, user);
-
-    //     expect(kumo).to.be.an.instanceOf(EthersKumo);
-
-    // });
-
-    // Always setup same initial balance for user
-    // beforeEach(async () => {
-    //     const targetBalance = BigNumber.from(STARTING_BALANCE.hex);
-
-    //     const gasPrice = BigNumber.from(100e9); // 100 Gwei
-
-    //     const balance = await user.getBalance();
-    //     const txCost = gasLimit.mul(gasPrice);
-
-    //     if (balance.eq(targetBalance)) {
-    //         return;
-    //     }
-
-    //     if (balance.gt(targetBalance) && balance.lte(targetBalance.add(txCost))) {
-    //         await funder.sendTransaction({
-    //             to: user.getAddress(),
-    //             value: targetBalance.add(txCost).sub(balance).add(1),
-    //             gasLimit,
-    //             gasPrice
-    //         });
-
-    //         await user.sendTransaction({
-    //             to: funder.getAddress(),
-    //             value: 1,
-    //             gasLimit,
-    //             gasPrice
-    //         });
-    //     } else {
-    //         if (balance.lt(targetBalance)) {
-    //             await funder.sendTransaction({
-    //                 to: user.getAddress(),
-    //                 value: targetBalance.sub(balance),
-    //                 gasLimit,
-    //                 gasPrice
-    //             });
-    //         } else {
-    //             await user.sendTransaction({
-    //                 to: funder.getAddress(),
-    //                 value: balance.sub(targetBalance).sub(txCost),
-    //                 gasLimit,
-    //                 gasPrice
-    //             });
-    //         }
-    //     }
-
-    //     console.log("targetBalance", targetBalance.toString())
-    //     expect(`${await user.getBalance()}`).to.equal(`${targetBalance}`);
-    // });
+   
 
     mockAssetContracts.forEach(async mockAssetContract => {
         describe(`StabilityPool - TEST ${mockAssetContract.name}`, () => {
@@ -163,51 +107,51 @@ describe("EthersKumoStabilityPool", async () => {
                 });
             });
             // // Always setup same initial balance for user
-            // beforeEach(async () => {
-            //     const targetBalance = BigNumber.from(STARTING_BALANCE.hex);
+            beforeEach(async () => {
+                const targetBalance = BigNumber.from(STARTING_BALANCE.hex);
 
-            //     const gasPrice = BigNumber.from(100e9); // 100 Gwei
+                const gasPrice = BigNumber.from(100e9); // 100 Gwei
 
-            //     const balance = await user.getBalance();
-            //     const txCost = gasLimit.mul(gasPrice);
+                const balance = await user.getBalance();
+                const txCost = gasLimit.mul(gasPrice);
 
-            //     if (balance.eq(targetBalance)) {
-            //         return;
-            //     }
+                if (balance.eq(targetBalance)) {
+                    return;
+                }
 
-            //     if (balance.gt(targetBalance) && balance.lte(targetBalance.add(txCost))) {
-            //         await funder.sendTransaction({
-            //             to: user.getAddress(),
-            //             value: targetBalance.add(txCost).sub(balance).add(1),
-            //             gasLimit,
-            //             gasPrice
-            //         });
+                if (balance.gt(targetBalance) && balance.lte(targetBalance.add(txCost))) {
+                    await funder.sendTransaction({
+                        to: user.getAddress(),
+                        value: targetBalance.add(txCost).sub(balance).add(1),
+                        gasLimit,
+                        gasPrice
+                    });
 
-            //         await user.sendTransaction({
-            //             to: funder.getAddress(),
-            //             value: 1,
-            //             gasLimit,
-            //             gasPrice
-            //         });
-            //     } else {
-            //         if (balance.lt(targetBalance)) {
-            //             await funder.sendTransaction({
-            //                 to: user.getAddress(),
-            //                 value: targetBalance.sub(balance),
-            //                 gasLimit,
-            //                 gasPrice
-            //             });
-            //         } else {
-            //             await user.sendTransaction({
-            //                 to: funder.getAddress(),
-            //                 value: balance.sub(targetBalance).sub(txCost),
-            //                 gasLimit,
-            //                 gasPrice
-            //             });
-            //         }
-            //     }
-            //     expect(`${await user.getBalance()}`).to.equal(`${targetBalance}`);
-            // });
+                    await user.sendTransaction({
+                        to: funder.getAddress(),
+                        value: 1,
+                        gasLimit,
+                        gasPrice
+                    });
+                } else {
+                    if (balance.lt(targetBalance)) {
+                        await funder.sendTransaction({
+                            to: user.getAddress(),
+                            value: targetBalance.sub(balance),
+                            gasLimit,
+                            gasPrice
+                        });
+                    } else {
+                        await user.sendTransaction({
+                            to: funder.getAddress(),
+                            value: balance.sub(targetBalance).sub(txCost),
+                            gasLimit,
+                            gasPrice
+                        });
+                    }
+                }
+                expect(`${await user.getBalance()}`).to.equal(`${targetBalance}`);
+            });
 
             const initialTroveOfDepositor = Trove.create({
                 depositCollateral: KUSD_MINIMUM_DEBT.div(100),
