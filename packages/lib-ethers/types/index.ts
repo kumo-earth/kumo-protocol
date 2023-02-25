@@ -849,11 +849,7 @@ export interface StabilityPool
 }
 
 interface StabilityPoolFactoryCalls {
-  getCompoundedKUSDDepositByAsset(_asset: string, _depositor: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  getDepositorAssetGainByAsset(_asset: string, _depositor: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  getDepositorKUMOGainByAsset(_asset: string, _depositor: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getStabilityPoolByAsset(_asset: string, _overrides?: CallOverrides): Promise<string>;
-  getTotalKUSDDepositsByAsset(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   isOwner(_overrides?: CallOverrides): Promise<boolean>;
   isRegisteredStabilityPool(_stabilityPoolAddress: string, _overrides?: CallOverrides): Promise<boolean>;
   owner(_overrides?: CallOverrides): Promise<string>;
@@ -861,11 +857,7 @@ interface StabilityPoolFactoryCalls {
 
 interface StabilityPoolFactoryTransactions {
   createNewStabilityPool(_asset: string, _stabilityPoolAddress: string, _overrides?: Overrides): Promise<void>;
-  provideToSPbyAsset(_asset: string, _amount: BigNumberish, _frontEndTag: string, _overrides?: Overrides): Promise<void>;
-  registerFrontEndByAsset(_asset: string, _kickbackRate: BigNumberish, _overrides?: Overrides): Promise<void>;
   removeStabilityPool(_asset: string, _overrides?: Overrides): Promise<void>;
-  withdrawAssetGainToTroveByAsset(_asset: string, _upperHint: string, _lowerHint: string, _overrides?: Overrides): Promise<void>;
-  withdrawFromSPByAsset(_asset: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
 }
 
 export interface StabilityPoolFactory
