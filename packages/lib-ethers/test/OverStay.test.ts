@@ -6,8 +6,7 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { ethers, deployKumo } from "hardhat";
 
 import {
-    Decimal,
-    Decimalish
+    Decimal
 } from "@kumodao/lib-base";
 
 
@@ -16,38 +15,14 @@ import {
 } from "../src/PopulatableEthersKumo";
 
 import { _KumoDeploymentJSON } from "../src/contracts";
-import { _connectToDeployment } from "../src/EthersKumoConnection";
 import { EthersKumo } from "../src/EthersKumo";
+import { connectToDeployment, connectUsers, sendToEach, setUpInitialUserBalance } from "../testUtils";
+import { STARTING_BALANCE } from "../testUtils/constants";
+import { mockAssetContracts } from "../testUtils/types";
 
-
-const provider = ethers.provider;
 
 chai.use(chaiAsPromised);
 chai.use(chaiSpies);
-
-
-// Extra ETH sent to users to be spent on gas
-const GAS_BUDGET = Decimal.from(0.1); // ETH
-
-
-const STARTING_BALANCE = Decimal.from(100);
-
-
-const connectToDeployment = async (
-    deployment: _KumoDeploymentJSON,
-    signer: Signer,
-    frontendTag?: string
-) =>
-    EthersKumo._from(
-        _connectToDeployment(deployment, signer, {
-            userAddress: await signer.getAddress(),
-            frontendTag
-        })
-    );
-
-
-
-const mockAssetContracts = [{ name: "ctx", contract: "mockAsset1" }, { name: "cty", contract: "mockAsset2" }] as const
 
 
 // TODO make the testcases isolated
@@ -68,86 +43,30 @@ describe("EthersKumoOverStay", async () => {
 
 
 
-    const connectUsers = (users: Signer[]) =>
-        Promise.all(users.map(user => connectToDeployment(deployment, user)));
-
-
-    const sendTo = (user: Signer, value: Decimalish, nonce?: number) =>
-        funder.sendTransaction({
-            to: user.getAddress(),
-            value: Decimal.from(value).add(GAS_BUDGET).hex,
-            nonce
-        });
-
-    const sendToEach = async (users: Signer[], value: Decimalish) => {
-        const txCount = await provider.getTransactionCount(funder.getAddress());
-        const txs = await Promise.all(users.map((user, i) => sendTo(user, value, txCount + i)));
-
-        // Wait for the last tx to be mined.
-        await txs[txs.length - 1].wait();
-    };
-
-
     mockAssetContracts.forEach(async mockAssetContract => {
         describe(`when people overstay ${mockAssetContract.name}`, () => {
             before(async () => {
                 [deployer, funder, user, ...otherUsers] = await ethers.getSigners();
                 deployment = await deployKumo(deployer);
                 mockAssetAddress = deployment.addresses[mockAssetContract.contract];
+
                 const otherUsersSubset = otherUsers.slice(0, 5);
-                [deployerKumo, kumo, ...otherKumos] = await connectUsers([
+
+                kumo = await connectToDeployment(deployment, user);
+                expect(kumo).to.be.an.instanceOf(EthersKumo);
+                
+                [deployerKumo, kumo, ...otherKumos] = await connectUsers(deployment, [
                     deployer,
                     user,
                     ...otherUsersSubset
                 ]);
-
-                await sendToEach(otherUsersSubset, 0.1);
-
+                await sendToEach(otherUsersSubset, funder, 0.1);
             })
             // Always setup same initial balance for user
             beforeEach(async () => {
                 const targetBalance = BigNumber.from(STARTING_BALANCE.hex);
 
-                const gasPrice = BigNumber.from(100e9); // 100 Gwei
-
-                const balance = await user.getBalance();
-                const txCost = gasLimit.mul(gasPrice);
-
-                if (balance.eq(targetBalance)) {
-                    return;
-                }
-
-                if (balance.gt(targetBalance) && balance.lte(targetBalance.add(txCost))) {
-                    await funder.sendTransaction({
-                        to: user.getAddress(),
-                        value: targetBalance.add(txCost).sub(balance).add(1),
-                        gasLimit,
-                        gasPrice
-                    });
-
-                    await user.sendTransaction({
-                        to: funder.getAddress(),
-                        value: 1,
-                        gasLimit,
-                        gasPrice
-                    });
-                } else {
-                    if (balance.lt(targetBalance)) {
-                        await funder.sendTransaction({
-                            to: user.getAddress(),
-                            value: targetBalance.sub(balance),
-                            gasLimit,
-                            gasPrice
-                        });
-                    } else {
-                        await user.sendTransaction({
-                            to: funder.getAddress(),
-                            value: balance.sub(targetBalance).sub(txCost),
-                            gasLimit,
-                            gasPrice
-                        });
-                    }
-                }
+                await setUpInitialUserBalance(user, funder, gasLimit);
                 expect(`${await user.getBalance()}`).to.equal(`${targetBalance}`);
             });
 

@@ -1,4 +1,4 @@
-import chai, { expect, assert } from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import chaiSpies from "chai-spies";
 import { Signer } from "@ethersproject/abstract-signer";
@@ -11,32 +11,14 @@ import {
 import { _KumoDeploymentJSON } from "../src/contracts";
 import { _connectToDeployment } from "../src/EthersKumoConnection";
 import { EthersKumo } from "../src/EthersKumo";
+import { connectToDeployment, connectUsers, increaseTime, setUpInitialUserBalance } from "../testUtils";
+import { mockAssetContracts } from "../testUtils/types";
+import { BigNumber } from "ethers";
+import { STARTING_BALANCE } from "../testUtils/constants";
 
-
-const provider = ethers.provider;
 
 chai.use(chaiAsPromised);
 chai.use(chaiSpies);
-
-
-
-const connectToDeployment = async (
-    deployment: _KumoDeploymentJSON,
-    signer: Signer,
-    frontendTag?: string
-) =>
-    EthersKumo._from(
-        _connectToDeployment(deployment, signer, {
-            userAddress: await signer.getAddress(),
-            frontendTag
-        })
-    );
-
-const increaseTime = async (timeJumpSeconds: number) => {
-    await provider.send("evm_increaseTime", [timeJumpSeconds]);
-};
-
-const mockAssetContracts = [{ name: "ctx", contract: "mockAsset1" }, { name: "cty", contract: "mockAsset2" }] as const
 
 
 describe("EthersKumoMining", async () => {
@@ -53,21 +35,30 @@ describe("EthersKumoMining", async () => {
 
     let mockAssetAddress: string;
 
+    const gasLimit = BigNumber.from(2500000);
 
-
-    const connectUsers = (users: Signer[]) =>
-        Promise.all(users.map(user => connectToDeployment(deployment, user)));
 
     mockAssetContracts.forEach(async mockAssetContract => {
         describe(`Liquidity mining ${mockAssetContract.name}`, function () {
-
             before(async function () {
                 [deployer, funder, user, ...otherUsers] = await ethers.getSigners();
                 deployment = await deployKumo(deployer);
                 mockAssetAddress = deployment.addresses[mockAssetContract.contract];
-                [deployerKumo, kumo] = await connectUsers([deployer, user]);
+
+                kumo = await connectToDeployment(deployment, user);
+                expect(kumo).to.be.an.instanceOf(EthersKumo);
+                
+                [deployerKumo, kumo] = await connectUsers(deployment, [deployer, user]);
             });
-            
+
+             // Always setup same initial balance for user
+             beforeEach(async () => {
+                const targetBalance = BigNumber.from(STARTING_BALANCE.hex);
+
+                await setUpInitialUserBalance(user, funder, gasLimit);
+                expect(`${await user.getBalance()}`).to.equal(`${targetBalance}`);
+            });
+
             const someUniTokens = 1000;
 
             it(`should obtain some UNI LP tokens ${mockAssetContract.name}`, async () => {

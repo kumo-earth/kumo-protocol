@@ -1,4 +1,4 @@
-import chai, { expect, assert } from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import chaiSpies from "chai-spies";
 import { BigNumber } from "@ethersproject/bignumber";
@@ -7,11 +7,7 @@ import { ethers, network, deployKumo } from "hardhat";
 
 import {
     Decimal,
-    Decimalish,
     Trove,
-    KumoReceipt,
-    SuccessfulReceipt,
-    SentKumoTransaction,
     KUSD_MINIMUM_NET_DEBT
 } from "@kumodao/lib-base";
 
@@ -21,8 +17,10 @@ import {
 } from "../src/PopulatableEthersKumo";
 
 import { _KumoDeploymentJSON } from "../src/contracts";
-import { _connectToDeployment } from "../src/EthersKumoConnection";
 import { EthersKumo } from "../src/EthersKumo";
+import { connectToDeployment, connectUsers, increaseTime, sendToEach, setUpInitialUserBalance, waitForSuccess } from "../testUtils";
+import { mockAssetContracts } from "../testUtils/types";
+import { STARTING_BALANCE } from "../testUtils/constants";
 
 
 const ERC20ABI = require("../abi/ERC20Test.json")
@@ -31,49 +29,6 @@ const provider = ethers.provider;
 
 chai.use(chaiAsPromised);
 chai.use(chaiSpies);
-
-
-// Extra ETH sent to users to be spent on gas
-const GAS_BUDGET = Decimal.from(0.1); // ETH
-
-const STARTING_BALANCE = Decimal.from(100);
-
-
-const connectToDeployment = async (
-    deployment: _KumoDeploymentJSON,
-    signer: Signer,
-    frontendTag?: string
-) =>
-    EthersKumo._from(
-        _connectToDeployment(deployment, signer, {
-            userAddress: await signer.getAddress(),
-            frontendTag
-        })
-    );
-
-const increaseTime = async (timeJumpSeconds: number) => {
-    await provider.send("evm_increaseTime", [timeJumpSeconds]);
-};
-
-function assertStrictEqual<T, U extends T>(
-    actual: T,
-    expected: U,
-    message?: string
-): asserts actual is U {
-    assert.strictEqual(actual, expected, message);
-}
-
-
-const waitForSuccess = async <T extends KumoReceipt>(
-    tx: Promise<SentKumoTransaction<unknown, T>>
-) => {
-    const receipt = await (await tx).waitForReceipt();
-    assertStrictEqual(receipt.status, "succeeded" as const);
-
-    return receipt as Extract<T, SuccessfulReceipt>;
-};
-
-const mockAssetContracts = [{ name: "ctx", contract: "mockAsset1" }, { name: "cty", contract: "mockAsset2" }] as const
 
 
 describe("EthersKumoRedemptionTruncation", async () => {
@@ -95,26 +50,6 @@ describe("EthersKumoRedemptionTruncation", async () => {
     const gasLimit = BigNumber.from(2500000);
 
 
-
-    const connectUsers = (users: Signer[]) =>
-        Promise.all(users.map(user => connectToDeployment(deployment, user)));
-
-
-    const sendTo = (user: Signer, value: Decimalish, nonce?: number) =>
-        funder.sendTransaction({
-            to: user.getAddress(),
-            value: Decimal.from(value).add(GAS_BUDGET).hex,
-            nonce
-        });
-
-    const sendToEach = async (users: Signer[], value: Decimalish) => {
-        const txCount = await provider.getTransactionCount(funder.getAddress());
-        const txs = await Promise.all(users.map((user, i) => sendTo(user, value, txCount + i)));
-
-        // Wait for the last tx to be mined.
-        await txs[txs.length - 1].wait();
-    };
-
     before(async function () {
         if (network.name !== "hardhat") {
             // Redemptions are only allowed after a bootstrap phase of 2 weeks.
@@ -134,18 +69,24 @@ describe("EthersKumoRedemptionTruncation", async () => {
             const netDebtPerTrove = Trove.create(troveCreationParams).netDebt;
             const amountToAttempt = Decimal.from(3000);
             const expectedRedeemable = netDebtPerTrove.mul(2).sub(KUSD_MINIMUM_NET_DEBT);
+            
             beforeEach(async () => {
                 // Deploy new instances of the contracts, for a clean state
                 deployment = await deployKumo(deployer);
                 mockAssetAddress = deployment.addresses[mockAssetContract.contract];
                 mockAsset = new ethers.Contract(mockAssetAddress, ERC20ABI, provider.getSigner())
                 const otherUsersSubset = otherUsers.slice(0, 3);
-                [deployerKumo, kumo, ...otherKumos] = await connectUsers([
+
+                kumo = await connectToDeployment(deployment, user);
+                expect(kumo).to.be.an.instanceOf(EthersKumo);
+
+                [deployerKumo, kumo, ...otherKumos] = await connectUsers(deployment, [
                     deployer,
                     user,
                     ...otherUsersSubset
                 ]);
-                await sendToEach(otherUsersSubset, 0.1);
+                await sendToEach(otherUsersSubset, funder, 0.1);
+
                 await kumo.openTrove(
                     { depositCollateral: 99, borrowKUSD: 5000 },
                     mockAssetAddress,
@@ -163,10 +104,11 @@ describe("EthersKumoRedemptionTruncation", async () => {
                 });
 
                 await increaseTime(60 * 60 * 24 * 15);
+                const targetBalance = BigNumber.from(STARTING_BALANCE.hex);
+
+                await setUpInitialUserBalance(user, funder, gasLimit);
+                expect(`${await user.getBalance()}`).to.equal(`${targetBalance}`);
             });
-
-            
-
 
             it(`should truncate the amount if it would put the last Trove below the min debt ${mockAssetContract.name}`, async () => {
                 const redemption = await kumo.populate.redeemKUSD(mockAssetAddress, amountToAttempt);
