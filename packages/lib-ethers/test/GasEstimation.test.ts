@@ -1,4 +1,4 @@
-import chai, { expect, assert } from "chai";
+import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import chaiSpies from "chai-spies";
 import { BigNumber } from "@ethersproject/bignumber";
@@ -6,15 +6,8 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { ethers, network, deployKumo } from "hardhat";
 
 import {
-    Decimal,
-    Decimalish,
-    Trove,
-    KumoReceipt,
-    SuccessfulReceipt,
-    SentKumoTransaction,
-    TroveCreationParams
+    Trove
 } from "@kumodao/lib-base";
-
 
 import {
     _redeemMaxIterations
@@ -23,57 +16,15 @@ import {
 import { _KumoDeploymentJSON } from "../src/contracts";
 import { _connectToDeployment } from "../src/EthersKumoConnection";
 import { EthersKumo } from "../src/EthersKumo";
+import { STARTING_BALANCE } from "../testUtils/constants";
+import { assertDefined, connectToDeployment, connectUsers, increaseTime, openTroves, setUpInitialUserBalance, waitForSuccess } from "../testUtils";
+import { mockAssetContracts } from "../testUtils/types";
 
 
 const provider = ethers.provider;
 
 chai.use(chaiAsPromised);
 chai.use(chaiSpies);
-
-
-// Extra ETH sent to users to be spent on gas
-const GAS_BUDGET = Decimal.from(0.1); // ETH
-const STARTING_BALANCE = Decimal.from(1000);
-
-const connectToDeployment = async (
-    deployment: _KumoDeploymentJSON,
-    signer: Signer,
-    frontendTag?: string
-) =>
-    EthersKumo._from(
-        _connectToDeployment(deployment, signer, {
-            userAddress: await signer.getAddress(),
-            frontendTag
-        })
-    );
-
-const increaseTime = async (timeJumpSeconds: number) => {
-    await provider.send("evm_increaseTime", [timeJumpSeconds]);
-};
-
-function assertStrictEqual<T, U extends T>(
-    actual: T,
-    expected: U,
-    message?: string
-): asserts actual is U {
-    assert.strictEqual(actual, expected, message);
-}
-
-function assertDefined<T>(actual: T | undefined): asserts actual is T {
-    assert(actual !== undefined);
-}
-
-
-const waitForSuccess = async <T extends KumoReceipt>(
-    tx: Promise<SentKumoTransaction<unknown, T>>
-) => {
-    const receipt = await (await tx).waitForReceipt();
-    assertStrictEqual(receipt.status, "succeeded" as const);
-
-    return receipt as Extract<T, SuccessfulReceipt>;
-};
-
-const mockAssetContracts = [{ name: "ctx", contract: "mockAsset1" }, { name: "cty", contract: "mockAsset2" }] as const
 
 
 describe("EthersKumoGasEstimation", async () => {
@@ -88,36 +39,9 @@ describe("EthersKumoGasEstimation", async () => {
     let kumo: EthersKumo;
     let otherKumos: EthersKumo[];
 
-
     let mockAssetAddress: string;
 
     const gasLimit = BigNumber.from(2500000);
-
-
-
-    const connectUsers = (users: Signer[]) =>
-        Promise.all(users.map(user => connectToDeployment(deployment, user)));
-
-    const openTroves = (users: Signer[], params: TroveCreationParams<Decimalish>[], mockAssetAddress: string) =>
-        params
-            .map(
-                (params, i) => () =>
-                    Promise.all([
-                        connectToDeployment(deployment, users[i]),
-                        sendTo(users[i], 0.1).then(tx => tx.wait())
-                    ]).then(async ([kumo]) => {
-                        await kumo.openTrove(params, mockAssetAddress, undefined, { gasLimit });
-                    })
-            )
-            .reduce((a, b) => a.then(b), Promise.resolve());
-
-
-    const sendTo = (user: Signer, value: Decimalish, nonce?: number) =>
-        funder.sendTransaction({
-            to: user.getAddress(),
-            value: Decimal.from(value).add(GAS_BUDGET).hex,
-            nonce
-        });
 
 
     mockAssetContracts.forEach(async mockAssetContract => {
@@ -133,71 +57,36 @@ describe("EthersKumoGasEstimation", async () => {
                 [deployer, funder, user, ...otherUsers] = await ethers.getSigners();
                 deployment = await deployKumo(deployer);
                 mockAssetAddress = deployment.addresses[mockAssetContract.contract];
+                kumo = await connectToDeployment(deployment, user);
+
+                expect(kumo).to.be.an.instanceOf(EthersKumo);
 
                 [rudeUser, ...fiveOtherUsers] = otherUsers.slice(0, 6);
 
-                [deployerKumo, kumo, rudeKumo, ...otherKumos] = await connectUsers([
+                [deployerKumo, kumo, rudeKumo, ...otherKumos] = await connectUsers(deployment, [
                     deployer,
                     user,
                     rudeUser,
                     ...fiveOtherUsers
                 ]);
 
-                await openTroves(fiveOtherUsers, [
+                await openTroves(deployment, fiveOtherUsers, funder, [
                     { depositCollateral: 20, borrowKUSD: 2040 },
                     { depositCollateral: 20, borrowKUSD: 2050 },
                     { depositCollateral: 20, borrowKUSD: 2060 },
                     { depositCollateral: 20, borrowKUSD: 2070 },
                     { depositCollateral: 20, borrowKUSD: 2080 }
-                ], mockAssetAddress);
+                ], mockAssetAddress, gasLimit);
 
                 await increaseTime(60 * 60 * 24 * 15);
-                
+
             });
-           // Always setup same initial balance for user
+
+            // Always setup same initial balance for user
             beforeEach(async () => {
                 const targetBalance = BigNumber.from(STARTING_BALANCE.hex);
 
-                const gasPrice = BigNumber.from(100e9); // 100 Gwei
-
-                const balance = await user.getBalance();
-                const txCost = gasLimit.mul(gasPrice);
-
-                if (balance.eq(targetBalance)) {
-                    return;
-                }
-
-                if (balance.gt(targetBalance) && balance.lte(targetBalance.add(txCost))) {
-                    await funder.sendTransaction({
-                        to: user.getAddress(),
-                        value: targetBalance.add(txCost).sub(balance).add(1),
-                        gasLimit,
-                        gasPrice
-                    });
-
-                    await user.sendTransaction({
-                        to: funder.getAddress(),
-                        value: 1,
-                        gasLimit,
-                        gasPrice
-                    });
-                } else {
-                    if (balance.lt(targetBalance)) {
-                        await funder.sendTransaction({
-                            to: user.getAddress(),
-                            value: targetBalance.sub(balance),
-                            gasLimit,
-                            gasPrice
-                        });
-                    } else {
-                        await user.sendTransaction({
-                            to: funder.getAddress(),
-                            value: balance.sub(targetBalance).sub(txCost),
-                            gasLimit,
-                            gasPrice
-                        });
-                    }
-                }
+                await setUpInitialUserBalance(user, funder, gasLimit)
                 expect(`${await user.getBalance()}`).to.equal(`${targetBalance}`);
             });
 
@@ -250,7 +139,7 @@ describe("EthersKumoGasEstimation", async () => {
                 // A terribly rude user interferes
                 const rudeTrove = newTrove.addDebt(1);
                 const rudeCreation = Trove.recreate(rudeTrove);
-                await openTroves([rudeUser], [rudeCreation], mockAssetAddress);
+                await openTroves(deployment, [rudeUser], funder, [rudeCreation], mockAssetAddress, gasLimit);
 
                 const newGasEstimate = await provider.estimateGas(tx.rawPopulatedTransaction);
                 const gasIncrease = newGasEstimate.sub(originalGasEstimate).toNumber();
@@ -282,7 +171,7 @@ describe("EthersKumoGasEstimation", async () => {
                 const originalGasEstimate = await provider.estimateGas(tx.rawPopulatedTransaction);
 
                 // A terribly rude user interferes again
-                await openTroves([rudeUser], [Trove.recreate(newTrove.addDebt(1))], mockAssetAddress);
+                await openTroves(deployment, [rudeUser], funder, [Trove.recreate(newTrove.addDebt(1))], mockAssetAddress, gasLimit);
 
                 // On top of that, we'll need to update lastFeeOperationTime
                 await increaseTime(120);

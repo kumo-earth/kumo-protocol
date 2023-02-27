@@ -21,42 +21,14 @@ import {
 } from "../src/PopulatableEthersKumo";
 
 import { _KumoDeploymentJSON } from "../src/contracts";
-import { _connectToDeployment } from "../src/EthersKumoConnection";
 import { EthersKumo } from "../src/EthersKumo";
-
-
-const ERC20ABI = require("../abi/ERC20Test.json")
-
-const provider = ethers.provider;
+import { STARTING_BALANCE } from "../testUtils/constants";
+import { connectToDeployment, connectUsers, setUpInitialUserBalance } from "../testUtils";
+import { mockAssetContracts } from "../testUtils/types";
 
 chai.use(chaiAsPromised);
 chai.use(chaiSpies);
 
-const STARTING_BALANCE = Decimal.from(1000);
-
-
-
-const connectToDeployment = async (
-    deployment: _KumoDeploymentJSON,
-    signer: Signer,
-    frontendTag?: string
-) =>
-    EthersKumo._from(
-        _connectToDeployment(deployment, signer, {
-            userAddress: await signer.getAddress(),
-            frontendTag
-        })
-    );
-
-
-
-
-
-const mockAssetContracts = [{ name: "ctx", contract: "mockAsset1" }, { name: "cty", contract: "mockAsset2" }] as const
-
-interface MockAssets {
-    assetName: string, assetAddress: string, assetContract: any
-}
 
 // TODO make the testcases isolated
 
@@ -78,10 +50,6 @@ describe("EthersKumoStabilityPool", async () => {
     let mockAssetAddress: string;
 
 
-    const connectUsers = (users: Signer[]) =>
-        Promise.all(users.map(user => connectToDeployment(deployment, user)));
-
-   
 
     mockAssetContracts.forEach(async mockAssetContract => {
         describe(`StabilityPool - TEST ${mockAssetContract.name}`, () => {
@@ -95,7 +63,7 @@ describe("EthersKumoStabilityPool", async () => {
                 kumo = await connectToDeployment(deployment, user);
                 expect(kumo).to.be.an.instanceOf(EthersKumo);
 
-                [deployerKumo, kumo, ...otherKumos] = await connectUsers([
+                [deployerKumo, kumo, ...otherKumos] = await connectUsers(deployment, [
                     deployer,
                     user,
                     ...otherUsers.slice(0, 1)
@@ -106,50 +74,12 @@ describe("EthersKumoStabilityPool", async () => {
                     value: KUSD_MINIMUM_DEBT.div(170).hex
                 });
             });
-            // // Always setup same initial balance for user
+
+            // Always setup same initial balance for user
             beforeEach(async () => {
                 const targetBalance = BigNumber.from(STARTING_BALANCE.hex);
 
-                const gasPrice = BigNumber.from(100e9); // 100 Gwei
-
-                const balance = await user.getBalance();
-                const txCost = gasLimit.mul(gasPrice);
-
-                if (balance.eq(targetBalance)) {
-                    return;
-                }
-
-                if (balance.gt(targetBalance) && balance.lte(targetBalance.add(txCost))) {
-                    await funder.sendTransaction({
-                        to: user.getAddress(),
-                        value: targetBalance.add(txCost).sub(balance).add(1),
-                        gasLimit,
-                        gasPrice
-                    });
-
-                    await user.sendTransaction({
-                        to: funder.getAddress(),
-                        value: 1,
-                        gasLimit,
-                        gasPrice
-                    });
-                } else {
-                    if (balance.lt(targetBalance)) {
-                        await funder.sendTransaction({
-                            to: user.getAddress(),
-                            value: targetBalance.sub(balance),
-                            gasLimit,
-                            gasPrice
-                        });
-                    } else {
-                        await user.sendTransaction({
-                            to: funder.getAddress(),
-                            value: balance.sub(targetBalance).sub(txCost),
-                            gasLimit,
-                            gasPrice
-                        });
-                    }
-                }
+                await setUpInitialUserBalance(user, funder, gasLimit);
                 expect(`${await user.getBalance()}`).to.equal(`${targetBalance}`);
             });
 
