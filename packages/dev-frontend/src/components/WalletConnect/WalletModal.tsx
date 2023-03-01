@@ -57,8 +57,6 @@ export const WalletModal: React.FC = () => {
           }}
           sx={{
             width: 200,
-            // backgroundColor: "rgb(47, 52, 81)",
-            borderRadius: 8,
             outline: "none"
           }}
         >
@@ -74,8 +72,6 @@ export const WalletModal: React.FC = () => {
           }}
           sx={{
             width: 200,
-            // backgroundColor: "rgb(47, 52, 81)",
-            borderRadius: 8,
             outline: "none"
           }}
         >

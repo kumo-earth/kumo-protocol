@@ -451,7 +451,7 @@ const theme: Theme = {
       ml: 2,
       p: 1,
       border: "none",
-      borderRadius: 8,
+      borderRadius: '72px',
       minWidth: 90,
       maxWidth: "max-content",
       bg: "primary",

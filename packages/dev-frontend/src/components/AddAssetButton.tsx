@@ -48,8 +48,7 @@ const AddAssetButton: React.FC<AddAssetButtonTypes> = ({
     <Button
       onClick={() => addAsset(assetTokenAddress, tokenSymbol)}
       sx={{
-        width: 280,
-        borderRadius: 8,
+        width: 280
       }}
       disabled={!account}
       variant={!account ? 'primaryInActive' : 'primary'}

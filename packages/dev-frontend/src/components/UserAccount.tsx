@@ -70,16 +70,15 @@ export const UserAccount: React.FC = () => {
                 dialog.setVisible(true);
               }}
               sx={{
-                py: 1,
-                px: 2,
+                py: 2,
+                px: 3,
                 mr: 2,
-                borderRadius: "8px",
-                fontSize: 1,
-                outline: "none"
+                outline: "none",
+                fontSize: '14px'
               }}
             >
               {" "}
-              USER ASSET TOKENS
+              ADD TEST TOKENS TO WALLET
             </Button>
             {/* </Tooltip> */}
             <Tooltip message={account}>
@@ -89,12 +88,11 @@ export const UserAccount: React.FC = () => {
                   sessionStorage.removeItem("account");
                 }}
                 sx={{
-                  py: 1,
-                  px: 2,
+                  py: 2,
+                  px: 3,
                   mr: 2,
-                  borderRadius: "8px",
-                  fontSize: 1,
-                  outline: "none"
+                  outline: "none",
+                  fontSize: '14px'
                 }}
               >
                 {" "}
@@ -106,12 +104,11 @@ export const UserAccount: React.FC = () => {
           <Button
             onClick={() => dispatchEvent("OPEN_WALLET_MODAL_PRESSED")}
             sx={{
-              py: 1,
-              px: 2,
+              py: 2,
+              px: 3,
               mr: 2,
-              borderRadius: "8px",
-              fontSize: 1,
-              outline: "none"
+              outline: "none",
+              fontSize: '14px'
             }}
           >
             CONNECT

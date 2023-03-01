@@ -35,12 +35,12 @@ export const Stats: React.FC = () => {
         <Link
           to="protocol"
           sx={{
-            py: 1,
-            px: 2,
+            py: 2,
+            px: 3,
             mr: 2,
             letterSpacing: "inherit",
             backgroundColor: "#f0cfdc",
-            borderRadius: "8px"
+            borderRadius: '72px',
           }}
         >
           PROTOCOL STATISTICS
@@ -48,12 +48,12 @@ export const Stats: React.FC = () => {
         <Link
           to="vaults"
           sx={{
-            py: 1,
-            px: 2,
+            py: 2,
+            px: 3,
             mr: 2,
             letterSpacing: "inherit",
             backgroundColor: "#f0cfdc",
-            borderRadius: "8px"
+            borderRadius: '72px',
           }}
         >
           RISKY Vaults

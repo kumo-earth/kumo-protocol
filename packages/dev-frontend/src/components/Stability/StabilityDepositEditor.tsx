@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 
 import { Heading, Box, Card, Button } from "theme-ui";
@@ -56,11 +56,11 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   const edited = !editedKUSD.eq(originalDeposit.currentKUSD);
 
   const maxAmount = originalDeposit.currentKUSD.add(kusdBalance);
-  const maxedOut = editedKUSD.eq(maxAmount);
+  const maxedOut = editedKUSD.eq(maxAmount);  
 
-  const kusdInStabilityPoolAfterChange = kusdInStabilityPool
+  const kusdInStabilityPoolAfterChange =  (originalDeposit.currentKUSD.lte(kusdInStabilityPool)) && kusdInStabilityPool
     .sub(originalDeposit.currentKUSD)
-    .add(editedKUSD);
+    .add(editedKUSD) || Decimal.ZERO;
 
   const originalPoolShare = originalDeposit.currentKUSD.mulDiv(100, kusdInStabilityPool);
   const newPoolShare = editedKUSD.mulDiv(100, kusdInStabilityPoolAfterChange);

@@ -32,7 +32,6 @@ export const SwitchNetworkModal: React.FC = () => {
             e.stopPropagation();
           }}
           sx={{
-            borderRadius: 8,
             outline: "none"
           }}
         >
