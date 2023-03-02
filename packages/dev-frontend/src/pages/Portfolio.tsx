@@ -37,14 +37,17 @@ export const Portfolio: React.FC = () => {
         <DashboadHeaderItem
           title={"MY TOTAL COLLATERAL"}
           value={`$ ${totalTroveCollDebt.totalTroveColl.prettify(0)}`}
+          key={'1'}
         />
         <DashboadHeaderItem
           title={"MY MINTED KUSD"}
           value={`$ ${totalTroveCollDebt.totalTroveDebt.prettify(0)}`}
+          key={'2'}
         />
         <DashboadHeaderItem
           title={"MY TOTAL CARBON CREDITS"}
           value={`${totalTroveCollDebt.troveTotalCarbonCredits.prettify(0)}`}
+          key={'3'}
         />
       </Box>
       <Divider sx={{ color: "muted" }} />

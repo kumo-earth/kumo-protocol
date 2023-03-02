@@ -1,7 +1,7 @@
 import React from "react";
 import { Decimal } from "@kumodao/lib-base";
 
-import { Flex, Box, Card, Button, Heading, Text, Paragraph } from "theme-ui";
+import { Flex, Box, Card, Button, Text } from "theme-ui";
 
 type StakingCardV1Props = {
   totalKUSD: Decimal;
@@ -14,9 +14,6 @@ export const StakingCardV1: React.FC<StakingCardV1Props> = ({
   userKUSD,
   handleViewStakeDeposit
 }) => {
-  // const divdideVal = vault?.stabilityDeposit?.currentKUSD.div(vault?.stabilityDeposit?.currentKUSD);
-
-  // const aprRatio = divdideVal ? new Percent(divdideVal) : new Percent(Decimal.ZERO);
 
   return (
     <Card

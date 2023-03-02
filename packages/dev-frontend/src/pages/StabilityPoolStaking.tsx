@@ -1,20 +1,6 @@
 import { Grid } from "theme-ui";
-import { Percent, KumoStoreState } from "@kumodao/lib-base";
-import { useKumoSelector } from "@kumodao/lib-react";
-
 import { StabilityPoolStakingCard } from "../components/StabilityPoolStakingCard/StabilityPoolStakingCard";
-import { DashboadContent } from "../components/DashboardContent";
-import { useParams } from "react-router-dom";
 
-const select = ({
-  vaults,
-  totalStakedKUMO,
-  frontend
-}: KumoStoreState) => ({
-  vaults,
-  totalStakedKUMO,
-  kickbackRate: frontend.status === "registered" ? frontend.kickbackRate : null
-});
 
 export const StabilityPoolStaking: React.FC = () => {
   return (
@@ -37,7 +23,6 @@ export const StabilityPoolStaking: React.FC = () => {
         title="Liquidity Mining"
         description="Help bootstrap the KUMO ecosystem by providing and staking liquidity to receive rewards."
         stakingType={"liquidity"}
-       
       />
     </Grid>
   );

@@ -1,23 +1,10 @@
 import React, { useEffect } from "react";
 import { Button, Flex, Spinner } from "theme-ui";
 
-import { KumoStoreState } from "@kumodao/lib-base";
-import { useKumoSelector } from "@kumodao/lib-react";
-
-import { useKumo } from "../hooks/KumoContext";
-
-import { Transaction, useMyTransactionState } from "./Transaction";
+import { useMyTransactionState } from "./Transaction";
 import { useTroveView } from "./Trove/context/TroveViewContext";
 
-// const select = ({ collateralSurplusBalance }: KumoStoreState) => ({
-//   collateralSurplusBalance
-// });
-
-export const CollateralSurplusAction: React.FC<{ asset?: string }> = ({ asset = "" }) => {
-  // const { collateralSurplusBalance } = useKumoSelector(select);
-  const {
-    kumo: { send: kumo }
-  } = useKumo();
+export const CollateralSurplusAction: React.FC<{ asset?: string }> = () => {
 
   const myTransactionId = "claim-coll-surplus";
   const myTransactionState = useMyTransactionState(myTransactionId);

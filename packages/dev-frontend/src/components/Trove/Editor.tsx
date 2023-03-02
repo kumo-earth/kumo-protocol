@@ -45,11 +45,9 @@ type TokenUsdProps = SxProp & {
 };
 
 export const TokenUsd: React.FC<TokenUsdProps> = ({
-  sx,
   tokenPrice = Decimal.ZERO,
   editedVal = Decimal.ZERO,
-  right = "50px",
-  children
+  right = "50px"
 }) => {
   return (
     <Box

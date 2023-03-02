@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 
 import { Heading, Box, Card, Button } from "theme-ui";
@@ -49,7 +49,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   const editingState = useState<string>();
   const { collateralType } = useParams<{ collateralType: string }>();
   const { dispatchEvent } = useStabilityView();
-  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
+  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
   const { kusdInStabilityPool } = vault;
   const location = useLocation();
 

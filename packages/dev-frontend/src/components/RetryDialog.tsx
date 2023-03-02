@@ -1,4 +1,3 @@
-import { toUpper } from "lodash";
 import React from "react";
 import { Box, Button, Flex } from "theme-ui";
 

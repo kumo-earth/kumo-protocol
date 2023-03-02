@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { Box, Flex } from "theme-ui";
 import { Link } from "../components/Link";
-import { StatsLiquidation } from "../components/StatsLiquidation/StatsLiquidation";
 import { StatsRiskyTroves } from "../components/StatsRiskyTroves/StatsRiskyTroves";
 import { ProtocolStats } from "./ProtocolStats";
 

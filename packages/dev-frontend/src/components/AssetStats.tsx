@@ -1,37 +1,9 @@
 import React from "react";
-import { Card, Heading, Link, Box, Text, Flex, Progress, Divider } from "theme-ui";
+import { Card, Box, Text, Flex, Progress, Divider } from "theme-ui";
 import { Decimal, KumoStoreState, Trove } from "@kumodao/lib-base";
-import { useKumoSelector } from "@kumodao/lib-react";
 
-import { useKumo } from "../hooks/KumoContext";
 import { toUpper } from "lodash";
 import { InfoIcon } from "./InfoIcon";
-
-// const selectBalances = ({ accountBalance, kusdBalance, kumoBalance }: KumoStoreState) => ({
-//   accountBalance,
-//   kusdBalance,
-//   kumoBalance
-// });
-
-const Balances: React.FC = () => {
-  // const { accountBalance, kusdBalance, kumoBalance } = useKumoSelector(selectBalances);
-
-  return (
-    <Box sx={{ mb: 3 }}>
-      <Heading>My Account Balances</Heading>
-      {/* <Statistic name="ETH"> {accountBalance.prettify(4)}</Statistic>
-      <Statistic name={COIN}> {kusdBalance.prettify()}</Statistic>
-      <Statistic name={GT}>{kumoBalance.prettify()}</Statistic> */}
-    </Box>
-  );
-};
-
-const GitHubCommit: React.FC<{ children?: string }> = ({ children }) =>
-  children?.match(/[0-9a-f]{40}/) ? (
-    <Link href={`https://github.com/kumo/dev/commit/${children}`}>{children.substr(0, 7)}</Link>
-  ) : (
-    <>unknown</>
-  );
 
 type SystemStatsProps = {
   total: Trove;
@@ -43,60 +15,17 @@ type SystemStatsProps = {
   showBalances?: boolean;
 };
 
-const select = ({
-  // numberOfTroves,
-  // price,
-  // total,
-  // kusdInStabilityPool,
-  // borrowingRate,
-  // redemptionRate,
-  totalStakedKUMO,
-  frontend
-}: KumoStoreState) => ({
-  // numberOfTroves,
-  // price,
-  // total,
-  // kusdInStabilityPool,
-  // borrowingRate,
-  // redemptionRate,
-  totalStakedKUMO,
-  kickbackRate: frontend.status === "registered" ? frontend.kickbackRate : null
-});
-
 export const AssetStats: React.FC<SystemStatsProps> = ({
   total,
   totalCollateralRatioPct,
   kusdMintedCap,
   minNetDebt,
   collateralType,
-  variant = "info",
-  showBalances
 }) => {
-  const {
-    kumo: {
-      connection: { version: contractsVersion, deploymentDate, frontendTag }
-    }
-  } = useKumo();
-
-  const {
-    // numberOfTroves,
-    // price,
-    // kusdInStabilityPool,
-    // total,
-    // borrowingRate,
-    totalStakedKUMO,
-    kickbackRate
-  } = useKumoSelector(select);
-
-  // const kusdInStabilityPoolPct =
-  //   total.debt.nonZero && new Percent(kusdInStabilityPool.div(total.debt));
-  // const totalCollateralRatioPct = new Percent(total.collateralRatio(price));
-  // const borrowingFeePct = new Percent(borrowingRate);
-  // const kickbackRatePct = frontendTag === AddressZero ? "100" : kickbackRate?.mul(100).prettify();
 
   return (
     <Card variant="base" sx={{ py: 4, px: 5 }}>
-      <Flex sx={{ flexDirection: "column", justifyContent: "space-between", mb: 1}}>
+      <Flex sx={{ flexDirection: "column", justifyContent: "space-between", mb: 1 }}>
         <Text as="p" variant="normalBold">
           TOTAL COLLATERAL RATIO{" "}
           <InfoIcon

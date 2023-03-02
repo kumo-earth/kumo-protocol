@@ -21,8 +21,6 @@ import { useMyTransactionState } from "../Transaction";
 
 import { RedemptionAction } from "./RedemptionAction";
 import { InfoIcon } from "../InfoIcon";
-import { useParams } from "react-router-dom";
-import { useDashboard } from "../../hooks/DashboardContext";
 
 const mcrPercent = new Percent(MINIMUM_COLLATERAL_RATIO).toString(0);
 
@@ -36,7 +34,7 @@ const transactionId = "redemption";
 export const RedemptionManager: React.FC = () => {
   const [assetType, setAssetType] = useState("ctx");
   const { vaults, kusdBalance } = useKumoSelector(select);
-  const vault = vaults.find(vault => vault.asset === assetType) || new Vault();
+  const vault = vaults.find(vault => vault.asset === assetType) ?? new Vault;
   const price = vault?.price
   const { fees, total } = vault;
   const [kusdAmount, setKUSDAmount] = useState(Decimal.ZERO);

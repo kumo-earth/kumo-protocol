@@ -2,7 +2,6 @@ import React from "react";
 import { Heading, Box, Card } from "theme-ui";
 
 import {
-  Percent,
   Difference,
   Decimalish,
   Decimal,
@@ -38,23 +37,17 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
   children,
   original,
   edited,
-  fee,
-  borrowingRate,
   changePending
 }) => {
   const { vaults } = useKumoSelector(select);
 
-  const feePct = new Percent(borrowingRate);
-
   const { collateralType } = useParams<{ collateralType: string }>();
-  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault;
+  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
   const price = vault?.price;
 
   const originalCollateralRatio = !original.isEmpty ? original.collateralRatio(price) : undefined;
   const collateralRatio = !edited.isEmpty ? edited.collateralRatio(price) : undefined;
   const collateralRatioChange = Difference.between(collateralRatio, originalCollateralRatio);
-
-  console.log("originalTrove", original)
 
   return (
     <Card

@@ -1,14 +1,14 @@
 import React, { useCallback } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { Card, Heading, Box, Flex, Button, Select } from "theme-ui";
-import { Decimal, Vault } from "@kumodao/lib-base";
+import { useHistory } from "react-router-dom";
+import { Card, Heading, Box } from "theme-ui";
+import { Vault } from "@kumodao/lib-base";
 import { DisabledEditableRow } from "./Editor";
 import { useTroveView } from "./context/TroveViewContext";
 import { COIN } from "../../strings";
 import { CollateralRatio } from "./CollateralRatio";
 
 
-export const PortfolioTrove: React.FC<{ vault: Vault }> = ({ vault = new Vault() }) => {
+export const PortfolioTrove: React.FC<{ vault: Vault }> = ({ vault = new Vault }) => {
   const { dispatchEvent } = useTroveView();
   const handleAdjustTrove = useCallback(() => {
     dispatchEvent("ADJUST_TROVE_PRESSED");

@@ -13,7 +13,6 @@ import { DisabledEditableRow, StaticRow } from "../Trove/Editor";
 import { ClaimAndMove } from "./actions/ClaimAndMove";
 import { ClaimRewards } from "./actions/ClaimRewards";
 import { useStabilityView } from "./context/StabilityViewContext";
-import { RemainingKUMO } from "./RemainingKUMO";
 import { Yield } from "./Yield";
 import { InfoIcon } from "../InfoIcon";
 
@@ -27,10 +26,7 @@ export const ActiveDeposit: React.FC = () => {
   const { vaults } = useKumoSelector(select);
   const vault = vaults.find(vault => vault.asset === collateralType) || new Vault;
   const { stabilityDeposit, trove, kusdInStabilityPool } = vault;
-
   const poolShare = stabilityDeposit.currentKUSD.mulDiv(100, kusdInStabilityPool);
-
-  console.log("ActiveDeposit3", vault)
 
   const handleAdjustDeposit = useCallback(() => {
     dispatchEvent("ADJUST_DEPOSIT_PRESSED");
@@ -127,10 +123,7 @@ export const ActiveDeposit: React.FC = () => {
             </ClaimAndMove>
           )}
         </Flex>
-
-
       </Box>
-
       {isWaitingForTransaction && <LoadingOverlay />}
     </Card>
   );

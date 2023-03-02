@@ -30,8 +30,7 @@ export const ReadOnlyTrove: React.FC = () => {
   let collateralRatio = trove?.collateralRatio(price);
 
   // console.log("READONLY TROVE", trove.collateral.prettify(4));
-  console.log("stableTroveChangeValues",  trove?.collateral?.toString(4), trove?.debt?.prettify() )
-  
+
   return (
     <Card variant="base">
       <Heading as="h2">{vault?.asset.toUpperCase()} Vault</Heading>
@@ -64,7 +63,7 @@ export const ReadOnlyTrove: React.FC = () => {
               mb: 2
             }}
           >
-           CLOSE VAULT
+            CLOSE VAULT
           </Button>
           <Button
             onClick={handleAdjustTrove}

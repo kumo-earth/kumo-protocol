@@ -20,8 +20,6 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: [350, 470],
-  // bgcolor: "background.paper",
-  // bgcolor: "white",
   border: "none",
   boxShadow: 24,
   p: 0
@@ -33,7 +31,7 @@ export const Collateral: React.FC = () => {
   const { showModal,view, dispatchEvent } = useStabilityView();
   const { vaults } = useKumoSelector(select);
   const { collateralType } = useParams<{ collateralType: string }>();
-  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
+  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
   const totalCollateralRatioPct = !vault?.total?.isEmpty ? new Percent(vault.total.collateralRatio(vault?.price)).toString(0) : `${Decimal.from(0).prettify(0)} %`;
 
   useEffect(() => {

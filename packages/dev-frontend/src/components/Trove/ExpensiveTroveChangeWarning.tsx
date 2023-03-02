@@ -32,24 +32,24 @@ export const ExpensiveTroveChangeWarning: React.FC<ExpensiveTroveChangeWarningPa
     if (troveChange && troveChange.type !== "closure") {
       setGasEstimationState({ type: "inProgress" });
       let cancelled = false;
-      
+
       const timeoutId = setTimeout(async () => {
         console.log("Estimated TX cost: ", asset, troveChange);
         const populatedTx = await (troveChange.type === "creation"
           ? kumo.populate.openTrove(troveChange.params, asset, {
-              maxBorrowingRate,
-              borrowingFeeDecayToleranceMinutes
-            })
+            maxBorrowingRate,
+            borrowingFeeDecayToleranceMinutes
+          })
           : kumo.populate.adjustTrove(troveChange.params, asset, {
-              maxBorrowingRate,
-              borrowingFeeDecayToleranceMinutes
-            }));
+            maxBorrowingRate,
+            borrowingFeeDecayToleranceMinutes
+          }));
 
         if (!cancelled) {
           setGasEstimationState({ type: "complete", populatedTx });
           console.log(
             "Estimated TX cost: " +
-              Decimal.from(`${populatedTx.rawPopulatedTransaction.gasLimit}`).prettify(0)
+            Decimal.from(`${populatedTx.rawPopulatedTransaction.gasLimit}`).prettify(0)
           );
         }
       }, 333);

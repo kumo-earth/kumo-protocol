@@ -1,25 +1,19 @@
 import React, { useCallback } from "react";
 import { Card, Heading, Box, Button, Flex } from "theme-ui";
 import { CollateralSurplusAction } from "../CollateralSurplusAction";
-import { Decimal, KumoStoreState, Vault } from "@kumodao/lib-base";
+import { KumoStoreState, Vault } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { useTroveView } from "./context/TroveViewContext";
 import { InfoMessage } from "../InfoMessage";
 import { useParams } from "react-router-dom";
 
-// const select = ({ collateralSurplusBalance }: KumoStoreState) => ({
-//   hasSurplusCollateral: !collateralSurplusBalance.isZero
-// });
-
 export const LiquidatedTrove: React.FC = () => {
-  // const { hasSurplusCollateral } = useKumoSelector(select);
-
   const { collateralType } = useParams<{ collateralType: string }>();
 
   const { hasSurplusCollateral } = useKumoSelector((state: KumoStoreState) => {
     const { vaults } = state;
 
-    const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
+    const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
     const { collateralSurplusBalance } = vault;
     return {
       hasSurplusCollateral: !collateralSurplusBalance.isZero

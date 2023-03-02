@@ -6,7 +6,7 @@ const UserView = () => {
   const userViewParam = useUserViewParam();
   const paramView = userViewParam
     .split(" ")
-    .map((param, index) => {
+    .map(param => {
       const prm = param.toLocaleLowerCase();
       if (prm === "ctx" || prm === "cty") {
         return _.toUpper(prm);

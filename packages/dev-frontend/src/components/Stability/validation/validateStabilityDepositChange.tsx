@@ -11,27 +11,13 @@ import { Amount } from "../../ActionDescription";
 import { ErrorDescription } from "../../ErrorDescription";
 import { StabilityActionDescription } from "../StabilityActionDescription";
 
-// export const selectForStabilityDepositChangeValidation = ({
-//   trove,
-//   kusdBalance,
-//   ownFrontend,
-//   haveUndercollateralizedTroves
-// }: KumoStoreState) => ({
-//   trove,
-//   kusdBalance,
-//   haveOwnFrontend: ownFrontend.status === "registered",
-//   haveUndercollateralizedTroves
-// });
 type SelectForStabilityDepositChangeValidationType = {
   trove: UserTrove;
-    kusdBalance: Decimal;
-    haveOwnFrontend: boolean;
-    haveUndercollateralizedTroves: boolean;
+  kusdBalance: Decimal;
+  haveOwnFrontend: boolean;
+  haveUndercollateralizedTroves: boolean;
 }
 
-// type StabilityDepositChangeValidationContext = ReturnType<
-//   typeof selectForStabilityDepositChangeValidation
-// >;
 type StabilityDepositChangeValidationContext = SelectForStabilityDepositChangeValidationType;
 
 export const validateStabilityDepositChange = (
@@ -44,9 +30,9 @@ export const validateStabilityDepositChange = (
     haveUndercollateralizedTroves
   }: StabilityDepositChangeValidationContext
 ): [
-  validChange: StabilityDepositChange<Decimal> | undefined,
-  description: JSX.Element | undefined
-] => {
+    validChange: StabilityDepositChange<Decimal> | undefined,
+    description: JSX.Element | undefined
+  ] => {
   const change = originalDeposit.whatChanged(editedKUSD);
 
   if (haveOwnFrontend) {

@@ -8,7 +8,6 @@ import { LoadingOverlay } from "../../../LoadingOverlay";
 import { useMyTransactionState } from "../../../Transaction";
 import { DisabledEditableRow, StaticRow } from "../../../Trove/Editor";
 import { useFarmView } from "../../context/FarmViewContext";
-import { RemainingKUMO } from "../RemainingKUMO";
 import { ClaimReward } from "./ClaimReward";
 import { UnstakeAndClaim } from "../UnstakeAndClaim";
 import { Yield } from "../Yield";

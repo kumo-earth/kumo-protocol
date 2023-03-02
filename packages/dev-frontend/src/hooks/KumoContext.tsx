@@ -15,22 +15,20 @@ import {
   EthersKumoWithStore,
   _connectByChainId
 } from "@kumodao/lib-ethers";
-
 import { KumoFrontendConfig, getConfig } from "../config";
-import { useHistory } from "react-router-dom";
 
 type KumoContextValue =
   | {
-      config: KumoFrontendConfig;
-      kumo: EthersKumoWithStore<BlockPolledKumoStore>;
-      provider: Provider;
-      account: string;
-    }
+    config: KumoFrontendConfig;
+    kumo: EthersKumoWithStore<BlockPolledKumoStore>;
+    provider: Provider;
+    account: string;
+  }
   | {
-      config: KumoFrontendConfig;
-      kumo: EthersKumoWithStore<BlockPolledKumoStore>;
-      provider: Provider;
-    };
+    config: KumoFrontendConfig;
+    kumo: EthersKumoWithStore<BlockPolledKumoStore>;
+    provider: Provider;
+  };
 
 const KumoContext = createContext<KumoContextValue | undefined>(undefined);
 
@@ -50,7 +48,6 @@ export const KumoProvider: React.FC<KumoProviderProps> = ({
 }) => {
   const { library: provider, account, chainId } = useWeb3React<Web3Provider>();
   const { networkSwitched } = useSwitchNetwork();
-  const history = useHistory()
 
   const [readprovider, setReadProvider] = useState<{
     provider: any;
@@ -58,11 +55,8 @@ export const KumoProvider: React.FC<KumoProviderProps> = ({
   }>();
   const [config, setConfig] = useState<KumoFrontendConfig>();
   const triedAuthorizedConnection = useAuthorizedConnection();
-  
+
   const connection = useMemo(() => {
-    // if(account !==  sessionStorage.getItem('account')){
-    //   history.push("/dashboard")
-    // }
     if (config && provider && account && chainId) {
       sessionStorage.setItem("account", account);
       return _connectByChainId(

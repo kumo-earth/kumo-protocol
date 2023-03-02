@@ -28,21 +28,7 @@ import { CollateralRatio } from "./CollateralRatio";
 import { EditableRow, StaticRow } from "./Editor";
 import { ExpensiveTroveChangeWarning, GasEstimationState } from "./ExpensiveTroveChangeWarning";
 import { ErrorDescription } from "../ErrorDescription";
-// import {
-//   selectForTroveChangeValidation,
-//   validateTroveChange
-// } from "./validation/validateTroveChange";
 import { validateTroveChange } from "./validation/validateTroveChange";
-
-// const selector = (state: KumoStoreState) => {
-//   const { vaults, fees, price } = state;
-//   return {
-//     vaults,
-//     fees,
-//     price,
-//     validationContext: selectForTroveChangeValidation(state)
-//   };
-// };
 
 const TRANSACTION_ID = "trove-adjustment";
 const GAS_ROOM_ETH = Decimal.from(0.1);
@@ -93,13 +79,12 @@ export const Adjusting: React.FC = () => {
   const { vault, price, trove, accountBalance, fees, validationContext } = useKumoSelector(
     (state: KumoStoreState) => {
       const { vaults, kusdBalance } = state;
-      const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
+      const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
       const { numberOfTroves, total, fees, accountBalance, trove } = vault;
 
       const price = vault?.price
 
       const validationContext = {
-        // ...selectForTroveChangeValidation({ price, accountBalance,  }),
         trove,
         price,
         total,
@@ -111,7 +96,6 @@ export const Adjusting: React.FC = () => {
     }
   );
   const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
-  // const fees = vault?.fees as Fees
 
   const { kusdMintedCap } = vault
   const editingState = useState<string>();

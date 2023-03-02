@@ -1,10 +1,8 @@
-import { Decimal, Trove, UserTrove } from "@kumodao/lib-base";
+import { Decimal, Trove } from "@kumodao/lib-base";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { Flex, Progress, Box, Card, Text, Heading } from "theme-ui";
-
 import { useTroveView } from "../Trove/context/TroveViewContext";
-import { toUpper } from "lodash";
 import { InfoIcon } from "../InfoIcon";
 
 type CollateralCardProps = {
@@ -35,23 +33,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
   };
   return (
     <Card variant="collateralCard" sx={{ mb: 5 }} onClick={() => handleClick()}>
-      {/* {!account && (
-        <Flex
-          sx={{
-            position: "absolute",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            height: "100%",
-            width: "100%",
-            mt: 30
-          }}
-          onClick={e => e.stopPropagation()}
-        >
-          <Box sx={{ fontWeight: 600 }}>Please Connect the Wallet to Proceed</Box>
-        </Flex>
-      )} */}
-      <Heading as="h2">{toUpper(collateralType)} Vault</Heading>
+      <Heading as="h2">{collateralType?.toUpperCase()} Vault</Heading>
 
       <Box sx={{ px: 5, mt: 5 }}>
         <Text as="p" variant="normalBold">
@@ -60,7 +42,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             tooltip={
               <Card variant="tooltip" sx={{ width: "220px" }}>
                 {`The Total Collateral Ratio or TCR is the ratio of the Dollar value of the entire
-                system collateral at the current ${toUpper(collateralType)}:USD price, to the entire system debt.`}
+                system collateral at the current ${collateralType?.toUpperCase()}:USD price, to the entire system debt.`}
               </Card>
             }
           />

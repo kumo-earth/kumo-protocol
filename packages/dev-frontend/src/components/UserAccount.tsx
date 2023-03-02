@@ -16,7 +16,6 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: [340, 470],
-  // bgcolor: "background.paper",
   bgcolor: "white",
   border: "none",
   boxShadow: 24,
@@ -27,7 +26,7 @@ export const UserAccount: React.FC = () => {
   const [showAssetModal, setShowAssetModal] = useState(false);
   const { deactivate, active } = useWeb3React<Web3Provider>();
   const dialog = useDialogState();
-  const { view, showModal, dispatchEvent } = useWalletView();
+  const { showModal, dispatchEvent } = useWalletView();
   const { showSwitchModal } = useSwitchNetworkView();
   const { account } = useWeb3React();
 
@@ -58,12 +57,9 @@ export const UserAccount: React.FC = () => {
 
   return (
     <Box>
-      {/* <Box sx={{ display: ["none", "flex"] }}></Box> */}
       <Flex sx={{ alignItems: "center", ml: 3 }}>
-        {/* <Icon name="user-circle" size="lg" color="#a81f58"/> */}
         {account ? (
           <>
-            {/* <Tooltip message={"Asset Tokens (CTX | CTY | KUSD)"}> */}
             <Button
               onClick={() => {
                 setShowAssetModal(true);
@@ -80,7 +76,6 @@ export const UserAccount: React.FC = () => {
               {" "}
               ADD TEST TOKENS TO WALLET
             </Button>
-            {/* </Tooltip> */}
             <Tooltip message={account}>
               <Button
                 onClick={() => {
@@ -132,7 +127,7 @@ export const UserAccount: React.FC = () => {
       )}
       {showAssetModal && (
         <Dialog {...dialog} hideOnClickOutside={false}>
-          <Box sx={{ ...style,  width: [340, 500], position: "absolute", borderRadius: "50px", background: "linear-gradient(128.29deg, #FFFFFF 0%, rgba(255, 255, 255, 1) 127.78%)" }}>
+          <Box sx={{ ...style, width: [340, 500], position: "absolute", borderRadius: "50px", background: "linear-gradient(128.29deg, #FFFFFF 0%, rgba(255, 255, 255, 1) 127.78%)" }}>
             <AddAssetModal onClose={() => setShowAssetModal(false)} />
           </Box>
         </Dialog>

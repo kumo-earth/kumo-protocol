@@ -1,4 +1,4 @@
-import { Grid, Box } from "theme-ui";
+import { Grid } from "theme-ui";
 import { MiningTypeCard } from "../components/MiningTypeCard/MiningTypeCard";
 
 export const LiquidityStaking: React.FC = () => {

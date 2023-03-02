@@ -60,14 +60,6 @@ export const StakingType: React.FC = () => {
   };
   return (
     <Grid
-      // sx={{
-      //   width: "100%",
-      //   display: "grid",
-      //   gridGap: 2,
-      //   gridTemplateColumns: `repeat(auto-fill, minmax(400px, 1fr))`,
-      //   height: "100%",
-      //   p: 6
-      // }}
       sx={{ p: 6, gridGap: 4, gridTemplateColumns: ["auto-fill", "1fr 1fr"] }}
     >
       {vaults.map(vault => {

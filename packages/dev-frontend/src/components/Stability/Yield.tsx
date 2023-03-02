@@ -21,7 +21,7 @@ export const Yield: React.FC = () => {
   } = useKumo();
   const { vaults, remainingStabilityPoolKUMOReward } = useKumoSelector(selector);
   const { collateralType } = useParams<{ collateralType: string }>();
-  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
+  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
   const { kusdInStabilityPool } = vault;
 
   const [kumoPrice, setKumoPrice] = useState<Decimal | undefined>(undefined);

@@ -27,7 +27,6 @@ export const StatsPieChart: React.FC<StatsPieChartProps> = ({ title, data }) => 
                 outerRadius={70}
                 fill="#8884d8"
                 label={label => {
-                  console.log("label", data)
                   if(label?.symbol === "KUSD"){
                     return `${Decimal.from(label?.value).prettify(0)} KUSD`
                   } else if(label?.symbol === "$")

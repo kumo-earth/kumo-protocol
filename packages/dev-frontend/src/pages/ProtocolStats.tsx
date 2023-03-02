@@ -19,6 +19,7 @@ export const ProtocolStats: React.FC = () => {
             { name: "CTX TVL", value: `$ ${totalCollDebt?.totalCTXColl.prettify(0)}` },
             { name: "CTY TVL", value: `$ ${totalCollDebt?.totalCTYColl.prettify(0)}` }
           ]}
+          key={"1"}
         />
         <StatsTVCard
           title="Total KUSD Minted"
@@ -27,6 +28,7 @@ export const ProtocolStats: React.FC = () => {
             { name: "CTX Vault", value: `${totalCollDebt.totalCTXDebt.prettify(0)} KUSD` },
             { name: "CTY Vault", value: `${totalCollDebt.totalCTYDebt.prettify(0)} KUSD` }
           ]}
+          key={"2"}
         />
       </Grid>
       <Grid sx={{ mt: 8, gridGap: 4, gridTemplateColumns: ["auto-fill", "1fr 1fr"] }}>
@@ -36,6 +38,7 @@ export const ProtocolStats: React.FC = () => {
             { name: "CTX", symbol: '$',  value: parseInt(totalCollDebt?.totalCTXColl.toString())},
             { name: "CTY", symbol: '$', value:  parseInt(totalCollDebt?.totalCTYColl.toString()) }
           ]}
+          key={"1"}
         />
         <StatsPieChart
           title="KUSD Minted by Vault"
@@ -43,6 +46,7 @@ export const ProtocolStats: React.FC = () => {
             { name: "CTX", symbol: 'KUSD',  value: parseInt(totalCollDebt.totalCTXDebt.toString()) },
             { name: "CTY", symbol: 'KUSD', value: parseInt(totalCollDebt.totalCTYDebt.toString()) }
           ]}
+          key={"2"}
         />
       </Grid>
       <StatsPriceTVLChart />

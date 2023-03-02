@@ -21,9 +21,9 @@ interface MaybeHasMetaMask {
 type ConnectionState =
   | { type: "inactive" }
   | {
-      type: "activating" | "active" | "rejectedByUser" | "alreadyPending" | "failed";
-      connector: AbstractConnector;
-    };
+    type: "activating" | "active" | "rejectedByUser" | "alreadyPending" | "failed";
+    connector: AbstractConnector;
+  };
 
 type ConnectionAction =
   | { type: "startActivating"; connector: AbstractConnector }
@@ -48,8 +48,8 @@ const connectionReducer: React.Reducer<ConnectionState, ConnectionAction> = (sta
           type: action.error.message.match(/user rejected/i)
             ? "rejectedByUser"
             : action.error.message.match(/already pending/i)
-            ? "alreadyPending"
-            : "failed",
+              ? "alreadyPending"
+              : "failed",
           connector: state.connector
         };
       }

@@ -3,12 +3,10 @@ import { useParams } from "react-router-dom";
 import { Button, Flex } from "theme-ui";
 
 import {
-  ASSET_TOKENS,
   Decimal,
   Decimalish,
   KumoStoreState,
   StabilityDeposit,
-  UserTrove,
   Vault
 } from "@kumodao/lib-base";
 import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@kumodao/lib-react";
@@ -21,21 +19,8 @@ import { useMyTransactionState } from "../Transaction";
 import { StabilityDepositEditor } from "./StabilityDepositEditor";
 import { StabilityDepositAction } from "./StabilityDepositAction";
 import { useStabilityView } from "./context/StabilityViewContext";
-// import {
-//   selectForStabilityDepositChangeValidation,
-//   validateStabilityDepositChange
-// } from "./validation/validateStabilityDepositChange";
 import { validateStabilityDepositChange } from "./validation/validateStabilityDepositChange";
 
-// const init = ({ stabilityDeposit, vaults }: KumoStoreState) => {
-//   return {
-//     originalDeposit: stabilityDeposit,
-//     editedKUSD: stabilityDeposit.currentKUSD,
-//     changePending: false
-//   };
-// };
-
-// type StabilityDepositManagerState = ReturnType<typeof init>;
 type StabilityDepositManagerState = {
   collateralType: string;
   originalDeposit: StabilityDeposit;
@@ -49,8 +34,8 @@ type StabilityDepositManagerAction =
 
 const reduceWith =
   (action: StabilityDepositManagerAction) =>
-  (state: StabilityDepositManagerState): StabilityDepositManagerState =>
-    reduce(state, action);
+    (state: StabilityDepositManagerState): StabilityDepositManagerState =>
+      reduce(state, action);
 
 const finishChange = reduceWith({ type: "finishChange" });
 const revert = reduceWith({ type: "revert" });
@@ -59,8 +44,6 @@ const reduce = (
   state: StabilityDepositManagerState,
   action: StabilityDepositManagerAction
 ): StabilityDepositManagerState => {
-  // console.log(state);
-  // console.log(action);
 
   const { originalDeposit, editedKUSD, changePending } = state;
 
@@ -82,31 +65,6 @@ const reduce = (
     case "updateStore": {
       const vault = action.stateChange.vaults?.find(vault => vault.asset === state.collateralType);
       const updatedStabilityDeposit = vault?.stabilityDeposit;
-      // const {
-      //   stateChange: { stabilityDeposit: updatedDeposit }
-      // } = action;
-
-      // if (!updatedVualts) {
-      //   return state;
-      // }
-      // const newState = { ...state, originalDeposit: updatedDeposit };
-
-      // const changeCommitted =
-      //   !updatedDeposit.initialKUSD.eq(originalDeposit.initialKUSD) ||
-      //   updatedDeposit.currentKUSD.gt(originalDeposit.currentKUSD) ||
-      //   updatedDeposit.collateralGain.lt(originalDeposit.collateralGain) ||
-      //   updatedDeposit.kumoReward.lt(originalDeposit.kumoReward);
-
-      // if (changePending && changeCommitted) {
-      //   return finishChange(revert(newState));
-      // }
-
-      // console.log("newState", newState, updatedDeposit);
-
-      // return {
-      //   ...newState,
-      //   editedKUSD: updatedDeposit.apply(originalDeposit.whatChanged(editedKUSD))
-      // };
       if (!updatedStabilityDeposit) {
         return state;
       }
@@ -141,7 +99,7 @@ const select = ({ vaults, kusdBalance, ownFrontend }: KumoStoreState) => ({
 export const StabilityDepositManager: React.FC = () => {
   const { collateralType } = useParams<{ collateralType: string }>();
   const { vaults, kusdBalance, ownFrontend } = useKumoSelector(select);
-  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
+  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
   const { stabilityDeposit, trove, haveUndercollateralizedTroves } = vault;
 
   const validationContext = {
@@ -160,10 +118,6 @@ export const StabilityDepositManager: React.FC = () => {
     };
   });
 
-  // const validationContext = useKumoSelector(selectForStabilityDepositChangeValidation);
-  // const validationContext = useKumoSelector((state: KumoStoreState) => {
-
-  // });
   const { dispatchEvent } = useStabilityView();
 
   const handleCancel = useCallback(() => {

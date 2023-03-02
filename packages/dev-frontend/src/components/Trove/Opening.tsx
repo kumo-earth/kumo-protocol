@@ -9,7 +9,6 @@ import {
   KUSD_MINIMUM_NET_DEBT,
   Percent,
   ASSET_TOKENS,
-  Fees,
   Vault
 } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
@@ -27,10 +26,6 @@ import { CollateralRatio } from "./CollateralRatio";
 import { EditableRow, StaticRow } from "./Editor";
 import { ExpensiveTroveChangeWarning, GasEstimationState } from "./ExpensiveTroveChangeWarning";
 import { ErrorDescription } from "../ErrorDescription";
-// import {
-//   selectForTroveChangeValidation,
-//   validateTroveChange
-// } from "./validation/validateTroveChange";
 import { validateTroveChange } from "./validation/validateTroveChange";
 
 const EMPTY_TROVE = new Trove(Decimal.ZERO, Decimal.ZERO);
@@ -43,12 +38,10 @@ export const Opening: React.FC = () => {
 
   const { accountBalance, fees, price, kusdMintedCap, validationContext } = useKumoSelector((state: KumoStoreState) => {
     const { vaults, kusdBalance } = state;
-    const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
+    const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
     const { accountBalance, fees, price, total, numberOfTroves, kusdMintedCap } = vault;
 
-
     const validationContext = {
-      // ...selectForTroveChangeValidation(state),
       price,
       total,
       accountBalance,

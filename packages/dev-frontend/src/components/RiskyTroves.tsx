@@ -82,12 +82,6 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
   let price = Decimal.ZERO;
   let assetAddress = AddressZero;
 
-  // if (assetType === "all") {
-  //   vaults.forEach(vault => {
-  //     numberOfTroves += vault?.numberOfTroves;
-  //   });
-  // } else 
-
   if (assetType === "ctx" || assetType === "cty") {
     const vault = vaults.find(vault => vault.asset === assetType);
     if (vault) {

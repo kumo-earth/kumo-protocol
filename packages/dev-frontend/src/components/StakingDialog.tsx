@@ -1,7 +1,6 @@
 import React from "react";
 import { Heading, Flex, Card, Button, Box } from "theme-ui";
 import { Stability } from "../components/Stability/Stability";
-import { Trove } from "./Trove/Trove";
 
 import { Icon } from "./Icon";
 

@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { KumoStoreState, UserTroveStatus, UserTrove, Vault } from "@kumodao/lib-base";
-import { Web3Provider } from "@ethersproject/providers";
-import { useWeb3React } from "@web3-react/core";
+import { KumoStoreState, UserTroveStatus, Vault } from "@kumodao/lib-base";
 
 import { TroveViewContext } from "./TroveViewContext";
 import type { TroveView, TroveEvent } from "./types";
@@ -92,7 +90,7 @@ export const TroveViewProvider: React.FC = props => {
   const { vaults } = useKumoSelector(select);
   const location = useLocation();
 
-  const vault = vaults.find(vault => vault.asset === getPathName(location)) || new Vault();
+  const vault = vaults.find(vault => vault.asset === getPathName(location)) ?? new Vault;
   const { trove } = vault;
 
   const [view, setView] = useState<TroveView>(getInitialView(trove?.status));

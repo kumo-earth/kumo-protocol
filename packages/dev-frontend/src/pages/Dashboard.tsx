@@ -1,5 +1,5 @@
 import { Divider, Flex } from "theme-ui";
-import { KumoStoreState, Percent, Decimal, Trove } from "@kumodao/lib-base";
+import { KumoStoreState, Percent, Decimal } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { CollateralCard } from "../components/ColleteralCard/ColleteralCard";
 import { DashboadHeader } from "../components/DashboardHeader";

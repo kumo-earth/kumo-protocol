@@ -26,7 +26,7 @@ import { StabilityPoolStaking } from "./pages/StabilityPoolStaking";
 import { StakingType } from "./pages/StakingType";
 import { DashboardProvider } from "./hooks/DashboardContext";
 import { useWeb3React } from "@web3-react/core";
-import { DomainSafetyBanner } from "./components/DomainSafetyBanner";
+// import { DomainSafetyBanner } from "./components/DomainSafetyBanner";
 
 import appBackground from "./asset/images/appBackground.svg";
 import UserView from "./components/UserView";
@@ -51,8 +51,6 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
     Difference,
     Wallet
   });
-
-  console.log("BlockedPoolState", kumo?.store)
 
   return (
     <KumoStoreProvider {...{ loader }} store={kumo.store}>
