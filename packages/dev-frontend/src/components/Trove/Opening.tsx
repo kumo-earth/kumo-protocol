@@ -89,7 +89,7 @@ export const Opening: React.FC = () => {
   );
 
   const stableTroveChange = useStableTroveChange(troveChange);
-  const isDebtLessMintCap = totalDebt.lte(kusdMintedCap)
+  const isMintCapReached = totalDebt.gt(kusdMintedCap)
   const [gasEstimationState, setGasEstimationState] = useState<GasEstimationState>({ type: "idle" });
 
   const transactionState = useMyTransactionState(TRANSACTION_ID);
@@ -220,7 +220,7 @@ export const Opening: React.FC = () => {
           </ActionDescription>
         )}
         {
-          !isDebtLessMintCap && (
+          isMintCapReached && (
             <ErrorDescription>
               Total debt {totalDebt.prettify(2)} {COIN} must be less than {COIN} Minted Cap {kusdMintedCap.shorten().toString().toLowerCase()} {COIN}
             </ErrorDescription>
@@ -245,7 +245,7 @@ export const Opening: React.FC = () => {
             <Button disabled sx={{ mb: 2 }}>
               <Spinner size="24px" sx={{ color: "background" }} />
             </Button>
-          ) : (stableTroveChange && isDebtLessMintCap) ? (
+          ) : (stableTroveChange && !isMintCapReached) ? (
             <TroveAction
               transactionId={TRANSACTION_ID}
               change={stableTroveChange}
