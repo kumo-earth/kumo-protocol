@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Box, Text, Flex, Progress, Divider } from "theme-ui";
-import { Decimal, KumoStoreState, Trove } from "@kumodao/lib-base";
+import { Decimal, Trove } from "@kumodao/lib-base";
 
 import { toUpper } from "lodash";
 import { InfoIcon } from "./InfoIcon";

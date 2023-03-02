@@ -8,7 +8,6 @@ import {
   Percent,
   MINIMUM_COLLATERAL_RATIO,
   CRITICAL_COLLATERAL_RATIO,
-  KumoStoreState,
   TroveClosureParams,
   TroveCreationParams
 } from "@kumodao/lib-base";

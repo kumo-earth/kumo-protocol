@@ -4,7 +4,6 @@ import { Flex, Spinner, Heading, ThemeProvider, Paragraph, Link } from "theme-ui
 
 import { BatchedWebSocketAugmentedWeb3Provider } from "@kumodao/providers";
 import { KumoProvider } from "./hooks/KumoContext";
-import { WalletConnector } from "./components/WalletConnector";
 import { TransactionProvider } from "./components/Transaction";
 import { Icon } from "./components/Icon";
 import { getConfig } from "./config";

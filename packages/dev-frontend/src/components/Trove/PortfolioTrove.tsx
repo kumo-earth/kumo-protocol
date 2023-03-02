@@ -9,14 +9,6 @@ import { CollateralRatio } from "./CollateralRatio";
 
 
 export const PortfolioTrove: React.FC<{ vault: Vault }> = ({ vault = new Vault }) => {
-  const { dispatchEvent } = useTroveView();
-  const handleAdjustTrove = useCallback(() => {
-    dispatchEvent("ADJUST_TROVE_PRESSED");
-  }, [dispatchEvent]);
-  const handleCloseTrove = useCallback(() => {
-    dispatchEvent("CLOSE_TROVE_PRESSED");
-  }, [dispatchEvent]);
-
   const history = useHistory()
 
   const { trove } = vault;

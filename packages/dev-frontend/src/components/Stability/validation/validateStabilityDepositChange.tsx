@@ -1,6 +1,5 @@
 import {
   Decimal,
-  KumoStoreState,
   StabilityDeposit,
   StabilityDepositChange,
   UserTrove

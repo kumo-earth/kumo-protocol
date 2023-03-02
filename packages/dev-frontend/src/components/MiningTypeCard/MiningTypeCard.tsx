@@ -1,7 +1,7 @@
 import React from "react";
 import { Flex, Box, Card, Heading, Text } from "theme-ui";
 
-export const MiningTypeCard: React.FC = ({}) => {
+export const MiningTypeCard: React.FC = () => {
   return (
     <Card
       sx={{

@@ -1,5 +1,5 @@
 import React from "react";
-import { Decimal, UserTrove, StabilityDeposit, Percent, Vault } from "@kumodao/lib-base";
+import { Vault } from "@kumodao/lib-base";
 
 import { Flex, Box, Card, Heading, Divider, Text } from "theme-ui";
 
@@ -12,15 +12,10 @@ export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
   vault,
   handleViewStakeDeposit
 }) => {
-  const divdideVal = vault?.stabilityDeposit?.currentKUSD.div(vault?.stabilityDeposit?.currentKUSD);
-  const aprRatio = divdideVal ? new Percent(divdideVal) : new Percent(Decimal.ZERO);
 
   return (
     <Card variant="StabilityPoolStakingCard" onClick={handleViewStakeDeposit}>
       <Heading
-        // sx={{
-        //   height: "100px !important"
-        // }}
         as="h2"
       >
         {vault?.asset?.toUpperCase()} Stability Pool Staking

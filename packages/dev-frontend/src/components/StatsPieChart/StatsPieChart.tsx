@@ -1,6 +1,6 @@
 import React from "react";
-import { Flex, Box, Card, Text, Heading, Divider, Paragraph } from "theme-ui";
-import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer } from "recharts";
+import { Flex, Box, Card, Text } from "theme-ui";
+import { PieChart, Pie, Tooltip, ResponsiveContainer } from "recharts";
 import { Decimal } from "@kumodao/lib-base";
 
 type StatsPieChartProps = {

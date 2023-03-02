@@ -1,10 +1,9 @@
 import React from "react";
-import { NavLink as RouterLink, NavLinkProps as RouterLinkProps } from "react-router-dom";
 import { Flex, Box, Container, Divider } from "theme-ui";
 import { KumoLogo } from "../KumoLogo";
 import { Link } from "../Link";
 
-export const Sidebar: React.FC = props => {
+export const Sidebar: React.FC = () => {
   return (
     <Container variant="sideBarOverlay">
       <Flex variant="layout.sideBar" sx={{ flex: 1 }}>

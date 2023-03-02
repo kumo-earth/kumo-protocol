@@ -1,5 +1,4 @@
 import { Container } from "theme-ui";
-import { SystemStats } from "../components/SystemStats";
 import { Farm as FarmPanel } from "../components/Farm/Farm";
 
 export const Farm: React.FC = () => (

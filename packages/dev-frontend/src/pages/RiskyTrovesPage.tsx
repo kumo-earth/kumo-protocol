@@ -1,6 +1,5 @@
 import React from "react";
 import { Container, Card, Box, Paragraph } from "theme-ui";
-import { SystemStats } from "../components/SystemStats";
 import { LiquidationManager } from "../components/LiquidationManager";
 import { RiskyTroves } from "../components/RiskyTroves";
 import { InfoMessage } from "../components/InfoMessage";

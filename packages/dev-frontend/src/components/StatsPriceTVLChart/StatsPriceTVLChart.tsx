@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Flex, Box, Card, Text, Select, Heading, Divider, Paragraph } from "theme-ui";
+import React from "react";
+import { Flex, Box, Card, Text, Select } from "theme-ui";
 import {
-  PieChart,
-  Pie,
   Legend,
   Tooltip,
   LineChart,

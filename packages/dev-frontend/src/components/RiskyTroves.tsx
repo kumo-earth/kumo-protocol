@@ -8,7 +8,6 @@ import {
   CRITICAL_COLLATERAL_RATIO,
   UserTrove,
   Decimal,
-  Vault,
   Trove,
   CORE_TEAM_ACCOUNTS,
 } from "@kumodao/lib-base";
@@ -128,7 +127,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
     if (assetType === "ctx" || assetType === "cty") {
       const tempVault = vaults.find(vault => vault.asset === assetType);
       if (tempVault) {
-        const { asset, assetAddress, price, total, kusdInStabilityPool, numberOfTroves } = tempVault;
+        const { asset, assetAddress, price, total, kusdInStabilityPool } = tempVault;
         const recoveryMode = total.collateralRatioIsBelowCritical(price);
         const totalCollateralRatio = total.collateralRatio(price);
         kumo

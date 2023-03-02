@@ -4,7 +4,6 @@ import { useKumo } from "../../../../hooks/KumoContext";
 import { Icon } from "../../../Icon";
 import { InfoMessage } from "../../../InfoMessage";
 import { useFarmView } from "../../context/FarmViewContext";
-import { RemainingKUMO } from "../RemainingKUMO";
 import { Yield } from "../Yield";
 
 const uniLink = (kusdAddress: string) => `https://app.uniswap.org/#/add/ETH/${kusdAddress}`;
