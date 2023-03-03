@@ -77,7 +77,7 @@ export const Adjusting: React.FC = () => {
   const { vault, price, trove, accountBalance, fees, validationContext } = useKumoSelector(
     (state: KumoStoreState) => {
       const { vaults, kusdBalance } = state;
-      const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
+      const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
       const { numberOfTroves, total, fees, accountBalance, trove } = vault;
 
       const price = vault?.price
@@ -95,7 +95,7 @@ export const Adjusting: React.FC = () => {
   );
   const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
 
-  const { kusdMintedCap } = vault
+  const { kusdMintedCap, total } = vault
   const editingState = useState<string>();
   const previousTrove = useRef<Trove>(trove);
   const [collateral, setCollateral] = useState<Decimal>(trove.collateral);
@@ -161,7 +161,7 @@ export const Adjusting: React.FC = () => {
     validationContext
   );
   const stableTroveChange = useStableTroveChange(troveChange);
-  const isMintCapReached = totalDebt.gt(kusdMintedCap)
+  const isMintCapReached = (totalDebt.add(total.debt)).gt(kusdMintedCap)
 
   const [gasEstimationState, setGasEstimationState] = useState<GasEstimationState>({ type: "idle" });
 

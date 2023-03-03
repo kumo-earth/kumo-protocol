@@ -1,14 +1,13 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
 import { Card, Heading, Box } from "theme-ui";
 import { Vault } from "@kumodao/lib-base";
 import { DisabledEditableRow } from "./Editor";
-import { useTroveView } from "./context/TroveViewContext";
 import { COIN } from "../../strings";
 import { CollateralRatio } from "./CollateralRatio";
 
 
-export const PortfolioTrove: React.FC<{ vault: Vault }> = ({ vault = new Vault }) => {
+export const PortfolioTrove: React.FC<{ vault: Vault }> = ({ vault = new Vault() }) => {
   const history = useHistory()
 
   const { trove } = vault;

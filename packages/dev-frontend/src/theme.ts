@@ -155,9 +155,9 @@ const modalOverlay: ThemeUIStyleObject = {
   height: "100vh"
 };
 
-const headerGradient: ThemeUIStyleObject = {
-  background: `linear-gradient(90deg, ${colors.background}, ${colors.muted})`
-};
+// const headerGradient: ThemeUIStyleObject = {
+//   background: `linear-gradient(90deg, ${colors.background}, ${colors.muted})`
+// };
 
 const theme: Theme = {
   breakpoints: ["48em", "52em", "64em"],

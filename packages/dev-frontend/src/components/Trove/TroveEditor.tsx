@@ -42,7 +42,7 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
   const { vaults } = useKumoSelector(select);
 
   const { collateralType } = useParams<{ collateralType: string }>();
-  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
+  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
   const price = vault?.price;
 
   const originalCollateralRatio = !original.isEmpty ? original.collateralRatio(price) : undefined;

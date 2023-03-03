@@ -13,6 +13,7 @@ export const Stats: React.FC = () => {
      if(statsType === 'protocol' || statsType !== 'vaults'){
       history.push('/stats/protocol')
      }
+     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statsType])
   
   const renderStatsView = (view: string) => {

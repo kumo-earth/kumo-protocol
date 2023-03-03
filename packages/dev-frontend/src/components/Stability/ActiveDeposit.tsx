@@ -24,7 +24,7 @@ export const ActiveDeposit: React.FC = () => {
   const { dispatchEvent } = useStabilityView();
   const { collateralType } = useParams<{ collateralType: string }>();
   const { vaults } = useKumoSelector(select);
-  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault;
+  const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
   const { stabilityDeposit, trove, kusdInStabilityPool } = vault;
   const poolShare = stabilityDeposit.currentKUSD.mulDiv(100, kusdInStabilityPool);
 

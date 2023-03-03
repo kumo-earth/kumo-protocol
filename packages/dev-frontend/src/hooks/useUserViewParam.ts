@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useRouteMatch, useLocation } from "react-router-dom";
+import { useRouteMatch, useLocation } from "react-router-dom";
 import { startCase } from 'lodash'
 
 type UserView = {

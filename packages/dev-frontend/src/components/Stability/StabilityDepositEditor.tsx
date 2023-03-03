@@ -49,7 +49,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   const editingState = useState<string>();
   const { collateralType } = useParams<{ collateralType: string }>();
   const { dispatchEvent } = useStabilityView();
-  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
+  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
   const { kusdInStabilityPool } = vault;
   const location = useLocation();
 
@@ -58,9 +58,9 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   const maxAmount = originalDeposit.currentKUSD.add(kusdBalance);
   const maxedOut = editedKUSD.eq(maxAmount);  
 
-  const kusdInStabilityPoolAfterChange =  (originalDeposit.currentKUSD.lte(kusdInStabilityPool)) && kusdInStabilityPool
+  const kusdInStabilityPoolAfterChange =  (originalDeposit.currentKUSD.lte(kusdInStabilityPool)) ? kusdInStabilityPool
     .sub(originalDeposit.currentKUSD)
-    .add(editedKUSD) || Decimal.ZERO;
+    .add(editedKUSD) : Decimal.ZERO;
 
   const originalPoolShare = originalDeposit.currentKUSD.mulDiv(100, kusdInStabilityPool);
   const newPoolShare = editedKUSD.mulDiv(100, kusdInStabilityPoolAfterChange);

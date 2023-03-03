@@ -4,7 +4,7 @@ import { useWeb3React } from "@web3-react/core";
 import { useSwitchNetwork } from "../../hooks/useSwitchNetwork";
 import { useWalletView } from "./context/WalletViewContext";
 import { Card, Box, Heading, Button } from "theme-ui";
-import { useDialogState, Dialog } from "reakit/Dialog";
+import { useDialogState } from "reakit/Dialog";
 import { injectedConnector, WalletConnect } from "../../connectors/injectedConnector";
 import { Icon } from "../Icon";
 
@@ -18,6 +18,7 @@ export const WalletModal: React.FC = () => {
     if (!dialog.visible && view !== "OPEN") {
       dispatchEvent("CLOSE_WALLET_MODAL_PRESSED");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dialog.visible]);
 
   return (

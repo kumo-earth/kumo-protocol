@@ -31,13 +31,14 @@ export const Collateral: React.FC = () => {
   const { showModal,view, dispatchEvent } = useStabilityView();
   const { vaults } = useKumoSelector(select);
   const { collateralType } = useParams<{ collateralType: string }>();
-  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
+  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
   const totalCollateralRatioPct = !vault?.total?.isEmpty ? new Percent(vault.total.collateralRatio(vault?.price)).toString(0) : `${Decimal.from(0).prettify(0)} %`;
 
   useEffect(() => {
     if (!dialog.visible) {
       dispatchEvent("CLOSE_MODAL_PRESSED");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dialog.visible]);
 
   useEffect(() => {
@@ -45,6 +46,7 @@ export const Collateral: React.FC = () => {
      if(!vault){
       history.push('/')
      }
+     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collateralType])
 
   useEffect(() => {
@@ -66,6 +68,7 @@ export const Collateral: React.FC = () => {
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -82,6 +82,7 @@ export const StabilityViewProvider: React.FC = props => {
 
   useEffect(() => {
     setView(getInitialView(stabilityDeposit));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getPathName(location)]);
 
   useEffect(() => {

@@ -99,7 +99,7 @@ const select = ({ vaults, kusdBalance, ownFrontend }: KumoStoreState) => ({
 export const StabilityDepositManager: React.FC = () => {
   const { collateralType } = useParams<{ collateralType: string }>();
   const { vaults, kusdBalance, ownFrontend } = useKumoSelector(select);
-  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
+  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
   const { stabilityDeposit, trove, haveUndercollateralizedTroves } = vault;
 
   const validationContext = {

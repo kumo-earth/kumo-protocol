@@ -34,6 +34,7 @@ export const UserAccount: React.FC = () => {
     if (!active) {
       dialog.setVisible(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // useEffect(() => {

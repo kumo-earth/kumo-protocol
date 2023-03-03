@@ -90,7 +90,7 @@ export const TroveViewProvider: React.FC = props => {
   const { vaults } = useKumoSelector(select);
   const location = useLocation();
 
-  const vault = vaults.find(vault => vault.asset === getPathName(location)) ?? new Vault;
+  const vault = vaults.find(vault => vault.asset === getPathName(location)) ?? new Vault();
   const { trove } = vault;
 
   const [view, setView] = useState<TroveView>(getInitialView(trove?.status));
@@ -115,6 +115,7 @@ export const TroveViewProvider: React.FC = props => {
     if (view !== "OPENING") {
       setView(getInitialView(trove?.status));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trove?.status]);
 
   useEffect(() => {

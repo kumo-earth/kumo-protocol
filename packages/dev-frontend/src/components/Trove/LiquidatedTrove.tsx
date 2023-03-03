@@ -13,7 +13,7 @@ export const LiquidatedTrove: React.FC = () => {
   const { hasSurplusCollateral } = useKumoSelector((state: KumoStoreState) => {
     const { vaults } = state;
 
-    const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
+    const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
     const { collateralSurplusBalance } = vault;
     return {
       hasSurplusCollateral: !collateralSurplusBalance.isZero

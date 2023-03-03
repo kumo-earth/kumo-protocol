@@ -24,6 +24,7 @@ export const StakingType: React.FC = () => {
       dispatchEvent("CLOSE_MODAL_PRESSED");
       history.push("/staking/stability");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dialog.visible, showModal]);
 
   useEffect(() => {
@@ -45,6 +46,7 @@ export const StakingType: React.FC = () => {
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const style = {

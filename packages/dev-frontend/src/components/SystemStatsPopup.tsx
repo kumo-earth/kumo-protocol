@@ -16,7 +16,7 @@ export const SystemStatsPopup: React.FC = () => {
   const { vaults } = useKumoSelector(select);
 
   const { collateralType } = useParams<{ collateralType: string }>();
-  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
+  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
   const { price, total } = vault;
 
   const [systemStatsOpen, setSystemStatsOpen] = useState(false);

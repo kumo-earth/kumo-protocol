@@ -36,9 +36,9 @@ export const Opening: React.FC = () => {
   const { dispatchEvent } = useTroveView();
   const { collateralType } = useParams<{ collateralType: string }>();
 
-  const { accountBalance, fees, price, kusdMintedCap, validationContext } = useKumoSelector((state: KumoStoreState) => {
+  const { accountBalance, fees, price, total, kusdMintedCap, validationContext } = useKumoSelector((state: KumoStoreState) => {
     const { vaults, kusdBalance } = state;
-    const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault;
+    const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
     const { accountBalance, fees, price, total, numberOfTroves, kusdMintedCap } = vault;
 
     const validationContext = {
@@ -48,7 +48,7 @@ export const Opening: React.FC = () => {
       kusdBalance,
       numberOfTroves
     };
-    return { accountBalance, fees, price, kusdMintedCap, validationContext };
+    return { accountBalance, fees, price,total, kusdMintedCap, validationContext };
   });
 
   const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
@@ -82,7 +82,7 @@ export const Opening: React.FC = () => {
   );
 
   const stableTroveChange = useStableTroveChange(troveChange);
-  const isMintCapReached = totalDebt.gt(kusdMintedCap)
+  const isMintCapReached = (totalDebt.add(total.debt)).gt(kusdMintedCap)
   const [gasEstimationState, setGasEstimationState] = useState<GasEstimationState>({ type: "idle" });
 
   const transactionState = useMyTransactionState(TRANSACTION_ID);

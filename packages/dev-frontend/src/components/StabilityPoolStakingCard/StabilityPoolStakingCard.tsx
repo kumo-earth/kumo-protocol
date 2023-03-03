@@ -36,7 +36,7 @@ export const StabilityPoolStakingCard: React.FC<CollateralCardProps> = ({
           borderTopRightRadius: 20
         }}
       >
-        <img src={getStakingImg(stakingType)} height="100%" width={"100%"} />
+        <img src={getStakingImg(stakingType)} alt={stakingType} height="100%" width={"100%"} />
       </Box>
       <Box sx={{ m: 3 }}>
         <Heading sx={{ ml: 3 }}>{title}</Heading>
