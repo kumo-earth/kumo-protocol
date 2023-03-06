@@ -26,7 +26,8 @@ chai.use(chaiAsPromised);
 chai.use(chaiSpies);
 
 
-describe("EthersKumoGasChecks", async () => {
+
+describe("EthersKumoGasChecksMultiAsset", async () => {
     let deployer: Signer;
     let funder: Signer;
     let user: Signer;
@@ -38,15 +39,44 @@ describe("EthersKumoGasChecks", async () => {
     let kumo: EthersKumo;
     let otherKumos: EthersKumo[];
 
-
     let mockAssetAddress: string;
 
     const gasLimit = BigNumber.from(2500000);
 
-    mockAssetContracts.forEach(async mockAssetContract => {
-        describe(`Redemption gas checks ${mockAssetContract.name}`, function () {
-            this.timeout("5m");
+    let amountToDeposit: Decimal
+    let amountToRedeem: Decimal
 
+
+    before(async function () {
+        if (network.name !== "hardhat") {
+            // Redemptions are only allowed after a bootstrap phase of 2 weeks.
+            // Since fast-forwarding only works on Hardhat EVM, skip these tests elsewhere.
+            this.skip();
+        }
+
+        // Deploy new instances of the contracts, for a clean state
+        [deployer, funder, user, ...otherUsers] = await ethers.getSigners();
+        deployment = await deployKumo(deployer);
+
+
+        kumo = await connectToDeployment(deployment, user);
+        expect(kumo).to.be.an.instanceOf(EthersKumo);
+
+        const otherUsersSubset = otherUsers.slice(0, _redeemMaxIterations);
+        expect(otherUsersSubset).to.have.length(_redeemMaxIterations);
+
+        [deployerKumo, kumo, ...otherKumos] = await connectUsers(deployment, [
+            deployer,
+            user,
+            ...otherUsersSubset
+        ]);
+        await sendToEach(otherUsersSubset, funder, 0.1);
+
+    });
+
+    mockAssetContracts.forEach(async mockAssetContract => {
+        describe("Bootstrap Phase Multi Asset", function () {
+            this.timeout("5m");
             const massivePrice = Decimal.from(1000000);
 
             const amountToBorrowPerTrove = Decimal.from(2000);
@@ -55,39 +85,15 @@ describe("EthersKumoGasChecks", async () => {
                 .add(KUSD_LIQUIDATION_RESERVE)
                 .mulDiv(1.5, massivePrice);
 
-            const amountToRedeem = netDebtPerTrove.mul(_redeemMaxIterations);
-            const amountToDeposit = MINIMUM_BORROWING_RATE.add(1)
+            amountToRedeem = netDebtPerTrove.mul(_redeemMaxIterations);
+            amountToDeposit = MINIMUM_BORROWING_RATE.add(1)
                 .mul(amountToRedeem)
                 .add(KUSD_LIQUIDATION_RESERVE)
                 .mulDiv(2, massivePrice);
-            before(async function () {
-                if (network.name !== "hardhat") {
-                    // Redemptions are only allowed after a bootstrap phase of 2 weeks.
-                    // Since fast-forwarding only works on Hardhat EVM, skip these tests elsewhere.
-                    this.skip();
-                }
-
-                // Deploy new instances of the contracts, for a clean state
-                [deployer, funder, user, ...otherUsers] = await ethers.getSigners();
-                deployment = await deployKumo(deployer);
+            before(async () => {
                 mockAssetAddress = deployment.addresses[mockAssetContract.contract];
-
-                kumo = await connectToDeployment(deployment, user);
-                expect(kumo).to.be.an.instanceOf(EthersKumo);
-                
-                const otherUsersSubset = otherUsers.slice(0, _redeemMaxIterations);
-                expect(otherUsersSubset).to.have.length(_redeemMaxIterations);
-
-                [deployerKumo, kumo, ...otherKumos] = await connectUsers(deployment, [
-                    deployer,
-                    user,
-                    ...otherUsersSubset
-                ]);
-
                 await deployerKumo.setPrice(mockAssetAddress, massivePrice);
-                await sendToEach(otherUsersSubset, funder, 0.1);
-
-                for (const otherKumo of otherKumos) {
+                for await (const otherKumo of otherKumos) {
                     await otherKumo.openTrove(
                         {
                             depositCollateral: collateralPerTrove,
@@ -99,8 +105,16 @@ describe("EthersKumoGasChecks", async () => {
                         { gasLimit }
                     );
                 }
-
                 await increaseTime(60 * 60 * 24 * 15);
+            })
+            it(`should be true for Bootstrap phase ${mockAssetContract.name}`, async () => {
+                expect(`test_for_bootstrap_phase`).to.equal(`test_for_bootstrap_phase`);
+            })
+        })
+        describe(`Redemption gas checks Multi Asset ${mockAssetContract.name}`, function () {
+            this.timeout("5m");
+            before(async function () {
+                mockAssetAddress = deployment.addresses[mockAssetContract.contract];
             });
             // Always setup same initial balance for user
             beforeEach(async () => {
@@ -110,7 +124,9 @@ describe("EthersKumoGasChecks", async () => {
                 expect(`${await user.getBalance()}`).to.equal(`${targetBalance}`);
             });
 
+
             it(`should redeem using the maximum iterations and almost all gas ${mockAssetContract.name}`, async () => {
+
                 await kumo.openTrove(
                     {
                         depositCollateral: amountToDeposit,

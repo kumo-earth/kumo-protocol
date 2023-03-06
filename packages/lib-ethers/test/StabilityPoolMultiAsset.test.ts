@@ -30,9 +30,8 @@ chai.use(chaiAsPromised);
 chai.use(chaiSpies);
 
 
-// TODO make the testcases isolated
 
-describe("EthersKumoStabilityPool", async () => {
+describe("EthersKumoStabilityPoolMultiAsset", async () => {
     let deployer: Signer;
     let funder: Signer;
     let user: Signer;
@@ -48,31 +47,31 @@ describe("EthersKumoStabilityPool", async () => {
     const gasLimit = BigNumber.from(2500000);
 
     let mockAssetAddress: string;
+    before(async () => {
+        // Deploy new instances of the contracts, for a clean state
+        [deployer, funder, user, ...otherUsers] = await ethers.getSigners();
+        // Deploy new instances of the contracts, for a clean state
+        deployment = await deployKumo(deployer);
+        kumo = await connectToDeployment(deployment, user);
+        expect(kumo).to.be.an.instanceOf(EthersKumo);
 
+        [deployerKumo, kumo, ...otherKumos] = await connectUsers(deployment, [
+            deployer,
+            user,
+            ...otherUsers.slice(0, 1)
+        ]);
+
+        await funder.sendTransaction({
+            to: otherUsers[0].getAddress(),
+            value: KUSD_MINIMUM_DEBT.div(170).hex
+        });
+    });
 
 
     mockAssetContracts.forEach(async mockAssetContract => {
-        describe(`StabilityPool - TEST ${mockAssetContract.name}`, () => {
+        describe(`StabilityPool - TEST Multi Asset ${mockAssetContract.name}`, () => {
             before(async () => {
-                // Deploy new instances of the contracts, for a clean state
-                [deployer, funder, user, ...otherUsers] = await ethers.getSigners();
-                // Deploy new instances of the contracts, for a clean state
-                deployment = await deployKumo(deployer);
                 mockAssetAddress = deployment.addresses[mockAssetContract.contract];
-
-                kumo = await connectToDeployment(deployment, user);
-                expect(kumo).to.be.an.instanceOf(EthersKumo);
-
-                [deployerKumo, kumo, ...otherKumos] = await connectUsers(deployment, [
-                    deployer,
-                    user,
-                    ...otherUsers.slice(0, 1)
-                ]);
-
-                await funder.sendTransaction({
-                    to: otherUsers[0].getAddress(),
-                    value: KUSD_MINIMUM_DEBT.div(170).hex
-                });
             });
 
             // Always setup same initial balance for user
@@ -218,6 +217,7 @@ describe("EthersKumoStabilityPool", async () => {
                 const stabilityDeposit = await kumo.getStabilityDeposit(mockAssetContract.name);
                 expect(stabilityDeposit.isEmpty).to.be.true;
             });
+
         })
     })
 });

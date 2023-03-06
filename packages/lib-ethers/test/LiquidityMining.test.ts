@@ -47,12 +47,12 @@ describe("EthersKumoMining", async () => {
 
                 kumo = await connectToDeployment(deployment, user);
                 expect(kumo).to.be.an.instanceOf(EthersKumo);
-                
+
                 [deployerKumo, kumo] = await connectUsers(deployment, [deployer, user]);
             });
 
              // Always setup same initial balance for user
-             beforeEach(async () => {
+            beforeEach(async () => {
                 const targetBalance = BigNumber.from(STARTING_BALANCE.hex);
 
                 await setUpInitialUserBalance(user, funder, gasLimit);

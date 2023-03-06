@@ -16,7 +16,7 @@ import {
 
 import { HintHelpers } from "../types";
 import { assertStrictEqual, connectToDeployment, setUpInitialUserBalance, waitForSuccess } from "../testUtils"
-import { MockAssets, mockAssetContracts } from "../testUtils/types"
+import { mockAssetContracts } from "../testUtils/types"
 import { STARTING_BALANCE } from "../testUtils/constants"
 
 import {
@@ -44,22 +44,14 @@ describe("EthersKumo", async () => {
   let otherUsers: Signer[];
 
   let deployment: _KumoDeploymentJSON;
-
   let kumo: EthersKumo;
-  let mockAssets: MockAssets[]
-
 
   const gasLimit = BigNumber.from(2500000);
-
   
   before(async () => {
     [deployer, funder, user, ...otherUsers] = await ethers.getSigners();
     deployment = await deployKumo(deployer);
-    mockAssets = mockAssetContracts.map(assetCont => {
-      const mockAssetAddress = deployment.addresses[assetCont.contract];
-      const mockAsset = new ethers.Contract(mockAssetAddress, ERC20ABI, provider.getSigner())
-      return { assetName: assetCont.name, assetAddress: mockAssetAddress, assetContract: mockAsset }
-    })
+
     kumo = await connectToDeployment(deployment, user);
 
     expect(kumo).to.be.an.instanceOf(EthersKumo);

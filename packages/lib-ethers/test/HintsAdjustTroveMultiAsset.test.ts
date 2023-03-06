@@ -24,8 +24,7 @@ chai.use(chaiAsPromised);
 chai.use(chaiSpies);
 
 
-// // Test workarounds related to https://github.com/kumo/dev/issues/600
-describe("EthersKumoHints", async () => {
+describe("EthersKumoHintsMultiAsset", async () => {
     let deployer: Signer;
     let funder: Signer;
     let user: Signer;
@@ -39,19 +38,23 @@ describe("EthersKumoHints", async () => {
 
     const gasLimit = BigNumber.from(2500000);
 
-    mockAssetContracts.forEach(async mockAssetContract => {
-        describe(`Hints (adjustTrove) ${mockAssetContract.name}`, () => {
-            let eightOtherUsers: Signer[];
-            before(async function () {
-                [deployer, funder, user, ...otherUsers] = await ethers.getSigners();
-                deployment = await deployKumo(deployer);
-                mockAssetAddress = deployment.addresses[mockAssetContract.contract];
-                eightOtherUsers = otherUsers.slice(0, 8);
-                kumo = await connectToDeployment(deployment, user);
-                
-                expect(kumo).to.be.an.instanceOf(EthersKumo);
+    let eightOtherUsers: Signer[];
 
-                await openTroves(deployment, eightOtherUsers, funder,  [
+    before(async function () {
+        [deployer, funder, user, ...otherUsers] = await ethers.getSigners();
+        deployment = await deployKumo(deployer);
+
+        eightOtherUsers = otherUsers.slice(0, 8);
+        kumo = await connectToDeployment(deployment, user);
+        expect(kumo).to.be.an.instanceOf(EthersKumo);
+    });
+
+    mockAssetContracts.forEach(async mockAssetContract => {
+        describe(`Hints (adjustTrove) Multi Asset ${mockAssetContract.name}`, () => {
+            before(async () => {
+                mockAssetAddress = deployment.addresses[mockAssetContract.contract];
+
+                await openTroves(deployment, eightOtherUsers, funder, [
                     { depositCollateral: 30, borrowKUSD: 2000 }, // 0
                     { depositCollateral: 30, borrowKUSD: 2100 }, // 1
                     { depositCollateral: 30, borrowKUSD: 2200 }, // 2
@@ -65,8 +68,8 @@ describe("EthersKumoHints", async () => {
                     // Test 2 (other):   30,             3000
                     // Test 3:           30,             3100 -> 3200
                 ], mockAssetAddress, gasLimit);
-    
-            });
+
+            })
 
             // Always setup same initial balance for user
             beforeEach(async () => {
@@ -145,6 +148,5 @@ describe("EthersKumoHints", async () => {
             });
 
         });
-
     });
 })
