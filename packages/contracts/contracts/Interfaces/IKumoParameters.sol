@@ -13,7 +13,6 @@ import "./IStabilityPoolFactory.sol";
 import "./ISortedTroves.sol";
 import "./IKUMOToken.sol";
 import "./IKUMOStaking.sol";
-import "./ITroveRedemptor.sol";
 
 interface IKumoParameters {
     error SafeCheckError(string parameter, uint256 valueEntered, uint256 minValue, uint256 maxValue);
@@ -90,8 +89,6 @@ interface IKumoParameters {
 
     function kumoStaking() external view returns (IKUMOStaking);
 
-    function troveRedemptor() external view returns (ITroveRedemptor);
-
     function setAddresses(
         address _activePool,
         address _defaultPool,
@@ -103,8 +100,7 @@ interface IKumoParameters {
         address _stabilityPoolFactoryAddress,
         address _sortedTrovesAddress,
         address _kumoTokenAddress,
-        address _kumoStakingAddress,
-        address _troveRedemptorAddress
+        address _kumoStakingAddress
     ) external;
 
     function setPriceFeed(address _priceFeed) external;

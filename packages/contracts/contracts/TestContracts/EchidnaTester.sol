@@ -15,10 +15,10 @@ import "../SortedTroves.sol";
 import "./EchidnaProxy.sol";
 import "../KumoParameters.sol";
 import "../Interfaces/IStabilityPool.sol";
-import "../Interfaces/IDiamond.sol";
+import "../Interfaces/IDiamondCut.sol";
 import "../Interfaces/ITroveManagerDiamond.sol";
 
-//import "../Dependencies/console.sol";
+//import "hardhat/console.sol";
 
 // Run with:
 // rm -f fuzzTests/corpus/* # (optional)
@@ -50,8 +50,8 @@ contract EchidnaTester {
 
     uint256 private numberOfTroves;
 
-    constructor(address _asset, IDiamond.FacetCut[] memory _diamondCut, DiamondArgs memory _args) payable {  
-        troveManager = new TroveManagerDiamond(_diamondCut, _args);
+    constructor(address _asset) payable {
+        troveManager = new TroveManagerDiamond();
         borrowerOperations = new BorrowerOperations();
         activePool = new ActivePool();
         defaultPool = new DefaultPool();
@@ -239,7 +239,7 @@ contract EchidnaTester {
         (, bytes memory _data) = address(troveManager).call(
             abi.encodeWithSignature("getTroveOwnersCount(address)", _asset)
         );
-        numberOfTroves = abi.decode(_data, (uint));
+        numberOfTroves = abi.decode(_data, (uint256));
         assert(numberOfTroves > 0);
         // canary
         //assert(numberOfTroves == 0);
@@ -484,10 +484,7 @@ contract EchidnaTester {
         address nextTrove = sortedTroves.getNext(_asset, currentTrove);
 
         while (currentTrove != address(0) && nextTrove != address(0)) {
-            if (
-                tmGetNominalICR(_asset, nextTrove) >
-                tmGetNominalICR(_asset, currentTrove)
-            ) {
+            if (tmGetNominalICR(_asset, nextTrove) > tmGetNominalICR(_asset, currentTrove)) {
                 return false;
             }
             // Uncomment to check that the condition is meaningful
@@ -516,10 +513,7 @@ contract EchidnaTester {
             //else return false;
 
             // Minimum debt (gas compensation)
-            if (
-                tmGetTroveDebt(_asset, currentTrove) <
-                kumoParams.KUSD_GAS_COMPENSATION(_asset)
-            ) {
+            if (tmGetTroveDebt(_asset, currentTrove) < kumoParams.KUSD_GAS_COMPENSATION(_asset)) {
                 return false;
             }
             // Uncomment to check that the condition is meaningful
@@ -622,27 +616,27 @@ contract EchidnaTester {
     }
     */
 
-    function tmGetNominalICR(address _asset, address _borrower) internal returns(uint256 _result) {
+    function tmGetNominalICR(address _asset, address _borrower) internal returns (uint256 _result) {
         (, bytes memory _data) = address(troveManager).call(
             abi.encodeWithSignature("getNominalICR(address,address)", _asset, _borrower)
         );
 
-        _result = abi.decode(_data, (uint));
+        _result = abi.decode(_data, (uint256));
     }
 
-    function tmGetTroveDebt(address _asset, address _borrower) internal returns(uint256 _result) {
+    function tmGetTroveDebt(address _asset, address _borrower) internal returns (uint256 _result) {
         (, bytes memory _data) = address(troveManager).call(
             abi.encodeWithSignature("getTroveDebt(address,address)", _asset, _borrower)
         );
 
-        _result = abi.decode(_data, (uint));
+        _result = abi.decode(_data, (uint256));
     }
 
-    function tmGetTroveStake(address _asset, address _borrower) internal returns(uint256 _result) {
+    function tmGetTroveStake(address _asset, address _borrower) internal returns (uint256 _result) {
         (, bytes memory _data) = address(troveManager).call(
             abi.encodeWithSignature("getTroveStake(address,address)", _asset, _borrower)
         );
 
-        _result = abi.decode(_data, (uint));
+        _result = abi.decode(_data, (uint256));
     }
 }

@@ -81,7 +81,6 @@ contract("TroveManager", async accounts => {
 
   beforeEach(async () => {
     contracts = await deploymentHelper.deployKumoCore();
-    contracts.troveManager = await TroveManagerTester.new();
     contracts.kusdToken = await KUSDTokenTester.new(
       contracts.troveManager.address,
       contracts.stabilityPoolFactory.address,

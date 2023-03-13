@@ -57,7 +57,7 @@ library LibTroveManager {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
         uint256 snapshotAsset = s.rewardSnapshots[_borrower][_asset].asset;
-        uint256 rewardPerUnitStaked = s.L_ASSETS[_asset] + snapshotAsset;
+        uint256 rewardPerUnitStaked = s.L_ASSETS[_asset] - snapshotAsset;
         if (rewardPerUnitStaked == 0 || !_isTroveActive(_asset, _borrower)) {
             return 0;
         }
@@ -233,7 +233,7 @@ library LibTroveManager {
         return redemptionFee;
     }
 
-     function _calcRedemptionRate(address _asset, uint256 _baseRate) internal view returns (uint256) {
+    function _calcRedemptionRate(address _asset, uint256 _baseRate) internal view returns (uint256) {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
         return
@@ -251,5 +251,27 @@ library LibTroveManager {
 
     function _getRedemptionFee(address _asset, uint256 _assetDraw) internal view returns (uint256) {
         return _calcRedemptionFee(_getRedemptionRate(_asset), _assetDraw);
+    }
+
+    function _getEntireDebtAndColl(address _asset, address _borrower)
+        internal
+        view
+        returns (
+            uint256 debt,
+            uint256 coll,
+            uint256 pendingKUSDDebtReward,
+            uint256 pendingReward
+        )
+    {
+        AppStorage storage s = LibAppStorage.diamondStorage();
+
+        debt = s.Troves[_borrower][_asset].debt;
+        coll = s.Troves[_borrower][_asset].coll;
+
+        pendingKUSDDebtReward = _getPendingKUSDDebtReward(_asset, _borrower);
+        pendingReward = _getPendingReward(_asset, _borrower);
+
+        debt = debt + pendingKUSDDebtReward;
+        coll = coll + pendingReward;
     }
 }

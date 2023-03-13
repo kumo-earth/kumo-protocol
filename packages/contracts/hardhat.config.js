@@ -1,3 +1,4 @@
+require("hardhat-diamond-abi");
 require("@nomiclabs/hardhat-truffle5");
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
@@ -32,6 +33,8 @@ const alchemyUrlRinkeby = () => {
 const alchemyUrlMumbai = () => {
   return `https://polygon-mumbai.g.alchemy.com/v2/${getSecret("alchemyAPIKeyMumbai")}`;
 };
+
+let abiMap = {};
 
 module.exports = {
   paths: {
@@ -141,5 +144,26 @@ module.exports = {
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS ? true : false
+  },
+  diamondAbi: {
+    name: "TroveManager",
+    include: [
+      "TroveManagerFacet",
+      "TroveRedemptorFacet",
+      "DiamondCutFacet",
+      "DiamondLoupeFacet",
+      "CDPManagerTesterFacet",
+      "OwnershipFacet"
+    ],
+    filter: function (abiElement, index, fullAbi, fullyQualifiedName) {
+      if (abiMap[abiElement.name] == true) {
+        return false;
+      }
+
+      abiMap[abiElement.name] = true;
+
+      return true;
+    },
+    strict: true
   }
 };

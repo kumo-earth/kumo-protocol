@@ -60,7 +60,6 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
     ISortedTroves public override sortedTroves;
     IKUMOToken public override kumoToken;
     IKUMOStaking public override kumoStaking;
-    ITroveRedemptor public override troveRedemptor;
     // address public adminContract;
 
     bool public isInitialized;
@@ -81,8 +80,7 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         address _stabilityPoolFactoryAddress,
         address _sortedTrovesAddress,
         address _kumoTokenAddress,
-        address _kumoStakingAddress,
-        address _troveRedemptorAddress
+        address _kumoStakingAddress
     ) external onlyOwner {
         require(!isInitialized, "Already initalized");
         checkContract(_activePool);
@@ -95,7 +93,6 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         checkContract(_sortedTrovesAddress);
         checkContract(_kumoTokenAddress);
         checkContract(_kumoStakingAddress);
-        checkContract(_troveRedemptorAddress);
         isInitialized = true;
 
         activePool = IActivePool(_activePool);
@@ -109,7 +106,6 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         kumoToken = IKUMOToken(_kumoTokenAddress);
         kumoStaking = IKUMOStaking(_kumoStakingAddress);
-        troveRedemptor = ITroveRedemptor(_troveRedemptorAddress);
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit StabilityPoolFactoryAddressChanged(_stabilityPoolFactoryAddress);
@@ -119,7 +115,6 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit KUMOTokenAddressChanged(_kumoTokenAddress);
         emit KUMOStakingAddressChanged(_kumoStakingAddress);
-        emit TroveRedemptorAddressChanged(_troveRedemptorAddress);
     }
 
     function setPriceFeed(address _priceFeed) external override onlyOwner {

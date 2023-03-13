@@ -126,6 +126,9 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         s.sortedTroves = s.kumoParams.sortedTroves();
         s.kumoToken = s.kumoParams.kumoToken();
         s.kumoStaking = s.kumoParams.kumoStaking();
+        s.stabilityPoolFactory = s.kumoParams.stabilityPoolFactory();
+        s.defaultPool = s.kumoParams.defaultPool();
+        s.activePool = s.kumoParams.activePool();
     }
 
     function addNewAsset(address _asset) external onlyOwner {
@@ -461,6 +464,14 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         returns (uint256)
     {
         return s.Troves[_borrower][_asset].coll;
+    }
+
+    function getEntireSystemColl(address _asset) external view returns (uint256 entireSystemColl) {
+        return LibKumoBase._getEntireSystemColl(_asset);
+    }
+
+    function getEntireSystemDebt(address _asset) external view returns (uint256 entireSystemDebt) {
+        return LibKumoBase._getEntireSystemDebt(_asset);
     }
 
     // --- Trove property setters, called by BorrowerOperations ---

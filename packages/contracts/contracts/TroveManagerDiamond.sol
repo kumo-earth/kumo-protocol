@@ -11,6 +11,10 @@ pragma solidity 0.8.11;
 
 import {IDiamondCut} from "./Interfaces/IDiamondCut.sol";
 import {LibDiamond} from "./Libraries/LibDiamond.sol";
+import {DiamondCutFacet} from "./Facets/DiamondCutFacet.sol";
+import {DiamondLoupeFacet} from "./Facets/DiamondLoupeFacet.sol";
+import {OwnershipFacet} from "./Facets/OwnershipFacet.sol";
+import "hardhat/console.sol";
 
 // When no function exists for function called
 error FunctionNotFound(bytes4 _functionSelector);
@@ -25,9 +29,13 @@ struct DiamondArgs {
 }
 
 contract TroveManagerDiamond {
-    constructor(IDiamondCut.FacetCut[] memory _diamondCut, DiamondArgs memory _args) payable {
-        LibDiamond.setContractOwner(_args.owner);
-        LibDiamond.diamondCut(_diamondCut, _args.init, _args.initCalldata);
+    constructor() {
+        LibDiamond.setContractOwner(msg.sender);
+        LibDiamond.addDiamondFunctions(
+            address(new DiamondCutFacet()),
+            address(new DiamondLoupeFacet()),
+            address(new OwnershipFacet())
+        );
 
         // Code can be added here to perform actions and set state variables.
     }

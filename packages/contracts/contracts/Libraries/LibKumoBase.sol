@@ -43,26 +43,26 @@ library LibKumoBase {
         return _entireColl / s.kumoParams.PERCENT_DIVISOR(_asset);
     }
 
-    function getEntireSystemColl(address _asset) public view returns (uint256 entireSystemColl) {
+    function _getEntireSystemColl(address _asset) internal view returns (uint256 entireSystemColl) {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
-        uint256 activeColl = s.kumoParams.activePool().getAssetBalance(_asset);
-        uint256 liquidatedColl = s.kumoParams.defaultPool().getAssetBalance(_asset);
+        uint256 activeColl = s.activePool.getAssetBalance(_asset);
+        uint256 liquidatedColl = s.defaultPool.getAssetBalance(_asset);
         return activeColl + liquidatedColl;
     }
 
-    function getEntireSystemDebt(address _asset) public view returns (uint256 entireSystemDebt) {
+    function _getEntireSystemDebt(address _asset) internal view returns (uint256 entireSystemDebt) {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
-        uint256 activeDebt = s.kumoParams.activePool().getKUSDDebt(_asset);
-        uint256 closedDebt = s.kumoParams.defaultPool().getKUSDDebt(_asset);
+        uint256 activeDebt = s.activePool.getKUSDDebt(_asset);
+        uint256 closedDebt = s.defaultPool.getKUSDDebt(_asset);
 
         return activeDebt + closedDebt;
     }
 
     function _getTCR(address _asset, uint256 _price) internal view returns (uint256 TCR) {
-        uint256 entireSystemColl = getEntireSystemColl(_asset);
-        uint256 entireSystemDebt = getEntireSystemDebt(_asset);
+        uint256 entireSystemColl = _getEntireSystemColl(_asset);
+        uint256 entireSystemDebt = _getEntireSystemDebt(_asset);
 
         TCR = KumoMath._computeCR(entireSystemColl, entireSystemDebt, _price);
 

@@ -15,7 +15,6 @@ import {
 import activePoolAbi from "../abi/ActivePool.json";
 import borrowerOperationsAbi from "../abi/BorrowerOperations.json";
 import troveManagerAbi from "../abi/TroveManager.json";
-import troveRedemptorAbi from "../abi/TroveRedemptor.json";
 import kusdTokenAbi from "../abi/KUSDToken.json";
 import collSurplusPoolAbi from "../abi/CollSurplusPool.json";
 import communityIssuanceAbi from "../abi/CommunityIssuance.json";
@@ -60,8 +59,7 @@ import {
   ERC20Mock,
   IERC20,
   KumoParameters,
-  ERC20Test,
-  TroveRedemptor
+  ERC20Test
 } from "../types";
 
 import { EthersProvider, EthersSigner } from "./types";
@@ -196,7 +194,6 @@ export interface _KumoContracts {
   uniToken: IERC20 | ERC20Mock;
   mockAsset1: ERC20Test;
   mockAsset2: ERC20Test;
-  troveRedemptor: TroveRedemptor;
 }
 
 /** @internal */
@@ -238,8 +235,7 @@ const getAbi = (priceFeedIsTestnet: boolean, uniTokenIsMock: boolean): KumoContr
   unipool: unipoolAbi,
   uniToken: uniTokenIsMock ? erc20MockAbi : iERC20Abi,
   mockAsset1: erc20TestAbi,
-  mockAsset2: erc20TestAbi,
-  troveRedemptor: troveRedemptorAbi
+  mockAsset2: erc20TestAbi
 });
 
 const mapKumoContracts = <T, U>(

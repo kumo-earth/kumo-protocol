@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeab
 import "./Interfaces/IBorrowerOperations.sol";
 import "./Interfaces/IStabilityPool.sol";
 import "./Interfaces/IBorrowerOperations.sol";
-import "./Interfaces/ITroveManager.sol";
+import "./Interfaces/ITroveManagerDiamond.sol";
 import "./Interfaces/IKUSDToken.sol";
 import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/ICommunityIssuance.sol";
@@ -15,7 +15,7 @@ import "./Dependencies/KumoBase.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/KumoSafeMath128.sol";
 import "./Dependencies/CheckContract.sol";
-import "./Dependencies/console.sol";
+import "hardhat/console.sol";
 import "./Dependencies/SafetyTransfer.sol";
 
 /*
@@ -160,7 +160,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
     IBorrowerOperations public borrowerOperations;
 
-    ITroveManager public troveManager;
+    ITroveManagerDiamond public troveManager;
 
     IKUSDToken public kusdToken;
 
@@ -278,7 +278,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         assetAddress = _assetAddress;
 
         borrowerOperations = IBorrowerOperations(_borrowerOperationsAddress);
-        troveManager = ITroveManager(_troveManagerAddress);
+        troveManager = ITroveManagerDiamond(_troveManagerAddress);
         kusdToken = IKUSDToken(_kusdTokenAddress);
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         communityIssuance = ICommunityIssuance(_communityIssuanceAddress);
@@ -1038,10 +1038,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     }
 
     function _requireCallerIsTroveManager() internal view {
-        require(
-            msg.sender == address(troveManager),
-            "StabilityPool: Caller is not TroveManager"
-        );
+        require(msg.sender == address(troveManager), "StabilityPool: Caller is not TroveManager");
     }
 
     function _requireNoUnderCollateralizedTroves() internal {

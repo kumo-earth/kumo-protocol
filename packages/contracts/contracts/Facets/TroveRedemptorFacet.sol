@@ -4,9 +4,11 @@ pragma solidity ^0.8.11;
 import "../Interfaces/Facets/ITroveRedemptorFacet.sol";
 import "../Interfaces/IStabilityPool.sol";
 import "../Dependencies/KumoMath.sol";
+import "hardhat/console.sol";
 import {Status, Modifiers, TroveManagerOperation} from "../Libraries/LibAppStorage.sol";
 import {LibKumoBase} from "../Libraries/LibKumoBase.sol";
 import {LibTroveManager} from "../Libraries/LibTroveManager.sol";
+import {LibMeta} from "../Libraries/LibMeta.sol";
 
 contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
     struct LocalVariables_OuterLiquidationFunction {
@@ -157,9 +159,9 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         // _requireAmountGreaterThanZero
         require(_KUSDamount > 0, "TroveManager: Amount must be greater than zero");
 
-        _requireKUSDBalanceCoversRedemption(msg.sender, _KUSDamount);
+        _requireKUSDBalanceCoversRedemption(LibMeta.msgSender(), _KUSDamount);
 
-        totals.totalKUSDSupplyAtStart = LibKumoBase.getEntireSystemDebt(_asset);
+        totals.totalKUSDSupplyAtStart = LibKumoBase._getEntireSystemDebt(_asset);
         totals.remainingKUSD = _KUSDamount;
         address currentBorrower;
 
@@ -240,10 +242,10 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         );
 
         // Burn the total KUSD that is cancelled with debt, and send the redeemed Asset to msg.sender
-        s.kusdToken.burn(msg.sender, totals.totalKUSDToRedeem);
+        s.kusdToken.burn(LibMeta.msgSender(), totals.totalKUSDToRedeem);
         // Update Active Pool KUSD, and send Asset to account
         s.activePool.decreaseKUSDDebt(_asset, totals.totalKUSDToRedeem);
-        s.activePool.sendAsset(_asset, msg.sender, assetToSendToRedeemer);
+        s.activePool.sendAsset(_asset, LibMeta.msgSender(), assetToSendToRedeemer);
     }
 
     // Redeem as much collateral as possible from _borrower's Trove in exchange for KUSD up to _maxKUSDamount
@@ -410,7 +412,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         // Send gas compensation to caller
         sendGasCompensation(
             _asset,
-            msg.sender,
+            LibMeta.msgSender(),
             totals.totalkusdGasCompensation,
             totals.totalCollGasCompensation
         );
@@ -421,6 +423,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
      * starting from the one with the lowest collateral ratio in the system, and moving upwards
      */
     function liquidateTroves(address _asset, uint256 _n) external {
+        console.log("--- liquidateTroves");
         IStabilityPool stabilityPoolCached = s.stabilityPoolFactory.getStabilityPoolByAsset(_asset);
 
         LocalVariables_OuterLiquidationFunction memory vars;
@@ -473,9 +476,10 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         );
 
         // Send gas compensation to caller
+        console.log("sendGasCompensation, liquidateTroves");
         sendGasCompensation(
             _asset,
-            msg.sender,
+            LibMeta.msgSender(),
             totals.totalkusdGasCompensation,
             totals.totalCollGasCompensation
         );
@@ -491,6 +495,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         uint256 _KUSDInStabPool,
         uint256 _n
     ) internal returns (LiquidationTotals memory totals) {
+        console.log("--- _getTotalsFromLiquidateTrovesSequence_RecoveryMode");
         LocalVariables_AssetBorrowerPrice memory assetVars = LocalVariables_AssetBorrowerPrice(
             _asset,
             address(0),
@@ -501,8 +506,8 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
 
         vars.remainingKUSDInStabPool = _KUSDInStabPool;
         vars.backToNormalMode = false;
-        vars.entireSystemDebt = LibKumoBase.getEntireSystemDebt(assetVars._asset);
-        vars.entireSystemColl = LibKumoBase.getEntireSystemColl(assetVars._asset);
+        vars.entireSystemDebt = LibKumoBase._getEntireSystemDebt(assetVars._asset);
+        vars.entireSystemColl = LibKumoBase._getEntireSystemColl(assetVars._asset);
 
         vars.user = s.sortedTroves.getLast(assetVars._asset);
         address firstUser = s.sortedTroves.getFirst(assetVars._asset);
@@ -523,7 +528,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
                     vars.entireSystemDebt,
                     _price
                 );
-
+                console.log("Index of troves: ", vars.i);
                 singleLiquidation = _liquidateRecoveryMode(
                     assetVars._asset,
                     vars.user,
@@ -852,8 +857,8 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
 
         vars.remainingKUSDInStabPool = _KUSDInStabPool;
         vars.backToNormalMode = false;
-        vars.entireSystemDebt = LibKumoBase.getEntireSystemDebt(_asset);
-        vars.entireSystemColl = LibKumoBase.getEntireSystemColl(_asset);
+        vars.entireSystemDebt = LibKumoBase._getEntireSystemDebt(_asset);
+        vars.entireSystemColl = LibKumoBase._getEntireSystemColl(_asset);
 
         for (vars.i = 0; vars.i < _troveArray.length; vars.i++) {
             vars.user = _troveArray[vars.i];
@@ -960,7 +965,9 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         uint256 _TCR,
         uint256 _price
     ) internal returns (LiquidationValues memory singleLiquidation) {
+        console.log("--- _liquidateRecoveryMode");
         LocalVariables_InnerSingleLiquidateFunction memory vars;
+        console.log("Number of troves: ", s.TroveOwners[_asset].length);
         if (s.TroveOwners[_asset].length <= 1) {
             return singleLiquidation;
         } // don't liquidate if last trove
@@ -969,7 +976,11 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
             singleLiquidation.entireTroveColl,
             vars.pendingDebtReward,
             vars.pendingCollReward
-        ) = getEntireDebtAndColl(_asset, _borrower);
+        ) = LibTroveManager._getEntireDebtAndColl(_asset, _borrower);
+        console.log("singleLiquidation.entireTroveDebt", singleLiquidation.entireTroveDebt);
+        console.log("singleLiquidation.entireTroveColl", singleLiquidation.entireTroveColl);
+        console.log("vars.pendingDebtReward", vars.pendingDebtReward);
+        console.log("vars.pendingCollReward", vars.pendingCollReward);
 
         singleLiquidation.collGasCompensation = LibKumoBase._getCollGasCompensation(
             _asset,
@@ -1115,7 +1126,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
             singleLiquidation.entireTroveColl,
             vars.pendingDebtReward,
             vars.pendingCollReward
-        ) = getEntireDebtAndColl(_asset, _borrower);
+        ) = LibTroveManager._getEntireDebtAndColl(_asset, _borrower);
 
         LibTroveManager._movePendingTroveRewardsToActivePool(
             _asset,
@@ -1203,7 +1214,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
 
     // Return the Troves entire debt and coll, including pending rewards from redistributions.
     function getEntireDebtAndColl(address _asset, address _borrower)
-        public
+        external
         view
         returns (
             uint256 debt,
@@ -1308,6 +1319,8 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         // (see LibKumoBase._getCollGasCompensation function in KumoBase)
         // With the current values of min debt this seems quite unlikely, unless ETH price was in the order of magnitude of $10^19 or more,
         // but it’s ok to have this here as a sanity check
+
+        console.log("sendGasCompensation, inside");
         if (_amount > 0) {
             s.activePool.sendAsset(_asset, _liquidator, _amount);
         }

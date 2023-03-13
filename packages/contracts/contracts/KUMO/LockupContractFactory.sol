@@ -9,34 +9,34 @@ import "../Dependencies/SafeMath.sol";
 import "../Dependencies/Ownable.sol";
 import "../Interfaces/ILockupContractFactory.sol";
 import "./LockupContract.sol";
-import "../Dependencies/console.sol";
+import "hardhat/console.sol";
 
 /*
-* The LockupContractFactory deploys LockupContracts - its main purpose is to keep a registry of valid deployed 
-* LockupContracts. 
-* 
-* This registry is checked by KUMOToken when the Kumo deployer attempts to transfer KUMO tokens. During the first year 
-* since system deployment, the Kumo deployer is only allowed to transfer KUMO to valid LockupContracts that have been 
-* deployed by and recorded in the LockupContractFactory. This ensures the deployer's KUMO can't be traded or staked in the
-* first year, and can only be sent to a verified LockupContract which unlocks at least one year after system deployment.
-*
-* LockupContracts can of course be deployed directly, but only those deployed through and recorded in the LockupContractFactory 
-* will be considered "valid" by KUMOToken. This is a convenient way to verify that the target address is a genuine 
-* LockupContract.
-*/
+ * The LockupContractFactory deploys LockupContracts - its main purpose is to keep a registry of valid deployed
+ * LockupContracts.
+ *
+ * This registry is checked by KUMOToken when the Kumo deployer attempts to transfer KUMO tokens. During the first year
+ * since system deployment, the Kumo deployer is only allowed to transfer KUMO to valid LockupContracts that have been
+ * deployed by and recorded in the LockupContractFactory. This ensures the deployer's KUMO can't be traded or staked in the
+ * first year, and can only be sent to a verified LockupContract which unlocks at least one year after system deployment.
+ *
+ * LockupContracts can of course be deployed directly, but only those deployed through and recorded in the LockupContractFactory
+ * will be considered "valid" by KUMOToken. This is a convenient way to verify that the target address is a genuine
+ * LockupContract.
+ */
 
 contract LockupContractFactory is ILockupContractFactory, Ownable, CheckContract {
     using SafeMath for uint256;
 
-	// bool public isInitialized;
+    // bool public isInitialized;
     // --- Data ---
-    string constant public NAME = "LockupContractFactory";
+    string public constant NAME = "LockupContractFactory";
 
-    uint256 constant public SECONDS_IN_ONE_YEAR = 31536000;
+    uint256 public constant SECONDS_IN_ONE_YEAR = 31536000;
 
     address public kumoTokenAddress;
-    
-    mapping (address => address) public lockupContractToDeployer;
+
+    mapping(address => address) public lockupContractToDeployer;
 
     // --- Events ---
 
@@ -48,9 +48,9 @@ contract LockupContractFactory is ILockupContractFactory, Ownable, CheckContract
     function setKUMOTokenAddress(address _kumoTokenAddress) external override onlyOwner {
         // require(!isInitialized, "Already initialized");
         checkContract(_kumoTokenAddress);
-		// isInitialized = true;
+        // isInitialized = true;
 
-		// __Ownable_init();
+        // __Ownable_init();
 
         kumoTokenAddress = _kumoTokenAddress;
         emit KUMOTokenAddressSet(_kumoTokenAddress);
@@ -62,12 +62,18 @@ contract LockupContractFactory is ILockupContractFactory, Ownable, CheckContract
         address kumoTokenAddressCached = kumoTokenAddress;
         _requireKUMOAddressIsSet(kumoTokenAddressCached);
         LockupContract lockupContract = new LockupContract(
-                                                        kumoTokenAddressCached,
-                                                        _beneficiary, 
-                                                        _unlockTime);
+            kumoTokenAddressCached,
+            _beneficiary,
+            _unlockTime
+        );
 
         lockupContractToDeployer[address(lockupContract)] = msg.sender;
-        emit LockupContractDeployedThroughFactory(address(lockupContract), _beneficiary, _unlockTime, msg.sender);
+        emit LockupContractDeployedThroughFactory(
+            address(lockupContract),
+            _beneficiary,
+            _unlockTime,
+            msg.sender
+        );
     }
 
     function isRegisteredLockup(address _contractAddress) public view override returns (bool) {

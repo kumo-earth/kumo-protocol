@@ -78,8 +78,6 @@ const deployContracts = async (
     troveManager: await deployContract(deployer, getContractFactory, "TroveManager", {
       ...overrides
     }),
-    troveRedemptor: await deployContract(deployer, getContractFactory, "TroveRedemptor", { ...overrides 
-    }),
     collSurplusPool: await deployContract(deployer, getContractFactory, "CollSurplusPool", {
       ...overrides
     }),

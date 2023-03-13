@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.11;
 
-//import "../Dependencies/console.sol";
+//import "hardhat/console.sol";
 
 contract NonPayable {
     mapping(address => uint256) internal assetsBalance;

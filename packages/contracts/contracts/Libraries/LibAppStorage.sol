@@ -10,9 +10,9 @@ import "../Interfaces/IKUMOToken.sol";
 import "../Interfaces/IKUMOStaking.sol";
 import "../Interfaces/IKumoParameters.sol";
 import "../Interfaces/IStabilityPoolFactory.sol";
-import "../Interfaces/ITroveRedemptor.sol";
 import "../Interfaces/IActivePool.sol";
 import "../Interfaces/IDefaultPool.sol";
+import "hardhat/console.sol";
 
 enum Status {
     nonExistent,
@@ -23,11 +23,11 @@ enum Status {
 }
 
 enum TroveManagerOperation {
-        applyPendingRewards,
-        liquidateInNormalMode,
-        liquidateInRecoveryMode,
-        redeemCollateral
-    }
+    applyPendingRewards,
+    liquidateInNormalMode,
+    liquidateInRecoveryMode,
+    redeemCollateral
+}
 
 // Store the necessary data for a trove
 struct Trove {
@@ -60,7 +60,6 @@ struct AppStorage {
     IKUSDToken kusdToken;
     IKUMOToken kumoToken;
     IKUMOStaking kumoStaking;
-    ITroveRedemptor troveRedemptor;
     ISortedTroves sortedTroves;
     IKumoParameters kumoParams;
     IDefaultPool defaultPool;

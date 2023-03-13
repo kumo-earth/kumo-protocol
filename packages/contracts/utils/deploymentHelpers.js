@@ -1,6 +1,11 @@
 const SortedTroves = artifacts.require("./SortedTroves.sol");
-const TroveManager = artifacts.require("./TroveManager.sol");
-const TroveRedemptor = artifacts.require("./TroveRedemptor.sol");
+
+const TroveManager = artifacts.require(
+  "TroveManager",
+  "../hardhat-diamond-abi/HardhatDiamondABI.sol"
+);
+const DiamondInit = artifacts.require("./DiamondInit.sol");
+
 const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol");
 const KUSDToken = artifacts.require("./KUSDToken.sol");
 const ActivePool = artifacts.require("./ActivePool.sol");
@@ -64,6 +69,12 @@ KUMO contracts consist of only those contracts related to the KUMO Token:
 const ZERO_ADDRESS = "0x" + "0".repeat(40);
 const maxBytes32 = "0x" + "f".repeat(64);
 
+const FacetCutAction = {
+  Add: 0,
+  Replace: 1,
+  Remove: 2
+};
+
 let Asset1Address;
 let Asset2Address;
 
@@ -95,8 +106,9 @@ class DeploymentHelper {
   static async deployKumoCoreHardhat() {
     const priceFeedTestnet = await PriceFeedTestnet.new();
     const sortedTroves = await SortedTroves.new();
-    const troveManager = await TroveManager.new();
-    const troveRedemptor = await TroveRedemptor.new();
+    const troveManagerAddress = await this.deployTroveManagerDiamond();
+    const troveManager = await TroveManager.at(troveManagerAddress);
+    const troveManagerHardhat = await ethers.getContractAt("TroveManager", troveManagerAddress);
     const activePool = await ActivePool.new();
     // const stabilityPool = await StabilityPool.new()
     const gasPool = await GasPool.new();
@@ -133,7 +145,6 @@ class DeploymentHelper {
       kusdToken,
       sortedTroves,
       troveManager,
-      troveRedemptor,
       activePool,
       // stabilityPool,
       gasPool,
@@ -143,7 +154,8 @@ class DeploymentHelper {
       borrowerOperations,
       hintHelpers,
       kumoParameters,
-      stabilityPoolFactory
+      stabilityPoolFactory,
+      troveManagerHardhat
     };
     return coreContracts;
   }
@@ -164,7 +176,6 @@ class DeploymentHelper {
     testerContracts.math = await KumoMathTester.new();
     testerContracts.borrowerOperations = await BorrowerOperationsTester.new();
     testerContracts.troveManager = await TroveManagerTester.new();
-    testerContracts.troveRedemptor = await TroveRedemptor.new();
     testerContracts.functionCaller = await FunctionCaller.new();
     testerContracts.hintHelpers = await HintHelpers.new();
     testerContracts.kumoParameters = await KumoParameters.new();
@@ -403,31 +414,19 @@ class DeploymentHelper {
     await contracts.kumoParameters.setAddresses(
       contracts.activePool.address,
       contracts.defaultPool.address,
-      contracts.priceFeedTestnet.address
+      contracts.gasPool.address,
+      contracts.priceFeedTestnet.address,
+      contracts.borrowerOperations.address,
+      contracts.collSurplusPool.address,
+      contracts.kusdToken.address,
+      contracts.stabilityPoolFactory.address,
+      contracts.sortedTroves.address,
+      KUMOContracts.kumoToken.address,
+      KUMOContracts.kumoStaking.address
     );
 
     // set contracts in the Trove Manager
-    await contracts.troveManager.setAddresses(
-      contracts.borrowerOperations.address,
-      contracts.stabilityPoolFactory.address,
-      contracts.gasPool.address,
-      contracts.collSurplusPool.address,
-      contracts.kusdToken.address,
-      contracts.sortedTroves.address,
-      KUMOContracts.kumoToken.address,
-      KUMOContracts.kumoStaking.address,
-      contracts.kumoParameters.address,
-      contracts.troveRedemptor.address
-    );
-
-    await contracts.troveRedemptor.setAddresses(
-      contracts.troveManager.address,
-      contracts.sortedTroves.address,
-      contracts.stabilityPoolFactory.address,
-      contracts.kusdToken.address,
-      contracts.collSurplusPool.address,
-      contracts.kumoParameters.address
-    );
+    await contracts.troveManager.setAddresses(contracts.kumoParameters.address);
 
     // set contracts in BorrowerOperations
     await contracts.borrowerOperations.setAddresses(
@@ -458,8 +457,7 @@ class DeploymentHelper {
       contracts.stabilityPoolFactory.address,
       contracts.defaultPool.address,
       contracts.collSurplusPool.address,
-      KUMOContracts.kumoStaking.address,
-      contracts.troveRedemptor.address
+      KUMOContracts.kumoStaking.address
     );
 
     await contracts.defaultPool.setAddresses(
@@ -525,8 +523,7 @@ class DeploymentHelper {
       contracts.kusdToken.address,
       contracts.sortedTroves.address,
       KUMOContracts.communityIssuance.address,
-      contracts.kumoParameters.address,
-      contracts.troveRedemptor.address
+      contracts.kumoParameters.address
     );
 
     // Add Stability Pool to the Stability Pool Factory
@@ -547,6 +544,48 @@ class DeploymentHelper {
 
   static async deployERC20Asset() {
     return await ERC20Test.new();
+  }
+
+  static async deployTroveManagerDiamond() {
+    const troveManagerFacet = await (await ethers.getContractFactory("TroveManagerFacet")).deploy();
+    const troveRedemptorFacet = await (
+      await ethers.getContractFactory("TroveRedemptorFacet")
+    ).deploy();
+    const troveTesterFacet = await (
+      await ethers.getContractFactory("CDPManagerTesterFacet")
+    ).deploy();
+
+    const facets = [troveManagerFacet, troveRedemptorFacet, troveTesterFacet];
+
+    const diamondInit = await (await ethers.getContractFactory("DiamondInit")).deploy();
+    const troveManagerDiamond = await (
+      await ethers.getContractFactory("TroveManagerDiamond")
+    ).deploy();
+    const functionCall = diamondInit.interface.encodeFunctionData("init");
+
+    const diamondCut = [];
+
+    for (const deployedFacet of facets) {
+      diamondCut.push([deployedFacet.address, FacetCutAction.Add, this.getSelectors(deployedFacet)]);
+    }
+
+    const diamondCutFacet = await ethers.getContractAt("TroveManager", troveManagerDiamond.address);
+    const tx = await diamondCutFacet.diamondCut(diamondCut, diamondInit.address, functionCall, {
+      gasLimit: 5000000
+    });
+
+    return troveManagerDiamond.address;
+  }
+
+  static getSelectors(contract) {
+    const signatures = Object.keys(contract.interface.functions);
+    const selectors = signatures.reduce((acc, val) => {
+      if (val !== "init(bytes)") {
+        acc.push(contract.interface.getSighash(val));
+      }
+      return acc;
+    }, []);
+    return selectors;
   }
 }
 

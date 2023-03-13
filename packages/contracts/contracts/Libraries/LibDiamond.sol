@@ -5,8 +5,12 @@ pragma solidity ^0.8.11;
 * Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
 * EIP-2535 Diamonds: https://eips.ethereum.org/EIPS/eip-2535
 /******************************************************************************/
-import "../Interfaces/IDiamond.sol";
 import "../Interfaces/IDiamondCut.sol";
+import {IERC165} from "../Interfaces/IERC165.sol";
+import {IERC173} from "../Interfaces/IERC173.sol";
+import {IDiamondCut} from "../Interfaces/IDiamondCut.sol";
+import {IDiamondLoupe} from "../Interfaces/IDiamondLoupe.sol";
+import "hardhat/console.sol";
 
 // Remember to add the loupe functions from DiamondLoupeFacet to the diamond.
 // The loupe functions are required by the EIP2535 Diamonds standard
@@ -72,6 +76,41 @@ library LibDiamond {
 
     event DiamondCut(IDiamondCut.FacetCut[] _diamondCut, address _init, bytes _calldata);
 
+    function addDiamondFunctions(
+        address _diamondCutFacet,
+        address _diamondLoupeFacet,
+        address _ownershipFacet
+    ) internal {
+        IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](3);
+        bytes4[] memory functionSelectors = new bytes4[](1);
+        functionSelectors[0] = IDiamondCut.diamondCut.selector;
+        cut[0] = IDiamondCut.FacetCut({
+            facetAddress: _diamondCutFacet,
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: functionSelectors
+        });
+        functionSelectors = new bytes4[](5);
+        functionSelectors[0] = IDiamondLoupe.facets.selector;
+        functionSelectors[1] = IDiamondLoupe.facetFunctionSelectors.selector;
+        functionSelectors[2] = IDiamondLoupe.facetAddresses.selector;
+        functionSelectors[3] = IDiamondLoupe.facetAddress.selector;
+        functionSelectors[4] = IERC165.supportsInterface.selector;
+        cut[1] = IDiamondCut.FacetCut({
+            facetAddress: _diamondLoupeFacet,
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: functionSelectors
+        });
+        functionSelectors = new bytes4[](2);
+        functionSelectors[0] = IERC173.transferOwnership.selector;
+        functionSelectors[1] = IERC173.owner.selector;
+        cut[2] = IDiamondCut.FacetCut({
+            facetAddress: _ownershipFacet,
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: functionSelectors
+        });
+        diamondCut(cut, address(0), "");
+    }
+
     // Internal function version of diamondCut
     function diamondCut(
         IDiamondCut.FacetCut[] memory _diamondCut,
@@ -85,11 +124,11 @@ library LibDiamond {
                 revert NoSelectorsProvidedForFacetForCut(facetAddress);
             }
             IDiamondCut.FacetCutAction action = _diamondCut[facetIndex].action;
-            if (action == IDiamond.FacetCutAction.Add) {
+            if (action == IDiamondCut.FacetCutAction.Add) {
                 addFunctions(facetAddress, functionSelectors);
-            } else if (action == IDiamond.FacetCutAction.Replace) {
+            } else if (action == IDiamondCut.FacetCutAction.Replace) {
                 replaceFunctions(facetAddress, functionSelectors);
-            } else if (action == IDiamond.FacetCutAction.Remove) {
+            } else if (action == IDiamondCut.FacetCutAction.Remove) {
                 removeFunctions(facetAddress, functionSelectors);
             } else {
                 revert IncorrectFacetCutAction(uint8(action));

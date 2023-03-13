@@ -532,7 +532,7 @@
     "name": "troveManager",
     "outputs": [
       {
-        "internalType": "contract ITroveManager",
+        "internalType": "contract ITroveManagerDiamond",
         "name": "",
         "type": "address"
       }

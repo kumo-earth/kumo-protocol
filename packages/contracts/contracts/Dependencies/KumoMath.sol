@@ -3,7 +3,6 @@
 pragma solidity 0.8.11;
 
 // import "./SafeMath.sol";
-import "./console.sol";
 
 library KumoMath {
     // using SafeMath for uint256;

@@ -435,11 +435,6 @@
         "internalType": "address",
         "name": "_kumoStakingAddress",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_troveRedemptorAddress",
-        "type": "address"
       }
     ],
     "name": "setAddresses",

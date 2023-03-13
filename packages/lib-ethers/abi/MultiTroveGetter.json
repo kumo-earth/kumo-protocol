@@ -2,7 +2,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract TroveManager",
+        "internalType": "contract ITroveManagerDiamond",
         "name": "_troveManager",
         "type": "address"
       },
@@ -99,7 +99,7 @@
     "name": "troveManager",
     "outputs": [
       {
-        "internalType": "contract TroveManager",
+        "internalType": "contract ITroveManagerDiamond",
         "name": "",
         "type": "address"
       }
