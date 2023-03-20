@@ -30,7 +30,7 @@ contract('CollSurplusPool', async accounts => {
 
   beforeEach(async () => {
     contracts = await deploymentHelper.deployKumoCore()
-    contracts.troveManager = await TroveManagerTester.new()
+    
     contracts.kusdToken = await KUSDToken.new(
       contracts.troveManager.address,
       contracts.stabilityPoolFactory.address,

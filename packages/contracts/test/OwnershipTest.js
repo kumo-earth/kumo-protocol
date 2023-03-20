@@ -97,7 +97,7 @@ contract("All Kumo functions with onlyOwner modifier", async accounts => {
 
   describe("TroveManager", async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses", async () => {
-      await testSetAddresses(troveManager, 10, false);
+      await testSetAddresses(troveManager, 1, false);
     });
   });
 
@@ -115,13 +115,13 @@ contract("All Kumo functions with onlyOwner modifier", async accounts => {
 
   describe("StabilityPool", async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses", async () => {
-      await testSetAddresses(stabilityPool, 8, false);
+      await testSetAddresses(stabilityPool, 7, false);
     });
   });
 
   describe("ActivePool", async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      await testSetAddresses(activePool, 7);
+      await testSetAddresses(activePool, 6);
     });
   });
 
