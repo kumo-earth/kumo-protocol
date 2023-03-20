@@ -238,7 +238,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
             _KUSDamount,
             totals.totalKUSDToRedeem,
             totals.totalAssetDrawn,
-            totals.totalAssetDrawn
+            totals.AssetFee
         );
 
         // Burn the total KUSD that is cancelled with debt, and send the redeemed Asset to msg.sender

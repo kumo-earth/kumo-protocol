@@ -889,7 +889,7 @@ interface TroveManagerCalls {
   MINUTE_DECAY_FACTOR(_overrides?: CallOverrides): Promise<BigNumber>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   SECONDS_IN_ONE_MINUTE(_overrides?: CallOverrides): Promise<BigNumber>;
-  TroveOwners(_asset: string, _overrides?: CallOverrides): Promise<string[]>;
+  TroveOwners(_asset: string, _index: BigNumberish, _overrides?: CallOverrides): Promise<string>;
   Troves(_borrower: string, _asset: string, _overrides?: CallOverrides): Promise<{ asset: string; debt: BigNumber; coll: BigNumber; stake: BigNumber; status: number; arrayIndex: BigNumber }>;
   baseRate(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   borrowerOperationsAddress(_overrides?: CallOverrides): Promise<string>;
@@ -899,6 +899,8 @@ interface TroveManagerCalls {
   getBorrowingRate(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getBorrowingRateWithDecay(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getCurrentICR(_asset: string, _borrower: string, _price: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
+  getEntireSystemColl(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  getEntireSystemDebt(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getNominalICR(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getPendingKUSDDebtReward(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getPendingReward(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<BigNumber>;
@@ -928,7 +930,7 @@ interface TroveManagerCalls {
   totalCollateralSnapshot(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   totalStakes(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   totalStakesSnapshot(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  getEntireDebtAndColl(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<[BigNumber, BigNumber, BigNumber, BigNumber]>;
+  getEntireDebtAndColl(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<{ debt: BigNumber; coll: BigNumber; pendingKUSDDebtReward: BigNumber; pendingReward: BigNumber }>;
   hasPendingRewards(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<boolean>;
 }
 
