@@ -156,7 +156,7 @@ interface ITroveManagerFacet {
         view
         returns (RewardSnapshot memory);
 
-    function TroveOwners(address _asset) external view returns (address[] memory);
+    function TroveOwners(address _asset, uint256 _index) external view returns (address);
 
     function lastAssetError_Redistribution(address _asset) external view returns (uint256);
 

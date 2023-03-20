@@ -4,6 +4,7 @@ pragma solidity ^0.8.11;
 import "../Interfaces/Facets/ITroveManagerFacet.sol";
 import "../Interfaces/IKumoParameters.sol";
 import "../Dependencies/KumoMath.sol";
+import "hardhat/console.sol";
 
 import {LibAppStorage, Status, TroveManagerOperation, Modifiers} from "../Libraries/LibAppStorage.sol";
 import {LibKumoBase} from "../Libraries/LibKumoBase.sol";
@@ -90,8 +91,8 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         return s.rewardSnapshots[_borrower][_asset];
     }
 
-    function TroveOwners(address _asset) external view returns (address[] memory) {
-        return s.TroveOwners[_asset];
+    function TroveOwners(address _asset, uint256 _index) external view returns (address) {
+        return s.TroveOwners[_asset][_index];
     }
 
     function lastAssetError_Redistribution(address _asset) external view returns (uint256) {
