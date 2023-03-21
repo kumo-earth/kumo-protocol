@@ -2,6 +2,7 @@ const deploymentHelper = require("../utils/deploymentHelpers.js");
 const { TestHelper: th, MoneyValues: mv } = require("../utils/testHelpers.js");
 
 const GasPool = artifacts.require("./GasPool.sol");
+const KumoParameters = artifacts.require("./KumoParameters.sol");
 // const KumoParameters = artifacts.require("./KumoParameters.sol")
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol");
 
@@ -74,8 +75,13 @@ contract("All Kumo functions with onlyOwner modifier", async accounts => {
     }
   };
 
-  const testSetAddresses = async (contract, numberOfAddresses, renounceOwnership = true) => {
-    const dumbContract = await GasPool.new();
+  const testSetAddresses = async (
+    contract,
+    numberOfAddresses,
+    renounceOwnership = true,
+    isTroveManager = false
+  ) => {
+    const dumbContract = isTroveManager ? await KumoParameters.new() : await GasPool.new();
     const params = Array(numberOfAddresses).fill(dumbContract.address);
 
     // Attempt call from alice
@@ -97,7 +103,7 @@ contract("All Kumo functions with onlyOwner modifier", async accounts => {
 
   describe("TroveManager", async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses", async () => {
-      await testSetAddresses(troveManager, 1, false);
+      await testSetAddresses(troveManager, 1, false, true);
     });
   });
 

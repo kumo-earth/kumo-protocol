@@ -522,8 +522,8 @@ class TestHelper {
 
   static async getEntireCollAndDebt(contracts, asset, account) {
     // console.log(`account: ${account}`)
-    const rawColl = (await contracts.troveManager.Troves(account, asset))[TroveData.coll];
-    const rawDebt = (await contracts.troveManager.Troves(account, asset))[TroveData.debt];
+    const rawColl = this.toBN((await contracts.troveManager.Troves(account, asset))[TroveData.coll]);
+    const rawDebt = this.toBN((await contracts.troveManager.Troves(account, asset))[TroveData.debt]);
     const pendingReward = await contracts.troveManager.getPendingReward(asset, account);
     const pendingKUSDDebtReward = await contracts.troveManager.getPendingKUSDDebtReward(
       asset,

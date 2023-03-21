@@ -34,7 +34,6 @@ contract("StabilityPool", async accounts => {
       dumbContractAddress,
       dumbContractAddress,
       dumbContractAddress,
-      dumbContractAddress,
       dumbContractAddress
     );
   });
@@ -68,7 +67,6 @@ contract("ActivePool", async accounts => {
       mockBorrowerOperations.address,
       dumbContractAddress,
       stabilityPoolFactory.address,
-      dumbContractAddress,
       dumbContractAddress,
       dumbContractAddress,
       dumbContractAddress

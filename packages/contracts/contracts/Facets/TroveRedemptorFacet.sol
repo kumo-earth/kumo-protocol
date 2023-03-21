@@ -423,7 +423,6 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
      * starting from the one with the lowest collateral ratio in the system, and moving upwards
      */
     function liquidateTroves(address _asset, uint256 _n) external {
-        console.log("--- liquidateTroves");
         IStabilityPool stabilityPoolCached = s.stabilityPoolFactory.getStabilityPoolByAsset(_asset);
 
         LocalVariables_OuterLiquidationFunction memory vars;
@@ -476,7 +475,6 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         );
 
         // Send gas compensation to caller
-        console.log("sendGasCompensation, liquidateTroves");
         sendGasCompensation(
             _asset,
             LibMeta.msgSender(),
@@ -495,7 +493,6 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         uint256 _KUSDInStabPool,
         uint256 _n
     ) internal returns (LiquidationTotals memory totals) {
-        console.log("--- _getTotalsFromLiquidateTrovesSequence_RecoveryMode");
         LocalVariables_AssetBorrowerPrice memory assetVars = LocalVariables_AssetBorrowerPrice(
             _asset,
             address(0),
@@ -528,7 +525,6 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
                     vars.entireSystemDebt,
                     _price
                 );
-                console.log("Index of troves: ", vars.i);
                 singleLiquidation = _liquidateRecoveryMode(
                     assetVars._asset,
                     vars.user,
@@ -965,9 +961,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         uint256 _TCR,
         uint256 _price
     ) internal returns (LiquidationValues memory singleLiquidation) {
-        console.log("--- _liquidateRecoveryMode");
         LocalVariables_InnerSingleLiquidateFunction memory vars;
-        console.log("Number of troves: ", s.TroveOwners[_asset].length);
         if (s.TroveOwners[_asset].length <= 1) {
             return singleLiquidation;
         } // don't liquidate if last trove
@@ -977,10 +971,6 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
             vars.pendingDebtReward,
             vars.pendingCollReward
         ) = LibTroveManager._getEntireDebtAndColl(_asset, _borrower);
-        console.log("singleLiquidation.entireTroveDebt", singleLiquidation.entireTroveDebt);
-        console.log("singleLiquidation.entireTroveColl", singleLiquidation.entireTroveColl);
-        console.log("vars.pendingDebtReward", vars.pendingDebtReward);
-        console.log("vars.pendingCollReward", vars.pendingCollReward);
 
         singleLiquidation.collGasCompensation = LibKumoBase._getCollGasCompensation(
             _asset,
@@ -1320,7 +1310,6 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         // With the current values of min debt this seems quite unlikely, unless ETH price was in the order of magnitude of $10^19 or more,
         // but it’s ok to have this here as a sanity check
 
-        console.log("sendGasCompensation, inside");
         if (_amount > 0) {
             s.activePool.sendAsset(_asset, _liquidator, _amount);
         }

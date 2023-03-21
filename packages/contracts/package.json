@@ -19,9 +19,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "peerDependencies": {
-    "ethers": "^5.7.2"
-  },
   "dependencies": {
     "decimal.js": "^10.3.1",
     "eth-mutants": "^0.1.1",

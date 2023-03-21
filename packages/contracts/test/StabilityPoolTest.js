@@ -4696,7 +4696,7 @@ contract("StabilityPool", async accounts => {
 
       // check Alice's Trove recorded Asset Before:
       const aliceTrove_Before = await troveManager.Troves(alice, assetAddress1);
-      const aliceTrove_Asset_Before = aliceTrove_Before[TroveData.coll];
+      const aliceTrove_Asset_Before = toBN(aliceTrove_Before[TroveData.coll]);
       assert.isTrue(aliceTrove_Asset_Before.gt(toBN("0")));
 
       // price drops: defaulter's Trove falls below MCR, alice and whale Trove remain active
@@ -4732,7 +4732,7 @@ contract("StabilityPool", async accounts => {
 
       // check alice's Trove recorded Asset has increased by the expected reward amount
       const aliceTrove_After = await troveManager.Troves(alice, assetAddress1);
-      const aliceTrove_Asset_After = aliceTrove_After[TroveData.coll];
+      const aliceTrove_Asset_After = toBN(aliceTrove_After[TroveData.coll]);
 
       const Trove_Asset_Increase = aliceTrove_Asset_After.sub(aliceTrove_Asset_Before).toString();
 
@@ -4770,7 +4770,7 @@ contract("StabilityPool", async accounts => {
 
       // check alice's Trove recorded Asset Before:
       const aliceTrove_Before = await troveManager.Troves(alice, assetAddress1);
-      const aliceTrove_Asset_Before = aliceTrove_Before[TroveData.coll];
+      const aliceTrove_Asset_Before = toBN(aliceTrove_Before[TroveData.coll]);
       assert.isTrue(aliceTrove_Asset_Before.gt(toBN("0")));
 
       // price drops: defaulter's Trove falls below MCR
@@ -4817,7 +4817,7 @@ contract("StabilityPool", async accounts => {
 
       // check alice's Trove recorded Asset Before:
       const aliceTrove_Before = await troveManager.Troves(alice, assetAddress1);
-      const aliceTrove_Asset_Before = aliceTrove_Before[TroveData.coll];
+      const aliceTrove_Asset_Before = toBN(aliceTrove_Before[TroveData.coll]);
       assert.isTrue(aliceTrove_Asset_Before.gt(toBN("0")));
 
       // price drops: defaulter's Trove falls below MCR
@@ -4999,7 +4999,7 @@ contract("StabilityPool", async accounts => {
         });
         await stabilityPoolAsset1.provideToSP(dec(10000, 18), frontEnd_1, { from: account });
       }
-      const collBefore = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]; // all troves have same coll before
+      const collBefore = toBN((await troveManager.Troves(alice, assetAddress1))[TroveData.coll]); // all troves have same coll before
 
       await priceFeed.setPrice(assetAddress1, dec(105, 18));
       const liquidationTx = await troveManager.liquidate(assetAddress1, defaulter_1);
@@ -5017,27 +5017,29 @@ contract("StabilityPool", async accounts => {
       await priceFeed.setPrice(assetAddress1, dec(200, 18));
 
       await stabilityPoolAsset1.withdrawAssetGainToTrove(alice, alice, { from: alice });
-      const aliceCollAfter = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll];
+      const aliceCollAfter = toBN((await troveManager.Troves(alice, assetAddress1))[TroveData.coll]);
       assert.isAtMost(th.getDifference(aliceCollAfter.sub(collBefore), expectedCollGain), 10000);
 
       await stabilityPoolAsset1.withdrawAssetGainToTrove(bob, bob, { from: bob });
-      const bobCollAfter = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll];
+      const bobCollAfter = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll]);
       assert.isAtMost(th.getDifference(bobCollAfter.sub(collBefore), expectedCollGain), 10000);
 
       await stabilityPoolAsset1.withdrawAssetGainToTrove(carol, carol, { from: carol });
-      const carolCollAfter = (await troveManager.Troves(carol, assetAddress1))[TroveData.coll];
+      const carolCollAfter = toBN((await troveManager.Troves(carol, assetAddress1))[TroveData.coll]);
       assert.isAtMost(th.getDifference(carolCollAfter.sub(collBefore), expectedCollGain), 10000);
 
       await stabilityPoolAsset1.withdrawAssetGainToTrove(dennis, dennis, { from: dennis });
-      const dennisCollAfter = (await troveManager.Troves(dennis, assetAddress1))[TroveData.coll];
+      const dennisCollAfter = toBN(
+        (await troveManager.Troves(dennis, assetAddress1))[TroveData.coll]
+      );
       assert.isAtMost(th.getDifference(dennisCollAfter.sub(collBefore), expectedCollGain), 10000);
 
       await stabilityPoolAsset1.withdrawAssetGainToTrove(erin, erin, { from: erin });
-      const erinCollAfter = (await troveManager.Troves(erin, assetAddress1))[TroveData.coll];
+      const erinCollAfter = toBN((await troveManager.Troves(erin, assetAddress1))[TroveData.coll]);
       assert.isAtMost(th.getDifference(erinCollAfter.sub(collBefore), expectedCollGain), 10000);
 
       await stabilityPoolAsset1.withdrawAssetGainToTrove(flyn, flyn, { from: flyn });
-      const flynCollAfter = (await troveManager.Troves(flyn, assetAddress1))[TroveData.coll];
+      const flynCollAfter = toBN((await troveManager.Troves(flyn, assetAddress1))[TroveData.coll]);
       assert.isAtMost(th.getDifference(flynCollAfter.sub(collBefore), expectedCollGain), 10000);
     });
 
@@ -5087,13 +5089,15 @@ contract("StabilityPool", async accounts => {
       // Check defaulter 1 has ICR: 100% < ICR < 110%.
       assert.isTrue(await th.ICRbetween100and110(assetAddress1, defaulter_1, troveManager, price));
 
-      const alice_Collateral_Before = (await troveManager.Troves(alice, assetAddress1))[
-        TroveData.coll
-      ];
-      const bob_Collateral_Before = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll];
-      const carol_Collateral_Before = (await troveManager.Troves(carol, assetAddress1))[
-        TroveData.coll
-      ];
+      const alice_Collateral_Before = toBN(
+        (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]
+      );
+      const bob_Collateral_Before = toBN(
+        (await troveManager.Troves(bob, assetAddress1))[TroveData.coll]
+      );
+      const carol_Collateral_Before = toBN(
+        (await troveManager.Troves(carol, assetAddress1))[TroveData.coll]
+      );
 
       // Liquidate defaulter 1
       assert.isTrue(await sortedTroves.contains(assetAddress1, defaulter_1));
@@ -5118,13 +5122,15 @@ contract("StabilityPool", async accounts => {
         .add(carol_AssetGain_Before)
         .toString();
 
-      const alice_Collateral_After = (await troveManager.Troves(alice, assetAddress1))[
-        TroveData.coll
-      ];
-      const bob_Collateral_After = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll];
-      const carol_Collateral_After = (await troveManager.Troves(carol, assetAddress1))[
-        TroveData.coll
-      ];
+      const alice_Collateral_After = toBN(
+        (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]
+      );
+      const bob_Collateral_After = toBN(
+        (await troveManager.Troves(bob, assetAddress1))[TroveData.coll]
+      );
+      const carol_Collateral_After = toBN(
+        (await troveManager.Troves(carol, assetAddress1))[TroveData.coll]
+      );
 
       assert.equal(alice_expectedCollateral, alice_Collateral_After);
       assert.equal(bob_expectedColalteral, bob_Collateral_After);

@@ -82,12 +82,7 @@ contract DefaultPool is Ownable, CheckContract, IDefaultPool {
         uint256 safetyTransferAmount = SafetyTransfer.decimalsCorrection(_asset, _amount);
         if (safetyTransferAmount == 0) return;
 
-        console.log("balance: ", assetsBalance[_asset]);
-        console.log("_amount: ", _amount);
-
         assetsBalance[_asset] = assetsBalance[_asset].sub(_amount);
-
-        console.log("balance aftermath: ", assetsBalance[_asset]);
 
         IERC20Upgradeable(_asset).safeTransfer(activePool, safetyTransferAmount);
         IDeposit(activePool).receivedERC20(_asset, _amount);

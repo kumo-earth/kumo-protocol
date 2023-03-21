@@ -98,7 +98,7 @@ contract("Gas compensation tests", async accounts => {
     defaultPool = contracts.defaultPool;
     borrowerOperations = contracts.borrowerOperations;
 
-    await troveManager.setKumoParameters(kumoParameters.address);
+    await troveManager.setAddresses(kumoParameters.address);
 
     await deploymentHelper.connectKUMOContracts(KUMOContracts);
     await deploymentHelper.connectCoreContracts(contracts, KUMOContracts);
@@ -509,7 +509,7 @@ contract("Gas compensation tests", async accounts => {
     -> Expect 0.5% of collaterall to be sent to liquidator, as gas compensation */
 
     // Check collateral value in USD is < $10
-    const aliceColl = (await troveManager.Troves(alice, assetAddress1))[2];
+    const aliceColl = toBN((await troveManager.Troves(alice, assetAddress1))[2]);
 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));
 
@@ -544,7 +544,7 @@ contract("Gas compensation tests", async accounts => {
     -> Expect 0.5% of collaterall to be sent to liquidator, as gas compensation */
 
     // Check collateral value in USD is < $10
-    const bobColl = (await troveManager.Troves(bob, assetAddress1))[2];
+    const bobColl = toBN((await troveManager.Troves(bob, assetAddress1))[2]);
 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));
     // Liquidate B (use 0 gas price to easily check the amount the compensation amount the liquidator receives)
@@ -582,7 +582,7 @@ contract("Gas compensation tests", async accounts => {
     -> Expect 0.5% of collaterall to be sent to liquidator, as gas compensation */
 
     // Check collateral value in USD is < $10
-    const carolColl = (await troveManager.Troves(carol, assetAddress1))[2];
+    const carolColl = toBN((await troveManager.Troves(carol, assetAddress1))[2]);
 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));
     // Liquidate B (use 0 gas price to easily check the amount the compensation amount the liquidator receives)
@@ -676,7 +676,7 @@ contract("Gas compensation tests", async accounts => {
     and (1 - 0.05000025000125001) = 0.94999974999875 ETH remainder liquidated */
 
     // Check collateral value in USD is > $10
-    const aliceColl = (await troveManager.Troves(alice, assetAddress1))[2];
+    const aliceColl = toBN((await troveManager.Troves(alice, assetAddress1))[2]);
 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));
 
@@ -722,7 +722,7 @@ contract("Gas compensation tests", async accounts => {
     and (15 - 0.666666666666666666) ETH remainder liquidated */
 
     // Check collateral value in USD is > $10
-    const bobColl = (await troveManager.Troves(bob, assetAddress1))[2];
+    const bobColl = toBN((await troveManager.Troves(bob, assetAddress1))[2]);
 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));
 
@@ -816,7 +816,7 @@ contract("Gas compensation tests", async accounts => {
     and (10.001 - 0.050005) ETH remainder liquidated */
 
     // Check value of 0.5% of collateral in USD is > $10
-    const aliceColl = (await troveManager.Troves(alice, assetAddress1))[2];
+    const aliceColl = toBN((await troveManager.Troves(alice, assetAddress1))[2]);
     const _0pt5percent_aliceColl = aliceColl.div(web3.utils.toBN("200"));
 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));
@@ -858,7 +858,7 @@ contract("Gas compensation tests", async accounts => {
    and (37.5 - 0.1875 ETH) ETH remainder liquidated */
 
     // Check value of 0.5% of collateral in USD is > $10
-    const bobColl = (await troveManager.Troves(bob, assetAddress1))[2];
+    const bobColl = toBN((await troveManager.Troves(bob, assetAddress1))[2]);
     const _0pt5percent_bobColl = bobColl.div(web3.utils.toBN("200"));
 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));
@@ -949,8 +949,8 @@ contract("Gas compensation tests", async accounts => {
     -> Expect 0.5% of collaterall to be sent to liquidator, as gas compensation */
 
     // Check collateral value in USD is < $10
-    const aliceColl = (await troveManager.Troves(alice, assetAddress1))[2];
-    const aliceDebt = (await troveManager.Troves(alice, assetAddress1))[1];
+    const aliceColl = toBN((await troveManager.Troves(alice, assetAddress1))[2]);
+    const aliceDebt = toBN((await troveManager.Troves(alice, assetAddress1))[1]);
 
     // th.logBN('TCR', await troveManager.getTCR(await priceFeed.getPrice(assetAddress1)))
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));
@@ -981,8 +981,8 @@ contract("Gas compensation tests", async accounts => {
     -> Expect 0.5% of collaterall to be sent to liquidator, as gas compensation */
 
     // Check collateral value in USD is < $10
-    const bobColl = (await troveManager.Troves(bob, assetAddress1))[2];
-    const bobDebt = (await troveManager.Troves(bob, assetAddress1))[1];
+    const bobColl = toBN((await troveManager.Troves(bob, assetAddress1))[2]);
+    const bobDebt = toBN((await troveManager.Troves(bob, assetAddress1))[1]);
 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));
     // Liquidate B (use 0 gas price to easily check the amount the compensation amount the liquidator receives)
@@ -1063,8 +1063,8 @@ contract("Gas compensation tests", async accounts => {
     and (1 - 0.05000025000125001) = 0.94999974999875 ETH remainder liquidated */
 
     // Check collateral value in USD is > $10
-    const aliceColl = (await troveManager.Troves(alice, assetAddress1))[2];
-    const aliceDebt = (await troveManager.Troves(alice, assetAddress1))[1];
+    const aliceColl = toBN((await troveManager.Troves(alice, assetAddress1))[2]);
+    const aliceDebt = toBN((await troveManager.Troves(alice, assetAddress1))[1]);
     const aliceCollValueInUSD = await borrowerOperationsTester.getUSDValue(aliceColl, price_1);
     assert.isTrue(aliceCollValueInUSD.gt(th.toBN(dec(10, 18))));
 
@@ -1106,8 +1106,8 @@ contract("Gas compensation tests", async accounts => {
     and (15 - 0.666666666666666666) ETH remainder liquidated */
 
     // Check collateral value in USD is > $10
-    const bobColl = (await troveManager.Troves(bob, assetAddress1))[2];
-    const bobDebt = (await troveManager.Troves(bob, assetAddress1))[1];
+    const bobColl = toBN((await troveManager.Troves(bob, assetAddress1))[2]);
+    const bobDebt = toBN((await troveManager.Troves(bob, assetAddress1))[1]);
 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));
 
@@ -1185,8 +1185,8 @@ contract("Gas compensation tests", async accounts => {
     const price_1 = await priceFeed.getPrice(assetAddress1);
 
     // Check value of 0.5% of collateral in USD is > $10
-    const aliceColl = (await troveManager.Troves(alice, assetAddress1))[2];
-    const aliceDebt = (await troveManager.Troves(alice, assetAddress1))[1];
+    const aliceColl = toBN((await troveManager.Troves(alice, assetAddress1))[2]);
+    const aliceDebt = toBN((await troveManager.Troves(alice, assetAddress1))[1]);
     const _0pt5percent_aliceColl = aliceColl.div(web3.utils.toBN("200"));
 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));
@@ -1220,8 +1220,8 @@ contract("Gas compensation tests", async accounts => {
    and (37.5 - 0.1875 ETH) ETH remainder liquidated */
 
     // Check value of 0.5% of collateral in USD is > $10
-    const bobColl = (await troveManager.Troves(bob, assetAddress1))[2];
-    const bobDebt = (await troveManager.Troves(bob, assetAddress1))[1];
+    const bobColl = toBN((await troveManager.Troves(bob, assetAddress1))[2]);
+    const bobDebt = toBN((await troveManager.Troves(bob, assetAddress1))[1]);
     const _0pt5percent_bobColl = bobColl.div(web3.utils.toBN("200"));
 
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));
@@ -1319,10 +1319,10 @@ contract("Gas compensation tests", async accounts => {
     assert.isTrue((await troveManager.getCurrentICR(assetAddress1, flyn, price)).gt(mv._MCR));
 
     // --- Check value of of A's collateral is < $10, and value of B,C,D collateral are > $10  ---
-    const aliceColl = (await troveManager.Troves(alice, assetAddress1))[2];
-    const bobColl = (await troveManager.Troves(bob, assetAddress1))[2];
-    const carolColl = (await troveManager.Troves(carol, assetAddress1))[2];
-    const dennisColl = (await troveManager.Troves(dennis, assetAddress1))[2];
+    const aliceColl = toBN((await troveManager.Troves(alice, assetAddress1))[2]);
+    const bobColl = toBN((await troveManager.Troves(bob, assetAddress1))[2]);
+    const carolColl = toBN((await troveManager.Troves(carol, assetAddress1))[2]);
+    const dennisColl = toBN((await troveManager.Troves(dennis, assetAddress1))[2]);
 
     // --- Check value of 0.5% of A, B, and C's collateral is <$10, and value of 0.5% of D's collateral is > $10 ---
     const _0pt5percent_aliceColl = aliceColl.div(web3.utils.toBN("200"));
@@ -1423,10 +1423,10 @@ contract("Gas compensation tests", async accounts => {
     assert.isTrue((await troveManager.getCurrentICR(assetAddress1, dennis, price)).lt(mv._MCR));
 
     // --- Check value of of A's collateral is < $10, and value of B,C,D collateral are > $10  ---
-    const aliceColl = (await troveManager.Troves(alice, assetAddress1))[2];
-    const bobColl = (await troveManager.Troves(bob, assetAddress1))[2];
-    const carolColl = (await troveManager.Troves(carol, assetAddress1))[2];
-    const dennisColl = (await troveManager.Troves(dennis, assetAddress1))[2];
+    const aliceColl = toBN((await troveManager.Troves(alice, assetAddress1))[2]);
+    const bobColl = toBN((await troveManager.Troves(bob, assetAddress1))[2]);
+    const carolColl = toBN((await troveManager.Troves(carol, assetAddress1))[2]);
+    const dennisColl = toBN((await troveManager.Troves(dennis, assetAddress1))[2]);
 
     // --- Check value of 0.5% of A, B, and C's collateral is <$10, and value of 0.5% of D's collateral is > $10 ---
     const _0pt5percent_aliceColl = aliceColl.div(web3.utils.toBN("200"));
@@ -1547,10 +1547,10 @@ contract("Gas compensation tests", async accounts => {
     assert.isTrue((await troveManager.getCurrentICR(assetAddress1, flyn, price)).gt(mv._MCR));
 
     // --- Check value of of A's collateral is < $10, and value of B,C,D collateral are > $10  ---
-    const aliceColl = (await troveManager.Troves(alice, assetAddress1))[2];
-    const bobColl = (await troveManager.Troves(bob, assetAddress1))[2];
-    const carolColl = (await troveManager.Troves(carol, assetAddress1))[2];
-    const dennisColl = (await troveManager.Troves(dennis, assetAddress1))[2];
+    const aliceColl = toBN((await troveManager.Troves(alice, assetAddress1))[2]);
+    const bobColl = toBN((await troveManager.Troves(bob, assetAddress1))[2]);
+    const carolColl = toBN((await troveManager.Troves(carol, assetAddress1))[2]);
+    const dennisColl = toBN((await troveManager.Troves(dennis, assetAddress1))[2]);
 
     // --- Check value of 0.5% of A, B, and C's collateral is <$10, and value of 0.5% of D's collateral is > $10 ---
     const _0pt5percent_aliceColl = aliceColl.div(web3.utils.toBN("200"));
@@ -1658,10 +1658,10 @@ contract("Gas compensation tests", async accounts => {
     assert.isTrue((await troveManager.getCurrentICR(assetAddress1, carol, price)).lt(mv._MCR));
     assert.isTrue((await troveManager.getCurrentICR(assetAddress1, dennis, price)).lt(mv._MCR));
 
-    const aliceColl = (await troveManager.Troves(alice, assetAddress1))[2];
-    const bobColl = (await troveManager.Troves(bob, assetAddress1))[2];
-    const carolColl = (await troveManager.Troves(carol, assetAddress1))[2];
-    const dennisColl = (await troveManager.Troves(dennis, assetAddress1))[2];
+    const aliceColl = toBN((await troveManager.Troves(alice, assetAddress1))[2]);
+    const bobColl = toBN((await troveManager.Troves(bob, assetAddress1))[2]);
+    const carolColl = toBN((await troveManager.Troves(carol, assetAddress1))[2]);
+    const dennisColl = toBN((await troveManager.Troves(dennis, assetAddress1))[2]);
 
     // --- Check value of 0.5% of A, B, and C's collateral is <$10, and value of 0.5% of D's collateral is > $10 ---
     const _0pt5percent_aliceColl = aliceColl.div(web3.utils.toBN("200"));
@@ -1735,14 +1735,14 @@ contract("Gas compensation tests", async accounts => {
       await priceFeed.setPrice(assetAddress1, priceString);
 
       const ICRList = [];
-      const coll_firstTrove = (await troveManager.Troves(_10_accounts[0], assetAddress1))[0];
+      const coll_firstTrove = toBN((await troveManager.Troves(_10_accounts[0], assetAddress1))[0]);
       const gasComp_firstTrove = (
         await troveManager.getCollGasCompensation(assetAddress1, coll_firstTrove)
       ).toString();
 
       for (account of _10_accounts) {
         // Check gas compensation is the same for all troves
-        const coll = (await troveManager.Troves(account, assetAddress1))[0];
+        const coll = toBN((await troveManager.Troves(account, assetAddress1))[0]);
         const gasCompensation = (
           await troveManager.getCollGasCompensation(assetAddress1, coll)
         ).toString();

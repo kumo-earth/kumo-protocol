@@ -106,9 +106,7 @@ class DeploymentHelper {
   static async deployKumoCoreHardhat() {
     const priceFeedTestnet = await PriceFeedTestnet.new();
     const sortedTroves = await SortedTroves.new();
-    const troveManagerAddress = await this.deployTroveManagerDiamond();
-    const troveManager = await TroveManager.at(troveManagerAddress);
-    const troveManagerHardhat = await ethers.getContractAt("TroveManager", troveManagerAddress);
+    const troveManager = await TroveManager.at(await this.deployTroveManagerDiamond());
     const activePool = await ActivePool.new();
     // const stabilityPool = await StabilityPool.new()
     const gasPool = await GasPool.new();
@@ -154,8 +152,7 @@ class DeploymentHelper {
       borrowerOperations,
       hintHelpers,
       kumoParameters,
-      stabilityPoolFactory,
-      troveManagerHardhat
+      stabilityPoolFactory
     };
     return coreContracts;
   }
@@ -175,7 +172,7 @@ class DeploymentHelper {
     testerContracts.collSurplusPool = await CollSurplusPool.new();
     testerContracts.math = await KumoMathTester.new();
     testerContracts.borrowerOperations = await BorrowerOperationsTester.new();
-    testerContracts.troveManager = await TroveManagerTester.new();
+    testerContracts.troveManager = await TroveManager.at(await this.deployTroveManagerDiamond());
     testerContracts.functionCaller = await FunctionCaller.new();
     testerContracts.hintHelpers = await HintHelpers.new();
     testerContracts.kumoParameters = await KumoParameters.new();
