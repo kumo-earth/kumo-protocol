@@ -4,7 +4,7 @@
 
 ## KumoStoreBaseState.kusdToken property
 
-Custom Vault Array for each Asset type
+KUSD token address
 
 <b>Signature:</b>
 
