@@ -64,7 +64,7 @@ describe("EthersKumoRedemptionTruncation", async () => {
 
 
     mockAssetContracts.forEach(async mockAssetContract => {
-        describe(`Redemption truncation ${mockAssetContract.name}`, () => {
+        describe(`Redemption truncation Multi Asset Independent tests ${mockAssetContract.name}`, () => {
             const troveCreationParams = { depositCollateral: 20, borrowKUSD: 2000 };
             const netDebtPerTrove = Trove.create(troveCreationParams).netDebt;
             const amountToAttempt = Decimal.from(3000);
@@ -110,12 +110,22 @@ describe("EthersKumoRedemptionTruncation", async () => {
                 expect(`${await user.getBalance()}`).to.equal(`${targetBalance}`);
             });
 
+            afterEach(`Run after each test ${mockAssetContract.name}`, async () => {
+                const otherMockAssetContracts = mockAssetContracts.filter(contract => contract.name !== mockAssetContract.name)
+                const currentAssetBalance = await kumo.getAssetBalance(await user.getAddress(), mockAssetAddress, provider)
+                for await (const otherMockContract of otherMockAssetContracts) {
+                    const mockAssetAddress = deployment.addresses[otherMockContract.contract];
+                    const assetBalance = await kumo.getAssetBalance(await user.getAddress(), mockAssetAddress, provider)
+                    expect(`${assetBalance}`).to.equal("100")
+                }
+                expect(Number(currentAssetBalance.toString())).lessThan(20)
+            })
+
             it(`should truncate the amount if it would put the last Trove below the min debt ${mockAssetContract.name}`, async () => {
                 const redemption = await kumo.populate.redeemKUSD(mockAssetAddress, amountToAttempt);
                 expect(`${redemption.attemptedKUSDAmount}`).to.equal(`${amountToAttempt}`);
                 expect(`${redemption.redeemableKUSDAmount}`).to.equal(`${expectedRedeemable}`);
                 expect(redemption.isTruncated).to.be.true;
-
                 const { details } = await waitForSuccess(redemption.send());
                 expect(`${details.attemptedKUSDAmount}`).to.equal(`${expectedRedeemable}`);
                 expect(`${details.actualKUSDAmount}`).to.equal(`${expectedRedeemable}`);
