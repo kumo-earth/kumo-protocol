@@ -34,12 +34,11 @@ describe("EthersKumoMining", async () => {
 
 
     let mockAssetAddress: string;
-
     const gasLimit = BigNumber.from(2500000);
 
 
     mockAssetContracts.forEach(async mockAssetContract => {
-        describe(`Liquidity mining ${mockAssetContract.name}`, function () {
+        describe(`Liquidity mining Multi Asset Independent tests ${mockAssetContract.name}`, function () {
             before(async function () {
                 [deployer, funder, user, ...otherUsers] = await ethers.getSigners();
                 deployment = await deployKumo(deployer);
@@ -47,12 +46,12 @@ describe("EthersKumoMining", async () => {
 
                 kumo = await connectToDeployment(deployment, user);
                 expect(kumo).to.be.an.instanceOf(EthersKumo);
-                
+
                 [deployerKumo, kumo] = await connectUsers(deployment, [deployer, user]);
             });
 
              // Always setup same initial balance for user
-             beforeEach(async () => {
+            beforeEach(async () => {
                 const targetBalance = BigNumber.from(STARTING_BALANCE.hex);
 
                 await setUpInitialUserBalance(user, funder, gasLimit);
