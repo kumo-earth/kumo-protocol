@@ -195,8 +195,7 @@ const connectContracts = async (
     gasPool,
     unipool,
     uniToken,
-    kumoParameters,
-    troveRedemptor
+    kumoParameters
   }: _KumoContracts,
   deployer: Signer,
   overrides?: Overrides
@@ -216,29 +215,6 @@ const connectContracts = async (
 
     nonce =>
       troveManager.setAddresses(
-        borrowerOperations.address,
-        // activePool.address,
-        // defaultPool.address,
-        stabilityPoolFactory.address,
-        gasPool.address,
-        collSurplusPool.address,
-        // priceFeed.address,
-        kusdToken.address,
-        sortedTroves.address,
-        kumoToken.address,
-        kumoStaking.address,
-        kumoParameters.address,
-        troveRedemptor.address,
-        { ...overrides, nonce }
-      ),
-
-    nonce =>
-      troveRedemptor.setAddresses(
-        troveManager.address,
-        sortedTroves.address,
-        stabilityPoolFactory.address,
-        kusdToken.address,
-        collSurplusPool.address,
         kumoParameters.address,
         { ...overrides, nonce }
       ),
@@ -279,7 +255,6 @@ const connectContracts = async (
         defaultPool.address,
         collSurplusPool.address,
         kumoStaking.address,
-        troveRedemptor.address,
         { ...overrides, nonce }
       ),
 
@@ -332,7 +307,15 @@ const connectContracts = async (
       }),
 
     nonce =>
-      kumoParameters.setAddresses(activePool.address, defaultPool.address, priceFeed.address, {
+      kumoParameters.setAddresses(activePool.address, defaultPool.address, gasPool.address,
+      priceFeed.address,
+      borrowerOperations.address,
+      collSurplusPool.address,
+      kusdToken.address,
+      stabilityPoolFactory.address,
+      sortedTroves.address,
+      kumoToken.address,
+      kumoStaking.address, {
         ...overrides,
         nonce
       })
@@ -384,8 +367,7 @@ const addMockAssetsToSystem = async (
     stabilityPoolAsset1,
     stabilityPoolAsset2,
     mockAsset1,
-    mockAsset2,
-    troveRedemptor
+    mockAsset2
   }: _KumoContracts,
   deployer: Signer,
   overrides?: Overrides
@@ -403,8 +385,7 @@ const addMockAssetsToSystem = async (
     kusdToken.address,
     sortedTroves.address,
     communityIssuance.address,
-    kumoParameters.address,
-    troveRedemptor.address,
+    kumoParameters.address
   ),
 
     await stabilityPoolFactory.createNewStabilityPool(mockAsset1.address, stabilityPoolAsset1.address)
@@ -421,8 +402,7 @@ const addMockAssetsToSystem = async (
     kusdToken.address,
     sortedTroves.address,
     communityIssuance.address,
-    kumoParameters.address,
-    troveRedemptor.address,
+    kumoParameters.address
   ),
 
     await stabilityPoolFactory.createNewStabilityPool(mockAsset2.address, stabilityPoolAsset2.address)
