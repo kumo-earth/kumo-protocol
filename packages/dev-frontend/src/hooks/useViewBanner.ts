@@ -8,28 +8,28 @@ const getSessionStorageOrDefault = (key: string, defaultValue: boolean) => {
   return JSON.parse(stored);
 };
 
-export const useViewSafetyBanner = () => {
-  const [changeInProgress, setChangeInProgress] = useState(300);
-  const [isDomainSafetyCheck, setIsDomainSafetyCheck] = useState(
-    getSessionStorageOrDefault("safetyCheck", false)
+export const useViewBanner = (visibility: number) => {
+  const [changeInProgress, setChangeInProgress] = useState(visibility);
+  const [isViewBannerCheck, setIsViewBannerCheck] = useState(
+    getSessionStorageOrDefault("viewCheck", false)
   );
   useEffect(() => {
-    sessionStorage.setItem("safetyCheck", JSON.stringify(isDomainSafetyCheck));
-  }, [isDomainSafetyCheck]);
+    sessionStorage.setItem("viewCheck", JSON.stringify(isViewBannerCheck));
+  }, [isViewBannerCheck]);
 
   useEffect(() => {
-    if (!isDomainSafetyCheck) {
+    if (!isViewBannerCheck) {
       const interval = setInterval(() => {
         if (changeInProgress > 0) {
           setChangeInProgress(changeInProgress - 1);
         }
         if (changeInProgress === 0) {
-          setIsDomainSafetyCheck(true);
+          setIsViewBannerCheck(true);
         }
       }, 10);
       return () => clearInterval(interval);
     }
-  }, [changeInProgress, isDomainSafetyCheck]);
+  }, [changeInProgress, isViewBannerCheck]);
 
-  return { isDomainSafetyCheck, changeInProgress };
+  return { isViewBannerCheck, changeInProgress };
 };
