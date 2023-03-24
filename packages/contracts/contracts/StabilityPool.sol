@@ -15,7 +15,7 @@ import "./Dependencies/KumoBase.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/KumoSafeMath128.sol";
 import "./Dependencies/CheckContract.sol";
-import "./Dependencies/console.sol";
+// import "./Dependencies/console.sol";
 import "./Dependencies/SafetyTransfer.sol";
 
 /*

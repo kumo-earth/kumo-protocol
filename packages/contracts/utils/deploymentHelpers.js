@@ -1,44 +1,44 @@
-const SortedTroves = artifacts.require("./SortedTroves.sol")
-const TroveManager = artifacts.require("./TroveManager.sol")
-const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol")
-const KUSDToken = artifacts.require("./KUSDToken.sol")
+const SortedTroves = artifacts.require("./SortedTroves.sol");
+const TroveManager = artifacts.require("./TroveManager.sol");
+const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol");
+const KUSDToken = artifacts.require("./KUSDToken.sol");
 const ActivePool = artifacts.require("./ActivePool.sol");
 const DefaultPool = artifacts.require("./DefaultPool.sol");
-const StabilityPool = artifacts.require("./StabilityPool.sol")
-const GasPool = artifacts.require("./GasPool.sol")
-const CollSurplusPool = artifacts.require("./CollSurplusPool.sol")
-const FunctionCaller = artifacts.require("./TestContracts/FunctionCaller.sol")
-const BorrowerOperations = artifacts.require("./BorrowerOperations.sol")
-const HintHelpers = artifacts.require("./HintHelpers.sol")
-const StabilityPoolFactory = artifacts.require("./StabilityPoolFactory.sol")
+const StabilityPool = artifacts.require("./StabilityPool.sol");
+const GasPool = artifacts.require("./GasPool.sol");
+const CollSurplusPool = artifacts.require("./CollSurplusPool.sol");
+const FunctionCaller = artifacts.require("./TestContracts/FunctionCaller.sol");
+const BorrowerOperations = artifacts.require("./BorrowerOperations.sol");
+const HintHelpers = artifacts.require("./HintHelpers.sol");
+const StabilityPoolFactory = artifacts.require("./StabilityPoolFactory.sol");
 
-const KUMOStaking = artifacts.require("./KUMOStaking.sol")
-const KUMOToken = artifacts.require("./KUMOToken.sol")
-const LockupContractFactory = artifacts.require("./LockupContractFactory.sol")
-const CommunityIssuance = artifacts.require("./CommunityIssuance.sol")
+const KUMOStaking = artifacts.require("./KUMOStaking.sol");
+const KUMOToken = artifacts.require("./KUMOToken.sol");
+const LockupContractFactory = artifacts.require("./LockupContractFactory.sol");
+const CommunityIssuance = artifacts.require("./CommunityIssuance.sol");
 
-const KumoParameters = artifacts.require("./KumoParameters.sol")
+const KumoParameters = artifacts.require("./KumoParameters.sol");
 
-const Unipool = artifacts.require("./Unipool.sol")
+const Unipool = artifacts.require("./Unipool.sol");
 
-const KUMOTokenTester = artifacts.require("./KUMOTokenTester.sol")
-const CommunityIssuanceTester = artifacts.require("./CommunityIssuanceTester.sol")
-const StabilityPoolTester = artifacts.require("./StabilityPoolTester.sol")
-const ActivePoolTester = artifacts.require("./ActivePoolTester.sol")
-const DefaultPoolTester = artifacts.require("./DefaultPoolTester.sol")
-const KumoMathTester = artifacts.require("./KumoMathTester.sol")
-const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol")
-const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
-const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol")
-const ERC20Test = artifacts.require("./ERC20Test.sol")
+const KUMOTokenTester = artifacts.require("./KUMOTokenTester.sol");
+const CommunityIssuanceTester = artifacts.require("./CommunityIssuanceTester.sol");
+const StabilityPoolTester = artifacts.require("./StabilityPoolTester.sol");
+const ActivePoolTester = artifacts.require("./ActivePoolTester.sol");
+const DefaultPoolTester = artifacts.require("./DefaultPoolTester.sol");
+const KumoMathTester = artifacts.require("./KumoMathTester.sol");
+const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol");
+const TroveManagerTester = artifacts.require("./TroveManagerTester.sol");
+const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol");
+const ERC20Test = artifacts.require("./ERC20Test.sol");
 
 // Proxy scripts
-const BorrowerOperationsScript = artifacts.require('BorrowerOperationsScript')
-const BorrowerWrappersScript = artifacts.require('BorrowerWrappersScript')
-const TroveManagerScript = artifacts.require('TroveManagerScript')
-const StabilityPoolScript = artifacts.require('StabilityPoolScript')
-const TokenScript = artifacts.require('TokenScript')
-const KUMOStakingScript = artifacts.require('KUMOStakingScript')
+const BorrowerOperationsScript = artifacts.require("BorrowerOperationsScript");
+const BorrowerWrappersScript = artifacts.require("BorrowerWrappersScript");
+const TroveManagerScript = artifacts.require("TroveManagerScript");
+const StabilityPoolScript = artifacts.require("StabilityPoolScript");
+const TokenScript = artifacts.require("TokenScript");
+const KUMOStakingScript = artifacts.require("KUMOStakingScript");
 const {
   buildUserProxies,
   BorrowerOperationsProxy,
@@ -48,7 +48,7 @@ const {
   SortedTrovesProxy,
   TokenProxy,
   KUMOStakingProxy
-} = require('../utils/proxyHelpers.js')
+} = require("../utils/proxyHelpers.js");
 
 /* "Kumo core" consists of all contracts in the core Kumo system.
 
@@ -60,73 +60,71 @@ KUMO contracts consist of only those contracts related to the KUMO Token:
 -the CommunityIssuance contract
 */
 
-const ZERO_ADDRESS = '0x' + '0'.repeat(40)
-const maxBytes32 = '0x' + 'f'.repeat(64)
+const ZERO_ADDRESS = "0x" + "0".repeat(40);
+const maxBytes32 = "0x" + "f".repeat(64);
 
-let Asset1Address
-let Asset2Address
+let Asset1Address;
+let Asset2Address;
 
 class DeploymentHelper {
-
   static async deployKumoCore() {
-    const cmdLineArgs = process.argv
-    const frameworkPath = cmdLineArgs[1]
+    const cmdLineArgs = process.argv;
+    const frameworkPath = cmdLineArgs[1];
     // console.log(`Framework used:  ${frameworkPath}`)
 
     if (frameworkPath.includes("hardhat")) {
-      return this.deployKumoCoreHardhat()
+      return this.deployKumoCoreHardhat();
     } else if (frameworkPath.includes("truffle")) {
-      return this.deployKumoCoreTruffle()
+      return this.deployKumoCoreTruffle();
     }
   }
 
   static async deployKUMOContracts(bountyAddress, lpRewardsAddress, multisigAddress) {
-    const cmdLineArgs = process.argv
-    const frameworkPath = cmdLineArgs[1]
+    const cmdLineArgs = process.argv;
+    const frameworkPath = cmdLineArgs[1];
     // console.log(`Framework used:  ${frameworkPath}`)
 
     if (frameworkPath.includes("hardhat")) {
-      return this.deployKUMOContractsHardhat(bountyAddress, lpRewardsAddress, multisigAddress)
+      return this.deployKUMOContractsHardhat(bountyAddress, lpRewardsAddress, multisigAddress);
     } else if (frameworkPath.includes("truffle")) {
-      return this.deployKUMOContractsTruffle(bountyAddress, lpRewardsAddress, multisigAddress)
+      return this.deployKUMOContractsTruffle(bountyAddress, lpRewardsAddress, multisigAddress);
     }
   }
 
   static async deployKumoCoreHardhat() {
-    const priceFeedTestnet = await PriceFeedTestnet.new()
-    const sortedTroves = await SortedTroves.new()
-    const troveManager = await TroveManager.new()
-    const activePool = await ActivePool.new()
+    const priceFeedTestnet = await PriceFeedTestnet.new();
+    const sortedTroves = await SortedTroves.new();
+    const troveManager = await TroveManager.new();
+    const activePool = await ActivePool.new();
     // const stabilityPool = await StabilityPool.new()
-    const gasPool = await GasPool.new()
-    const defaultPool = await DefaultPool.new()
-    const collSurplusPool = await CollSurplusPool.new()
-    const functionCaller = await FunctionCaller.new()
-    const borrowerOperations = await BorrowerOperations.new()
-    const hintHelpers = await HintHelpers.new()
-    const kumoParameters = await KumoParameters.new()
-    const stabilityPoolFactory = await StabilityPoolFactory.new()
+    const gasPool = await GasPool.new();
+    const defaultPool = await DefaultPool.new();
+    const collSurplusPool = await CollSurplusPool.new();
+    const functionCaller = await FunctionCaller.new();
+    const borrowerOperations = await BorrowerOperations.new();
+    const hintHelpers = await HintHelpers.new();
+    const kumoParameters = await KumoParameters.new();
+    const stabilityPoolFactory = await StabilityPoolFactory.new();
     const kusdToken = await KUSDToken.new(
       troveManager.address,
       stabilityPoolFactory.address,
       borrowerOperations.address
-    )
+    );
 
-
-    KUSDToken.setAsDeployed(kusdToken)
-    DefaultPool.setAsDeployed(defaultPool)
-    PriceFeedTestnet.setAsDeployed(priceFeedTestnet)
-    SortedTroves.setAsDeployed(sortedTroves)
-    TroveManager.setAsDeployed(troveManager)
-    ActivePool.setAsDeployed(activePool)
+    KUSDToken.setAsDeployed(kusdToken);
+    DefaultPool.setAsDeployed(defaultPool);
+    PriceFeedTestnet.setAsDeployed(priceFeedTestnet);
+    SortedTroves.setAsDeployed(sortedTroves);
+    TroveManager.setAsDeployed(troveManager);
+    ActivePool.setAsDeployed(activePool);
     // StabilityPool.setAsDeployed(stabilityPool)
-    GasPool.setAsDeployed(gasPool)
-    CollSurplusPool.setAsDeployed(collSurplusPool)
-    FunctionCaller.setAsDeployed(functionCaller)
-    BorrowerOperations.setAsDeployed(borrowerOperations)
-    HintHelpers.setAsDeployed(hintHelpers)
-    KumoParameters.setAsDeployed(kumoParameters)
-    StabilityPoolFactory.setAsDeployed(stabilityPoolFactory)
+    GasPool.setAsDeployed(gasPool);
+    CollSurplusPool.setAsDeployed(collSurplusPool);
+    FunctionCaller.setAsDeployed(functionCaller);
+    BorrowerOperations.setAsDeployed(borrowerOperations);
+    HintHelpers.setAsDeployed(hintHelpers);
+    KumoParameters.setAsDeployed(kumoParameters);
+    StabilityPoolFactory.setAsDeployed(stabilityPoolFactory);
 
     const coreContracts = {
       priceFeedTestnet,
@@ -143,34 +141,34 @@ class DeploymentHelper {
       hintHelpers,
       kumoParameters,
       stabilityPoolFactory
-    }
-    return coreContracts
+    };
+    return coreContracts;
   }
 
   static async deployTesterContractsHardhat() {
-    const testerContracts = {}
+    const testerContracts = {};
 
     // Contract without testers (yet)
-    testerContracts.priceFeedTestnet = await PriceFeedTestnet.new()
-    testerContracts.sortedTroves = await SortedTroves.new()
+    testerContracts.priceFeedTestnet = await PriceFeedTestnet.new();
+    testerContracts.sortedTroves = await SortedTroves.new();
     // Actual tester contracts
-    testerContracts.communityIssuance = await CommunityIssuanceTester.new()
-    testerContracts.activePool = await ActivePoolTester.new()
-    testerContracts.defaultPool = await DefaultPoolTester.new()
-    testerContracts.stabilityPool = await StabilityPoolTester.new()
-    testerContracts.gasPool = await GasPool.new()
-    testerContracts.collSurplusPool = await CollSurplusPool.new()
-    testerContracts.math = await KumoMathTester.new()
-    testerContracts.borrowerOperations = await BorrowerOperationsTester.new()
-    testerContracts.troveManager = await TroveManagerTester.new()
-    testerContracts.functionCaller = await FunctionCaller.new()
-    testerContracts.hintHelpers = await HintHelpers.new()
-    testerContracts.kumoParameters = await KumoParameters.new()
-    testerContracts.erc20Asset1 = await ERC20Test.new("Carbon Token X", "CTX")
-    Asset1Address = testerContracts.erc20Asset1.address
-    testerContracts.erc20Asset2 = await ERC20Test.new("Carbon Token Y", "CTY")
-    Asset2Address = testerContracts.erc20Asset2.address
-    testerContracts.stabilityPoolFactory = await StabilityPoolFactory.new()
+    testerContracts.communityIssuance = await CommunityIssuanceTester.new();
+    testerContracts.activePool = await ActivePoolTester.new();
+    testerContracts.defaultPool = await DefaultPoolTester.new();
+    testerContracts.stabilityPool = await StabilityPoolTester.new();
+    testerContracts.gasPool = await GasPool.new();
+    testerContracts.collSurplusPool = await CollSurplusPool.new();
+    testerContracts.math = await KumoMathTester.new();
+    testerContracts.borrowerOperations = await BorrowerOperationsTester.new();
+    testerContracts.troveManager = await TroveManagerTester.new();
+    testerContracts.functionCaller = await FunctionCaller.new();
+    testerContracts.hintHelpers = await HintHelpers.new();
+    testerContracts.kumoParameters = await KumoParameters.new();
+    testerContracts.erc20Asset1 = await ERC20Test.new("Carbon Token X", "CTX");
+    Asset1Address = testerContracts.erc20Asset1.address;
+    testerContracts.erc20Asset2 = await ERC20Test.new("Carbon Token Y", "CTY");
+    Asset2Address = testerContracts.erc20Asset2.address;
+    testerContracts.stabilityPoolFactory = await StabilityPoolFactory.new();
 
     // await testerContracts.erc20.setDecimals(18);
     // ERC20Test.setAsDeployed(testerContracts.erc20);
@@ -178,18 +176,18 @@ class DeploymentHelper {
       testerContracts.troveManager.address,
       testerContracts.stabilityPoolFactory.address,
       testerContracts.borrowerOperations.address
-    )
-    return testerContracts
+    );
+    return testerContracts;
   }
 
   static async deployKUMOContractsHardhat(bountyAddress, lpRewardsAddress, multisigAddress) {
-    const kumoStaking = await KUMOStaking.new()
-    const lockupContractFactory = await LockupContractFactory.new()
-    const communityIssuance = await CommunityIssuance.new()
+    const kumoStaking = await KUMOStaking.new();
+    const lockupContractFactory = await LockupContractFactory.new();
+    const communityIssuance = await CommunityIssuance.new();
 
-    KUMOStaking.setAsDeployed(kumoStaking)
-    LockupContractFactory.setAsDeployed(lockupContractFactory)
-    CommunityIssuance.setAsDeployed(communityIssuance)
+    KUMOStaking.setAsDeployed(kumoStaking);
+    LockupContractFactory.setAsDeployed(lockupContractFactory);
+    CommunityIssuance.setAsDeployed(communityIssuance);
 
     // Deploy KUMO Token, passing Community Issuance and Factory addresses to the constructor
     const kumoToken = await KUMOToken.new(
@@ -199,26 +197,26 @@ class DeploymentHelper {
       bountyAddress,
       lpRewardsAddress,
       multisigAddress
-    )
-    KUMOToken.setAsDeployed(kumoToken)
+    );
+    KUMOToken.setAsDeployed(kumoToken);
 
     const KUMOContracts = {
       kumoStaking,
       lockupContractFactory,
       communityIssuance,
       kumoToken
-    }
-    return KUMOContracts
+    };
+    return KUMOContracts;
   }
 
   static async deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisigAddress) {
-    const kumoStaking = await KUMOStaking.new()
-    const lockupContractFactory = await LockupContractFactory.new()
-    const communityIssuance = await CommunityIssuanceTester.new()
+    const kumoStaking = await KUMOStaking.new();
+    const lockupContractFactory = await LockupContractFactory.new();
+    const communityIssuance = await CommunityIssuanceTester.new();
 
-    KUMOStaking.setAsDeployed(kumoStaking)
-    LockupContractFactory.setAsDeployed(lockupContractFactory)
-    CommunityIssuanceTester.setAsDeployed(communityIssuance)
+    KUMOStaking.setAsDeployed(kumoStaking);
+    LockupContractFactory.setAsDeployed(lockupContractFactory);
+    CommunityIssuanceTester.setAsDeployed(communityIssuance);
 
     // Deploy KUMO Token, passing Community Issuance and Factory addresses to the constructor
     const kumoToken = await KUMOTokenTester.new(
@@ -228,16 +226,16 @@ class DeploymentHelper {
       bountyAddress,
       lpRewardsAddress,
       multisigAddress
-    )
-    KUMOTokenTester.setAsDeployed(kumoToken)
+    );
+    KUMOTokenTester.setAsDeployed(kumoToken);
 
     const KUMOContracts = {
       kumoStaking,
       lockupContractFactory,
       communityIssuance,
       kumoToken
-    }
-    return KUMOContracts
+    };
+    return KUMOContracts;
   }
 
   // static async deployKumoCoreTruffle() {
@@ -304,8 +302,8 @@ class DeploymentHelper {
       contracts.troveManager.address,
       contracts.stabilityPoolFactory.address,
       contracts.borrowerOperations.address
-    )
-    return contracts
+    );
+    return contracts;
   }
 
   static async deployKUSDTokenTester(contracts) {
@@ -313,59 +311,96 @@ class DeploymentHelper {
       contracts.troveManager.address,
       contracts.stabilityPoolFactory.address,
       contracts.borrowerOperations.address
-    )
-    return contracts
+    );
+    return contracts;
   }
 
   static async deployProxyScripts(contracts, KUMOContracts, owner, users) {
-    const proxies = await buildUserProxies(users)
+    const proxies = await buildUserProxies(users);
 
     const borrowerWrappersScript = await BorrowerWrappersScript.new(
       contracts.borrowerOperations.address,
       contracts.troveManager.address,
       KUMOContracts.kumoStaking.address
-    )
-    contracts.borrowerWrappers = new BorrowerWrappersProxy(owner, proxies, borrowerWrappersScript.address)
+    );
+    contracts.borrowerWrappers = new BorrowerWrappersProxy(
+      owner,
+      proxies,
+      borrowerWrappersScript.address
+    );
 
-    const borrowerOperationsScript = await BorrowerOperationsScript.new(contracts.borrowerOperations.address)
-    contracts.borrowerOperations = new BorrowerOperationsProxy(owner, proxies, borrowerOperationsScript.address, contracts.borrowerOperations)
+    const borrowerOperationsScript = await BorrowerOperationsScript.new(
+      contracts.borrowerOperations.address
+    );
+    contracts.borrowerOperations = new BorrowerOperationsProxy(
+      owner,
+      proxies,
+      borrowerOperationsScript.address,
+      contracts.borrowerOperations
+    );
 
-    const troveManagerScript = await TroveManagerScript.new(contracts.troveManager.address)
-    contracts.troveManager = new TroveManagerProxy(owner, proxies, troveManagerScript.address, contracts.troveManager)
+    const troveManagerScript = await TroveManagerScript.new(contracts.troveManager.address);
+    contracts.troveManager = new TroveManagerProxy(
+      owner,
+      proxies,
+      troveManagerScript.address,
+      contracts.troveManager
+    );
 
-    const stabilityPoolScript = await StabilityPoolScript.new(contracts.stabilityPoolFactory.address)
-    contracts.stabilityPool = new StabilityPoolProxy(owner, proxies, stabilityPoolScript.address, contracts.stabilityPool)
+    const stabilityPoolScript = await StabilityPoolScript.new(
+      contracts.stabilityPoolFactory.address
+    );
+    contracts.stabilityPool = new StabilityPoolProxy(
+      owner,
+      proxies,
+      stabilityPoolScript.address,
+      contracts.stabilityPool
+    );
 
-    contracts.sortedTroves = new SortedTrovesProxy(owner, proxies, contracts.sortedTroves)
+    contracts.sortedTroves = new SortedTrovesProxy(owner, proxies, contracts.sortedTroves);
 
-    const kusdTokenScript = await TokenScript.new(contracts.kusdToken.address)
-    contracts.kusdToken = new TokenProxy(owner, proxies, kusdTokenScript.address, contracts.kusdToken)
+    const kusdTokenScript = await TokenScript.new(contracts.kusdToken.address);
+    contracts.kusdToken = new TokenProxy(
+      owner,
+      proxies,
+      kusdTokenScript.address,
+      contracts.kusdToken
+    );
 
-    const kumoTokenScript = await TokenScript.new(KUMOContracts.kumoToken.address)
-    KUMOContracts.kumoToken = new TokenProxy(owner, proxies, kumoTokenScript.address, KUMOContracts.kumoToken)
+    const kumoTokenScript = await TokenScript.new(KUMOContracts.kumoToken.address);
+    KUMOContracts.kumoToken = new TokenProxy(
+      owner,
+      proxies,
+      kumoTokenScript.address,
+      KUMOContracts.kumoToken
+    );
 
-    const kumoStakingScript = await KUMOStakingScript.new(KUMOContracts.kumoStaking.address)
-    KUMOContracts.kumoStaking = new KUMOStakingProxy(owner, proxies, kumoStakingScript.address, KUMOContracts.kumoStaking)
+    const kumoStakingScript = await KUMOStakingScript.new(KUMOContracts.kumoStaking.address);
+    KUMOContracts.kumoStaking = new KUMOStakingProxy(
+      owner,
+      proxies,
+      kumoStakingScript.address,
+      KUMOContracts.kumoStaking
+    );
   }
 
   // Connect contracts to their dependencies
   static async connectCoreContracts(contracts, KUMOContracts) {
-
     // set TroveManager addr in SortedTroves
     await contracts.sortedTroves.setParams(
       contracts.troveManager.address,
       contracts.borrowerOperations.address
-    )
+    );
 
     // set contract addresses in the FunctionCaller
-    await contracts.functionCaller.setTroveManagerAddress(contracts.troveManager.address)
-    await contracts.functionCaller.setSortedTrovesAddress(contracts.sortedTroves.address)
+    await contracts.functionCaller.setTroveManagerAddress(contracts.troveManager.address);
+    await contracts.functionCaller.setSortedTrovesAddress(contracts.sortedTroves.address);
 
     await contracts.kumoParameters.setAddresses(
       contracts.activePool.address,
       contracts.defaultPool.address,
       contracts.priceFeedTestnet.address
-    )
+    );
 
     // set contracts in the Trove Manager
     await contracts.troveManager.setAddresses(
@@ -378,7 +413,7 @@ class DeploymentHelper {
       KUMOContracts.kumoToken.address,
       KUMOContracts.kumoStaking.address,
       contracts.kumoParameters.address
-    )
+    );
 
     // set contracts in BorrowerOperations
     await contracts.borrowerOperations.setAddresses(
@@ -390,7 +425,7 @@ class DeploymentHelper {
       contracts.kusdToken.address,
       KUMOContracts.kumoStaking.address,
       contracts.kumoParameters.address
-    )
+    );
 
     // // set contracts in the Pools
     // await contracts.stabilityPool.setAddresses(
@@ -403,7 +438,6 @@ class DeploymentHelper {
     //   contracts.kumoParameters.address
     // )
 
-
     await contracts.activePool.setAddresses(
       contracts.borrowerOperations.address,
       contracts.troveManager.address,
@@ -411,30 +445,30 @@ class DeploymentHelper {
       contracts.defaultPool.address,
       contracts.collSurplusPool.address,
       KUMOContracts.kumoStaking.address
-    )
+    );
 
     await contracts.defaultPool.setAddresses(
       contracts.troveManager.address,
-      contracts.activePool.address,
-    )
+      contracts.activePool.address
+    );
 
     await contracts.collSurplusPool.setAddresses(
       contracts.borrowerOperations.address,
       contracts.troveManager.address,
-      contracts.activePool.address,
-    )
+      contracts.activePool.address
+    );
 
     // set contracts in HintHelpers
     await contracts.hintHelpers.setAddresses(
       contracts.sortedTroves.address,
       contracts.troveManager.address,
       contracts.kumoParameters.address
-    )
+    );
   }
 
   static async connectKUMOContracts(KUMOContracts) {
     // Set KUMOToken address in LCF
-    await KUMOContracts.lockupContractFactory.setKUMOTokenAddress(KUMOContracts.kumoToken.address)
+    await KUMOContracts.lockupContractFactory.setKUMOTokenAddress(KUMOContracts.kumoToken.address);
   }
 
   static async connectKUMOContractsToCore(KUMOContracts, coreContracts) {
@@ -446,28 +480,27 @@ class DeploymentHelper {
       coreContracts.borrowerOperations.address,
       coreContracts.activePool.address
       // treasurySig
-    )
+    );
 
     await KUMOContracts.communityIssuance.setAddresses(
       KUMOContracts.kumoToken.address,
       coreContracts.stabilityPoolFactory.address
-    )
+    );
   }
 
   static async connectUnipool(uniPool, KUMOContracts, uniswapPairAddr, duration) {
-    await uniPool.setParams(KUMOContracts.kumoToken.address, uniswapPairAddr, duration)
+    await uniPool.setParams(KUMOContracts.kumoToken.address, uniswapPairAddr, duration);
   }
 
   static async mintMockAssets(erc20Asset, accounts, numberOfAccounts) {
     for (let index = 0; index < numberOfAccounts; index++) {
-      await erc20Asset.mint(accounts[index], await web3.eth.getBalance(accounts[index]))
+      await erc20Asset.mint(accounts[index], await web3.eth.getBalance(accounts[index]));
     }
   }
 
   static async addNewAssetToSystem(contracts, KUMOContracts, asset) {
-
     // Deoloy new stability pool contract
-    const stabilityPool = await StabilityPool.new()
+    const stabilityPool = await StabilityPool.new();
 
     // Set address in stability pool
     await stabilityPool.setAddresses(
@@ -478,25 +511,27 @@ class DeploymentHelper {
       contracts.sortedTroves.address,
       KUMOContracts.communityIssuance.address,
       contracts.kumoParameters.address
-    )
+    );
 
     // Add Stability Pool to the Stability Pool Factory
-    contracts.stabilityPoolFactory.createNewStabilityPool(asset, stabilityPool.address)
+    contracts.stabilityPoolFactory.createNewStabilityPool(asset, stabilityPool.address);
 
     // Set initial values for the asset
-    await contracts.kumoParameters.setAsDefault(asset)
-    await contracts.troveManager.addNewAsset(asset)
-    await contracts.sortedTroves.addNewAsset(asset)
+    await contracts.kumoParameters.setAsDefault(asset);
+    await contracts.troveManager.addNewAsset(asset);
+    await contracts.sortedTroves.addNewAsset(asset);
   }
 
   static async getStabilityPoolByAsset(contracts, address) {
-    const stabilityPoolAddress = await contracts.stabilityPoolFactory.getStabilityPoolByAsset(address);
+    const stabilityPoolAddress = await contracts.stabilityPoolFactory.getStabilityPoolByAsset(
+      address
+    );
     return await StabilityPool.at(stabilityPoolAddress);
   }
 
-  static async deployERC20Asset() {
-    return await ERC20Test.new();
+  static async deployERC20Asset(name, symbol) {
+    return await ERC20Test.new(name, symbol);
   }
 }
 
-module.exports = DeploymentHelper
+module.exports = DeploymentHelper;
