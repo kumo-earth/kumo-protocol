@@ -1,186 +1,201 @@
-const deploymentHelper = require("../utils/deploymentHelpers.js")
-const { TestHelper: th, MoneyValues: mv } = require("../utils/testHelpers.js")
+const deploymentHelper = require("../utils/deploymentHelpers.js");
+const { TestHelper: th, MoneyValues: mv } = require("../utils/testHelpers.js");
 
-const GasPool = artifacts.require("./GasPool.sol")
+const GasPool = artifacts.require("./GasPool.sol");
 // const KumoParameters = artifacts.require("./KumoParameters.sol")
-const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol")
+const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol");
 
-contract('All Kumo functions with onlyOwner modifier', async accounts => {
-
+contract("All Kumo functions with onlyOwner modifier", async accounts => {
   const [owner, alice, bob] = accounts;
 
-  const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
+  const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000);
 
-  let contracts
-  let kusdToken
-  let sortedTroves
-  let troveManager
-  let activePool
-  let stabilityPool
-  let defaultPool
-  let borrowerOperations
+  let contracts;
+  let kusdToken;
+  let sortedTroves;
+  let troveManager;
+  let activePool;
+  let stabilityPool;
+  let defaultPool;
+  let borrowerOperations;
 
-  let kumoStaking
-  let communityIssuance
-  let kumoToken
-  let lockupContractFactory
+  let kumoStaking;
+  let communityIssuance;
+  let kumoToken;
+  let lockupContractFactory;
 
   before(async () => {
-    contracts = await deploymentHelper.deployKumoCore()
-    contracts.borrowerOperations = await BorrowerOperationsTester.new()
-    contracts = await deploymentHelper.deployKUSDToken(contracts)
-    const KUMOContracts = await deploymentHelper.deployKUMOContracts(bountyAddress, lpRewardsAddress, multisig)
+    contracts = await deploymentHelper.deployKumoCore();
+    contracts.borrowerOperations = await BorrowerOperationsTester.new();
+    contracts = await deploymentHelper.deployKUSDToken(contracts);
+    const KUMOContracts = await deploymentHelper.deployKUMOContracts(
+      bountyAddress,
+      lpRewardsAddress,
+      multisig
+    );
 
-    erc20Asset = await deploymentHelper.deployERC20Asset()
-    assetAddress1 = erc20Asset.address
+    erc20Asset = await deploymentHelper.deployERC20Asset("Carbon Token X", "CTX");
+    assetAddress1 = erc20Asset.address;
 
-    await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1)
+    await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1);
 
-    kusdToken = contracts.kusdToken
-    sortedTroves = contracts.sortedTroves
-    troveManager = contracts.troveManager
-    activePool = contracts.activePool
-    stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1)
-    defaultPool = contracts.defaultPool
-    borrowerOperations = contracts.borrowerOperations
+    kusdToken = contracts.kusdToken;
+    sortedTroves = contracts.sortedTroves;
+    troveManager = contracts.troveManager;
+    activePool = contracts.activePool;
+    stabilityPool = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1);
+    defaultPool = contracts.defaultPool;
+    borrowerOperations = contracts.borrowerOperations;
 
-    kumoStaking = KUMOContracts.kumoStaking
-    communityIssuance = KUMOContracts.communityIssuance
-    kumoToken = KUMOContracts.kumoToken
-    lockupContractFactory = KUMOContracts.lockupContractFactory
-  })
+    kumoStaking = KUMOContracts.kumoStaking;
+    communityIssuance = KUMOContracts.communityIssuance;
+    kumoToken = KUMOContracts.kumoToken;
+    lockupContractFactory = KUMOContracts.lockupContractFactory;
+  });
 
-  const testZeroAddress = async (contract, params, method = 'setAddresses', skip = 0) => {
-    await testWrongAddress(contract, params, th.ZERO_ADDRESS, method, skip, 'Account cannot be zero address')
-  }
-  const testNonContractAddress = async (contract, params, method = 'setAddresses', skip = 0) => {
-    await testWrongAddress(contract, params, bob, method, skip, 'Account code size cannot be zero')
-  }
+  const testZeroAddress = async (contract, params, method = "setAddresses", skip = 0) => {
+    await testWrongAddress(
+      contract,
+      params,
+      th.ZERO_ADDRESS,
+      method,
+      skip,
+      "Account cannot be zero address"
+    );
+  };
+  const testNonContractAddress = async (contract, params, method = "setAddresses", skip = 0) => {
+    await testWrongAddress(contract, params, bob, method, skip, "Account code size cannot be zero");
+  };
   const testWrongAddress = async (contract, params, address, method, skip, message) => {
     for (let i = skip; i < params.length; i++) {
-      const newParams = [...params]
-      newParams[i] = address
-      await th.assertRevert(contract[method](...newParams, { from: owner }), message)
+      const newParams = [...params];
+      newParams[i] = address;
+      await th.assertRevert(contract[method](...newParams, { from: owner }), message);
     }
-  }
+  };
 
   const testSetAddresses = async (contract, numberOfAddresses, renounceOwnership = true) => {
-    const dumbContract = await GasPool.new()
-    const params = Array(numberOfAddresses).fill(dumbContract.address)
+    const dumbContract = await GasPool.new();
+    const params = Array(numberOfAddresses).fill(dumbContract.address);
 
     // Attempt call from alice
-    await th.assertRevert(contract.setAddresses(...params, { from: alice }))
+    await th.assertRevert(contract.setAddresses(...params, { from: alice }));
 
     // Attempt to use zero address
-    await testZeroAddress(contract, params)
+    await testZeroAddress(contract, params);
     // Attempt to use non contract
-    await testNonContractAddress(contract, params)
+    await testNonContractAddress(contract, params);
 
     // Owner can successfully set any address
-    const txOwner = await contract.setAddresses(...params, { from: owner })
-    assert.isTrue(txOwner.receipt.status)
+    const txOwner = await contract.setAddresses(...params, { from: owner });
+    assert.isTrue(txOwner.receipt.status);
     // fails if called twice
-    renounceOwnership == true ? await th.assertRevert(contract.setAddresses(...params, { from: owner })) : "";
-  }
+    renounceOwnership == true
+      ? await th.assertRevert(contract.setAddresses(...params, { from: owner }))
+      : "";
+  };
 
-
-  describe('TroveManager', async accounts => {
+  describe("TroveManager", async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses", async () => {
-      await testSetAddresses(troveManager, 9, false)
-    })
-  })
+      await testSetAddresses(troveManager, 9, false);
+    });
+  });
 
-  describe('BorrowerOperations', async accounts => {
+  describe("BorrowerOperations", async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      await testSetAddresses(borrowerOperations, 8)
-    })
-  })
+      await testSetAddresses(borrowerOperations, 8);
+    });
+  });
 
-  describe('DefaultPool', async accounts => {
+  describe("DefaultPool", async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      await testSetAddresses(defaultPool, 2)
-    })
-  })
+      await testSetAddresses(defaultPool, 2);
+    });
+  });
 
-  describe('StabilityPool', async accounts => {
+  describe("StabilityPool", async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses", async () => {
-      await testSetAddresses(stabilityPool, 7, false)
-    })
-  })
+      await testSetAddresses(stabilityPool, 7, false);
+    });
+  });
 
-  describe('ActivePool', async accounts => {
+  describe("ActivePool", async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      await testSetAddresses(activePool, 6)
-    })
-  })
+      await testSetAddresses(activePool, 6);
+    });
+  });
 
-  describe('SortedTroves', async accounts => {
+  describe("SortedTroves", async accounts => {
     it("setParams(): reverts when called by non-owner, with wrong addresses", async () => {
-      const dumbContract = await GasPool.new()
-      const params = [dumbContract.address, dumbContract.address]
+      const dumbContract = await GasPool.new();
+      const params = [dumbContract.address, dumbContract.address];
 
       // Attempt call from alice
-      await th.assertRevert(sortedTroves.setParams(...params, { from: alice }))
+      await th.assertRevert(sortedTroves.setParams(...params, { from: alice }));
 
       // Attempt to use zero address
-      await testZeroAddress(sortedTroves, params, 'setParams', 1)
+      await testZeroAddress(sortedTroves, params, "setParams", 1);
       // Attempt to use non contract
-      await testNonContractAddress(sortedTroves, params, 'setParams', 1)
+      await testNonContractAddress(sortedTroves, params, "setParams", 1);
 
       // Owner can successfully set params
-      const txOwner = await sortedTroves.setParams(...params, { from: owner })
-      assert.isTrue(txOwner.receipt.status)
+      const txOwner = await sortedTroves.setParams(...params, { from: owner });
+      assert.isTrue(txOwner.receipt.status);
 
       // fails if called twice
       // Can be called multiple times because of adding new assets to the system
-      // await th.assertRevert(sortedTroves.setParams(...params, { from: owner })) 
+      // await th.assertRevert(sortedTroves.setParams(...params, { from: owner }))
+    });
+  });
 
-    })
-  })
-
-  describe('CommunityIssuance', async accounts => {
+  describe("CommunityIssuance", async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      const params = [kumoToken.address, stabilityPool.address]
-      await th.assertRevert(communityIssuance.setAddresses(...params, { from: alice }))
+      const params = [kumoToken.address, stabilityPool.address];
+      await th.assertRevert(communityIssuance.setAddresses(...params, { from: alice }));
 
       // Attempt to use zero address
-      await testZeroAddress(communityIssuance, params)
+      await testZeroAddress(communityIssuance, params);
       // Attempt to use non contract
-      await testNonContractAddress(communityIssuance, params)
+      await testNonContractAddress(communityIssuance, params);
 
       // Owner can successfully set any address
-      const txOwner = await communityIssuance.setAddresses(...params, { from: owner })
+      const txOwner = await communityIssuance.setAddresses(...params, { from: owner });
 
-      assert.isTrue(txOwner.receipt.status)
+      assert.isTrue(txOwner.receipt.status);
       // fails if called twice
-      await th.assertRevert(communityIssuance.setAddresses(...params, { from: owner }))
-    })
-  })
+      await th.assertRevert(communityIssuance.setAddresses(...params, { from: owner }));
+    });
+  });
 
-  describe('KUMOStaking', async accounts => {
+  describe("KUMOStaking", async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      await testSetAddresses(kumoStaking, 5)
-    })
-  })
+      await testSetAddresses(kumoStaking, 5);
+    });
+  });
 
-  describe('LockupContractFactory', async accounts => {
+  describe("LockupContractFactory", async accounts => {
     it("setKUMOAddress(): reverts when called by non-owner, with wrong address, or twice", async () => {
-      await th.assertRevert(lockupContractFactory.setKUMOTokenAddress(kumoToken.address, { from: alice }))
+      await th.assertRevert(
+        lockupContractFactory.setKUMOTokenAddress(kumoToken.address, { from: alice })
+      );
 
-      const params = [kumoToken.address]
+      const params = [kumoToken.address];
 
       // Attempt to use zero address
-      await testZeroAddress(lockupContractFactory, params, 'setKUMOTokenAddress')
+      await testZeroAddress(lockupContractFactory, params, "setKUMOTokenAddress");
       // Attempt to use non contract
-      await testNonContractAddress(lockupContractFactory, params, 'setKUMOTokenAddress')
+      await testNonContractAddress(lockupContractFactory, params, "setKUMOTokenAddress");
 
       // Owner can successfully set any address
-      const txOwner = await lockupContractFactory.setKUMOTokenAddress(kumoToken.address, { from: owner })
+      const txOwner = await lockupContractFactory.setKUMOTokenAddress(kumoToken.address, {
+        from: owner
+      });
 
-      assert.isTrue(txOwner.receipt.status)
+      assert.isTrue(txOwner.receipt.status);
       // fails if called twice
-      await th.assertRevert(lockupContractFactory.setKUMOTokenAddress(kumoToken.address, { from: owner }))
-    })
-  })
-})
-
+      await th.assertRevert(
+        lockupContractFactory.setKUMOTokenAddress(kumoToken.address, { from: owner })
+      );
+    });
+  });
+});
