@@ -418,7 +418,7 @@ const addMockAssetsToSystem = async (
 }
 
 
-// // Mint token to each acccount / un-comment for prototype server
+// // Mint token to each acccount / un-comment and only use for prototype server
 // const mintMockAssets = async (signers: SignerWithAddress[], { mockAsset1, mockAsset2 }: _KumoContracts) => {
 //   for (let i = 0; i < signers.length; ++i) {
 //     if(i < 3) {
