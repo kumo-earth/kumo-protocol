@@ -2,13 +2,13 @@ import React from "react";
 import { Heading, Box, Card } from "theme-ui";
 
 import {
-  Percent,
   Difference,
   Decimalish,
   Decimal,
   Trove,
   KumoStoreState,
-  KUSD_LIQUIDATION_RESERVE
+  KUSD_LIQUIDATION_RESERVE,
+  Vault,
 } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 
@@ -18,6 +18,7 @@ import { StaticRow } from "./Editor";
 import { LoadingOverlay } from "../LoadingOverlay";
 import { CollateralRatio } from "./CollateralRatio";
 import { InfoIcon } from "../InfoIcon";
+import { useParams } from "react-router-dom";
 
 type TroveEditorProps = {
   original: Trove;
@@ -30,19 +31,19 @@ type TroveEditorProps = {
   ) => void;
 };
 
-const select = ({ price }: KumoStoreState) => ({ price });
+const select = ({ vaults }: KumoStoreState) => ({ vaults });
 
 export const TroveEditor: React.FC<TroveEditorProps> = ({
   children,
   original,
   edited,
-  fee,
-  borrowingRate,
   changePending
 }) => {
-  const { price } = useKumoSelector(select);
+  const { vaults } = useKumoSelector(select);
 
-  const feePct = new Percent(borrowingRate);
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
+  const price = vault?.price;
 
   const originalCollateralRatio = !original.isEmpty ? original.collateralRatio(price) : undefined;
   const collateralRatio = !edited.isEmpty ? edited.collateralRatio(price) : undefined;
@@ -55,17 +56,17 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
         width: "90%"
       }}
     >
-      <Heading>Trove</Heading>
+      <Heading>{collateralType?.toUpperCase()} Vault</Heading>
 
       <Box sx={{ p: [2, 3] }}>
         <StaticRow
           label="Collateral"
           inputId="trove-collateral"
-          amount={edited.collateral.prettify(4)}
-          unit="ETH"
+          amount={original.collateral.prettify(0)}
+          unit={collateralType?.toUpperCase()}
         />
 
-        <StaticRow label="Debt" inputId="trove-debt" amount={edited.debt.prettify()} unit={COIN} />
+        <StaticRow label="Debt" inputId="trove-debt" amount={original.netDebt.prettify(0)} unit={COIN} />
 
         {original.isEmpty && (
           <StaticRow
@@ -77,9 +78,9 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
               <InfoIcon
                 tooltip={
                   <Card variant="tooltip" sx={{ width: "200px" }}>
-                    An amount set aside to cover the liquidator’s gas costs if your Trove needs to be
+                    An amount set aside to cover the liquidator’s gas costs if your Vault needs to be
                     liquidated. The amount increases your debt and is refunded if you close your
-                    Trove by fully paying off its net debt.
+                    Vault by fully paying off its net debt.
                   </Card>
                 }
               />
@@ -87,7 +88,7 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
           />
         )}
 
-        <StaticRow
+        {/* <StaticRow
           label="Borrowing Fee"
           inputId="trove-borrowing-fee"
           amount={fee.toString(2)}
@@ -103,9 +104,9 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
               }
             />
           }
-        />
+        /> */}
 
-        <CollateralRatio value={collateralRatio} change={collateralRatioChange} />
+        <CollateralRatio value={originalCollateralRatio} change={collateralRatioChange} />
 
         {children}
       </Box>

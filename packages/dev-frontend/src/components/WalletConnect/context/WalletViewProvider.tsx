@@ -6,10 +6,10 @@ type WalletEventTransitions = Record<WalletView, Partial<Record<WalletEvent, Wal
 
 const transitions: WalletEventTransitions = {
   NONE: {
-    CLOSE_MODAL_PRESSED: "NONE"
+    CLOSE_WALLET_MODAL_PRESSED: "NONE"
   },
   OPEN: {
-    OPEN_MODAL_PRESSED: "OPEN"
+    OPEN_WALLET_MODAL_PRESSED: "OPEN"
   }
 };
 
@@ -22,15 +22,19 @@ export const WalletViewProvider: React.FC = props => {
   const { children } = props;
 
   const [view, setView] = useState<WalletView>("NONE");
+  const [showModal, setShowModal] = useState(false)
   const viewRef = useRef<WalletView>(view);
   const dispatchEvent = useCallback((event: WalletEvent) => {
-    if (event === "OPEN_MODAL_PRESSED") {
+   
+    if (event === "OPEN_WALLET_MODAL_PRESSED") {
+      setShowModal(true)
       viewRef.current = "OPEN";
-    } else if (event === "CLOSE_MODAL_PRESSED") {
+    } else if (event === "CLOSE_WALLET_MODAL_PRESSED") {
       viewRef.current = "NONE";
+      setShowModal(false)
     }
     const nextView = transition(viewRef.current, event);
-    console.log("dispatchEvent", nextView);
+    
     setView(nextView);
   }, []);
 
@@ -38,8 +42,10 @@ export const WalletViewProvider: React.FC = props => {
     viewRef.current = view;
   }, [view]);
 
+
   const provider = {
     view,
+    showModal,
     dispatchEvent
   };
   return <WalletViewContext.Provider value={provider}>{children}</WalletViewContext.Provider>;

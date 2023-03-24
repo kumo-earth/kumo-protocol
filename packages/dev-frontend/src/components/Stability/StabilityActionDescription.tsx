@@ -6,15 +6,17 @@ import { COIN, GT } from "../../strings";
 import { ActionDescription, Amount } from "../ActionDescription";
 
 type StabilityActionDescriptionProps = {
+  collateralType: string,
   originalDeposit: StabilityDeposit;
   change: StabilityDepositChange<Decimal>;
 };
 
 export const StabilityActionDescription: React.FC<StabilityActionDescriptionProps> = ({
+  collateralType,
   originalDeposit,
   change
 }) => {
-  const collateralGain = originalDeposit.collateralGain.nonZero?.prettify(4).concat(" ETH");
+  const collateralGain = originalDeposit.collateralGain.nonZero?.prettify(4).concat(` ${collateralType.toUpperCase()}`);
   const kumoReward = originalDeposit.kumoReward.nonZero?.prettify().concat(" ", GT);
 
   return (

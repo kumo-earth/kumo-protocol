@@ -117,7 +117,7 @@ const config: HardhatUserConfig = {
 
     dev: {
       url: "http://localhost:8545",
-      accounts: generateAccountArray(3, accounts),
+      accounts: generateAccountArray(numAccounts, accounts),
       allowUnlimitedContractSize: true
     },
 

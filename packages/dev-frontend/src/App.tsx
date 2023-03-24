@@ -4,7 +4,6 @@ import { Flex, Spinner, Heading, ThemeProvider, Paragraph, Link } from "theme-ui
 
 import { BatchedWebSocketAugmentedWeb3Provider } from "@kumodao/providers";
 import { KumoProvider } from "./hooks/KumoContext";
-import { WalletConnector } from "./components/WalletConnector";
 import { TransactionProvider } from "./components/Transaction";
 import { Icon } from "./components/Icon";
 import { getConfig } from "./config";
@@ -14,6 +13,7 @@ import { DisposableWalletProvider } from "./testUtils/DisposableWalletProvider";
 import { KumoFrontend } from "./KumoFrontend";
 import { WalletViewProvider } from "./components/WalletConnect/context/WalletViewProvider";
 import { SwitchNetworkViewProvider } from "./components/SwitchNetwork/context/SwitchNetworkViewProvider";
+import { BrowserRouter } from "react-router-dom";
 
 if (window.ethereum) {
   // Silence MetaMask warning in console
@@ -97,6 +97,7 @@ const App = () => {
   );
 
   return (
+    <BrowserRouter>
     <EthersWeb3ReactProvider>
       <ThemeProvider theme={theme}>
         <WalletViewProvider>
@@ -118,6 +119,7 @@ const App = () => {
         </WalletViewProvider>
       </ThemeProvider>
     </EthersWeb3ReactProvider>
+    </BrowserRouter>
   );
 };
 

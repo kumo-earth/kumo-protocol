@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 import { Heading, Box, Card, Button } from "theme-ui";
 
@@ -8,7 +8,8 @@ import {
   Decimalish,
   StabilityDeposit,
   KumoStoreState,
-  Difference
+  Difference,
+  Vault
 } from "@kumodao/lib-base";
 
 import { useKumoSelector } from "@kumodao/lib-react";
@@ -19,10 +20,11 @@ import { Icon } from "../Icon";
 import { EditableRow, StaticRow } from "../Trove/Editor";
 import { LoadingOverlay } from "../LoadingOverlay";
 import { InfoIcon } from "../InfoIcon";
+import { useStabilityView } from "./context/StabilityViewContext";
 
-const select = ({ kusdBalance, kusdInStabilityPool }: KumoStoreState) => ({
-  kusdBalance,
-  kusdInStabilityPool
+const select = ({ vaults, kusdBalance }: KumoStoreState) => ({
+  vaults,
+  kusdBalance
 });
 
 type StabilityDepositEditorProps = {
@@ -43,19 +45,22 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   dispatch,
   children
 }) => {
-  const { kusdBalance, kusdInStabilityPool } = useKumoSelector(select);
+  const { vaults, kusdBalance } = useKumoSelector(select);
   const editingState = useState<string>();
-
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const { dispatchEvent } = useStabilityView();
+  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
+  const { kusdInStabilityPool } = vault;
   const location = useLocation();
 
   const edited = !editedKUSD.eq(originalDeposit.currentKUSD);
 
   const maxAmount = originalDeposit.currentKUSD.add(kusdBalance);
-  const maxedOut = editedKUSD.eq(maxAmount);
+  const maxedOut = editedKUSD.eq(maxAmount);  
 
-  const kusdInStabilityPoolAfterChange = kusdInStabilityPool
+  const kusdInStabilityPoolAfterChange =  (originalDeposit.currentKUSD.lte(kusdInStabilityPool)) ? kusdInStabilityPool
     .sub(originalDeposit.currentKUSD)
-    .add(editedKUSD);
+    .add(editedKUSD) : Decimal.ZERO;
 
   const originalPoolShare = originalDeposit.currentKUSD.mulDiv(100, kusdInStabilityPool);
   const newPoolShare = editedKUSD.mulDiv(100, kusdInStabilityPoolAfterChange);
@@ -64,13 +69,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
     Difference.between(newPoolShare, originalPoolShare).nonZero;
 
   return (
-    <Card
-      sx={{
-        width: "90%",
-        background: '#ebd8df'
-      }}
-      variant="base"
-    >
+    <Card variant="modalCard">
       <Heading as="h2">
         {getPathName(location).toUpperCase()} Stability Pool
         {edited && !changePending && (
@@ -79,9 +78,18 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
             sx={{ ":enabled:hover": { color: "danger" } }}
             onClick={() => dispatch({ type: "revert" })}
           >
-            <Icon name="history" size="lg" />
+            <Icon name="history" size="sm" />
           </Button>
         )}
+        <span
+          style={{ marginLeft: "auto", cursor: "pointer" }}
+          onClick={() => {
+            dispatchEvent("CLOSE_MODAL_PRESSED");
+            dispatchEvent("CANCEL_PRESSED");
+          }}
+        >
+          <Icon name="window-close" size={"1x"} color="#da357a" />
+        </span>
       </Heading>
 
       <Box sx={{ p: [2, 3] }}>
@@ -103,8 +111,8 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
           <StaticRow
             label="Pool share"
             inputId="deposit-share"
-            amount={newPoolShare.prettify(4)}
-            pendingAmount={poolShareChange?.prettify(4).concat("%")}
+            amount={newPoolShare.prettify(0)}
+            pendingAmount={poolShareChange?.prettify(0).concat("%")}
             pendingColor={poolShareChange?.positive ? "success" : "danger"}
             unit="%"
           />
@@ -115,7 +123,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
             <StaticRow
               label="Liquidation gain"
               inputId="deposit-gain"
-              amount={originalDeposit.collateralGain.prettify(4)}
+              amount={originalDeposit.collateralGain.prettify(0)}
               color={originalDeposit.collateralGain.nonZero && "success"}
               unit={getPathName(location).toUpperCase()}
             />
@@ -123,7 +131,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
             <StaticRow
               label="Reward"
               inputId="deposit-reward"
-              amount={originalDeposit.kumoReward.prettify()}
+              amount={originalDeposit.kumoReward.prettify(0)}
               color={originalDeposit.kumoReward.nonZero && "success"}
               unit={GT}
               infoIcon={

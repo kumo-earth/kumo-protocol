@@ -113,9 +113,6 @@ contract('TroveManager', async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(4, 18)), extraParams: { from: alice } })
 
-    await openTrove({ asset: assetAddress2, ICR: toBN(dec(20, 18)), extraParams: { from: whale } })
-    await openTrove({ asset: assetAddress2, ICR: toBN(dec(4, 18)), extraParams: { from: alice } })
-
     const price = await priceFeed.getPrice(assetAddress1)
     const ICR_Before_Asset1 = await troveManager.getCurrentICR(assetAddress1, alice, price)
     assert.equal(ICR_Before_Asset1.toString(), dec(4, 18))

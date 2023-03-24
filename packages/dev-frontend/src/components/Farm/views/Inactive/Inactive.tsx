@@ -4,7 +4,6 @@ import { useKumo } from "../../../../hooks/KumoContext";
 import { Icon } from "../../../Icon";
 import { InfoMessage } from "../../../InfoMessage";
 import { useFarmView } from "../../context/FarmViewContext";
-import { RemainingKUMO } from "../RemainingKUMO";
 import { Yield } from "../Yield";
 
 const uniLink = (kusdAddress: string) => `https://app.uniswap.org/#/add/ETH/${kusdAddress}`;
@@ -27,7 +26,7 @@ export const Inactive: React.FC = () => {
       <Heading>
         Uniswap Liquidity Farm
         <Flex sx={{ justifyContent: "flex-end" }}>
-          <RemainingKUMO />
+          {/* <RemainingKUMO /> */}
         </Flex>
       </Heading>
       <Box sx={{ p: [2, 3] }}>
@@ -46,7 +45,7 @@ export const Inactive: React.FC = () => {
           <Flex sx={{ justifyContent: "flex-start", alignItems: "center", flex: 1 }}>
             <Yield />
           </Flex>
-          <Button onClick={handleStakePressed}>Stake</Button>
+          <Button onClick={handleStakePressed}>STAKE</Button>
         </Flex>
       </Box>
     </Card>

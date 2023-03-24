@@ -39,7 +39,7 @@ const transition = (view: StabilityView, event: StabilityEvent): StabilityView =
   return nextView;
 };
 
-const getInitialView = (stabilityDeposit: StabilityDeposit): StabilityView => {
+const getInitialView = (stabilityDeposit?: StabilityDeposit): StabilityView => {
   return stabilityDeposit?.isEmpty ? "NONE" : "ACTIVE";
 };
 
@@ -53,14 +53,23 @@ export const StabilityViewProvider: React.FC = props => {
   const location = useLocation();
 
   const vault = vaults.find(vault => vault.asset === getPathName(location));
-  const stabilityDeposit: StabilityDeposit = vault?.stabilityDeposit && vault.stabilityDeposit
+  const stabilityDeposit = vault?.stabilityDeposit && vault.stabilityDeposit;
 
   const [view, setView] = useState<StabilityView>(getInitialView(stabilityDeposit));
+  const [showModal, setShowModal] = useState(false);
   const viewRef = useRef<StabilityView>(view);
 
-
   const dispatchEvent = useCallback((event: StabilityEvent) => {
+    if (event === "CLOSE_MODAL_PRESSED") {
+      setShowModal(false);
+      return;
+    } else if (event === "OPEN_MODAL_PRESSED") {
+      setShowModal(true);
+      return;
+    }
+
     const nextView = transition(viewRef.current, event);
+    console.log("nextView", nextView, viewRef.current, event);
 
     console.log(
       "dispatchEvent() [current-view, event, next-view]",
@@ -70,6 +79,11 @@ export const StabilityViewProvider: React.FC = props => {
     );
     setView(nextView);
   }, []);
+
+  useEffect(() => {
+    setView(getInitialView(stabilityDeposit));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getPathName(location)]);
 
   useEffect(() => {
     viewRef.current = view;
@@ -83,6 +97,7 @@ export const StabilityViewProvider: React.FC = props => {
 
   const provider = {
     view,
+    showModal,
     dispatchEvent
   };
 

@@ -15,21 +15,20 @@ import {
   EthersKumoWithStore,
   _connectByChainId
 } from "@kumodao/lib-ethers";
-
 import { KumoFrontendConfig, getConfig } from "../config";
 
 type KumoContextValue =
   | {
-      config: KumoFrontendConfig;
-      kumo: EthersKumoWithStore<BlockPolledKumoStore>;
-      provider: Provider;
-      account: string;
-    }
+    config: KumoFrontendConfig;
+    kumo: EthersKumoWithStore<BlockPolledKumoStore>;
+    provider: Provider;
+    account: string;
+  }
   | {
-      config: KumoFrontendConfig;
-      kumo: EthersKumoWithStore<BlockPolledKumoStore>;
-      provider: Provider;
-    };
+    config: KumoFrontendConfig;
+    kumo: EthersKumoWithStore<BlockPolledKumoStore>;
+    provider: Provider;
+  };
 
 const KumoContext = createContext<KumoContextValue | undefined>(undefined);
 
@@ -100,18 +99,21 @@ export const KumoProvider: React.FC<KumoProviderProps> = ({
   useEffect(() => {
     console.log(networkSwitched, triedAuthorizedConnection);
     getConfig().then(setConfig);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (!account) {
       handleReadConnector();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
   useEffect(() => {
     if (!sessionStorage.getItem("account")) {
       handleReadConnector();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionStorage.getItem("account")]);
 
   useEffect(() => {
@@ -138,6 +140,7 @@ export const KumoProvider: React.FC<KumoProviderProps> = ({
         };
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config, connection, account]);
 
   if (config?.testnetOnly && chainId === 1) {

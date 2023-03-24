@@ -1,16 +1,10 @@
 import React from "react";
-import { Decimal, UserTrove, StabilityDeposit, Percent } from "@kumodao/lib-base";
+import { Vault } from "@kumodao/lib-base";
 
-import { Flex, Box, Card, Heading, Divider } from "theme-ui";
+import { Flex, Box, Card, Heading, Divider, Text } from "theme-ui";
 
 type StakingTypeCardProps = {
-  vault?: {
-    type: string;
-    collateralRatio: Decimal;
-    stabilityStatus: Boolean;
-    usersTroves: UserTrove[];
-    stabilityDeposit: StabilityDeposit;
-  };
+  vault: Vault;
   handleViewStakeDeposit: () => void;
 };
 
@@ -18,50 +12,57 @@ export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
   vault,
   handleViewStakeDeposit
 }) => {
-  const divdideVal = vault?.stabilityDeposit?.currentKUSD.div(vault?.stabilityDeposit?.currentKUSD);
-
-  const aprRatio = divdideVal ? new Percent(divdideVal) : new Percent(Decimal.ZERO);
 
   return (
-    <Card
-      variant="base"
-      onClick={handleViewStakeDeposit}
-    >
+    <Card variant="StabilityPoolStakingCard" onClick={handleViewStakeDeposit}>
       <Heading
-        sx={{
-          height: "100px !important",
-        }}
         as="h2"
       >
-        {vault?.type?.toUpperCase()} Stability Pool Staking
+        {vault?.asset?.toUpperCase()} Stability Pool Staking
       </Heading>
 
       <Box sx={{ p: 4 }}>
-        <Flex sx={{ justifyContent: "space-between", alignItems: "center", mt: 4 }}>
-          <Heading as="h6">APR</Heading>
-          <Heading as="h6">Total KUSD In Pool</Heading>
+        <Flex sx={{ justifyContent: "space-between", alignItems: "center", mt: 3 }}>
+          <Text as="p" variant="small">
+            APR
+          </Text>
+          <Text as="p" variant="small">
+            Total KUSD In Pool
+          </Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between", mt: 2 }}>
-          <Heading as="h2">
-            {aprRatio.toString(1) === "∞" ? Decimal.ZERO.prettify() : aprRatio.prettify()}
-          </Heading>
-          <Heading as="h2">{vault?.stabilityDeposit?.currentKUSD.shorten()}</Heading>
+          <Text as="p" variant="large">
+            18%
+          </Text>
+          <Text as="p" variant="large">
+            {vault?.kusdInStabilityPool?.isZero ? 0 : vault?.kusdInStabilityPool.prettify(0)}
+          </Text>
         </Flex>
-        <Divider />
+        <Divider color="muted" />
         <Flex sx={{ justifyContent: "space-between", mt: 4 }}>
-          <Heading as="h4">Liquidation Gain APR</Heading>
-          <Heading as="h4">-</Heading>
+          <Text as="p" variant="normalBold">
+            Liquidation Gain APR
+          </Text>
+          <Text as="p" variant="normalBold">
+            10%
+          </Text>
         </Flex>
         <Flex sx={{ justifyContent: "space-between", mt: 2, mb: 4 }}>
-          <Heading as="h4">KUMO APR</Heading>
-          <Heading as="h4">
-            {aprRatio.toString(1) === "∞" ? Decimal.ZERO.prettify() : aprRatio.prettify()}
-          </Heading>
+          <Text as="p" variant="normalBold">
+            KUMO APR
+          </Text>
+          <Text as="p" variant="normalBold">
+            8%
+          </Text>
         </Flex>
-        <Divider />
+        <Divider color="muted" />
         <Flex sx={{ justifyContent: "space-between", mt: 2 }}>
-          <Heading as="h4">YOUR STAKED KUSD</Heading>
-          <Heading as="h4">{vault?.stabilityDeposit?.currentKUSD.shorten()}</Heading>
+          <Text as="p" variant="normalBold">
+            YOUR STAKED KUSD
+          </Text>
+          <Text as="p" variant="normalBold">
+            {vault?.stabilityDeposit?.currentKUSD.shorten()}
+          </Text>
         </Flex>
       </Box>
     </Card>

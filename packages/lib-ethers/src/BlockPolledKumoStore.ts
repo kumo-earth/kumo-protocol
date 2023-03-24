@@ -10,7 +10,7 @@ import {
   KumoStore,
   Fees,
   ASSET_TOKENS,
-  UserTrove
+  Vault
 } from "@kumodao/lib-base";
 
 import { decimalify, promiseAllValues } from "./_utils";
@@ -90,19 +90,15 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
   }
 
   private async _get(
-    asset: string,
     blockTag?: number
   ): Promise<[baseState: KumoStoreBaseState, extraState: BlockPolledKumoStoreExtraState]> {
-    const { userAddress, frontendTag, provider } = this.connection;
+    const { userAddress, frontendTag, provider, addresses : { kusdToken, kumoToken } } = this.connection;
+    const asset = ASSET_TOKENS.ctx.assetAddress;
 
-    interface VaultStateType extends Partial<KumoStoreBaseState> {
-      asset: string;
-    }
-
-    const vaultState: VaultStateType[] = [];
-
+    const vaultState: Vault[] = [];
     Object.keys(ASSET_TOKENS).forEach(async assetToken => {
-      const { assetAddress } = ASSET_TOKENS[assetToken];
+      const { assetName, assetAddress, KUSD_MINTED_CAP, MIN_NET_DEBT } = ASSET_TOKENS[assetToken];
+
       const values = await promiseAllValues({
         blockTimestamp: this._readable._getBlockTimestamp(blockTag),
         _feesFactory: this._readable._getFeesFactory(assetAddress, { blockTag }),
@@ -129,7 +125,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
                   blockTag
                 }
               ),
-              // trove: this._readable.getTrove(address, userAddress, {
+              // trove: this._readable.getTrove(assetAddress, userAddress, {
               //   blockTag
               // }),
 
@@ -182,7 +178,16 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
           ?.applyRedistribution(totalRedistributed)
           ?.collateralRatioIsBelowMinimum(price)
       };
-      vaultState.push({ asset: assetToken, ...derivedValues, ...values });
+      vaultState.push({
+        asset: assetToken,
+        assetName,
+        assetAddress,
+        kusdMintedCap: KUSD_MINTED_CAP,
+        minNetDebt: MIN_NET_DEBT,
+        _feesInNormalMode,
+        ...derivedValues,
+        ...values
+      });
     });
 
     const { blockTimestamp, _feesFactory, calculateRemainingKUMO, ...baseState } =
@@ -193,15 +198,15 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
           blockTag
         }),
 
-        price: this._readable.getPrice(asset, { blockTag }),
-        numberOfTroves: this._readable.getNumberOfTroves(asset, { blockTag }),
-        totalRedistributed: this._readable.getTotalRedistributed(asset, { blockTag }),
-        total: this._readable.getTotal(asset, { blockTag }),
-        kusdInStabilityPool: this._readable.getKUSDInStabilityPool("ctx", { blockTag }),
+        // price: this._readable.getPrice(asset, { blockTag }),
+        // numberOfTroves: this._readable.getNumberOfTroves(asset, { blockTag }),
+        // totalRedistributed: this._readable.getTotalRedistributed(asset, { blockTag }),
+        // total: this._readable.getTotal(asset, { blockTag }),
+        // kusdInStabilityPool: this._readable.getKUSDInStabilityPool({ blockTag }),
         totalStakedKUMO: this._readable.getTotalStakedKUMO({ blockTag }),
-        _riskiestTroveBeforeRedistribution: this._getRiskiestTroveBeforeRedistribution(asset, {
-          blockTag
-        }),
+        // _riskiestTroveBeforeRedistribution: this._getRiskiestTroveBeforeRedistribution(asset, {
+        //   blockTag
+        // }),
         totalStakedUniTokens: this._readable.getTotalStakedUniTokens({ blockTag }),
         remainingStabilityPoolKUMOReward: this._readable.getRemainingStabilityPoolKUMOReward({
           blockTag
@@ -224,21 +229,21 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
               liquidityMiningKUMOReward: this._readable.getLiquidityMiningKUMOReward(userAddress, {
                 blockTag
               }),
-              collateralSurplusBalance: this._readable.getCollateralSurplusBalance(
-                asset,
-                userAddress,
-                {
-                  blockTag
-                }
-              ),
-              troveBeforeRedistribution: this._readable.getTroveBeforeRedistribution(
-                asset,
-                userAddress,
-                {
-                  blockTag
-                }
-              ),
-              stabilityDeposit: this._readable.getStabilityDeposit("ctx", userAddress, { blockTag }),
+              // collateralSurplusBalance: this._readable.getCollateralSurplusBalance(
+              //   asset,
+              //   userAddress,
+              //   {
+              //     blockTag
+              //   }
+              // ),
+              // troveBeforeRedistribution: this._readable.getTroveBeforeRedistribution(
+              //   asset,
+              //   userAddress,
+              //   {
+              //     blockTag
+              //   }
+              // ),
+              // stabilityDeposit: this._readable.getStabilityDeposit("ctx", userAddress, { blockTag }),
               kumoStake: this._readable.getKUMOStake(asset, userAddress, { blockTag }),
               ownFrontend: this._readable.getFrontendStatus("ctx", userAddress, { blockTag })
             }
@@ -250,18 +255,18 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
               uniTokenAllowance: Decimal.ZERO,
               liquidityMiningStake: Decimal.ZERO,
               liquidityMiningKUMOReward: Decimal.ZERO,
-              collateralSurplusBalance: Decimal.ZERO,
-              troveBeforeRedistribution: new TroveWithPendingRedistribution(
-                AddressZero,
-                "nonExistent"
-              ),
-              stabilityDeposit: new StabilityDeposit(
-                Decimal.ZERO,
-                Decimal.ZERO,
-                Decimal.ZERO,
-                Decimal.ZERO,
-                AddressZero
-              ),
+              // collateralSurplusBalance: Decimal.ZERO,
+              // troveBeforeRedistribution: new TroveWithPendingRedistribution(
+              //   AddressZero,
+              //   "nonExistent"
+              // ),
+              // stabilityDeposit: new StabilityDeposit(
+              //   Decimal.ZERO,
+              //   Decimal.ZERO,
+              //   Decimal.ZERO,
+              //   Decimal.ZERO,
+              //   AddressZero
+              // ),
               kumoStake: new KUMOStake(),
               ownFrontend: { status: "unregistered" as const }
             })
@@ -270,8 +275,10 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
     return [
       {
         ...baseState,
+        kusdToken,
+        kumoToken,
         vaults: [...vaultState],
-        _feesInNormalMode: _feesFactory(blockTimestamp, false),
+        // _feesInNormalMode: _feesFactory(blockTimestamp, false),
         remainingLiquidityMiningKUMOReward: calculateRemainingKUMO(blockTimestamp)
       },
       {
@@ -322,19 +329,18 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
   // }
   /** @internal @override */
   protected _doStart(): () => void {
-    const asset = "0xB861c98B465272765c5B2F651471Ea8a65871ACd";
-    this._get(asset).then(state => {
-      if (!this._loaded) {
+    const assetNumbers = Object.keys(ASSET_TOKENS).length;
+    this._get().then(state => {
+      if ((!this._loaded && state[0].vaults.length === assetNumbers) || this.connection?._isDev) {
         this._load(...state);
       }
     });
 
     const blockListener = async (blockTag: number) => {
-      const state = await this._get(asset, blockTag);
-
-      if (this._loaded) {
+      const state = await this._get(blockTag);
+      if (this._loaded && state[0].vaults.length === assetNumbers) {
         this._update(...state);
-      } else {
+      } else if (state[0].vaults.length === assetNumbers) {
         this._load(...state);
       }
     };

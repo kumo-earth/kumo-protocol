@@ -8,13 +8,10 @@ import {
   KUSD_LIQUIDATION_RESERVE,
   Percent,
   Difference,
-  UserTrove,
   ASSET_TOKENS,
-  Fees
+  Vault
 } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
-import { Web3Provider } from "@ethersproject/providers";
-import { useWeb3React } from "@web3-react/core";
 
 import { useStableTroveChange } from "../../hooks/useStableTroveChange";
 import { ActionDescription } from "../ActionDescription";
@@ -28,21 +25,8 @@ import { LoadingOverlay } from "../LoadingOverlay";
 import { CollateralRatio } from "./CollateralRatio";
 import { EditableRow, StaticRow } from "./Editor";
 import { ExpensiveTroveChangeWarning, GasEstimationState } from "./ExpensiveTroveChangeWarning";
-import {
-  selectForTroveChangeValidation,
-  validateTroveChange
-} from "./validation/validateTroveChange";
-import { useDashboard } from "../../hooks/DashboardContext";
-
-const selector = (state: KumoStoreState) => {
-  const { vaults, fees, price } = state;
-  return {
-    vaults,
-    fees,
-    price,
-    validationContext: selectForTroveChangeValidation(state)
-  };
-};
+import { ErrorDescription } from "../ErrorDescription";
+import { validateTroveChange } from "./validation/validateTroveChange";
 
 const TRANSACTION_ID = "trove-adjustment";
 const GAS_ROOM_ETH = Decimal.from(0.1);
@@ -89,16 +73,29 @@ const applyUnsavedNetDebtChanges = (unsavedChanges: Difference, trove: Trove) =>
 
 export const Adjusting: React.FC = () => {
   const { dispatchEvent } = useTroveView();
-  const { account } = useWeb3React<Web3Provider>();
-  const { vaults, validationContext } = useKumoSelector(selector);
   const { collateralType } = useParams<{ collateralType: string }>();
-  const { ctx, cty } = useDashboard();
+  const { vault, price, trove, accountBalance, fees, validationContext } = useKumoSelector(
+    (state: KumoStoreState) => {
+      const { vaults, kusdBalance } = state;
+      const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
+      const { numberOfTroves, total, fees, accountBalance, trove } = vault;
 
-  const vault = vaults.find(vault => vault.asset === collateralType);
-  const trove: UserTrove = vault?.trove?.ownerAddress === account && vault?.trove;
+      const price = vault?.price
+
+      const validationContext = {
+        trove,
+        price,
+        total,
+        accountBalance,
+        kusdBalance,
+        numberOfTroves
+      };
+      return { vault, price, trove, accountBalance, fees, validationContext };
+    }
+  );
   const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
-  const fees = vault?.fees as Fees
 
+  const { kusdMintedCap, total } = vault
   const editingState = useState<string>();
   const previousTrove = useRef<Trove>(trove);
   const [collateral, setCollateral] = useState<Decimal>(trove.collateral);
@@ -148,15 +145,14 @@ export const Adjusting: React.FC = () => {
   const maxBorrowingRate = borrowingRate.add(0.005);
   const updatedTrove = isDirty ? new Trove(collateral, totalDebt) : trove;
   const feePct = new Percent(borrowingRate);
-  const availableTokens = vault?.accountBalance?.gt(GAS_ROOM_ETH)
-    ? vault?.accountBalance.sub(GAS_ROOM_ETH)
+  const availableTokens = accountBalance?.gt(GAS_ROOM_ETH)
+    ? accountBalance.sub(GAS_ROOM_ETH)
     : Decimal.ZERO;
   const maxCollateral = trove.collateral.add(availableTokens);
   const collateralMaxedOut = collateral.eq(maxCollateral);
-  const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
   const collateralRatio =
     !collateral.isZero && !netDebt.isZero ? updatedTrove.collateralRatio(price) : undefined;
-  const collateralRatioChange = Difference.between(collateralRatio, trove.collateralRatio(cty));
+  const collateralRatioChange = Difference.between(collateralRatio, trove.collateralRatio(price));
 
   const [troveChange, description] = validateTroveChange(
     trove,
@@ -164,8 +160,9 @@ export const Adjusting: React.FC = () => {
     borrowingRate,
     validationContext
   );
-
   const stableTroveChange = useStableTroveChange(troveChange);
+  const isMintCapReached = (totalDebt.add(total.debt)).gt(kusdMintedCap)
+
   const [gasEstimationState, setGasEstimationState] = useState<GasEstimationState>({ type: "idle" });
 
   const isTransactionPending =
@@ -178,10 +175,10 @@ export const Adjusting: React.FC = () => {
   return (
     <Card variant="base">
       <Heading>
-        {vault?.asset.toUpperCase()} Trove
+        {vault?.asset.toUpperCase()} Vault
         {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
-            <Icon name="history" size="lg" />
+            <Icon name="history" size="sm" />
           </Button>
         )}
       </Heading>
@@ -221,8 +218,8 @@ export const Adjusting: React.FC = () => {
             <InfoIcon
               tooltip={
                 <Card variant="tooltip" sx={{ width: "200px" }}>
-                  An amount set aside to cover the liquidator’s gas costs if your Trove needs to be
-                  liquidated. The amount increases your debt and is refunded if you close your Trove
+                  An amount set aside to cover the liquidator’s gas costs if your Vault needs to be
+                  liquidated. The amount increases your debt and is refunded if you close your Vault
                   by fully paying off its net debt.
                 </Card>
               }
@@ -257,10 +254,10 @@ export const Adjusting: React.FC = () => {
             <InfoIcon
               tooltip={
                 <Card variant="tooltip" sx={{ width: "240px" }}>
-                  The total amount of KUSD your Trove will hold.{" "}
+                  The total amount of KUSD your Vault will hold.{" "}
                   {isDirty && (
                     <>
-                      You will need to repay {totalDebt.sub(KUSD_LIQUIDATION_RESERVE).prettify(2)}{" "}
+                      You will need to repay {totalDebt.sub(KUSD_LIQUIDATION_RESERVE).prettify(0)}{" "}
                       KUSD to reclaim your collateral ({KUSD_LIQUIDATION_RESERVE.toString()} KUSD
                       Liquidation Reserve excluded).
                     </>
@@ -275,9 +272,17 @@ export const Adjusting: React.FC = () => {
 
         {description ?? (
           <ActionDescription>
-            Adjust your Trove by modifying its collateral, debt, or both.
+            Adjust your Vault by modifying its collateral, debt, or both.
           </ActionDescription>
         )}
+
+        {
+          isMintCapReached && (
+            <ErrorDescription>
+              Total debt {totalDebt.prettify(2)} {COIN} must be less than {COIN} Minted Cap {kusdMintedCap.shorten().toString().toLowerCase()} {COIN}
+            </ErrorDescription>
+          )
+        }
 
         <ExpensiveTroveChangeWarning
           asset={assetTokenAddress}
@@ -291,19 +296,16 @@ export const Adjusting: React.FC = () => {
         <Flex variant="layout.actions">
           <Button
             sx={{
-              backgroundColor: "rgb(152, 80, 90)",
-              boxShadow:
-                "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
-              border: "none",
-              color: "white"
+              mt: 3,
+              mb: 3
             }}
-            variant="cancel"
+            variant="secondary"
             onClick={handleCancelPressed}
           >
-            Cancel
+            CANCEL
           </Button>
 
-          {stableTroveChange ? (
+          {(stableTroveChange && !isMintCapReached) ? (
             <TroveAction
               transactionId={TRANSACTION_ID}
               change={stableTroveChange}
@@ -311,20 +313,17 @@ export const Adjusting: React.FC = () => {
               maxBorrowingRate={maxBorrowingRate}
               borrowingFeeDecayToleranceMinutes={60}
             >
-              Confirm
+              CONFIRM
             </TroveAction>
           ) : (
             <Button
               sx={{
-                backgroundColor: "rgb(152, 80, 90)",
-                boxShadow:
-                  "rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px",
-                border: "none",
-                color: "white"
+                mb: 2
               }}
+              variant="primaryInActive"
               disabled
             >
-              Confirm
+              CONFIRM
             </Button>
           )}
         </Flex>

@@ -15,25 +15,32 @@ const select = ({
 });
 
 export const Dashboard: React.FC = () => {
-  const { totalCollDebt, ctx, cty } = useDashboard();
+  const { totalCollDebt } = useDashboard();
   const { vaults } = useKumoSelector(select);
   return (
     <Flex variant="layout.dashboard">
       <DashboadHeader>
         <DashboadHeaderItem  title={"TOTAL COLLATERAL"} value={`$${totalCollDebt.totalColl.prettify(0)}`} />
-        <DashboadHeaderItem  title={"TOTAL DEBT"} value={`$${totalCollDebt.totalDebt.prettify(0)}`} />
+        <DashboadHeaderItem  title={"TOTAL MINTED KUSD"} value={`$${totalCollDebt.totalDebt.prettify(0)}`} />
         <DashboadHeaderItem  title={"TOTAL CARBON CREDITS"} value={totalCollDebt.totalCarbonCredits.prettify(0)} />
       </DashboadHeader>
       <Divider  sx={{ color: "muted" }} />
       <DashboadContent>
         {vaults.map(vault => {
-          const price = vault?.asset === 'ctx' ? ctx : vault?.asset === 'cty' ? cty : Decimal.from(0)
-          const totalCollateralRatioPct = new Percent(vault.total.collateralRatio(price));
+          const price = vault?.price
+          const total = vault.total
+          const kusdInStabilityPool = vault.kusdInStabilityPool;
+          const borrowingRate = vault.borrowingRate;
+          const totalCollateralRatioPct = !vault?.total?.isEmpty ? new Percent(vault.total.collateralRatio(price)).toString(0) : `${Decimal.from(0).prettify(0)} %`;
+          
           return (
             <CollateralCard
               collateralType={vault.asset}
-              totalCollateralRatioPct={totalCollateralRatioPct.prettify()}
-              trove={vault?.trove}
+              totalCollateralRatioPct={totalCollateralRatioPct}
+              total={total}
+              kusdInStabilityPool={kusdInStabilityPool}
+              borrowingRate={borrowingRate}
+              kusdMintedCap={vault?.kusdMintedCap}
               key={vault?.asset}
             />
           );

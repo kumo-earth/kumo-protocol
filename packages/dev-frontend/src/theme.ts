@@ -1,18 +1,27 @@
 import { Theme, ThemeUIStyleObject } from "theme-ui";
 
 const baseColors = {
-  black: "#000",
+  black: "#000000",
   white: "#fff",
   magenta: "#da357a",
   magentaLight: "#f0cfdc",
   magentaDark: "#a81f58",
   magentaMedium: "#de96b3",
   lightGrey: "#e6e6e6",
-  transparent: "transparent"
+  transparent: "transparent",
+
+  blue: "#00aed6",
+  darkBlue: "#4721BD",
+  orange: "#f6701f",
+  green: "#4BAD79",
+  yellow: "#fd9d28",
+  red: "#dc2c10",
+  lightRed: "#ff755f"
 };
 
 const colors = {
   text: baseColors.black,
+  textWhite: baseColors.white,
   background: baseColors.white,
   primary: baseColors.magenta,
   secondary: baseColors.magentaLight,
@@ -20,14 +29,21 @@ const colors = {
 
   primaryHover: baseColors.magentaDark,
   secondaryHover: baseColors.magentaMedium,
-  transparent: baseColors.transparent
+  transparent: baseColors.transparent,
+
+  success: baseColors.green,
+  warning: baseColors.orange,
+  danger: baseColors.red,
+  dangerHover: baseColors.lightRed,
+  info: baseColors.blue,
+  invalid: "pink"
 };
 
 const buttonBase: ThemeUIStyleObject = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-
+  fontFamily: 'Quicksand',
   ":enabled": { cursor: "pointer" }
 };
 
@@ -35,8 +51,8 @@ const button: ThemeUIStyleObject = {
   ...buttonBase,
   px: "32px",
   py: "12px",
-  color: "white",
-
+  color: "textWhite",
+  fontStyle: "normal",
   fontWeight: "bold",
 
   ":disabled": {
@@ -48,7 +64,7 @@ const buttonOutline = (color: string, hoverColor: string): ThemeUIStyleObject =>
   color,
   borderColor: color,
   background: "none",
-
+  fontFamily: 'Quicksand',
   ":enabled:hover": {
     color: "background",
     bg: hoverColor,
@@ -66,7 +82,7 @@ const iconButton: ThemeUIStyleObject = {
   background: "none",
 
   ":disabled": {
-    color: "text",
+    color: "primary",
     opacity: 0.25
   }
 };
@@ -109,13 +125,12 @@ const formBase: ThemeUIStyleObject = {
   width: "auto",
   flexShrink: 0,
   padding: 2,
-  fontSize: 3
+  fontSize: 3,
+  fontFamily: 'Quicksand'
 };
 
 const formCell: ThemeUIStyleObject = {
   ...formBase,
-
-  bg: "background",
   border: 1,
   borderColor: "muted",
   borderRadius: 0,
@@ -140,9 +155,9 @@ const modalOverlay: ThemeUIStyleObject = {
   height: "100vh"
 };
 
-const headerGradient: ThemeUIStyleObject = {
-  background: `linear-gradient(90deg, ${colors.background}, ${colors.muted})`
-};
+// const headerGradient: ThemeUIStyleObject = {
+//   background: `linear-gradient(90deg, ${colors.background}, ${colors.muted})`
+// };
 
 const theme: Theme = {
   breakpoints: ["48em", "52em", "64em"],
@@ -151,7 +166,7 @@ const theme: Theme = {
 
   fonts: {
     body: [
-      "Lato",
+      "Quicksand",
       "-apple-system",
       "BlinkMacSystemFont",
       '"Segoe UI"',
@@ -171,6 +186,7 @@ const theme: Theme = {
 
     light: 200,
     medium: 500,
+    mediumBold: 600,
     bold: 700
   },
 
@@ -190,6 +206,9 @@ const theme: Theme = {
       fontFamily: "heading",
       fontWeight: "heading",
       lineHeight: "heading"
+    },
+    normal: {
+      fontWeight: "medium"
     },
     normalBold: {
       fontWeight: "bold"
@@ -221,7 +240,7 @@ const theme: Theme = {
   buttons: {
     primary: {
       ...button,
-
+      borderRadius: '72px',
       bg: "primary",
       borderColor: "primary",
 
@@ -230,23 +249,44 @@ const theme: Theme = {
         borderColor: "primaryHover"
       }
     },
+    primaryInActive: {
+      variant: 'buttons.primary',
+      opacity: 0.5,
+    },
+    secondary: {
+      ...button,
+      borderRadius: '72px',
+      color: 'rgba(0, 0, 0, 0.5)',
+      bg: "secondary",
+      borderColor: "secondary",
+
+      ":enabled:hover": {
+        bg: "secondaryHover",
+        borderColor: "secondaryHover"
+      }
+    },
+    secondaryInActive: {
+      variant: 'buttons.secondary',
+      bg: 'rgba(218, 53, 122, 0.2)',
+      opacity: 0.5,
+    },
 
     outline: {
       ...button,
       ...buttonOutline("primary", "secondary")
     },
 
-    cancel: {
-      ...button,
-      color: "text",
-      bg: "secondary",
-      borderColor: "secondary",
-      ":enabled:hover": {
-        bg: "secondaryHover",
-        borderColor: "secondaryHover"
-      },
-      opacity: 0.9
-    },
+    // cancel: {
+    //   ...button,
+    //   color: "text",
+    //   bg: "secondary",
+    //   borderColor: "secondary",
+    //   ":enabled:hover": {
+    //     bg: "secondaryHover",
+    //     borderColor: "secondaryHover"
+    //   },
+    //   opacity: 0.9
+    // },
 
     icon: {
       ...iconButton,
@@ -262,9 +302,10 @@ const theme: Theme = {
 
     titleIcon: {
       ...iconButton,
-      color: "text",
-      ":enabled:hover": { color: "success" }
-    }
+      color: "primary",
+      ":enabled:hover": { color: "primaryHover" }
+    },
+
   },
 
   cards: {
@@ -272,25 +313,22 @@ const theme: Theme = {
       ...card,
       padding: 0,
       borderColor: "muted",
-      bg: "background",
+      background: "linear-gradient(128.29deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 127.78%)",
       "> h2": {
         display: "flex",
         alignItems: "center",
         height: "60px",
-        borderRadius: "20px 20px 0 0",
-        pl: 4,
-        py: 2,
-        pr: 2
+        borderRadius: "50px 50px 0 0",
+        px: 5,
+        py: 2
       }
     },
     base: {
       variant: "cards.primary",
-      bg: "transparent",
       boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
-      borderRadius: "20px",
-      width: "97%",
+      borderRadius: "50px",
+      width: "100%",
       maxWidth: "100%",
-      position: "relative",
       "> h2": {
         variant: "cards.primary.> h2",
         borderBottom: 1,
@@ -316,39 +354,65 @@ const theme: Theme = {
       overflowY: "scroll"
     },
 
-    collateralCard: {
-      variant: "cards.primary",
-      bg: "transparent",
-      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
-      borderRadius: "20px",
-      width: "97%",
-      maxWidth: "100%",
-      position: "relative",
-      "> h2": {
-        variant: "cards.base.> h2",
-        height: "60px",
-      },
-      ":hover": {
-        ...cardHoverEffects
-      }
-    },
-    StabilityPoolStakingCard: {
+    portfolioCard: {
       variant: "cards.base",
-      border: "none",
-      borderRadius: "20px",
-      height: "max-content",
       ":hover": {
         ...cardHoverEffects
       }
     },
 
+    collateralCard: {
+      variant: "cards.primary",
+      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
+      borderRadius: "50px",
+      width: "97%",
+      maxWidth: "100%",
+      "> h2": {
+        variant: "cards.base.> h2",
+        height: "60px"
+      },
+      ":hover": {
+        ...cardHoverEffects
+      }
+    },
+    modalCard: {
+      variant: "cards.primary",
+      boxShadow: "0 3px 10px rgba(0, 0, 0, 0.5)",
+      borderRadius: "50px",
+      width: "100%",
+      background: 'linear-gradient(128.29deg, rgb(248 213 228 / 37%) 0%, rgba(255, 255, 255, 0) 127.78%)',
+      // position: "relative",
+      "> h2": {
+        variant: "cards.base.> h2",
+        height: "60px"
+      },
+      zIndex: 9999999999,
+    },
+    StabilityPoolStakingCard: {
+      variant: "cards.base",
+      border: "none",
+      display: "flex",
+      flexDirection: "column",
+
+      borderRadius: "50px",
+      ":hover": {
+        ...cardHoverEffects
+      }
+    },
+
+    systemStatsCard: {
+      variant: 'cards.modalCard',
+      height: '90vh',
+      width: '90vw',
+      p: 4,
+    },
     tooltip: {
       padding: 2,
 
       border: 1,
       borderColor: "muted",
       borderRadius: "4px",
-      bg: "background",
+      bg: "secondary",
       boxShadow: 2,
 
       fontSize: 1,
@@ -365,9 +429,16 @@ const theme: Theme = {
 
     unit: {
       ...formCell,
-
       textAlign: "center",
-      bg: "muted"
+      bg: "muted",
+    },
+
+    unitSecondary: {
+      ...formCell,
+      bg: "primary",
+      outline: 'none',
+      border: 'none',
+      color: 'white'
     },
 
     input: {
@@ -376,7 +447,26 @@ const theme: Theme = {
       flex: 1
     },
 
-    editor: {}
+    select: {
+      ml: 2,
+      p: 1,
+      border: "none",
+      borderRadius: '72px',
+      minWidth: 90,
+      maxWidth: "max-content",
+      bg: "primary",
+      borderColor: "primary",
+      fontSize: 2,
+      color: 'textWhite',
+      fontFamily: 'Quicksand',
+      ":focus": {
+        borderColor: "primary",
+        outline: "none"
+      }
+    },
+    editor: {
+      fontFamily: 'Quicksand',
+    }
   },
 
   layout: {
@@ -393,7 +483,7 @@ const theme: Theme = {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      pl: 5,
+      px: 5,
       height: "110px",
       borderBottom: 1,
       borderColor: "muted",
@@ -413,6 +503,7 @@ const theme: Theme = {
     },
 
     main: {
+      position: 'relative',
       height: "calc(100vh - 110px)",
       width: "100%",
       overflow: "auto",
@@ -437,13 +528,17 @@ const theme: Theme = {
     },
 
     actions: {
-      justifyContent: "flex-end",
+      // justifyContent: "flex-end",
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
       mt: 2,
 
       button: {
-        p: 2,
-        minWidth: "64px"
+        minWidth: "64px",
+        width: '95%',
       }
+
     },
 
     disabledOverlay: {
@@ -467,12 +562,30 @@ const theme: Theme = {
       width: ["100%", "40em"]
     },
 
-    infoOverlay: {
-      ...modalOverlay,
-
+    sideNavOverlay: {
+      position: "absolute",
+      zIndex: 999999,
+      left: 0,
+      top: 0,
+      width: "100vw",
+      height: "100vh",
+      bg: 'white',
       display: ["block", "none"],
+    },
 
-      bg: "rgba(255, 255, 255, 0.8)"
+    systemStatsOverlay: {
+      position: "absolute",
+      zIndex: 999999,
+      left: 0,
+      top: 0,
+      width: "100vw",
+      height: "100vh",
+      bg: 'white',
+
+      display: ["flex", "none"],
+      justifyContent: 'center',
+      alignItems: 'center'
+
     },
 
     infoMessage: {
@@ -509,21 +622,25 @@ const theme: Theme = {
     sidenav: {
       display: ["flex", "none"],
       flexDirection: "column",
-      p: 0,
+      pl: 4,
       m: 0,
       borderColor: "muted",
-      mr: "25vw",
-      height: "100%",
-      ...headerGradient
+      overflow: 'scroll'
+      // ...headerGradient
     },
 
     dashboard: {
+      // position: 'relative',
       flexDirection: "column",
       height: "100%"
     },
 
-    DashboadHeader: {
-      height: "170px"
+    dashboadHeader: {
+      display: ["none", "flex"],
+      height: 'max-content',
+      px: 5,
+      pb: 4
+      // height: "170px"
     },
 
     badge: {
@@ -535,6 +652,13 @@ const theme: Theme = {
       color: "slate",
       fontSize: 1,
       fontWeight: "body"
+    },
+    newTabLinks: {
+      ".link": {
+        ":hover": {
+          color: '#da357a !important'
+        }
+      }
     }
   },
 
@@ -567,7 +691,7 @@ const theme: Theme = {
   links: {
     nav: {
       py: 2,
-      fontWeight: 800,
+      fontWeight: 700,
       fontSize: 2,
       textTransform: "uppercase",
       width: ["100%", "auto"],

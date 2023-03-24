@@ -69,10 +69,11 @@ export function useSwitchNetwork(): {
       if (error?.name === "UnsupportedChainIdError") {
         sessionStorage.removeItem("account");
         deactivate();
-        dispatchEvent("OPEN_MODAL_PRESSED");
+        dispatchEvent("OPEN_SWITCH_MODAL_PRESSED");
       }
     };
     handleSwitch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provider, connector, error?.name]);
 
   useEffect(() => {
@@ -81,7 +82,7 @@ export function useSwitchNetwork(): {
     } else {
       setNetworkSwitched(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
-
   return { networkSwitched, switchNetwork };
 }

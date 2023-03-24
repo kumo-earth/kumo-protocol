@@ -8,7 +8,6 @@ import { LoadingOverlay } from "../../../LoadingOverlay";
 import { useMyTransactionState } from "../../../Transaction";
 import { DisabledEditableRow, StaticRow } from "../../../Trove/Editor";
 import { useFarmView } from "../../context/FarmViewContext";
-import { RemainingKUMO } from "../RemainingKUMO";
 import { ClaimReward } from "./ClaimReward";
 import { UnstakeAndClaim } from "../UnstakeAndClaim";
 import { Yield } from "../Yield";
@@ -50,7 +49,7 @@ export const Active: React.FC = () => {
         Uniswap Liquidity Farm
         {!isTransactionPending && (
           <Flex sx={{ justifyContent: "flex-end" }}>
-            <RemainingKUMO />
+            {/* <RemainingKUMO /> */}
           </Flex>
         )}
       </Heading>
@@ -59,7 +58,7 @@ export const Active: React.FC = () => {
           <DisabledEditableRow
             label="Stake"
             inputId="farm-stake"
-            amount={liquidityMiningStake.prettify(4)}
+            amount={liquidityMiningStake.prettify(0)}
             unit={LP}
           />
           {poolShare.infinite ? (
@@ -68,7 +67,7 @@ export const Active: React.FC = () => {
             <StaticRow
               label="Pool share"
               inputId="farm-share"
-              amount={poolShare.prettify(4)}
+              amount={poolShare.prettify(0)}
               unit={"%"}
             />
           )}
@@ -76,7 +75,7 @@ export const Active: React.FC = () => {
             <StaticRow
               label="Reward"
               inputId="farm-reward"
-              amount={liquidityMiningKUMOReward.prettify(4)}
+              amount={liquidityMiningKUMOReward.prettify(0)}
               color={liquidityMiningKUMOReward.nonZero && "success"}
               unit={GT}
             />
@@ -88,11 +87,12 @@ export const Active: React.FC = () => {
 
         <Flex variant="layout.actions">
           <Button
+            sx={{ mb: 2 }}
             variant={!liquidityMiningKUMOReward.isZero ? "outline" : "primary"}
             onClick={handleAdjustPressed}
           >
             <Icon name="pen" size="sm" />
-            &nbsp;Adjust
+            &nbsp;ADJUST
           </Button>
           {!liquidityMiningKUMOReward.isZero && <ClaimReward />}
         </Flex>
