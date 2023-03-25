@@ -9,9 +9,9 @@ Type of [KumoStore](./lib-base.kumostore.md)<!-- -->'s [state](./lib-base.kumost
 <b>Signature:</b>
 
 ```typescript
-export declare type KumoStoreState<T = unknown> = KumoStoreBaseState & KumoStoreDerivedState & T;
+export declare type KumoStoreState<T = unknown> = KumoStoreBaseState & T;
 ```
-<b>References:</b> [KumoStoreBaseState](./lib-base.kumostorebasestate.md)<!-- -->, [KumoStoreDerivedState](./lib-base.kumostorederivedstate.md)
+<b>References:</b> [KumoStoreBaseState](./lib-base.kumostorebasestate.md)
 
 ## Remarks
 

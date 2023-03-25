@@ -1,7 +1,6 @@
 import React from "react";
 import { Heading, Flex, Card, Button, Box } from "theme-ui";
 import { Stability } from "../components/Stability/Stability";
-import { Trove } from "./Trove/Trove";
 
 import { Icon } from "./Icon";
 
@@ -54,8 +53,8 @@ export const StakingDialog: React.FC<DialogProps> = ({
       <Heading as="h1" sx={{ textAlign: "center", color: "black", fontSize: [2, 3], px: [3, 0] }}>
         {title}
       </Heading>
-      <Button variant="icon" onClick={onClose}>
-        <Icon name="times" size="lg" aria-label={cancelLabel || "Cancel"} />
+      <Button variant="secondary" onClick={onClose}>
+        <Icon name="times" size="lg" aria-label={cancelLabel?.toUpperCase() || "CANCEL"} />
       </Button>
     </Flex>
     <Stability />

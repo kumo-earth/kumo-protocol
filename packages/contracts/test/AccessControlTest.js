@@ -65,7 +65,7 @@ contract(
       kumoToken = KUMOContracts.kumoToken;
       communityIssuance = KUMOContracts.communityIssuance;
       lockupContractFactory = KUMOContracts.lockupContractFactory;
-      erc20Asset1 = await deploymentHelper.deployERC20Asset();
+      erc20Asset1 = await deploymentHelper.deployERC20Asset("Carbon Token X", "CTX");
       assetAddress1 = erc20Asset1.address;
 
       await deploymentHelper.connectKUMOContracts(KUMOContracts);

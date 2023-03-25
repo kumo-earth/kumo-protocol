@@ -54,7 +54,7 @@ contract("ActivePool", async accounts => {
 
   const [owner, alice] = accounts;
   beforeEach(async () => {
-    erc20Test = await ERC20Test.new();
+    erc20Test = await ERC20Test.new("Carbon Token X", "CTX");
     await erc20Test.mint(owner, await web3.eth.getBalance(owner));
     activePool = await ActivePool.new();
     mockBorrowerOperations = await NonPayable.new();
@@ -186,7 +186,7 @@ contract("DefaultPool", async accounts => {
 
   const [owner, alice] = accounts;
   beforeEach(async () => {
-    erc20Test = await ERC20Test.new();
+    erc20Test = await ERC20Test.new("Carbon Token X", "CTX");
     await erc20Test.mint(owner, await web3.eth.getBalance(owner));
     defaultPool = await DefaultPool.new();
     mockTroveManager = await NonPayable.new();

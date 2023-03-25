@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Text } from "theme-ui";
+import { Box, Flex, Text } from "theme-ui";
 
 import { Icon } from "./Icon";
 

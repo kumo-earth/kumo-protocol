@@ -95,7 +95,7 @@ contract("BorrowerOperations", async accounts => {
         multisig
       );
 
-      erc20Asset1 = await deploymentHelper.deployERC20Asset();
+      erc20Asset1 = await deploymentHelper.deployERC20Asset("Carbon Token X", "CTX");
       assetAddress1 = erc20Asset1.address;
 
       kumoParams = contracts.kumoParameters;

@@ -5,14 +5,13 @@ pragma solidity 0.8.11;
 import "../Interfaces/IPriceFeed.sol";
 
 /*
-* PriceFeed placeholder for testnet and development. The price is simply set manually and saved in a state 
-* variable. The contract does not connect to a live Chainlink price feed. 
-*/
+ * PriceFeed placeholder for testnet and development. The price is simply set manually and saved in a state
+ * variable. The contract does not connect to a live Chainlink price feed.
+ */
 contract PriceFeedTestnet is IPriceFeed {
-    
     // uint256 private _price = 200 * 1e18;
     mapping(address => uint256) private assetPrices;
-    uint private constant zeroValue = type(uint).max - 143; // 143 is just to increase randomness
+    uint256 private constant zeroValue = type(uint256).max - 143; // 143 is just to increase randomness
 
     // --- Functions ---
 

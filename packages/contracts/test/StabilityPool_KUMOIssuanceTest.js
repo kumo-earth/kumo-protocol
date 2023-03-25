@@ -65,7 +65,7 @@ contract("StabilityPool - KUMO Rewards", async accounts => {
   const openTrove = async params => th.openTrove(contracts, params);
   describe("KUMO Rewards", async () => {
     beforeEach(async () => {
-      erc20Asset1 = await deploymentHelper.deployERC20Asset();
+      erc20Asset1 = await deploymentHelper.deployERC20Asset("Carbon Token X", "CTX");
       assetAddress1 = erc20Asset1.address;
 
       // Mint token to each acccount

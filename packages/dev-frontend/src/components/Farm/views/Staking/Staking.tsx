@@ -51,7 +51,7 @@ export const Staking: React.FC = () => {
             sx={{ ":enabled:hover": { color: "danger" } }}
             onClick={() => setAmount(Decimal.from(0))}
           >
-            <Icon name="history" size="lg" />
+            <Icon name="history" size="sm" />
           </Button>
         )}
       </Heading>
@@ -75,7 +75,7 @@ export const Staking: React.FC = () => {
           <StaticRow
             label="Pool share"
             inputId="farm-share"
-            amount={poolShare.prettify(4)}
+            amount={poolShare.prettify(0)}
             unit="%"
           />
         )}
@@ -84,8 +84,8 @@ export const Staking: React.FC = () => {
         <Description amount={amount} />
 
         <Flex variant="layout.actions">
-          <Button variant="cancel" onClick={handleCancelPressed}>
-            Cancel
+          <Button variant="secondary" onClick={handleCancelPressed}>
+            CANCEL
           </Button>
           <Approve amount={amount} />
           <Confirm amount={amount} />

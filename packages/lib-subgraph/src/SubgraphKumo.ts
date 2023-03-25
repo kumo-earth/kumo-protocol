@@ -197,7 +197,7 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
       }
     });
   }
-
+  
   getTotalRedistributed() {
     return totalRedistributed.get(this.client, undefined);
   }
@@ -293,7 +293,8 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
   }
 
   getTroves(
-    asset: string, params: TroveListingParams & { beforeRedistribution: true }
+    asset: string,
+    params: TroveListingParams & { beforeRedistribution: true }
   ): Promise<TroveWithPendingRedistribution[]>;
 
   getTroves(asset: string, params: TroveListingParams): Promise<UserTrove[]>;

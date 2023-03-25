@@ -80,9 +80,9 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
     defaultPool = contracts.defaultPool;
     functionCaller = contracts.functionCaller;
     borrowerOperations = contracts.borrowerOperations;
-    erc20Asset1 = await deploymentHelper.deployERC20Asset();
+    erc20Asset1 = await deploymentHelper.deployERC20Asset("Carbon Token X", "CTX");
     assetAddress1 = erc20Asset1.address;
-    erc20Asset2 = await deploymentHelper.deployERC20Asset();
+    erc20Asset2 = await deploymentHelper.deployERC20Asset("Carbon Token Y", "CTY");
     assetAddress2 = erc20Asset2.address;
 
     await deploymentHelper.connectKUMOContracts(KUMOContracts);

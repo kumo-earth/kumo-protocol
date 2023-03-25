@@ -3,6 +3,7 @@ import type { StabilityView, StabilityEvent } from "./types";
 
 type StabilityViewContextType = {
   view: StabilityView;
+  showModal: boolean;
   dispatchEvent: (event: StabilityEvent) => void;
 };
 

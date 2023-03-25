@@ -103,7 +103,7 @@ contract("KUSDToken", async accounts => {
       await deploymentHelper.connectKUMOContracts(KUMOContracts);
       await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts);
 
-      erc20Asset1 = await deploymentHelper.deployERC20Asset();
+      erc20Asset1 = await deploymentHelper.deployERC20Asset("Carbon Token X", "CTX");
       assetAddress1 = erc20Asset1.address;
 
       await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1);

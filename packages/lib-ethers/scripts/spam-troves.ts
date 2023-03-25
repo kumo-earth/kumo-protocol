@@ -3,7 +3,32 @@ import { TransactionResponse } from "@ethersproject/abstract-provider";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
 
-import { Decimal, KUSD_MINIMUM_DEBT, Trove } from "@kumodao/lib-base";
+import { ethers } from 'ethers';
+
+
+var contractAbiFragment = [
+  {
+    "name": "transfer",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "type": "uint256",
+        "name": "_tokens"
+      }
+    ],
+    "constant": false,
+    "outputs": [],
+    "payable": false
+  }
+];
+
+
+
+import { Decimal, KUSD_MINIMUM_DEBT, Trove, ASSET_TOKENS } from "@kumodao/lib-base";
 import { EthersKumo, EthersKumoWithStore, BlockPolledKumoStore } from "@kumodao/lib-ethers";
 
 import {
@@ -17,14 +42,16 @@ const BatchedWebSocketAugmentedJsonRpcProvider = Batched(WebSocketAugmented(Json
 
 Object.assign(globalThis, { WebSocket });
 
-const numberOfTrovesToCreate = 1000;
+const numberOfTrovesToCreate = 25;
 const collateralRatioStart = Decimal.from(2);
 const collateralRatioStep = Decimal.from(1e-6);
-const funderKey = "0x4d5db4107d237df6a3d58ee5f70ae63d73d7658d4026f2eefd2f204c81682cb7";
+const funderKey = "0x60ddFE7f579aB6867cbE7A2Dc03853dC141d7A4aB6DBEFc0Dae2d2B1Bd4e487F";
+
+const DEBT_MULITIPLIER = 5
 
 let provider: BatchedProvider & WebSocketAugmentedProvider & JsonRpcProvider;
 let funder: Wallet;
-let liquity: EthersKumoWithStore<BlockPolledKumoStore>;
+let kumo: EthersKumoWithStore<BlockPolledKumoStore>;
 
 const waitForSuccess = (tx: TransactionResponse) =>
   tx.wait().then(receipt => {
@@ -34,22 +61,25 @@ const waitForSuccess = (tx: TransactionResponse) =>
     return receipt;
   });
 
-const createTrove = async (nominalCollateralRatio: Decimal) => {
+const createTrove = async (nominalCollateralRatio: Decimal, assetAddress: string) => {
   const randomWallet = Wallet.createRandom().connect(provider);
 
-  const debt = KUSD_MINIMUM_DEBT.mul(2);
+  const debt = KUSD_MINIMUM_DEBT.mul(1);
   const collateral = debt.mul(nominalCollateralRatio);
 
-  await funder
-    .sendTransaction({
-      to: randomWallet.address,
-      value: collateral.hex
-    })
-    .then(waitForSuccess);
+  // debt for base prices 10 and 15 and collateral Ratio 200 and 300
+  const debtForBasePrices = debt.mul(DEBT_MULITIPLIER).mul(nominalCollateralRatio)
 
-  await liquity.populate
+  var mockERC20contract = new ethers.Contract(assetAddress, contractAbiFragment, funder);
+
+  // Send tokens
+  await mockERC20contract.transfer(randomWallet.address, collateral.hex).then(waitForSuccess);
+
+
+  await kumo.populate
     .openTrove(
-      Trove.recreate(new Trove(collateral, debt), liquity.store.state.borrowingRate),
+      Trove.recreate(new Trove(collateral, debtForBasePrices)),
+      assetAddress,
       {},
       { from: randomWallet.address }
     )
@@ -61,9 +91,11 @@ const createTrove = async (nominalCollateralRatio: Decimal) => {
 const runLoop = async () => {
   for (let i = 0; i < numberOfTrovesToCreate; ++i) {
     const collateralRatio = collateralRatioStep.mul(i).add(collateralRatioStart);
-    const nominalCollateralRatio = collateralRatio.div(liquity.store.state.price);
+    const nominalCollateralRatio = collateralRatio
 
-    await createTrove(nominalCollateralRatio);
+    await createTrove(nominalCollateralRatio, ASSET_TOKENS.ctx.assetAddress);
+ 
+    await createTrove(nominalCollateralRatio, ASSET_TOKENS.cty.assetAddress);
 
     if ((i + 1) % 10 == 0) {
       console.log(`Created ${i + 1} Troves.`);
@@ -83,13 +115,13 @@ const main = async () => {
     network
   );
 
-  liquity = await EthersKumo.connect(provider, { useStore: "blockPolled" });
+  kumo = await EthersKumo.connect(provider, { useStore: "blockPolled" });
 
   let stopStore: () => void;
 
   return new Promise<void>(resolve => {
-    liquity.store.onLoaded = resolve;
-    stopStore = liquity.store.start();
+    kumo.store.onLoaded = resolve;
+    stopStore = kumo.store.start();
   })
     .then(runLoop)
     .then(() => {

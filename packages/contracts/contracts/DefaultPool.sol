@@ -8,7 +8,6 @@ import "./Interfaces/IDefaultPool.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
-import "hardhat/console.sol";
 import "./Dependencies/SafetyTransfer.sol";
 
 /*

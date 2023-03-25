@@ -83,7 +83,6 @@ contract("SortedTroves", async accounts => {
   describe("SortedTroves", () => {
     beforeEach(async () => {
       contracts = await deploymentHelper.deployKumoCore();
-
       contracts.kusdToken = await KUSDToken.new(
         contracts.troveManager.address,
         contracts.stabilityPoolFactory.address,
@@ -94,7 +93,7 @@ contract("SortedTroves", async accounts => {
         lpRewardsAddress,
         multisig
       );
-      erc20Asset1 = await deploymentHelper.deployERC20Asset();
+      erc20Asset1 = await deploymentHelper.deployERC20Asset("Carbon Token X", "CTX");
       assetAddress1 = erc20Asset1.address;
 
       priceFeed = contracts.priceFeedTestnet;

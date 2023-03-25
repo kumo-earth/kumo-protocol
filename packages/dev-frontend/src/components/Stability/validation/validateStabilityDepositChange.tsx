@@ -1,8 +1,8 @@
 import {
   Decimal,
-  KumoStoreState,
   StabilityDeposit,
-  StabilityDepositChange
+  StabilityDepositChange,
+  UserTrove
 } from "@kumodao/lib-base";
 
 import { COIN } from "../../../strings";
@@ -10,23 +10,17 @@ import { Amount } from "../../ActionDescription";
 import { ErrorDescription } from "../../ErrorDescription";
 import { StabilityActionDescription } from "../StabilityActionDescription";
 
-export const selectForStabilityDepositChangeValidation = ({
-  trove,
-  kusdBalance,
-  ownFrontend,
-  haveUndercollateralizedTroves
-}: KumoStoreState) => ({
-  trove,
-  kusdBalance,
-  haveOwnFrontend: ownFrontend.status === "registered",
-  haveUndercollateralizedTroves
-});
+type SelectForStabilityDepositChangeValidationType = {
+  trove: UserTrove;
+  kusdBalance: Decimal;
+  haveOwnFrontend: boolean;
+  haveUndercollateralizedTroves: boolean;
+}
 
-type StabilityDepositChangeValidationContext = ReturnType<
-  typeof selectForStabilityDepositChangeValidation
->;
+type StabilityDepositChangeValidationContext = SelectForStabilityDepositChangeValidationType;
 
 export const validateStabilityDepositChange = (
+  collateralType: string,
   originalDeposit: StabilityDeposit,
   editedKUSD: Decimal,
   {
@@ -35,9 +29,9 @@ export const validateStabilityDepositChange = (
     haveUndercollateralizedTroves
   }: StabilityDepositChangeValidationContext
 ): [
-  validChange: StabilityDepositChange<Decimal> | undefined,
-  description: JSX.Element | undefined
-] => {
+    validChange: StabilityDepositChange<Decimal> | undefined,
+    description: JSX.Element | undefined
+  ] => {
   const change = originalDeposit.whatChanged(editedKUSD);
 
   if (haveOwnFrontend) {
@@ -59,7 +53,7 @@ export const validateStabilityDepositChange = (
       <ErrorDescription>
         The amount you're trying to deposit exceeds your balance by{" "}
         <Amount>
-          {change.depositKUSD.sub(kusdBalance).prettify()} {COIN}
+          {change.depositKUSD.sub(kusdBalance).prettify(0)} {COIN}
         </Amount>
         .
       </ErrorDescription>
@@ -71,10 +65,10 @@ export const validateStabilityDepositChange = (
       undefined,
       <ErrorDescription>
         You're not allowed to withdraw KUSD from your Stability Deposit when there are
-        undercollateralized Troves. Please liquidate those Troves or try again later.
+        undercollateralized Vaults. Please liquidate those Vaults or try again later.
       </ErrorDescription>
     ];
   }
 
-  return [change, <StabilityActionDescription originalDeposit={originalDeposit} change={change} />];
+  return [change, <StabilityActionDescription collateralType={collateralType} originalDeposit={originalDeposit} change={change} />];
 };

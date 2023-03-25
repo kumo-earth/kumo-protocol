@@ -50,7 +50,6 @@ contract("KUMOStaking revenue share tests", async accounts => {
 
   beforeEach(async () => {
     contracts = await deploymentHelper.deployKumoCore();
-
     contracts = await deploymentHelper.deployKUSDTokenTester(contracts);
     const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(
       bountyAddress,
@@ -62,7 +61,7 @@ contract("KUMOStaking revenue share tests", async accounts => {
     await deploymentHelper.connectCoreContracts(contracts, KUMOContracts);
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts);
 
-    erc20Asset1 = await deploymentHelper.deployERC20Asset();
+    erc20Asset1 = await deploymentHelper.deployERC20Asset("Carbon Token X", "CTX");
     assetAddress1 = erc20Asset1.address;
 
     await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1);

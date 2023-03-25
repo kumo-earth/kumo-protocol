@@ -84,6 +84,9 @@ export type _CollateralWithdrawal<T> = {
     withdrawCollateral: T;
 };
 
+// @public (undocumented)
+export const CORE_TEAM_ACCOUNTS: string[];
+
 // @public
 export const CRITICAL_COLLATERAL_RATIO: Decimal;
 
@@ -283,33 +286,22 @@ export abstract class KumoStore<T = unknown> {
 
 // @public
 export interface KumoStoreBaseState {
-    accountBalance: Decimal;
-    collateralSurplusBalance: Decimal;
-    // @internal (undocumented)
-    _feesInNormalMode: Fees;
     frontend: FrontendStatus;
     kumoBalance: Decimal;
     kumoStake: KUMOStake;
+    kumoToken: string;
     kusdBalance: Decimal;
-    kusdInStabilityPool: Decimal;
+    kusdToken: string;
     liquidityMiningKUMOReward: Decimal;
     liquidityMiningStake: Decimal;
-    numberOfTroves: number;
     ownFrontend: FrontendStatus;
-    price: Decimal;
     remainingLiquidityMiningKUMOReward: Decimal;
     remainingStabilityPoolKUMOReward: Decimal;
-    // @internal (undocumented)
-    _riskiestTroveBeforeRedistribution: TroveWithPendingRedistribution;
-    stabilityDeposit: StabilityDeposit;
-    total: Trove;
-    totalRedistributed: Trove;
     totalStakedKUMO: Decimal;
     totalStakedUniTokens: Decimal;
-    troveBeforeRedistribution: TroveWithPendingRedistribution;
     uniTokenAllowance: Decimal;
     uniTokenBalance: Decimal;
-    vaults: any[];
+    vaults: Vault[];
 }
 
 // @public
@@ -329,7 +321,7 @@ export interface KumoStoreListenerParams<T = unknown> {
 }
 
 // @public
-export type KumoStoreState<T = unknown> = KumoStoreBaseState & KumoStoreDerivedState & T;
+export type KumoStoreState<T = unknown> = KumoStoreBaseState & T;
 
 // @public
 export const KUSD_LIQUIDATION_RESERVE: Decimal;
@@ -828,6 +820,55 @@ export class UserTrove extends Trove {
 
 // @public
 export type UserTroveStatus = "nonExistent" | "open" | "closedByOwner" | "closedByLiquidation" | "closedByRedemption";
+
+// @public
+export class Vault {
+    constructor();
+    // (undocumented)
+    readonly accountBalance: Decimal;
+    // (undocumented)
+    readonly asset: string;
+    // (undocumented)
+    readonly assetAddress: string;
+    // (undocumented)
+    readonly assetName: string;
+    // (undocumented)
+    readonly borrowingRate: Decimal;
+    // (undocumented)
+    readonly collateralSurplusBalance: Decimal;
+    // (undocumented)
+    readonly fees: Fees;
+    // (undocumented)
+    readonly _feesInNormalMode: Fees;
+    // (undocumented)
+    readonly haveUndercollateralizedTroves: boolean;
+    // (undocumented)
+    readonly kumoStake: KUMOStake;
+    // (undocumented)
+    readonly kusdInStabilityPool: Decimal;
+    // (undocumented)
+    readonly kusdMintedCap: Decimal;
+    // (undocumented)
+    readonly minNetDebt: Decimal;
+    // (undocumented)
+    readonly numberOfTroves: number;
+    // (undocumented)
+    readonly price: Decimal;
+    // (undocumented)
+    readonly redemptionRate: Decimal;
+    // (undocumented)
+    readonly _riskiestTroveBeforeRedistribution: TroveWithPendingRedistribution;
+    // (undocumented)
+    readonly stabilityDeposit: StabilityDeposit;
+    // (undocumented)
+    readonly total: Trove;
+    // (undocumented)
+    readonly totalRedistributed: Trove;
+    // (undocumented)
+    readonly trove: UserTrove;
+    // (undocumented)
+    readonly troveBeforeRedistribution: TroveWithPendingRedistribution;
+}
 
 
 // (No @packageDocumentation comment for this package)

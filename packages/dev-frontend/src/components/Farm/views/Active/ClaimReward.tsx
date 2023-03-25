@@ -28,7 +28,7 @@ export const ClaimReward: React.FC = () => {
       showFailure="asTooltip"
       tooltipPlacement="bottom"
     >
-      <Button>Claim reward</Button>
+      <Button>CLAIM REWARD</Button>
     </Transaction>
   );
 };

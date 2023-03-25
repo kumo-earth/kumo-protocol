@@ -6,7 +6,6 @@ import "./Interfaces/IKUSDToken.sol";
 import "./Interfaces/IStabilityPoolFactory.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/CheckContract.sol";
-import "hardhat/console.sol";
 
 /*
  *

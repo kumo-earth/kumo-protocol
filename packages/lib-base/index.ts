@@ -11,3 +11,4 @@ export * from "./src/SendableKumo";
 export * from "./src/PopulatableKumo";
 export * from "./src/KumoStore";
 export * from "./src/_CachedReadableKumo";
+export * from "./src/Vault";

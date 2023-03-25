@@ -39,6 +39,6 @@ export const FrontendRegistrationSuccess: React.FC<FrontendRegistrationSuccessPr
       <Paragraph sx={{ fontSize: 2 }}>Your frontend is now ready to receive KUMO rewards.</Paragraph>
     </Box>
 
-    <Button onClick={onDismiss}>Go to Dashboard</Button>
+    <Button onClick={onDismiss}>GO to DASHBOARD</Button>
   </>
 );

@@ -6,10 +6,10 @@ type SwitchNetworkEventTransitions = Record<SwitchNetworkView, Partial<Record<Sw
 
 const transitions: SwitchNetworkEventTransitions = {
   NONE: {
-    CLOSE_MODAL_PRESSED: "NONE",
+    CLOSE_SWITCH_MODAL_PRESSED: "NONE",
   },
   OPEN: {
-    OPEN_MODAL_PRESSED: "OPEN",
+    OPEN_SWITCH_MODAL_PRESSED: "OPEN",
   }
 };
 
@@ -23,15 +23,17 @@ export const SwitchNetworkViewProvider: React.FC = props => {
   const { children } = props;
   
   const [view, setView] = useState<SwitchNetworkView>("NONE");
+  const [showSwitchModal, setShowSwitchModal] = useState(false)
   const viewRef = useRef<SwitchNetworkView>(view);
   const dispatchEvent = useCallback((event: SwitchNetworkEvent) => {
-    if(event === 'OPEN_MODAL_PRESSED'){
+    if(event === 'OPEN_SWITCH_MODAL_PRESSED'){
         viewRef.current = "OPEN";
-    } else if(event === "CLOSE_MODAL_PRESSED"){
+        setShowSwitchModal(true)
+    } else if(event === "CLOSE_SWITCH_MODAL_PRESSED"){
         viewRef.current = "NONE";
+        setShowSwitchModal(false)
     }
     const nextView = transition(viewRef.current, event);
-    console.log("dispatchEvent", nextView)
     setView(nextView);
   }, []);
 
@@ -42,6 +44,7 @@ export const SwitchNetworkViewProvider: React.FC = props => {
 
   const provider = {
     view,
+    showSwitchModal,
     dispatchEvent
   };
   return <SwitchNetworkViewContext.Provider value={provider}>{children}</SwitchNetworkViewContext.Provider>;

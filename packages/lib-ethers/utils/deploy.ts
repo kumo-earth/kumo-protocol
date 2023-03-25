@@ -5,7 +5,7 @@ import { Wallet } from "@ethersproject/wallet";
 import { Decimal } from "@kumodao/lib-base";
 
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
-
+const networkHelpers = require("@nomicfoundation/hardhat-network-helpers");
 
 import {
   _KumoContractAddresses,
@@ -121,8 +121,8 @@ const deployContracts = async (
     unipool: await deployContract(deployer, getContractFactory, "Unipool", { ...overrides }),
 
 
-    mockAsset1: await deployContract(deployer, getContractFactory, "ERC20Test", { ...overrides }),
-    mockAsset2: await deployContract(deployer, getContractFactory, "ERC20Test", { ...overrides })
+    mockAsset1: await deployContract(deployer, getContractFactory, "ERC20Test", "Carbon Token X", "CTX",  { ...overrides }),
+    mockAsset2: await deployContract(deployer, getContractFactory, "ERC20Test", "Carbon Token Y", "CTY", { ...overrides })
 
 
 
@@ -415,6 +415,19 @@ const addMockAssetsToSystem = async (
 }
 
 
+// // Mint token to each acccount / un-comment and only use for prototype server
+// const mintMockAssets = async (signers: SignerWithAddress[], { mockAsset1, mockAsset2 }: _KumoContracts) => {
+//   for (let i = 0; i < signers.length; ++i) {
+//     if(i < 3) {
+//       await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000000000000000000000"));
+//       await mockAsset2.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000000000000000000000"));
+//     } else {
+//       await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("50000000000000000000000"));
+//       await mockAsset2.mint((await signers[i].getAddress()), BigNumber.from("50000000000000000000000"));
+//     }
+//   }
+// };
+
 // Mint token to each acccount
 const mintMockAssets = async (signers: SignerWithAddress[], { mockAsset1, mockAsset2 }: _KumoContracts) => {
   for (let i = 0; i < signers.length; ++i) {
@@ -487,6 +500,9 @@ export const deployAndSetupContracts = async (
   const bootstrapPeriod = await contracts.kumoParameters.REDEMPTION_BLOCK_DAY();
   const totalStabilityPoolKUMOReward = await contracts.communityIssuance.KUMOSupplyCap();
   const liquidityMiningKUMORewardRate = await contracts.unipool.rewardRate();
+
+  // log("Fast forward 15 days...")
+  // await networkHelpers.time.increase(60 * 60 * 24 * 15);
 
   return {
     ...deployment,

@@ -325,7 +325,7 @@ const collateralChangeFrom = <T>({
   if (depositCollateral !== undefined && withdrawCollateral !== undefined) {
     throw new Error(
       "TroveAdjustmentParams: 'depositCollateral' and 'withdrawCollateral' " +
-      "can't be present at the same time"
+        "can't be present at the same time"
     );
   }
 
@@ -565,12 +565,10 @@ export class Trove {
     if (this.collateral.eq(that.collateral) && this.debt.eq(that.debt)) {
       return undefined;
     }
-
     if (this.isEmpty) {
       if (that.debt.lt(KUSD_LIQUIDATION_RESERVE)) {
         return invalidTroveCreation(that, "missingLiquidationReserve");
       }
-
       return troveCreation({
         depositCollateral: that.collateral,
         borrowKUSD: unapplyFee(borrowingRate, that.netDebt)
@@ -588,8 +586,8 @@ export class Trove {
     return this.collateral.eq(that.collateral)
       ? troveAdjustment<Decimal>(this._debtChange(that, borrowingRate), that.debt.zero && "debt")
       : this.debt.eq(that.debt)
-        ? troveAdjustment<Decimal>(this._collateralChange(that), that.collateral.zero && "collateral")
-        : troveAdjustment<Decimal>(
+      ? troveAdjustment<Decimal>(this._collateralChange(that), that.collateral.zero && "collateral")
+      : troveAdjustment<Decimal>(
           {
             ...this._debtChange(that, borrowingRate),
             ...this._collateralChange(that)
@@ -654,10 +652,10 @@ export class Trove {
         return setToZero === "collateral"
           ? this.setCollateral(Decimal.ZERO).addDebt(debtIncrease).subtractDebt(debtDecrease)
           : setToZero === "debt"
-            ? this.setDebt(Decimal.ZERO)
+          ? this.setDebt(Decimal.ZERO)
               .addCollateral(collateralIncrease)
               .subtractCollateral(collateralDecrease)
-            : this.add(new Trove(collateralIncrease, debtIncrease)).subtract(
+          : this.add(new Trove(collateralIncrease, debtIncrease)).subtract(
               new Trove(collateralDecrease, debtDecrease)
             );
       }

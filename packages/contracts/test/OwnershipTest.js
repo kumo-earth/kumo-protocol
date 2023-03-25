@@ -35,7 +35,7 @@ contract("All Kumo functions with onlyOwner modifier", async accounts => {
       multisig
     );
 
-    erc20Asset = await deploymentHelper.deployERC20Asset();
+    erc20Asset = await deploymentHelper.deployERC20Asset("Carbon Token X", "CTX");
     assetAddress1 = erc20Asset.address;
 
     await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1);

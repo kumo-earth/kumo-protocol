@@ -1,16 +1,23 @@
 import React, { useState, useRef } from "react";
 import { Container, Flex, Button } from "theme-ui";
 
-import { KumoStoreState } from "@kumodao/lib-base";
+import { KumoStoreState, Vault } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 
 import { Icon } from "./Icon";
 import { SystemStats } from "./SystemStats";
+import { useParams } from "react-router-dom";
 
-const select = ({ total, price }: KumoStoreState) => ({ total, price });
+import appBackground from "../asset/images/appBackground.svg";
+
+const select = ({ vaults }: KumoStoreState) => ({ vaults });
 
 export const SystemStatsPopup: React.FC = () => {
-  const { price, total } = useKumoSelector(select);
+  const { vaults } = useKumoSelector(select);
+
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
+  const { price, total } = vault;
 
   const [systemStatsOpen, setSystemStatsOpen] = useState(false);
   const systemStatsOverlayRef = useRef<HTMLDivElement>(null);
@@ -50,15 +57,11 @@ export const SystemStatsPopup: React.FC = () => {
 
       {systemStatsOpen && (
         <Container
-          variant="infoOverlay"
+          variant="systemStatsOverlay"
           ref={systemStatsOverlayRef}
-          onClick={e => {
-            if (e.target === systemStatsOverlayRef.current) {
-              setSystemStatsOpen(false);
-            }
-          }}
+          sx={{ backgroundImage: `url(${appBackground})` }}
         >
-          <SystemStats variant="infoPopup" showBalances />
+          <SystemStats variant="infoPopup" showBalances  onClose={() => setSystemStatsOpen(false)}/>
         </Container>
       )}
     </>

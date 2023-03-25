@@ -84,7 +84,6 @@ contract("TroveManager - in Recovery Mode", async accounts => {
 
   beforeEach(async () => {
     contracts = await deploymentHelper.deployKumoCore();
-
     contracts.kusdToken = await KUSDToken.new(
       contracts.troveManager.address,
       contracts.stabilityPoolFactory.address,
@@ -107,9 +106,9 @@ contract("TroveManager - in Recovery Mode", async accounts => {
     borrowerOperations = contracts.borrowerOperations;
     collSurplusPool = contracts.collSurplusPool;
 
-    erc20Asset1 = await deploymentHelper.deployERC20Asset();
+    erc20Asset1 = await deploymentHelper.deployERC20Asset("Carbon Token X", "CTX");
     assetAddress1 = erc20Asset1.address;
-    erc20Asset2 = await deploymentHelper.deployERC20Asset();
+    erc20Asset2 = await deploymentHelper.deployERC20Asset("Carbon Token Y", "CTY");
     assetAddress2 = erc20Asset2.address;
 
     await deploymentHelper.connectKUMOContracts(KUMOContracts);

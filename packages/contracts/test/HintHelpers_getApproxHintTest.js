@@ -85,7 +85,6 @@ contract("HintHelpers", async accounts => {
 
   before(async () => {
     contracts = await deploymentHelper.deployKumoCore();
-
     contracts.kusdToken = await KUSDToken.new(
       contracts.troveManager.address,
       contracts.stabilityPoolFactory.address,
@@ -97,7 +96,7 @@ contract("HintHelpers", async accounts => {
       multisig
     );
 
-    erc20Asset1 = await deploymentHelper.deployERC20Asset();
+    erc20Asset1 = await deploymentHelper.deployERC20Asset("Carbon Token X", "CTX");
     assetAddress1 = erc20Asset1.address;
 
     await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1);
@@ -160,7 +159,7 @@ contract("HintHelpers", async accounts => {
 
     let hintAddress;
 
-      // const hintAddress_250 = await functionCaller.troveManager_getApproxHint(CR_250, sqrtLength * 10)
+    // const hintAddress_250 = await functionCaller.troveManager_getApproxHint(CR_250, sqrtLength * 10)
     ({ hintAddress, latestRandomSeed } = await hintHelpers.getApproxHint(
       assetAddress1,
       CR_250,
@@ -265,7 +264,7 @@ contract("HintHelpers", async accounts => {
 
     let hintAddress;
 
-      // const hintAddress_Max = await functionCaller.troveManager_getApproxHint(CR_Max, sqrtLength * 10)
+    // const hintAddress_Max = await functionCaller.troveManager_getApproxHint(CR_Max, sqrtLength * 10)
     ({ hintAddress, latestRandomSeed } = await hintHelpers.getApproxHint(
       assetAddress1,
       CR_Max,
@@ -294,7 +293,7 @@ contract("HintHelpers", async accounts => {
 
     let hintAddress;
 
-      //  const hintAddress_Min = await functionCaller.troveManager_getApproxHint(CR_Min, sqrtLength * 10)
+    //  const hintAddress_Min = await functionCaller.troveManager_getApproxHint(CR_Min, sqrtLength * 10)
     ({ hintAddress, latestRandomSeed } = await hintHelpers.getApproxHint(
       assetAddress1,
       CR_Min,

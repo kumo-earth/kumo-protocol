@@ -17,6 +17,7 @@
 |  [Trove](./lib-base.trove.md) | A combination of collateral and debt. |
 |  [TroveWithPendingRedistribution](./lib-base.trovewithpendingredistribution.md) | A Trove in its state after the last direct modification. |
 |  [UserTrove](./lib-base.usertrove.md) | A Trove that is associated with a single owner. |
+|  [Vault](./lib-base.vault.md) | A Vault that is associated with each asset. |
 
 ## Interfaces
 
@@ -47,6 +48,7 @@
 |  Variable | Description |
 |  --- | --- |
 |  [ASSET\_TOKENS](./lib-base.asset_tokens.md) | Assets Types |
+|  [CORE\_TEAM\_ACCOUNTS](./lib-base.core_team_accounts.md) |  |
 |  [CRITICAL\_COLLATERAL\_RATIO](./lib-base.critical_collateral_ratio.md) | Total collateral ratio below which recovery mode is triggered. |
 |  [KUSD\_LIQUIDATION\_RESERVE](./lib-base.kusd_liquidation_reserve.md) | Amount of KUSD that's reserved for compensating the liquidator of a Trove. |
 |  [KUSD\_MINIMUM\_DEBT](./lib-base.kusd_minimum_debt.md) | A Trove must always have at least this much debt. |

@@ -31,21 +31,21 @@ export const ReadOnlyStake: React.FC = () => {
         <DisabledEditableRow
           label="Stake"
           inputId="stake-kumo"
-          amount={kumoStake.stakedKUMO.prettify()}
+          amount={kumoStake.stakedKUMO.prettify(0)}
           unit={GT}
         />
 
         <StaticRow
           label="Pool share"
           inputId="stake-share"
-          amount={poolShare.prettify(4)}
+          amount={poolShare.prettify(0)}
           unit="%"
         />
 
         <StaticRow
           label="Redemption gain"
           inputId="stake-gain-eth"
-          amount={kumoStake.collateralGain.prettify(4)}
+          amount={kumoStake.collateralGain.prettify(0)}
           color={kumoStake.collateralGain.nonZero && "success"}
           unit="ETH"
         />
@@ -53,7 +53,7 @@ export const ReadOnlyStake: React.FC = () => {
         <StaticRow
           label="Issuance gain"
           inputId="stake-gain-kusd"
-          amount={kumoStake.kusdGain.prettify()}
+          amount={kumoStake.kusdGain.prettify(0)}
           color={kumoStake.kusdGain.nonZero && "success"}
           unit={COIN}
         />
@@ -61,9 +61,8 @@ export const ReadOnlyStake: React.FC = () => {
         <Flex variant="layout.actions">
           <Button variant="outline" onClick={() => dispatch({ type: "startAdjusting" })}>
             <Icon name="pen" size="sm" />
-            &nbsp;Adjust
+            &nbsp;ADJUST
           </Button>
-
           <StakingGainsAction />
         </Flex>
       </Box>

@@ -71,7 +71,7 @@ contract("StabilityPool - Withdrawal of stability deposit - Reward calculations"
 
       contracts = await deploymentHelper.deployKUSDToken(contracts);
 
-      erc20Asset1 = await deploymentHelper.deployERC20Asset();
+      erc20Asset1 = await deploymentHelper.deployERC20Asset("Carbon Token X", "CTX");
       assetAddress1 = erc20Asset1.address;
 
       await deploymentHelper.addNewAssetToSystem(contracts, KUMOContracts, assetAddress1);
