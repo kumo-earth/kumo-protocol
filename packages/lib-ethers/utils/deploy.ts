@@ -4,8 +4,7 @@ import { Wallet } from "@ethersproject/wallet";
 
 import { Decimal } from "@kumodao/lib-base";
 
-import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
-const networkHelpers = require("@nomicfoundation/hardhat-network-helpers");
+import { BigNumber } from "@ethersproject/bignumber";
 
 import {
   _KumoContractAddresses,
