@@ -24,6 +24,7 @@ import StabilityPool from "../../contracts/artifacts/contracts/StabilityPool.sol
 import IStabilityPool from "../../contracts/artifacts/contracts/Interfaces/IStabilityPool.sol/IStabilityPool.json";
 import StabilityPoolFactory from "../../contracts/artifacts/contracts/StabilityPoolFactory.sol/StabilityPoolFactory.json";
 import TroveManager from "../../contracts/artifacts/hardhat-diamond-abi/HardhatDiamondABI.sol/TroveManager.json";
+import TroveManagerDiamond from "../../contracts/artifacts/contracts/TroveManagerDiamond.sol/TroveManagerDiamond.json";
 import Unipool from "../../contracts/artifacts/contracts/LPRewards/Unipool.sol/Unipool.json";
 import KumoParameters from "../../contracts/artifacts/contracts/KumoParameters.sol/KumoParameters.json";
 import ERC20Test from "../../contracts/artifacts/contracts/TestContracts/ERC20Test.sol/ERC20Test.json";
@@ -169,6 +170,7 @@ const contractArtifacts = [
   StabilityPool,
   StabilityPoolFactory,
   TroveManager,
+  TroveManagerDiamond,
   Unipool,
   KumoParameters,
   ERC20Test

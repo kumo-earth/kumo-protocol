@@ -19,6 +19,7 @@ import { deployAndSetupContracts, deployTellorCaller, setSilent } from "./utils/
 import { _connectToContracts, _KumoDeploymentJSON, _priceFeedIsTestnet } from "./src/contracts";
 
 import accounts from "./accounts.json";
+import { HardhatEthersHelpers } from "@nomiclabs/hardhat-ethers/types";
 
 dotenv.config();
 
@@ -153,6 +154,11 @@ const getContractFactory: (
     }
     : env => env.ethers.getContractFactory;
 
+const ethers = (
+  env: HardhatRuntimeEnvironment
+): HardhatEthersHelpers => {
+  return env.ethers;
+}
 
 extendEnvironment(env => {
   env.deployKumo = async (
@@ -163,7 +169,7 @@ extendEnvironment(env => {
   ) => {
     const deployment = await deployAndSetupContracts(
       deployer,
-      getContractFactory(env),
+      ethers(env),
       !useRealPriceFeed,
       env.network.name === "dev",
       await env.ethers.getSigners(),

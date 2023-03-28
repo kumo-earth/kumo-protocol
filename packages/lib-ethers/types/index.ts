@@ -985,6 +985,18 @@ export interface TroveManager
   extractEvents(logs: Log[], name: "TroveUpdated"): _TypedLogDescription<{ _asset: string; _borrower: string; _debt: BigNumber; _coll: BigNumber; _stake: BigNumber; _operation: number }>[];
 }
 
+interface TroveManagerDiamondCalls {
+}
+
+interface TroveManagerDiamondTransactions {
+}
+
+export interface TroveManagerDiamond
+  extends _TypedKumoContract<TroveManagerDiamondCalls, TroveManagerDiamondTransactions> {
+  readonly filters: {
+  };
+}
+
 interface UnipoolCalls {
   NAME(_overrides?: CallOverrides): Promise<string>;
   balanceOf(account: string, _overrides?: CallOverrides): Promise<BigNumber>;
