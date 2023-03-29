@@ -639,7 +639,8 @@ const theme: Theme = {
       display: ["none", "flex"],
       height: 'max-content',
       px: 5,
-      pb: 4
+      pb: 4,
+      flexWrap: "wrap"
       // height: "170px"
     },
 
