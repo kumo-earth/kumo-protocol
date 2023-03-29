@@ -7,10 +7,12 @@ export const StabilityPoolStaking: React.FC = () => {
     <Grid sx={{
       width: "100%",
       display: "grid",
-      gridGap: 5,
-      gridTemplateColumns: `repeat(auto-fill, minmax(400px, 1fr))`,
-      mt: 5,
-      px: 6
+      gridGap: 3,
+      gridTemplateColumns: `repeat(auto-fit, minmax(250px, 1fr))`,
+      // mt: 5,
+      mt: 6,
+      px: 5,
+      pb: 4
     }}>
       <StabilityPoolStakingCard
         stakingType={"stability"}

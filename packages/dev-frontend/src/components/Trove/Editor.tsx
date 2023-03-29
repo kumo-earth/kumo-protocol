@@ -57,8 +57,8 @@ export const TokenUsd: React.FC<TokenUsdProps> = ({
         position: "absolute",
         pt: "12px",
         right: right,
-        top: "25px",
-        fontSize: 2,
+        top: ["40px", "30px"],
+        fontSize: ["10px", 2],
         fontWeight: "bold",
         border: 1,
         borderColor: "transparent"

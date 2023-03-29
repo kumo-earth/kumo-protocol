@@ -31,7 +31,7 @@ export const StakingCardV1: React.FC<StakingCardV1Props> = ({
             LIQUIDATION BONUS
           </Text>
         </Flex>
-        <Flex sx={{ justifyContent: "space-between", mt: 1 }}>
+        <Flex sx={{ justifyContent: "space-between", mt: 1, flexWrap: 'wrap' }}>
           <Text as="p" variant="xlarge">
             8%
           </Text>
@@ -39,7 +39,7 @@ export const StakingCardV1: React.FC<StakingCardV1Props> = ({
             10%
           </Text>
         </Flex>
-        <Flex sx={{ justifyContent: "space-between", mt: 4 }}>
+        <Flex sx={{ justifyContent: "space-between", mt: 4, flexWrap: 'wrap' }}>
           <Text as="p" variant="normalBold">
             TOTAL DEPOSITED KUSD
           </Text>
@@ -47,7 +47,7 @@ export const StakingCardV1: React.FC<StakingCardV1Props> = ({
             {totalKUSD.prettify(0)}
           </Text>
         </Flex>
-        <Flex sx={{ justifyContent: "space-between", mt: 2 }}>
+        <Flex sx={{ justifyContent: "space-between", mt: 2, flexWrap: 'wrap' }}>
           <Text as="p" variant="normalBold">
             YOUR DEPOSITED KUSD
           </Text>

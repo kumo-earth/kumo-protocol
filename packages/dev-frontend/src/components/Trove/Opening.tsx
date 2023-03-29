@@ -112,7 +112,7 @@ export const Opening: React.FC = () => {
   }, [collateral, borrowAmount]);
 
   return (
-    <Card variant="base">
+    <Card variant="base" sx={{ minWidth: '270px' }}>
       <Heading as="h2">
         {collateralType.toUpperCase()} Vault
         {isDirty && !isTransactionPending && (

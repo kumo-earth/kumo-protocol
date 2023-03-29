@@ -8,7 +8,7 @@ export const Banner: React.FC<{ bannerHeading : string,  visibility: number }> =
     <Alert
       sx={{
         position: "absolute",
-        width: "35%",
+        width: ["55%", "35%"],
         top: 5,
         left: 0,
         right: 0,
@@ -16,6 +16,7 @@ export const Banner: React.FC<{ bannerHeading : string,  visibility: number }> =
         p: 3,
         backgroundColor: "#f0cfdc",
         display: "flex",
+        flexWrap: 'wrap',
         flexDirection: "column",
         borderRadius: 12,
         alignItems: "flex-start",
