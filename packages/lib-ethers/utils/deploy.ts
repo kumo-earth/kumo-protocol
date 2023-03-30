@@ -279,6 +279,20 @@ const connectContracts = async (
       }),
 
     nonce =>
+      kumoParameters.setAddresses(activePool.address, defaultPool.address, gasPool.address,
+      priceFeed.address,
+      borrowerOperations.address,
+      collSurplusPool.address,
+      kusdToken.address,
+      stabilityPoolFactory.address,
+      sortedTroves.address,
+      kumoToken.address,
+      kumoStaking.address, {
+        ...overrides,
+        nonce
+      }),
+
+    nonce =>
       troveManager.setAddresses(
         kumoParameters.address,
         { ...overrides, nonce }
@@ -367,20 +381,6 @@ const connectContracts = async (
 
     nonce =>
       unipool.setParams(kumoToken.address, uniToken.address, 2 * 30 * 24 * 60 * 60, {
-        ...overrides,
-        nonce
-      }),
-
-    nonce =>
-      kumoParameters.setAddresses(activePool.address, defaultPool.address, gasPool.address,
-      priceFeed.address,
-      borrowerOperations.address,
-      collSurplusPool.address,
-      kusdToken.address,
-      stabilityPoolFactory.address,
-      sortedTroves.address,
-      kumoToken.address,
-      kumoStaking.address, {
         ...overrides,
         nonce
       })

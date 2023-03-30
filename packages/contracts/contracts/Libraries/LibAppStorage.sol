@@ -117,7 +117,7 @@ contract Modifiers {
 
     function _requireCallerIsBorrowerOperations() internal view {
         require(
-            msg.sender == address(s.borrowerOperationsAddress),
+            msg.sender == s.borrowerOperationsAddress,
             "TroveManager: Caller is not the BorrowerOperations contract"
         );
     }
