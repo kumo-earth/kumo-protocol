@@ -393,8 +393,12 @@ const theme: Theme = {
       border: "none",
       display: "flex",
       flexDirection: "column",
-
       borderRadius: "50px",
+      "> h2": {
+        variant: "cards.base.> h2",
+        minHeight: "60px",
+        height: "max-content"
+      },
       ":hover": {
         ...cardHoverEffects
       }

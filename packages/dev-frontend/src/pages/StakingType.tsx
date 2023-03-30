@@ -50,10 +50,10 @@ export const StakingType: React.FC = () => {
   }, []);
 
   const style = {
-    top: "45%",
+    top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: [350, 470],
+    width: ["80%", 470],
     // bgcolor: "background.paper",
     bgcolor: "white",
     border: "none",
@@ -62,7 +62,12 @@ export const StakingType: React.FC = () => {
   };
   return (
     <Grid
-      sx={{ p: 6, gridGap: 4, gridTemplateColumns: ["auto-fill", "1fr 1fr"] }}
+      sx={{
+        gridGap: 3,
+        gridTemplateColumns: `repeat(auto-fit, minmax(250px, 1fr))`,
+        mt: 5,
+        px: 5
+      }}
     >
       {vaults.map(vault => {
         return (
