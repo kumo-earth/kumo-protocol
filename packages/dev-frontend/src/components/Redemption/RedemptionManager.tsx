@@ -99,13 +99,13 @@ export const RedemptionManager: React.FC = () => {
       ];
 
   return (
-    <Card variant="collateralCard" sx={{ width: '70%' }}>
+    <Card variant="collateralCard" sx={{ width: '70%', minWidth: "270px" }}>
       <Heading
         as="h2"
         sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
       >
         Redeem
-        <Box sx={{ display: "flex", alignItems: "center", mr: 7 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mr: 2 }}>
           {dirty && !changePending && (
             <Button
               variant="titleIcon"
@@ -115,7 +115,7 @@ export const RedemptionManager: React.FC = () => {
               <Icon name="history" size="xs" />
             </Button>
           )}
-          <Text sx={{ fontSize: "14px" }}>Vault: </Text>
+          <Text sx={{ fontSize: ["10px", "14px"] }}>Vault: </Text>
           <Select value={assetType} onChange={event => setAssetType(event.target.value)}>
             <option value={"ctx"}>CTX</option>
             <option value={"cty"}>CTY</option>

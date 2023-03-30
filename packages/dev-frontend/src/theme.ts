@@ -456,11 +456,11 @@ const theme: Theme = {
       p: 1,
       border: "none",
       borderRadius: '72px',
-      minWidth: 90,
+      minWidth: [60, 90],
       maxWidth: "max-content",
       bg: "primary",
       borderColor: "primary",
-      fontSize: 2,
+      fontSize: [0, 2],
       color: 'textWhite',
       fontFamily: 'Quicksand',
       ":focus": {
