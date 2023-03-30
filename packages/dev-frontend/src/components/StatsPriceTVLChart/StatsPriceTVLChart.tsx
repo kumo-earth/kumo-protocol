@@ -86,7 +86,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 export const StatsPriceTVLChart: React.FC = () => {
   return (
-    <Card variant="base" sx={{ mt: 8 }}>
+    <Card variant="base" sx={{ mt: 8, minWidth: "250px" }}>
       <Box sx={{ px: 4, py: 3 }}>
         <Flex sx={{ alignItems: "center" }}>
           <Text sx={{ fontWeight: "bold" }}>Show Data from Last: </Text>
@@ -97,7 +97,7 @@ export const StatsPriceTVLChart: React.FC = () => {
               p: 1,
               border: "none",
               borderRadius: 6,
-              minWidth: 90,
+              minWidth: [70, 90],
               maxWidth: "max-content",
               ":focus-visible": { outline: "none" }
             }}

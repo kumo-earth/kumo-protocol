@@ -31,7 +31,7 @@ export const StatsTVCard: React.FC<StatsTVCardProps> = ({ title,totalValueLocked
           <Heading as="h2">$ {totalValueLocked.prettify(0)}</Heading>
         </Flex>
         {data?.map(dtVal => (
-          <Flex sx={{ justifyContent: "space-between", mx: 2, mb: 2}} key={dtVal?.name}>
+          <Flex sx={{ justifyContent: "space-between", mx: 2, mb: 2, flexWrap: 'wrap'}} key={dtVal?.name}>
             <Heading as="h4">{dtVal?.name}</Heading>
             <Heading as="h4">{dtVal?.value}</Heading>
           </Flex>

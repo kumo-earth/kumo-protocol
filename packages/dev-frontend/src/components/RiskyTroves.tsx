@@ -221,8 +221,8 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
   }, [copied]);
 
   return (
-    <Card sx={{ width: "100%", height: "100%", bg: "#f0cfdc", borderRadius: 20 }}>
-      <Heading sx={{ display: "flex", justifyContent: "space-between" }}>
+    <Card sx={{ width: "100%", minWidth: "300px", height: "100%", bg: "#f0cfdc", borderRadius: 20 }}>
+      <Heading sx={{ display: "flex", height: ['max-content !important', "60px"],  justifyContent: "space-between", flexDirection: [ 'column', "row" ] }}>
         <Flex sx={{ alignItems: "center" }}>
           {numberOfTroves !== 0 && (
             <>
@@ -259,10 +259,9 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
           {
             ((account && troves) && (CORE_TEAM_ACCOUNTS.includes(account) && troves?.length > 0)) ? <PriceManager price={price} assetAddress={assetAddress} /> : null
           }
-
         </Box>
-        <Box sx={{ display: "flex", mr: 7 }}>
-          <Text sx={{ fontSize: 4 }}>Riskiest Vaults:</Text>
+        <Box sx={{ display: "flex", mr: 2, alignItems: 'center' }}>
+          <Text sx={{ fontSize: ["10px", "14px"] }}>Riskiest Vaults:</Text>
           <Select value={assetType} onChange={event => setAssetType(event.target.value)}>
             <option value={"ctx"}>CTX</option>
             <option value={"cty"}>CTY</option>

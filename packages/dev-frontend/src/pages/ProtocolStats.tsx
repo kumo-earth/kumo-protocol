@@ -11,7 +11,7 @@ export const ProtocolStats: React.FC = () => {
 
   return (
     <Flex sx={{ flexDirection: "column", my: 6 }}>
-      <Grid sx={{ gridGap: 4, gridTemplateColumns: ["auto-fill", "1fr 1fr"] }}>
+      <Grid sx={{ gridGap: [2, 4],  gridTemplateColumns: `repeat(auto-fit, minmax(250px, 1fr))`, }}>
         <StatsTVCard
           title="Total Value Locked"
           totalValueLocked={totalCollDebt?.totalColl}
@@ -31,7 +31,7 @@ export const ProtocolStats: React.FC = () => {
           key={"2"}
         />
       </Grid>
-      <Grid sx={{ mt: 8, gridGap: 4, gridTemplateColumns: ["auto-fill", "1fr 1fr"] }}>
+      <Grid sx={{ mt: 8, gridGap: 4, gridTemplateColumns: `repeat(auto-fit, minmax(250px, 1fr))`, }}>
         <StatsPieChart
           title="KUSD Collateralization"
           data={[

@@ -30,14 +30,18 @@ export const Stats: React.FC = () => {
   };
 
   return (
-    <Flex sx={{ px: 8, py: 7, height: "100%", flexDirection: "column" }}>
+    <Flex sx={{ py: 4, px: [3, 5], height: "100%", flexDirection: "column" }}>
       <Flex>
         <Link
           to="protocol"
           sx={{
-            py: 2,
-            px: 3,
+            py: [1, 2],
+            px: [2, 3],
             mr: 2,
+            fontSize: [1, 2],
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
             letterSpacing: "inherit",
             backgroundColor: "#f0cfdc",
             borderRadius: '72px',
@@ -48,9 +52,13 @@ export const Stats: React.FC = () => {
         <Link
           to="vaults"
           sx={{
-            py: 2,
-            px: 3,
+            py: [1, 2],
+            px: [2, 3],
             mr: 2,
+            fontSize: [1, 2],
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
             letterSpacing: "inherit",
             backgroundColor: "#f0cfdc",
             borderRadius: '72px',
