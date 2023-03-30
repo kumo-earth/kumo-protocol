@@ -183,7 +183,7 @@ export const Adjusting: React.FC = () => {
         )}
       </Heading>
 
-      <Box sx={{ p: [2, 3] }}>
+      <Box sx={{ py: 4, px: 5 }}>
         <EditableRow
           label="Collateral"
           inputId="trove-collateral"
@@ -317,9 +317,6 @@ export const Adjusting: React.FC = () => {
             </TroveAction>
           ) : (
             <Button
-              sx={{
-                mb: 2
-              }}
               variant="primaryInActive"
               disabled
             >

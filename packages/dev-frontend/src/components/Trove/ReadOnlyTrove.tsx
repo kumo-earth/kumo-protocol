@@ -34,7 +34,7 @@ export const ReadOnlyTrove: React.FC = () => {
   return (
     <Card variant="base">
       <Heading as="h2">{vault?.asset.toUpperCase()} Vault</Heading>
-      <Box sx={{ p: [2, 3] }}>
+      <Box sx={{ py: 4, px: 5 }}>
         <Box>
           <DisabledEditableRow
             label="Collateral"
@@ -67,9 +67,6 @@ export const ReadOnlyTrove: React.FC = () => {
           </Button>
           <Button
             onClick={handleAdjustTrove}
-            sx={{
-              mb: 2
-            }}
           >
             <Icon name="pen" size="sm" />
             &nbsp;ADJUST

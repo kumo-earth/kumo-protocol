@@ -122,7 +122,7 @@ export const Opening: React.FC = () => {
         )}
       </Heading>
 
-      <Box sx={{ p: [2, 3] }}>
+      <Box sx={{ py: 4, px: 5 }}>
         <EditableRow
           label="Collateral"
           inputId="trove-collateral"
@@ -235,7 +235,7 @@ export const Opening: React.FC = () => {
           </Button>
 
           {gasEstimationState.type === "inProgress" ? (
-            <Button disabled sx={{ mb: 2 }}>
+            <Button disabled>
               <Spinner size="24px" sx={{ color: "background" }} />
             </Button>
           ) : (stableTroveChange && !isMintCapReached) ? (
@@ -249,7 +249,7 @@ export const Opening: React.FC = () => {
               CONFIRM
             </TroveAction>
           ) : (
-            <Button variant="primaryInActive" disabled sx={{ mb: 2 }}>CONFIRM</Button>
+            <Button variant="primaryInActive" disabled>CONFIRM</Button>
           )}
         </Flex>
       </Box>

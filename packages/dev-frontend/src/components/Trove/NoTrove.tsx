@@ -32,7 +32,7 @@ export const NoTrove: React.FC = props => {
   return (
     <Card variant="base" sx={{ width: "100%" }}>
       <Heading as="h2">{collateralType?.toUpperCase()} Vault</Heading>
-      <Box sx={{ p: [2, 3] }}>
+      <Box sx={{  py: 4, px: 5 }}>
         <InfoMessage title="You haven't borrowed any KUSD yet.">
           You can borrow KUSD by opening a Vault.
         </InfoMessage>
@@ -46,8 +46,8 @@ export const NoTrove: React.FC = props => {
 
         <Flex variant="layout.actions">
           {isMintCapReached ?
-            <Button variant="primaryInActive" disabled sx={{ mt: 3, mb: 2 }}>OPEN VAULT</Button> :
-            <Button sx={{ mt: 3, mb: 2 }} onClick={handleOpenTrove}>
+            <Button variant="primaryInActive" disabled sx={{ mt: 3 }}>OPEN VAULT</Button> :
+            <Button sx={{ mt: 3 }} onClick={handleOpenTrove}>
               OPEN VAULT
             </Button>
 

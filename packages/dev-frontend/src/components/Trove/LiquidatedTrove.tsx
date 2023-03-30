@@ -34,7 +34,7 @@ export const LiquidatedTrove: React.FC = () => {
       }}
     >
       <Heading>Vault</Heading>
-      <Box sx={{ p: [2, 3] }}>
+      <Box sx={{ py: 4, px: 5 }}>
         <InfoMessage title="Your Vault has been liquidated.">
           {hasSurplusCollateral
             ? "Please reclaim your remaining collateral before opening a new Vault."
