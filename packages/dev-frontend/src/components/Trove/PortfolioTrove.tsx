@@ -18,7 +18,7 @@ export const PortfolioTrove: React.FC<{ vault: Vault }> = ({ vault = new Vault()
   return (
     <Card variant="portfolioCard" onClick={() => history.push(`/dashboard/${vault?.asset}`)}>
       <Heading as="h2">{vault?.asset.toUpperCase()} Vault</Heading>
-      <Box sx={{ p: [2, 3] }}>
+      <Box sx={{ py: 4, px: 5 }}>
         <Box>
           <DisabledEditableRow
             label="Collateral"
