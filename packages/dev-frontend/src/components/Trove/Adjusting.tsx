@@ -183,7 +183,7 @@ export const Adjusting: React.FC = () => {
         )}
       </Heading>
 
-      <Box sx={{ py: 4, px: 5 }}>
+      <Box sx={{ py: 4, px: [3, 5] }}>
         <EditableRow
           label="Collateral"
           inputId="trove-collateral"

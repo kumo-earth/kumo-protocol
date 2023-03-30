@@ -34,7 +34,7 @@ export const ReadOnlyTrove: React.FC = () => {
   return (
     <Card variant="base">
       <Heading as="h2">{vault?.asset.toUpperCase()} Vault</Heading>
-      <Box sx={{ py: 4, px: 5 }}>
+      <Box sx={{ py: 4, px: [3, 5] }}>
         <Box>
           <DisabledEditableRow
             label="Collateral"

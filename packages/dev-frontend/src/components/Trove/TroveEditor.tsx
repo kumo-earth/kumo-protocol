@@ -58,7 +58,7 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
     >
       <Heading>{collateralType?.toUpperCase()} Vault</Heading>
 
-      <Box sx={{ py: 4, px: 5 }}>
+      <Box sx={{ py: 4, px: [3, 5] }}>
         <StaticRow
           label="Collateral"
           inputId="trove-collateral"
