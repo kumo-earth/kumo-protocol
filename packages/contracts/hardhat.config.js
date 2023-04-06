@@ -153,7 +153,9 @@ module.exports = {
       "DiamondCutFacet",
       "DiamondLoupeFacet",
       "CDPManagerTesterFacet",
-      "OwnershipFacet"
+      "OwnershipFacet",
+      "LibTroveManager",
+      "LibKumoBase"
     ],
     filter: function (abiElement, index, fullAbi, fullyQualifiedName) {
       if (abiMap[abiElement.name] == true) {
