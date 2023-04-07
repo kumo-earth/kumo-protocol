@@ -141,6 +141,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
     ) external {
         RedemptionTotals memory totals;
 
+        _requireAfterBootstrapPeriod();
         // requireValidMaxFeePercentage
         require(
             _maxFeePercentage >= s.kumoParams.REDEMPTION_FEE_FLOOR(_asset) &&
@@ -1338,6 +1339,14 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
             _asset,
             s.totalStakesSnapshot[_asset],
             s.totalCollateralSnapshot[_asset]
+        );
+    }
+
+    function _requireAfterBootstrapPeriod() internal view {
+        uint256 systemDeploymentTime = s.kumoToken.getDeploymentStartTime();
+        require(
+            block.timestamp >= systemDeploymentTime + s.kumoParams.BOOTSTRAP_PERIOD(),
+            "TroveManager: Redemptions are not allowed during bootstrap phase"
         );
     }
 }

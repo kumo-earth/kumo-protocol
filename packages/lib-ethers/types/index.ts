@@ -971,7 +971,6 @@ export interface TroveManager
     Liquidation(_asset?: string | null, _liquidatedDebt?: null, _liquidatedColl?: null, _collGasCompensation?: null, _kusdGasCompensation?: null): EventFilter;
     Redemption(_asset?: string | null, _attemptedKUSDAmount?: null, _actualKUSDAmount?: null, _AssetSent?: null, _AssetFee?: null): EventFilter;
     SystemSnapshotsUpdated(_asset?: string | null, _totalStakesSnapshot?: null, _totalCollateralSnapshot?: null): EventFilter;
-    Test(): EventFilter;
     TotalStakesUpdated(_asset?: string | null, _newTotalStakes?: null): EventFilter;
     TroveLiquidated(_asset?: string | null, _borrower?: string | null, _debt?: null, _coll?: null, _operation?: null): EventFilter;
     TroveUpdated(_asset?: string | null, _borrower?: string | null, _debt?: null, _coll?: null, _stake?: null, _operation?: null): EventFilter;
@@ -986,7 +985,6 @@ export interface TroveManager
   extractEvents(logs: Log[], name: "Liquidation"): _TypedLogDescription<{ _asset: string; _liquidatedDebt: BigNumber; _liquidatedColl: BigNumber; _collGasCompensation: BigNumber; _kusdGasCompensation: BigNumber }>[];
   extractEvents(logs: Log[], name: "Redemption"): _TypedLogDescription<{ _asset: string; _attemptedKUSDAmount: BigNumber; _actualKUSDAmount: BigNumber; _AssetSent: BigNumber; _AssetFee: BigNumber }>[];
   extractEvents(logs: Log[], name: "SystemSnapshotsUpdated"): _TypedLogDescription<{ _asset: string; _totalStakesSnapshot: BigNumber; _totalCollateralSnapshot: BigNumber }>[];
-  extractEvents(logs: Log[], name: "Test"): _TypedLogDescription<{  }>[];
   extractEvents(logs: Log[], name: "TotalStakesUpdated"): _TypedLogDescription<{ _asset: string; _newTotalStakes: BigNumber }>[];
   extractEvents(logs: Log[], name: "TroveLiquidated"): _TypedLogDescription<{ _asset: string; _borrower: string; _debt: BigNumber; _coll: BigNumber; _operation: number }>[];
   extractEvents(logs: Log[], name: "TroveUpdated"): _TypedLogDescription<{ _asset: string; _borrower: string; _debt: BigNumber; _coll: BigNumber; _stake: BigNumber; _operation: number }>[];

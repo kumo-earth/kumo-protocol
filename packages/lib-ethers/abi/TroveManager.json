@@ -1939,12 +1939,6 @@
   },
   {
     "anonymous": false,
-    "inputs": [],
-    "name": "Test",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
     "inputs": [
       {
         "indexed": true,

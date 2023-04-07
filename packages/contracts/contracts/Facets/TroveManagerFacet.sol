@@ -410,14 +410,6 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         );
     }
 
-    function _requireAfterBootstrapPeriod() internal view {
-        uint256 systemDeploymentTime = s.kumoToken.getDeploymentStartTime();
-        require(
-            block.timestamp >= systemDeploymentTime + s.kumoParams.BOOTSTRAP_PERIOD(),
-            "TroveManager: Redemptions are not allowed during bootstrap phase"
-        );
-    }
-
     function _requireValidMaxFeePercentage(address _asset, uint256 _maxFeePercentage) internal view {
         require(
             _maxFeePercentage >= s.kumoParams.REDEMPTION_FEE_FLOOR(_asset) &&
