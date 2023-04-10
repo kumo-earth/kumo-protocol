@@ -409,6 +409,14 @@ const theme: Theme = {
       height: '90vh',
       width: '90vw',
       p: 4,
+      zIndex: 99,
+    },
+    walletInstruction : {
+      position: "fixed",
+      zIndex: 9999,
+      height: "100%",
+      width: "100%",
+      background: "white"
     },
     tooltip: {
       padding: 2,
@@ -574,6 +582,7 @@ const theme: Theme = {
       width: "100vw",
       height: "100vh",
       bg: 'white',
+      overflow: "auto",
       display: ["block", "none"],
     },
 
@@ -588,8 +597,10 @@ const theme: Theme = {
 
       display: ["flex", "none"],
       justifyContent: 'center',
-      alignItems: 'center'
-
+      alignItems: 'center',
+      "svg" : {
+        width: "100% !important"
+      }
     },
 
     infoMessage: {

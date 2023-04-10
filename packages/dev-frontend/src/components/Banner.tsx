@@ -3,10 +3,15 @@ import { Progress, Alert, Heading } from "theme-ui";
 import { useViewBanner } from "../hooks/useViewBanner";
 import { Icon } from "./Icon";
 
-export const Banner: React.FC<{ bannerHeading : string,  visibility: number }> = ({ bannerHeading, visibility, children }) => {
+export const Banner: React.FC<{ bannerHeading: string, visibility: number }> = ({ bannerHeading, visibility, children }) => {
   const { isViewBannerCheck, changeInProgress } = useViewBanner(visibility);
   const [isView, setIsView] = useState(true);
-  
+
+  const onClick = () => {
+    setIsView(false)
+    sessionStorage.setItem("viewCheck", JSON.stringify(true));
+  }
+
 
   return (!isViewBannerCheck && isView) ? (
     <Alert
@@ -27,9 +32,9 @@ export const Banner: React.FC<{ bannerHeading : string,  visibility: number }> =
         zIndex: 9999999
       }}
     >
-      <Heading as="h3" sx={{color: "black", width: "100%", display: "flex", justifyContent: "space-between", mb: 2,mr: 2 }}>
+      <Heading as="h3" sx={{ color: "black", width: "100%", display: "flex", justifyContent: "space-between", mb: 2, mr: 2 }}>
         {bannerHeading}
-        <span style={{ marginLeft: "auto", cursor: "pointer" }} onClick={() => setIsView(false)}>
+        <span style={{ marginLeft: "auto", cursor: "pointer" }} onClick={onClick}>
           <Icon name="window-close" size={"1x"} color="white" />
         </span>
       </Heading>

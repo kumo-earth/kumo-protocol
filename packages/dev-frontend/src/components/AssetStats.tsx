@@ -30,7 +30,7 @@ export const AssetStats: React.FC<SystemStatsProps> = ({
           TOTAL COLLATERAL RATIO{" "}
           <InfoIcon
             tooltip={
-              <Card variant="tooltip" sx={{ width: "220px" }}>
+              <Card variant="tooltip" >
                 {`The Total Collateral Ratio or TCR is the ratio of the Dollar value of the entire
                 system collateral at the current ${toUpper(
                   collateralType

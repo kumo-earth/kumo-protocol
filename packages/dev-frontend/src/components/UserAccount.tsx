@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Flex, Box, Button } from "theme-ui";
 import { useWalletView } from "../components/WalletConnect/context/WalletViewContext";
+import { useAddAssetModal } from "../components/AddAssetToken/context/AssetViewContext"
 import { Web3Provider } from "@ethersproject/providers";
 
 import { useWeb3React } from "@web3-react/core";
@@ -9,7 +10,7 @@ import { WalletModal } from "./WalletConnect/WalletModal";
 import { Tooltip } from "./Tooltip";
 import { SwitchNetworkModal } from "./SwitchNetwork/SwitchNetwork";
 import { useSwitchNetworkView } from "./SwitchNetwork/context/SwitchNetworkViewContext";
-import { AddAssetModal } from "./AddAssetModal";
+import { AddAssetModal } from "./AddAssetToken/AddAssetModal";
 
 const style = {
   top: "45%",
@@ -23,10 +24,10 @@ const style = {
 };
 
 export const UserAccount: React.FC = () => {
-  const [showAssetModal, setShowAssetModal] = useState(false);
   const { deactivate, active } = useWeb3React<Web3Provider>();
   const dialog = useDialogState();
   const { showModal, dispatchEvent } = useWalletView();
+  const { showAddAssetModal, dispatchEvent: dispatch } = useAddAssetModal()
   const { showSwitchModal } = useSwitchNetworkView();
   const { account } = useWeb3React();
 
@@ -36,6 +37,13 @@ export const UserAccount: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (showAddAssetModal) {
+      dialog.setVisible(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAddAssetModal]);
 
   // useEffect(() => {
   //   const keyDownHandler = (event: { key: string; preventDefault: () => void }) => {
@@ -58,13 +66,12 @@ export const UserAccount: React.FC = () => {
 
   return (
     <Box>
-      <Flex sx={{ alignItems: "center", ml: 3 }}>
+      <Flex sx={{ alignItems: ["start",  "center"], ml: 3, flexDirection: ['column', 'row'] }}>
         {account ? (
           <>
             <Button
               onClick={() => {
-                setShowAssetModal(true);
-                dialog.setVisible(true);
+                dispatch("OPEN_ADD_ASSET_MODAL_PRESSED")
               }}
               sx={{
                 py: 2,
@@ -87,6 +94,7 @@ export const UserAccount: React.FC = () => {
                   py: 2,
                   px: 3,
                   mr: 2,
+                  mt: [3, null],
                   outline: "none",
                   fontSize: '14px'
                 }}
@@ -120,16 +128,16 @@ export const UserAccount: React.FC = () => {
         </Dialog>
       )}
       {showSwitchModal && (
-        <Dialog {...dialog} hideOnClickOutside={false} >
+        <Dialog {...dialog} hideOnClickOutside={false} preventBodyScroll={true}>
           <Box sx={{ ...style, position: "absolute", borderRadius: "50px", background: "linear-gradient(128.29deg, #FFFFFF 0%, rgba(255, 255, 255, 1) 127.78%)" }}>
             <SwitchNetworkModal />
           </Box>
         </Dialog>
       )}
-      {showAssetModal && (
-        <Dialog {...dialog} hideOnClickOutside={false}>
+      {showAddAssetModal && (
+        <Dialog {...dialog} hideOnClickOutside={false} preventBodyScroll={true}>
           <Box sx={{ ...style, width: [340, 500], position: "absolute", borderRadius: "50px", background: "linear-gradient(128.29deg, #FFFFFF 0%, rgba(255, 255, 255, 1) 127.78%)" }}>
-            <AddAssetModal onClose={() => setShowAssetModal(false)} />
+            <AddAssetModal />
           </Box>
         </Dialog>
       )}

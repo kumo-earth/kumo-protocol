@@ -14,6 +14,7 @@ import { KumoFrontend } from "./KumoFrontend";
 import { WalletViewProvider } from "./components/WalletConnect/context/WalletViewProvider";
 import { SwitchNetworkViewProvider } from "./components/SwitchNetwork/context/SwitchNetworkViewProvider";
 import { BrowserRouter } from "react-router-dom";
+import { AddAssetViewProvider } from "./components/AddAssetToken/context/AssetViewProvider";
 
 if (window.ethereum) {
   // Silence MetaMask warning in console
@@ -98,27 +99,29 @@ const App = () => {
 
   return (
     <BrowserRouter>
-    <EthersWeb3ReactProvider>
-      <ThemeProvider theme={theme}>
-        <WalletViewProvider>
-          <SwitchNetworkViewProvider>
-            {/* <WalletConnector loader={loader}> */}
-            <KumoProvider
-              loader={loader}
-              unsupportedNetworkFallback={unsupportedNetworkFallback}
-              unsupportedMainnetFallback={<UnsupportedMainnetFallback />}
-            >
-              <TransactionProvider>
-               
-                <KumoFrontend loader={loader} />
-               
-              </TransactionProvider>
-            </KumoProvider>
-          </SwitchNetworkViewProvider>
-          {/* </WalletConnector> */}
-        </WalletViewProvider>
-      </ThemeProvider>
-    </EthersWeb3ReactProvider>
+      <EthersWeb3ReactProvider>
+        <ThemeProvider theme={theme}>
+          <WalletViewProvider>
+            <SwitchNetworkViewProvider>
+              <AddAssetViewProvider>
+                {/* <WalletConnector loader={loader}> */}
+                <KumoProvider
+                  loader={loader}
+                  unsupportedNetworkFallback={unsupportedNetworkFallback}
+                  unsupportedMainnetFallback={<UnsupportedMainnetFallback />}
+                >
+                  <TransactionProvider>
+
+                    <KumoFrontend loader={loader} />
+
+                  </TransactionProvider>
+                </KumoProvider>
+              </AddAssetViewProvider>
+            </SwitchNetworkViewProvider>
+            {/* </WalletConnector> */}
+          </WalletViewProvider>
+        </ThemeProvider>
+      </EthersWeb3ReactProvider>
     </BrowserRouter>
   );
 };
