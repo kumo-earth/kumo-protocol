@@ -66,7 +66,7 @@ export const UserAccount: React.FC = () => {
 
   return (
     <Box>
-      <Flex sx={{ alignItems: ["start",  "center"], ml: 3, flexDirection: ['column', 'row'] }}>
+      <Flex sx={{ alignItems: ["start",  "center"], ml: 3, flexDirection: ['column', 'row'] }} style={{ alignItems: "baseline" }}>
         {account ? (
           <>
             <Button
