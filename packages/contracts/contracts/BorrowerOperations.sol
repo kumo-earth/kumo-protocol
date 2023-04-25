@@ -176,6 +176,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         address _upperHint,
         address _lowerHint
     ) external payable override assetIsInitialized(_asset) {
+        checkKUSDMintCap(_KUSDAmount);
         kumoParams.sanitizeParameters(_asset);
         ContractsCache memory contractsCache = ContractsCache(
             troveManager,
@@ -311,6 +312,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         address _upperHint,
         address _lowerHint
     ) external override {
+        checkKUSDMintCap(_KUSDAmount);
         _adjustTrove(
             _asset,
             0,
@@ -344,6 +346,10 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         address _upperHint,
         address _lowerHint
     ) external payable override {
+        if (_isDebtIncrease) {
+            checkKUSDMintCap(_KUSDChange);
+        }
+
         _adjustTrove(
             _asset,
             _assetSent,
@@ -586,11 +592,10 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         return usdValue;
     }
 
-    function _getCollChange(uint256 _collReceived, uint256 _requestedCollWithdrawal)
-        internal
-        pure
-        returns (uint256 collChange, bool isCollIncrease)
-    {
+    function _getCollChange(
+        uint256 _collReceived,
+        uint256 _requestedCollWithdrawal
+    ) internal pure returns (uint256 collChange, bool isCollIncrease) {
         if (_collReceived != 0) {
             collChange = _collReceived;
             isCollIncrease = true;
@@ -644,11 +649,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     }
 
     // Send ETH to Active Pool and increase its recorded ETH balance
-    function _activePoolAddColl(
-        address _asset,
-        IActivePool _activePool,
-        uint256 _amount
-    ) internal {
+    function _activePoolAddColl(address _asset, IActivePool _activePool, uint256 _amount) internal {
         // (bool success, ) = address(_activePool).call{value: _amount}("");
         // require(success, "BorrowerOps: Sending ETH to ActivePool failed");
         IERC20Upgradeable(_asset).safeTransferFrom(
@@ -954,12 +955,17 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         return newTCR;
     }
 
-    function getCompositeDebt(address _asset, uint256 _debt)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getCompositeDebt(
+        address _asset,
+        uint256 _debt
+    ) external view override returns (uint256) {
         return _getCompositeDebt(_asset, _debt);
+    }
+
+    function checkKUSDMintCap(uint256 _KUSDAmount) internal {
+        require(
+            kusdToken.totalSupply() + _KUSDAmount <= kumoParams.kusdMintCap(),
+            "KUSD mint cap is reached"
+        );
     }
 }

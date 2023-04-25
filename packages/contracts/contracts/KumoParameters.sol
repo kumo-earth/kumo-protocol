@@ -34,6 +34,8 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
 
     uint256 public constant REDEMPTION_FEE_FLOOR_DEFAULT = (DECIMAL_PRECISION / 1000) * 5; // 0.5%
 
+    uint256 public kusdMintCap = 10000000 * 1e18; // 10M
+
     // Minimum collateral ratio for individual troves
     mapping(address => uint256) public override MCR;
     // Critical system collateral ratio. If the system's total collateral ratio (TCR) falls below the CCR, Recovery Mode is triggered.
@@ -145,7 +147,10 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         setRedemptionFeeFloor(_asset, redemptionFeeFloor);
     }
 
-    function setMCR(address _asset, uint256 newMCR)
+    function setMCR(
+        address _asset,
+        uint256 newMCR
+    )
         public
         override
         onlyOwner
@@ -157,7 +162,10 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         emit MCRChanged(oldMCR, newMCR);
     }
 
-    function setCCR(address _asset, uint256 newCCR)
+    function setCCR(
+        address _asset,
+        uint256 newCCR
+    )
         public
         override
         onlyOwner
@@ -169,19 +177,20 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         emit CCRChanged(oldCCR, newCCR);
     }
 
-    function setPercentDivisor(address _asset, uint256 precentDivisor)
-        public
-        override
-        onlyOwner
-        safeCheck("Percent Divisor", _asset, precentDivisor, 2, 200)
-    {
+    function setPercentDivisor(
+        address _asset,
+        uint256 precentDivisor
+    ) public override onlyOwner safeCheck("Percent Divisor", _asset, precentDivisor, 2, 200) {
         uint256 oldPercent = PERCENT_DIVISOR[_asset];
         PERCENT_DIVISOR[_asset] = precentDivisor;
 
         emit PercentDivisorChanged(oldPercent, precentDivisor);
     }
 
-    function setBorrowingFeeFloor(address _asset, uint256 borrowingFeeFloor)
+    function setBorrowingFeeFloor(
+        address _asset,
+        uint256 borrowingFeeFloor
+    )
         public
         override
         onlyOwner
@@ -195,7 +204,10 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         emit BorrowingFeeFloorChanged(oldBorrowing, newBorrowingFee);
     }
 
-    function setMaxBorrowingFee(address _asset, uint256 maxBorrowingFee)
+    function setMaxBorrowingFee(
+        address _asset,
+        uint256 maxBorrowingFee
+    )
         public
         override
         onlyOwner
@@ -208,7 +220,10 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         emit MaxBorrowingFeeChanged(oldMaxBorrowingFee, newMaxBorrowingFee);
     }
 
-    function setKUMOGasCompensation(address _asset, uint256 gasCompensation)
+    function setKUMOGasCompensation(
+        address _asset,
+        uint256 gasCompensation
+    )
         public
         override
         onlyOwner
@@ -220,19 +235,20 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         emit GasCompensationChanged(oldGasComp, gasCompensation);
     }
 
-    function setMinNetDebt(address _asset, uint256 minNetDebt)
-        public
-        override
-        onlyOwner
-        safeCheck("Min Net Debt", _asset, minNetDebt, 0, 1800 ether)
-    {
+    function setMinNetDebt(
+        address _asset,
+        uint256 minNetDebt
+    ) public override onlyOwner safeCheck("Min Net Debt", _asset, minNetDebt, 0, 1800 ether) {
         uint256 oldMinNet = MIN_NET_DEBT[_asset];
         MIN_NET_DEBT[_asset] = minNetDebt;
 
         emit MinNetDebtChanged(oldMinNet, minNetDebt);
     }
 
-    function setRedemptionFeeFloor(address _asset, uint256 redemptionFeeFloor)
+    function setRedemptionFeeFloor(
+        address _asset,
+        uint256 redemptionFeeFloor
+    )
         public
         override
         onlyOwner
@@ -243,6 +259,13 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
 
         REDEMPTION_FEE_FLOOR[_asset] = newRedemptionFeeFloor;
         emit RedemptionFeeFloorChanged(oldRedemptionFeeFloor, newRedemptionFeeFloor);
+    }
+
+    function setKUSDMintCap(uint256 newCap) public onlyOwner {
+        uint256 oldCap = kusdMintCap;
+        kusdMintCap = newCap;
+
+        emit KUSDMintCapChanged(oldCap, newCap);
     }
 
     function removeRedemptionBlock(address _asset) external override onlyOwner {

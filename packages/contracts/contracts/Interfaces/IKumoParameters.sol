@@ -21,6 +21,7 @@ interface IKumoParameters {
     event RedemptionFeeFloorChanged(uint256 oldRedemptionFeeFloor, uint256 newRedemptionFeeFloor);
     event RedemptionBlockRemoved(address _asset);
     event PriceFeedChanged(address indexed addr);
+    event KUSDMintCapChanged(uint256 oldMintCap, uint256 newMintCap);
 
     function BOOTSTRAP_PERIOD() external view returns (uint256);
 
@@ -45,6 +46,8 @@ interface IKumoParameters {
     function REDEMPTION_FEE_FLOOR(address _collateral) external view returns (uint256);
 
     function MAX_BORROWING_FEE(address _collateral) external view returns (uint256);
+
+    function kusdMintCap() external view returns (uint256);
 
     function redemptionBlock(address _collateral) external view returns (uint256);
 
