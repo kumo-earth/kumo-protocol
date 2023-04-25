@@ -94,6 +94,9 @@ contract("TroveManager - stakeDecline", async accounts => {
     // Mint token to each acccount
     await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 25);
     await deploymentHelper.mintMockAssets(erc20Asset2, accounts, 25);
+
+    // Set KUSD mint cap to 1 trillion
+    await contracts.kumoParameters.setKUSDMintCap(dec(1, 30));
   });
 
   it("A given trove's stake decline is negligible with adjustments and tiny liquidations", async () => {

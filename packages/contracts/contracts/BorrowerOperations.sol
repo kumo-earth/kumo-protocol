@@ -13,7 +13,7 @@ import "./Interfaces/IKUMOStaking.sol";
 import "./Interfaces/IStabilityPoolFactory.sol";
 import "./Dependencies/KumoBase.sol";
 import "./Dependencies/CheckContract.sol";
-// import "./Dependencies/console.sol";
+import "hardhat/console.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/SafetyTransfer.sol";
 

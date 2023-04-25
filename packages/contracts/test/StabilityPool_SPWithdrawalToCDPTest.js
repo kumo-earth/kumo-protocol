@@ -92,6 +92,9 @@ contract("StabilityPool - Withdrawal of stability deposit - Reward calculations"
 
       await deploymentHelper.connectCoreContracts(contracts, KUMOContracts);
       await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts);
+
+      // Set KUSD mint cap to 1 trillion
+      await contracts.kumoParameters.setKUSDMintCap(dec(1, 30));
     });
 
     // --- Compounding tests ---

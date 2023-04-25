@@ -129,6 +129,9 @@ contract("TroveManager", async accounts => {
     // Set StabilityPools
     stabilityPoolAsset1 = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1);
     stabilityPoolAsset2 = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress2);
+
+    // Set KUSD mint cap to 1 trillion
+    await kumoParams.setKUSDMintCap(dec(1, 30));
   });
 
   it("liquidate(): closes a Trove that has ICR < MCR", async () => {
