@@ -10,7 +10,6 @@ const mv = testHelpers.MoneyValues;
 const timeValues = testHelpers.TimeValues;
 const TroveData = testHelpers.TroveData;
 
-const TroveManagerTester = artifacts.require("./TroveManagerTester");
 const KUSDToken = artifacts.require("./KUSDToken.sol");
 
 const GAS_PRICE = 10000000;

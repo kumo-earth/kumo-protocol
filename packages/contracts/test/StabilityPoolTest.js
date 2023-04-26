@@ -8,7 +8,6 @@ const mv = testHelpers.MoneyValues;
 const timeValues = testHelpers.TimeValues;
 const TroveData = testHelpers.TroveData;
 
-const TroveManagerTester = artifacts.require("TroveManagerTester");
 const KUSDToken = artifacts.require("KUSDToken");
 const NonPayable = artifacts.require("NonPayable.sol");
 const StabilityPool = artifacts.require("./StabilityPool.sol");

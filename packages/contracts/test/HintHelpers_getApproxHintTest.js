@@ -7,7 +7,6 @@ const moneyVals = testHelpers.MoneyValues;
 
 let latestRandomSeed = 31337;
 
-const TroveManagerTester = artifacts.require("TroveManagerTester");
 const KUSDToken = artifacts.require("KUSDToken");
 
 contract("HintHelpers", async accounts => {

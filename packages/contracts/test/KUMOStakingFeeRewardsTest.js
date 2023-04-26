@@ -5,7 +5,6 @@ const testHelpers = require("../utils/testHelpers.js");
 const { send } = require("@openzeppelin/test-helpers");
 
 const KUMOStakingTester = artifacts.require("KUMOStakingTester");
-const TroveManagerTester = artifacts.require("TroveManagerTester");
 const NonPayable = artifacts.require("./NonPayable.sol");
 
 const th = testHelpers.TestHelper;

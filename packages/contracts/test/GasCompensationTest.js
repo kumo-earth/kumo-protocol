@@ -2,7 +2,6 @@ const { ZERO_ADDRESS } = require("@openzeppelin/test-helpers/src/constants.js");
 const { zeroAddress } = require("ethereumjs-util");
 const deploymentHelper = require("../utils/deploymentHelpers.js");
 const testHelpers = require("../utils/testHelpers.js");
-const TroveManagerTester = artifacts.require("./TroveManagerTester.sol");
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol");
 const KumoParameters = artifacts.require("./KumoParameters.sol");
 const KUSDToken = artifacts.require("KUSDToken");
@@ -49,7 +48,6 @@ contract("Gas compensation tests", async accounts => {
   let assetAddress1;
 
   let contracts;
-  let troveManagerTester;
   let borrowerOperationsTester;
 
   const getOpenTroveKUSDAmount = async totalDebt => th.getOpenTroveKUSDAmount(contracts, totalDebt);
@@ -62,13 +60,11 @@ contract("Gas compensation tests", async accounts => {
   };
 
   before(async () => {
-    troveManagerTester = await TroveManagerTester.new();
     borrowerOperationsTester = await BorrowerOperationsTester.new();
 
     kumoParameters = await KumoParameters.new();
     KumoParameters.setAsDeployed(kumoParameters);
 
-    TroveManagerTester.setAsDeployed(troveManagerTester);
     BorrowerOperationsTester.setAsDeployed(borrowerOperationsTester);
   });
 

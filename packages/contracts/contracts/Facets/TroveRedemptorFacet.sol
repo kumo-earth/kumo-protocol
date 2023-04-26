@@ -129,6 +129,30 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         _;
     }
 
+    // --- Redemption functions ---
+
+    /* Send _KUSDamount KUSD to the system and redeem the corresponding amount of collateral from as many Troves as are needed to fill the redemption
+     * request.  Applies pending rewards to a Trove before reducing its debt and coll.
+     *
+     * Note that if _amount is very large, this function can run out of gas, specially if traversed troves are small. This can be easily avoided by
+     * splitting the total _amount in appropriate chunks and calling the function multiple times.
+     *
+     * Param `_maxIterations` can also be provided, so the loop through Troves is capped (if it’s zero, it will be ignored).This makes it easier to
+     * avoid OOG for the frontend, as only knowing approximately the average cost of an iteration is enough, without needing to know the “topology”
+     * of the trove list. It also avoids the need to set the cap in stone in the contract, nor doing gas calculations, as both gas price and opcode
+     * costs can vary.
+     *
+     * All Troves that are redeemed from -- with the likely exception of the last one -- will end up with no debt left, therefore they will be closed.
+     * If the last Trove does have some remaining debt, it has a finite ICR, and the reinsertion could be anywhere in the list, therefore it requires a hint.
+     * A frontend should use getRedemptionHints() to calculate what the ICR of this Trove will be after redemption, and pass a hint for its position
+     * in the sortedTroves list along with the ICR value that the hint was found for.
+     *
+     * If another transaction modifies the list between calling getRedemptionHints() and passing the hints to redeemCollateral(), it
+     * is very likely that the last (partially) redeemed Trove would end up with a different ICR than what the hint is for. In this case the
+     * redemption will stop after the last completely redeemed Trove and the sender will keep the remaining KUSD amount, which they can attempt
+     * to redeem later.
+     */
+
     function redeemCollateral(
         address _asset,
         uint256 _KUSDamount,
@@ -606,11 +630,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         }
     }
 
-    function _redistributeDebtAndColl(
-        address _asset,
-        uint256 _debt,
-        uint256 _coll
-    ) internal {
+    function _redistributeDebtAndColl(address _asset, uint256 _debt, uint256 _coll) internal {
         if (_debt == 0) {
             return;
         }
@@ -798,19 +818,19 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         s.activePool.sendAsset(_asset, address(s.collSurplusPool), _amount);
     }
 
-    function updateStakeAndTotalStakes(address _asset, address _borrower)
-        external
-        returns (uint256)
-    {
+    function updateStakeAndTotalStakes(
+        address _asset,
+        address _borrower
+    ) external returns (uint256) {
         _requireCallerIsBorrowerOperations();
         return _updateStakeAndTotalStakes(_asset, _borrower);
     }
 
     // Update borrower's stake based on their latest collateral value
-    function _updateStakeAndTotalStakes(address _asset, address _borrower)
-        internal
-        returns (uint256)
-    {
+    function _updateStakeAndTotalStakes(
+        address _asset,
+        address _borrower
+    ) internal returns (uint256) {
         uint256 newStake = _computeNewStake(_asset, s.Troves[_borrower][_asset].coll);
         uint256 oldStake = s.Troves[_borrower][_asset].stake;
         s.Troves[_borrower][_asset].stake = newStake;
@@ -1204,15 +1224,13 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
     }
 
     // Return the Troves entire debt and coll, including pending rewards from redistributions.
-    function getEntireDebtAndColl(address _asset, address _borrower)
+    function getEntireDebtAndColl(
+        address _asset,
+        address _borrower
+    )
         external
         view
-        returns (
-            uint256 debt,
-            uint256 coll,
-            uint256 pendingKUSDDebtReward,
-            uint256 pendingReward
-        )
+        returns (uint256 debt, uint256 coll, uint256 pendingKUSDDebtReward, uint256 pendingReward)
     {
         debt = s.Troves[_borrower][_asset].debt;
         coll = s.Troves[_borrower][_asset].coll;
@@ -1326,9 +1344,10 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
      *
      * The ETH as compensation must be excluded as it is always sent out at the very end of the liquidation sequence.
      */
-    function updateSystemSnapshots_excludeCollRemainder(address _asset, uint256 _collRemainder)
-        internal
-    {
+    function updateSystemSnapshots_excludeCollRemainder(
+        address _asset,
+        uint256 _collRemainder
+    ) internal {
         s.totalStakesSnapshot[_asset] = s.totalStakes[_asset];
 
         uint256 activeColl = s.activePool.getAssetBalance(_asset);

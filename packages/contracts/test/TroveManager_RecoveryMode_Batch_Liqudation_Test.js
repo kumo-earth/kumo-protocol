@@ -2,7 +2,6 @@ const deploymentHelper = require("../utils/deploymentHelpers.js");
 const { TestHelper: th, MoneyValues: mv, TroveData } = require("../utils/testHelpers.js");
 const { toBN, dec, ZERO_ADDRESS } = th;
 
-const TroveManagerTester = artifacts.require("./TroveManagerTester");
 const KUSDToken = artifacts.require("./KUSDToken.sol");
 
 contract("TroveManager - in Recovery Mode - back to normal mode in 1 tx", async accounts => {

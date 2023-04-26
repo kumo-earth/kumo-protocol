@@ -34,7 +34,6 @@ const ActivePoolTester = artifacts.require("./ActivePoolTester.sol");
 const DefaultPoolTester = artifacts.require("./DefaultPoolTester.sol");
 const KumoMathTester = artifacts.require("./KumoMathTester.sol");
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol");
-const TroveManagerTester = artifacts.require("./TroveManagerTester.sol");
 const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol");
 const ERC20Test = artifacts.require("./ERC20Test.sol");
 

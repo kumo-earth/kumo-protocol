@@ -1,7 +1,6 @@
 const { getAddress } = require("ethers/lib/utils");
 const deploymentHelper = require("../utils/deploymentHelpers.js");
 const testHelpers = require("../utils/testHelpers.js");
-const TroveManagerTester = artifacts.require("./TroveManagerTester.sol");
 const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol");
 
 const th = testHelpers.TestHelper;

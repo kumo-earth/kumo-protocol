@@ -8,7 +8,6 @@ const toBN = th.toBN;
 const mv = testHelpers.MoneyValues;
 const timeValues = testHelpers.TimeValues;
 
-const TroveManagerTester = artifacts.require("TroveManagerTester");
 const KUSDToken = artifacts.require("KUSDToken");
 
 contract("CollSurplusPool", async accounts => {

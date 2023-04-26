@@ -7,7 +7,6 @@ const dec = th.dec;
 const toBN = th.toBN;
 const getDifference = th.getDifference;
 
-const TroveManagerTester = artifacts.require("TroveManagerTester");
 const KUSDToken = artifacts.require("KUSDToken");
 
 const GAS_PRICE = 10000000;
