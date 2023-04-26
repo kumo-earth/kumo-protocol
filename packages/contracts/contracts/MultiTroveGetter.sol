@@ -76,32 +76,20 @@ contract MultiTroveGetter {
         for (uint256 idx = 0; idx < _count; ++idx) {
             _troves[idx].owner = currentTroveowner;
 
-            // TODO
-            // (
-            //     _troves[idx].asset,
-            //     _troves[idx].debt,
-            //     _troves[idx].coll,
-            //     _troves[idx].stake,
-            //     /* status */
-            //     /* arrayIndex */
-            //     ,
+            Trove memory trove = troveManager.Troves(currentTroveowner, _asset);
 
-            // ) = troveManager.Troves(currentTroveowner, _asset);
+            _troves[idx].asset = trove.asset;
+            _troves[idx].debt = trove.debt;
+            _troves[idx].coll = trove.coll;
+            _troves[idx].stake = trove.stake;
 
-            _troves[idx].asset = troveManager.Troves(currentTroveowner, _asset).asset;
-            _troves[idx].debt = troveManager.Troves(currentTroveowner, _asset).debt;
-            _troves[idx].coll = troveManager.Troves(currentTroveowner, _asset).coll;
-            _troves[idx].stake = troveManager.Troves(currentTroveowner, _asset).stake;
+            RewardSnapshot memory rewardSnapshot = troveManager.rewardSnapshots(
+                currentTroveowner,
+                _asset
+            );
 
-            // (_troves[idx].snapshotAsset, _troves[idx].snapshotKUSDDebt) = troveManager
-            //     .rewardSnapshots(currentTroveowner, _asset);
-
-            _troves[idx].snapshotAsset = troveManager
-                .rewardSnapshots(currentTroveowner, _asset)
-                .asset;
-            _troves[idx].snapshotKUSDDebt = troveManager
-                .rewardSnapshots(currentTroveowner, _asset)
-                .KUSDDebt;
+            _troves[idx].snapshotAsset = rewardSnapshot.asset;
+            _troves[idx].snapshotKUSDDebt = rewardSnapshot.KUSDDebt;
 
             currentTroveowner = sortedTroves.getNext(_asset, currentTroveowner);
         }
@@ -122,32 +110,21 @@ contract MultiTroveGetter {
 
         for (uint256 idx = 0; idx < _count; ++idx) {
             _troves[idx].owner = currentTroveowner;
-            
-            // TODO
-            // (
-            //     _troves[idx].asset,
-            //     _troves[idx].debt,
-            //     _troves[idx].coll,
-            //     _troves[idx].stake,
-            //     /* status */
-            //     /* arrayIndex */
-            //     ,
 
-            // ) = troveManager.Troves(currentTroveowner, _asset);
-            // (_troves[idx].snapshotAsset, _troves[idx].snapshotKUSDDebt) = troveManager
-            //     .rewardSnapshots(currentTroveowner, _asset);
+            Trove memory trove = troveManager.Troves(currentTroveowner, _asset);
 
-            _troves[idx].asset = troveManager.Troves(currentTroveowner, _asset).asset;
-            _troves[idx].debt = troveManager.Troves(currentTroveowner, _asset).debt;
-            _troves[idx].coll = troveManager.Troves(currentTroveowner, _asset).coll;
-            _troves[idx].stake = troveManager.Troves(currentTroveowner, _asset).stake;
+            _troves[idx].asset = trove.asset;
+            _troves[idx].debt = trove.debt;
+            _troves[idx].coll = trove.coll;
+            _troves[idx].stake = trove.stake;
 
-            _troves[idx].snapshotAsset = troveManager
-                .rewardSnapshots(currentTroveowner, _asset)
-                .asset;
-            _troves[idx].snapshotKUSDDebt = troveManager
-                .rewardSnapshots(currentTroveowner, _asset)
-                .KUSDDebt;
+            RewardSnapshot memory rewardSnapshot = troveManager.rewardSnapshots(
+                currentTroveowner,
+                _asset
+            );
+
+            _troves[idx].snapshotAsset = rewardSnapshot.asset;
+            _troves[idx].snapshotKUSDDebt = rewardSnapshot.KUSDDebt;
 
             currentTroveowner = sortedTroves.getPrev(_asset, currentTroveowner);
         }

@@ -68,9 +68,10 @@ contract EchidnaTester {
         priceFeedTestnet = new PriceFeedTestnet();
         sortedTroves = new SortedTroves();
 
-        address(troveManager).call(
+        (bool success, ) = address(troveManager).call(
             abi.encodeWithSignature("setAddresses(address)", address(kumoParams))
         );
+        require(success);
 
         borrowerOperations.setAddresses(
             address(troveManager),
@@ -134,20 +135,12 @@ contract EchidnaTester {
 
     // TroveManager
 
-    function liquidateExt(
-        address _asset,
-        uint256 _i,
-        address _user
-    ) external {
+    function liquidateExt(address _asset, uint256 _i, address _user) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].liquidatePrx(_asset, _user);
     }
 
-    function liquidateTrovesExt(
-        address _asset,
-        uint256 _i,
-        uint256 _n
-    ) external {
+    function liquidateTrovesExt(address _asset, uint256 _i, uint256 _n) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].liquidateTrovesPrx(_asset, _n);
     }
@@ -265,11 +258,7 @@ contract EchidnaTester {
         );
     }
 
-    function addCollExt(
-        address _asset,
-        uint256 _i,
-        uint256 _ASSET
-    ) external payable {
+    function addCollExt(address _asset, uint256 _i, uint256 _ASSET) external payable {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         EchidnaProxy echidnaProxy = echidnaProxies[actor];
         uint256 actorBalance = address(echidnaProxy).balance;
@@ -396,31 +385,19 @@ contract EchidnaTester {
         echidnaProxies[actor].provideToSPPrx(_asset, _amount, _frontEndTag);
     }
 
-    function withdrawFromSPExt(
-        uint256 _i,
-        address _asset,
-        uint256 _amount
-    ) external {
+    function withdrawFromSPExt(uint256 _i, address _asset, uint256 _amount) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].withdrawFromSPPrx(_asset, _amount);
     }
 
     // KUSD Token
 
-    function transferExt(
-        uint256 _i,
-        address recipient,
-        uint256 amount
-    ) external returns (bool) {
+    function transferExt(uint256 _i, address recipient, uint256 amount) external returns (bool) {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         return echidnaProxies[actor].transferPrx(recipient, amount);
     }
 
-    function approveExt(
-        uint256 _i,
-        address spender,
-        uint256 amount
-    ) external returns (bool) {
+    function approveExt(uint256 _i, address spender, uint256 amount) external returns (bool) {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         return echidnaProxies[actor].approvePrx(spender, amount);
     }
@@ -479,7 +456,7 @@ contract EchidnaTester {
         return true;
     }
 
-    function echidna_troves_order(address _asset) external returns (bool) {
+    function echidna_troves_order(address _asset) external view returns (bool) {
         address currentTrove = sortedTroves.getFirst(_asset);
         address nextTrove = sortedTroves.getNext(_asset, currentTrove);
 
@@ -502,7 +479,7 @@ contract EchidnaTester {
      * Minimum debt (gas compensation)
      * Stake > 0
      */
-    function echidna_trove_properties(address _asset) public returns (bool) {
+    function echidna_trove_properties(address _asset) public view returns (bool) {
         address currentTrove = sortedTroves.getFirst(_asset);
         while (currentTrove != address(0)) {
             // Status
@@ -616,24 +593,33 @@ contract EchidnaTester {
     }
     */
 
-    function tmGetNominalICR(address _asset, address _borrower) internal returns (uint256 _result) {
-        (, bytes memory _data) = address(troveManager).call(
+    function tmGetNominalICR(
+        address _asset,
+        address _borrower
+    ) internal view returns (uint256 _result) {
+        (, bytes memory _data) = address(troveManager).staticcall(
             abi.encodeWithSignature("getNominalICR(address,address)", _asset, _borrower)
         );
 
         _result = abi.decode(_data, (uint256));
     }
 
-    function tmGetTroveDebt(address _asset, address _borrower) internal returns (uint256 _result) {
-        (, bytes memory _data) = address(troveManager).call(
+    function tmGetTroveDebt(
+        address _asset,
+        address _borrower
+    ) internal view returns (uint256 _result) {
+        (, bytes memory _data) = address(troveManager).staticcall(
             abi.encodeWithSignature("getTroveDebt(address,address)", _asset, _borrower)
         );
 
         _result = abi.decode(_data, (uint256));
     }
 
-    function tmGetTroveStake(address _asset, address _borrower) internal returns (uint256 _result) {
-        (, bytes memory _data) = address(troveManager).call(
+    function tmGetTroveStake(
+        address _asset,
+        address _borrower
+    ) internal view returns (uint256 _result) {
+        (, bytes memory _data) = address(troveManager).staticcall(
             abi.encodeWithSignature("getTroveStake(address,address)", _asset, _borrower)
         );
 
