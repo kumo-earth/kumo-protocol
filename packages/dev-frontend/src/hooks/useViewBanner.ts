@@ -8,13 +8,13 @@ const getSessionStorageOrDefault = (key: string, defaultValue: boolean) => {
   return JSON.parse(stored);
 };
 
-export const useViewBanner = (visibility: number) => {
+export const useViewBanner = (visibility: number, viewId: string) => {
   const [changeInProgress, setChangeInProgress] = useState(visibility);
   const [isViewBannerCheck, setIsViewBannerCheck] = useState(
-    getSessionStorageOrDefault("viewCheck", false)
+    getSessionStorageOrDefault(viewId, false)
   );
   useEffect(() => {
-    sessionStorage.setItem("viewCheck", JSON.stringify(isViewBannerCheck));
+    sessionStorage.setItem(viewId, JSON.stringify(isViewBannerCheck));
   }, [isViewBannerCheck]);
 
   useEffect(() => {

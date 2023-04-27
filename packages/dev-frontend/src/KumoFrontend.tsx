@@ -33,6 +33,7 @@ import { Portfolio } from "./pages/Portfolio";
 import { Stats } from "./pages/stats";
 import { LiquidityStaking } from "./pages/LiquidityStaking";
 import { SystemStatsPopup } from "./components/SystemStatsPopup";
+import { Link } from "./components/Link";
 
 type KumoFrontendProps = {
   loader?: React.ReactNode;
@@ -59,9 +60,15 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
             <StabilityViewProvider>
               <StakingViewProvider>
                 <FarmViewProvider>
-                  <Banner  bannerHeading="Information" visibility={1000}>
+                <Banner bannerHeading="Information" visibility={1000} viewId="testToken">
                     <Text sx={{ fontWeight: 500 }}>Please reach out to  <Text sx={{ fontWeight: "bold" }}>contact@kumo.earth</Text> to request test tokens.</Text>
                   </Banner>
+                  {
+                    account && <Banner bannerHeading="Faucet links for test MATICS" visibility={1000} viewId="matics">
+                      <Link to={{ pathname: "https://mumbaifaucet.com/" }} target="_blank" sx={{ p: 0, pt: 2, pb: 1, textTransform: "lowercase" }}>https://mumbaifaucet.com/</Link>
+                      <Link to={{ pathname: "https://faucet.polygon.technology/" }} target="_blank" sx={{ p: 0, pb: 2, textTransform: "lowercase"  }}>https://faucet.polygon.technology/</Link>
+                    </Banner>
+                  }
                   <Flex variant="layout.app" sx={{ backgroundImage: `url(${appBackground})` }}>
                     <Sidebar />
                     <Flex

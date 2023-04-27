@@ -640,7 +640,7 @@ const theme: Theme = {
       pl: 4,
       m: 0,
       borderColor: "muted",
-      overflow: 'scroll'
+      // overflow: 'scroll'
       // ...headerGradient
     },
 

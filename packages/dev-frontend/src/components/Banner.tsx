@@ -3,13 +3,13 @@ import { Progress, Alert, Heading } from "theme-ui";
 import { useViewBanner } from "../hooks/useViewBanner";
 import { Icon } from "./Icon";
 
-export const Banner: React.FC<{ bannerHeading: string, visibility: number }> = ({ bannerHeading, visibility, children }) => {
-  const { isViewBannerCheck, changeInProgress } = useViewBanner(visibility);
+export const Banner: React.FC<{ bannerHeading: string, visibility: number, viewId: string }> = ({ bannerHeading, visibility, viewId, children }) => {
+  const { isViewBannerCheck, changeInProgress } = useViewBanner(visibility, viewId);
   const [isView, setIsView] = useState(true);
 
   const onClick = () => {
     setIsView(false)
-    sessionStorage.setItem("viewCheck", JSON.stringify(true));
+    sessionStorage.setItem(viewId, JSON.stringify(true));
   }
 
 
