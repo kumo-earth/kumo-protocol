@@ -74,14 +74,14 @@ const select = ({ vaults, blockTag }: BlockPolledKumoStoreState) => ({
 
 export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
   const { account } = useWeb3React<Web3Provider>();
-  const [assetType, setAssetType] = useState("ctx");
+  const [assetType, setAssetType] = useState("nbc");
   const { vaults, blockTag } = useKumoSelector(select);
   const { kumo } = useKumo();
   let numberOfTroves = 0;
   let price = Decimal.ZERO;
   let assetAddress = AddressZero;
 
-  if (assetType === "ctx" || assetType === "cty") {
+  if (assetType === "nbc" || assetType === "csc") {
     const vault = vaults.find(vault => vault.asset === assetType);
     if (vault) {
       price = vault.price;
@@ -124,7 +124,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
 
     setLoading(true);
 
-    if (assetType === "ctx" || assetType === "cty") {
+    if (assetType === "nbc" || assetType === "csc") {
       const tempVault = vaults.find(vault => vault.asset === assetType);
       if (tempVault) {
         const { asset, assetAddress, price, total, kusdInStabilityPool } = tempVault;
@@ -263,8 +263,8 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
         <Box sx={{ display: "flex", mr: 2, alignItems: 'center' }}>
           <Text sx={{ fontSize: ["10px", "14px"] }}>Riskiest Vaults:</Text>
           <Select value={assetType} onChange={event => setAssetType(event.target.value)}>
-            <option value={"ctx"}>CTX</option>
-            <option value={"cty"}>CTY</option>
+            <option value={"nbc"}>NBC</option>
+            <option value={"csc"}>CSC</option>
           </Select>
         </Box>
       </Heading>

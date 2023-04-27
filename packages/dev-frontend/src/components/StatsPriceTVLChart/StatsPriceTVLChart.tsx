@@ -43,33 +43,33 @@ const data01 = [
 const data = [
   {
     name: "6th Oct 2022",
-    CTX: 400000,
-    CTY: 400500
+    NBC: 400000,
+    CSC: 400500
   },
   {
     name: "12th Oct 2022",
-    CTX: 705070,
-    CTY: 605000
+    NBC: 705070,
+    CSC: 605000
   },
   {
     name: "18th Oct 2022",
-    CTX: 200300,
-    CTY: 205000
+    NBC: 200300,
+    CSC: 205000
   },
   {
     name: "24th Oct 2022",
-    CTX: 500300,
-    CTY: 700300
+    NBC: 500300,
+    CSC: 700300
   },
   {
     name: "30th Oct 2022",
-    CTX: 300300,
-    CTY: 500300
+    NBC: 300300,
+    CSC: 500300
   },
   {
     name: "6th Nov 2022",
-    CTX: 800300,
-    CTY: 400300
+    NBC: 800300,
+    CSC: 400300
   }
 ];
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -142,8 +142,8 @@ export const StatsPriceTVLChart: React.FC = () => {
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Area type="monotone" dataKey="CTX" stackId="1" stroke="#b579e" fill="#8884d8" />
-                <Area type="monotone" dataKey="CTY" stackId="1" stroke="#82ca9d" fill="#82ca9d" />
+                <Area type="monotone" dataKey="NBC" stackId="1" stroke="#b579e" fill="#8884d8" />
+                <Area type="monotone" dataKey="CSC" stackId="1" stroke="#82ca9d" fill="#82ca9d" />
                 <Legend />
               </AreaChart>
             </ResponsiveContainer>

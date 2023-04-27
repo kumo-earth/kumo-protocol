@@ -16,16 +16,16 @@ interface AssetType {
  * Assets Types
  */
 export const ASSET_TOKENS: ASSET_TOKENS_TYPES<AssetType> = {
-  ctx: {
-    assetName: "Carbon Token X",
+  nbc: {
+    assetName: "Nature-based Carbon",
     assetAddress: "0x213696b6F4d41178D3E7069BAc8fab6fAaD53BF2",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
     MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
     KUSD_MINTED_CAP: Decimal.from(15000000),
     MIN_NET_DEBT: Decimal.from(2000)
   },
-  cty: {
-    assetName: "Carbon Token Y",
+  csc: {
+    assetName: "Cookstove Carbon",
     assetAddress: "0x19027dcD6026AA3251505dc7Af262370Fc26Aa89",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
     MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),

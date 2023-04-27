@@ -18,7 +18,7 @@ export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
       <Heading
         as="h2"
       >
-        {vault?.asset?.toUpperCase()} Stability Pool Staking
+        {vault?.asset?.toUpperCase()} Stability Pool Staking <Text variant="assetName">({vault.assetName})</Text>
       </Heading>
 
       <Box sx={{ p: 4 }}>

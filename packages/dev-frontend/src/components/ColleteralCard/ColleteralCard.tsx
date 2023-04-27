@@ -7,6 +7,7 @@ import { InfoIcon } from "../InfoIcon";
 
 type CollateralCardProps = {
   collateralType?: string;
+  vaultName: string;
   totalCollateralRatioPct: string;
   total: Trove;
   kusdInStabilityPool: Decimal;
@@ -16,6 +17,7 @@ type CollateralCardProps = {
 
 export const CollateralCard: React.FC<CollateralCardProps> = ({
   collateralType,
+  vaultName,
   totalCollateralRatioPct,
   total,
   kusdInStabilityPool,
@@ -33,8 +35,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
   };
   return (
     <Card variant="collateralCard" sx={{ mb: 5 }} onClick={() => handleClick()}>
-      <Heading as="h2">{collateralType?.toUpperCase()} Vault</Heading>
-
+      <Heading as="h2">{collateralType?.toUpperCase()} Vault <Text variant="assetName">({vaultName})</Text></Heading>
       <Box sx={{ px: 5, mt: 5 }}>
         <Text as="p" variant="normalBold">
           TOTAL COLLATERAL RATIO{" "}

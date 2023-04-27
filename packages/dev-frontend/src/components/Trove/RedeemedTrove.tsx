@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Card, Heading, Box, Button, Flex } from "theme-ui";
+import { Card, Heading, Box, Button, Flex, Text } from "theme-ui";
 import { CollateralSurplusAction } from "../CollateralSurplusAction";
 import { KumoStoreState, Vault } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
@@ -10,13 +10,14 @@ import { useParams } from "react-router-dom";
 export const RedeemedTrove: React.FC = () => {
   const { collateralType } = useParams<{ collateralType: string }>();
 
-  const { hasSurplusCollateral } = useKumoSelector((state: KumoStoreState) => {
+  const { hasSurplusCollateral, assetName } = useKumoSelector((state: KumoStoreState) => {
     const { vaults } = state;
 
     const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
-    const { collateralSurplusBalance } = vault;
+    const { collateralSurplusBalance, assetName } = vault;
     return {
-      hasSurplusCollateral: !collateralSurplusBalance.isZero
+      hasSurplusCollateral: !collateralSurplusBalance.isZero,
+      assetName
     };
   });
   const { dispatchEvent } = useTroveView();
@@ -32,7 +33,7 @@ export const RedeemedTrove: React.FC = () => {
         width: "100%"
       }}
     >
-      <Heading>Vault</Heading>
+      <Heading as="h2">{collateralType?.toUpperCase()} Vault <Text variant="assetName">({assetName})</Text></Heading>
       <Box sx={{ py: 4, px: [3, 5] }}>
         <InfoMessage title="Your Vault has been redeemed.">
           {hasSurplusCollateral

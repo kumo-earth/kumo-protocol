@@ -228,6 +228,12 @@ const theme: Theme = {
     xlarge: {
       fontSize: 10,
       fontWeight: "bold"
+    },
+    assetName: {
+      fontSize: "12px", 
+      paddingLeft: "3px", 
+      fontWeight: 900, 
+      marginTop: "5px"
     }
   },
 

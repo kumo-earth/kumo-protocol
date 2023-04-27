@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Flex, Button, Box, Card, Heading } from "theme-ui";
+import { Flex, Button, Box, Card, Heading, Text } from "theme-ui";
 import {
   KumoStoreState,
   Decimal,
@@ -175,7 +175,7 @@ export const Adjusting: React.FC = () => {
   return (
     <Card variant="base">
       <Heading>
-        {vault?.asset.toUpperCase()} Vault
+        {vault?.asset.toUpperCase()} Vault <Text variant="assetName">({vault.assetName})</Text>
         {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
             <Icon name="history" size="sm" />

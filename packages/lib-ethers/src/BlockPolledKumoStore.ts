@@ -93,12 +93,12 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
     blockTag?: number
   ): Promise<[baseState: KumoStoreBaseState, extraState: BlockPolledKumoStoreExtraState]> {
     const { userAddress, frontendTag, provider, addresses : { kusdToken, kumoToken } } = this.connection;
-    const asset = ASSET_TOKENS.ctx.assetAddress;
+    let asset = AddressZero;
 
     const vaultState: Vault[] = [];
     Object.keys(ASSET_TOKENS).forEach(async assetToken => {
       const { assetName, assetAddress, KUSD_MINTED_CAP, MIN_NET_DEBT } = ASSET_TOKENS[assetToken];
-
+      asset = assetAddress
       const values = await promiseAllValues({
         blockTimestamp: this._readable._getBlockTimestamp(blockTag),
         _feesFactory: this._readable._getFeesFactory(assetAddress, { blockTag }),
@@ -213,7 +213,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
         }),
 
         frontend: frontendTag
-          ? this._readable.getFrontendStatus("ctx", frontendTag, { blockTag })
+          ? this._readable.getFrontendStatus("nbc", frontendTag, { blockTag })
           : { status: "unregistered" as const },
 
         ...(userAddress
@@ -243,9 +243,9 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
               //     blockTag
               //   }
               // ),
-              // stabilityDeposit: this._readable.getStabilityDeposit("ctx", userAddress, { blockTag }),
+              // stabilityDeposit: this._readable.getStabilityDeposit("nbc", userAddress, { blockTag }),
               kumoStake: this._readable.getKUMOStake(asset, userAddress, { blockTag }),
-              ownFrontend: this._readable.getFrontendStatus("ctx", userAddress, { blockTag })
+              ownFrontend: this._readable.getFrontendStatus("nbc", userAddress, { blockTag })
             }
           : {
               accountBalance: Decimal.ZERO,

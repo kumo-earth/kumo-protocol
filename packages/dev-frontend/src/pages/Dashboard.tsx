@@ -36,6 +36,7 @@ export const Dashboard: React.FC = () => {
           return (
             <CollateralCard
               collateralType={vault.asset}
+              vaultName={vault.assetName}
               totalCollateralRatioPct={totalCollateralRatioPct}
               total={total}
               kusdInStabilityPool={kusdInStabilityPool}

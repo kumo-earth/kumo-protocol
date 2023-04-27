@@ -133,9 +133,9 @@ export const _getContracts = (connection: EthersKumoConnection): _KumoContracts 
 
 export const _getStabilityPoolByAsset = (assetName: string, connection: EthersKumoConnection) => {
   const { stabilityPoolAsset1, stabilityPoolAsset2 } = _getContracts(connection);
-  if (assetName === 'ctx') {
+  if (assetName === 'nbc') {
     return stabilityPoolAsset1
-  } else if (assetName === 'cty') {
+  } else if (assetName === 'csc') {
     return stabilityPoolAsset2
   } else {
     throw new Error("Can't get the required Stability Pool");

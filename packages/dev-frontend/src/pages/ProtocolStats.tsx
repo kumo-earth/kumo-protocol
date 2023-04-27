@@ -16,8 +16,8 @@ export const ProtocolStats: React.FC = () => {
           title="Total Value Locked"
           totalValueLocked={totalCollDebt?.totalColl}
           data={[
-            { name: "CTX TVL", value: `$ ${totalCollDebt?.totalCTXColl.prettify(0)}` },
-            { name: "CTY TVL", value: `$ ${totalCollDebt?.totalCTYColl.prettify(0)}` }
+            { name: "NBC TVL", value: `$ ${totalCollDebt?.totalNBCColl.prettify(0)}` },
+            { name: "CSC TVL", value: `$ ${totalCollDebt?.totalCSCColl.prettify(0)}` }
           ]}
           key={"1"}
         />
@@ -25,8 +25,8 @@ export const ProtocolStats: React.FC = () => {
           title="Total KUSD Minted"
           totalValueLocked={totalCollDebt?.totalDebt}
           data={[
-            { name: "CTX Vault", value: `${totalCollDebt.totalCTXDebt.prettify(0)} KUSD` },
-            { name: "CTY Vault", value: `${totalCollDebt.totalCTYDebt.prettify(0)} KUSD` }
+            { name: "NBC Vault", value: `${totalCollDebt.totalNBCDebt.prettify(0)} KUSD` },
+            { name: "CSC Vault", value: `${totalCollDebt.totalCSCDebt.prettify(0)} KUSD` }
           ]}
           key={"2"}
         />
@@ -35,16 +35,16 @@ export const ProtocolStats: React.FC = () => {
         <StatsPieChart
           title="KUSD Collateralization"
           data={[
-            { name: "CTX", symbol: '$',  value: parseInt(totalCollDebt?.totalCTXColl.toString())},
-            { name: "CTY", symbol: '$', value:  parseInt(totalCollDebt?.totalCTYColl.toString()) }
+            { name: "NBC", symbol: '$',  value: parseInt(totalCollDebt?.totalNBCColl.toString())},
+            { name: "CSC", symbol: '$', value:  parseInt(totalCollDebt?.totalCSCColl.toString()) }
           ]}
           key={"1"}
         />
         <StatsPieChart
           title="KUSD Minted by Vault"
           data={[
-            { name: "CTX", symbol: 'KUSD',  value: parseInt(totalCollDebt.totalCTXDebt.toString()) },
-            { name: "CTY", symbol: 'KUSD', value: parseInt(totalCollDebt.totalCTYDebt.toString()) }
+            { name: "NBC", symbol: 'KUSD',  value: parseInt(totalCollDebt.totalNBCDebt.toString()) },
+            { name: "CSC", symbol: 'KUSD', value: parseInt(totalCollDebt.totalCSCDebt.toString()) }
           ]}
           key={"2"}
         />

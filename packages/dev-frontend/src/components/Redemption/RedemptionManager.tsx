@@ -32,7 +32,7 @@ const select = ({ vaults, kusdBalance }: KumoStoreState) => ({
 const transactionId = "redemption";
 
 export const RedemptionManager: React.FC = () => {
-  const [assetType, setAssetType] = useState("ctx");
+  const [assetType, setAssetType] = useState("nbc");
   const { vaults, kusdBalance } = useKumoSelector(select);
   const vault = vaults.find(vault => vault.asset === assetType) ?? new Vault();
   const price = vault?.price
@@ -117,8 +117,8 @@ export const RedemptionManager: React.FC = () => {
           )}
           <Text sx={{ fontSize: ["10px", "14px"] }}>Vault: </Text>
           <Select value={assetType} onChange={event => setAssetType(event.target.value)}>
-            <option value={"ctx"}>CTX</option>
-            <option value={"cty"}>CTY</option>
+            <option value={"nbc"}>NBC</option>
+            <option value={"csc"}>CSC</option>
           </Select>
         </Box>
       </Heading>

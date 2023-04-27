@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 
-import { Heading, Box, Card, Button } from "theme-ui";
+import { Heading, Box, Card, Button, Text } from "theme-ui";
 
 import {
   Decimal,
@@ -50,7 +50,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   const { collateralType } = useParams<{ collateralType: string }>();
   const { dispatchEvent } = useStabilityView();
   const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
-  const { kusdInStabilityPool } = vault;
+  const { kusdInStabilityPool, assetName } = vault;
   const location = useLocation();
 
   const edited = !editedKUSD.eq(originalDeposit.currentKUSD);
@@ -71,7 +71,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
   return (
     <Card variant="modalCard">
       <Heading as="h2">
-        {getPathName(location).toUpperCase()} Stability Pool
+        {getPathName(location).toUpperCase()} Stability Pool <Text variant="assetName">({assetName})</Text>
         {edited && !changePending && (
           <Button
             variant="titleIcon"
