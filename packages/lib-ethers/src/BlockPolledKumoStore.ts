@@ -96,7 +96,8 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
     let asset = AddressZero;
 
     const vaultState: Vault[] = [];
-    Object.keys(ASSET_TOKENS).forEach(async assetToken => {
+    const assetTokenKeys = Object.keys(ASSET_TOKENS)
+    for await (const assetToken of assetTokenKeys) { 
       const { assetName, assetAddress, KUSD_MINTED_CAP, MIN_NET_DEBT } = ASSET_TOKENS[assetToken];
       asset = assetAddress
       const values = await promiseAllValues({
@@ -188,7 +189,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
         ...derivedValues,
         ...values
       });
-    });
+    }
 
     const { blockTimestamp, _feesFactory, calculateRemainingKUMO, ...baseState } =
       await promiseAllValues({
