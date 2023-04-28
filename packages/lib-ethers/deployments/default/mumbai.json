@@ -33,6 +33,7 @@
     "multiTroveGetter": "0x19e6fA6Db4583e764aA064A689fA7db8c322c715",
     "uniToken": "0x0A925909aC5588B26fae9f7D8a391212C02de868",
     "mockAsset1": "0x69C735ce75B3Dec7c1Cdf21306628A6eb1b81346",
-    "mockAsset2": "0x874bE2797c1038dB009dc00ed3Bc89C5366f1F61"
+    "mockAsset2": "0x874bE2797c1038dB009dc00ed3Bc89C5366f1F61",
+    "troveRedemptor": "0"
   }
 }

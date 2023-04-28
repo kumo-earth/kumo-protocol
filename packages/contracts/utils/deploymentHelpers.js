@@ -1,5 +1,11 @@
 const SortedTroves = artifacts.require("./SortedTroves.sol");
-const TroveManager = artifacts.require("./TroveManager.sol");
+
+const TroveManager = artifacts.require(
+  "TroveManager",
+  "../hardhat-diamond-abi/HardhatDiamondABI.sol"
+);
+const DiamondInit = artifacts.require("./DiamondInit.sol");
+
 const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol");
 const KUSDToken = artifacts.require("./KUSDToken.sol");
 const ActivePool = artifacts.require("./ActivePool.sol");
@@ -28,7 +34,6 @@ const ActivePoolTester = artifacts.require("./ActivePoolTester.sol");
 const DefaultPoolTester = artifacts.require("./DefaultPoolTester.sol");
 const KumoMathTester = artifacts.require("./KumoMathTester.sol");
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol");
-const TroveManagerTester = artifacts.require("./TroveManagerTester.sol");
 const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol");
 const ERC20Test = artifacts.require("./ERC20Test.sol");
 
@@ -63,6 +68,12 @@ KUMO contracts consist of only those contracts related to the KUMO Token:
 const ZERO_ADDRESS = "0x" + "0".repeat(40);
 const maxBytes32 = "0x" + "f".repeat(64);
 
+const FacetCutAction = {
+  Add: 0,
+  Replace: 1,
+  Remove: 2
+};
+
 let Asset1Address;
 let Asset2Address;
 
@@ -94,7 +105,7 @@ class DeploymentHelper {
   static async deployKumoCoreHardhat() {
     const priceFeedTestnet = await PriceFeedTestnet.new();
     const sortedTroves = await SortedTroves.new();
-    const troveManager = await TroveManager.new();
+    const troveManager = await TroveManager.at(await this.deployTroveManagerDiamond());
     const activePool = await ActivePool.new();
     // const stabilityPool = await StabilityPool.new()
     const gasPool = await GasPool.new();
@@ -160,7 +171,7 @@ class DeploymentHelper {
     testerContracts.collSurplusPool = await CollSurplusPool.new();
     testerContracts.math = await KumoMathTester.new();
     testerContracts.borrowerOperations = await BorrowerOperationsTester.new();
-    testerContracts.troveManager = await TroveManagerTester.new();
+    testerContracts.troveManager = await TroveManager.at(await this.deployTroveManagerDiamond());
     testerContracts.functionCaller = await FunctionCaller.new();
     testerContracts.hintHelpers = await HintHelpers.new();
     testerContracts.kumoParameters = await KumoParameters.new();
@@ -399,21 +410,19 @@ class DeploymentHelper {
     await contracts.kumoParameters.setAddresses(
       contracts.activePool.address,
       contracts.defaultPool.address,
-      contracts.priceFeedTestnet.address
+      contracts.gasPool.address,
+      contracts.priceFeedTestnet.address,
+      contracts.borrowerOperations.address,
+      contracts.collSurplusPool.address,
+      contracts.kusdToken.address,
+      contracts.stabilityPoolFactory.address,
+      contracts.sortedTroves.address,
+      KUMOContracts.kumoToken.address,
+      KUMOContracts.kumoStaking.address
     );
 
     // set contracts in the Trove Manager
-    await contracts.troveManager.setAddresses(
-      contracts.borrowerOperations.address,
-      contracts.stabilityPoolFactory.address,
-      contracts.gasPool.address,
-      contracts.collSurplusPool.address,
-      contracts.kusdToken.address,
-      contracts.sortedTroves.address,
-      KUMOContracts.kumoToken.address,
-      KUMOContracts.kumoStaking.address,
-      contracts.kumoParameters.address
-    );
+    await contracts.troveManager.setAddresses(contracts.kumoParameters.address);
 
     // set contracts in BorrowerOperations
     await contracts.borrowerOperations.setAddresses(
@@ -531,6 +540,48 @@ class DeploymentHelper {
 
   static async deployERC20Asset(name, symbol) {
     return await ERC20Test.new(name, symbol);
+  }
+
+  static async deployTroveManagerDiamond() {
+    const troveManagerFacet = await (await ethers.getContractFactory("TroveManagerFacet")).deploy();
+    const troveRedemptorFacet = await (
+      await ethers.getContractFactory("TroveRedemptorFacet")
+    ).deploy();
+    const troveTesterFacet = await (
+      await ethers.getContractFactory("CDPManagerTesterFacet")
+    ).deploy();
+
+    const facets = [troveManagerFacet, troveRedemptorFacet, troveTesterFacet];
+
+    const diamondInit = await (await ethers.getContractFactory("DiamondInit")).deploy();
+    const troveManagerDiamond = await (
+      await ethers.getContractFactory("TroveManagerDiamond")
+    ).deploy();
+    const functionCall = diamondInit.interface.encodeFunctionData("init");
+
+    const diamondCut = [];
+
+    for (const deployedFacet of facets) {
+      diamondCut.push([deployedFacet.address, FacetCutAction.Add, this.getSelectors(deployedFacet)]);
+    }
+
+    const diamondCutFacet = await ethers.getContractAt("TroveManager", troveManagerDiamond.address);
+    const tx = await diamondCutFacet.diamondCut(diamondCut, diamondInit.address, functionCall, {
+      gasLimit: 5000000
+    });
+
+    return troveManagerDiamond.address;
+  }
+
+  static getSelectors(contract) {
+    const signatures = Object.keys(contract.interface.functions);
+    const selectors = signatures.reduce((acc, val) => {
+      if (val !== "init(bytes)") {
+        acc.push(contract.interface.getSighash(val));
+      }
+      return acc;
+    }, []);
+    return selectors;
   }
 }
 

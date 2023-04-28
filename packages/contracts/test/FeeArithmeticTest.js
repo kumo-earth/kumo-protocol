@@ -2,7 +2,6 @@ const Decimal = require("decimal.js");
 const deploymentHelper = require("../utils/deploymentHelpers.js");
 const { BNConverter } = require("../utils/BNConverter.js");
 const testHelpers = require("../utils/testHelpers.js");
-const TroveManagerTester = artifacts.require("./TroveManagerTester.sol");
 const KumoMathTester = artifacts.require("./KumoMathTester.sol");
 
 const th = testHelpers.TestHelper;
@@ -198,9 +197,6 @@ contract("Fee arithmetic tests", async accounts => {
   ];
 
   before(async () => {
-    troveManagerTester = await TroveManagerTester.new();
-    TroveManagerTester.setAsDeployed(troveManagerTester);
-
     mathTester = await KumoMathTester.new();
     KumoMathTester.setAsDeployed(mathTester);
   });
@@ -217,6 +213,8 @@ contract("Fee arithmetic tests", async accounts => {
     await deploymentHelper.connectKUMOContracts(KUMOContracts);
     await deploymentHelper.connectCoreContracts(contracts, KUMOContracts);
     await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts);
+
+    troveManagerTester = contracts.troveManager;
   });
 
   it("minutesPassedSinceLastFeeOp(): returns minutes passed for no time increase", async () => {

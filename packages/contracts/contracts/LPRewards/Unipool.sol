@@ -12,8 +12,7 @@ import "../Interfaces/IKUMOToken.sol";
 import "./Dependencies/SafeERC20.sol";
 import "./Interfaces/ILPTokenWrapper.sol";
 import "./Interfaces/IUnipool.sol";
-import "../Dependencies/console.sol";
-
+import "hardhat/console.sol";
 
 // Adapted from: https://github.com/Synthetixio/Unipool/blob/master/contracts/Unipool.sol
 // Some more useful references:
@@ -75,7 +74,7 @@ contract LPTokenWrapper is ILPTokenWrapper {
  */
 contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
     using SafeMath for uint256;
-    string constant public NAME = "Unipool";
+    string public constant NAME = "Unipool";
     // bool public isInitialized;
 
     uint256 public duration;
@@ -100,18 +99,14 @@ contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
         address _kumoTokenAddress,
         address _uniTokenAddress,
         uint256 _duration
-    )
-        external
-        override
-        onlyOwner
-    {
+    ) external override onlyOwner {
         // require(!isInitialized, "Already initialized");
         checkContract(_kumoTokenAddress);
         checkContract(_uniTokenAddress);
-		// isInitialized = true;
+        // isInitialized = true;
 
-		// __Ownable_init();
-        
+        // __Ownable_init();
+
         uniToken = IERC20(_uniTokenAddress);
         kumoToken = IKUMOToken(_kumoTokenAddress);
         duration = _duration;
@@ -136,11 +131,9 @@ contract Unipool is LPTokenWrapper, Ownable, CheckContract, IUnipool {
         }
         return
             rewardPerTokenStored.add(
-                lastTimeRewardApplicable()
-                    .sub(lastUpdateTime)
-                    .mul(rewardRate)
-                    .mul(1e18)
-                    .div(totalSupply())
+                lastTimeRewardApplicable().sub(lastUpdateTime).mul(rewardRate).mul(1e18).div(
+                    totalSupply()
+                )
             );
     }
 

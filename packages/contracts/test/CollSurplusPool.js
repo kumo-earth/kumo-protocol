@@ -8,7 +8,6 @@ const toBN = th.toBN;
 const mv = testHelpers.MoneyValues;
 const timeValues = testHelpers.TimeValues;
 
-const TroveManagerTester = artifacts.require("TroveManagerTester");
 const KUSDToken = artifacts.require("KUSDToken");
 
 contract("CollSurplusPool", async accounts => {
@@ -28,7 +27,6 @@ contract("CollSurplusPool", async accounts => {
 
   beforeEach(async () => {
     contracts = await deploymentHelper.deployKumoCore();
-    contracts.troveManager = await TroveManagerTester.new();
     contracts.kusdToken = await KUSDToken.new(
       contracts.troveManager.address,
       contracts.stabilityPoolFactory.address,

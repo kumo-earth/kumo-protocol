@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.11;
-pragma experimental ABIEncoderV2;
 
-import "./TroveManager.sol";
+import {Trove, RewardSnapshot} from "./Libraries/LibAppStorage.sol";
+import "./Interfaces/ITroveManagerDiamond.sol";
 import "./SortedTroves.sol";
 
 /*  Helper contract for grabbing Trove data for the front end. Not part of the core Kumo system. */
@@ -17,10 +17,10 @@ contract MultiTroveGetter {
         uint256 snapshotKUSDDebt;
     }
 
-    TroveManager public troveManager; // XXX Troves missing from ITroveManager?
+    ITroveManagerDiamond public troveManager; // XXX Troves missing from ITroveManager?
     ISortedTroves public sortedTroves;
 
-    constructor(TroveManager _troveManager, ISortedTroves _sortedTroves) {
+    constructor(ITroveManagerDiamond _troveManager, ISortedTroves _sortedTroves) {
         troveManager = _troveManager;
         sortedTroves = _sortedTroves;
     }
@@ -75,18 +75,21 @@ contract MultiTroveGetter {
 
         for (uint256 idx = 0; idx < _count; ++idx) {
             _troves[idx].owner = currentTroveowner;
-            (
-                _troves[idx].asset,
-                _troves[idx].debt,
-                _troves[idx].coll,
-                _troves[idx].stake,
-                /* status */
-                /* arrayIndex */
-                ,
 
-            ) = troveManager.Troves(currentTroveowner, _asset);
-            (_troves[idx].snapshotAsset, _troves[idx].snapshotKUSDDebt) = troveManager
-                .rewardSnapshots(_asset, currentTroveowner);
+            Trove memory trove = troveManager.Troves(currentTroveowner, _asset);
+
+            _troves[idx].asset = trove.asset;
+            _troves[idx].debt = trove.debt;
+            _troves[idx].coll = trove.coll;
+            _troves[idx].stake = trove.stake;
+
+            RewardSnapshot memory rewardSnapshot = troveManager.rewardSnapshots(
+                currentTroveowner,
+                _asset
+            );
+
+            _troves[idx].snapshotAsset = rewardSnapshot.asset;
+            _troves[idx].snapshotKUSDDebt = rewardSnapshot.KUSDDebt;
 
             currentTroveowner = sortedTroves.getNext(_asset, currentTroveowner);
         }
@@ -107,18 +110,21 @@ contract MultiTroveGetter {
 
         for (uint256 idx = 0; idx < _count; ++idx) {
             _troves[idx].owner = currentTroveowner;
-            (
-                _troves[idx].asset,
-                _troves[idx].debt,
-                _troves[idx].coll,
-                _troves[idx].stake,
-                /* status */
-                /* arrayIndex */
-                ,
 
-            ) = troveManager.Troves(currentTroveowner, _asset);
-            (_troves[idx].snapshotAsset, _troves[idx].snapshotKUSDDebt) = troveManager
-                .rewardSnapshots(_asset, currentTroveowner);
+            Trove memory trove = troveManager.Troves(currentTroveowner, _asset);
+
+            _troves[idx].asset = trove.asset;
+            _troves[idx].debt = trove.debt;
+            _troves[idx].coll = trove.coll;
+            _troves[idx].stake = trove.stake;
+
+            RewardSnapshot memory rewardSnapshot = troveManager.rewardSnapshots(
+                currentTroveowner,
+                _asset
+            );
+
+            _troves[idx].snapshotAsset = rewardSnapshot.asset;
+            _troves[idx].snapshotKUSDDebt = rewardSnapshot.KUSDDebt;
 
             currentTroveowner = sortedTroves.getPrev(_asset, currentTroveowner);
         }
