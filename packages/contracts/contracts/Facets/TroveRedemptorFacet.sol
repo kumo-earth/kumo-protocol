@@ -166,31 +166,25 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         RedemptionTotals memory totals;
 
         _requireAfterBootstrapPeriod();
-        // requireValidMaxFeePercentage
-        require(
-            _maxFeePercentage >= s.kumoParams.REDEMPTION_FEE_FLOOR(_asset) &&
-                _maxFeePercentage <= KumoMath.DECIMAL_PRECISION,
-            "TroveManager: Max fee percentage must be between 0.5% and 100%"
-        );
+        _requireValidMaxFeePercentage(_asset, _maxFeePercentage);
 
         totals.price = s.kumoParams.priceFeed().fetchPrice(_asset);
 
-        // requireTCRoverMCR
-        require(
-            LibKumoBase._getTCR(_asset, totals.price) >= s.kumoParams.MCR(_asset),
-            "TroveManager: Cannot redeem when TCR < MCR"
-        );
+        _requireTCRoverMCR(_asset, totals.price);
 
-        // _requireAmountGreaterThanZero
-        require(_KUSDamount > 0, "TroveManager: Amount must be greater than zero");
+        _requireAmountGreaterThanZero(_KUSDamount);
 
         _requireKUSDBalanceCoversRedemption(LibMeta.msgSender(), _KUSDamount);
 
         totals.totalKUSDSupplyAtStart = LibKumoBase._getEntireSystemDebt(_asset);
+
+        // Confirm redeemer's balance is less than total KUSD supply
+        assert(s.kusdToken.balanceOf(LibMeta.msgSender()) <= totals.totalKUSDSupplyAtStart);
+
         totals.remainingKUSD = _KUSDamount;
         address currentBorrower;
 
-        if (isValidFirstRedemptionHint(_asset, _firstRedemptionHint, totals.price)) {
+        if (_isValidFirstRedemptionHint(_asset, _firstRedemptionHint, totals.price)) {
             currentBorrower = _firstRedemptionHint;
         } else {
             currentBorrower = s.sortedTroves.getLast(_asset);
@@ -256,7 +250,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         s.activePool.sendAsset(_asset, address(s.kumoStaking), totals.AssetFee);
         s.kumoStaking.increaseF_Asset(_asset, totals.AssetFee);
 
-        uint256 assetToSendToRedeemer = totals.totalAssetDrawn - totals.AssetFee;
+        totals.AssetToSendToRedeemer = totals.totalAssetDrawn - totals.AssetFee;
 
         emit Redemption(
             _asset,
@@ -270,7 +264,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         s.kusdToken.burn(LibMeta.msgSender(), totals.totalKUSDToRedeem);
         // Update Active Pool KUSD, and send Asset to account
         s.activePool.decreaseKUSDDebt(_asset, totals.totalKUSDToRedeem);
-        s.activePool.sendAsset(_asset, LibMeta.msgSender(), assetToSendToRedeemer);
+        s.activePool.sendAsset(_asset, LibMeta.msgSender(), totals.AssetToSendToRedeemer);
     }
 
     // Redeem as much collateral as possible from _borrower's Trove in exchange for KUSD up to _maxKUSDamount
@@ -297,7 +291,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         // Get the ETHLot of equivalent value in USD
         singleRedemption.AssetLot = (singleRedemption.KUSDLot * KumoMath.DECIMAL_PRECISION) / _price;
 
-        // Decrease the debt and collateral of the current Trove according to the KUSD lot and corresponding ETH to send
+        // Decrease the debt and collateral of the current Trove according to the KUSD lot and corresponding Asset to send
         uint256 newDebt = s.Troves[vars._borrower][vars._asset].debt - singleRedemption.KUSDLot;
         uint256 newColl = s.Troves[vars._borrower][vars._asset].coll - singleRedemption.AssetLot;
 
@@ -413,7 +407,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
 
         require(totals.totalDebtInSequence > 0, "TroveManager: nothing to liquidate");
 
-        // Move liquidated ETH and KUSD to the appropriate pools
+        // Move liquidated Asset and KUSD to the appropriate pools
         stabilityPoolCached.offset(totals.totalDebtToOffset, totals.totalCollToSendToSP);
         _redistributeDebtAndColl(
             _asset,
@@ -424,7 +418,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
             s.activePool.sendAsset(_asset, address(s.collSurplusPool), totals.totalCollSurplus);
         }
 
-        updateSystemSnapshots_excludeCollRemainder(_asset, totals.totalCollGasCompensation);
+        _updateSystemSnapshots_excludeCollRemainder(_asset, totals.totalCollGasCompensation);
 
         emit Liquidation(
             _asset,
@@ -435,7 +429,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         );
 
         // Send gas compensation to caller
-        sendGasCompensation(
+        _sendGasCompensation(
             _asset,
             LibMeta.msgSender(),
             totals.totalkusdGasCompensation,
@@ -478,7 +472,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
 
         require(totals.totalDebtInSequence > 0, "TroveManager: nothing to liquidate");
 
-        // Move liquidated ETH and KUSD to the appropriate pools
+        // Move liquidated Asset and KUSD to the appropriate pools
         stabilityPoolCached.offset(totals.totalDebtToOffset, totals.totalCollToSendToSP);
         _redistributeDebtAndColl(
             _asset,
@@ -489,7 +483,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
             s.activePool.sendAsset(_asset, address(s.collSurplusPool), totals.totalCollSurplus);
         }
 
-        updateSystemSnapshots_excludeCollRemainder(_asset, totals.totalCollGasCompensation);
+        _updateSystemSnapshots_excludeCollRemainder(_asset, totals.totalCollGasCompensation);
 
         emit Liquidation(
             _asset,
@@ -500,7 +494,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         );
 
         // Send gas compensation to caller
-        sendGasCompensation(
+        _sendGasCompensation(
             _asset,
             LibMeta.msgSender(),
             totals.totalkusdGasCompensation,
@@ -646,7 +640,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
          * 4) Store these errors for use in the next correction when this function is called.
          * 5) Note: static analysis tools complain about this "division before multiplication", however, it is intended.
          */
-        uint256 ETHNumerator = _coll *
+        uint256 AssetNumerator = _coll *
             KumoMath.DECIMAL_PRECISION +
             s.lastAssetError_Redistribution[_asset];
         uint256 KUSDDebtNumerator = _debt *
@@ -654,10 +648,10 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
             s.lastKUSDDebtError_Redistribution[_asset];
 
         // Get the per-unit-staked terms
-        uint256 AssetRewardPerUnitStaked = ETHNumerator / s.totalStakes[_asset];
+        uint256 AssetRewardPerUnitStaked = AssetNumerator / s.totalStakes[_asset];
         uint256 KUSDDebtRewardPerUnitStaked = KUSDDebtNumerator / s.totalStakes[_asset];
 
-        uint256 _lastAssetError = ETHNumerator -
+        uint256 _lastAssetError = AssetNumerator -
             (AssetRewardPerUnitStaked * (s.totalStakes[_asset]));
         uint256 _lastKUSDDebtError = KUSDDebtNumerator -
             (KUSDDebtRewardPerUnitStaked * (s.totalStakes[_asset]));
@@ -675,7 +669,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         s.activePool.sendAsset(_asset, address(s.defaultPool), _coll);
     }
 
-    function isValidFirstRedemptionHint(
+    function _isValidFirstRedemptionHint(
         address _asset,
         address _firstRedemptionHint,
         uint256 _price
@@ -778,7 +772,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
     ) internal returns (uint256) {
         uint256 decayedBaseRate = LibTroveManager._calcDecayedBaseRate(_asset);
 
-        /* Convert the drawn ETH back to KUSD at face value rate (1 KUSD:1 USD), in order to get
+        /* Convert the drawn Asset back to KUSD at face value rate (1 KUSD:1 USD), in order to get
          * the fraction of total supply that was redeemed at face value. */
         uint256 redeemedKUSDFraction = (_amountDrawn * _price) / _totalKUSDSupply;
 
@@ -798,10 +792,10 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
 
     /*
      * Called when a full redemption occurs, and closes the trove.
-     * The redeemer swaps (debt - liquidation reserve) KUSD for (debt - liquidation reserve) worth of ETH, so the KUSD liquidation reserve left corresponds to the remaining debt.
+     * The redeemer swaps (debt - liquidation reserve) KUSD for (debt - liquidation reserve) worth of Asset, so the KUSD liquidation reserve left corresponds to the remaining debt.
      * In order to close the trove, the KUSD liquidation reserve is burned, and the corresponding debt is removed from the active pool.
      * The debt recorded on the trove's struct is zero'd elswhere, in _closeTrove.
-     * Any surplus ETH left in the trove, is sent to the Coll surplus pool, and can be later claimed by the borrower.
+     * Any surplus Asset left in the trove, is sent to the Coll surplus pool, and can be later claimed by the borrower.
      */
     function _redeemCloseTrove(
         address _asset,
@@ -810,10 +804,10 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         uint256 _amount
     ) internal {
         s.kusdToken.burn(s.gasPoolAddress, _KUSD);
-        // Update Active Pool KUSD, and send ETH to account
+        // Update Active Pool KUSD, and send Asset to account
         s.activePool.decreaseKUSDDebt(_asset, _KUSD);
 
-        // send ETH from Active Pool to CollSurplus Pool
+        // send Asset from Active Pool to CollSurplus Pool
         s.collSurplusPool.accountSurplus(_asset, _borrower, _amount);
         s.activePool.sendAsset(_asset, address(s.collSurplusPool), _amount);
     }
@@ -1211,7 +1205,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         return newTotals;
     }
 
-    // Check whether or not the system *would be* in Recovery Mode, given an ETH:USD price, and the entire system coll and debt.
+    // Check whether or not the system *would be* in Recovery Mode, given an Asset:USD price, and the entire system coll and debt.
     function _checkPotentialRecoveryMode(
         address _asset,
         uint256 _entireSystemColl,
@@ -1285,7 +1279,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
     }
 
     /*
-     *  Get its offset coll/debt and ETH gas comp, and close the trove.
+     *  Get its offset coll/debt and Asset gas comp, and close the trove.
      */
     function _getCappedOffsetVals(
         address _asset,
@@ -1312,7 +1306,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
 
     // --- Liquidation helper functions ---
 
-    function sendGasCompensation(
+    function _sendGasCompensation(
         address _asset,
         address _liquidator,
         uint256 _KUSD,
@@ -1324,9 +1318,9 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
             s.kusdToken.returnFromPool(s.gasPoolAddress, _liquidator, _KUSD);
         }
 
-        // ETH gas compensation could only be zero if all liquidated troves in the sequence had collateral lower than 200 Wei
+        // Asset gas compensation could only be zero if all liquidated troves in the sequence had collateral lower than 200 Wei
         // (see LibKumoBase._getCollGasCompensation function in KumoBase)
-        // With the current values of min debt this seems quite unlikely, unless ETH price was in the order of magnitude of $10^19 or more,
+        // With the current values of min debt this seems quite unlikely, unless Asset price was in the order of magnitude of $10^19 or more,
         // but it’s ok to have this here as a sanity check
 
         if (_amount > 0) {
@@ -1340,11 +1334,11 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
      *
      * The calculation excludes a portion of collateral that is in the ActivePool:
      *
-     * the total ETH gas compensation from the liquidation sequence
+     * the total Asset gas compensation from the liquidation sequence
      *
-     * The ETH as compensation must be excluded as it is always sent out at the very end of the liquidation sequence.
+     * The Asset as compensation must be excluded as it is always sent out at the very end of the liquidation sequence.
      */
-    function updateSystemSnapshots_excludeCollRemainder(
+    function _updateSystemSnapshots_excludeCollRemainder(
         address _asset,
         uint256 _collRemainder
     ) internal {
@@ -1367,5 +1361,24 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
             block.timestamp >= systemDeploymentTime + s.kumoParams.BOOTSTRAP_PERIOD(),
             "TroveManager: Redemptions are not allowed during bootstrap phase"
         );
+    }
+
+    function _requireValidMaxFeePercentage(address _asset, uint256 _maxFeePercentage) internal view {
+        require(
+            _maxFeePercentage >= s.kumoParams.REDEMPTION_FEE_FLOOR(_asset) &&
+                _maxFeePercentage <= KumoMath.DECIMAL_PRECISION,
+            "TroveManager: Max fee percentage must be between 0.5% and 100%"
+        );
+    }
+
+    function _requireTCRoverMCR(address _asset, uint256 _price) internal view {
+        require(
+            LibKumoBase._getTCR(_asset, _price) >= s.kumoParams.MCR(_asset),
+            "TroveManager: Cannot redeem when TCR < MCR"
+        );
+    }
+
+    function _requireAmountGreaterThanZero(uint256 _KUSDamount) internal pure {
+        require(_KUSDamount > 0, "TroveManager: Amount must be greater than zero");
     }
 }

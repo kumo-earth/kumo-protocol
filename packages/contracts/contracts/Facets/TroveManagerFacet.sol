@@ -199,7 +199,7 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
     {
         uint256 snapshotAsset = s.rewardSnapshots[_borrower][_asset].asset;
         uint256 rewardPerUnitStaked = s.L_ASSETS[_asset] - (snapshotAsset);
-        if (rewardPerUnitStaked == 0 || !isTroveActive(_asset, _borrower)) {
+        if (rewardPerUnitStaked == 0 || !_isTroveActive(_asset, _borrower)) {
             return 0;
         }
         uint256 stake = s.Troves[_borrower][_asset].stake;
@@ -395,7 +395,7 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
     }
 
     // --- Trove property getters ---
-    function isTroveActive(address _asset, address _borrower) internal view returns (bool) {
+    function _isTroveActive(address _asset, address _borrower) internal view returns (bool) {
         return this.getTroveStatus(_asset, _borrower) == uint256(Status.active);
     }
 

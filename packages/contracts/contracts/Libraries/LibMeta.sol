@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.11;
 
+/******************************************************************************\
+* Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
+https://github.com/aavegotchi/aavegotchi-contracts/blob/master/contracts/shared/libraries/LibMeta.sol
+******************************************************************************/
+
 library LibMeta {
     function getChainID() internal view returns (uint256 id) {
         assembly {
