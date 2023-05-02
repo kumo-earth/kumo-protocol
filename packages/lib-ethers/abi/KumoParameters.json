@@ -88,6 +88,25 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "oldMintCap",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newMintCap",
+        "type": "uint256"
+      }
+    ],
+    "name": "KUSDMintCapChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "oldMCR",
         "type": "uint256"
       },
@@ -616,6 +635,19 @@
   },
   {
     "inputs": [],
+    "name": "kusdMintCap",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -824,6 +856,19 @@
       }
     ],
     "name": "setKUMOGasCompensation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "newCap",
+        "type": "uint256"
+      }
+    ],
+    "name": "setKUSDMintCap",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

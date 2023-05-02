@@ -7830,6 +7830,33 @@ contract("BorrowerOperations", async accounts => {
       });
     });
 
+    it("KUSDMintRemainder - returns correct value", async () => {
+      // Set KUSD mint cap to 1 million
+      const mintCap = toBN(dec(1, 24));
+      await kumoParams.setKUSDMintCap(mintCap);
+
+      const troveColl = toBN(dec(1000, "ether"));
+      const amountMinted = toBN(dec(123456, 18));
+      // mint 123456 KUSD
+      await borrowerOperations.openTrove(
+        assetAddress1,
+        troveColl,
+        th._100pct,
+        amountMinted,
+        alice,
+        alice,
+        { from: alice }
+      );
+
+      const KUSDMintRemainder = await borrowerOperations.KUSDMintRemainder();
+      const expectedFee = await troveManager.getBorrowingFeeWithDecay(assetAddress1, amountMinted);
+
+      assert.equal(
+        KUSDMintRemainder.toString(),
+        mintCap.sub(amountMinted).sub(expectedFee).sub(KUSD_GAS_COMPENSATION).toString()
+      );
+    });
+
     if (!withProxy) {
       // ToDo: Evalute if test is necessary: https://github.com/kumodao/kumo-protocol/issues/188
       it.skip("closeTrove(): fails if owner cannot receive ETH", async () => {

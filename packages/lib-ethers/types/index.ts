@@ -67,6 +67,7 @@ export interface ActivePool
 
 interface BorrowerOperationsCalls {
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
+  KUSDMintRemainder(_overrides?: CallOverrides): Promise<BigNumber>;
   MIN_NET_DEBT(_overrides?: CallOverrides): Promise<BigNumber>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   getCompositeDebt(_asset: string, _debt: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
@@ -1075,6 +1076,7 @@ interface KumoParametersCalls {
   hasCollateralConfigured(arg0: string, _overrides?: CallOverrides): Promise<boolean>;
   isInitialized(_overrides?: CallOverrides): Promise<boolean>;
   isOwner(_overrides?: CallOverrides): Promise<boolean>;
+  kusdMintCap(_overrides?: CallOverrides): Promise<BigNumber>;
   owner(_overrides?: CallOverrides): Promise<string>;
   priceFeed(_overrides?: CallOverrides): Promise<string>;
   redemptionBlock(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
@@ -1089,6 +1091,7 @@ interface KumoParametersTransactions {
   setCCR(_asset: string, newCCR: BigNumberish, _overrides?: Overrides): Promise<void>;
   setCollateralParameters(_asset: string, newMCR: BigNumberish, newCCR: BigNumberish, gasCompensation: BigNumberish, minNetDebt: BigNumberish, precentDivisor: BigNumberish, borrowingFeeFloor: BigNumberish, maxBorrowingFee: BigNumberish, redemptionFeeFloor: BigNumberish, _overrides?: Overrides): Promise<void>;
   setKUMOGasCompensation(_asset: string, gasCompensation: BigNumberish, _overrides?: Overrides): Promise<void>;
+  setKUSDMintCap(newCap: BigNumberish, _overrides?: Overrides): Promise<void>;
   setMCR(_asset: string, newMCR: BigNumberish, _overrides?: Overrides): Promise<void>;
   setMaxBorrowingFee(_asset: string, maxBorrowingFee: BigNumberish, _overrides?: Overrides): Promise<void>;
   setMinNetDebt(_asset: string, minNetDebt: BigNumberish, _overrides?: Overrides): Promise<void>;
@@ -1103,6 +1106,7 @@ export interface KumoParameters
     BorrowingFeeFloorChanged(oldBorrowingFloorFee?: null, newBorrowingFloorFee?: null): EventFilter;
     CCRChanged(oldCCR?: null, newCCR?: null): EventFilter;
     GasCompensationChanged(oldGasComp?: null, newGasComp?: null): EventFilter;
+    KUSDMintCapChanged(oldMintCap?: null, newMintCap?: null): EventFilter;
     MCRChanged(oldMCR?: null, newMCR?: null): EventFilter;
     MaxBorrowingFeeChanged(oldMaxBorrowingFee?: null, newMaxBorrowingFee?: null): EventFilter;
     MinNetDebtChanged(oldMinNet?: null, newMinNet?: null): EventFilter;
@@ -1115,6 +1119,7 @@ export interface KumoParameters
   extractEvents(logs: Log[], name: "BorrowingFeeFloorChanged"): _TypedLogDescription<{ oldBorrowingFloorFee: BigNumber; newBorrowingFloorFee: BigNumber }>[];
   extractEvents(logs: Log[], name: "CCRChanged"): _TypedLogDescription<{ oldCCR: BigNumber; newCCR: BigNumber }>[];
   extractEvents(logs: Log[], name: "GasCompensationChanged"): _TypedLogDescription<{ oldGasComp: BigNumber; newGasComp: BigNumber }>[];
+  extractEvents(logs: Log[], name: "KUSDMintCapChanged"): _TypedLogDescription<{ oldMintCap: BigNumber; newMintCap: BigNumber }>[];
   extractEvents(logs: Log[], name: "MCRChanged"): _TypedLogDescription<{ oldMCR: BigNumber; newMCR: BigNumber }>[];
   extractEvents(logs: Log[], name: "MaxBorrowingFeeChanged"): _TypedLogDescription<{ oldMaxBorrowingFee: BigNumber; newMaxBorrowingFee: BigNumber }>[];
   extractEvents(logs: Log[], name: "MinNetDebtChanged"): _TypedLogDescription<{ oldMinNet: BigNumber; newMinNet: BigNumber }>[];

@@ -685,6 +685,10 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         _kusdToken.burn(_account, _KUSD);
     }
 
+    function KUSDMintRemainder() external view returns (uint256) {
+        return kumoParams.kusdMintCap() - kusdToken.totalSupply();
+    }
+
     // --- 'Require' wrapper functions ---
 
     function _requireSingularCollChange(uint256 _collWithdrawal, uint256 _amountSent) internal view {
