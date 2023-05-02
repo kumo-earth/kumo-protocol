@@ -94,7 +94,7 @@ contract("StabilityPool - Withdrawal of stability deposit - Reward calculations"
       await deploymentHelper.connectKUMOContractsToCore(KUMOContracts, contracts);
 
       // Set KUSD mint cap to 1 trillion
-      await contracts.kumoParameters.setKUSDMintCap(dec(1, 30));
+      await contracts.kumoParameters.setKUSDMintCap(assetAddress1, dec(1, 30));
     });
 
     // --- Compounding tests ---
@@ -4125,7 +4125,7 @@ contract("StabilityPool - Withdrawal of stability deposit - Reward calculations"
 
     it("withdrawAssetGainToTrove(): Large liquidated coll/debt, deposits and ETH price", async () => {
       // Set KUSD mint cap to a lot
-      await contracts.kumoParameters.setKUSDMintCap(dec(1, 50));
+      await contracts.kumoParameters.setKUSDMintCap(assetAddress1, dec(1, 50));
 
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(
@@ -4218,7 +4218,7 @@ contract("StabilityPool - Withdrawal of stability deposit - Reward calculations"
 
     it("withdrawAssetGainToTrove(): Small liquidated coll/debt, large deposits and ETH price", async () => {
       // Set KUSD mint cap to a lot
-      await contracts.kumoParameters.setKUSDMintCap(dec(1, 50));
+      await contracts.kumoParameters.setKUSDMintCap(assetAddress1, dec(1, 50));
 
       // Whale opens Trove with 100k ETH
       await borrowerOperations.openTrove(

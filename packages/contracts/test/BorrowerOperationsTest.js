@@ -134,7 +134,7 @@ contract("BorrowerOperations", async accounts => {
       await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 20);
 
       // Set KUSD mint cap to 1 trillion
-      await kumoParams.setKUSDMintCap(dec(1, 30));
+      await kumoParams.setKUSDMintCap(assetAddress1, dec(1, 30));
 
       // for (account of accounts.slice(0, 10)) {
       //   await th.openTrove(contracts, { asset: assetAddress1, extraKUSDAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
@@ -2042,6 +2042,7 @@ contract("BorrowerOperations", async accounts => {
 
       // Set up KUSD mint cap to 10001 KUSD + liquidation reserve and latest borrowing fee
       await kumoParams.setKUSDMintCap(
+        assetAddress1,
         toBN(dec(10001, 18)).add(KUSD_GAS_COMPENSATION).add(expectedFee)
       );
 
@@ -4724,6 +4725,7 @@ contract("BorrowerOperations", async accounts => {
 
       // Set up KUSD mint cap to 10001 KUSD + liquidation reserve and latest borrowing fee
       await kumoParams.setKUSDMintCap(
+        assetAddress1,
         toBN(dec(10001, 18)).add(KUSD_GAS_COMPENSATION).add(expectedFee)
       );
 
@@ -7052,6 +7054,7 @@ contract("BorrowerOperations", async accounts => {
 
       // Set up KUSD mint cap to 10001 KUSD + (liquidation reserve and latest borrowing fee
       await kumoParams.setKUSDMintCap(
+        assetAddress1,
         toBN(dec(10001, 18)).add(expectedFee).add(KUSD_GAS_COMPENSATION)
       );
 
@@ -7833,7 +7836,7 @@ contract("BorrowerOperations", async accounts => {
     it("KUSDMintRemainder - returns correct value", async () => {
       // Set KUSD mint cap to 1 million
       const mintCap = toBN(dec(1, 24));
-      await kumoParams.setKUSDMintCap(mintCap);
+      await kumoParams.setKUSDMintCap(assetAddress1, mintCap);
 
       const troveColl = toBN(dec(1000, "ether"));
       const amountMinted = toBN(dec(123456, 18));
@@ -7848,7 +7851,7 @@ contract("BorrowerOperations", async accounts => {
         { from: alice }
       );
 
-      const KUSDMintRemainder = await borrowerOperations.KUSDMintRemainder();
+      const KUSDMintRemainder = await borrowerOperations.KUSDMintRemainder(assetAddress1);
       const expectedFee = await troveManager.getBorrowingFeeWithDecay(assetAddress1, amountMinted);
 
       assert.equal(

@@ -176,7 +176,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         address _upperHint,
         address _lowerHint
     ) external payable override assetIsInitialized(_asset) {
-        checkKUSDMintCap(_KUSDAmount);
+        checkKUSDMintCap(_asset, _KUSDAmount);
         kumoParams.sanitizeParameters(_asset);
         ContractsCache memory contractsCache = ContractsCache(
             troveManager,
@@ -312,7 +312,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         address _upperHint,
         address _lowerHint
     ) external override {
-        checkKUSDMintCap(_KUSDAmount);
+        checkKUSDMintCap(_asset, _KUSDAmount);
         _adjustTrove(
             _asset,
             0,
@@ -347,7 +347,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         address _lowerHint
     ) external payable override {
         if (_isDebtIncrease) {
-            checkKUSDMintCap(_KUSDChange);
+            checkKUSDMintCap(_asset, _KUSDChange);
         }
 
         _adjustTrove(
@@ -685,8 +685,8 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         _kusdToken.burn(_account, _KUSD);
     }
 
-    function KUSDMintRemainder() external view returns (uint256) {
-        return kumoParams.kusdMintCap() - kusdToken.totalSupply();
+    function KUSDMintRemainder(address _asset) external view returns (uint256) {
+        return kumoParams.KUSDMintCap(_asset) - kusdToken.totalSupply();
     }
 
     // --- 'Require' wrapper functions ---
@@ -966,10 +966,10 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         return _getCompositeDebt(_asset, _debt);
     }
 
-    function checkKUSDMintCap(uint256 _KUSDAmount) internal {
+    function checkKUSDMintCap(address _asset, uint256 _KUSDAmount) internal {
         require(
-            kusdToken.totalSupply() + _KUSDAmount <= kumoParams.kusdMintCap(),
-            "KUSD mint cap is reached"
+            kusdToken.totalSupply() + _KUSDAmount <= kumoParams.KUSDMintCap(_asset),
+            "KUSD mint cap is reached for this asset"
         );
     }
 }

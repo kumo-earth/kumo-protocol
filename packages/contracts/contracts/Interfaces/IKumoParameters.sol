@@ -21,7 +21,7 @@ interface IKumoParameters {
     event RedemptionFeeFloorChanged(uint256 oldRedemptionFeeFloor, uint256 newRedemptionFeeFloor);
     event RedemptionBlockRemoved(address _asset);
     event PriceFeedChanged(address indexed addr);
-    event KUSDMintCapChanged(uint256 oldMintCap, uint256 newMintCap);
+    event KUSDMintCapChanged(address _asset, uint256 oldMintCap, uint256 newMintCap);
 
     function BOOTSTRAP_PERIOD() external view returns (uint256);
 
@@ -30,26 +30,26 @@ interface IKumoParameters {
     function _100pct() external view returns (uint256);
 
     // Minimum collateral ratio for individual troves
-    function MCR(address _collateral) external view returns (uint256);
+    function MCR(address _asset) external view returns (uint256);
 
     // Critical system collateral ratio. If the system's total collateral ratio (TCR) falls below the CCR, Recovery Mode is triggered.
-    function CCR(address _collateral) external view returns (uint256);
+    function CCR(address _asset) external view returns (uint256);
 
-    function KUSD_GAS_COMPENSATION(address _collateral) external view returns (uint256);
+    function KUSD_GAS_COMPENSATION(address _asset) external view returns (uint256);
 
-    function MIN_NET_DEBT(address _collateral) external view returns (uint256);
+    function MIN_NET_DEBT(address _asset) external view returns (uint256);
 
-    function PERCENT_DIVISOR(address _collateral) external view returns (uint256);
+    function PERCENT_DIVISOR(address _asset) external view returns (uint256);
 
-    function BORROWING_FEE_FLOOR(address _collateral) external view returns (uint256);
+    function BORROWING_FEE_FLOOR(address _asset) external view returns (uint256);
 
-    function REDEMPTION_FEE_FLOOR(address _collateral) external view returns (uint256);
+    function REDEMPTION_FEE_FLOOR(address _asset) external view returns (uint256);
 
-    function MAX_BORROWING_FEE(address _collateral) external view returns (uint256);
+    function MAX_BORROWING_FEE(address _asset) external view returns (uint256);
 
-    function kusdMintCap() external view returns (uint256);
+    function KUSDMintCap(address _asset) external view returns (uint256);
 
-    function redemptionBlock(address _collateral) external view returns (uint256);
+    function redemptionBlock(address _asset) external view returns (uint256);
 
     function activePool() external view returns (IActivePool);
 
@@ -57,11 +57,7 @@ interface IKumoParameters {
 
     function priceFeed() external view returns (IPriceFeed);
 
-    function setAddresses(
-        address _activePool,
-        address _defaultPool,
-        address _priceFeed
-    ) external;
+    function setAddresses(address _activePool, address _defaultPool, address _priceFeed) external;
 
     function setPriceFeed(address _priceFeed) external;
 
@@ -86,6 +82,8 @@ interface IKumoParameters {
     function setMaxBorrowingFee(address _asset, uint256 maxBorrowingFee) external;
 
     function setRedemptionFeeFloor(address _asset, uint256 redemptionFeeFloor) external;
+
+    function setKUSDMintCap(address _asset, uint256 _newCap) external;
 
     function removeRedemptionBlock(address _asset) external;
 

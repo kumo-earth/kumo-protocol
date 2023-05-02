@@ -96,12 +96,13 @@ contract("TroveManager - stakeDecline", async accounts => {
     await deploymentHelper.mintMockAssets(erc20Asset2, accounts, 25);
 
     // Set KUSD mint cap to 1 trillion
-    await contracts.kumoParameters.setKUSDMintCap(dec(1, 30));
+    await contracts.kumoParameters.setKUSDMintCap(assetAddress1, dec(1, 30));
+    await contracts.kumoParameters.setKUSDMintCap(assetAddress2, dec(1, 30));
   });
 
   it("A given trove's stake decline is negligible with adjustments and tiny liquidations", async () => {
     // Set KUSD mint cap to a lot
-    await contracts.kumoParameters.setKUSDMintCap(dec(1, 50));
+    await contracts.kumoParameters.setKUSDMintCap(assetAddress1, dec(1, 50));
 
     await priceFeed.setPrice(assetAddress1, dec(100, 18));
 
