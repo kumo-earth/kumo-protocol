@@ -899,6 +899,7 @@ interface TroveManagerCalls {
   getBorrowingRate(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getBorrowingRateWithDecay(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getCurrentICR(_asset: string, _borrower: string, _price: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
+  getEntireDebtAndColl(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<{ debt: BigNumber; coll: BigNumber; pendingKUSDDebtReward: BigNumber; pendingReward: BigNumber }>;
   getEntireSystemColl(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getEntireSystemDebt(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getNominalICR(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<BigNumber>;
@@ -930,7 +931,6 @@ interface TroveManagerCalls {
   totalCollateralSnapshot(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   totalStakes(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   totalStakesSnapshot(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  getEntireDebtAndColl(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<{ debt: BigNumber; coll: BigNumber; pendingKUSDDebtReward: BigNumber; pendingReward: BigNumber }>;
   hasPendingRewards(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<boolean>;
   MIN_NET_DEBT(_overrides?: CallOverrides): Promise<BigNumber>;
 }

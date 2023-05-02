@@ -17,10 +17,10 @@ interface ITroveManagerFacet {
 
     function setAddresses(address _kumoParamsAddress) external;
 
-    function getTroveFromTroveOwnersArray(address _asset, uint256 _index)
-        external
-        view
-        returns (address);
+    function getTroveFromTroveOwnersArray(
+        address _asset,
+        uint256 _index
+    ) external view returns (address);
 
     function getNominalICR(address _asset, address _borrower) external view returns (uint256);
 
@@ -30,16 +30,17 @@ interface ITroveManagerFacet {
         uint256 _price
     ) external view returns (uint256);
 
-    function addTroveOwnerToArray(address _asset, address _borrower)
-        external
-        returns (uint256 index);
+    function addTroveOwnerToArray(
+        address _asset,
+        address _borrower
+    ) external returns (uint256 index);
 
     function getPendingReward(address _asset, address _borrower) external view returns (uint256);
 
-    function getPendingKUSDDebtReward(address _asset, address _borrower)
-        external
-        view
-        returns (uint256);
+    function getPendingKUSDDebtReward(
+        address _asset,
+        address _borrower
+    ) external view returns (uint256);
 
     function closeTrove(address _asset, address _borrower) external;
 
@@ -51,10 +52,10 @@ interface ITroveManagerFacet {
 
     function getRedemptionRateWithDecay(address _asset) external view returns (uint256);
 
-    function getRedemptionFeeWithDecay(address _asset, uint256 _assetDraw)
-        external
-        view
-        returns (uint256);
+    function getRedemptionFeeWithDecay(
+        address _asset,
+        uint256 _assetDraw
+    ) external view returns (uint256);
 
     function getBorrowingRate(address _asset) external view returns (uint256);
 
@@ -62,10 +63,10 @@ interface ITroveManagerFacet {
 
     function getBorrowingFee(address _asset, uint256 KUSDDebt) external view returns (uint256);
 
-    function getBorrowingFeeWithDecay(address _asset, uint256 _KUSDDebt)
-        external
-        view
-        returns (uint256);
+    function getBorrowingFeeWithDecay(
+        address _asset,
+        uint256 _KUSDDebt
+    ) external view returns (uint256);
 
     function decayBaseRateFromBorrowing(address _asset) external;
 
@@ -79,11 +80,7 @@ interface ITroveManagerFacet {
 
     function getTroveOwnersCount(address _asset) external view returns (uint256);
 
-    function setTroveStatus(
-        address _asset,
-        address _borrower,
-        uint256 num
-    ) external;
+    function setTroveStatus(address _asset, address _borrower, uint256 num) external;
 
     function increaseTroveColl(
         address _asset,
@@ -151,10 +148,10 @@ interface ITroveManagerFacet {
 
     function L_KUSDDebts(address _asset) external view returns (uint256);
 
-    function rewardSnapshots(address _borrower, address _asset)
-        external
-        view
-        returns (RewardSnapshot memory);
+    function rewardSnapshots(
+        address _borrower,
+        address _asset
+    ) external view returns (RewardSnapshot memory);
 
     function TroveOwners(address _asset, uint256 _index) external view returns (address);
 
@@ -167,4 +164,17 @@ interface ITroveManagerFacet {
     function redemptionWhitelist(address _asset) external view returns (bool);
 
     function isRedemptionWhitelisted() external view returns (bool);
+
+    function getEntireDebtAndColl(
+        address _asset,
+        address _borrower
+    )
+        external
+        view
+        returns (
+            uint256 debt,
+            uint256 coll,
+            uint256 pendingKUSDDebtReward,
+            uint256 pendingETHReward
+        );
 }

@@ -83,11 +83,10 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         return s.L_KUSDDebts[_asset];
     }
 
-    function rewardSnapshots(address _borrower, address _asset)
-        external
-        view
-        returns (RewardSnapshot memory)
-    {
+    function rewardSnapshots(
+        address _borrower,
+        address _asset
+    ) external view returns (RewardSnapshot memory) {
         return s.rewardSnapshots[_borrower][_asset];
     }
 
@@ -137,30 +136,13 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         s.L_KUSDDebts[_asset] = 0;
     }
 
-    // --- Getters ---
-
-    function getTroveOwnersCount(address _asset) external view override returns (uint256) {
-        return s.TroveOwners[_asset].length;
-    }
-
-    function getTroveFromTroveOwnersArray(address _asset, uint256 _index)
-        external
-        view
-        override
-        returns (address)
-    {
-        return s.TroveOwners[_asset][_index];
-    }
-
     // --- Helper functions ---
 
     // Return the nominal collateral ratio (ICR) of a given Trove, without the price. Takes a trove's pending coll and debt rewards from redistributions into account.
-    function getNominalICR(address _asset, address _borrower)
-        public
-        view
-        override
-        returns (uint256)
-    {
+    function getNominalICR(
+        address _asset,
+        address _borrower
+    ) public view override returns (uint256) {
         (uint256 currentAsset, uint256 currentKUSDDebt) = _getCurrentTroveAmounts(_asset, _borrower);
 
         uint256 NICR = KumoMath._computeNominalCR(currentAsset, currentKUSDDebt);
@@ -176,11 +158,10 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         return LibTroveManager._getCurrentICR(_asset, _borrower, _price);
     }
 
-    function _getCurrentTroveAmounts(address _asset, address _borrower)
-        internal
-        view
-        returns (uint256, uint256)
-    {
+    function _getCurrentTroveAmounts(
+        address _asset,
+        address _borrower
+    ) internal view returns (uint256, uint256) {
         uint256 pendingReward = LibTroveManager._getPendingReward(_asset, _borrower);
         uint256 pendingKUSDDebtReward = LibTroveManager._getPendingKUSDDebtReward(_asset, _borrower);
 
@@ -191,12 +172,10 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
     }
 
     // Get the borrower's pending accumulated ETH reward, earned by their stake
-    function getPendingReward(address _asset, address _borrower)
-        public
-        view
-        override
-        returns (uint256)
-    {
+    function getPendingReward(
+        address _asset,
+        address _borrower
+    ) public view override returns (uint256) {
         uint256 snapshotAsset = s.rewardSnapshots[_borrower][_asset].asset;
         uint256 rewardPerUnitStaked = s.L_ASSETS[_asset] - (snapshotAsset);
         if (rewardPerUnitStaked == 0 || !_isTroveActive(_asset, _borrower)) {
@@ -208,13 +187,23 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
     }
 
     // Get the borrower's pending accumulated KUSD reward, earned by their stake
-    function getPendingKUSDDebtReward(address _asset, address _borrower)
+    function getPendingKUSDDebtReward(
+        address _asset,
+        address _borrower
+    ) external view override returns (uint256) {
+        return LibTroveManager._getPendingKUSDDebtReward(_asset, _borrower);
+    }
+
+    // Return the Troves entire debt and coll, including pending rewards from redistributions.
+    function getEntireDebtAndColl(
+        address _asset,
+        address _borrower
+    )
         external
         view
-        override
-        returns (uint256)
+        returns (uint256 debt, uint256 coll, uint256 pendingKUSDDebtReward, uint256 pendingReward)
     {
-        return LibTroveManager._getPendingKUSDDebtReward(_asset, _borrower);
+        return LibTroveManager._getEntireDebtAndColl(_asset, _borrower);
     }
 
     function removeStake(address _asset, address _borrower) external override {
@@ -228,19 +217,18 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
     }
 
     // Push the owner's address to the Trove owners list, and record the corresponding array index on the Trove struct
-    function addTroveOwnerToArray(address _asset, address _borrower)
-        external
-        override
-        returns (uint256 index)
-    {
+    function addTroveOwnerToArray(
+        address _asset,
+        address _borrower
+    ) external override returns (uint256 index) {
         _requireCallerIsBorrowerOperations();
         return _addTroveOwnerToArray(_asset, _borrower);
     }
 
-    function _addTroveOwnerToArray(address _asset, address _borrower)
-        internal
-        returns (uint128 index)
-    {
+    function _addTroveOwnerToArray(
+        address _asset,
+        address _borrower
+    ) internal returns (uint128 index) {
         /* Max array size is 2**128 - 1, i.e. ~3e30 troves. No risk of overflow, since troves have minimum KUSD
         debt of liquidation reserve plus MIN_NET_DEBT. 3e30 KUSD dwarfs the value of all wealth in the world ( which is < 1e15 USD). */
 
@@ -260,12 +248,10 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         return LibKumoBase._getTCR(_asset, _price);
     }
 
-    function checkRecoveryMode(address _asset, uint256 _price)
-        external
-        view
-        override
-        returns (bool)
-    {
+    function checkRecoveryMode(
+        address _asset,
+        uint256 _price
+    ) external view override returns (bool) {
         return LibKumoBase._checkRecoveryMode(_asset, _price);
     }
 
@@ -283,11 +269,10 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         return LibTroveManager._getRedemptionFee(_asset, _assetDraw);
     }
 
-    function getRedemptionFeeWithDecay(address _asset, uint256 _assetDraw)
-        external
-        view
-        returns (uint256)
-    {
+    function getRedemptionFeeWithDecay(
+        address _asset,
+        uint256 _assetDraw
+    ) external view returns (uint256) {
         return LibTroveManager._calcRedemptionFee(getRedemptionRateWithDecay(_asset), _assetDraw);
     }
 
@@ -309,29 +294,24 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
             );
     }
 
-    function getBorrowingFee(address _asset, uint256 _KUSDDebt)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getBorrowingFee(
+        address _asset,
+        uint256 _KUSDDebt
+    ) external view override returns (uint256) {
         return _calcBorrowingFee(getBorrowingRate(_asset), _KUSDDebt);
     }
 
-    function getBorrowingFeeWithDecay(address _asset, uint256 _KUSDDebt)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getBorrowingFeeWithDecay(
+        address _asset,
+        uint256 _KUSDDebt
+    ) external view override returns (uint256) {
         return _calcBorrowingFee(getBorrowingRateWithDecay(_asset), _KUSDDebt);
     }
 
-    function _calcBorrowingFee(uint256 _borrowingRate, uint256 _KUSDDebt)
-        internal
-        pure
-        returns (uint256)
-    {
+    function _calcBorrowingFee(
+        uint256 _borrowingRate,
+        uint256 _KUSDDebt
+    ) internal pure returns (uint256) {
         return (_borrowingRate * _KUSDDebt) / KumoMath.DECIMAL_PRECISION;
     }
 
@@ -394,44 +374,49 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         );
     }
 
+    // --- Getters ---
+
+    function getTroveOwnersCount(address _asset) external view override returns (uint256) {
+        return s.TroveOwners[_asset].length;
+    }
+
+    function getTroveFromTroveOwnersArray(
+        address _asset,
+        uint256 _index
+    ) external view override returns (address) {
+        return s.TroveOwners[_asset][_index];
+    }
+
     // --- Trove property getters ---
     function _isTroveActive(address _asset, address _borrower) internal view returns (bool) {
         return this.getTroveStatus(_asset, _borrower) == uint256(Status.active);
     }
 
-    function getTroveStatus(address _asset, address _borrower)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getTroveStatus(
+        address _asset,
+        address _borrower
+    ) external view override returns (uint256) {
         return uint256(s.Troves[_borrower][_asset].status);
     }
 
-    function getTroveStake(address _asset, address _borrower)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getTroveStake(
+        address _asset,
+        address _borrower
+    ) external view override returns (uint256) {
         return s.Troves[_borrower][_asset].stake;
     }
 
-    function getTroveDebt(address _asset, address _borrower)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getTroveDebt(
+        address _asset,
+        address _borrower
+    ) external view override returns (uint256) {
         return s.Troves[_borrower][_asset].debt;
     }
 
-    function getTroveColl(address _asset, address _borrower)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getTroveColl(
+        address _asset,
+        address _borrower
+    ) external view override returns (uint256) {
         return s.Troves[_borrower][_asset].coll;
     }
 
@@ -445,11 +430,7 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
 
     // --- Trove property setters, called by BorrowerOperations ---
 
-    function setTroveStatus(
-        address _asset,
-        address _borrower,
-        uint256 _num
-    ) external override {
+    function setTroveStatus(address _asset, address _borrower, uint256 _num) external override {
         _requireCallerIsBorrowerOperations();
         s.Troves[_borrower][_asset].asset = _asset;
         s.Troves[_borrower][_asset].status = Status(_num);

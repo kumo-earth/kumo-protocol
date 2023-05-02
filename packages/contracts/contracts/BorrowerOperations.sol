@@ -585,11 +585,10 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         return usdValue;
     }
 
-    function _getCollChange(uint256 _collReceived, uint256 _requestedCollWithdrawal)
-        internal
-        pure
-        returns (uint256 collChange, bool isCollIncrease)
-    {
+    function _getCollChange(
+        uint256 _collReceived,
+        uint256 _requestedCollWithdrawal
+    ) internal pure returns (uint256 collChange, bool isCollIncrease) {
         if (_collReceived != 0) {
             collChange = _collReceived;
             isCollIncrease = true;
@@ -643,11 +642,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     }
 
     // Send ETH to Active Pool and increase its recorded ETH balance
-    function _activePoolAddColl(
-        address _asset,
-        IActivePool _activePool,
-        uint256 _amount
-    ) internal {
+    function _activePoolAddColl(address _asset, IActivePool _activePool, uint256 _amount) internal {
         // (bool success, ) = address(_activePool).call{value: _amount}("");
         // require(success, "BorrowerOps: Sending ETH to ActivePool failed");
         IERC20Upgradeable(_asset).safeTransferFrom(
@@ -685,7 +680,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
 
     // --- 'Require' wrapper functions ---
 
-    function _requireSingularCollChange(uint256 _collWithdrawal, uint256 _amountSent) internal view {
+    function _requireSingularCollChange(uint256 _collWithdrawal, uint256 _amountSent) internal pure {
         require(
             _collWithdrawal == 0 || _amountSent == 0,
             "BorrowerOperations: Cannot withdraw and add coll"
@@ -703,7 +698,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         uint256 _collWithdrawal,
         uint256 _KUSDChange,
         uint256 _amountSent
-    ) internal view {
+    ) internal pure {
         require(
             _collWithdrawal != 0 || _KUSDChange != 0 || _amountSent != 0,
             "BorrowerOps: There must be either a collateral change or a debt change"
@@ -953,12 +948,10 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         return newTCR;
     }
 
-    function getCompositeDebt(address _asset, uint256 _debt)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getCompositeDebt(
+        address _asset,
+        uint256 _debt
+    ) external view override returns (uint256) {
         return _getCompositeDebt(_asset, _debt);
     }
 }

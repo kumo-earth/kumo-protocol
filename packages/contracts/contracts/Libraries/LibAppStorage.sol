@@ -60,10 +60,14 @@ struct AppStorage {
     IKUSDToken kusdToken;
     IKUMOToken kumoToken;
     IKUMOStaking kumoStaking;
+    // A doubly linked list of Troves, sorted by their sorted by their collateral ratios
     ISortedTroves sortedTroves;
     IKumoParameters kumoParams;
     IDefaultPool defaultPool;
     IActivePool activePool;
+
+    // --- Data structures ---
+    
     mapping(address => uint256) baseRate;
     // The timestamp of the latest fee operation (redemption or new KUSD issuance)
     mapping(address => uint256) lastFeeOperationTime;

@@ -28,14 +28,4 @@ interface ITroveRedemptorFacet {
     function applyPendingRewards(address _asset, address _borrower) external;
 
     function hasPendingRewards(address _asset, address _borrower) external view returns (bool);
-
-    function getEntireDebtAndColl(address _asset, address _borrower)
-        external
-        view
-        returns (
-            uint256 debt,
-            uint256 coll,
-            uint256 pendingKUSDDebtReward,
-            uint256 pendingETHReward
-        );
 }

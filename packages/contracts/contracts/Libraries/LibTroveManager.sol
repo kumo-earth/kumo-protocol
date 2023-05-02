@@ -36,11 +36,10 @@ library LibTroveManager {
         return ICR;
     }
 
-    function _getCurrentTroveAmounts(address _asset, address _borrower)
-        internal
-        view
-        returns (uint256, uint256)
-    {
+    function _getCurrentTroveAmounts(
+        address _asset,
+        address _borrower
+    ) internal view returns (uint256, uint256) {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
         uint256 pendingReward = _getPendingReward(_asset, _borrower);
@@ -77,11 +76,10 @@ library LibTroveManager {
     }
 
     // Get the borrower's pending accumulated KUSD reward, earned by their stake
-    function _getPendingKUSDDebtReward(address _asset, address _borrower)
-        internal
-        view
-        returns (uint256)
-    {
+    function _getPendingKUSDDebtReward(
+        address _asset,
+        address _borrower
+    ) internal view returns (uint256) {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
         uint256 snapshotKUSDDebt = s.rewardSnapshots[_borrower][_asset].KUSDDebt;
@@ -147,11 +145,7 @@ library LibTroveManager {
         s.Troves[_borrower][_asset].stake = 0;
     }
 
-    function _closeTrove(
-        address _asset,
-        address _borrower,
-        Status closedStatus
-    ) internal {
+    function _closeTrove(address _asset, address _borrower, Status closedStatus) internal {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
         assert(closedStatus != Status.nonExistent && closedStatus != Status.active);
@@ -170,10 +164,10 @@ library LibTroveManager {
         s.sortedTroves.remove(_asset, _borrower);
     }
 
-    function _requireMoreThanOneTroveInSystem(address _asset, uint256 TroveOwnersArrayLength)
-        internal
-        view
-    {
+    function _requireMoreThanOneTroveInSystem(
+        address _asset,
+        uint256 TroveOwnersArrayLength
+    ) internal view {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
         require(
@@ -220,11 +214,10 @@ library LibTroveManager {
         emit TroveSnapshotsUpdated(_asset, s.L_ASSETS[_asset], s.L_KUSDDebts[_asset]);
     }
 
-    function _calcRedemptionFee(uint256 _redemptionRate, uint256 _assetDraw)
-        internal
-        pure
-        returns (uint256)
-    {
+    function _calcRedemptionFee(
+        uint256 _redemptionRate,
+        uint256 _assetDraw
+    ) internal pure returns (uint256) {
         uint256 redemptionFee = (_redemptionRate * _assetDraw) / KumoMath.DECIMAL_PRECISION;
         require(
             redemptionFee < _assetDraw,
@@ -253,15 +246,13 @@ library LibTroveManager {
         return _calcRedemptionFee(_getRedemptionRate(_asset), _assetDraw);
     }
 
-    function _getEntireDebtAndColl(address _asset, address _borrower)
+    function _getEntireDebtAndColl(
+        address _asset,
+        address _borrower
+    )
         internal
         view
-        returns (
-            uint256 debt,
-            uint256 coll,
-            uint256 pendingKUSDDebtReward,
-            uint256 pendingReward
-        )
+        returns (uint256 debt, uint256 coll, uint256 pendingKUSDDebtReward, uint256 pendingReward)
     {
         AppStorage storage s = LibAppStorage.diamondStorage();
 

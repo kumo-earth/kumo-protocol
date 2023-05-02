@@ -119,9 +119,9 @@ describe("EthersKumoGasEstimationFeeDecay", async () => {
                 const borrowingRate = await kumo.getFees(mockAssetAddress).then(fees => fees.borrowingRate());
 
                 for (const [borrowingFeeDecayToleranceMinutes, roughGasHeadroom] of [
-                    [10, 134000],
-                    [20, 254000],
-                    [30, 339000]
+                    [10, 135000],
+                    [20, 255000],
+                    [30, 340000]
                 ]) {
                     const tx = await kumo.populate.openTrove(
                         Trove.recreate(bottomTrove, borrowingRate),
@@ -255,9 +255,9 @@ describe("EthersKumoGasEstimationFeeDecay", async () => {
                 const borrowingRate = await kumo.getFees(mockAssetAddress).then(fees => fees.borrowingRate());
 
                 for (const [borrowingFeeDecayToleranceMinutes, roughGasHeadroom] of [
-                    [10, 134000],
-                    [20, 254000],
-                    [30, 339000]
+                    [10, 135000],
+                    [20, 255000],
+                    [30, 340000]
                 ]) {
                     const tx = await kumo.populate.openTrove(
                         Trove.recreate(bottomTrove, borrowingRate),
