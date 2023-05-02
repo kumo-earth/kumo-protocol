@@ -100,6 +100,9 @@ contract("TroveManager - stakeDecline", async accounts => {
   });
 
   it("A given trove's stake decline is negligible with adjustments and tiny liquidations", async () => {
+    // Set KUSD mint cap to a lot
+    await contracts.kumoParameters.setKUSDMintCap(dec(1, 50));
+
     await priceFeed.setPrice(assetAddress1, dec(100, 18));
 
     // Make 1 mega troves A at ~50% total collateral
