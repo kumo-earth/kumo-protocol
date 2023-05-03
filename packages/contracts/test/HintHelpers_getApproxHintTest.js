@@ -7,7 +7,6 @@ const moneyVals = testHelpers.MoneyValues;
 
 let latestRandomSeed = 31337;
 
-const TroveManagerTester = artifacts.require("TroveManagerTester");
 const KUSDToken = artifacts.require("KUSDToken");
 
 contract("HintHelpers", async accounts => {
@@ -85,7 +84,6 @@ contract("HintHelpers", async accounts => {
 
   before(async () => {
     contracts = await deploymentHelper.deployKumoCore();
-    contracts.troveManager = await TroveManagerTester.new();
     contracts.kusdToken = await KUSDToken.new(
       contracts.troveManager.address,
       contracts.stabilityPoolFactory.address,
@@ -160,7 +158,7 @@ contract("HintHelpers", async accounts => {
 
     let hintAddress;
 
-      // const hintAddress_250 = await functionCaller.troveManager_getApproxHint(CR_250, sqrtLength * 10)
+    // const hintAddress_250 = await functionCaller.troveManager_getApproxHint(CR_250, sqrtLength * 10)
     ({ hintAddress, latestRandomSeed } = await hintHelpers.getApproxHint(
       assetAddress1,
       CR_250,
@@ -265,7 +263,7 @@ contract("HintHelpers", async accounts => {
 
     let hintAddress;
 
-      // const hintAddress_Max = await functionCaller.troveManager_getApproxHint(CR_Max, sqrtLength * 10)
+    // const hintAddress_Max = await functionCaller.troveManager_getApproxHint(CR_Max, sqrtLength * 10)
     ({ hintAddress, latestRandomSeed } = await hintHelpers.getApproxHint(
       assetAddress1,
       CR_Max,
@@ -294,7 +292,7 @@ contract("HintHelpers", async accounts => {
 
     let hintAddress;
 
-      //  const hintAddress_Min = await functionCaller.troveManager_getApproxHint(CR_Min, sqrtLength * 10)
+    //  const hintAddress_Min = await functionCaller.troveManager_getApproxHint(CR_Min, sqrtLength * 10)
     ({ hintAddress, latestRandomSeed } = await hintHelpers.getApproxHint(
       assetAddress1,
       CR_Min,

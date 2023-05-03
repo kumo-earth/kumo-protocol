@@ -1,7 +1,6 @@
 const { getAddress } = require("ethers/lib/utils");
 const deploymentHelper = require("../utils/deploymentHelpers.js");
 const testHelpers = require("../utils/testHelpers.js");
-const TroveManagerTester = artifacts.require("./TroveManagerTester.sol");
 const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol");
 
 const th = testHelpers.TestHelper;
@@ -81,7 +80,6 @@ contract("TroveManager", async accounts => {
 
   beforeEach(async () => {
     contracts = await deploymentHelper.deployKumoCore();
-    contracts.troveManager = await TroveManagerTester.new();
     contracts.kusdToken = await KUSDTokenTester.new(
       contracts.troveManager.address,
       contracts.stabilityPoolFactory.address,
@@ -134,12 +132,12 @@ contract("TroveManager", async accounts => {
   it("liquidate(): closes a Trove that has ICR < MCR", async () => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(20, 18)), extraParams: { from: whale } });
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(4, 18)), extraParams: { from: alice } });
+
     await openTrove({ asset: assetAddress2, ICR: toBN(dec(20, 18)), extraParams: { from: whale } });
     await openTrove({ asset: assetAddress2, ICR: toBN(dec(4, 18)), extraParams: { from: alice } });
 
     const price = await priceFeed.getPrice(assetAddress1);
     const ICR_Before_Asset1 = await troveManager.getCurrentICR(assetAddress1, alice, price);
-
     assert.equal(ICR_Before_Asset1.toString(), dec(4, 18));
 
     const ICR_Before_Asset2 = await troveManager.getCurrentICR(assetAddress2, alice, price);
@@ -1317,8 +1315,8 @@ contract("TroveManager", async accounts => {
 
     /* Though Bob's true ICR (including pending rewards) is below the MCR,
     check that Bob's raw coll and debt has not changed, and that his "raw" ICR is above the MCR */
-    const bob_Coll = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll];
-    const bob_Debt = (await troveManager.Troves(bob, assetAddress1))[TroveData.debt];
+    const bob_Coll = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll]);
+    const bob_Debt = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.debt]);
 
     const bob_rawICR = bob_Coll.mul(toBN(dec(100, 18))).div(bob_Debt);
     assert.isTrue(bob_rawICR.gte(mv._MCR));
@@ -1751,8 +1749,8 @@ contract("TroveManager", async accounts => {
     assert.isTrue(carol_ICR_After.lte(mv._MCR));
 
     /* Though Bob's true ICR (including pending rewards) is below the MCR, check that Bob's raw coll and debt has not changed */
-    const bob_Coll = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll];
-    const bob_Debt = (await troveManager.Troves(bob, assetAddress1))[TroveData.debt];
+    const bob_Coll = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll]);
+    const bob_Debt = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.debt]);
 
     const bob_rawICR = bob_Coll.mul(toBN(dec(100, 18))).div(bob_Debt);
     assert.isTrue(bob_rawICR.gte(mv._MCR));

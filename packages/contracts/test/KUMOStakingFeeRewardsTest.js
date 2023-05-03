@@ -5,7 +5,6 @@ const testHelpers = require("../utils/testHelpers.js");
 const { send } = require("@openzeppelin/test-helpers");
 
 const KUMOStakingTester = artifacts.require("KUMOStakingTester");
-const TroveManagerTester = artifacts.require("TroveManagerTester");
 const NonPayable = artifacts.require("./NonPayable.sol");
 
 const th = testHelpers.TestHelper;
@@ -50,7 +49,6 @@ contract("KUMOStaking revenue share tests", async accounts => {
 
   beforeEach(async () => {
     contracts = await deploymentHelper.deployKumoCore();
-    contracts.troveManager = await TroveManagerTester.new();
     contracts = await deploymentHelper.deployKUSDTokenTester(contracts);
     const KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(
       bountyAddress,

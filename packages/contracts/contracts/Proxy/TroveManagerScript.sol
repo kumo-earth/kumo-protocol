@@ -3,15 +3,14 @@
 pragma solidity 0.8.11;
 
 import "../Dependencies/CheckContract.sol";
-import "../Interfaces/ITroveManager.sol";
-
+import "../Interfaces/ITroveManagerDiamond.sol";
 
 contract TroveManagerScript is CheckContract {
-    string constant public NAME = "TroveManagerScript";
+    string public constant NAME = "TroveManagerScript";
 
-    ITroveManager immutable troveManager;
+    ITroveManagerDiamond immutable troveManager;
 
-    constructor (ITroveManager _troveManager) {
+    constructor(ITroveManagerDiamond _troveManager) {
         checkContract(address(_troveManager));
         troveManager = _troveManager;
     }
@@ -26,7 +25,7 @@ contract TroveManagerScript is CheckContract {
         uint256 _maxIterations,
         uint256 _maxFee
     ) external returns (uint256 collateral) {
-         troveManager.redeemCollateral(
+        troveManager.redeemCollateral(
             _asset,
             _KUSDAmount,
             _firstRedemptionHint,

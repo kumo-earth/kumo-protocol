@@ -8,7 +8,6 @@ const getDifference = th.getDifference;
 const mv = testHelpers.MoneyValues;
 const TroveData = testHelpers.TroveData;
 
-const TroveManagerTester = artifacts.require("TroveManagerTester");
 const KUSDToken = artifacts.require("KUSDToken");
 
 contract("TroveManager - Redistribution reward calculations", async accounts => {
@@ -60,7 +59,6 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
 
   beforeEach(async () => {
     contracts = await deploymentHelper.deployKumoCore();
-    contracts.troveManager = await TroveManagerTester.new();
     contracts.kusdToken = await KUSDToken.new(
       contracts.troveManager.address,
       contracts.stabilityPoolFactory.address,
@@ -150,10 +148,10 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, dennis));
 
     // Get entire coll of A and C
-    const alice_Coll = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]
+    const alice_Coll = toBN((await troveManager.Troves(alice, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, alice))
       .toString();
-    const carol_Coll = (await troveManager.Troves(carol, assetAddress1))[TroveData.coll]
+    const carol_Coll = toBN((await troveManager.Troves(carol, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, carol))
       .toString();
 
@@ -257,16 +255,16 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, freddy));
 
     // Get entire coll of A, B, D and E
-    const alice_Coll = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]
+    const alice_Coll = toBN((await troveManager.Troves(alice, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, alice))
       .toString();
-    const bob_Coll = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll]
+    const bob_Coll = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, bob))
       .toString();
-    const dennis_Coll = (await troveManager.Troves(dennis, assetAddress1))[TroveData.coll]
+    const dennis_Coll = toBN((await troveManager.Troves(dennis, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, dennis))
       .toString();
-    const erin_Coll = (await troveManager.Troves(erin, assetAddress1))[TroveData.coll]
+    const erin_Coll = toBN((await troveManager.Troves(erin, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, erin))
       .toString();
 
@@ -409,25 +407,25 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, erin));
 
     // Get entire coll of A, B, D, E and F
-    const alice_Coll = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]
+    const alice_Coll = toBN((await troveManager.Troves(alice, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, alice))
       .toString();
-    const bob_Coll = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll]
+    const bob_Coll = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, bob))
       .toString();
-    const carol_Coll = (await troveManager.Troves(carol, assetAddress1))[TroveData.coll]
+    const carol_Coll = toBN((await troveManager.Troves(carol, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, carol))
       .toString();
-    const dennis_Coll = (await troveManager.Troves(dennis, assetAddress1))[TroveData.coll]
+    const dennis_Coll = toBN((await troveManager.Troves(dennis, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, dennis))
       .toString();
-    const erin_Coll = (await troveManager.Troves(erin, assetAddress1))[TroveData.coll]
+    const erin_Coll = toBN((await troveManager.Troves(erin, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, erin))
       .toString();
 
-    const freddy_rawColl = (await troveManager.Troves(freddy, assetAddress1))[
-      TroveData.coll
-    ].toString();
+    const freddy_rawColl = toBN(
+      (await troveManager.Troves(freddy, assetAddress1))[TroveData.coll]
+    ).toString();
     const freddy_ETHReward = (await troveManager.getPendingReward(assetAddress1, freddy)).toString();
 
     /* Expected collateral:
@@ -794,11 +792,11 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, alice));
 
     // Expect Bob now holds all Ether and KUSDDebt in the system: 2 + 0.4975+0.4975*0.995+0.995 Ether and 110*3 KUSD (10 each for gas compensation)
-    const bob_Coll = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll]
+    const bob_Coll = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, bob))
       .toString();
 
-    const bob_KUSDDebt = (await troveManager.Troves(bob, assetAddress1))[TroveData.debt]
+    const bob_KUSDDebt = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.debt])
       .add(await troveManager.getPendingKUSDDebtReward(assetAddress1, bob))
       .toString();
 
@@ -883,19 +881,19 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
     totalColl: 4.99 ETH
     totalDebt 380 KUSD (includes 50 each for gas compensation)
     */
-    const bob_Coll = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll]
+    const bob_Coll = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, bob))
       .toString();
 
-    const bob_KUSDDebt = (await troveManager.Troves(bob, assetAddress1))[TroveData.debt]
+    const bob_KUSDDebt = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.debt])
       .add(await troveManager.getPendingKUSDDebtReward(assetAddress1, bob))
       .toString();
 
-    const alice_Coll = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]
+    const alice_Coll = toBN((await troveManager.Troves(alice, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, alice))
       .toString();
 
-    const alice_KUSDDebt = (await troveManager.Troves(alice, assetAddress1))[TroveData.debt]
+    const alice_KUSDDebt = toBN((await troveManager.Troves(alice, assetAddress1))[TroveData.debt])
       .add(await troveManager.getPendingKUSDDebtReward(assetAddress1, alice))
       .toString();
 
@@ -1037,15 +1035,15 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
     total = 3982.02 ETH
     */
 
-    const alice_Coll = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]
+    const alice_Coll = toBN((await troveManager.Troves(alice, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, alice))
       .toString();
 
-    const bob_Coll = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll]
+    const bob_Coll = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, bob))
       .toString();
 
-    const carol_Coll = (await troveManager.Troves(carol, assetAddress1))[TroveData.coll]
+    const carol_Coll = toBN((await troveManager.Troves(carol, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, carol))
       .toString();
 
@@ -1202,15 +1200,15 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
     total = 3986.01 ETH
     */
 
-    const alice_Coll = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]
+    const alice_Coll = toBN((await troveManager.Troves(alice, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, alice))
       .toString();
 
-    const bob_Coll = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll]
+    const bob_Coll = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, bob))
       .toString();
 
-    const carol_Coll = (await troveManager.Troves(carol, assetAddress1))[TroveData.coll]
+    const carol_Coll = toBN((await troveManager.Troves(carol, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, carol))
       .toString();
 
@@ -1311,11 +1309,11 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
 
     // Expect Bob now holds all Ether and KUSDDebt in the system: 2.5 Ether and 300 KUSD
     // 1 + 0.995/2 - 0.5 + 1.4975*0.995
-    const bob_Coll = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll]
+    const bob_Coll = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, bob))
       .toString();
 
-    const bob_KUSDDebt = (await troveManager.Troves(bob, assetAddress1))[TroveData.debt]
+    const bob_KUSDDebt = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.debt])
       .add(await troveManager.getPendingKUSDDebtReward(assetAddress1, bob))
       .toString();
 
@@ -1403,19 +1401,19 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
     totalColl: 3.49 ETH
     totalDebt 380 KUSD (Includes 50 in each trove for gas compensation)
     */
-    const bob_Coll = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll]
+    const bob_Coll = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, bob))
       .toString();
 
-    const bob_KUSDDebt = (await troveManager.Troves(bob, assetAddress1))[TroveData.debt]
+    const bob_KUSDDebt = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.debt])
       .add(await troveManager.getPendingKUSDDebtReward(assetAddress1, bob))
       .toString();
 
-    const alice_Coll = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]
+    const alice_Coll = toBN((await troveManager.Troves(alice, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, alice))
       .toString();
 
-    const alice_KUSDDebt = (await troveManager.Troves(alice, assetAddress1))[TroveData.debt]
+    const alice_KUSDDebt = toBN((await troveManager.Troves(alice, assetAddress1))[TroveData.debt])
       .add(await troveManager.getPendingKUSDDebtReward(assetAddress1, alice))
       .toString();
 
@@ -1579,15 +1577,15 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
     total = 3978.03 ETH
     */
 
-    const alice_Coll = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]
+    const alice_Coll = toBN((await troveManager.Troves(alice, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, alice))
       .toString();
 
-    const bob_Coll = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll]
+    const bob_Coll = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, bob))
       .toString();
 
-    const carol_Coll = (await troveManager.Troves(carol, assetAddress1))[TroveData.coll]
+    const carol_Coll = toBN((await troveManager.Troves(carol, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, carol))
       .toString();
 
@@ -1709,15 +1707,15 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
       from: carol
     });
 
-    const alice_Coll_1 = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]
+    const alice_Coll_1 = toBN((await troveManager.Troves(alice, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, alice))
       .toString();
 
-    const bob_Coll_1 = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll]
+    const bob_Coll_1 = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, bob))
       .toString();
 
-    const carol_Coll_1 = (await troveManager.Troves(carol, assetAddress1))[TroveData.coll]
+    const carol_Coll_1 = toBN((await troveManager.Troves(carol, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, carol))
       .toString();
 
@@ -1782,15 +1780,15 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
     total = 3977.0325 ETH
     */
 
-    const alice_Coll_2 = (await troveManager.Troves(alice, assetAddress1))[TroveData.coll]
+    const alice_Coll_2 = toBN((await troveManager.Troves(alice, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, alice))
       .toString();
 
-    const bob_Coll_2 = (await troveManager.Troves(bob, assetAddress1))[TroveData.coll]
+    const bob_Coll_2 = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, bob))
       .toString();
 
-    const carol_Coll_2 = (await troveManager.Troves(carol, assetAddress1))[TroveData.coll]
+    const carol_Coll_2 = toBN((await troveManager.Troves(carol, assetAddress1))[TroveData.coll])
       .add(await troveManager.getPendingReward(assetAddress1, carol))
       .toString();
 
@@ -2005,21 +2003,23 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, freddy));
 
     // Grab remaining troves' collateral
-    const carol_rawColl = (await troveManager.Troves(carol, assetAddress1))[
-      TroveData.coll
-    ].toString();
+    const carol_rawColl = toBN(
+      (await troveManager.Troves(carol, assetAddress1))[TroveData.coll]
+    ).toString();
     const carol_pendingETHReward = (
       await troveManager.getPendingReward(assetAddress1, carol)
     ).toString();
 
-    const dennis_rawColl = (await troveManager.Troves(dennis, assetAddress1))[
-      TroveData.coll
-    ].toString();
+    const dennis_rawColl = toBN(
+      (await troveManager.Troves(dennis, assetAddress1))[TroveData.coll]
+    ).toString();
     const dennis_pendingETHReward = (
       await troveManager.getPendingReward(assetAddress1, dennis)
     ).toString();
 
-    const erin_rawColl = (await troveManager.Troves(erin, assetAddress1))[TroveData.coll].toString();
+    const erin_rawColl = toBN(
+      (await troveManager.Troves(erin, assetAddress1))[TroveData.coll]
+    ).toString();
     const erin_pendingETHReward = (
       await troveManager.getPendingReward(assetAddress1, erin)
     ).toString();
@@ -2266,31 +2266,35 @@ contract("TroveManager - Redistribution reward calculations", async accounts => 
     assert.isFalse(await sortedTroves.contains(assetAddress1, freddy));
 
     // Grab remaining troves' collateral
-    const carol_rawColl = (await troveManager.Troves(carol, assetAddress1))[
-      TroveData.coll
-    ].toString();
+    const carol_rawColl = toBN(
+      (await troveManager.Troves(carol, assetAddress1))[TroveData.coll]
+    ).toString();
     const carol_pendingETHReward = (
       await troveManager.getPendingReward(assetAddress1, carol)
     ).toString();
-    const carol_Stake = (await troveManager.Troves(carol, assetAddress1))[
-      TroveData.stake
-    ].toString();
+    const carol_Stake = toBN(
+      (await troveManager.Troves(carol, assetAddress1))[TroveData.stake]
+    ).toString();
 
-    const dennis_rawColl = (await troveManager.Troves(dennis, assetAddress1))[
-      TroveData.coll
-    ].toString();
+    const dennis_rawColl = toBN(
+      (await troveManager.Troves(dennis, assetAddress1))[TroveData.coll]
+    ).toString();
     const dennis_pendingETHReward = (
       await troveManager.getPendingReward(assetAddress1, dennis)
     ).toString();
-    const dennis_Stake = (await troveManager.Troves(dennis, assetAddress1))[
-      TroveData.stake
-    ].toString();
+    const dennis_Stake = toBN(
+      (await troveManager.Troves(dennis, assetAddress1))[TroveData.stake]
+    ).toString();
 
-    const erin_rawColl = (await troveManager.Troves(erin, assetAddress1))[TroveData.coll].toString();
+    const erin_rawColl = toBN(
+      (await troveManager.Troves(erin, assetAddress1))[TroveData.coll]
+    ).toString();
     const erin_pendingETHReward = (
       await troveManager.getPendingReward(assetAddress1, erin)
     ).toString();
-    const erin_Stake = (await troveManager.Troves(erin, assetAddress1))[TroveData.stake].toString();
+    const erin_Stake = toBN(
+      (await troveManager.Troves(erin, assetAddress1))[TroveData.stake]
+    ).toString();
 
     // Check raw collateral of C, D, E
     const totalCollForL3 = C_collAfterL2.add(D_collAfterL2).add(E_coll);

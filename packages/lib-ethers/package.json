@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@microsoft/api-extractor": "7.13.2",
-    "@nomiclabs/hardhat-ethers": "2.2.2",
+    "@nomiclabs/hardhat-ethers": "^2.2.2",
     "@types/chai": "4.2.15",
     "@types/chai-as-promised": "7.1.3",
     "@types/chai-spies": "1.0.3",
@@ -60,7 +60,7 @@
     "dotenv": "16.0.0",
     "eslint": "8.20.0",
     "eslint-plugin-tsdoc": "0.2.14",
-    "ethers": "~5.7.2",
+    "ethers": "~5.6.9",
     "fs-extra": "9.1.0",
     "hardhat": "^2.9.9",
     "npm-run-all": "4.1.5",

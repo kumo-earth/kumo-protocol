@@ -1,7 +1,6 @@
 const { connectKUMOContractsToCore } = require("../utils/deploymentHelpers.js");
 const deploymentHelper = require("../utils/deploymentHelpers.js");
 const testHelpers = require("../utils/testHelpers.js");
-const TroveManagerTester = artifacts.require("TroveManagerTester");
 
 const th = testHelpers.TestHelper;
 const timeValues = testHelpers.TimeValues;
@@ -44,7 +43,6 @@ contract(
 
     before(async () => {
       coreContracts = await deploymentHelper.deployKumoCore();
-      coreContracts.troveManager = await TroveManagerTester.new();
       coreContracts = await deploymentHelper.deployKUSDTokenTester(coreContracts);
       KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(
         bountyAddress,

@@ -15,7 +15,6 @@
 
 // const GAS_PRICE = 10000000
 
-
 // const {
 //   buildUserProxies,
 //   BorrowerOperationsProxy,
@@ -35,7 +34,6 @@
 //     defaulter_1, defaulter_2,
 //     // frontEnd_1, frontEnd_2, frontEnd_3
 //   ] = accounts;
-
 
 //   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
 
@@ -69,7 +67,7 @@
 
 //   beforeEach(async () => {
 //     contracts = await deploymentHelper.deployKumoCore()
-//     contracts.troveManager = await TroveManagerTester.new()
+//
 //     contracts = await deploymentHelper.deployKUSDToken(contracts)
 //     KUMOContracts = await deploymentHelper.deployKUMOTesterContractsHardhat(bountyAddress, lpRewardsAddress, multisig)
 //     hardhatTester = await deploymentHelper.deployTesterContractsHardhat()
@@ -82,7 +80,6 @@
 //     kumoTokenOriginal = KUMOContracts.kumoToken
 
 //     const users = [alice, bob, carol, dennis, whale, A, B, C, D, E, defaulter_1, defaulter_2]
-
 
 //     erc20Asset1 = hardhatTester.erc20Asset1
 //     assetAddress1 = erc20Asset1.address
@@ -101,7 +98,6 @@
 //         break;
 //     }
 
-
 //     await deploymentHelper.deployProxyScripts(contracts, KUMOContracts, owner, users)
 //     priceFeed = contracts.priceFeedTestnet
 //     kusdToken = contracts.kusdToken
@@ -116,7 +112,6 @@
 //     kumoStaking = KUMOContracts.kumoStaking
 //     kumoToken = KUMOContracts.kumoToken
 //     kumoParams = contracts.kumoParameters
-
 
 //     KUSD_GAS_COMPENSATION = await kumoParams.KUSD_GAS_COMPENSATION(assetAddress1)
 //   })
@@ -373,7 +368,6 @@
 //     const alice_pendingETHGain = await stabilityPool.getDepositorETHGain(alice)
 //     assert.equal(alice_pendingETHGain, 0)
 //   })
-
 
 //   // --- claimStakingGainsAndRecycle ---
 

@@ -7,7 +7,6 @@ const dec = th.dec;
 const toBN = th.toBN;
 const getDifference = th.getDifference;
 
-const TroveManagerTester = artifacts.require("TroveManagerTester");
 const KUSDToken = artifacts.require("KUSDToken");
 
 const GAS_PRICE = 10000000;
@@ -72,7 +71,7 @@ contract("StabilityPool - KUMO Rewards", async accounts => {
       await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 20);
 
       contracts = await deploymentHelper.deployKumoCore();
-      contracts.troveManager = await TroveManagerTester.new();
+
       contracts.kusdToken = await KUSDToken.new(
         contracts.troveManager.address,
         contracts.stabilityPoolFactory.address,
