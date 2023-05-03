@@ -686,7 +686,13 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     }
 
     function KUSDMintRemainder(address _asset) external view returns (uint256) {
-        return kumoParams.KUSDMintCap(_asset) - kusdToken.totalSupply();
+        int256 remainder = kumoParams.KUSDMintCap(_asset) - kusdToken.totalSupply();
+
+        if (remainder < 0) {
+            return 0;
+        } else {
+            return remainder;
+        }
     }
 
     // --- 'Require' wrapper functions ---
