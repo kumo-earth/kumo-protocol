@@ -6,7 +6,7 @@ import "../Dependencies/CheckContract.sol";
 import "../Dependencies/SafeMath.sol";
 import "../Interfaces/IKUMOToken.sol";
 import "../Interfaces/ILockupContractFactory.sol";
-import "../Dependencies/console.sol";
+import "hardhat/console.sol";
 
 /*
 * Based upon OpenZeppelin's ERC20 contract:

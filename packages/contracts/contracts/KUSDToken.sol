@@ -7,8 +7,6 @@ import "./Interfaces/IStabilityPoolFactory.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/CheckContract.sol";
 
-// import "./Dependencies/console.sol";
-
 /*
  *
  * Based upon OpenZeppelin's ERC20 contract:

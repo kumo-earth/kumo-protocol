@@ -5,7 +5,7 @@ pragma solidity 0.8.11;
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 
 import "./Interfaces/IBorrowerOperations.sol";
-import "./Interfaces/ITroveManager.sol";
+import "./Interfaces/ITroveManagerDiamond.sol";
 import "./Interfaces/IKUSDToken.sol";
 import "./Interfaces/ICollSurplusPool.sol";
 import "./Interfaces/ISortedTroves.sol";
@@ -14,6 +14,7 @@ import "./Interfaces/IStabilityPoolFactory.sol";
 import "./Dependencies/KumoBase.sol";
 import "./Dependencies/CheckContract.sol";
 import "hardhat/console.sol";
+
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/SafetyTransfer.sol";
 
@@ -24,7 +25,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     // bool public isInitialized;
     // --- Connected contract declarations ---
 
-    ITroveManager public troveManager;
+    ITroveManagerDiamond public troveManager;
 
     IStabilityPoolFactory public stabilityPoolFactory;
 
@@ -75,7 +76,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     }
 
     struct ContractsCache {
-        ITroveManager troveManager;
+        ITroveManagerDiamond troveManager;
         IActivePool activePool;
         IKUSDToken kusdToken;
     }
@@ -144,7 +145,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
 
         // __Ownable_init();
 
-        troveManager = ITroveManager(_troveManagerAddress);
+        troveManager = ITroveManagerDiamond(_troveManagerAddress);
         stabilityPoolFactory = IStabilityPoolFactory(_stabilityPoolFactoryAddress);
         gasPoolAddress = _gasPoolAddress;
         collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
@@ -510,7 +511,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     }
 
     function closeTrove(address _asset) external override {
-        ITroveManager troveManagerCached = troveManager;
+        ITroveManagerDiamond troveManagerCached = troveManager;
         IActivePool activePoolCached = kumoParams.activePool();
         IKUSDToken kusdTokenCached = kusdToken;
 
@@ -569,7 +570,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
 
     function _triggerBorrowingFee(
         address _asset,
-        ITroveManager _troveManager,
+        ITroveManagerDiamond _troveManager,
         IKUSDToken _kusdToken,
         uint256 _KUSDAmount,
         uint256 _maxFeePercentage
@@ -607,7 +608,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     // Update trove's coll and debt based on whether they increase or decrease
     function _updateTroveFromAdjustment(
         address _asset,
-        ITroveManager _troveManager,
+        ITroveManagerDiamond _troveManager,
         address _borrower,
         uint256 _collChange,
         bool _isCollIncrease,
@@ -686,18 +687,18 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     }
 
     function KUSDMintRemainder(address _asset) external view returns (uint256) {
-        int256 remainder = kumoParams.KUSDMintCap(_asset) - kusdToken.totalSupply();
+        int256 remainder = int256(kumoParams.KUSDMintCap(_asset) - kusdToken.totalSupply());
 
         if (remainder < 0) {
             return 0;
         } else {
-            return remainder;
+            return uint256(remainder);
         }
     }
 
     // --- 'Require' wrapper functions ---
 
-    function _requireSingularCollChange(uint256 _collWithdrawal, uint256 _amountSent) internal view {
+    function _requireSingularCollChange(uint256 _collWithdrawal, uint256 _amountSent) internal pure {
         require(
             _collWithdrawal == 0 || _amountSent == 0,
             "BorrowerOperations: Cannot withdraw and add coll"
@@ -715,7 +716,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         uint256 _collWithdrawal,
         uint256 _KUSDChange,
         uint256 _amountSent
-    ) internal view {
+    ) internal pure {
         require(
             _collWithdrawal != 0 || _KUSDChange != 0 || _amountSent != 0,
             "BorrowerOps: There must be either a collateral change or a debt change"
@@ -724,7 +725,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
 
     function _requireTroveisActive(
         address _asset,
-        ITroveManager _troveManager,
+        ITroveManagerDiamond _troveManager,
         address _borrower
     ) internal view {
         uint256 status = _troveManager.getTroveStatus(_asset, _borrower);
@@ -733,7 +734,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
 
     function _requireTroveisNotActive(
         address _asset,
-        ITroveManager _troveManager,
+        ITroveManagerDiamond _troveManager,
         address _borrower
     ) internal view {
         uint256 status = _troveManager.getTroveStatus(_asset, _borrower);

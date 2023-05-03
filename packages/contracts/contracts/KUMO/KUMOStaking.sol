@@ -8,7 +8,7 @@ import "../Dependencies/BaseMath.sol";
 import "../Dependencies/SafeMath.sol";
 import "../Dependencies/Ownable.sol";
 import "../Dependencies/CheckContract.sol";
-import "../Dependencies/console.sol";
+import "hardhat/console.sol";
 import "../Interfaces/IKUMOToken.sol";
 import "../Interfaces/IKUMOStaking.sol";
 import "../Dependencies/KumoMath.sol";

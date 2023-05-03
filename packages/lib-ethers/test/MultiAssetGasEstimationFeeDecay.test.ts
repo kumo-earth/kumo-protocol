@@ -119,9 +119,9 @@ describe("EthersKumoGasEstimationFeeDecay", async () => {
                 const borrowingRate = await kumo.getFees(mockAssetAddress).then(fees => fees.borrowingRate());
 
                 for (const [borrowingFeeDecayToleranceMinutes, roughGasHeadroom] of [
-                    [10, 133000],
-                    [20, 251000],
-                    [30, 335000]
+                    [10, 135000],
+                    [20, 255000],
+                    [30, 340000]
                 ]) {
                     const tx = await kumo.populate.openTrove(
                         Trove.recreate(bottomTrove, borrowingRate),
@@ -227,7 +227,7 @@ describe("EthersKumoGasEstimationFeeDecay", async () => {
             afterEach(`Run after each test ${mockAssetContract.name}`, async () => {
                 let totalTroves = 0
                 const otherMockAssetContracts = mockAssetContracts.filter(contract => contract.name !== mockAssetContract.name)
-                const currentTroves =  await kumo.getTroves(mockAssetAddress, {
+                const currentTroves = await kumo.getTroves(mockAssetAddress, {
                     first: 10,
                     sortedBy: "ascendingCollateralRatio"
                 });
@@ -238,7 +238,7 @@ describe("EthersKumoGasEstimationFeeDecay", async () => {
                         first: 10,
                         sortedBy: "ascendingCollateralRatio"
                     });
-                    totalTroves +=  troves.length
+                    totalTroves += troves.length
                     expect(`${troves.length}`).to.equal("0")
                 }
                 expect(`${currentTroves.length * totalTroves}`).to.equal("0")
@@ -255,9 +255,9 @@ describe("EthersKumoGasEstimationFeeDecay", async () => {
                 const borrowingRate = await kumo.getFees(mockAssetAddress).then(fees => fees.borrowingRate());
 
                 for (const [borrowingFeeDecayToleranceMinutes, roughGasHeadroom] of [
-                    [10, 133000],
-                    [20, 251000],
-                    [30, 335000]
+                    [10, 135000],
+                    [20, 255000],
+                    [30, 340000]
                 ]) {
                     const tx = await kumo.populate.openTrove(
                         Trove.recreate(bottomTrove, borrowingRate),

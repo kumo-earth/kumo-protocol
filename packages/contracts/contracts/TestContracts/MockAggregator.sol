@@ -3,14 +3,13 @@
 pragma solidity 0.8.11;
 
 import "../Dependencies/AggregatorV3Interface.sol";
-import "../Dependencies/console.sol";
+import "hardhat/console.sol";
 
 contract MockAggregator is AggregatorV3Interface {
-    
     // storage variables to hold the mock data
     uint8 private decimalsVal = 8;
-    int private price;
-    int private prevPrice;
+    int256 private price;
+    int256 private prevPrice;
     uint256 private updateTime;
     uint256 private prevUpdateTime;
 
@@ -27,11 +26,11 @@ contract MockAggregator is AggregatorV3Interface {
         decimalsVal = _decimals;
     }
 
-    function setPrice(int _price) external {
+    function setPrice(int256 _price) external {
         price = _price;
     }
 
-    function setPrevPrice(int _prevPrice) external {
+    function setPrevPrice(int256 _prevPrice) external {
         prevPrice = _prevPrice;
     }
 
@@ -39,15 +38,15 @@ contract MockAggregator is AggregatorV3Interface {
         prevUpdateTime = _prevUpdateTime;
     }
 
-    function setUpdateTime(uint256 _updateTime) external  {
+    function setUpdateTime(uint256 _updateTime) external {
         updateTime = _updateTime;
     }
 
-    function setLatestRevert() external  {
+    function setLatestRevert() external {
         latestRevert = !latestRevert;
     }
 
-    function setPrevRevert() external  {
+    function setPrevRevert() external {
         prevRevert = !prevRevert;
     }
 
@@ -59,56 +58,63 @@ contract MockAggregator is AggregatorV3Interface {
         latestRoundId = _latestRoundId;
     }
 
-      function setPrevRoundId(uint80 _prevRoundId) external {
+    function setPrevRoundId(uint80 _prevRoundId) external {
         prevRoundId = _prevRoundId;
     }
-    
 
     // --- Getters that adhere to the AggregatorV3 interface ---
 
-    function decimals() external override view returns (uint8) {
-        if (decimalsRevert) {require(1== 0, "decimals reverted");}
+    function decimals() external view override returns (uint8) {
+        if (decimalsRevert) {
+            require(1 == 0, "decimals reverted");
+        }
 
         return decimalsVal;
     }
 
     function latestRoundData()
         external
-        override
         view
-    returns (
-        uint80 roundId,
-        int256 answer,
-        uint256 startedAt,
-        uint256 updatedAt,
-        uint80 answeredInRound
-    ) 
-    {    
-        if (latestRevert) { require(1== 0, "latestRoundData reverted");}
+        override
+        returns (
+            uint80 roundId,
+            int256 answer,
+            uint256 startedAt,
+            uint256 updatedAt,
+            uint80 answeredInRound
+        )
+    {
+        if (latestRevert) {
+            require(1 == 0, "latestRoundData reverted");
+        }
 
-        return (latestRoundId, price, 0, updateTime, 0); 
+        return (latestRoundId, price, 0, updateTime, 0);
     }
 
     function getRoundData(uint80)
-    external
-    override 
-    view
-    returns (
-      uint80 roundId,
-      int256 answer,
-      uint256 startedAt,
-      uint256 updatedAt,
-      uint80 answeredInRound
-    ) {
-        if (prevRevert) {require( 1== 0, "getRoundData reverted");}
+        external
+        view
+        override
+        returns (
+            uint80 roundId,
+            int256 answer,
+            uint256 startedAt,
+            uint256 updatedAt,
+            uint80 answeredInRound
+        )
+    {
+        if (prevRevert) {
+            require(1 == 0, "getRoundData reverted");
+        }
 
         return (prevRoundId, prevPrice, 0, updateTime, 0);
     }
 
-    function description() external override pure returns (string memory) {
+    function description() external pure override returns (string memory) {
         return "";
     }
-    function version() external override pure returns (uint256) {
+
+    function version() external pure override returns (uint256) {
         return 1;
     }
 }

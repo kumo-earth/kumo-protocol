@@ -268,7 +268,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      }
+    ],
     "name": "KUSDMintRemainder",
     "outputs": [
       {
@@ -739,7 +745,7 @@
     "name": "troveManager",
     "outputs": [
       {
-        "internalType": "contract ITroveManager",
+        "internalType": "contract ITroveManagerDiamond",
         "name": "",
         "type": "address"
       }

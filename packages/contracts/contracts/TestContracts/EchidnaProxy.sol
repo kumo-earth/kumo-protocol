@@ -2,25 +2,25 @@
 
 pragma solidity 0.8.11;
 
-import "../TroveManager.sol";
+import "../Interfaces/ITroveManagerDiamond.sol";
 import "../BorrowerOperations.sol";
 import "../StabilityPoolFactory.sol";
 import "../KUSDToken.sol";
 import "../Interfaces/IStabilityPool.sol";
 
 contract EchidnaProxy {
-    TroveManager troveManager;
+    ITroveManagerDiamond troveManager;
     BorrowerOperations borrowerOperations;
     StabilityPoolFactory stabilityPoolFactory;
     KUSDToken kusdToken;
 
     constructor(
-        TroveManager _troveManager,
+        address _troveManagerAddress,
         BorrowerOperations _borrowerOperations,
         StabilityPoolFactory _stabilityPoolFactory,
         KUSDToken _kusdToken
     ) {
-        troveManager = _troveManager;
+        troveManager = ITroveManagerDiamond(_troveManagerAddress);
         borrowerOperations = _borrowerOperations;
         stabilityPoolFactory = _stabilityPoolFactory;
         kusdToken = _kusdToken;

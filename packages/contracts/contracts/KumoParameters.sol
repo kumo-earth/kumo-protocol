@@ -55,6 +55,14 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
     IActivePool public override activePool;
     IDefaultPool public override defaultPool;
     IPriceFeed public override priceFeed;
+    IBorrowerOperations public override borrowerOperations;
+    ICollSurplusPool public override collSurplusPool;
+    IKUSDToken public override kusdToken;
+    IStabilityPoolFactory public override stabilityPoolFactory;
+    address public gasPoolAddress;
+    ISortedTroves public override sortedTroves;
+    IKUMOToken public override kumoToken;
+    IKUMOStaking public override kumoStaking;
     // address public adminContract;
 
     bool public isInitialized;
@@ -67,17 +75,49 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
     function setAddresses(
         address _activePool,
         address _defaultPool,
-        address _priceFeed
+        address _gasPoolAddress,
+        address _priceFeed,
+        address _borrowerOperationsAddress,
+        address _collSurplusPoolAddress,
+        address _kusdTokenAddress,
+        address _stabilityPoolFactoryAddress,
+        address _sortedTrovesAddress,
+        address _kumoTokenAddress,
+        address _kumoStakingAddress
     ) external onlyOwner {
         require(!isInitialized, "Already initalized");
         checkContract(_activePool);
         checkContract(_defaultPool);
         checkContract(_priceFeed);
+        checkContract(_borrowerOperationsAddress);
+        checkContract(_collSurplusPoolAddress);
+        checkContract(_kusdTokenAddress);
+        checkContract(_stabilityPoolFactoryAddress);
+        checkContract(_sortedTrovesAddress);
+        checkContract(_kumoTokenAddress);
+        checkContract(_kumoStakingAddress);
         isInitialized = true;
 
         activePool = IActivePool(_activePool);
         defaultPool = IDefaultPool(_defaultPool);
         priceFeed = IPriceFeed(_priceFeed);
+        borrowerOperations = IBorrowerOperations(_borrowerOperationsAddress);
+        collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
+        kusdToken = IKUSDToken(_kusdTokenAddress);
+        stabilityPoolFactory = IStabilityPoolFactory(_stabilityPoolFactoryAddress);
+        gasPoolAddress = _gasPoolAddress;
+        sortedTroves = ISortedTroves(_sortedTrovesAddress);
+        kumoToken = IKUMOToken(_kumoTokenAddress);
+        kumoStaking = IKUMOStaking(_kumoStakingAddress);
+
+        emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
+        emit StabilityPoolFactoryAddressChanged(_stabilityPoolFactoryAddress);
+        emit GasPoolAddressChanged(_gasPoolAddress);
+        emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
+        emit KUSDTokenAddressChanged(_kusdTokenAddress);
+        emit SortedTrovesAddressChanged(_sortedTrovesAddress);
+        emit KUMOTokenAddressChanged(_kumoTokenAddress);
+        emit KUMOStakingAddressChanged(_kumoStakingAddress);
     }
 
     function setPriceFeed(address _priceFeed) external override onlyOwner {

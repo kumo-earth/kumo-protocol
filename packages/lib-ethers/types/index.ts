@@ -23,6 +23,7 @@ interface ActivePoolCalls {
   owner(_overrides?: CallOverrides): Promise<string>;
   stabilityPoolFactory(_overrides?: CallOverrides): Promise<string>;
   troveManagerAddress(_overrides?: CallOverrides): Promise<string>;
+  troveRedemptorAddress(_overrides?: CallOverrides): Promise<string>;
 }
 
 interface ActivePoolTransactions {
@@ -67,7 +68,7 @@ export interface ActivePool
 
 interface BorrowerOperationsCalls {
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
-  KUSDMintRemainder(_overrides?: CallOverrides): Promise<BigNumber>;
+  KUSDMintRemainder(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   MIN_NET_DEBT(_overrides?: CallOverrides): Promise<BigNumber>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   getCompositeDebt(_asset: string, _debt: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
@@ -870,17 +871,28 @@ export interface StabilityPoolFactory
 }
 
 interface TroveManagerCalls {
+  callGetRedemptionFee(_asset: string, _ETHDrawn: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
+  computeICR(_coll: BigNumberish, _debt: BigNumberish, _price: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
+  getActualDebtFromComposite(_asset: string, _debtVal: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
+  getCollGasCompensation(_asset: string, _coll: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
+  getCompositeDebt(_asset: string, _debt: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
+  getkusdGasCompensation(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  minutesPassedSinceLastFeeOp(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  facetAddress(_functionSelector: BytesLike, _overrides?: CallOverrides): Promise<string>;
+  facetAddresses(_overrides?: CallOverrides): Promise<string[]>;
+  facetFunctionSelectors(_facet: string, _overrides?: CallOverrides): Promise<string[]>;
+  facets(_overrides?: CallOverrides): Promise<{ facetAddress: string; functionSelectors: string[] }[]>;
+  supportsInterface(_interfaceId: BytesLike, _overrides?: CallOverrides): Promise<boolean>;
+  owner(_overrides?: CallOverrides): Promise<string>;
   BETA(_overrides?: CallOverrides): Promise<BigNumber>;
-  DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
-  L_ASSETS(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  L_KUSDDebts(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  L_ASSETS(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  L_KUSDDebts(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   MINUTE_DECAY_FACTOR(_overrides?: CallOverrides): Promise<BigNumber>;
-  MIN_NET_DEBT(_overrides?: CallOverrides): Promise<BigNumber>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   SECONDS_IN_ONE_MINUTE(_overrides?: CallOverrides): Promise<BigNumber>;
-  TroveOwners(arg0: string, arg1: BigNumberish, _overrides?: CallOverrides): Promise<string>;
-  Troves(arg0: string, arg1: string, _overrides?: CallOverrides): Promise<{ asset: string; debt: BigNumber; coll: BigNumber; stake: BigNumber; status: number; arrayIndex: BigNumber }>;
-  baseRate(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  TroveOwners(_asset: string, _index: BigNumberish, _overrides?: CallOverrides): Promise<string>;
+  Troves(_borrower: string, _asset: string, _overrides?: CallOverrides): Promise<{ asset: string; debt: BigNumber; coll: BigNumber; stake: BigNumber; status: number; arrayIndex: BigNumber }>;
+  baseRate(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   borrowerOperationsAddress(_overrides?: CallOverrides): Promise<string>;
   checkRecoveryMode(_asset: string, _price: BigNumberish, _overrides?: CallOverrides): Promise<boolean>;
   getBorrowingFee(_asset: string, _KUSDDebt: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
@@ -894,6 +906,7 @@ interface TroveManagerCalls {
   getNominalICR(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getPendingKUSDDebtReward(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getPendingReward(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  getRedemptionFee(_asset: string, _assetDraw: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
   getRedemptionFeeWithDecay(_asset: string, _assetDraw: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
   getRedemptionRate(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getRedemptionRateWithDecay(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
@@ -904,45 +917,48 @@ interface TroveManagerCalls {
   getTroveOwnersCount(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getTroveStake(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getTroveStatus(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  hasPendingRewards(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<boolean>;
   isInitialized(_overrides?: CallOverrides): Promise<boolean>;
-  isOwner(_overrides?: CallOverrides): Promise<boolean>;
   isRedemptionWhitelisted(_overrides?: CallOverrides): Promise<boolean>;
-  kumoParams(_overrides?: CallOverrides): Promise<string>;
   kumoStaking(_overrides?: CallOverrides): Promise<string>;
   kumoToken(_overrides?: CallOverrides): Promise<string>;
   kusdToken(_overrides?: CallOverrides): Promise<string>;
-  lastETHError_Redistribution(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  lastFeeOperationTime(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  lastKUSDDebtError_Redistribution(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  owner(_overrides?: CallOverrides): Promise<string>;
-  redemptionWhitelist(arg0: string, _overrides?: CallOverrides): Promise<boolean>;
-  rewardSnapshots(arg0: string, arg1: string, _overrides?: CallOverrides): Promise<{ asset: BigNumber; KUSDDebt: BigNumber }>;
+  lastAssetError_Redistribution(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  lastFeeOperationTime(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  lastKUSDDebtError_Redistribution(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  redemptionWhitelist(_asset: string, _overrides?: CallOverrides): Promise<boolean>;
+  rewardSnapshots(_borrower: string, _asset: string, _overrides?: CallOverrides): Promise<{ asset: BigNumber; KUSDDebt: BigNumber }>;
   sortedTroves(_overrides?: CallOverrides): Promise<string>;
   stabilityPoolFactory(_overrides?: CallOverrides): Promise<string>;
-  totalCollateralSnapshot(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  totalStakes(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  totalStakesSnapshot(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  totalCollateralSnapshot(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  totalStakes(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  totalStakesSnapshot(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  hasPendingRewards(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<boolean>;
+  MIN_NET_DEBT(_overrides?: CallOverrides): Promise<BigNumber>;
 }
 
 interface TroveManagerTransactions {
+  callInternalRemoveTroveOwner(_asset: string, _troveOwner: string, _overrides?: Overrides): Promise<void>;
+  setBaseRate(_asset: string, _baseRate: BigNumberish, _overrides?: Overrides): Promise<void>;
+  setLastFeeOpTimeToNow(_asset: string, _overrides?: Overrides): Promise<void>;
+  unprotectedDecayBaseRateFromBorrowing(_asset: string, _overrides?: Overrides): Promise<BigNumber>;
+  diamondCut(_diamondCut: { facetAddress: string; action: BigNumberish; functionSelectors: BytesLike[] }[], _init: string, _calldata: BytesLike, _overrides?: Overrides): Promise<void>;
+  transferOwnership(_newOwner: string, _overrides?: Overrides): Promise<void>;
   addNewAsset(_asset: string, _overrides?: Overrides): Promise<void>;
   addTroveOwnerToArray(_asset: string, _borrower: string, _overrides?: Overrides): Promise<BigNumber>;
-  applyPendingRewards(_asset: string, _borrower: string, _overrides?: Overrides): Promise<void>;
-  batchLiquidateTroves(_asset: string, _troveArray: string[], _overrides?: Overrides): Promise<void>;
   closeTrove(_asset: string, _borrower: string, _overrides?: Overrides): Promise<void>;
   decayBaseRateFromBorrowing(_asset: string, _overrides?: Overrides): Promise<void>;
   decreaseTroveColl(_asset: string, _borrower: string, _collDecrease: BigNumberish, _overrides?: Overrides): Promise<BigNumber>;
   decreaseTroveDebt(_asset: string, _borrower: string, _debtDecrease: BigNumberish, _overrides?: Overrides): Promise<BigNumber>;
   increaseTroveColl(_asset: string, _borrower: string, _collIncrease: BigNumberish, _overrides?: Overrides): Promise<BigNumber>;
   increaseTroveDebt(_asset: string, _borrower: string, _debtIncrease: BigNumberish, _overrides?: Overrides): Promise<BigNumber>;
+  removeStake(_asset: string, _borrower: string, _overrides?: Overrides): Promise<void>;
+  setAddresses(_kumoParamsAddress: string, _overrides?: Overrides): Promise<void>;
+  setTroveStatus(_asset: string, _borrower: string, _num: BigNumberish, _overrides?: Overrides): Promise<void>;
+  applyPendingRewards(_asset: string, _borrower: string, _overrides?: Overrides): Promise<void>;
+  batchLiquidateTroves(_asset: string, _troveArray: string[], _overrides?: Overrides): Promise<void>;
   liquidate(_asset: string, _borrower: string, _overrides?: Overrides): Promise<void>;
   liquidateTroves(_asset: string, _n: BigNumberish, _overrides?: Overrides): Promise<void>;
   redeemCollateral(_asset: string, _KUSDamount: BigNumberish, _firstRedemptionHint: string, _upperPartialRedemptionHint: string, _lowerPartialRedemptionHint: string, _partialRedemptionHintNICR: BigNumberish, _maxIterations: BigNumberish, _maxFeePercentage: BigNumberish, _overrides?: Overrides): Promise<void>;
-  removeStake(_asset: string, _borrower: string, _overrides?: Overrides): Promise<void>;
-  setAddresses(_borrowerOperationsAddress: string, _stabilityPoolFactoryAddress: string, _gasPoolAddress: string, _collSurplusPoolAddress: string, _kusdTokenAddress: string, _sortedTrovesAddress: string, _kumoTokenAddress: string, _kumoStakingAddress: string, _kumoParamsAddress: string, _overrides?: Overrides): Promise<void>;
-  setKumoParameters(_kumoParamsAddress: string, _overrides?: Overrides): Promise<void>;
-  setTroveStatus(_asset: string, _borrower: string, _num: BigNumberish, _overrides?: Overrides): Promise<void>;
   updateStakeAndTotalStakes(_asset: string, _borrower: string, _overrides?: Overrides): Promise<BigNumber>;
   updateTroveRewardSnapshots(_asset: string, _borrower: string, _overrides?: Overrides): Promise<void>;
 }
@@ -950,55 +966,45 @@ interface TroveManagerTransactions {
 export interface TroveManager
   extends _TypedKumoContract<TroveManagerCalls, TroveManagerTransactions> {
   readonly filters: {
-    ActivePoolAddressChanged(_activePoolAddress?: null): EventFilter;
-    BaseRateUpdated(_asset?: string | null, _baseRate?: null): EventFilter;
-    BorrowerOperationsAddressChanged(_newBorrowerOperationsAddress?: null): EventFilter;
-    CollSurplusPoolAddressChanged(_collSurplusPoolAddress?: null): EventFilter;
-    DefaultPoolAddressChanged(_defaultPoolAddress?: null): EventFilter;
-    GasPoolAddressChanged(_gasPoolAddress?: null): EventFilter;
-    KUMOStakingAddressChanged(_kumoStakingAddress?: null): EventFilter;
-    KUMOTokenAddressChanged(_kumoTokenAddress?: null): EventFilter;
-    KUSDTokenAddressChanged(_newKUSDTokenAddress?: null): EventFilter;
-    LTermsUpdated(_L_ETH?: null, _L_KUSDDebt?: null): EventFilter;
-    LastFeeOpTimeUpdated(_asset?: string | null, _lastFeeOpTime?: null): EventFilter;
-    Liquidation(_asset?: string | null, _liquidatedDebt?: null, _liquidatedColl?: null, _collGasCompensation?: null, _kusdGasCompensation?: null): EventFilter;
+    DiamondCut(_diamondCut?: null, _init?: null, _calldata?: null): EventFilter;
     OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
-    PriceFeedAddressChanged(_newPriceFeedAddress?: null): EventFilter;
+    LTermsUpdated(_L_ETH?: null, _L_KUSDDebt?: null): EventFilter;
+    Liquidation(_asset?: string | null, _liquidatedDebt?: null, _liquidatedColl?: null, _collGasCompensation?: null, _kusdGasCompensation?: null): EventFilter;
     Redemption(_asset?: string | null, _attemptedKUSDAmount?: null, _actualKUSDAmount?: null, _AssetSent?: null, _AssetFee?: null): EventFilter;
-    SortedTrovesAddressChanged(_sortedTrovesAddress?: null): EventFilter;
-    StabilityPoolFactoryAddressChanged(_stabilityPoolFactoryAddress?: null): EventFilter;
     SystemSnapshotsUpdated(_asset?: string | null, _totalStakesSnapshot?: null, _totalCollateralSnapshot?: null): EventFilter;
     TotalStakesUpdated(_asset?: string | null, _newTotalStakes?: null): EventFilter;
-    TroveIndexUpdated(_asset?: string | null, _borrower?: null, _newIndex?: null): EventFilter;
     TroveLiquidated(_asset?: string | null, _borrower?: string | null, _debt?: null, _coll?: null, _operation?: null): EventFilter;
-    TroveSnapshotsUpdated(_asset?: string | null, _L_ETH?: null, _L_KUSDDebt?: null): EventFilter;
     TroveUpdated(_asset?: string | null, _borrower?: string | null, _debt?: null, _coll?: null, _stake?: null, _operation?: null): EventFilter;
-    VaultParametersBaseChanged(newAddress?: string | null): EventFilter;
+    BaseRateUpdated(_asset?: string | null, _baseRate?: null): EventFilter;
+    LastFeeOpTimeUpdated(_asset?: string | null, _lastFeeOpTime?: null): EventFilter;
+    TroveIndexUpdated(_asset?: string | null, _borrower?: null, _newIndex?: null): EventFilter;
+    TroveSnapshotsUpdated(_asset?: string | null, _L_ETH?: null, _L_KUSDDebt?: null): EventFilter;
   };
-  extractEvents(logs: Log[], name: "ActivePoolAddressChanged"): _TypedLogDescription<{ _activePoolAddress: string }>[];
-  extractEvents(logs: Log[], name: "BaseRateUpdated"): _TypedLogDescription<{ _asset: string; _baseRate: BigNumber }>[];
-  extractEvents(logs: Log[], name: "BorrowerOperationsAddressChanged"): _TypedLogDescription<{ _newBorrowerOperationsAddress: string }>[];
-  extractEvents(logs: Log[], name: "CollSurplusPoolAddressChanged"): _TypedLogDescription<{ _collSurplusPoolAddress: string }>[];
-  extractEvents(logs: Log[], name: "DefaultPoolAddressChanged"): _TypedLogDescription<{ _defaultPoolAddress: string }>[];
-  extractEvents(logs: Log[], name: "GasPoolAddressChanged"): _TypedLogDescription<{ _gasPoolAddress: string }>[];
-  extractEvents(logs: Log[], name: "KUMOStakingAddressChanged"): _TypedLogDescription<{ _kumoStakingAddress: string }>[];
-  extractEvents(logs: Log[], name: "KUMOTokenAddressChanged"): _TypedLogDescription<{ _kumoTokenAddress: string }>[];
-  extractEvents(logs: Log[], name: "KUSDTokenAddressChanged"): _TypedLogDescription<{ _newKUSDTokenAddress: string }>[];
-  extractEvents(logs: Log[], name: "LTermsUpdated"): _TypedLogDescription<{ _L_ETH: BigNumber; _L_KUSDDebt: BigNumber }>[];
-  extractEvents(logs: Log[], name: "LastFeeOpTimeUpdated"): _TypedLogDescription<{ _asset: string; _lastFeeOpTime: BigNumber }>[];
-  extractEvents(logs: Log[], name: "Liquidation"): _TypedLogDescription<{ _asset: string; _liquidatedDebt: BigNumber; _liquidatedColl: BigNumber; _collGasCompensation: BigNumber; _kusdGasCompensation: BigNumber }>[];
+  extractEvents(logs: Log[], name: "DiamondCut"): _TypedLogDescription<{ _diamondCut: { facetAddress: string; action: number; functionSelectors: string[] }[]; _init: string; _calldata: string }>[];
   extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
-  extractEvents(logs: Log[], name: "PriceFeedAddressChanged"): _TypedLogDescription<{ _newPriceFeedAddress: string }>[];
+  extractEvents(logs: Log[], name: "LTermsUpdated"): _TypedLogDescription<{ _L_ETH: BigNumber; _L_KUSDDebt: BigNumber }>[];
+  extractEvents(logs: Log[], name: "Liquidation"): _TypedLogDescription<{ _asset: string; _liquidatedDebt: BigNumber; _liquidatedColl: BigNumber; _collGasCompensation: BigNumber; _kusdGasCompensation: BigNumber }>[];
   extractEvents(logs: Log[], name: "Redemption"): _TypedLogDescription<{ _asset: string; _attemptedKUSDAmount: BigNumber; _actualKUSDAmount: BigNumber; _AssetSent: BigNumber; _AssetFee: BigNumber }>[];
-  extractEvents(logs: Log[], name: "SortedTrovesAddressChanged"): _TypedLogDescription<{ _sortedTrovesAddress: string }>[];
-  extractEvents(logs: Log[], name: "StabilityPoolFactoryAddressChanged"): _TypedLogDescription<{ _stabilityPoolFactoryAddress: string }>[];
   extractEvents(logs: Log[], name: "SystemSnapshotsUpdated"): _TypedLogDescription<{ _asset: string; _totalStakesSnapshot: BigNumber; _totalCollateralSnapshot: BigNumber }>[];
   extractEvents(logs: Log[], name: "TotalStakesUpdated"): _TypedLogDescription<{ _asset: string; _newTotalStakes: BigNumber }>[];
-  extractEvents(logs: Log[], name: "TroveIndexUpdated"): _TypedLogDescription<{ _asset: string; _borrower: string; _newIndex: BigNumber }>[];
   extractEvents(logs: Log[], name: "TroveLiquidated"): _TypedLogDescription<{ _asset: string; _borrower: string; _debt: BigNumber; _coll: BigNumber; _operation: number }>[];
-  extractEvents(logs: Log[], name: "TroveSnapshotsUpdated"): _TypedLogDescription<{ _asset: string; _L_ETH: BigNumber; _L_KUSDDebt: BigNumber }>[];
   extractEvents(logs: Log[], name: "TroveUpdated"): _TypedLogDescription<{ _asset: string; _borrower: string; _debt: BigNumber; _coll: BigNumber; _stake: BigNumber; _operation: number }>[];
-  extractEvents(logs: Log[], name: "VaultParametersBaseChanged"): _TypedLogDescription<{ newAddress: string }>[];
+  extractEvents(logs: Log[], name: "BaseRateUpdated"): _TypedLogDescription<{ _asset: string; _baseRate: BigNumber }>[];
+  extractEvents(logs: Log[], name: "LastFeeOpTimeUpdated"): _TypedLogDescription<{ _asset: string; _lastFeeOpTime: BigNumber }>[];
+  extractEvents(logs: Log[], name: "TroveIndexUpdated"): _TypedLogDescription<{ _asset: string; _borrower: string; _newIndex: BigNumber }>[];
+  extractEvents(logs: Log[], name: "TroveSnapshotsUpdated"): _TypedLogDescription<{ _asset: string; _L_ETH: BigNumber; _L_KUSDDebt: BigNumber }>[];
+}
+
+interface TroveManagerDiamondCalls {
+}
+
+interface TroveManagerDiamondTransactions {
+}
+
+export interface TroveManagerDiamond
+  extends _TypedKumoContract<TroveManagerDiamondCalls, TroveManagerDiamondTransactions> {
+  readonly filters: {
+  };
 }
 
 interface UnipoolCalls {
@@ -1056,8 +1062,10 @@ interface KumoParametersCalls {
   CCR(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
   CCR_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
+  KUSDMintCap(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
   KUSD_GAS_COMPENSATION(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
   KUSD_GAS_COMPENSATION_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
+  KUSD_MINT_CAP_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
   MAX_BORROWING_FEE(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
   MAX_BORROWING_FEE_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
   MCR(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
@@ -1072,26 +1080,33 @@ interface KumoParametersCalls {
   REDEMPTION_FEE_FLOOR_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
   _100pct(_overrides?: CallOverrides): Promise<BigNumber>;
   activePool(_overrides?: CallOverrides): Promise<string>;
+  borrowerOperations(_overrides?: CallOverrides): Promise<string>;
+  collSurplusPool(_overrides?: CallOverrides): Promise<string>;
   defaultPool(_overrides?: CallOverrides): Promise<string>;
+  gasPoolAddress(_overrides?: CallOverrides): Promise<string>;
   hasCollateralConfigured(arg0: string, _overrides?: CallOverrides): Promise<boolean>;
   isInitialized(_overrides?: CallOverrides): Promise<boolean>;
   isOwner(_overrides?: CallOverrides): Promise<boolean>;
-  kusdMintCap(_overrides?: CallOverrides): Promise<BigNumber>;
+  kumoStaking(_overrides?: CallOverrides): Promise<string>;
+  kumoToken(_overrides?: CallOverrides): Promise<string>;
+  kusdToken(_overrides?: CallOverrides): Promise<string>;
   owner(_overrides?: CallOverrides): Promise<string>;
   priceFeed(_overrides?: CallOverrides): Promise<string>;
   redemptionBlock(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  sortedTroves(_overrides?: CallOverrides): Promise<string>;
+  stabilityPoolFactory(_overrides?: CallOverrides): Promise<string>;
 }
 
 interface KumoParametersTransactions {
   removeRedemptionBlock(_asset: string, _overrides?: Overrides): Promise<void>;
   sanitizeParameters(_asset: string, _overrides?: Overrides): Promise<void>;
-  setAddresses(_activePool: string, _defaultPool: string, _priceFeed: string, _overrides?: Overrides): Promise<void>;
+  setAddresses(_activePool: string, _defaultPool: string, _gasPoolAddress: string, _priceFeed: string, _borrowerOperationsAddress: string, _collSurplusPoolAddress: string, _kusdTokenAddress: string, _stabilityPoolFactoryAddress: string, _sortedTrovesAddress: string, _kumoTokenAddress: string, _kumoStakingAddress: string, _overrides?: Overrides): Promise<void>;
   setAsDefault(_asset: string, _overrides?: Overrides): Promise<void>;
   setBorrowingFeeFloor(_asset: string, borrowingFeeFloor: BigNumberish, _overrides?: Overrides): Promise<void>;
   setCCR(_asset: string, newCCR: BigNumberish, _overrides?: Overrides): Promise<void>;
   setCollateralParameters(_asset: string, newMCR: BigNumberish, newCCR: BigNumberish, gasCompensation: BigNumberish, minNetDebt: BigNumberish, precentDivisor: BigNumberish, borrowingFeeFloor: BigNumberish, maxBorrowingFee: BigNumberish, redemptionFeeFloor: BigNumberish, _overrides?: Overrides): Promise<void>;
   setKUMOGasCompensation(_asset: string, gasCompensation: BigNumberish, _overrides?: Overrides): Promise<void>;
-  setKUSDMintCap(newCap: BigNumberish, _overrides?: Overrides): Promise<void>;
+  setKUSDMintCap(_asset: string, _newCap: BigNumberish, _overrides?: Overrides): Promise<void>;
   setMCR(_asset: string, newMCR: BigNumberish, _overrides?: Overrides): Promise<void>;
   setMaxBorrowingFee(_asset: string, maxBorrowingFee: BigNumberish, _overrides?: Overrides): Promise<void>;
   setMinNetDebt(_asset: string, minNetDebt: BigNumberish, _overrides?: Overrides): Promise<void>;
@@ -1103,31 +1118,55 @@ interface KumoParametersTransactions {
 export interface KumoParameters
   extends _TypedKumoContract<KumoParametersCalls, KumoParametersTransactions> {
   readonly filters: {
+    ActivePoolAddressChanged(_activePoolAddress?: null): EventFilter;
+    BorrowerOperationsAddressChanged(_newBorrowerOperationsAddress?: null): EventFilter;
     BorrowingFeeFloorChanged(oldBorrowingFloorFee?: null, newBorrowingFloorFee?: null): EventFilter;
     CCRChanged(oldCCR?: null, newCCR?: null): EventFilter;
+    CollSurplusPoolAddressChanged(_collSurplusPoolAddress?: null): EventFilter;
+    DefaultPoolAddressChanged(_defaultPoolAddress?: null): EventFilter;
     GasCompensationChanged(oldGasComp?: null, newGasComp?: null): EventFilter;
-    KUSDMintCapChanged(oldMintCap?: null, newMintCap?: null): EventFilter;
+    GasPoolAddressChanged(_gasPoolAddress?: null): EventFilter;
+    KUMOStakingAddressChanged(_kumoStakingAddress?: null): EventFilter;
+    KUMOTokenAddressChanged(_kumoTokenAddress?: null): EventFilter;
+    KUSDMintCapChanged(_asset?: null, oldMintCap?: null, newMintCap?: null): EventFilter;
+    KUSDTokenAddressChanged(_newKUSDTokenAddress?: null): EventFilter;
     MCRChanged(oldMCR?: null, newMCR?: null): EventFilter;
     MaxBorrowingFeeChanged(oldMaxBorrowingFee?: null, newMaxBorrowingFee?: null): EventFilter;
     MinNetDebtChanged(oldMinNet?: null, newMinNet?: null): EventFilter;
     OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
     PercentDivisorChanged(oldPercentDiv?: null, newPercentDiv?: null): EventFilter;
+    PriceFeedAddressChanged(_newPriceFeedAddress?: null): EventFilter;
     PriceFeedChanged(addr?: string | null): EventFilter;
     RedemptionBlockRemoved(_asset?: null): EventFilter;
     RedemptionFeeFloorChanged(oldRedemptionFeeFloor?: null, newRedemptionFeeFloor?: null): EventFilter;
+    SortedTrovesAddressChanged(_sortedTrovesAddress?: null): EventFilter;
+    StabilityPoolFactoryAddressChanged(_stabilityPoolFactoryAddress?: null): EventFilter;
+    TroveRedemptorAddressChanged(_troveRedemptorAddress?: null): EventFilter;
   };
+  extractEvents(logs: Log[], name: "ActivePoolAddressChanged"): _TypedLogDescription<{ _activePoolAddress: string }>[];
+  extractEvents(logs: Log[], name: "BorrowerOperationsAddressChanged"): _TypedLogDescription<{ _newBorrowerOperationsAddress: string }>[];
   extractEvents(logs: Log[], name: "BorrowingFeeFloorChanged"): _TypedLogDescription<{ oldBorrowingFloorFee: BigNumber; newBorrowingFloorFee: BigNumber }>[];
   extractEvents(logs: Log[], name: "CCRChanged"): _TypedLogDescription<{ oldCCR: BigNumber; newCCR: BigNumber }>[];
+  extractEvents(logs: Log[], name: "CollSurplusPoolAddressChanged"): _TypedLogDescription<{ _collSurplusPoolAddress: string }>[];
+  extractEvents(logs: Log[], name: "DefaultPoolAddressChanged"): _TypedLogDescription<{ _defaultPoolAddress: string }>[];
   extractEvents(logs: Log[], name: "GasCompensationChanged"): _TypedLogDescription<{ oldGasComp: BigNumber; newGasComp: BigNumber }>[];
-  extractEvents(logs: Log[], name: "KUSDMintCapChanged"): _TypedLogDescription<{ oldMintCap: BigNumber; newMintCap: BigNumber }>[];
+  extractEvents(logs: Log[], name: "GasPoolAddressChanged"): _TypedLogDescription<{ _gasPoolAddress: string }>[];
+  extractEvents(logs: Log[], name: "KUMOStakingAddressChanged"): _TypedLogDescription<{ _kumoStakingAddress: string }>[];
+  extractEvents(logs: Log[], name: "KUMOTokenAddressChanged"): _TypedLogDescription<{ _kumoTokenAddress: string }>[];
+  extractEvents(logs: Log[], name: "KUSDMintCapChanged"): _TypedLogDescription<{ _asset: string; oldMintCap: BigNumber; newMintCap: BigNumber }>[];
+  extractEvents(logs: Log[], name: "KUSDTokenAddressChanged"): _TypedLogDescription<{ _newKUSDTokenAddress: string }>[];
   extractEvents(logs: Log[], name: "MCRChanged"): _TypedLogDescription<{ oldMCR: BigNumber; newMCR: BigNumber }>[];
   extractEvents(logs: Log[], name: "MaxBorrowingFeeChanged"): _TypedLogDescription<{ oldMaxBorrowingFee: BigNumber; newMaxBorrowingFee: BigNumber }>[];
   extractEvents(logs: Log[], name: "MinNetDebtChanged"): _TypedLogDescription<{ oldMinNet: BigNumber; newMinNet: BigNumber }>[];
   extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
   extractEvents(logs: Log[], name: "PercentDivisorChanged"): _TypedLogDescription<{ oldPercentDiv: BigNumber; newPercentDiv: BigNumber }>[];
+  extractEvents(logs: Log[], name: "PriceFeedAddressChanged"): _TypedLogDescription<{ _newPriceFeedAddress: string }>[];
   extractEvents(logs: Log[], name: "PriceFeedChanged"): _TypedLogDescription<{ addr: string }>[];
   extractEvents(logs: Log[], name: "RedemptionBlockRemoved"): _TypedLogDescription<{ _asset: string }>[];
   extractEvents(logs: Log[], name: "RedemptionFeeFloorChanged"): _TypedLogDescription<{ oldRedemptionFeeFloor: BigNumber; newRedemptionFeeFloor: BigNumber }>[];
+  extractEvents(logs: Log[], name: "SortedTrovesAddressChanged"): _TypedLogDescription<{ _sortedTrovesAddress: string }>[];
+  extractEvents(logs: Log[], name: "StabilityPoolFactoryAddressChanged"): _TypedLogDescription<{ _stabilityPoolFactoryAddress: string }>[];
+  extractEvents(logs: Log[], name: "TroveRedemptorAddressChanged"): _TypedLogDescription<{ _troveRedemptorAddress: string }>[];
 }
 
 interface ERC20TestCalls {

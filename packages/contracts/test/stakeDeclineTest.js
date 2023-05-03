@@ -1,6 +1,5 @@
 const deploymentHelper = require("../utils/deploymentHelpers.js");
 const testHelpers = require("../utils/testHelpers.js");
-const TroveManagerTester = artifacts.require("./TroveManagerTester.sol");
 const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol");
 
 const th = testHelpers.TestHelper;
@@ -52,7 +51,6 @@ contract("TroveManager - stakeDecline", async accounts => {
 
   beforeEach(async () => {
     contracts = await deploymentHelper.deployKumoCore();
-    contracts.troveManager = await TroveManagerTester.new();
     contracts.kusdToken = await KUSDTokenTester.new(
       contracts.troveManager.address,
       contracts.stabilityPoolFactory.address,
