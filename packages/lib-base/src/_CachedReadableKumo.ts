@@ -248,6 +248,8 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     );
   }
 
+  
+
   async getTotalStakedKUMO(...extraParams: T): Promise<Decimal> {
     return (
       this._cache.getTotalStakedKUMO(...extraParams) ??
@@ -259,6 +261,13 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     return (
       this._cache.getFrontendStatus(asset, address, ...extraParams) ??
       this._readable.getFrontendStatus(asset, address, ...extraParams)
+    );
+  }
+  
+  async getTestTokensTransferState(assetAddress: string, userAddress: string, ...extraParams: T): Promise<boolean> {
+    return (
+      this._cache.getTestTokensTransferState(assetAddress, userAddress, ...extraParams) ??
+      this._readable.getTestTokensTransferState(assetAddress, userAddress, ...extraParams)
     );
   }
 }

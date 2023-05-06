@@ -164,6 +164,8 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     // (undocumented)
     getStabilityDeposit(assetName: string, address?: string, overrides?: EthersCallOverrides): Promise<StabilityDeposit>;
     // (undocumented)
+    getTestTokensTransferState(assetAddress: string, userAddress: string, overrides?: EthersCallOverrides): Promise<boolean>;
+    // (undocumented)
     getTotal(asset: string, overrides?: EthersCallOverrides): Promise<Trove>;
     // (undocumented)
     getTotalRedistributed(asset: string, overrides?: EthersCallOverrides): Promise<Trove>;
@@ -202,6 +204,8 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     registerFrontend(assetName: string, kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
     // (undocumented)
     repayKUSD(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<TroveAdjustmentDetails>;
+    // (undocumented)
+    requestTestToken(tokenAddress: string, overrides?: EthersTransactionOverrides): Promise<void>;
     readonly send: SendableEthersKumo;
     // (undocumented)
     sendKUMO(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
@@ -215,6 +219,8 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     stakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
     // (undocumented)
     transferCollateralGainToTrove(asset: string, assetName: string, overrides?: EthersTransactionOverrides): Promise<CollateralGainTransferDetails>;
+    // (undocumented)
+    transferTestTokens(tokenAddress: string, toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
     // (undocumented)
     unstakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
     // (undocumented)
@@ -363,6 +369,8 @@ export class PopulatableEthersKumo implements PopulatableKumo<EthersTransactionR
     // (undocumented)
     repayKUSD(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
+    requestTestToken(tokenAddress: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
+    // (undocumented)
     sendKUMO(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
     sendKUSD(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
@@ -374,6 +382,8 @@ export class PopulatableEthersKumo implements PopulatableKumo<EthersTransactionR
     stakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
     transferCollateralGainToTrove(asset: string, assetName: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<CollateralGainTransferDetails>>;
+    // (undocumented)
+    transferTestTokens(tokenAddress: string, toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
     unstakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
@@ -501,6 +511,8 @@ export class ReadableEthersKumo implements ReadableKumo {
     // (undocumented)
     getStabilityDeposit(assetName: string, address?: string, overrides?: EthersCallOverrides): Promise<StabilityDeposit>;
     // (undocumented)
+    getTestTokensTransferState(assetAddress: string, userAddress: string, overrides?: EthersCallOverrides): Promise<boolean>;
+    // (undocumented)
     getTotal(asset: string, overrides?: EthersCallOverrides): Promise<Trove>;
     // (undocumented)
     getTotalRedistributed(asset: string, overrides?: EthersCallOverrides): Promise<Trove>;
@@ -568,6 +580,8 @@ export class SendableEthersKumo implements SendableKumo<EthersTransactionReceipt
     // (undocumented)
     repayKUSD(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
+    requestTestToken(tokenAddress: string, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
+    // (undocumented)
     sendKUMO(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)
     sendKUSD(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
@@ -579,6 +593,8 @@ export class SendableEthersKumo implements SendableKumo<EthersTransactionReceipt
     stakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)
     transferCollateralGainToTrove(asset: string, assetName: string, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<CollateralGainTransferDetails>>;
+    // (undocumented)
+    transferTestTokens(tokenAddress: string, toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)
     unstakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)

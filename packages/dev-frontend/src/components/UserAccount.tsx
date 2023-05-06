@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useHistory  } from "react-router-dom";
 import { Flex, Box, Button } from "theme-ui";
 import { useWalletView } from "../components/WalletConnect/context/WalletViewContext";
 import { useAddAssetModal } from "../components/AddAssetToken/context/AssetViewContext"
@@ -30,6 +31,7 @@ export const UserAccount: React.FC = () => {
   const { showAddAssetModal, dispatchEvent: dispatch } = useAddAssetModal()
   const { showSwitchModal } = useSwitchNetworkView();
   const { account } = useWeb3React();
+  const history = useHistory()
 
   useEffect(() => {
     if (!active) {
@@ -66,10 +68,23 @@ export const UserAccount: React.FC = () => {
 
   return (
     <Box>
-      <Flex sx={{ alignItems: ["start",  "center"], ml: 3, flexDirection: ['column', 'row'] }} style={{ alignItems: "baseline" }}>
+      <Flex sx={{ alignItems: ["start", "center"], ml: 3, flexDirection: ['column', 'row'] }} style={{ alignItems: "baseline" }}>
         {account ? (
           <>
             <Button
+              onClick={() => {
+                history.push("/faucet")
+              }}
+              sx={{
+                py: 2,
+                px: 3,
+                mr: 2,
+                outline: "none",
+                fontSize: '14px'
+              }}
+            >Kumo Faucet
+            </Button>
+            {/* <Button
               onClick={() => {
                 dispatch("OPEN_ADD_ASSET_MODAL_PRESSED")
               }}
@@ -83,7 +98,7 @@ export const UserAccount: React.FC = () => {
             >
               {" "}
               ADD TEST TOKENS TO WALLET
-            </Button>
+            </Button> */}
             <Tooltip message={account}>
               <Button
                 onClick={() => {

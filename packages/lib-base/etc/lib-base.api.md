@@ -43,6 +43,8 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     // (undocumented)
     getStabilityDeposit(asset: string, address: string, ...extraParams: T): Promise<StabilityDeposit>;
     // (undocumented)
+    getTestTokensTransferState(assetAddress: string, userAddress: string, ...extraParams: T): Promise<boolean>;
+    // (undocumented)
     getTotal(asset: string, ...extraParams: T): Promise<Trove>;
     // (undocumented)
     getTotalRedistributed(asset: string, ...extraParams: T): Promise<Trove>;
@@ -458,6 +460,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown> extends 
     redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<PopulatedRedemption<P, S, R>>;
     registerFrontend(assetName: string, kickbackRate: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     repayKUSD(asset: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
+    requestTestToken(tokenAddress: string): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     sendKUMO(toAddress: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     sendKUSD(toAddress: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     // @internal (undocumented)
@@ -465,6 +468,7 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown> extends 
     stakeKUMO(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     stakeUniTokens(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     transferCollateralGainToTrove(asset: string, assetName: string): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, CollateralGainTransferDetails>>>>;
+    transferTestTokens(tokenAddress: string, toAddress: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     unstakeKUMO(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     unstakeUniTokens(amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     withdrawCollateral(asset: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
@@ -505,6 +509,7 @@ export interface ReadableKumo {
     getRemainingLiquidityMiningKUMOReward(): Promise<Decimal>;
     getRemainingStabilityPoolKUMOReward(): Promise<Decimal>;
     getStabilityDeposit(asset: string, address: string): Promise<StabilityDeposit>;
+    getTestTokensTransferState(assetAddress: string, userAddress: string): Promise<boolean>;
     getTotal(asset: string): Promise<Trove>;
     getTotalRedistributed(asset: string): Promise<Trove>;
     getTotalStakedKUMO(): Promise<Decimal>;
@@ -566,6 +571,7 @@ export interface SendableKumo<R = unknown, S = unknown> extends _SendableFrom<Tr
     redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, RedemptionDetails>>>;
     registerFrontend(assetName: string, kickbackRate: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     repayKUSD(asset: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
+    requestTestToken(_tokenAddress: string): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     sendKUMO(toAddress: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     sendKUSD(toAddress: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     // @internal (undocumented)
@@ -573,6 +579,7 @@ export interface SendableKumo<R = unknown, S = unknown> extends _SendableFrom<Tr
     stakeKUMO(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     stakeUniTokens(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     transferCollateralGainToTrove(asset: string, assetName: string): Promise<SentKumoTransaction<S, KumoReceipt<R, CollateralGainTransferDetails>>>;
+    transferTestTokens(tokenAddress: string, toAddress: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     unstakeKUMO(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     unstakeUniTokens(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     withdrawCollateral(asset: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
@@ -656,6 +663,7 @@ export interface TransactableKumo {
     redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<RedemptionDetails>;
     registerFrontend(assetName: string, kickbackRate: Decimalish): Promise<void>;
     repayKUSD(asset: string, amount: Decimalish): Promise<TroveAdjustmentDetails>;
+    requestTestToken(tokenAddress: string): Promise<void>;
     sendKUMO(toAddress: string, amount: Decimalish): Promise<void>;
     sendKUSD(toAddress: string, amount: Decimalish): Promise<void>;
     // @internal (undocumented)
@@ -663,6 +671,7 @@ export interface TransactableKumo {
     stakeKUMO(amount: Decimalish): Promise<void>;
     stakeUniTokens(amount: Decimalish): Promise<void>;
     transferCollateralGainToTrove(asset: string, assetName: string): Promise<CollateralGainTransferDetails>;
+    transferTestTokens(tokenAddress: string, toAddress: string, amount: Decimalish): Promise<void>;
     unstakeKUMO(amount: Decimalish): Promise<void>;
     unstakeUniTokens(amount: Decimalish): Promise<void>;
     withdrawCollateral(asset: string, amount: Decimalish): Promise<TroveAdjustmentDetails>;
@@ -860,6 +869,8 @@ export class Vault {
     readonly _riskiestTroveBeforeRedistribution: TroveWithPendingRedistribution;
     // (undocumented)
     readonly stabilityDeposit: StabilityDeposit;
+    // (undocumented)
+    readonly testTokensTransfered: boolean;
     // (undocumented)
     readonly total: Trove;
     // (undocumented)

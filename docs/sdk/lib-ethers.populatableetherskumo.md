@@ -37,11 +37,13 @@ export declare class PopulatableEthersKumo implements PopulatableKumo<EthersTran
 |  [redeemKUSD(asset, amount, maxRedemptionRate, overrides)](./lib-ethers.populatableetherskumo.redeemkusd.md) |  | Redeem KUSD to native currency (e.g. Ether) at face value. |
 |  [registerFrontend(assetName, kickbackRate, overrides)](./lib-ethers.populatableetherskumo.registerfrontend.md) |  | Register current wallet address as a Kumo frontend. |
 |  [repayKUSD(asset, amount, overrides)](./lib-ethers.populatableetherskumo.repaykusd.md) |  | Adjust existing Trove by repaying some of its debt. |
+|  [requestTestToken(tokenAddress, overrides)](./lib-ethers.populatableetherskumo.requesttesttoken.md) |  | Request Test tokens to an address. |
 |  [sendKUMO(toAddress, amount, overrides)](./lib-ethers.populatableetherskumo.sendkumo.md) |  | Send KUMO tokens to an address. |
 |  [sendKUSD(toAddress, amount, overrides)](./lib-ethers.populatableetherskumo.sendkusd.md) |  | Send KUSD tokens to an address. |
 |  [stakeKUMO(amount, overrides)](./lib-ethers.populatableetherskumo.stakekumo.md) |  | Stake KUMO to start earning fee revenue or increase existing stake. |
 |  [stakeUniTokens(amount, overrides)](./lib-ethers.populatableetherskumo.stakeunitokens.md) |  | Stake Uniswap ETH/KUSD LP tokens to participate in liquidity mining and earn KUMO. |
 |  [transferCollateralGainToTrove(asset, assetName, overrides)](./lib-ethers.populatableetherskumo.transfercollateralgaintotrove.md) |  | Transfer [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) from Stability Deposit to Trove. |
+|  [transferTestTokens(tokenAddress, toAddress, amount, overrides)](./lib-ethers.populatableetherskumo.transfertesttokens.md) |  | Request Test tokens to an address. |
 |  [unstakeKUMO(amount, overrides)](./lib-ethers.populatableetherskumo.unstakekumo.md) |  | Withdraw KUMO from staking. |
 |  [unstakeUniTokens(amount, overrides)](./lib-ethers.populatableetherskumo.unstakeunitokens.md) |  | Withdraw Uniswap ETH/KUSD LP tokens from liquidity mining. |
 |  [withdrawCollateral(asset, amount, overrides)](./lib-ethers.populatableetherskumo.withdrawcollateral.md) |  | Adjust existing Trove by withdrawing some of its collateral. |

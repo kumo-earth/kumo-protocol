@@ -140,7 +140,9 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
               stabilityDeposit: this._readable.getStabilityDeposit(assetToken, userAddress, {
                 blockTag
               }),
-              kumoStake: this._readable.getKUMOStake(assetAddress, userAddress, { blockTag })
+              kumoStake: this._readable.getKUMOStake(assetAddress, userAddress, { blockTag }),
+              testTokensTransfered: this._readable.getTestTokensTransferState(assetAddress, userAddress, { blockTag })
+              
             }
           : {
               collateralSurplusBalance: Decimal.ZERO,
@@ -156,7 +158,8 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
                 Decimal.ZERO,
                 AddressZero
               ),
-              kumoStake: new KUMOStake()
+              kumoStake: new KUMOStake(),
+              testTokensTransfered: false
             })
       });
       const {
@@ -246,7 +249,8 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
               // ),
               // stabilityDeposit: this._readable.getStabilityDeposit("nbc", userAddress, { blockTag }),
               kumoStake: this._readable.getKUMOStake(asset, userAddress, { blockTag }),
-              ownFrontend: this._readable.getFrontendStatus("nbc", userAddress, { blockTag })
+              ownFrontend: this._readable.getFrontendStatus("nbc", userAddress, { blockTag }),
+              
             }
           : {
               accountBalance: Decimal.ZERO,

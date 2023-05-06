@@ -35,6 +35,7 @@ import unipoolAbi from "../abi/Unipool.json";
 import iERC20Abi from "../abi/IERC20.json";
 import erc20MockAbi from "../abi/ERC20Mock.json";
 import erc20TestAbi from "../abi/ERC20Test.json";
+import kumoFaucetAbi from "../abi/KumoFaucet.json";
 
 import {
   ActivePool,
@@ -59,7 +60,8 @@ import {
   ERC20Mock,
   IERC20,
   KumoParameters,
-  ERC20Test
+  ERC20Test, 
+  KumoFaucet
 } from "../types";
 
 import { EthersProvider, EthersSigner } from "./types";
@@ -194,6 +196,7 @@ export interface _KumoContracts {
   uniToken: IERC20 | ERC20Mock;
   mockAsset1: ERC20Test;
   mockAsset2: ERC20Test;
+  kumoFaucet: KumoFaucet;
 }
 
 /** @internal */
@@ -235,7 +238,8 @@ const getAbi = (priceFeedIsTestnet: boolean, uniTokenIsMock: boolean): KumoContr
   unipool: unipoolAbi,
   uniToken: uniTokenIsMock ? erc20MockAbi : iERC20Abi,
   mockAsset1: erc20TestAbi,
-  mockAsset2: erc20TestAbi
+  mockAsset2: erc20TestAbi,
+  kumoFaucet: kumoFaucetAbi,
 });
 
 const mapKumoContracts = <T, U>(

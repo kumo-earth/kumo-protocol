@@ -18,7 +18,7 @@ interface AssetType {
 export const ASSET_TOKENS: ASSET_TOKENS_TYPES<AssetType> = {
   nbc: {
     assetName: "Nature-based Carbon",
-    assetAddress: "0x213696b6F4d41178D3E7069BAc8fab6fAaD53BF2",
+    assetAddress: "0xD759cFEd50b427b5ca50F56ac9888159fC640baC",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
     MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
     KUSD_MINTED_CAP: Decimal.from(15000000),
@@ -26,7 +26,7 @@ export const ASSET_TOKENS: ASSET_TOKENS_TYPES<AssetType> = {
   },
   csc: {
     assetName: "Cookstove Carbon",
-    assetAddress: "0x19027dcD6026AA3251505dc7Af262370Fc26Aa89",
+    assetAddress: "0xaf015d45b9916E2615E78484319Ea9bCe1E680f6",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
     MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
     KUSD_MINTED_CAP: Decimal.from(10000000),

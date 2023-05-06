@@ -34,6 +34,7 @@ import { Stats } from "./pages/stats";
 import { LiquidityStaking } from "./pages/LiquidityStaking";
 import { SystemStatsPopup } from "./components/SystemStatsPopup";
 import { Link } from "./components/Link";
+import Faucet from "./pages/Faucet";
 
 type KumoFrontendProps = {
   loader?: React.ReactNode;
@@ -51,6 +52,7 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
     Difference,
     Wallet
   });
+
 
   return (
     <KumoStoreProvider {...{ loader }} store={kumo.store}>
@@ -122,6 +124,9 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                           </Route>
                           <Route path="/redemption" exact>
                             <RedemptionPage />
+                          </Route>
+                          <Route path="/faucet" exact>
+                            <Faucet />
                           </Route>
                           <Route path="*">
                             <Redirect from="*" to="/dashboard" exact />
