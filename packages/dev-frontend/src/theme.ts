@@ -321,6 +321,7 @@ const theme: Theme = {
       borderColor: "muted",
       background: "linear-gradient(128.29deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 127.78%)",
       "> h2": {
+        fontSize: ['1.1250em', '1.5em'],
         display: "flex",
         alignItems: "center",
         height: "60px",

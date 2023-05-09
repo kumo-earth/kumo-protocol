@@ -36,7 +36,7 @@ export const RedemptionManager: React.FC = () => {
   const { vaults, kusdBalance } = useKumoSelector(select);
   const vault = vaults.find(vault => vault.asset === assetType) ?? new Vault();
   const price = vault?.price
-  const { fees, total } = vault;
+  const { fees, total, assetName } = vault;
   const [kusdAmount, setKUSDAmount] = useState(Decimal.ZERO);
   const [changePending, setChangePending] = useState(false);
   const editingState = useState<string>();
@@ -66,14 +66,14 @@ export const RedemptionManager: React.FC = () => {
 
   const [canRedeem, description] = total.collateralRatioIsBelowMinimum(price)
     ? [
-        false,
-        <ErrorDescription>
-          You can't redeem KUSD when the total collateral ratio is less than{" "}
-          <Amount>{mcrPercent}</Amount>. Please try again later.
-        </ErrorDescription>
-      ]
+      false,
+      <ErrorDescription>
+        You can't redeem KUSD when the total collateral ratio is less than{" "}
+        <Amount>{mcrPercent}</Amount>. Please try again later.
+      </ErrorDescription>
+    ]
     : kusdAmount.gt(kusdBalance)
-    ? [
+      ? [
         false,
         <ErrorDescription>
           The amount you're trying to redeem exceeds your balance by{" "}
@@ -83,7 +83,7 @@ export const RedemptionManager: React.FC = () => {
           .
         </ErrorDescription>
       ]
-    : [
+      : [
         true,
         <ActionDescription>
           You will receive{" "}
@@ -104,7 +104,7 @@ export const RedemptionManager: React.FC = () => {
         as="h2"
         sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
       >
-        Redeem
+        <Heading as="h2">Redeem<Text variant="assetName">({assetName})</Text></Heading>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mr: 2 }}>
           {dirty && !changePending && (
             <Button
@@ -157,7 +157,7 @@ export const RedemptionManager: React.FC = () => {
         {((dirty || !canRedeem) && description) || (
           <ActionDescription>Enter the amount of {COIN} you'd like to redeem.</ActionDescription>
         )}
-    
+
         <Flex variant="layout.actions">
           <RedemptionAction
             transactionId={transactionId}
