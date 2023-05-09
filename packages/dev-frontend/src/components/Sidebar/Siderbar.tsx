@@ -14,6 +14,7 @@ export const Sidebar: React.FC = () => {
           <Link to="/staking">Staking</Link>
           <Link to="/redemption">Redemption</Link>
           <Link to="/stats">Stats</Link>
+          <Link to="/faucet">Faucet</Link>
         </Box>
       </Flex>
       <Divider sx={{ color: "muted" }} />
