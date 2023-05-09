@@ -178,7 +178,7 @@ export const Adjusting: React.FC = () => {
         {vault?.asset.toUpperCase()} Vault <Text variant="assetName">({vault.assetName})</Text>
         {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
-            <Icon name="history" size="sm" />
+            <Icon name="history" size="xs" />
           </Button>
         )}
       </Heading>
@@ -187,12 +187,12 @@ export const Adjusting: React.FC = () => {
         <EditableRow
           label="Collateral"
           inputId="trove-collateral"
-          amount={collateral.prettify(4)}
+          amount={collateral.prettify(0)}
           maxAmount={maxCollateral.toString()}
           maxedOut={collateralMaxedOut}
           editingState={editingState}
           unit={collateralType?.toUpperCase()}
-          editedAmount={collateral.toString(4)}
+          editedAmount={collateral.toString(0)}
           setEditedAmount={(amount: string) => {
             setCollateral(Decimal.from(amount));
           }}

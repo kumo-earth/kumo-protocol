@@ -66,7 +66,7 @@ export const AddAssetAction: React.FC<AddAssetActionProps> = ({
 
     return (
         <Button
-            sx={{  py: "4px",  width: ["100%", "65%"], mx: "auto" }}
+            sx={{  py: "4px",  width: ["100%", "65%"], mx: "auto", fontSize: 1 }}
             onClick={sendTransaction}
         >
             {children}

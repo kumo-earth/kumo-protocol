@@ -4,7 +4,7 @@ pragma solidity 0.8.11;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract KumoFaucet is ERC20, Ownable {
+contract KumoFaucet is Ownable {
     uint256 public withdrawalAmount = 50000 * (10 ** 18);
 
     mapping(address => IERC20) mockAssets;
@@ -12,8 +12,9 @@ contract KumoFaucet is ERC20, Ownable {
 
     event Withdrawal(address indexed to, uint256 indexed amount);
     event Deposit(address indexed from, uint256 indexed amount);
+    event Transfer(address indexed from, address indexed to,uint256 indexed amount);
 
-    constructor(address _nbcAddress, address _cscAddress) payable ERC20("KumoFaucet", "KMF") {
+    constructor(address _nbcAddress, address _cscAddress) payable {
         mockAssets[_nbcAddress] = IERC20(_nbcAddress);
         mockAssets[_cscAddress] = IERC20(_cscAddress);
     }
