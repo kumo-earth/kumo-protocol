@@ -486,19 +486,19 @@ const addMockAssetsToSystem = async (
 }
 
 
-// Mint token to each acccount / un-comment and only use for prototype server
+// // Mint token to each acccount / un-comment and only use for prototype server
 // const mintMockAssets = async (signers: SignerWithAddress[], { mockAsset1, mockAsset2 }: _KumoContracts) => {
-//   await mockAsset1.mint((await signers[0].getAddress()), BigNumber.from("100000000000000000000000000000000000000"));
-//   await mockAsset2.mint((await signers[0].getAddress()), BigNumber.from("100000000000000000000000000000000000000"));
-//   // for (let i = 0; i < signers.length; ++i) {
-//   //   if(i < 3) {
-//   //     await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000000000000000000000"));
-//   //     await mockAsset2.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000000000000000000000"));
-//   //   } else {
-//   //     await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("50000000000000000000000"));
-//   //     await mockAsset2.mint((await signers[i].getAddress()), BigNumber.from("50000000000000000000000"));
-//   //   }
-//   // }
+//   // await mockAsset1.mint((await signers[0].getAddress()), BigNumber.from("100000000000000000000000000000000000000"));
+//   // await mockAsset2.mint((await signers[0].getAddress()), BigNumber.from("100000000000000000000000000000000000000"));
+//   for (let i = 0; i < signers.length; ++i) {
+//     if(i < 3) {
+//       await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000000000000000000000"));
+//       await mockAsset2.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000000000000000000000"));
+//     } else {
+//       await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("50000000000000000000000"));
+//       await mockAsset2.mint((await signers[i].getAddress()), BigNumber.from("50000000000000000000000"));
+//     }
+//   }
 // };
 
 // Mint token to each acccount
