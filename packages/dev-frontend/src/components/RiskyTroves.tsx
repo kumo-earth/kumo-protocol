@@ -110,14 +110,11 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
 
   useEffect(() => {
     let mounted = true;
-
     setLoading(true);
-
-    if (assetType === "nbc" || assetType === "csc") {
-      const tempVault = vaults.find(vault => vault.asset === assetType);
-      const vault = vaults.find(vault => vault.asset === assetType);
-      if (tempVault) {
-        const { asset, numberOfTroves, assetAddress, price, total, kusdInStabilityPool } = tempVault;
+    
+    const selectedVault = vaults.find(vault => vault.asset === assetType);
+    if (selectedVault) {
+        const { asset, numberOfTroves, assetAddress, price, total, kusdInStabilityPool } = selectedVault;
         setAssetDetails({numberOfTroves, price, assetAddress})
         const recoveryMode = total.collateralRatioIsBelowCritical(price);
         const totalCollateralRatio = total.collateralRatio(price);
@@ -154,7 +151,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
               setLoading(false);
             }
           });
-      }
+    
     }
 
     // Promise.all(getAllTroves).then(troves => {
