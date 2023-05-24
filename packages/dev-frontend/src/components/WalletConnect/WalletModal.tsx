@@ -97,9 +97,8 @@ export const WalletModal: React.FC = () => {
                 <br/>New RPC URL: <Text sx={{ fontWeight: 'bold' }}>{`${process.env.REACT_APP_RPC_URL_WALLET}`}</Text>
                 <br/>Chain ID: <Text sx={{ fontWeight: 'bold' }}>{`${process.env.REACT_APP_CHAIN_ID}`}</Text>
                 <br/>Currency Symbol: <Text sx={{ fontWeight: 'bold' }}>{`${process.env.REACT_APP_CURRENCY_SYMBOL}`}</Text>
-                <br/><Text sx={{ fontWeight: 'bold' }}>2: Import Account Using Provided Private key</Text>
-                <br/><Text sx={{ fontWeight: 'bold' }}>3: Use In App MetaMask browser for better experience</Text>
-                <br/><Text sx={{ fontWeight: 'bold' }}>4: If loading takes longer please wait, retry or reload page</Text><br/><br/>
+                <br/><Text sx={{ fontWeight: 'bold' }}>2: Use In App MetaMask browser for better experience</Text>
+                <br/><Text sx={{ fontWeight: 'bold' }}>3: If loading takes longer please wait, retry or reload page</Text><br/><br/>
               </Card>
             }
           /></Text>
