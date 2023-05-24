@@ -93,10 +93,10 @@ export const WalletModal: React.FC = () => {
             tooltip={
               <Card variant="tooltip" sx={{ maxWidth: "270px", wordBreak: 'break-word' }}>
                 <Text sx={{ fontWeight: 'bold' }}>1: Add Network</Text>
-                <br/>Network Name: <Text sx={{ fontWeight: 'bold' }}>Kumo - Dev Chain</Text>
-                <br/>New RPC URL: <Text sx={{ fontWeight: 'bold' }}>https://dev.kumo.earth/rpc:8545</Text>
-                <br/>Chain ID: <Text sx={{ fontWeight: 'bold' }}>17</Text>
-                <br/>Currency Symbol: <Text sx={{ fontWeight: 'bold' }}>ETH</Text>
+                <br/>Network Name: <Text sx={{ fontWeight: 'bold' }}>{`${process.env.REACT_APP_CHAIN_NAME}`}</Text>
+                <br/>New RPC URL: <Text sx={{ fontWeight: 'bold' }}>{`${process.env.REACT_APP_RPC_URL_WALLET}`}</Text>
+                <br/>Chain ID: <Text sx={{ fontWeight: 'bold' }}>{`${process.env.REACT_APP_CHAIN_ID}`}</Text>
+                <br/>Currency Symbol: <Text sx={{ fontWeight: 'bold' }}>{`${process.env.REACT_APP_CURRENCY_SYMBOL}`}</Text>
                 <br/><Text sx={{ fontWeight: 'bold' }}>2: Import Account Using Provided Private key</Text>
                 <br/><Text sx={{ fontWeight: 'bold' }}>3: Use In App MetaMask browser for better experience</Text>
                 <br/><Text sx={{ fontWeight: 'bold' }}>4: If loading takes longer please wait, retry or reload page</Text><br/><br/>

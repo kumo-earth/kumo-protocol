@@ -78,7 +78,7 @@ export const StabilityDepositEditor: React.FC<StabilityDepositEditorProps> = ({
             sx={{ ":enabled:hover": { color: "danger" } }}
             onClick={() => dispatch({ type: "revert" })}
           >
-            <Icon name="history" size="sm" />
+            <Icon name="history" size="xs" />
           </Button>
         )}
         <span
