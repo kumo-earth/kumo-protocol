@@ -5,25 +5,36 @@ interface ASSET_TOKENS_TYPES<T> {
 }
 
 interface AssetType {
+  assetName: string,
   assetAddress: string;
   CRITICAL_COLLATERAL_RATIO: Decimal;
   MINIMUM_COLLATERAL_RATIO: Decimal;
+  KUSD_MINTED_CAP: Decimal,
+  MIN_NET_DEBT: Decimal
 }
 /**
  * Assets Types
  */
 export const ASSET_TOKENS: ASSET_TOKENS_TYPES<AssetType> = {
   ctx: {
-    assetAddress: "0xB861c98B465272765c5B2F651471Ea8a65871ACd",
+    assetName: "Carbon Token X",
+    assetAddress: "0x213696b6F4d41178D3E7069BAc8fab6fAaD53BF2",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
-    MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1)
+    MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
+    KUSD_MINTED_CAP: Decimal.from(15000000),
+    MIN_NET_DEBT: Decimal.from(2000)
   },
   cty: {
-    assetAddress: "0x3E474b98BA08CdF37543d6c8aa6F0e9B260F4881",
+    assetName: "Carbon Token Y",
+    assetAddress: "0x19027dcD6026AA3251505dc7Af262370Fc26Aa89",
     CRITICAL_COLLATERAL_RATIO: Decimal.from(1.5),
-    MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1)
+    MINIMUM_COLLATERAL_RATIO: Decimal.from(1.1),
+    KUSD_MINTED_CAP: Decimal.from(10000000),
+    MIN_NET_DEBT: Decimal.from(2000)
   }
 };
+
+export const CORE_TEAM_ACCOUNTS = ['0x31c57298578f7508B5982062cfEc5ec8BD346247', '0x1b1E98f4912aE9014064a70537025EF338e6aD67', '0x2E7108e381e9ACab03aA1B4819aaCB50D2964532']
 /**
  * Total collateral ratio below which recovery mode is triggered.
  *

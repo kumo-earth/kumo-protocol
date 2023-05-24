@@ -1,7 +1,7 @@
-import { Grid, Box } from "theme-ui";
+import { Grid } from "theme-ui";
 import { MiningTypeCard } from "../components/MiningTypeCard/MiningTypeCard";
 
-export const LiquidityStaking: React.FC = () => {  
+export const LiquidityStaking: React.FC = () => {
   return (
     <Grid
       sx={{
@@ -13,7 +13,6 @@ export const LiquidityStaking: React.FC = () => {
         p: 6
       }}
     >
-      <MiningTypeCard />
       <MiningTypeCard />
     </Grid>
   );

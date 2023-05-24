@@ -40,7 +40,7 @@ export const Confirm: React.FC<ConfirmProps> = ({ amount }) => {
       showFailure="asTooltip"
       tooltipPlacement="bottom"
     >
-      <Button disabled={shouldDisable}>Confirm</Button>
+      <Button disabled={shouldDisable} variant={ shouldDisable ? 'primaryInActive' : 'primary' }>CONFIRM</Button>
     </Transaction>
   );
 };

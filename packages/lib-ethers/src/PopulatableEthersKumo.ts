@@ -70,8 +70,8 @@ const noDetails = () => undefined;
 
 const compose =
   <T, U, V>(f: (_: U) => V, g: (_: T) => U) =>
-    (_: T) =>
-      f(g(_));
+  (_: T) =>
+    f(g(_));
 
 const id = <T>(t: T) => t;
 
@@ -79,8 +79,8 @@ const id = <T>(t: T) => t;
 // decayed baseRate increases logarithmically with time elapsed since the last update.
 const addGasForBaseRateUpdate =
   (maxMinutesSinceLastUpdate = 10) =>
-    (gas: BigNumber) =>
-      gas.add(10000 + 1414 * Math.ceil(Math.log2(maxMinutesSinceLastUpdate + 1)));
+  (gas: BigNumber) =>
+    gas.add(10000 + 1414 * Math.ceil(Math.log2(maxMinutesSinceLastUpdate + 1)));
 
 // First traversal in ascending direction takes ~50K, then ~13.5K per extra step.
 // 80K should be enough for 3 steps, plus some extra to be safe.
@@ -150,9 +150,9 @@ interface RawTransactionFailedError extends Error {
 export interface _RawTransactionReplacedError extends Error {
   code: ErrorCode.TRANSACTION_REPLACED;
   reason:
-  | _RawErrorReason.TRANSACTION_CANCELLED
-  | _RawErrorReason.TRANSACTION_REPLACED
-  | _RawErrorReason.TRANSACTION_REPRICED;
+    | _RawErrorReason.TRANSACTION_CANCELLED
+    | _RawErrorReason.TRANSACTION_REPLACED
+    | _RawErrorReason.TRANSACTION_REPRICED;
   cancelled: boolean;
   hash: string;
   replacement: EthersTransactionResponse;
@@ -203,7 +203,7 @@ export class EthersTransactionCancelledError extends Error {
  */
 export class SentEthersKumoTransaction<T = unknown>
   implements
-  SentKumoTransaction<EthersTransactionResponse, KumoReceipt<EthersTransactionReceipt, T>>
+    SentKumoTransaction<EthersTransactionResponse, KumoReceipt<EthersTransactionReceipt, T>>
 {
   /** Ethers' representation of a sent transaction. */
   readonly rawSentTransaction: EthersTransactionResponse;
@@ -226,8 +226,8 @@ export class SentEthersKumoTransaction<T = unknown>
     return rawReceipt
       ? rawReceipt.status
         ? _successfulReceipt(rawReceipt, this._parse(rawReceipt), () =>
-          logsToString(rawReceipt, _getContracts(this._connection))
-        )
+            logsToString(rawReceipt, _getContracts(this._connection))
+          )
         : _failedReceipt(rawReceipt)
       : _pendingReceipt;
   }
@@ -267,7 +267,6 @@ export class SentEthersKumoTransaction<T = unknown>
    */
   async waitForReceipt(): Promise<MinedReceipt<EthersTransactionReceipt, T>> {
     const receipt = this._receiptFrom(await this._waitForRawReceipt());
-
     assert(receipt.status !== "pending");
     return receipt;
   }
@@ -409,11 +408,11 @@ export class PopulatedEthersKumoTransaction<T = unknown>
 export class PopulatedEthersRedemption
   extends PopulatedEthersKumoTransaction<RedemptionDetails>
   implements
-  PopulatedRedemption<
-    EthersPopulatedTransaction,
-    EthersTransactionResponse,
-    EthersTransactionReceipt
-  >
+    PopulatedRedemption<
+      EthersPopulatedTransaction,
+      EthersTransactionResponse,
+      EthersTransactionReceipt
+    >
 {
   /** {@inheritDoc @kumodao/lib-base#PopulatedRedemption.attemptedKUSDAmount} */
   readonly attemptedKUSDAmount: Decimal;
@@ -468,7 +467,7 @@ export class PopulatedEthersRedemption
     if (!this._increaseAmountByMinimumNetDebt) {
       throw new Error(
         "PopulatedEthersRedemption: increaseAmountByMinimumNetDebt() can " +
-        "only be called when amount is truncated"
+          "only be called when amount is truncated"
       );
     }
 
@@ -490,7 +489,7 @@ export interface _TroveChangeWithFees<T> {
  */
 export class PopulatableEthersKumo
   implements
-  PopulatableKumo<EthersTransactionReceipt, EthersTransactionResponse, EthersPopulatedTransaction>
+    PopulatableKumo<EthersTransactionReceipt, EthersTransactionResponse, EthersPopulatedTransaction>
 {
   private readonly _readable: ReadableEthersKumo;
 
@@ -666,7 +665,10 @@ export class PopulatableEthersKumo
       this._readable.connection,
 
       ({ logs, from: userAddress }) => {
-        const gainsWithdrawalDetails = this._extractStabilityPoolGainsWithdrawalDetails(assetName, logs);
+        const gainsWithdrawalDetails = this._extractStabilityPoolGainsWithdrawalDetails(
+          assetName,
+          logs
+        );
 
         const [withdrawKUSD] = kusdToken
           .extractEvents(logs, "Transfer")
@@ -722,7 +724,6 @@ export class PopulatableEthersKumo
 
     const totalNumberOfTrials = Math.ceil(10 * Math.sqrt(numberOfTroves));
     const [firstTrials, ...restOfTrials] = generateTrials(totalNumberOfTrials);
-
     const collectApproxHint = (
       {
         latestRandomSeed,
@@ -814,10 +815,10 @@ export class PopulatableEthersKumo
       partialRedemptionHintNICR.isZero()
         ? [AddressZero, AddressZero]
         : await this._findHintsForNominalCollateralRatio(
-          asset,
-          decimalify(partialRedemptionHintNICR)
-          // XXX: if we knew the partially redeemed Trove's address, we'd pass it here
-        );
+            asset,
+            decimalify(partialRedemptionHintNICR)
+            // XXX: if we knew the partially redeemed Trove's address, we'd pass it here
+          );
 
     return [
       decimalify(truncatedKUSDamount),
@@ -886,7 +887,7 @@ export class PopulatableEthersKumo
       if (decayedTrove.debt.lt(KUSD_MINIMUM_DEBT)) {
         throw new Error(
           `Trove's debt might fall below ${KUSD_MINIMUM_DEBT} ` +
-          `within ${borrowingFeeDecayToleranceMinutes} minutes`
+            `within ${borrowingFeeDecayToleranceMinutes} minutes`
         );
       }
       // console.log("openTrove", decayBorrowingRate, currentBorrowingRate, newTrove, hints)
@@ -1025,18 +1026,17 @@ export class PopulatableEthersKumo
       if (decayedTrove.debt.lt(KUSD_MINIMUM_DEBT)) {
         throw new Error(
           `Trove's debt might fall below ${KUSD_MINIMUM_DEBT} ` +
-          `within ${borrowingFeeDecayToleranceMinutes} minutes`
+            `within ${borrowingFeeDecayToleranceMinutes} minutes`
         );
       }
 
       const [gasNow, gasLater] = await Promise.all([
         borrowerOperations.estimateGas.adjustTrove(...txParams(borrowKUSD)),
         borrowKUSD &&
-        borrowerOperations.estimateGas.adjustTrove(...txParams(borrowKUSDSimulatingDecay))
+          borrowerOperations.estimateGas.adjustTrove(...txParams(borrowKUSDSimulatingDecay))
       ]);
 
       let gasLimit = bigNumberMax(addGasForPotentialListTraversal(gasNow), gasLater);
-
       if (borrowKUSD) {
         gasLimit = addGasForBaseRateUpdate(borrowingFeeDecayToleranceMinutes)(gasLimit);
       }
@@ -1309,11 +1309,11 @@ export class PopulatableEthersKumo
 
         truncatedAmount.lt(attemptedKUSDAmount)
           ? newMaxRedemptionRate =>
-            populateRedemption(
-              asset,
-              truncatedAmount.add(KUSD_MINIMUM_NET_DEBT),
-              newMaxRedemptionRate ?? maxRedemptionRate
-            )
+              populateRedemption(
+                asset,
+                truncatedAmount.add(KUSD_MINIMUM_NET_DEBT),
+                newMaxRedemptionRate ?? maxRedemptionRate
+              )
           : undefined
       );
     };

@@ -235,7 +235,7 @@ const getAbi = (priceFeedIsTestnet: boolean, uniTokenIsMock: boolean): KumoContr
   unipool: unipoolAbi,
   uniToken: uniTokenIsMock ? erc20MockAbi : iERC20Abi,
   mockAsset1: erc20TestAbi,
-  mockAsset2: erc20TestAbi,
+  mockAsset2: erc20TestAbi
 });
 
 const mapKumoContracts = <T, U>(

@@ -30,6 +30,32 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "_activePoolAddress",
+        "type": "address"
+      }
+    ],
+    "name": "ActivePoolAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_newBorrowerOperationsAddress",
+        "type": "address"
+      }
+    ],
+    "name": "BorrowerOperationsAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "oldBorrowingFloorFee",
         "type": "uint256"
@@ -68,6 +94,32 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "_collSurplusPoolAddress",
+        "type": "address"
+      }
+    ],
+    "name": "CollSurplusPoolAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_defaultPoolAddress",
+        "type": "address"
+      }
+    ],
+    "name": "DefaultPoolAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "oldGasComp",
         "type": "uint256"
@@ -80,6 +132,83 @@
       }
     ],
     "name": "GasCompensationChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_gasPoolAddress",
+        "type": "address"
+      }
+    ],
+    "name": "GasPoolAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_kumoStakingAddress",
+        "type": "address"
+      }
+    ],
+    "name": "KUMOStakingAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_kumoTokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "KUMOTokenAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "oldMintCap",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newMintCap",
+        "type": "uint256"
+      }
+    ],
+    "name": "KUSDMintCapChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_newKUSDTokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "KUSDTokenAddressChanged",
     "type": "event"
   },
   {
@@ -181,6 +310,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_newPriceFeedAddress",
+        "type": "address"
+      }
+    ],
+    "name": "PriceFeedAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "addr",
@@ -220,6 +362,45 @@
       }
     ],
     "name": "RedemptionFeeFloorChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_sortedTrovesAddress",
+        "type": "address"
+      }
+    ],
+    "name": "SortedTrovesAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_stabilityPoolFactoryAddress",
+        "type": "address"
+      }
+    ],
+    "name": "StabilityPoolFactoryAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_troveRedemptorAddress",
+        "type": "address"
+      }
+    ],
+    "name": "TroveRedemptorAddressChanged",
     "type": "event"
   },
   {
@@ -320,6 +501,25 @@
         "type": "address"
       }
     ],
+    "name": "KUSDMintCap",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "KUSD_GAS_COMPENSATION",
     "outputs": [
       {
@@ -334,6 +534,19 @@
   {
     "inputs": [],
     "name": "KUSD_GAS_COMPENSATION_DEFAULT",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "KUSD_MINT_CAP_DEFAULT",
     "outputs": [
       {
         "internalType": "uint256",
@@ -558,10 +771,49 @@
   },
   {
     "inputs": [],
+    "name": "borrowerOperations",
+    "outputs": [
+      {
+        "internalType": "contract IBorrowerOperations",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "collSurplusPool",
+    "outputs": [
+      {
+        "internalType": "contract ICollSurplusPool",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "defaultPool",
     "outputs": [
       {
         "internalType": "contract IDefaultPool",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "gasPoolAddress",
+    "outputs": [
+      {
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -609,6 +861,45 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "kumoStaking",
+    "outputs": [
+      {
+        "internalType": "contract IKUMOStaking",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "kumoToken",
+    "outputs": [
+      {
+        "internalType": "contract IKUMOToken",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "kusdToken",
+    "outputs": [
+      {
+        "internalType": "contract IKUSDToken",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -699,7 +990,47 @@
       },
       {
         "internalType": "address",
+        "name": "_gasPoolAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "_priceFeed",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_borrowerOperationsAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_collSurplusPoolAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_kusdTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_stabilityPoolFactoryAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_sortedTrovesAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_kumoTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_kumoStakingAddress",
         "type": "address"
       }
     ],
@@ -837,6 +1168,24 @@
       },
       {
         "internalType": "uint256",
+        "name": "_newCap",
+        "type": "uint256"
+      }
+    ],
+    "name": "setKUSDMintCap",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
         "name": "newMCR",
         "type": "uint256"
       }
@@ -929,6 +1278,32 @@
     "name": "setRedemptionFeeFloor",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "sortedTroves",
+    "outputs": [
+      {
+        "internalType": "contract ISortedTroves",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stabilityPoolFactory",
+    "outputs": [
+      {
+        "internalType": "contract IStabilityPoolFactory",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ]

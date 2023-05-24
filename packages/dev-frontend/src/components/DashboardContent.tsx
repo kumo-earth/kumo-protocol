@@ -7,7 +7,7 @@ export const DashboadContent: React.FC = ({ children }) => {
       sx={{
         width: "100%",
         display: "grid",
-        gridGap: 2,
+        gridGap: 3,
         gridTemplateColumns: `repeat(auto-fill, minmax(400px, 1fr))`,
         mt: 5,
         px: 5

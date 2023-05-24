@@ -21,9 +21,9 @@ interface MaybeHasMetaMask {
 type ConnectionState =
   | { type: "inactive" }
   | {
-      type: "activating" | "active" | "rejectedByUser" | "alreadyPending" | "failed";
-      connector: AbstractConnector;
-    };
+    type: "activating" | "active" | "rejectedByUser" | "alreadyPending" | "failed";
+    connector: AbstractConnector;
+  };
 
 type ConnectionAction =
   | { type: "startActivating"; connector: AbstractConnector }
@@ -48,8 +48,8 @@ const connectionReducer: React.Reducer<ConnectionState, ConnectionAction> = (sta
           type: action.error.message.match(/user rejected/i)
             ? "rejectedByUser"
             : action.error.message.match(/already pending/i)
-            ? "alreadyPending"
-            : "failed",
+              ? "alreadyPending"
+              : "failed",
           connector: state.connector
         };
       }
@@ -87,7 +87,7 @@ type WalletConnectorProps = {
 };
 
 export const WalletConnector: React.FC<WalletConnectorProps> = ({ children, loader }) => {
-  const { activate, deactivate, active, error } = useWeb3React<unknown>();
+  const { activate, deactivate, active, error, connector } = useWeb3React<unknown>();
   const triedAuthorizedConnection = useAuthorizedConnection();
   const [connectionState, dispatch] = useReducer(connectionReducer, { type: "inactive" });
   const isMetaMask = detectMetaMask();
@@ -115,6 +115,10 @@ export const WalletConnector: React.FC<WalletConnectorProps> = ({ children, load
     return <>{children}</>;
   }
 
+  connector?.on("accountsChanged", () => {
+    alert("accountChanged");
+  });
+
   return (
     <>
       <Flex sx={{ height: "100vh", justifyContent: "center", alignItems: "center" }}>
@@ -127,12 +131,12 @@ export const WalletConnector: React.FC<WalletConnectorProps> = ({ children, load
           {isMetaMask ? (
             <>
               <MetaMaskIcon />
-              <Box sx={{ ml: 2 }}>Connect to MetaMask</Box>
+              <Box sx={{ ml: 2 }}>CONNECT to METAMASK</Box>
             </>
           ) : (
             <>
               <Icon name="plug" size="lg" />
-              <Box sx={{ ml: 2 }}>Connect wallet</Box>
+              <Box sx={{ ml: 2 }}>CONNECT WALLET</Box>
             </>
           )}
         </Button>

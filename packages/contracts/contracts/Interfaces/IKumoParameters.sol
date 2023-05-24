@@ -3,10 +3,16 @@
 pragma solidity ^0.8.11;
 
 import "./IActivePool.sol";
+import "./IBorrowerOperations.sol";
+import "./ICollSurplusPool.sol";
 import "./IDefaultPool.sol";
 import "./IPriceFeed.sol";
 import "./IKumoBase.sol";
-import "./IStabilityPool.sol";
+import "./IKUSDToken.sol";
+import "./IStabilityPoolFactory.sol";
+import "./ISortedTroves.sol";
+import "./IKUMOToken.sol";
+import "./IKUMOStaking.sol";
 
 interface IKumoParameters {
     error SafeCheckError(string parameter, uint256 valueEntered, uint256 minValue, uint256 maxValue);
@@ -21,6 +27,20 @@ interface IKumoParameters {
     event RedemptionFeeFloorChanged(uint256 oldRedemptionFeeFloor, uint256 newRedemptionFeeFloor);
     event RedemptionBlockRemoved(address _asset);
     event PriceFeedChanged(address indexed addr);
+    event KUSDMintCapChanged(address _asset, uint256 oldMintCap, uint256 newMintCap);
+
+    event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
+    event PriceFeedAddressChanged(address _newPriceFeedAddress);
+    event KUSDTokenAddressChanged(address _newKUSDTokenAddress);
+    event ActivePoolAddressChanged(address _activePoolAddress);
+    event DefaultPoolAddressChanged(address _defaultPoolAddress);
+    event StabilityPoolFactoryAddressChanged(address _stabilityPoolFactoryAddress);
+    event GasPoolAddressChanged(address _gasPoolAddress);
+    event CollSurplusPoolAddressChanged(address _collSurplusPoolAddress);
+    event SortedTrovesAddressChanged(address _sortedTrovesAddress);
+    event KUMOTokenAddressChanged(address _kumoTokenAddress);
+    event KUMOStakingAddressChanged(address _kumoStakingAddress);
+    event TroveRedemptorAddressChanged(address _troveRedemptorAddress);
 
     function BOOTSTRAP_PERIOD() external view returns (uint256);
 
@@ -29,24 +49,26 @@ interface IKumoParameters {
     function _100pct() external view returns (uint256);
 
     // Minimum collateral ratio for individual troves
-    function MCR(address _collateral) external view returns (uint256);
+    function MCR(address _asset) external view returns (uint256);
 
     // Critical system collateral ratio. If the system's total collateral ratio (TCR) falls below the CCR, Recovery Mode is triggered.
-    function CCR(address _collateral) external view returns (uint256);
+    function CCR(address _asset) external view returns (uint256);
 
-    function KUSD_GAS_COMPENSATION(address _collateral) external view returns (uint256);
+    function KUSD_GAS_COMPENSATION(address _asset) external view returns (uint256);
 
-    function MIN_NET_DEBT(address _collateral) external view returns (uint256);
+    function MIN_NET_DEBT(address _asset) external view returns (uint256);
 
-    function PERCENT_DIVISOR(address _collateral) external view returns (uint256);
+    function PERCENT_DIVISOR(address _asset) external view returns (uint256);
 
-    function BORROWING_FEE_FLOOR(address _collateral) external view returns (uint256);
+    function BORROWING_FEE_FLOOR(address _asset) external view returns (uint256);
 
-    function REDEMPTION_FEE_FLOOR(address _collateral) external view returns (uint256);
+    function REDEMPTION_FEE_FLOOR(address _asset) external view returns (uint256);
 
-    function MAX_BORROWING_FEE(address _collateral) external view returns (uint256);
+    function MAX_BORROWING_FEE(address _asset) external view returns (uint256);
 
-    function redemptionBlock(address _collateral) external view returns (uint256);
+    function KUSDMintCap(address _asset) external view returns (uint256);
+
+    function redemptionBlock(address _asset) external view returns (uint256);
 
     function activePool() external view returns (IActivePool);
 
@@ -54,10 +76,34 @@ interface IKumoParameters {
 
     function priceFeed() external view returns (IPriceFeed);
 
+    function borrowerOperations() external view returns (IBorrowerOperations);
+
+    function collSurplusPool() external view returns (ICollSurplusPool);
+
+    function kusdToken() external view returns (IKUSDToken);
+
+    function stabilityPoolFactory() external view returns (IStabilityPoolFactory);
+
+    function gasPoolAddress() external view returns (address);
+
+    function sortedTroves() external view returns (ISortedTroves);
+
+    function kumoToken() external view returns (IKUMOToken);
+
+    function kumoStaking() external view returns (IKUMOStaking);
+
     function setAddresses(
         address _activePool,
         address _defaultPool,
-        address _priceFeed
+        address _gasPoolAddress,
+        address _priceFeed,
+        address _borrowerOperationsAddress,
+        address _collSurplusPoolAddress,
+        address _kusdTokenAddress,
+        address _stabilityPoolFactoryAddress,
+        address _sortedTrovesAddress,
+        address _kumoTokenAddress,
+        address _kumoStakingAddress
     ) external;
 
     function setPriceFeed(address _priceFeed) external;
@@ -83,6 +129,8 @@ interface IKumoParameters {
     function setMaxBorrowingFee(address _asset, uint256 maxBorrowingFee) external;
 
     function setRedemptionFeeFloor(address _asset, uint256 redemptionFeeFloor) external;
+
+    function setKUSDMintCap(address _asset, uint256 _newCap) external;
 
     function removeRedemptionBlock(address _asset) external;
 

@@ -4,7 +4,6 @@ import { KumoStoreState } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { InfoMessage } from "../../../InfoMessage";
 import { UnstakeAndClaim } from "../UnstakeAndClaim";
-import { RemainingKUMO } from "../RemainingKUMO";
 import { StaticRow } from "../../../Trove/Editor";
 import { GT, LP } from "../../../../strings";
 
@@ -22,7 +21,7 @@ export const Disabled: React.FC = () => {
       <Heading>
         Uniswap Liquidity Farm
         <Flex sx={{ justifyContent: "flex-end" }}>
-          <RemainingKUMO />
+          {/* <RemainingKUMO /> */}
         </Flex>
       </Heading>
       <Box sx={{ p: [2, 3] }}>
@@ -35,13 +34,13 @@ export const Disabled: React.FC = () => {
               <StaticRow
                 label="Stake"
                 inputId="farm-deposit"
-                amount={liquidityMiningStake.prettify(4)}
+                amount={liquidityMiningStake.prettify(0)}
                 unit={LP}
               />
               <StaticRow
                 label="Reward"
                 inputId="farm-reward"
-                amount={liquidityMiningKUMOReward.prettify(4)}
+                amount={liquidityMiningKUMOReward.prettify(0)}
                 color={liquidityMiningKUMOReward.nonZero && "success"}
                 unit={GT}
               />

@@ -1,13 +1,9 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { useLocation, useParams } from "react-router-dom";
-import { KumoStoreState, UserTroveStatus, Decimal, UserTrove } from "@kumodao/lib-base";
-import { AddressZero } from "@ethersproject/constants";
-import { Web3Provider } from "@ethersproject/providers";
-import { useWeb3React } from "@web3-react/core";
+import { useLocation } from "react-router-dom";
+import { KumoStoreState, UserTroveStatus, Vault } from "@kumodao/lib-base";
 
 import { TroveViewContext } from "./TroveViewContext";
 import type { TroveView, TroveEvent } from "./types";
-import { useDashboard } from "../../../hooks/DashboardContext";
 import { useKumoSelector } from "@kumodao/lib-react";
 
 type TroveEventTransitions = Record<TroveView, Partial<Record<TroveEvent, TroveView>>>;
@@ -93,10 +89,9 @@ export const TroveViewProvider: React.FC = props => {
   const { children } = props;
   const { vaults } = useKumoSelector(select);
   const location = useLocation();
-  const { account } = useWeb3React<Web3Provider>();
 
-  const vault = vaults.find(vault => vault.asset === getPathName(location));
-  const trove: UserTrove = vault?.trove && vault.trove;
+  const vault = vaults.find(vault => vault.asset === getPathName(location)) ?? new Vault();
+  const { trove } = vault;
 
   const [view, setView] = useState<TroveView>(getInitialView(trove?.status));
   const viewRef = useRef<TroveView>(view);
@@ -120,6 +115,7 @@ export const TroveViewProvider: React.FC = props => {
     if (view !== "OPENING") {
       setView(getInitialView(trove?.status));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trove?.status]);
 
   useEffect(() => {

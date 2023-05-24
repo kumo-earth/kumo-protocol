@@ -9,7 +9,8 @@ import {
   Decimalish,
   KUSD_MINIMUM_DEBT,
   UserTrove,
-  ASSET_TOKENS
+  ASSET_TOKENS,
+  Vault
 } from "@kumodao/lib-base";
 
 import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@kumodao/lib-react";
@@ -20,25 +21,19 @@ import { useMyTransactionState } from "../Transaction";
 import { TroveEditor } from "./TroveEditor";
 import { TroveAction } from "./TroveAction";
 import { useTroveView } from "./context/TroveViewContext";
+import { validateTroveChange } from "./validation/validateTroveChange";
 
-import {
-  selectForTroveChangeValidation,
-  validateTroveChange
-} from "./validation/validateTroveChange";
-import { Web3Provider } from "@ethersproject/providers";
-import { useWeb3React } from "@web3-react/core";
 
-const init = ({ trove }: KumoStoreState) => {
-  return {
-    original: trove,
-    edited: new Trove(trove.collateral, trove.debt),
-    changePending: false,
-    debtDirty: false,
-    addedMinimumDebt: false
-  };
+type TroveManagerStateType = {
+  collateralType: string;
+  original: UserTrove;
+  edited: Trove;
+  changePending: boolean;
+  debtDirty: boolean;
+  addedMinimumDebt: boolean;
 };
 
-type TroveManagerState = ReturnType<typeof init>;
+type TroveManagerState = TroveManagerStateType;
 type TroveManagerAction =
   | KumoStoreUpdate
   | { type: "startChange" | "finishChange" | "revert" | "addMinimumDebt" | "removeMinimumDebt" }
@@ -46,8 +41,8 @@ type TroveManagerAction =
 
 const reduceWith =
   (action: TroveManagerAction) =>
-  (state: TroveManagerState): TroveManagerState =>
-    reduce(state, action);
+    (state: TroveManagerState): TroveManagerState =>
+      reduce(state, action);
 
 const addMinimumDebt = reduceWith({ type: "addMinimumDebt" });
 const removeMinimumDebt = reduceWith({ type: "removeMinimumDebt" });
@@ -55,8 +50,6 @@ const finishChange = reduceWith({ type: "finishChange" });
 const revert = reduceWith({ type: "revert" });
 
 const reduce = (state: TroveManagerState, action: TroveManagerAction): TroveManagerState => {
-  // console.log(state);
-  // console.log(action);
 
   const { original, edited, changePending, debtDirty, addedMinimumDebt } = state;
 
@@ -119,11 +112,13 @@ const reduce = (state: TroveManagerState, action: TroveManagerAction): TroveMana
       };
 
     case "updateStore": {
-      const {
-        newState: { trove },
-        stateChange: { troveBeforeRedistribution: changeCommitted }
-      } = action;
-
+      const vault =
+        action.stateChange.vaults?.find(vault => vault.asset === state.collateralType) ??
+        new Vault();
+      const newStateVualt =
+        action.newState.vaults?.find(vault => vault.asset === state.collateralType) ?? new Vault();
+      const changeCommitted = vault?.troveBeforeRedistribution;
+      const trove = newStateVualt?.trove && newStateVualt?.trove;
       const newState = {
         ...state,
         original: trove
@@ -141,7 +136,6 @@ const reduce = (state: TroveManagerState, action: TroveManagerAction): TroveMana
       ) {
         return revert(newState);
       }
-
       return { ...newState, edited: trove.apply(change, 0) };
     }
   }
@@ -157,10 +151,10 @@ const feeFrom = (original: Trove, edited: Trove, borrowingRate: Decimal): Decima
   }
 };
 
-const select = (state: KumoStoreState) => ({
-  fees: state.fees,
-  validationContext: selectForTroveChangeValidation(state)
-});
+// const select = (state: KumoStoreState) => ({
+//   fees: state.fees,
+//   validationContext: selectForTroveChangeValidation(state)
+// });
 
 const transactionIdPrefix = "trove-";
 const transactionIdMatcher = new RegExp(`^${transactionIdPrefix}`);
@@ -171,15 +165,15 @@ type TroveManagerProps = {
 };
 
 export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) => {
-  const { account } = useWeb3React<Web3Provider>();
   const { collateralType } = useParams<{ collateralType: string }>();
   const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
   const [{ original, edited, changePending }, dispatch] = useKumoReducer(
     reduce,
     ({ vaults }: KumoStoreState) => {
-      const vault = vaults.find(vault => vault.asset === collateralType);
-      const trove: UserTrove = vault?.trove?.ownerAddress === account && vault?.trove;
+      const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
+      const { trove } = vault;
       return {
+        collateralType,
         original: trove,
         edited: new Trove(trove.collateral, trove.debt),
         changePending: false,
@@ -188,7 +182,24 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
       };
     }
   );
-  const { fees, validationContext } = useKumoSelector(select);
+  // const { fees, validationContext } = useKumoSelector(select);
+  const { fees, validationContext } = useKumoSelector((state: KumoStoreState) => {
+    const { vaults, kusdBalance } = state;
+    const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
+    const { accountBalance, fees, total, numberOfTroves } = vault;
+
+    const price = vault?.price
+
+    const validationContext = {
+      // ...selectForTroveChangeValidation({ price, accountBalance,  }),
+      price,
+      total,
+      accountBalance,
+      kusdBalance,
+      numberOfTroves
+    };
+    return { vault, accountBalance, fees, validationContext };
+  });
 
   useEffect(() => {
     if (collateral !== undefined) {
@@ -252,19 +263,20 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
           </ActionDescription>
         ) : (
           <ActionDescription>
-            Adjust your Trove by modifying its collateral, debt, or both.
+            Adjust your Vault by modifying its collateral, debt, or both.
           </ActionDescription>
         ))}
 
       <Flex variant="layout.actions">
         <Button
           sx={{
-            border: "none"
+            mt: 3,
+            mb: 2
           }}
-          variant="cancel"
+          variant="secondary"
           onClick={handleCancel}
         >
-          Cancel
+          CANCEL
         </Button>
 
         {validChange ? (
@@ -280,11 +292,12 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
         ) : (
           <Button
             sx={{
-              border: "none"
+              mb: 2
             }}
+            variant="primaryInActive"
             disabled
           >
-            Confirm
+            CONFIRM
           </Button>
         )}
       </Flex>

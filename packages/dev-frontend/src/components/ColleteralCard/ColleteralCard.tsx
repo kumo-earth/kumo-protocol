@@ -1,25 +1,27 @@
-import { Decimal, UserTrove } from "@kumodao/lib-base";
+import { Decimal, Trove } from "@kumodao/lib-base";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { Flex, Progress, Box, Card, Text, Heading } from "theme-ui";
-import { Web3Provider } from "@ethersproject/providers";
-import { useWeb3React } from "@web3-react/core";
-
 import { useTroveView } from "../Trove/context/TroveViewContext";
-import { toUpper } from "lodash";
+import { InfoIcon } from "../InfoIcon";
 
 type CollateralCardProps = {
   collateralType?: string;
-  totalCollateralRatioPct?: string;
-  trove: UserTrove;
+  totalCollateralRatioPct: string;
+  total: Trove;
+  kusdInStabilityPool: Decimal;
+  borrowingRate: Decimal;
+  kusdMintedCap: Decimal;
 };
 
 export const CollateralCard: React.FC<CollateralCardProps> = ({
   collateralType,
   totalCollateralRatioPct,
-  trove
+  total,
+  kusdInStabilityPool,
+  borrowingRate,
+  kusdMintedCap
 }) => {
-  const { account } = useWeb3React<Web3Provider>();
   const { dispatchEvent, view } = useTroveView();
   const history = useHistory();
 
@@ -31,55 +33,61 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
   };
   return (
     <Card variant="collateralCard" sx={{ mb: 5 }} onClick={() => handleClick()}>
-      {/* {!account && (
-        <Flex
-          sx={{
-            position: "absolute",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            height: "100%",
-            width: "100%",
-            mt: 30
-          }}
-          onClick={e => e.stopPropagation()}
-        >
-          <Box sx={{ fontWeight: 600 }}>Please Connect the Wallet to Proceed</Box>
-        </Flex>
-      )} */}
-      <Heading as="h2">{toUpper(collateralType)} Vault</Heading>
+      <Heading as="h2">{collateralType?.toUpperCase()} Vault</Heading>
 
-      <Box sx={{ px: 4, mt: 5 }}>
+      <Box sx={{ px: 5, mt: 5 }}>
         <Text as="p" variant="normalBold">
-          SYSTEM COLLATERALL RATIO
+          TOTAL COLLATERAL RATIO{" "}
+          <InfoIcon
+            tooltip={
+              <Card variant="tooltip" sx={{ width: "220px" }}>
+                {`The Total Collateral Ratio or TCR is the ratio of the Dollar value of the entire
+                system collateral at the current ${collateralType?.toUpperCase()}:USD price, to the entire system debt.`}
+              </Card>
+            }
+          />
         </Text>
 
         <Text as="p" variant="xlarge" sx={{ mt: 1 }}>
-          {/* {totalCollateralRatioPct 0.00%} */}
-          0.00%
+          {totalCollateralRatioPct}
         </Text>
         <Flex sx={{ justifyContent: "space-between", mt: 6 }}>
-          <Text as="p" variant="normalBold">
-            COLLATERAL
-          </Text>
-          <Text as="p" variant="normalBold">
-            {trove?.collateral.prettify(2)} {toUpper(collateralType)}
-          </Text>
-        </Flex>
-        <Box sx={{ my: 2 }}>
-          <Progress
-            max={10000}
-            value={trove?.collateral.toString()}
-            sx={{ height: "12px", backgroundColor: "#F0CFDC" }}
-          ></Progress>
-        </Box>
-        <Flex sx={{ justifyContent: "space-between", mb: 4 }}>
           <Text as="p" variant="normalBold">
             MINTED KUSD
           </Text>
           <Text as="p" variant="normalBold">
-            {" "}
-            KUSD
+            {total?.debt.prettify(0)}
+          </Text>
+        </Flex>
+        <Box sx={{ my: 2 }}>
+          <Progress
+            max={kusdMintedCap.toString()}
+            value={total?.debt.toString()}
+            sx={{ height: "12px", backgroundColor: "#F0CFDC" }}
+          ></Progress>
+        </Box>
+        <Flex sx={{ justifyContent: "space-between", mb: 3 }}>
+          <Text as="p" variant="normalBold">
+            MINT CAP
+          </Text>
+          <Text as="p" variant="normalBold">
+            {kusdMintedCap.shorten().toString().toLowerCase()}
+          </Text>
+        </Flex>
+        <Flex sx={{ justifyContent: "space-between", mb: 1 }}>
+          <Text as="p" variant="normalBold">
+            KUSD in Stability Pool
+          </Text>
+          <Text as="p" variant="normalBold">
+            {kusdInStabilityPool.prettify(0)}
+          </Text>
+        </Flex>
+        <Flex sx={{ justifyContent: "space-between", mb: 4 }}>
+          <Text as="p" variant="normalBold">
+            Borrowing Rate
+          </Text>
+          <Text as="p" variant="normalBold">
+            {`${borrowingRate.mul(100).prettify(2)}%`}
           </Text>
         </Flex>
       </Box>

@@ -3,6 +3,7 @@ import type { SwitchNetworkView, SwitchNetworkEvent } from "./types";
 
 type SwitchNetworkViewContextType = {
   view: SwitchNetworkView;
+  showSwitchModal: boolean;
   dispatchEvent: (event: SwitchNetworkEvent) => void;
 };
 

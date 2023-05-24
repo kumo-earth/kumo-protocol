@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Card, Paragraph, Text } from "theme-ui";
-import { Decimal, KumoStoreState } from "@kumodao/lib-base";
+import { Decimal, KumoStoreState, Vault } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { InfoIcon } from "../InfoIcon";
 import { useKumo } from "../../hooks/KumoContext";
 import { Badge } from "../Badge";
 import { fetchKumoPrice } from "./context/fetchKumoPrice";
+import { useParams } from "react-router-dom";
 
-const selector = ({ kusdInStabilityPool, remainingStabilityPoolKUMOReward }: KumoStoreState) => ({
-  kusdInStabilityPool,
+const selector = ({ vaults, remainingStabilityPoolKUMOReward }: KumoStoreState) => ({
+  vaults,
   remainingStabilityPoolKUMOReward
 });
 
@@ -18,7 +19,10 @@ export const Yield: React.FC = () => {
       connection: { addresses }
     }
   } = useKumo();
-  const { kusdInStabilityPool, remainingStabilityPoolKUMOReward } = useKumoSelector(selector);
+  const { vaults, remainingStabilityPoolKUMOReward } = useKumoSelector(selector);
+  const { collateralType } = useParams<{ collateralType: string }>();
+  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
+  const { kusdInStabilityPool } = vault;
 
   const [kumoPrice, setKumoPrice] = useState<Decimal | undefined>(undefined);
   const hasZeroValue = remainingStabilityPoolKUMOReward.isZero || kusdInStabilityPool.isZero;

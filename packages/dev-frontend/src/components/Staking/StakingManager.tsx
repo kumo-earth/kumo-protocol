@@ -1,13 +1,7 @@
 import React from "react";
 import { Button, Flex } from "theme-ui";
 
-import {
-  Decimal,
-  Decimalish,
-  KumoStoreState,
-  KUMOStake,
-  KUMOStakeChange
-} from "@kumodao/lib-base";
+import { Decimal, Decimalish, KumoStoreState, KUMOStake, KUMOStakeChange } from "@kumodao/lib-base";
 
 import { KumoStoreUpdate, useKumoReducer, useKumoSelector } from "@kumodao/lib-react";
 
@@ -18,11 +12,15 @@ import { StakingEditor } from "./StakingEditor";
 import { StakingManagerAction } from "./StakingManagerAction";
 import { ActionDescription, Amount } from "../ActionDescription";
 import { ErrorDescription } from "../ErrorDescription";
+import { useLocation } from "react-router-dom";
 
-const init = ({ kumoStake }: KumoStoreState) => ({
-  originalStake: kumoStake,
-  editedKUMO: kumoStake.stakedKUMO
-});
+const init = ({ kumoStake }: KumoStoreState) => {
+  const location = useLocation();
+  return {
+    originalStake: kumoStake,
+    editedKUMO: kumoStake.stakedKUMO
+  };
+};
 
 type StakeManagerState = ReturnType<typeof init>;
 type StakeManagerAction =
@@ -130,7 +128,7 @@ export const StakingManager: React.FC = () => {
         <ErrorDescription>
           The amount you're trying to stake exceeds your balance by{" "}
           <Amount>
-            {change.stakeKUMO.sub(kumoBalance).prettify()} {GT}
+            {change.stakeKUMO.sub(kumoBalance).prettify(0)} {GT}
           </Amount>
           .
         </ErrorDescription>
@@ -150,16 +148,16 @@ export const StakingManager: React.FC = () => {
 
       <Flex variant="layout.actions">
         <Button
-          variant="cancel"
+          variant="secondary"
           onClick={() => dispatchStakingViewAction({ type: "cancelAdjusting" })}
         >
-          Cancel
+          CANCEL
         </Button>
 
         {validChange ? (
-          <StakingManagerAction change={validChange}>Confirm</StakingManagerAction>
+          <StakingManagerAction change={validChange}>CONFIRM</StakingManagerAction>
         ) : (
-          <Button disabled>Confirm</Button>
+          <Button variant="primaryInActive" disabled>CONFIRM</Button>
         )}
       </Flex>
     </StakingEditor>

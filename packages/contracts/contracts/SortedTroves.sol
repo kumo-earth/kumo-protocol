@@ -5,12 +5,11 @@ pragma solidity 0.8.11;
 // import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./Interfaces/ISortedTroves.sol";
-import "./Interfaces/ITroveManager.sol";
+import "./Interfaces/ITroveManagerDiamond.sol";
 import "./Interfaces/IBorrowerOperations.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
-import "./Dependencies/console.sol";
 
 /*
  * A sorted doubly linked list with nodes sorted in descending order.
@@ -60,7 +59,7 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
 
     address public borrowerOperationsAddress;
 
-    ITroveManager public troveManager;
+    ITroveManagerDiamond public troveManager;
 
     // Information for a node in the list
     struct Node {
@@ -94,7 +93,7 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
 
         // __Ownable_init();
 
-        troveManager = ITroveManager(_troveManagerAddress);
+        troveManager = ITroveManagerDiamond(_troveManagerAddress);
         borrowerOperationsAddress = _borrowerOperationsAddress;
 
         emit TroveManagerAddressChanged(_troveManagerAddress);
@@ -122,14 +121,14 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
         address _prevId,
         address _nextId
     ) external override {
-        ITroveManager troveManagerCached = troveManager;
+        ITroveManagerDiamond troveManagerCached = troveManager;
         _requireCallerIsBOorTroveM(troveManagerCached);
         _insert(_asset, troveManagerCached, _id, _NICR, _prevId, _nextId);
     }
 
     function _insert(
         address _asset,
-        ITroveManager _troveManager,
+        ITroveManagerDiamond _troveManager,
         address _id,
         uint256 _NICR,
         address _prevId,
@@ -252,7 +251,7 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
         address _prevId,
         address _nextId
     ) external override {
-        ITroveManager troveManagerCached = troveManager;
+        ITroveManagerDiamond troveManagerCached = troveManager;
 
         _requireCallerIsBOorTroveM(troveManagerCached);
         // List must contain the node
@@ -348,7 +347,7 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
 
     function _validInsertPosition(
         address _asset,
-        ITroveManager _troveManager,
+        ITroveManagerDiamond _troveManager,
         uint256 _NICR,
         address _prevId,
         address _nextId
@@ -383,7 +382,7 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
      */
     function _descendList(
         address _asset,
-        ITroveManager _troveManager,
+        ITroveManagerDiamond _troveManager,
         uint256 _NICR,
         address _startId
     ) internal view returns (address, address) {
@@ -417,7 +416,7 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
      */
     function _ascendList(
         address _asset,
-        ITroveManager _troveManager,
+        ITroveManagerDiamond _troveManager,
         uint256 _NICR,
         address _startId
     ) internal view returns (address, address) {
@@ -460,7 +459,7 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
 
     function _findInsertPosition(
         address _asset,
-        ITroveManager _troveManager,
+        ITroveManagerDiamond _troveManager,
         uint256 _NICR,
         address _prevId,
         address _nextId
@@ -503,7 +502,7 @@ contract SortedTroves is Ownable, CheckContract, ISortedTroves {
         require(msg.sender == address(troveManager), "SortedTroves: Caller is not the TroveManager");
     }
 
-    function _requireCallerIsBOorTroveM(ITroveManager _troveManager) internal view {
+    function _requireCallerIsBOorTroveM(ITroveManagerDiamond _troveManager) internal view {
         require(
             msg.sender == borrowerOperationsAddress || msg.sender == address(_troveManager),
             "SortedTroves: Caller is neither BO nor TroveM"

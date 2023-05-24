@@ -11,6 +11,10 @@ type CancelPressedEvent = "CANCEL_PRESSED";
 type DepositConfirmedEvent = "DEPOSIT_CONFIRMED";
 type RewardsClaimedEvent = "REWARDS_CLAIMED";
 type DepositEmptiedEvemt = "DEPOSIT_EMPTIED";
+type CloseModalPressed = "CLOSE_MODAL_PRESSED";
+type OpenModalPressed = "OPEN_MODAL_PRESSED";
+
+
 
 export type StabilityEvent =
   | DepositPressedEvent
@@ -18,4 +22,6 @@ export type StabilityEvent =
   | CancelPressedEvent
   | DepositConfirmedEvent
   | RewardsClaimedEvent
-  | DepositEmptiedEvemt;
+  | DepositEmptiedEvemt
+  | CloseModalPressed
+  | OpenModalPressed

@@ -45,7 +45,7 @@ export const NoStake: React.FC = () => {
               color: "white"
             }}
           >
-            Start staking
+            START STAKING
           </Button>
         </Flex>
       </Box>

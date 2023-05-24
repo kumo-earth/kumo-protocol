@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import "../TroveManager.sol";
+import "../TroveManagerDiamond.sol";
 import "../BorrowerOperations.sol";
 import "../ActivePool.sol";
 import "../DefaultPool.sol";
@@ -15,8 +15,10 @@ import "../SortedTroves.sol";
 import "./EchidnaProxy.sol";
 import "../KumoParameters.sol";
 import "../Interfaces/IStabilityPool.sol";
+import "../Interfaces/IDiamondCut.sol";
+import "../Interfaces/ITroveManagerDiamond.sol";
 
-//import "../Dependencies/console.sol";
+//import "hardhat/console.sol";
 
 // Run with:
 // rm -f fuzzTests/corpus/* # (optional)
@@ -31,7 +33,7 @@ contract EchidnaTester {
     uint256 private CCR;
     uint256 private KUSD_GAS_COMPENSATION;
 
-    TroveManager public troveManager;
+    TroveManagerDiamond public troveManager;
     BorrowerOperations public borrowerOperations;
     ActivePool public activePool;
     DefaultPool public defaultPool;
@@ -49,7 +51,7 @@ contract EchidnaTester {
     uint256 private numberOfTroves;
 
     constructor(address _asset) payable {
-        troveManager = new TroveManager();
+        troveManager = new TroveManagerDiamond();
         borrowerOperations = new BorrowerOperations();
         activePool = new ActivePool();
         defaultPool = new DefaultPool();
@@ -64,20 +66,12 @@ contract EchidnaTester {
 
         collSurplusPool = new CollSurplusPool();
         priceFeedTestnet = new PriceFeedTestnet();
-
         sortedTroves = new SortedTroves();
 
-        troveManager.setAddresses(
-            address(borrowerOperations),
-            address(stabilityPoolFactory),
-            address(gasPool),
-            address(collSurplusPool),
-            address(kusdToken),
-            address(sortedTroves),
-            address(0),
-            address(0),
-            address(kumoParams)
+        (bool success, ) = address(troveManager).call(
+            abi.encodeWithSignature("setAddresses(address)", address(kumoParams))
         );
+        require(success);
 
         borrowerOperations.setAddresses(
             address(troveManager),
@@ -96,7 +90,7 @@ contract EchidnaTester {
             address(stabilityPoolFactory),
             address(defaultPool),
             address(collSurplusPool),
-            address(0) // kumoStaking
+            address(0)
         );
         defaultPool.setAddresses(address(troveManager), address(activePool));
 
@@ -120,7 +114,7 @@ contract EchidnaTester {
 
         for (uint256 i = 0; i < NUMBER_OF_ACTORS; i++) {
             echidnaProxies[i] = new EchidnaProxy(
-                troveManager,
+                address(troveManager),
                 borrowerOperations,
                 stabilityPoolFactory,
                 kusdToken
@@ -141,20 +135,12 @@ contract EchidnaTester {
 
     // TroveManager
 
-    function liquidateExt(
-        address _asset,
-        uint256 _i,
-        address _user
-    ) external {
+    function liquidateExt(address _asset, uint256 _i, address _user) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].liquidatePrx(_asset, _user);
     }
 
-    function liquidateTrovesExt(
-        address _asset,
-        uint256 _i,
-        uint256 _n
-    ) external {
+    function liquidateTrovesExt(address _asset, uint256 _i, uint256 _n) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].liquidateTrovesPrx(_asset, _n);
     }
@@ -242,7 +228,11 @@ contract EchidnaTester {
 
         echidnaProxy.openTrovePrx(_asset, ASSET, KUSDAmount, address(0), address(0), 0);
 
-        numberOfTroves = troveManager.getTroveOwnersCount(_asset);
+        // numberOfTroves = troveManager.getTroveOwnersCount(_asset);
+        (, bytes memory _data) = address(troveManager).call(
+            abi.encodeWithSignature("getTroveOwnersCount(address)", _asset)
+        );
+        numberOfTroves = abi.decode(_data, (uint256));
         assert(numberOfTroves > 0);
         // canary
         //assert(numberOfTroves == 0);
@@ -268,11 +258,7 @@ contract EchidnaTester {
         );
     }
 
-    function addCollExt(
-        address _asset,
-        uint256 _i,
-        uint256 _ASSET
-    ) external payable {
+    function addCollExt(address _asset, uint256 _i, uint256 _ASSET) external payable {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         EchidnaProxy echidnaProxy = echidnaProxies[actor];
         uint256 actorBalance = address(echidnaProxy).balance;
@@ -399,31 +385,19 @@ contract EchidnaTester {
         echidnaProxies[actor].provideToSPPrx(_asset, _amount, _frontEndTag);
     }
 
-    function withdrawFromSPExt(
-        uint256 _i,
-        address _asset,
-        uint256 _amount
-    ) external {
+    function withdrawFromSPExt(uint256 _i, address _asset, uint256 _amount) external {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         echidnaProxies[actor].withdrawFromSPPrx(_asset, _amount);
     }
 
     // KUSD Token
 
-    function transferExt(
-        uint256 _i,
-        address recipient,
-        uint256 amount
-    ) external returns (bool) {
+    function transferExt(uint256 _i, address recipient, uint256 amount) external returns (bool) {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         return echidnaProxies[actor].transferPrx(recipient, amount);
     }
 
-    function approveExt(
-        uint256 _i,
-        address spender,
-        uint256 amount
-    ) external returns (bool) {
+    function approveExt(uint256 _i, address spender, uint256 amount) external returns (bool) {
         uint256 actor = _i % NUMBER_OF_ACTORS;
         return echidnaProxies[actor].approvePrx(spender, amount);
     }
@@ -487,10 +461,7 @@ contract EchidnaTester {
         address nextTrove = sortedTroves.getNext(_asset, currentTrove);
 
         while (currentTrove != address(0) && nextTrove != address(0)) {
-            if (
-                troveManager.getNominalICR(_asset, nextTrove) >
-                troveManager.getNominalICR(_asset, currentTrove)
-            ) {
+            if (tmGetNominalICR(_asset, nextTrove) > tmGetNominalICR(_asset, currentTrove)) {
                 return false;
             }
             // Uncomment to check that the condition is meaningful
@@ -519,17 +490,14 @@ contract EchidnaTester {
             //else return false;
 
             // Minimum debt (gas compensation)
-            if (
-                troveManager.getTroveDebt(_asset, currentTrove) <
-                kumoParams.KUSD_GAS_COMPENSATION(_asset)
-            ) {
+            if (tmGetTroveDebt(_asset, currentTrove) < kumoParams.KUSD_GAS_COMPENSATION(_asset)) {
                 return false;
             }
             // Uncomment to check that the condition is meaningful
             //else return false;
 
             // Stake > 0
-            if (troveManager.getTroveStake(_asset, currentTrove) == 0) {
+            if (tmGetTroveStake(_asset, currentTrove) == 0) {
                 return false;
             }
             // Uncomment to check that the condition is meaningful
@@ -624,4 +592,37 @@ contract EchidnaTester {
         return true;
     }
     */
+
+    function tmGetNominalICR(
+        address _asset,
+        address _borrower
+    ) internal view returns (uint256 _result) {
+        (, bytes memory _data) = address(troveManager).staticcall(
+            abi.encodeWithSignature("getNominalICR(address,address)", _asset, _borrower)
+        );
+
+        _result = abi.decode(_data, (uint256));
+    }
+
+    function tmGetTroveDebt(
+        address _asset,
+        address _borrower
+    ) internal view returns (uint256 _result) {
+        (, bytes memory _data) = address(troveManager).staticcall(
+            abi.encodeWithSignature("getTroveDebt(address,address)", _asset, _borrower)
+        );
+
+        _result = abi.decode(_data, (uint256));
+    }
+
+    function tmGetTroveStake(
+        address _asset,
+        address _borrower
+    ) internal view returns (uint256 _result) {
+        (, bytes memory _data) = address(troveManager).staticcall(
+            abi.encodeWithSignature("getTroveStake(address,address)", _asset, _borrower)
+        );
+
+        _result = abi.decode(_data, (uint256));
+    }
 }

@@ -13,7 +13,6 @@ import "./Interfaces//IStabilityPoolFactory.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
-import "./Dependencies/console.sol";
 import "./Dependencies/SafetyTransfer.sol";
 
 /*
@@ -35,6 +34,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     address public defaultPoolAddress;
     address public kumoStakingAddress;
     address public collSurplusPoolAddress;
+    address public troveRedemptorAddress;
 
     IStabilityPoolFactory public stabilityPoolFactory;
 
@@ -107,7 +107,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         address _account,
         uint256 _amount
     ) external override {
-        _requireCallerIsBOorTroveMorSP();
+        _requireCallerIsBOorTroveMorSPorTroveR();
 
         uint256 safetyTransferAmount = SafetyTransfer.decimalsCorrection(_asset, _amount);
         if (safetyTransferAmount == 0) return;
@@ -137,7 +137,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     }
 
     function decreaseKUSDDebt(address _asset, uint256 _amount) external override {
-        _requireCallerIsBOorTroveMorSP();
+        _requireCallerIsBOorTroveMorSPorTroveR();
         KUSDDebts[_asset] = KUSDDebts[_asset].sub(_amount);
         emit ActivePoolKUSDDebtUpdated(_asset, KUSDDebts[_asset]);
     }
@@ -151,12 +151,13 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         );
     }
 
-    function _requireCallerIsBOorTroveMorSP() internal view {
+    function _requireCallerIsBOorTroveMorSPorTroveR() internal view {
         require(
             msg.sender == borrowerOperationsAddress ||
                 msg.sender == troveManagerAddress ||
+                msg.sender == troveRedemptorAddress ||
                 stabilityPoolFactory.isRegisteredStabilityPool(msg.sender),
-            "ActivePool: Caller is neither BorrowerOperations nor TroveManager nor StabilityPool"
+            "ActivePool: Caller is neither BorrowerOperations nor TroveManager nor StabilityPool nor TroveRedemptor"
         );
     }
 

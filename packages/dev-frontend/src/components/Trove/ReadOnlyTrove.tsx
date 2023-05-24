@@ -1,15 +1,12 @@
 import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { Card, Heading, Box, Flex, Button, Select } from "theme-ui";
-import { Decimal, KumoStoreState, UserTrove } from "@kumodao/lib-base";
+import { Card, Heading, Box, Flex, Button } from "theme-ui";
+import { KumoStoreState, Vault } from "@kumodao/lib-base";
 import { DisabledEditableRow } from "./Editor";
 import { useTroveView } from "./context/TroveViewContext";
 import { Icon } from "../Icon";
 import { COIN } from "../../strings";
 import { CollateralRatio } from "./CollateralRatio";
-import { useDashboard } from "../../hooks/DashboardContext";
-import { Web3Provider } from "@ethersproject/providers";
-import { useWeb3React } from "@web3-react/core";
 import { useKumoSelector } from "@kumodao/lib-react";
 
 const select = ({ vaults }: KumoStoreState) => ({
@@ -25,34 +22,32 @@ export const ReadOnlyTrove: React.FC = () => {
     dispatchEvent("CLOSE_TROVE_PRESSED");
   }, [dispatchEvent]);
 
-  const { account } = useWeb3React<Web3Provider>();
-
   const { collateralType } = useParams<{ collateralType: string }>();
-
-  const { ctx, cty } = useDashboard();
   const { vaults } = useKumoSelector(select);
-  const vault = vaults.find(vault => vault.asset === collateralType);
-  const trove: UserTrove = vault?.trove?.ownerAddress === account && vault?.trove;
-  const price = vault?.asset === "ctx" ? ctx : vault?.asset === "cty" ? cty : Decimal.from(0);
-  let collateralRatio: Decimal = trove.collateralRatio(price);
+  const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
+  const { trove } = vault;
+  const price = vault?.price
+  let collateralRatio = trove?.collateralRatio(price);
 
   // console.log("READONLY TROVE", trove.collateral.prettify(4));
+
   return (
     <Card variant="base">
-      <Heading as="h2">{vault?.asset.toUpperCase()} Trove</Heading>
+      <Heading as="h2">{vault?.asset.toUpperCase()} Vault</Heading>
       <Box sx={{ p: [2, 3] }}>
         <Box>
           <DisabledEditableRow
             label="Collateral"
             inputId="trove-collateral"
-            amount={trove?.collateral.prettify(4) || "0"}
+            amount={trove?.collateral.toString(0)}
             unit={collateralType?.toUpperCase()}
+            tokenPrice={price}
           />
 
           <DisabledEditableRow
             label="Debt"
             inputId="trove-debt"
-            amount={trove?.debt.prettify() || "0"}
+            amount={trove?.debt.prettify(2)}
             unit={COIN}
           />
 
@@ -61,22 +56,23 @@ export const ReadOnlyTrove: React.FC = () => {
 
         <Flex variant="layout.actions">
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={handleCloseTrove}
             sx={{
-              border: "none"
+              mt: 3,
+              mb: 2
             }}
           >
-            Close Trove
+            CLOSE VAULT
           </Button>
           <Button
             onClick={handleAdjustTrove}
             sx={{
-              border: "none"
+              mb: 2
             }}
           >
             <Icon name="pen" size="sm" />
-            &nbsp;Adjust
+            &nbsp;ADJUST
           </Button>
         </Flex>
       </Box>

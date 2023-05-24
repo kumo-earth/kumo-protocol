@@ -1,23 +1,10 @@
 import React, { useEffect } from "react";
 import { Button, Flex, Spinner } from "theme-ui";
 
-import { KumoStoreState } from "@kumodao/lib-base";
-import { useKumoSelector } from "@kumodao/lib-react";
-
-import { useKumo } from "../hooks/KumoContext";
-
-import { Transaction, useMyTransactionState } from "./Transaction";
+import { useMyTransactionState } from "./Transaction";
 import { useTroveView } from "./Trove/context/TroveViewContext";
 
-const select = ({ collateralSurplusBalance }: KumoStoreState) => ({
-  collateralSurplusBalance
-});
-
-export const CollateralSurplusAction: React.FC<{ asset?: string }> = ({ asset = "" }) => {
-  const { collateralSurplusBalance } = useKumoSelector(select);
-  const {
-    kumo: { send: kumo }
-  } = useKumo();
+export const CollateralSurplusAction: React.FC<{ asset?: string }> = () => {
 
   const myTransactionId = "claim-coll-surplus";
   const myTransactionState = useMyTransactionState(myTransactionId);
@@ -32,7 +19,7 @@ export const CollateralSurplusAction: React.FC<{ asset?: string }> = ({ asset = 
 
   return myTransactionState.type === "waitingForApproval" ? (
     <Flex variant="layout.actions">
-      <Button disabled sx={{ mx: 2 }}>
+      <Button disabled sx={{ mx: 2 }} variant={'primaryInActive'}>
         <Spinner sx={{ mr: 2, color: "white" }} size="20px" />
         Waiting for your approval
       </Button>
@@ -40,12 +27,12 @@ export const CollateralSurplusAction: React.FC<{ asset?: string }> = ({ asset = 
   ) : myTransactionState.type !== "waitingForConfirmation" &&
     myTransactionState.type !== "confirmed" ? (
     <Flex variant="layout.actions">
-      <Transaction
+      {/* <Transaction
         id={myTransactionId}
         send={kumo.claimCollateralSurplus.bind(kumo, asset, undefined)}
       >
         <Button sx={{ mx: 2 }}>Claim {collateralSurplusBalance.prettify()} ETH</Button>
-      </Transaction>
+      </Transaction> */}
     </Flex>
   ) : null;
 };

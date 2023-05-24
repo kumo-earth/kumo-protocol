@@ -71,7 +71,7 @@ export const Adjusting: React.FC = () => {
             sx={{ ":enabled:hover": { color: "danger" } }}
             onClick={() => setAmount(liquidityMiningStake)}
           >
-            <Icon name="history" size="lg" />
+            <Icon name="history" size="sm" />
           </Button>
         )}
       </Heading>
@@ -105,7 +105,7 @@ export const Adjusting: React.FC = () => {
         <StaticRow
           label="Reward"
           inputId="farm-reward-amount"
-          amount={liquidityMiningKUMOReward.prettify(4)}
+          amount={liquidityMiningKUMOReward.prettify(0)}
           color={liquidityMiningKUMOReward.nonZero && "success"}
           unit={GT}
         />
@@ -114,8 +114,8 @@ export const Adjusting: React.FC = () => {
         {isDirty && <Description amount={amount} />}
 
         <Flex variant="layout.actions">
-          <Button variant="cancel" onClick={handleCancelPressed}>
-            Cancel
+          <Button variant="secondary" onClick={handleCancelPressed}>
+            CANCEL
           </Button>
           <Approve amount={amount} />
           <Confirm amount={amount} />

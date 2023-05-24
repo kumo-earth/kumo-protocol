@@ -5,7 +5,10 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 
 contract ERC20Test is ERC20, ERC20Permit {
-    constructor() ERC20("ERC Test", "TST") ERC20Permit("TST") {}
+   constructor(string memory contractName, string memory contracSymbol)
+        ERC20(contractName, contracSymbol)
+        ERC20Permit(contracSymbol)
+    {}
 
     uint8 private DECIMALS = 18;
 

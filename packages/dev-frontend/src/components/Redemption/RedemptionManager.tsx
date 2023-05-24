@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Button, Box, Flex, Card, Heading } from "theme-ui";
+import { Button, Text, Box, Flex, Card, Heading, Select } from "theme-ui";
 
-import { Decimal, Percent, KumoStoreState, MINIMUM_COLLATERAL_RATIO } from "@kumodao/lib-base";
+import {
+  Decimal,
+  Percent,
+  KumoStoreState,
+  MINIMUM_COLLATERAL_RATIO,
+  Vault
+} from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 
 import { COIN } from "../../strings";
@@ -18,17 +24,19 @@ import { InfoIcon } from "../InfoIcon";
 
 const mcrPercent = new Percent(MINIMUM_COLLATERAL_RATIO).toString(0);
 
-const select = ({ price, fees, total, kusdBalance }: KumoStoreState) => ({
-  price,
-  fees,
-  total,
+const select = ({ vaults, kusdBalance }: KumoStoreState) => ({
+  vaults,
   kusdBalance
 });
 
 const transactionId = "redemption";
 
 export const RedemptionManager: React.FC = () => {
-  const { price, fees, total, kusdBalance } = useKumoSelector(select);
+  const [assetType, setAssetType] = useState("ctx");
+  const { vaults, kusdBalance } = useKumoSelector(select);
+  const vault = vaults.find(vault => vault.asset === assetType) ?? new Vault();
+  const price = vault?.price
+  const { fees, total } = vault;
   const [kusdAmount, setKUSDAmount] = useState(Decimal.ZERO);
   const [changePending, setChangePending] = useState(false);
   const editingState = useState<string>();
@@ -78,27 +86,41 @@ export const RedemptionManager: React.FC = () => {
     : [
         true,
         <ActionDescription>
-          You will receive <Amount>{ethAmount.sub(ethFee).prettify(4)} ETH</Amount> in exchange for{" "}
+          You will receive{" "}
           <Amount>
-            {kusdAmount.prettify()} {COIN}
+            {ethAmount.sub(ethFee).prettify(0)} {assetType?.toUpperCase()}
+          </Amount>{" "}
+          in exchange for{" "}
+          <Amount>
+            {kusdAmount.prettify(0)} {COIN}
           </Amount>
           .
         </ActionDescription>
       ];
 
   return (
-    <Card>
-      <Heading>
+    <Card variant="collateralCard" sx={{ width: '70%' }}>
+      <Heading
+        as="h2"
+        sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+      >
         Redeem
-        {dirty && !changePending && (
-          <Button
-            variant="titleIcon"
-            sx={{ ":enabled:hover": { color: "danger" } }}
-            onClick={() => setKUSDAmount(Decimal.ZERO)}
-          >
-            <Icon name="history" size="lg" />
-          </Button>
-        )}
+        <Box sx={{ display: "flex", alignItems: "center", mr: 7 }}>
+          {dirty && !changePending && (
+            <Button
+              variant="titleIcon"
+              sx={{ ":enabled:hover": { color: "danger" } }}
+              onClick={() => setKUSDAmount(Decimal.ZERO)}
+            >
+              <Icon name="history" size="xs" />
+            </Button>
+          )}
+          <Text sx={{ fontSize: "14px" }}>Vault: </Text>
+          <Select value={assetType} onChange={event => setAssetType(event.target.value)}>
+            <option value={"ctx"}>CTX</option>
+            <option value={"cty"}>CTY</option>
+          </Select>
+        </Box>
       </Heading>
 
       <Box sx={{ p: [2, 3] }}>
@@ -119,13 +141,13 @@ export const RedemptionManager: React.FC = () => {
           inputId="redeem-fee"
           amount={ethFee.toString(4)}
           pendingAmount={feePct.toString(2)}
-          unit="ETH"
+          unit={assetType?.toUpperCase()}
           infoIcon={
             <InfoIcon
               tooltip={
                 <Card variant="tooltip" sx={{ minWidth: "240px" }}>
-                  The Redemption Fee is charged as a percentage of the redeemed Ether. The Redemption
-                  Fee depends on KUSD redemption volumes and is 0.5% at minimum.
+                  {`The Redemption Fee is charged as a percentage of the redeemed ${assetType?.toUpperCase()}. The Redemption
+                  Fee depends on KUSD redemption volumes and is 0.5% at minimum.`}
                 </Card>
               }
             />
@@ -135,10 +157,11 @@ export const RedemptionManager: React.FC = () => {
         {((dirty || !canRedeem) && description) || (
           <ActionDescription>Enter the amount of {COIN} you'd like to redeem.</ActionDescription>
         )}
-
+    
         <Flex variant="layout.actions">
           <RedemptionAction
             transactionId={transactionId}
+            asset={vault?.assetAddress}
             disabled={!dirty || !canRedeem}
             kusdAmount={kusdAmount}
             maxRedemptionRate={maxRedemptionRate}

@@ -14,27 +14,15 @@ interface IKUSDToken is IERC20, IERC2612 {
 
     event KUSDTokenBalanceUpdated(address _user, uint256 _amount);
 
-    function emergencyStopMinting(address _asset, bool status) external virtual;
+    function emergencyStopMinting(address _asset, bool status) external;
 
     // --- Functions ---
 
-    function mint(
-        address asset,
-        address _account,
-        uint256 _amount
-    ) external;
+    function mint(address asset, address _account, uint256 _amount) external;
 
     function burn(address _account, uint256 _amount) external;
 
-    function sendToPool(
-        address _sender,
-        address poolAddress,
-        uint256 _amount
-    ) external;
+    function sendToPool(address _sender, address poolAddress, uint256 _amount) external;
 
-    function returnFromPool(
-        address poolAddress,
-        address user,
-        uint256 _amount
-    ) external;
+    function returnFromPool(address poolAddress, address user, uint256 _amount) external;
 }

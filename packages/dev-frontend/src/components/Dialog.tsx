@@ -52,7 +52,7 @@ export const Dialog: React.FC<DialogProps> = ({
         {title}
       </Heading>
       <Button variant="icon" onClick={onCancel}>
-        <Icon name="times" size="lg" aria-label={cancelLabel || "Cancel"} />
+        <Icon name="times" size="lg" aria-label={cancelLabel?.toUpperCase() || "CANCEL"} />
       </Button>
     </Flex>
     {children}

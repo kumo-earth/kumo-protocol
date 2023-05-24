@@ -1,15 +1,20 @@
-import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import { Box, Flex } from "theme-ui";
 import { Link } from "../components/Link";
-import { StatsLiquidation } from "../components/StatsLiquidation/StatsLiquidation";
 import { StatsRiskyTroves } from "../components/StatsRiskyTroves/StatsRiskyTroves";
 import { ProtocolStats } from "./ProtocolStats";
 
 export const Stats: React.FC = () => {
   const { statsType } = useParams<{ statsType: string }>();
-
-
-  console.log("statsType", statsType)
+  const history = useHistory();
+  
+  useEffect(() => {
+     if(statsType === 'protocol' || statsType !== 'vaults'){
+      history.push('/stats/protocol')
+     }
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statsType])
   
   const renderStatsView = (view: string) => {
     switch (view) {
@@ -17,8 +22,8 @@ export const Stats: React.FC = () => {
         return  <ProtocolStats />;
       case "vaults":
         return  <StatsRiskyTroves />;
-      case "liquidations":
-          return <StatsLiquidation />;
+      // case "liquidations":
+      //     return <StatsLiquidation />;
       default:
         return <Box>protocol</Box>;
     }
@@ -30,12 +35,12 @@ export const Stats: React.FC = () => {
         <Link
           to="protocol"
           sx={{
-            py: 1,
-            px: 2,
+            py: 2,
+            px: 3,
             mr: 2,
             letterSpacing: "inherit",
             backgroundColor: "#f0cfdc",
-            borderRadius: "8px"
+            borderRadius: '72px',
           }}
         >
           PROTOCOL STATISTICS
@@ -43,17 +48,17 @@ export const Stats: React.FC = () => {
         <Link
           to="vaults"
           sx={{
-            py: 1,
-            px: 2,
+            py: 2,
+            px: 3,
             mr: 2,
             letterSpacing: "inherit",
             backgroundColor: "#f0cfdc",
-            borderRadius: "8px"
+            borderRadius: '72px',
           }}
         >
-          RISKY TROVES
+          RISKY Vaults
         </Link>
-        <Link
+        {/* <Link
           to="liquidations"
           sx={{
             py: 1,
@@ -64,7 +69,7 @@ export const Stats: React.FC = () => {
           }}
         >
           LIQUIDATION STATISTICS
-        </Link>
+        </Link> */}
       </Flex>
       <Box sx={{ flex: 1 }}>{renderStatsView(statsType)}</Box>
     </Flex>
