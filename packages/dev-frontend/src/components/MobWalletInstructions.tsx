@@ -9,7 +9,7 @@ type SystemStatsProps = {
 };
 
 export const MobWalletInstructons: React.FC<SystemStatsProps> = ({ variant = "info", showBalances }) => {
-  const { totalCollDebt } = useDashboard();
+  const { systemTotalCollDebt } = useDashboard();
 
   return (
     <Card variant="walletInstruction">
@@ -18,9 +18,9 @@ export const MobWalletInstructons: React.FC<SystemStatsProps> = ({ variant = "in
         <Heading as="h3" sx={{ my: 3 }}>
           KUMO Protocol
         </Heading>
-        <Statistic name={"TOTAL COLLATERAL"}>{`$${totalCollDebt.totalColl.prettify(0)}`}</Statistic>
-        <Statistic name={"TOTAL MINTED KUSD"}>{`$${totalCollDebt.totalDebt.prettify(0)}`}</Statistic>
-        <Statistic name={"TOTAL CARBON CREDITS"}>{totalCollDebt.totalCarbonCredits.prettify(0)}</Statistic>
+        <Statistic name={"TOTAL COLLATERAL"}>{`$${ systemTotalCollDebt.systemTotalCollateral.prettify(0)}`}</Statistic>
+        <Statistic name={"TOTAL MINTED KUSD"}>{`$${systemTotalCollDebt.systemTotalDebt.prettify(0)}`}</Statistic>
+        <Statistic name={"TOTAL CARBON CREDITS"}>{systemTotalCollDebt.systemTotalCarbonCredits.prettify(0)}</Statistic>
       </Box>
     </Card>
   );

@@ -3,19 +3,16 @@ import { Decimal, KumoStoreState } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 
 type DashboardContextValue = {
-  totalCollDebt: {
-    totalColl: Decimal;
-    totalNBCColl: Decimal;
-    totalCSCColl: Decimal;
-    totalNBCDebt: Decimal;
-    totalCSCDebt: Decimal;
-    totalDebt: Decimal;
-    totalCarbonCredits: Decimal;
+  assetTotalCollDebt : { [key: string]: { assetCollateral: Decimal, assetDebt: Decimal } } | undefined;
+  systemTotalCollDebt: {
+    systemTotalCollateral: Decimal,
+    systemTotalDebt: Decimal,
+    systemTotalCarbonCredits : Decimal,
   };
   totalTroveCollDebt: {
-    totalTroveColl: Decimal;
-    totalTroveDebt: Decimal;
-    troveTotalCarbonCredits: Decimal;
+    totalTroveColl: Decimal,
+    totalTroveDebt: Decimal,
+    troveTotalCarbonCredits: Decimal
   };
 };
 
@@ -23,16 +20,16 @@ const DashboardContext = createContext<DashboardContextValue | undefined>(undefi
 const select = ({ vaults }: KumoStoreState) => ({
   vaults
 });
+
+
 export const DashboardProvider: React.FC = ({ children }) => {
   const { vaults } = useKumoSelector(select);
-  const [totalCollDebt, setTotalCollDebt] = useState({
-    totalColl: Decimal.ZERO,
-    totalNBCColl: Decimal.ZERO,
-    totalCSCColl: Decimal.ZERO,
-    totalNBCDebt: Decimal.ZERO,
-    totalCSCDebt: Decimal.ZERO,
-    totalDebt: Decimal.ZERO,
-    totalCarbonCredits: Decimal.ZERO
+  const [assetTotalCollDebt, setAssetTotalCollDebt] = useState<{ [key: string]: { assetCollateral: Decimal, assetDebt: Decimal } }>();
+
+  const [systemTotalCollDebt, setSystemTotalCollDebt] = useState({
+    systemTotalCollateral: Decimal.ZERO,
+    systemTotalDebt: Decimal.ZERO,
+    systemTotalCarbonCredits : Decimal.ZERO,
   });
   const [totalTroveCollDebt, setTotalTroveCollDebt] = useState({
     totalTroveColl: Decimal.ZERO,
@@ -40,60 +37,63 @@ export const DashboardProvider: React.FC = ({ children }) => {
     troveTotalCarbonCredits: Decimal.ZERO
   });
 
-  useEffect(() => {
-    let calcCollat = Decimal.ZERO;
-    let calcDebt = Decimal.ZERO;
-    let totalNBCColl = Decimal.ZERO;
-    let totalCSCColl = Decimal.ZERO;
-    let totalNBCDebt = Decimal.ZERO;
-    let totalCSCDebt = Decimal.ZERO;
-    let calcCarbonCredits = Decimal.ZERO;
 
-    let troveCalcCollat = Decimal.ZERO;
-    let troveCalcDebt = Decimal.ZERO;
-    let troveCarbonCredits = Decimal.ZERO;
+  useEffect(() => {
+    let systemTotalCollateral = Decimal.ZERO;
+    let systemTotalDebt = Decimal.ZERO;
+
+    let systemTotalCarbonCredits = Decimal.ZERO;
+    let totalTroveColl = Decimal.ZERO;
+    let totalTroveDebt = Decimal.ZERO;
+    let troveTotalCarbonCredits = Decimal.ZERO;
+
 
     vaults.forEach(vault => {
-      const { total, trove, price } = vault;
-      calcDebt = calcDebt.add(total.debt);
-      troveCalcDebt = troveCalcDebt.add(trove.debt);
-      calcCarbonCredits = calcCarbonCredits.add(total.collateral);
-      troveCarbonCredits = troveCarbonCredits.add(trove.collateral);
-      if (vault.asset === "nbc") {
-        totalNBCDebt = totalNBCDebt.add(total.debt);
-      } else if (vault.asset === "csc") {
-        totalCSCDebt = totalCSCDebt.add(total.debt);
-      }
-      if (vault.asset === "nbc" && total.collateral.nonZero && price.nonZero) {
-        calcCollat = calcCollat.add(total.collateral.mul(price));
-        totalNBCColl = totalNBCColl.add(total.collateral.mul(price));
-        troveCalcCollat = troveCalcCollat.add(trove.collateral.mul(price));
-      } else if (vault.asset === "csc" && total.collateral.nonZero && price.nonZero) {
-        calcCollat = calcCollat.add(total.collateral.mul(price));
-        totalCSCColl = totalCSCColl.add(total.collateral.mul(price));
-        troveCalcCollat = troveCalcCollat.add(trove.collateral.mul(price));
-      }
-      setTotalCollDebt({
-        totalColl: calcCollat,
-        totalNBCColl: totalNBCColl,
-        totalCSCColl: totalCSCColl,
-        totalNBCDebt: totalNBCDebt,
-        totalCSCDebt: totalCSCDebt,
-        totalDebt: calcDebt,
-        totalCarbonCredits: calcCarbonCredits
+      const { total, trove, price, asset } = vault;
+
+      systemTotalCollateral = systemTotalCollateral.add(total.collateral.mul(price))
+      systemTotalDebt = systemTotalDebt.add(total.debt);
+      systemTotalCarbonCredits = systemTotalCarbonCredits.add(total.collateral);
+
+      totalTroveColl = totalTroveColl.add(trove.collateral.mul(price));
+      totalTroveDebt = totalTroveDebt.add(trove.debt);
+      troveTotalCarbonCredits = troveTotalCarbonCredits.add(trove.collateral);
+
+
+      let assetCollateralDebt = {
+        assetCollateral: total.collateral.mul(price),
+        assetDebt: total.debt,
+      };
+
+      setAssetTotalCollDebt((prevTotalValues) => {
+        return {
+          ...prevTotalValues,
+          [asset]: assetCollateralDebt,
+        };
       });
+
+
+      setSystemTotalCollDebt({
+        systemTotalCollateral,
+        systemTotalDebt,
+        systemTotalCarbonCredits
+      });
+
       setTotalTroveCollDebt({
-        totalTroveColl: troveCalcCollat,
-        totalTroveDebt: troveCalcDebt,
-        troveTotalCarbonCredits: troveCarbonCredits
+        totalTroveColl,
+        totalTroveDebt,
+        troveTotalCarbonCredits
       });
     });
+
   }, [vaults]);
+
 
   return (
     <DashboardContext.Provider
       value={{
-        totalCollDebt,
+        assetTotalCollDebt,
+        systemTotalCollDebt,
         totalTroveCollDebt
       }}
     >
@@ -106,7 +106,7 @@ export const useDashboard = () => {
   const dashboardContext = useContext(DashboardContext);
 
   if (!dashboardContext) {
-    throw new Error("You must provide a DashboardContext via LiquityProvider");
+    throw new Error("You must provide a DashboardContext via kumoProvider");
   }
 
   return dashboardContext;
