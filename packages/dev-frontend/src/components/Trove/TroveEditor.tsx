@@ -1,5 +1,5 @@
 import React from "react";
-import { Heading, Box, Card } from "theme-ui";
+import { Heading, Box, Card, Text } from "theme-ui";
 
 import {
   Difference,
@@ -56,9 +56,9 @@ export const TroveEditor: React.FC<TroveEditorProps> = ({
         width: "90%"
       }}
     >
-      <Heading>{collateralType?.toUpperCase()} Vault</Heading>
+      <Heading>{collateralType?.toUpperCase()} Vault <Text variant="assetName">({vault.assetName})</Text></Heading>
 
-      <Box sx={{ p: [2, 3] }}>
+      <Box sx={{ py: 4, px: [3, 5] }}>
         <StaticRow
           label="Collateral"
           inputId="trove-collateral"

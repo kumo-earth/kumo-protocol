@@ -7,10 +7,10 @@ export const LiquidityStaking: React.FC = () => {
       sx={{
         width: "100%",
         display: "grid",
-        gridGap: 2,
-        gridTemplateColumns: `repeat(auto-fill, minmax(400px, 1fr))`,
-        height: "100%",
-        p: 6
+        gridGap: 3,
+        gridTemplateColumns: `repeat(auto-fit, minmax(250px, 1fr))`,
+        mt: 5,
+        px: 5
       }}
     >
       <MiningTypeCard />

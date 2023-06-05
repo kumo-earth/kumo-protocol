@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Flex, Button, Box, Card, Heading, Spinner } from "theme-ui";
+import { Flex, Button, Box, Card, Heading, Spinner, Text } from "theme-ui";
 import {
   KumoStoreState,
   Decimal,
@@ -36,10 +36,10 @@ export const Opening: React.FC = () => {
   const { dispatchEvent } = useTroveView();
   const { collateralType } = useParams<{ collateralType: string }>();
 
-  const { accountBalance, fees, price, total, kusdMintedCap, validationContext } = useKumoSelector((state: KumoStoreState) => {
+  const { accountBalance, fees, price, total, kusdMintedCap, assetName, validationContext } = useKumoSelector((state: KumoStoreState) => {
     const { vaults, kusdBalance } = state;
     const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
-    const { accountBalance, fees, price, total, numberOfTroves, kusdMintedCap } = vault;
+    const { accountBalance, fees, price, total, numberOfTroves, kusdMintedCap, assetName } = vault;
 
     const validationContext = {
       price,
@@ -48,7 +48,7 @@ export const Opening: React.FC = () => {
       kusdBalance,
       numberOfTroves
     };
-    return { accountBalance, fees, price,total, kusdMintedCap, validationContext };
+    return { accountBalance, fees, price,total, kusdMintedCap, assetName,  validationContext };
   });
 
   const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
@@ -112,26 +112,25 @@ export const Opening: React.FC = () => {
   }, [collateral, borrowAmount]);
 
   return (
-    <Card variant="base">
+    <Card variant="base" sx={{ minWidth: '270px' }}>
       <Heading as="h2">
-        {collateralType.toUpperCase()} Vault
+        {collateralType.toUpperCase()} Vault <Text variant="assetName">({assetName})</Text>
         {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
-            <Icon name="history" size="sm" />
+            <Icon name="history" size="xs" />
           </Button>
         )}
       </Heading>
-
-      <Box sx={{ p: [2, 3] }}>
+      <Box sx={{ py: 4, px: [3, 5] }}>
         <EditableRow
           label="Collateral"
           inputId="trove-collateral"
-          amount={collateral.prettify(4)}
+          amount={collateral.prettify(0)}
           maxAmount={maxCollateral.toString()}
           maxedOut={collateralMaxedOut}
           editingState={editingState}
           unit={collateralType.toUpperCase()}
-          editedAmount={collateral.toString(4)}
+          editedAmount={collateral.toString(0)}
           setEditedAmount={(amount: string) => setCollateral(Decimal.from(amount))}
           tokenPrice={price}
         />
@@ -235,7 +234,7 @@ export const Opening: React.FC = () => {
           </Button>
 
           {gasEstimationState.type === "inProgress" ? (
-            <Button disabled sx={{ mb: 2 }}>
+            <Button disabled>
               <Spinner size="24px" sx={{ color: "background" }} />
             </Button>
           ) : (stableTroveChange && !isMintCapReached) ? (
@@ -249,7 +248,7 @@ export const Opening: React.FC = () => {
               CONFIRM
             </TroveAction>
           ) : (
-            <Button variant="primaryInActive" disabled sx={{ mb: 2 }}>CONFIRM</Button>
+            <Button variant="primaryInActive" disabled>CONFIRM</Button>
           )}
         </Flex>
       </Box>

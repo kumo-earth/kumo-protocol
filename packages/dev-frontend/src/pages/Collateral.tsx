@@ -16,10 +16,10 @@ const select = ({ vaults }: KumoStoreState) => ({
 });
 
 const style = {
-  top: "45%",
+  top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: [350, 470],
+  width: ["85%", 470],
   border: "none",
   boxShadow: 24,
   p: 0
@@ -77,14 +77,15 @@ export const Collateral: React.FC = () => {
       sx={{
         width: "100%",
         gridGap: 2,
-        p: 5
+        p: 5, 
+        justifyItems: ['center']
       }}
     >
-      <Flex sx={{ height: "max-content", width: "95%", mt: 8 }}>
+      <Flex sx={{ height: "max-content", width: "95%", mt: [5, 8] }}>
         <Trove />
       </Flex>
-      <Flex sx={{ flexDirection: "column", width: "95%" }}>
-        <Text as="p" variant="large" sx={{ mb: "20px" }}>
+      <Flex sx={{ flexDirection: "column", width: "95%", alignItems: ['center'] }}>
+        <Text as="p" variant="large" sx={{ mt: ["20px", 0, 0] }}>
           System Overview
         </Text>
         <AssetStats
@@ -94,7 +95,7 @@ export const Collateral: React.FC = () => {
           minNetDebt={vault?.minNetDebt}
           collateralType={collateralType}
         />
-        <Text as="p" variant="large" sx={{ my: 3, mt: 5 }}>
+        <Text as="p" variant="large" sx={{ my: 3, mt: [6, 5] }}>
           Stability Pool
         </Text>
         <StakingCardV1

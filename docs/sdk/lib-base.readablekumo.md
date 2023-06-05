@@ -35,6 +35,7 @@ Implemented by [EthersKumo](./lib-ethers.etherskumo.md)<!-- -->.
 |  [getRemainingLiquidityMiningKUMOReward()](./lib-base.readablekumo.getremainingliquidityminingkumoreward.md) | Get the remaining KUMO that will be collectively rewarded to liquidity miners. |
 |  [getRemainingStabilityPoolKUMOReward()](./lib-base.readablekumo.getremainingstabilitypoolkumoreward.md) | Get the remaining KUMO that will be collectively rewarded to stability depositors. |
 |  [getStabilityDeposit(asset, address)](./lib-base.readablekumo.getstabilitydeposit.md) | Get the current state of a Stability Deposit. |
+|  [getTestTokensTransferState(assetAddress, userAddress)](./lib-base.readablekumo.gettesttokenstransferstate.md) | Check whether an Test Tokens already transfered or not. |
 |  [getTotal(asset)](./lib-base.readablekumo.gettotal.md) | Get the total amount of collateral and debt in the Kumo system. |
 |  [getTotalRedistributed(asset)](./lib-base.readablekumo.gettotalredistributed.md) | Get the total collateral and debt per stake that has been liquidated through redistribution. |
 |  [getTotalStakedKUMO()](./lib-base.readablekumo.gettotalstakedkumo.md) | Get the total amount of KUMO currently staked. |

@@ -18,11 +18,11 @@ export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
       <Heading
         as="h2"
       >
-        {vault?.asset?.toUpperCase()} Stability Pool Staking
+        {vault?.asset?.toUpperCase()} Stability Pool Staking <Text variant="assetName">({vault.assetName})</Text>
       </Heading>
 
       <Box sx={{ p: 4 }}>
-        <Flex sx={{ justifyContent: "space-between", alignItems: "center", mt: 3 }}>
+        <Flex sx={{ justifyContent: "space-between", alignItems: "center", mt: 3, flexWrap: 'wrap' }}>
           <Text as="p" variant="small">
             APR
           </Text>
@@ -30,7 +30,7 @@ export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
             Total KUSD In Pool
           </Text>
         </Flex>
-        <Flex sx={{ justifyContent: "space-between", mt: 2 }}>
+        <Flex sx={{ justifyContent: "space-between", mt: 2, flexWrap: 'wrap' }}>
           <Text as="p" variant="large">
             18%
           </Text>
@@ -39,7 +39,7 @@ export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
           </Text>
         </Flex>
         <Divider color="muted" />
-        <Flex sx={{ justifyContent: "space-between", mt: 4 }}>
+        <Flex sx={{ justifyContent: "space-between", mt: 4, flexWrap: 'wrap' }}>
           <Text as="p" variant="normalBold">
             Liquidation Gain APR
           </Text>
@@ -47,7 +47,7 @@ export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
             10%
           </Text>
         </Flex>
-        <Flex sx={{ justifyContent: "space-between", mt: 2, mb: 4 }}>
+        <Flex sx={{ justifyContent: "space-between", mt: 2, mb: 4, flexWrap: 'wrap' }}>
           <Text as="p" variant="normalBold">
             KUMO APR
           </Text>
@@ -56,7 +56,7 @@ export const StakingTypeCard: React.FC<StakingTypeCardProps> = ({
           </Text>
         </Flex>
         <Divider color="muted" />
-        <Flex sx={{ justifyContent: "space-between", mt: 2 }}>
+        <Flex sx={{ justifyContent: "space-between", mt: 2, flexWrap: 'wrap' }}>
           <Text as="p" variant="normalBold">
             YOUR STAKED KUSD
           </Text>

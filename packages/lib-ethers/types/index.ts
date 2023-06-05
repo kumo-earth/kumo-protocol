@@ -1200,3 +1200,46 @@ export interface ERC20Test
   extractEvents(logs: Log[], name: "Approval"): _TypedLogDescription<{ owner: string; spender: string; value: BigNumber }>[];
   extractEvents(logs: Log[], name: "Transfer"): _TypedLogDescription<{ from: string; to: string; value: BigNumber }>[];
 }
+
+interface KumoFaucetCalls {
+  allowance(owner: string, spender: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  balanceOf(account: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  decimals(_overrides?: CallOverrides): Promise<number>;
+  getBalance(_tokenAddress: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  getTestTokensTransferState(_tokenAddress: string, _userAddress: string, _overrides?: CallOverrides): Promise<boolean>;
+  name(_overrides?: CallOverrides): Promise<string>;
+  owner(_overrides?: CallOverrides): Promise<string>;
+  symbol(_overrides?: CallOverrides): Promise<string>;
+  totalSupply(_overrides?: CallOverrides): Promise<BigNumber>;
+  withdrawalAmount(_overrides?: CallOverrides): Promise<BigNumber>;
+}
+
+interface KumoFaucetTransactions {
+  approve(spender: string, amount: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  decreaseAllowance(spender: string, subtractedValue: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  increaseAllowance(spender: string, addedValue: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  renounceOwnership(_overrides?: Overrides): Promise<void>;
+  requestTokens(_tokenAddress: string, _overrides?: Overrides): Promise<boolean>;
+  setWithdrawalAmount(amount: BigNumberish, _overrides?: Overrides): Promise<void>;
+  transfer(to: string, amount: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  transferFrom(from: string, to: string, amount: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  transferOwnership(newOwner: string, _overrides?: Overrides): Promise<void>;
+  transferTestTokens(_tokenAddress: string, to: string, amount: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  withdraw(_tokenAddress: string, _overrides?: Overrides): Promise<void>;
+}
+
+export interface KumoFaucet
+  extends _TypedKumoContract<KumoFaucetCalls, KumoFaucetTransactions> {
+  readonly filters: {
+    Approval(owner?: string | null, spender?: string | null, value?: null): EventFilter;
+    Deposit(from?: string | null, amount?: BigNumberish | null): EventFilter;
+    OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
+    Transfer(from?: string | null, to?: string | null, value?: null): EventFilter;
+    Withdrawal(to?: string | null, amount?: BigNumberish | null): EventFilter;
+  };
+  extractEvents(logs: Log[], name: "Approval"): _TypedLogDescription<{ owner: string; spender: string; value: BigNumber }>[];
+  extractEvents(logs: Log[], name: "Deposit"): _TypedLogDescription<{ from: string; amount: BigNumber }>[];
+  extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
+  extractEvents(logs: Log[], name: "Transfer"): _TypedLogDescription<{ from: string; to: string; value: BigNumber }>[];
+  extractEvents(logs: Log[], name: "Withdrawal"): _TypedLogDescription<{ to: string; amount: BigNumber }>[];
+}

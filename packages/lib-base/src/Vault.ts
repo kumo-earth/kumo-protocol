@@ -32,6 +32,7 @@ export class Vault {
   readonly borrowingRate: Decimal;
   readonly redemptionRate: Decimal;
   readonly haveUndercollateralizedTroves: boolean;
+  readonly testTokensTransfered : boolean;
 
   constructor() {
     this.asset = "";
@@ -62,5 +63,6 @@ export class Vault {
     this.borrowingRate = Decimal.ZERO;
     this.redemptionRate = Decimal.ZERO;
     this.haveUndercollateralizedTroves = false;
+    this.testTokensTransfered = false;
   }
 }

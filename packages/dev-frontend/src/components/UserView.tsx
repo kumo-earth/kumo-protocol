@@ -8,7 +8,7 @@ const UserView = () => {
     .split(" ")
     .map(param => {
       const prm = param.toLocaleLowerCase();
-      if (prm === "ctx" || prm === "cty") {
+      if (prm === "nbc" || prm === "csc") {
         return _.toUpper(prm);
       } else {
         return _.startCase(prm);

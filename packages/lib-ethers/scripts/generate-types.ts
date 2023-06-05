@@ -28,6 +28,7 @@ import TroveManagerDiamond from "../../contracts/artifacts/contracts/TroveManage
 import Unipool from "../../contracts/artifacts/contracts/LPRewards/Unipool.sol/Unipool.json";
 import KumoParameters from "../../contracts/artifacts/contracts/KumoParameters.sol/KumoParameters.json";
 import ERC20Test from "../../contracts/artifacts/contracts/TestContracts/ERC20Test.sol/ERC20Test.json";
+import KumoFaucet from "../../contracts/artifacts/contracts/KumoFaucet.sol/KumoFaucet.json";
 
 
 const getTupleType = (components: ParamType[], flexible: boolean) => {
@@ -173,7 +174,8 @@ const contractArtifacts = [
   TroveManagerDiamond,
   Unipool,
   KumoParameters,
-  ERC20Test
+  ERC20Test,
+  KumoFaucet
 ];
 
 const contracts = contractArtifacts.map(({ contractName, abi }) => ({

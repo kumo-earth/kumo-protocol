@@ -228,6 +228,12 @@ const theme: Theme = {
     xlarge: {
       fontSize: 10,
       fontWeight: "bold"
+    },
+    assetName: {
+      fontSize: "12px", 
+      paddingLeft: "3px", 
+      fontWeight: 900, 
+      marginTop: "5px"
     }
   },
 
@@ -315,6 +321,7 @@ const theme: Theme = {
       borderColor: "muted",
       background: "linear-gradient(128.29deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 127.78%)",
       "> h2": {
+        fontSize: ['1.1250em', '1.5em'],
         display: "flex",
         alignItems: "center",
         height: "60px",
@@ -393,8 +400,12 @@ const theme: Theme = {
       border: "none",
       display: "flex",
       flexDirection: "column",
-
       borderRadius: "50px",
+      "> h2": {
+        variant: "cards.base.> h2",
+        minHeight: "60px",
+        height: "max-content"
+      },
       ":hover": {
         ...cardHoverEffects
       }
@@ -405,6 +416,14 @@ const theme: Theme = {
       height: '90vh',
       width: '90vw',
       p: 4,
+      zIndex: 99,
+    },
+    walletInstruction : {
+      position: "fixed",
+      zIndex: 9999,
+      height: "100%",
+      width: "100%",
+      background: "white"
     },
     tooltip: {
       padding: 2,
@@ -452,11 +471,11 @@ const theme: Theme = {
       p: 1,
       border: "none",
       borderRadius: '72px',
-      minWidth: 90,
+      minWidth: [60, 90],
       maxWidth: "max-content",
       bg: "primary",
       borderColor: "primary",
-      fontSize: 2,
+      fontSize: [0, 2],
       color: 'textWhite',
       fontFamily: 'Quicksand',
       ":focus": {
@@ -570,6 +589,7 @@ const theme: Theme = {
       width: "100vw",
       height: "100vh",
       bg: 'white',
+      overflow: "auto",
       display: ["block", "none"],
     },
 
@@ -584,8 +604,10 @@ const theme: Theme = {
 
       display: ["flex", "none"],
       justifyContent: 'center',
-      alignItems: 'center'
-
+      alignItems: 'center',
+      "svg" : {
+        width: "100% !important"
+      }
     },
 
     infoMessage: {
@@ -625,7 +647,7 @@ const theme: Theme = {
       pl: 4,
       m: 0,
       borderColor: "muted",
-      overflow: 'scroll'
+      // overflow: 'scroll'
       // ...headerGradient
     },
 
@@ -639,7 +661,8 @@ const theme: Theme = {
       display: ["none", "flex"],
       height: 'max-content',
       px: 5,
-      pb: 4
+      pb: 4,
+      flexWrap: "wrap"
       // height: "170px"
     },
 

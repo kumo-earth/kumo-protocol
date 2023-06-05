@@ -1,6 +1,6 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { Card, Heading, Box } from "theme-ui";
+import { Card, Heading, Box, Text } from "theme-ui";
 import { Vault } from "@kumodao/lib-base";
 import { DisabledEditableRow } from "./Editor";
 import { COIN } from "../../strings";
@@ -17,8 +17,8 @@ export const PortfolioTrove: React.FC<{ vault: Vault }> = ({ vault = new Vault()
   // console.log("READONLY TROVE", trove.collateral.prettify(4));
   return (
     <Card variant="portfolioCard" onClick={() => history.push(`/dashboard/${vault?.asset}`)}>
-      <Heading as="h2">{vault?.asset.toUpperCase()} Vault</Heading>
-      <Box sx={{ p: [2, 3] }}>
+      <Heading as="h2">{vault?.asset.toUpperCase()} Vault <Text variant="assetName">({vault.assetName})</Text></Heading>
+      <Box sx={{ py: 4, px: 5 }}>
         <Box>
           <DisabledEditableRow
             label="Collateral"

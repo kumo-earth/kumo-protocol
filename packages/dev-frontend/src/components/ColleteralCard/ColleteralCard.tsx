@@ -7,6 +7,7 @@ import { InfoIcon } from "../InfoIcon";
 
 type CollateralCardProps = {
   collateralType?: string;
+  vaultName: string;
   totalCollateralRatioPct: string;
   total: Trove;
   kusdInStabilityPool: Decimal;
@@ -16,6 +17,7 @@ type CollateralCardProps = {
 
 export const CollateralCard: React.FC<CollateralCardProps> = ({
   collateralType,
+  vaultName,
   totalCollateralRatioPct,
   total,
   kusdInStabilityPool,
@@ -33,8 +35,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
   };
   return (
     <Card variant="collateralCard" sx={{ mb: 5 }} onClick={() => handleClick()}>
-      <Heading as="h2">{collateralType?.toUpperCase()} Vault</Heading>
-
+      <Heading as="h2">{collateralType?.toUpperCase()} Vault <Text variant="assetName">({vaultName})</Text></Heading>
       <Box sx={{ px: 5, mt: 5 }}>
         <Text as="p" variant="normalBold">
           TOTAL COLLATERAL RATIO{" "}
@@ -51,7 +52,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
         <Text as="p" variant="xlarge" sx={{ mt: 1 }}>
           {totalCollateralRatioPct}
         </Text>
-        <Flex sx={{ justifyContent: "space-between", mt: 6 }}>
+        <Flex sx={{ justifyContent: "space-between", mt: 6, flexWrap: 'wrap' }}>
           <Text as="p" variant="normalBold">
             MINTED KUSD
           </Text>
@@ -66,7 +67,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             sx={{ height: "12px", backgroundColor: "#F0CFDC" }}
           ></Progress>
         </Box>
-        <Flex sx={{ justifyContent: "space-between", mb: 3 }}>
+        <Flex sx={{ justifyContent: "space-between", mb: 3, flexWrap: 'wrap' }}>
           <Text as="p" variant="normalBold">
             MINT CAP
           </Text>
@@ -74,7 +75,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             {kusdMintedCap.shorten().toString().toLowerCase()}
           </Text>
         </Flex>
-        <Flex sx={{ justifyContent: "space-between", mb: 1 }}>
+        <Flex sx={{ justifyContent: "space-between", mb: 1, flexWrap: 'wrap' }}>
           <Text as="p" variant="normalBold">
             KUSD in Stability Pool
           </Text>
@@ -82,7 +83,7 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
             {kusdInStabilityPool.prettify(0)}
           </Text>
         </Flex>
-        <Flex sx={{ justifyContent: "space-between", mb: 4 }}>
+        <Flex sx={{ justifyContent: "space-between", mb: 4, flexWrap: 'wrap' }}>
           <Text as="p" variant="normalBold">
             Borrowing Rate
           </Text>

@@ -40,6 +40,7 @@ export declare class Vault
 |  [price](./lib-base.vault.price.md) |  | [Decimal](./lib-base.decimal.md) |  |
 |  [redemptionRate](./lib-base.vault.redemptionrate.md) |  | [Decimal](./lib-base.decimal.md) |  |
 |  [stabilityDeposit](./lib-base.vault.stabilitydeposit.md) |  | [StabilityDeposit](./lib-base.stabilitydeposit.md) |  |
+|  [testTokensTransfered](./lib-base.vault.testtokenstransfered.md) |  | boolean |  |
 |  [total](./lib-base.vault.total.md) |  | [Trove](./lib-base.trove.md) |  |
 |  [totalRedistributed](./lib-base.vault.totalredistributed.md) |  | [Trove](./lib-base.trove.md) |  |
 |  [trove](./lib-base.vault.trove.md) |  | [UserTrove](./lib-base.usertrove.md) |  |

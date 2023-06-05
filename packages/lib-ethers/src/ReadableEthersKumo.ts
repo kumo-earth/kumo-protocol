@@ -539,6 +539,18 @@ export class ReadableEthersKumo implements ReadableKumo {
       ? { status: "registered", kickbackRate: decimalify(kickbackRate) }
       : { status: "unregistered" };
   }
+
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTestTokensTransferState} */
+  async getTestTokensTransferState(
+    assetAddress: string,
+    userAddress: string,
+    overrides?: EthersCallOverrides
+  ): Promise<boolean> {
+    userAddress ??= _requireAddress(this.connection);
+    const { kumoFaucet } = _getContracts(this.connection);
+
+    return kumoFaucet.getTestTokensTransferState(assetAddress, userAddress, { ...overrides })
+  }
 }
 
 type Resolved<T> = T extends Promise<infer U> ? U : T;
@@ -805,6 +817,17 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
     return this._frontendHit(address, overrides)
       ? this.store.state.frontend
       : this._readable.getFrontendStatus(asset, address, overrides);
+  }
+
+  async getTestTokensTransferState(
+    assetAddress: string,
+    userAddress: string,
+    overrides?: EthersCallOverrides
+  ): Promise<boolean> {
+    const vault = this.store.state.vaults.find(vault => vault.assetAddress === assetAddress);
+    return (this._blockHit(overrides) && vault)
+      ? vault.testTokensTransfered
+      : this._readable.getTestTokensTransferState(assetAddress, userAddress, overrides);
   }
 
   getTroves(

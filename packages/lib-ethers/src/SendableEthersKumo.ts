@@ -192,6 +192,24 @@ export class SendableEthersKumo
     return this._populate.sendKUSD(toAddress, amount, overrides).then(sendTransaction);
   }
 
+  /** {@inheritDoc @kumodao/lib-base#SendableKumo.sendKUSD} */
+  requestTestToken(
+    tokenAddress: string,
+    overrides?: EthersTransactionOverrides
+  ): Promise<SentEthersKumoTransaction<void>> {
+    return this._populate.requestTestToken(tokenAddress, overrides).then(sendTransaction);
+  }
+
+  /** {@inheritDoc @kumodao/lib-base#SendableKumo.sendKUSD} */
+  transferTestTokens(
+    tokenAddress: string,
+    toAddress: string,
+    amount: Decimalish,
+    overrides?: EthersTransactionOverrides
+  ): Promise<SentEthersKumoTransaction<void>> {
+    return this._populate.transferTestTokens(tokenAddress, toAddress, amount, overrides).then(sendTransaction);
+  }
+
   /** {@inheritDoc @kumodao/lib-base#SendableKumo.sendKUMO} */
   sendKUMO(
     toAddress: string,

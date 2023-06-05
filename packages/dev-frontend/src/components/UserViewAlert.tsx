@@ -10,7 +10,8 @@ export const UserViewAlert: React.FC<UserViewAlertProps> = ({ onClose }) => {
     <Alert
       sx={{
         position: "absolute",
-        width: "35%",
+        width: ["60%", "35%"],
+        minWidth: "230px",
         top: 0,
         left: 0,
         right: 0,

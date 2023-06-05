@@ -8,7 +8,7 @@ export const DashboadContent: React.FC = ({ children }) => {
         width: "100%",
         display: "grid",
         gridGap: 3,
-        gridTemplateColumns: `repeat(auto-fill, minmax(400px, 1fr))`,
+        gridTemplateColumns: `repeat(auto-fit, minmax(250px, 1fr))`,
         mt: 5,
         px: 5
       }}
