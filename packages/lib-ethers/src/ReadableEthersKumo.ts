@@ -471,8 +471,8 @@ export class ReadableEthersKumo implements ReadableKumo {
     const { troveManager } = _getContracts(this.connection);
 
     const [lastFeeOperationTime, baseRateWithoutDecay] = await Promise.all([
-      troveManager.lastFeeOperationTime(asset, { ...overrides }),
-      troveManager.baseRate(asset, { ...overrides }).then(decimalify)
+      troveManager.lastFeeOperationTime({ ...overrides }),
+      troveManager.baseRate({ ...overrides }).then(decimalify)
     ]);
 
     return (blockTimestamp, recoveryMode) =>

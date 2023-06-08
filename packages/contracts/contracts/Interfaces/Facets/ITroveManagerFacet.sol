@@ -68,7 +68,7 @@ interface ITroveManagerFacet {
         uint256 _KUSDDebt
     ) external view returns (uint256);
 
-    function decayBaseRateFromBorrowing(address _asset) external;
+    function decayBaseRateFromBorrowing() external;
 
     function getTroveStatus(address _asset, address _borrower) external view returns (uint256);
 
@@ -132,9 +132,9 @@ interface ITroveManagerFacet {
 
     function BETA() external view returns (uint256);
 
-    function baseRate(address _asset) external view returns (uint256);
+    function baseRate() external view returns (uint256);
 
-    function lastFeeOperationTime(address _asset) external view returns (uint256);
+    function lastFeeOperationTime() external view returns (uint256);
 
     function Troves(address _borrower, address _asset) external view returns (Trove memory);
 

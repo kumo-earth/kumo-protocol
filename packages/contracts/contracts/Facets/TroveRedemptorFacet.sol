@@ -1082,7 +1082,6 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         // Decay the baseRate due to time passed, and then increase it according to the size of this redemption.
         // Use the saved total KUSD supply value, from before it was reduced by the redemption.
         _updateBaseRateFromRedemption(
-            _asset,
             totals.totalAssetDrawn,
             totals.price,
             totals.totalKUSDSupplyAtStart
@@ -1238,12 +1237,11 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
      * 2) increases the baseRate based on the amount redeemed, as a proportion of total supply
      */
     function _updateBaseRateFromRedemption(
-        address _asset,
         uint256 _amountDrawn,
         uint256 _price,
         uint256 _totalKUSDSupply
     ) internal returns (uint256) {
-        uint256 decayedBaseRate = LibTroveManager._calcDecayedBaseRate(_asset);
+        uint256 decayedBaseRate = LibTroveManager._calcDecayedBaseRate();
 
         /* Convert the drawn Asset back to KUSD at face value rate (1 KUSD:1 USD), in order to get
          * the fraction of total supply that was redeemed at face value. */
@@ -1255,10 +1253,10 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         assert(newBaseRate > 0); // Base rate is always non-zero after redemption
 
         // Update the baseRate state variable
-        s.baseRate[_asset] = newBaseRate;
-        emit LibTroveManager.BaseRateUpdated(_asset, newBaseRate);
+        s.baseRate = newBaseRate;
+        emit LibTroveManager.BaseRateUpdated(newBaseRate);
 
-        LibTroveManager._updateLastFeeOpTime(_asset);
+        LibTroveManager._updateLastFeeOpTime();
 
         return newBaseRate;
     }

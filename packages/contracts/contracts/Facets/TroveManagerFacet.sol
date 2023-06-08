@@ -51,12 +51,12 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         return LibTroveManager.BETA;
     }
 
-    function baseRate(address _asset) external view returns (uint256) {
-        return s.baseRate[_asset];
+    function baseRate() external view returns (uint256) {
+        return s.baseRate;
     }
 
-    function lastFeeOperationTime(address _asset) external view returns (uint256) {
-        return s.lastFeeOperationTime[_asset];
+    function lastFeeOperationTime() external view returns (uint256) {
+        return s.lastFeeOperationTime;
     }
 
     function Troves(address _borrower, address _asset) external view returns (Trove memory) {
@@ -258,7 +258,7 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
     // --- Redemption fee functions ---
 
     function getRedemptionRateWithDecay(address _asset) public view override returns (uint256) {
-        return LibTroveManager._calcRedemptionRate(_asset, _calcDecayedBaseRate(_asset));
+        return LibTroveManager._calcRedemptionRate(_asset, LibTroveManager._calcDecayedBaseRate());
     }
 
     function getRedemptionRate(address _asset) external view override returns (uint256) {
@@ -279,11 +279,11 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
     // --- Borrowing fee functions ---
 
     function getBorrowingRate(address _asset) public view override returns (uint256) {
-        return _calcBorrowingRate(_asset, s.baseRate[_asset]);
+        return _calcBorrowingRate(_asset, s.baseRate);
     }
 
     function getBorrowingRateWithDecay(address _asset) public view returns (uint256) {
-        return _calcBorrowingRate(_asset, _calcDecayedBaseRate(_asset));
+        return _calcBorrowingRate(_asset, LibTroveManager._calcDecayedBaseRate());
     }
 
     function _calcBorrowingRate(address _asset, uint256 _baseRate) internal view returns (uint256) {
@@ -316,62 +316,16 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
     }
 
     // Updates the baseRate state variable based on time elapsed since the last redemption or KUSD borrowing operation.
-    function decayBaseRateFromBorrowing(address _asset) external override {
+    function decayBaseRateFromBorrowing() external override {
         _requireCallerIsBorrowerOperations();
 
-        uint256 decayedBaseRate = _calcDecayedBaseRate(_asset);
+        uint256 decayedBaseRate = LibTroveManager._calcDecayedBaseRate();
         assert(decayedBaseRate <= KumoMath.DECIMAL_PRECISION); // The baseRate can decay to 0
 
-        s.baseRate[_asset] = decayedBaseRate;
-        emit LibTroveManager.BaseRateUpdated(_asset, decayedBaseRate);
+        s.baseRate = decayedBaseRate;
+        emit LibTroveManager.BaseRateUpdated(decayedBaseRate);
 
-        _updateLastFeeOpTime(_asset);
-    }
-
-    // --- Internal fee functions ---
-
-    // Update the last fee operation time only if time passed >= decay interval. This prevents base rate griefing.
-    function _updateLastFeeOpTime(address _asset) internal {
-        uint256 timePassed = block.timestamp - s.lastFeeOperationTime[_asset];
-
-        if (timePassed >= LibTroveManager.SECONDS_IN_ONE_MINUTE) {
-            s.lastFeeOperationTime[_asset] = block.timestamp;
-            emit LibTroveManager.LastFeeOpTimeUpdated(_asset, block.timestamp);
-        }
-    }
-
-    function _calcDecayedBaseRate(address _asset) internal view returns (uint256) {
-        uint256 minutesPassed = _minutesPassedSinceLastFeeOp(_asset);
-        uint256 decayFactor = KumoMath._decPow(LibTroveManager.MINUTE_DECAY_FACTOR, minutesPassed);
-
-        return (s.baseRate[_asset] * decayFactor) / KumoMath.DECIMAL_PRECISION;
-    }
-
-    function _minutesPassedSinceLastFeeOp(address _asset) internal view returns (uint256) {
-        return
-            (block.timestamp - s.lastFeeOperationTime[_asset]) /
-            LibTroveManager.SECONDS_IN_ONE_MINUTE;
-    }
-
-    // --- 'require' wrapper functions ---
-
-    function _requireAmountGreaterThanZero(uint256 _amount) internal pure {
-        require(_amount > 0, "TroveManager: Amount must be greater than zero");
-    }
-
-    function _requireTCRoverMCR(address _asset, uint256 _price) internal view {
-        require(
-            LibKumoBase._getTCR(_asset, _price) >= s.kumoParams.MCR(_asset),
-            "TroveManager: Cannot redeem when TCR < MCR"
-        );
-    }
-
-    function _requireValidMaxFeePercentage(address _asset, uint256 _maxFeePercentage) internal view {
-        require(
-            _maxFeePercentage >= s.kumoParams.REDEMPTION_FEE_FLOOR(_asset) &&
-                _maxFeePercentage <= KumoMath.DECIMAL_PRECISION,
-            "Max fee percentage must be between 0.5% and 100%"
-        );
+        LibTroveManager._updateLastFeeOpTime();
     }
 
     // --- Getters ---

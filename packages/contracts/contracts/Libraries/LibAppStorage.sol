@@ -65,12 +65,11 @@ struct AppStorage {
     IKumoParameters kumoParams;
     IDefaultPool defaultPool;
     IActivePool activePool;
-
     // --- Data structures ---
-    
-    mapping(address => uint256) baseRate;
+
+    uint256 baseRate;
     // The timestamp of the latest fee operation (redemption or new KUSD issuance)
-    mapping(address => uint256) lastFeeOperationTime;
+    uint256 lastFeeOperationTime;
     mapping(address => mapping(address => Trove)) Troves;
     mapping(address => uint256) totalStakes;
     // Snapshot of the value of totalStakes, taken immediately after the latest liquidation

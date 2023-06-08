@@ -394,7 +394,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         _requireNonZeroAdjustment(_collWithdrawal, _KUSDChange, _assetSent);
         _requireTroveisActive(vars.asset, contractsCache.troveManager, _borrower);
 
-        // Confirm the operation is either a borrower adjusting their own trove, or a pure ETH transfer from the Stability Pool to a trove
+        // Confirm the operation is either a borrower adjusting their own trove, or a pure Asset transfer from the Stability Pool to a trove
         assert(
             msg.sender == _borrower ||
                 (stabilityPoolFactory.isRegisteredStabilityPool(msg.sender) &&
@@ -567,7 +567,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         uint256 _KUSDAmount,
         uint256 _maxFeePercentage
     ) internal returns (uint256) {
-        _troveManager.decayBaseRateFromBorrowing(_asset); // decay the baseRate state variable
+        _troveManager.decayBaseRateFromBorrowing(); // decay the baseRate state variable
         uint256 KUSDFee = _troveManager.getBorrowingFee(_asset, _KUSDAmount);
 
         _requireUserAcceptsFee(KUSDFee, _KUSDAmount, _maxFeePercentage);
