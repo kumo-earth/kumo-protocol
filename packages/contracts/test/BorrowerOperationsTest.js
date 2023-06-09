@@ -938,10 +938,10 @@ contract("BorrowerOperations", async accounts => {
       const A_KUSDBal = await kusdToken.balanceOf(A);
 
       // Artificially set base rate to 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
+      await troveManager.setBaseRate(dec(5, 16));
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // 2 hours pass
@@ -953,7 +953,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check baseRate has decreased
-      const baseRate_2 = await troveManager.baseRate(assetAddress1);
+      const baseRate_2 = await troveManager.baseRate();
       assert.isTrue(baseRate_2.lt(baseRate_1));
 
       // 1 hour passes
@@ -964,7 +964,7 @@ contract("BorrowerOperations", async accounts => {
         from: E
       });
 
-      const baseRate_3 = await troveManager.baseRate(assetAddress1);
+      const baseRate_3 = await troveManager.baseRate();
       assert.isTrue(baseRate_3.lt(baseRate_2));
     });
 
@@ -1083,10 +1083,10 @@ contract("BorrowerOperations", async accounts => {
       const totalSupply = await kusdToken.totalSupply();
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
-      let baseRate = await troveManager.baseRate(assetAddress1); // expect 5% base rate
+      let baseRate = await troveManager.baseRate(); // expect 5% base rate
       assert.equal(baseRate, dec(5, 16));
 
       // 100%: 1e18,  10%: 1e17,  1%: 1e16,  0.1%: 1e15
@@ -1105,7 +1105,7 @@ contract("BorrowerOperations", async accounts => {
         "Fee exceeded provided maximum"
       );
 
-      baseRate = await troveManager.baseRate(assetAddress1); // expect 5% base rate
+      baseRate = await troveManager.baseRate(); // expect 5% base rate
       assert.equal(baseRate, dec(5, 16));
       // Attempt with maxFee 1%
       await assertRevert(
@@ -1113,7 +1113,7 @@ contract("BorrowerOperations", async accounts => {
         "Fee exceeded provided maximum"
       );
 
-      baseRate = await troveManager.baseRate(assetAddress1); // expect 5% base rate
+      baseRate = await troveManager.baseRate(); // expect 5% base rate
       assert.equal(baseRate, dec(5, 16));
       // Attempt with maxFee 3.754%
       await assertRevert(
@@ -1121,7 +1121,7 @@ contract("BorrowerOperations", async accounts => {
         "Fee exceeded provided maximum"
       );
 
-      baseRate = await troveManager.baseRate(assetAddress1); // expect 5% base rate
+      baseRate = await troveManager.baseRate(); // expect 5% base rate
       assert.equal(baseRate, dec(5, 16));
       // Attempt with maxFee 0.5%%
       await assertRevert(
@@ -1165,10 +1165,10 @@ contract("BorrowerOperations", async accounts => {
       const totalSupply = await kusdToken.totalSupply();
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
-      let baseRate = await troveManager.baseRate(assetAddress1); // expect 5% base rate
+      let baseRate = await troveManager.baseRate(); // expect 5% base rate
       assert.isTrue(baseRate.eq(toBN(dec(5, 16))));
 
       // Attempt with maxFee > 5%
@@ -1183,7 +1183,7 @@ contract("BorrowerOperations", async accounts => {
       );
       assert.isTrue(tx1.receipt.status);
 
-      baseRate = await troveManager.baseRate(assetAddress1); // expect 5% base rate
+      baseRate = await troveManager.baseRate(); // expect 5% base rate
       assert.equal(baseRate, dec(5, 16));
 
       // Attempt with maxFee = 5%
@@ -1197,7 +1197,7 @@ contract("BorrowerOperations", async accounts => {
       );
       assert.isTrue(tx2.receipt.status);
 
-      baseRate = await troveManager.baseRate(assetAddress1); // expect 5% base rate
+      baseRate = await troveManager.baseRate(); // expect 5% base rate
       assert.equal(baseRate, dec(5, 16));
 
       // Attempt with maxFee 10%
@@ -1211,7 +1211,7 @@ contract("BorrowerOperations", async accounts => {
       );
       assert.isTrue(tx3.receipt.status);
 
-      baseRate = await troveManager.baseRate(assetAddress1); // expect 5% base rate
+      baseRate = await troveManager.baseRate(); // expect 5% base rate
       assert.equal(baseRate, dec(5, 16));
 
       // Attempt with maxFee 37.659%
@@ -1276,7 +1276,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check baseRate is zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.equal(baseRate_1, "0");
 
       // 2 hours pass
@@ -1288,7 +1288,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check baseRate is still 0
-      const baseRate_2 = await troveManager.baseRate(assetAddress1);
+      const baseRate_2 = await troveManager.baseRate();
       assert.equal(baseRate_2, "0");
 
       // 1 hour passes
@@ -1299,7 +1299,7 @@ contract("BorrowerOperations", async accounts => {
         from: E
       });
 
-      const baseRate_3 = await troveManager.baseRate(assetAddress1);
+      const baseRate_3 = await troveManager.baseRate();
       assert.equal(baseRate_3, "0");
     });
 
@@ -1330,14 +1330,14 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
-      const lastFeeOpTime_1 = await troveManager.lastFeeOperationTime(assetAddress1);
+      const lastFeeOpTime_1 = await troveManager.lastFeeOperationTime();
 
       // 10 seconds pass
       th.fastForwardTime(10, web3.currentProvider);
@@ -1347,7 +1347,7 @@ contract("BorrowerOperations", async accounts => {
         from: C
       });
 
-      const lastFeeOpTime_2 = await troveManager.lastFeeOperationTime(assetAddress1);
+      const lastFeeOpTime_2 = await troveManager.lastFeeOperationTime();
 
       // Check that the last fee operation time did not update, as borrower D's debt issuance occured
       // since before minimum interval had passed
@@ -1365,7 +1365,7 @@ contract("BorrowerOperations", async accounts => {
         from: C
       });
 
-      const lastFeeOpTime_3 = await troveManager.lastFeeOperationTime(assetAddress1);
+      const lastFeeOpTime_3 = await troveManager.lastFeeOperationTime();
 
       // Check that the last fee operation time DID update, as borrower's debt issuance occured
       // after minimum interval had passed
@@ -1398,11 +1398,11 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // 30 seconds pass
@@ -1422,7 +1422,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check base rate has decreased even though Borrower tried to stop it decaying
-      const baseRate_2 = await troveManager.baseRate(assetAddress1);
+      const baseRate_2 = await troveManager.baseRate();
       assert.isTrue(baseRate_2.lt(baseRate_1));
     });
 
@@ -1467,11 +1467,11 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // 2 hours pass
@@ -1527,11 +1527,11 @@ contract("BorrowerOperations", async accounts => {
         const D_debtBefore = await getTroveEntireDebt(D, assetAddress1);
 
         // Artificially make baseRate 5%
-        await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-        await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+        await troveManager.setBaseRate(dec(5, 16));
+        await troveManager.setLastFeeOpTimeToNow();
 
         // Check baseRate is now non-zero
-        const baseRate_1 = await troveManager.baseRate(assetAddress1);
+        const baseRate_1 = await troveManager.baseRate();
         assert.isTrue(baseRate_1.gt(toBN("0")));
 
         // 2 hours pass
@@ -1603,11 +1603,11 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // 2 hours pass
@@ -1664,11 +1664,11 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // 2 hours pass
@@ -1723,7 +1723,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check baseRate is zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.equal(baseRate_1, "0");
 
       // A artificially receives KUMO, then stakes it
@@ -1779,7 +1779,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check baseRate is zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.equal(baseRate_1, "0");
 
       // 2 hours pass
@@ -2572,11 +2572,11 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // 2 hours pass
@@ -2596,7 +2596,7 @@ contract("BorrowerOperations", async accounts => {
       );
 
       // Check baseRate has decreased
-      const baseRate_2 = await troveManager.baseRate(assetAddress1);
+      const baseRate_2 = await troveManager.baseRate();
       assert.isTrue(baseRate_2.lt(baseRate_1));
 
       // 1 hour passes
@@ -2615,7 +2615,7 @@ contract("BorrowerOperations", async accounts => {
         { from: D }
       );
 
-      const baseRate_3 = await troveManager.baseRate(assetAddress1);
+      const baseRate_3 = await troveManager.baseRate();
       assert.isTrue(baseRate_3.lt(baseRate_2));
     });
 
@@ -2645,8 +2645,8 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // D opens trove
       await openTrove({
@@ -2657,7 +2657,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // 2 hours pass
@@ -2677,7 +2677,7 @@ contract("BorrowerOperations", async accounts => {
       );
 
       // Check baseRate has not decreased
-      const baseRate_2 = await troveManager.baseRate(assetAddress1);
+      const baseRate_2 = await troveManager.baseRate();
       assert.isTrue(baseRate_2.eq(baseRate_1));
     });
 
@@ -2696,7 +2696,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check baseRate is zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.equal(baseRate_1, "0");
 
       // 2 hours pass
@@ -2716,7 +2716,7 @@ contract("BorrowerOperations", async accounts => {
       );
 
       // Check baseRate is still 0
-      const baseRate_2 = await troveManager.baseRate(assetAddress1);
+      const baseRate_2 = await troveManager.baseRate();
       assert.equal(baseRate_2, "0");
 
       // 1 hour passes
@@ -2735,7 +2735,7 @@ contract("BorrowerOperations", async accounts => {
         { from: D }
       );
 
-      const baseRate_3 = await troveManager.baseRate(assetAddress1);
+      const baseRate_3 = await troveManager.baseRate();
       assert.equal(baseRate_3, "0");
     });
 
@@ -2765,14 +2765,14 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
-      const lastFeeOpTime_1 = await troveManager.lastFeeOperationTime(assetAddress1);
+      const lastFeeOpTime_1 = await troveManager.lastFeeOperationTime();
 
       // 10 seconds pass
       th.fastForwardTime(10, web3.currentProvider);
@@ -2782,7 +2782,7 @@ contract("BorrowerOperations", async accounts => {
         from: C
       });
 
-      const lastFeeOpTime_2 = await troveManager.lastFeeOperationTime(assetAddress1);
+      const lastFeeOpTime_2 = await troveManager.lastFeeOperationTime();
 
       // Check that the last fee operation time did not update, as borrower D's debt issuance occured
       // since before minimum interval had passed
@@ -2800,7 +2800,7 @@ contract("BorrowerOperations", async accounts => {
         from: C
       });
 
-      const lastFeeOpTime_3 = await troveManager.lastFeeOperationTime(assetAddress1);
+      const lastFeeOpTime_3 = await troveManager.lastFeeOperationTime();
 
       // Check that the last fee operation time DID update, as borrower's debt issuance occured
       // after minimum interval had passed
@@ -2833,11 +2833,11 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // Borrower C triggers a fee, before decay interval of 1 minute has passed
@@ -2854,7 +2854,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check base rate has decreased even though Borrower tried to stop it decaying
-      const baseRate_2 = await troveManager.baseRate(assetAddress1);
+      const baseRate_2 = await troveManager.baseRate();
       assert.isTrue(baseRate_2.lt(baseRate_1));
     });
 
@@ -2893,11 +2893,11 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // 2 hours pass
@@ -2956,11 +2956,11 @@ contract("BorrowerOperations", async accounts => {
         const D_debtBefore = await getTroveEntireDebt(D, assetAddress1);
 
         // Artificially make baseRate 5%
-        await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-        await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+        await troveManager.setBaseRate(dec(5, 16));
+        await troveManager.setLastFeeOpTimeToNow();
 
         // Check baseRate is now non-zero
-        const baseRate_1 = await troveManager.baseRate(assetAddress1);
+        const baseRate_1 = await troveManager.baseRate();
         assert.isTrue(baseRate_1.gt(toBN("0")));
 
         // 2 hours pass
@@ -3032,11 +3032,11 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // 2 hours pass
@@ -3103,11 +3103,11 @@ contract("BorrowerOperations", async accounts => {
       const D_KUSDBalanceBefore = await kusdToken.balanceOf(D);
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // 2 hours pass
@@ -3168,7 +3168,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check baseRate is zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.equal(baseRate_1, "0");
 
       // 2 hours pass
@@ -3229,7 +3229,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check baseRate is zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.equal(baseRate_1, "0");
 
       // 2 hours pass
@@ -3295,7 +3295,7 @@ contract("BorrowerOperations", async accounts => {
 
       const D_KUSDBalBefore = await kusdToken.balanceOf(D);
       // Check baseRate is zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.equal(baseRate_1, "0");
 
       // 2 hours pass
@@ -5458,13 +5458,13 @@ contract("BorrowerOperations", async accounts => {
         assert.isTrue(B_Coll.eq(B_emittedColl));
         assert.isTrue(C_Coll.eq(C_emittedColl));
 
-        const baseRateBefore = await troveManager.baseRate(assetAddress1);
+        const baseRateBefore = await troveManager.baseRate();
 
         // Artificially make baseRate 5%
-        await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-        await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+        await troveManager.setBaseRate(dec(5, 16));
+        await troveManager.setLastFeeOpTimeToNow();
 
-        assert.isTrue((await troveManager.baseRate(assetAddress1)).gt(baseRateBefore));
+        assert.isTrue((await troveManager.baseRate()).gt(baseRateBefore));
 
         const txD = (
           await openTrove({
@@ -5587,11 +5587,11 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // 2 hours pass
@@ -5606,7 +5606,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check baseRate has decreased
-      const baseRate_2 = await troveManager.baseRate(assetAddress1);
+      const baseRate_2 = await troveManager.baseRate();
       assert.isTrue(baseRate_2.lt(baseRate_1));
 
       // 1 hour passes
@@ -5620,7 +5620,7 @@ contract("BorrowerOperations", async accounts => {
         extraParams: { from: E }
       });
 
-      const baseRate_3 = await troveManager.baseRate(assetAddress1);
+      const baseRate_3 = await troveManager.baseRate();
       assert.isTrue(baseRate_3.lt(baseRate_2));
     });
 
@@ -5651,7 +5651,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check baseRate is zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.equal(baseRate_1, "0");
 
       // 2 hours pass
@@ -5666,7 +5666,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check baseRate is still 0
-      const baseRate_2 = await troveManager.baseRate(assetAddress1);
+      const baseRate_2 = await troveManager.baseRate();
       assert.equal(baseRate_2, "0");
 
       // 1 hour passes
@@ -5680,7 +5680,7 @@ contract("BorrowerOperations", async accounts => {
         extraParams: { from: E }
       });
 
-      const baseRate_3 = await troveManager.baseRate(assetAddress1);
+      const baseRate_3 = await troveManager.baseRate();
       assert.equal(baseRate_3, "0");
     });
 
@@ -5711,14 +5711,14 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
-      const lastFeeOpTime_1 = await troveManager.lastFeeOperationTime(assetAddress1);
+      const lastFeeOpTime_1 = await troveManager.lastFeeOperationTime();
 
       // Borrower D triggers a fee
       await openTrove({
@@ -5728,7 +5728,7 @@ contract("BorrowerOperations", async accounts => {
         extraParams: { from: D }
       });
 
-      const lastFeeOpTime_2 = await troveManager.lastFeeOperationTime(assetAddress1);
+      const lastFeeOpTime_2 = await troveManager.lastFeeOperationTime();
 
       // Check that the last fee operation time did not update, as borrower D's debt issuance occured
       // since before minimum interval had passed
@@ -5749,7 +5749,7 @@ contract("BorrowerOperations", async accounts => {
         extraParams: { from: E }
       });
 
-      const lastFeeOpTime_3 = await troveManager.lastFeeOperationTime(assetAddress1);
+      const lastFeeOpTime_3 = await troveManager.lastFeeOperationTime();
 
       // Check that the last fee operation time DID update, as borrower's debt issuance occured
       // after minimum interval had passed
@@ -5867,8 +5867,8 @@ contract("BorrowerOperations", async accounts => {
       const totalSupply = await kusdToken.totalSupply();
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       //       actual fee percentage: 0.005000000186264514
       // user's max fee percentage:  0.0049999999999999999
@@ -5939,8 +5939,8 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       let borrowingRate = await troveManager.getBorrowingRate(assetAddress1); // expect min(0.5 + 5%, 5%) rate
       assert.equal(borrowingRate, dec(5, 16));
@@ -6043,11 +6043,11 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // 59 minutes pass
@@ -6074,7 +6074,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check base rate has decreased even though Borrower tried to stop it decaying
-      const baseRate_2 = await troveManager.baseRate(assetAddress1);
+      const baseRate_2 = await troveManager.baseRate();
       assert.isTrue(baseRate_2.lt(baseRate_1));
     });
 
@@ -6114,11 +6114,11 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // 2 hours pass
@@ -6171,11 +6171,11 @@ contract("BorrowerOperations", async accounts => {
         });
 
         // Artificially make baseRate 5%
-        await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-        await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+        await troveManager.setBaseRate(dec(5, 16));
+        await troveManager.setLastFeeOpTimeToNow();
 
         // Check baseRate is now non-zero
-        const baseRate_1 = await troveManager.baseRate(assetAddress1);
+        const baseRate_1 = await troveManager.baseRate();
         assert.isTrue(baseRate_1.gt(toBN("0")));
 
         // 2 hours pass
@@ -6244,11 +6244,11 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is now non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // 2 hours pass
@@ -6303,11 +6303,11 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Artificially make baseRate 5%
-      await troveManager.setBaseRate(assetAddress1, dec(5, 16));
-      await troveManager.setLastFeeOpTimeToNow(assetAddress1);
+      await troveManager.setBaseRate(dec(5, 16));
+      await troveManager.setLastFeeOpTimeToNow();
 
       // Check baseRate is non-zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.isTrue(baseRate_1.gt(toBN("0")));
 
       // 2 hours pass
@@ -6355,7 +6355,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check baseRate is zero
-      const baseRate_1 = await troveManager.baseRate(assetAddress1);
+      const baseRate_1 = await troveManager.baseRate();
       assert.equal(baseRate_1, "0");
 
       // 2 hours pass

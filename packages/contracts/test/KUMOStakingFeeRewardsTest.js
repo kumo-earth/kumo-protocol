@@ -286,7 +286,7 @@ contract("KUMOStaking revenue share tests", async accounts => {
     assert.isTrue(B_BalAfterRedemption.lt(B_BalBeforeREdemption));
 
     // Check base rate is now non-zero
-    const baseRate = await troveManager.baseRate(assetAddress1);
+    const baseRate = await troveManager.baseRate();
     assert.isTrue(baseRate.gt(toBN("0")));
 
     // D draws debt
@@ -362,7 +362,7 @@ contract("KUMOStaking revenue share tests", async accounts => {
     assert.isTrue(B_BalAfterRedemption.lt(B_BalBeforeREdemption));
 
     // Check base rate is now non-zero
-    const baseRate = await troveManager.baseRate(assetAddress1);
+    const baseRate = await troveManager.baseRate();
     assert.isTrue(baseRate.gt(toBN("0")));
 
     // D draws debt

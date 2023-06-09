@@ -218,7 +218,7 @@ contract("Fee arithmetic tests", async accounts => {
   });
 
   it("minutesPassedSinceLastFeeOp(): returns minutes passed for no time increase", async () => {
-    await troveManagerTester.setLastFeeOpTimeToNow(erc20Asset1.address);
+    await troveManagerTester.setLastFeeOpTimeToNow();
     const minutesPassed = await troveManagerTester.minutesPassedSinceLastFeeOp(erc20Asset1.address);
 
     assert.equal(minutesPassed, "0");
@@ -226,7 +226,7 @@ contract("Fee arithmetic tests", async accounts => {
 
   it("minutesPassedSinceLastFeeOp(): returns minutes passed between time of last fee operation and current block.timestamp, rounded down to nearest minutes", async () => {
     for (testPair of secondsToMinutesRoundedDown) {
-      await troveManagerTester.setLastFeeOpTimeToNow(erc20Asset1.address);
+      await troveManagerTester.setLastFeeOpTimeToNow();
 
       const seconds = testPair[0];
       const expectedHoursPassed = testPair[1];
@@ -243,7 +243,7 @@ contract("Fee arithmetic tests", async accounts => {
 
   it("decayBaseRateFromBorrowing(): returns the initial base rate for no time increase", async () => {
     await troveManagerTester.setBaseRate(erc20Asset1.address, dec(5, 17));
-    await troveManagerTester.setLastFeeOpTimeToNow(erc20Asset1.address);
+    await troveManagerTester.setLastFeeOpTimeToNow();
 
     const baseRateBefore = await troveManagerTester.baseRate(erc20Asset1.address);
     assert.equal(baseRateBefore, dec(5, 17));
@@ -256,7 +256,7 @@ contract("Fee arithmetic tests", async accounts => {
 
   it("decayBaseRateFromBorrowing(): returns the initial base rate for less than one minute passed ", async () => {
     await troveManagerTester.setBaseRate(erc20Asset1.address, dec(5, 17));
-    await troveManagerTester.setLastFeeOpTimeToNow(erc20Asset1.address);
+    await troveManagerTester.setLastFeeOpTimeToNow();
 
     // 1 second
     const baseRateBefore_1 = await troveManagerTester.baseRate(erc20Asset1.address);
@@ -270,7 +270,7 @@ contract("Fee arithmetic tests", async accounts => {
     assert.isTrue(baseRateBefore_1.eq(baseRateAfter_1));
 
     // 17 seconds
-    await troveManagerTester.setLastFeeOpTimeToNow(erc20Asset1.address);
+    await troveManagerTester.setLastFeeOpTimeToNow();
 
     const baseRateBefore_2 = await troveManagerTester.baseRate(erc20Asset1.address);
     await th.fastForwardTime(17, web3.currentProvider);
@@ -281,7 +281,7 @@ contract("Fee arithmetic tests", async accounts => {
     assert.isTrue(baseRateBefore_2.eq(baseRateAfter_2));
 
     // 29 seconds
-    await troveManagerTester.setLastFeeOpTimeToNow(erc20Asset1.address);
+    await troveManagerTester.setLastFeeOpTimeToNow();
 
     const baseRateBefore_3 = await troveManagerTester.baseRate(erc20Asset1.address);
     await th.fastForwardTime(29, web3.currentProvider);
@@ -292,7 +292,7 @@ contract("Fee arithmetic tests", async accounts => {
     assert.isTrue(baseRateBefore_3.eq(baseRateAfter_3));
 
     // 50 seconds
-    await troveManagerTester.setLastFeeOpTimeToNow(erc20Asset1.address);
+    await troveManagerTester.setLastFeeOpTimeToNow();
 
     const baseRateBefore_4 = await troveManagerTester.baseRate(erc20Asset1.address);
     await th.fastForwardTime(50, web3.currentProvider);
@@ -317,7 +317,7 @@ contract("Fee arithmetic tests", async accounts => {
 
       const secondsPassed = decayBaseRateResults.seconds[i];
       const expectedDecayedBaseRate = decayBaseRateResults[startBaseRate][i];
-      await troveManagerTester.setLastFeeOpTimeToNow(erc20Asset1.address);
+      await troveManagerTester.setLastFeeOpTimeToNow();
 
       // Progress time
       await th.fastForwardTime(secondsPassed, web3.currentProvider);
@@ -354,7 +354,7 @@ contract("Fee arithmetic tests", async accounts => {
 
       const secondsPassed = decayBaseRateResults.seconds[i];
       const expectedDecayedBaseRate = decayBaseRateResults["0.1"][i];
-      await troveManagerTester.setLastFeeOpTimeToNow(erc20Asset1.address);
+      await troveManagerTester.setLastFeeOpTimeToNow();
 
       // Progress time
       await th.fastForwardTime(secondsPassed, web3.currentProvider);
@@ -391,7 +391,7 @@ contract("Fee arithmetic tests", async accounts => {
 
       const secondsPassed = decayBaseRateResults.seconds[i];
       const expectedDecayedBaseRate = decayBaseRateResults[startBaseRate][i];
-      await troveManagerTester.setLastFeeOpTimeToNow(erc20Asset1.address);
+      await troveManagerTester.setLastFeeOpTimeToNow();
 
       // Progress time
       await th.fastForwardTime(secondsPassed, web3.currentProvider);
@@ -428,7 +428,7 @@ contract("Fee arithmetic tests", async accounts => {
 
       const secondsPassed = decayBaseRateResults.seconds[i];
       const expectedDecayedBaseRate = decayBaseRateResults[startBaseRate][i];
-      await troveManagerTester.setLastFeeOpTimeToNow(erc20Asset1.address);
+      await troveManagerTester.setLastFeeOpTimeToNow();
 
       // progress time
       await th.fastForwardTime(secondsPassed, web3.currentProvider);

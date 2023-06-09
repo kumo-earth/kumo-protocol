@@ -3693,7 +3693,7 @@ contract("TroveManager", async accounts => {
     await kusdToken.transfer(B, await kusdToken.balanceOf(A), { from: A });
     await kusdToken.transfer(B, await kusdToken.balanceOf(C), { from: C });
 
-    await troveManager.setBaseRate(assetAddress1, 0);
+    await troveManager.setBaseRate(0);
 
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider);
@@ -3751,7 +3751,7 @@ contract("TroveManager", async accounts => {
     await kusdToken.transfer(B, await kusdToken.balanceOf(A), { from: A });
     await kusdToken.transfer(B, await kusdToken.balanceOf(C), { from: C });
 
-    await troveManager.setBaseRate(assetAddress1, 0);
+    await troveManager.setBaseRate(0);
 
     // Skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider);
@@ -4275,7 +4275,7 @@ contract("TroveManager", async accounts => {
     const totalSupply = await kusdToken.totalSupply();
     th.assertIsApproximatelyEqual(totalSupply, expectedTotalSupply);
 
-    await troveManager.setBaseRate(assetAddress1, 0);
+    await troveManager.setBaseRate(0);
 
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider);
@@ -4296,7 +4296,7 @@ contract("TroveManager", async accounts => {
       "Fee exceeded provided maximum"
     );
 
-    await troveManager.setBaseRate(assetAddress1, 0); // artificially zero the baseRate
+    await troveManager.setBaseRate(0); // artificially zero the baseRate
 
     // Max fee is 1%
     await assertRevert(
@@ -4310,7 +4310,7 @@ contract("TroveManager", async accounts => {
       "Fee exceeded provided maximum"
     );
 
-    await troveManager.setBaseRate(assetAddress1, 0);
+    await troveManager.setBaseRate(0);
 
     // Max fee is 3.754%
     await assertRevert(
@@ -4324,7 +4324,7 @@ contract("TroveManager", async accounts => {
       "Fee exceeded provided maximum"
     );
 
-    await troveManager.setBaseRate(assetAddress1, 0);
+    await troveManager.setBaseRate(0);
 
     // Max fee is 0.5%
     await assertRevert(
@@ -4364,7 +4364,7 @@ contract("TroveManager", async accounts => {
     const totalSupply = await kusdToken.totalSupply();
     th.assertIsApproximatelyEqual(totalSupply, expectedTotalSupply);
 
-    await troveManager.setBaseRate(assetAddress1, 0);
+    await troveManager.setBaseRate(0);
 
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider);
@@ -4388,7 +4388,7 @@ contract("TroveManager", async accounts => {
     );
     assert.isTrue(tx1.receipt.status);
 
-    await troveManager.setBaseRate(assetAddress1, 0); // Artificially zero the baseRate
+    await troveManager.setBaseRate(0); // Artificially zero the baseRate
 
     // Attempt with maxFee = 5.5%
     const exactSameFee = await troveManager.getRedemptionFeeWithDecay(assetAddress1, ETHDrawn);
@@ -4401,7 +4401,7 @@ contract("TroveManager", async accounts => {
     );
     assert.isTrue(tx2.receipt.status);
 
-    await troveManager.setBaseRate(assetAddress1, 0);
+    await troveManager.setBaseRate(0);
 
     // Max fee is 10%
     const tx3 = await th.redeemCollateralAndGetTxObject(
@@ -4413,7 +4413,7 @@ contract("TroveManager", async accounts => {
     );
     assert.isTrue(tx3.receipt.status);
 
-    await troveManager.setBaseRate(assetAddress1, 0);
+    await troveManager.setBaseRate(0);
 
     // Max fee is 37.659%
     const tx4 = await th.redeemCollateralAndGetTxObject(
@@ -4425,7 +4425,7 @@ contract("TroveManager", async accounts => {
     );
     assert.isTrue(tx4.receipt.status);
 
-    await troveManager.setBaseRate(assetAddress1, 0);
+    await troveManager.setBaseRate(0);
 
     // Max fee is 100%
     const tx5 = await th.redeemCollateralAndGetTxObject(
@@ -5137,7 +5137,7 @@ contract("TroveManager", async accounts => {
     });
 
     // Check baseRate == 0
-    assert.equal(await troveManager.baseRate(assetAddress1), "0");
+    assert.equal(await troveManager.baseRate(), "0");
 
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider);
@@ -5150,7 +5150,7 @@ contract("TroveManager", async accounts => {
     assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString());
 
     // Check baseRate is now non-zero
-    assert.isTrue((await troveManager.baseRate(assetAddress1)).gt(toBN("0")));
+    assert.isTrue((await troveManager.baseRate()).gt(toBN("0")));
   });
 
   it("redeemCollateral(): a redemption made when base rate is non-zero increases the base rate, for negligible time passed", async () => {
@@ -5181,7 +5181,7 @@ contract("TroveManager", async accounts => {
     });
 
     // Check baseRate == 0
-    assert.equal(await troveManager.baseRate(assetAddress1), "0");
+    assert.equal(await troveManager.baseRate(), "0");
 
     const A_balanceBefore = await kusdToken.balanceOf(A);
     const B_balanceBefore = await kusdToken.balanceOf(B);
@@ -5199,7 +5199,7 @@ contract("TroveManager", async accounts => {
     assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString());
 
     // Check baseRate is now non-zero
-    const baseRate_1 = await troveManager.baseRate(assetAddress1);
+    const baseRate_1 = await troveManager.baseRate();
     assert.isTrue(baseRate_1.gt(toBN("0")));
 
     // B redeems 10 KUSD
@@ -5217,7 +5217,7 @@ contract("TroveManager", async accounts => {
     // Check negligible time difference (< 1 minute) between txs
     assert.isTrue(Number(timeStamp_B) - Number(timeStamp_A) < 60);
 
-    const baseRate_2 = await troveManager.baseRate(assetAddress1);
+    const baseRate_2 = await troveManager.baseRate();
 
     // Check baseRate has again increased
     assert.isTrue(baseRate_2.gt(baseRate_1));
@@ -5257,10 +5257,10 @@ contract("TroveManager", async accounts => {
     assert.equal(A_balanceBefore.sub(await kusdToken.balanceOf(A)), dec(10, 18));
 
     // Check baseRate is now non-zero
-    const baseRate_1 = await troveManager.baseRate(assetAddress1);
+    const baseRate_1 = await troveManager.baseRate();
     assert.isTrue(baseRate_1.gt(toBN("0")));
 
-    const lastFeeOpTime_1 = await troveManager.lastFeeOperationTime(assetAddress1);
+    const lastFeeOpTime_1 = await troveManager.lastFeeOperationTime();
 
     // 45 seconds pass
     th.fastForwardTime(45, web3.currentProvider);
@@ -5268,7 +5268,7 @@ contract("TroveManager", async accounts => {
     // Borrower A triggers a fee
     await th.redeemCollateral(assetAddress1, A, contracts, dec(1, 18), GAS_PRICE);
 
-    const lastFeeOpTime_2 = await troveManager.lastFeeOperationTime(assetAddress1);
+    const lastFeeOpTime_2 = await troveManager.lastFeeOperationTime();
 
     // Check that the last fee operation time did not update, as borrower A's 2nd redemption occured
     // since before minimum interval had passed
@@ -5284,7 +5284,7 @@ contract("TroveManager", async accounts => {
     // Borrower A triggers a fee
     await th.redeemCollateral(assetAddress1, A, contracts, dec(1, 18), GAS_PRICE);
 
-    const lastFeeOpTime_3 = await troveManager.lastFeeOperationTime(assetAddress1);
+    const lastFeeOpTime_3 = await troveManager.lastFeeOperationTime();
 
     // Check that the last fee operation time DID update, as A's 2rd redemption occured
     // after minimum interval had passed
@@ -5319,7 +5319,7 @@ contract("TroveManager", async accounts => {
     });
 
     // Check baseRate == 0
-    assert.equal(await troveManager.baseRate(assetAddress1), "0");
+    assert.equal(await troveManager.baseRate(), "0");
 
     // Check KUMO Staking contract balance before is zero
     const kumoStakingBalance_Before = await erc20Asset1.balanceOf(kumoStaking.address);
@@ -5334,7 +5334,7 @@ contract("TroveManager", async accounts => {
     assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString());
 
     // Check baseRate is now non-zero
-    const baseRate_1 = await troveManager.baseRate(assetAddress1);
+    const baseRate_1 = await troveManager.baseRate();
     assert.isTrue(baseRate_1.gt(toBN("0")));
 
     // Check KUMO Staking contract balance after is non-zero
@@ -5370,7 +5370,7 @@ contract("TroveManager", async accounts => {
     });
 
     // Check baseRate == 0
-    assert.equal(await troveManager.baseRate(assetAddress1), "0");
+    assert.equal(await troveManager.baseRate(), "0");
 
     // Check KUMO Staking ETH-fees-per-KUMO-staked before is zero
     const F_ETH_Before = await kumoStaking.F_ASSETS(assetAddress1);
@@ -5385,7 +5385,7 @@ contract("TroveManager", async accounts => {
     assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString());
 
     // Check baseRate is now non-zero
-    const baseRate_1 = await troveManager.baseRate(assetAddress1);
+    const baseRate_1 = await troveManager.baseRate();
     assert.isTrue(baseRate_1.gt(toBN("0")));
 
     // Check KUMO Staking ETH-fees-per-KUMO-staked after is non-zero
@@ -5421,7 +5421,7 @@ contract("TroveManager", async accounts => {
     });
 
     // Check baseRate == 0
-    assert.equal(await troveManager.baseRate(assetAddress1), "0");
+    assert.equal(await troveManager.baseRate(), "0");
 
     const A_balanceBefore = await kusdToken.balanceOf(A);
     const B_balanceBefore = await kusdToken.balanceOf(B);
@@ -5433,7 +5433,7 @@ contract("TroveManager", async accounts => {
     assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString());
 
     // Check baseRate is now non-zero
-    const baseRate_1 = await troveManager.baseRate(assetAddress1);
+    const baseRate_1 = await troveManager.baseRate();
     assert.isTrue(baseRate_1.gt(toBN("0")));
 
     const kumoStakingBalance_Before = toBN(await erc20Asset1.balanceOf(kumoStaking.address));
@@ -5478,7 +5478,7 @@ contract("TroveManager", async accounts => {
     });
 
     // Check baseRate == 0
-    assert.equal(await troveManager.baseRate(assetAddress1), "0");
+    assert.equal(await troveManager.baseRate(), "0");
 
     const A_balanceBefore = await kusdToken.balanceOf(A);
     const B_balanceBefore = await kusdToken.balanceOf(B);
@@ -5490,7 +5490,7 @@ contract("TroveManager", async accounts => {
     assert.equal(await kusdToken.balanceOf(A), A_balanceBefore.sub(toBN(dec(10, 18))).toString());
 
     // Check baseRate is now non-zero
-    const baseRate_1 = await troveManager.baseRate(assetAddress1);
+    const baseRate_1 = await troveManager.baseRate();
     assert.isTrue(baseRate_1.gt(toBN("0")));
 
     // Check KUMO Staking ETH-fees-per-KUMO-staked before is zero
@@ -5617,7 +5617,7 @@ contract("TroveManager", async accounts => {
     const D_collBefore = await troveManager.getTroveColl(assetAddress1, D);
 
     // Confirm baseRate before redemption is 0
-    const baseRate = await troveManager.baseRate(assetAddress1);
+    const baseRate = await troveManager.baseRate();
     assert.equal(baseRate, "0");
 
     // whale redeems KUSD.  Expect this to fully redeem A, B, C, and partially redeem D.
