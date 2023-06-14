@@ -34,6 +34,11 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
 
     uint256 public constant REDEMPTION_FEE_FLOOR_DEFAULT = (DECIMAL_PRECISION / 1000) * 5; // 0.5%
 
+    uint256 public constant KUSD_MINT_CAP_DEFAULT = 10000000 * 10e18; // 10M
+
+    // KUSD mint caps per asset
+    mapping(address => uint256) public KUSDMintCap;
+
     // Minimum collateral ratio for individual troves
     mapping(address => uint256) public override MCR;
     // Critical system collateral ratio. If the system's total collateral ratio (TCR) falls below the CCR, Recovery Mode is triggered.
@@ -160,6 +165,7 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         BORROWING_FEE_FLOOR[_asset] = BORROWING_FEE_FLOOR_DEFAULT;
         MAX_BORROWING_FEE[_asset] = MAX_BORROWING_FEE_DEFAULT;
         REDEMPTION_FEE_FLOOR[_asset] = REDEMPTION_FEE_FLOOR_DEFAULT;
+        KUSDMintCap[_asset] = KUSD_MINT_CAP_DEFAULT;
     }
 
     function setCollateralParameters(
@@ -294,6 +300,13 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
     // function assetIsInitialzed(address _asset) external {
     // 	return hasCollateralConfigured[_asset];
     // }
+
+    function setKUSDMintCap(address _asset, uint256 _newCap) public onlyOwner {
+        uint256 _oldCap = KUSDMintCap[_asset];
+        KUSDMintCap[_asset] = _newCap;
+
+        // emit KUSDMintCapChanged(_asset, _oldCap, _newCap);
+    }
 
     modifier safeCheck(
         string memory parameter,
