@@ -35,8 +35,6 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
     uint256 public constant REDEMPTION_FEE_FLOOR_DEFAULT = (DECIMAL_PRECISION / 1000) * 5; // 0.5%
     uint256 public constant KUSD_MINT_CAP_DEFAULT = 10000000 * 10e18; // 10M
 
-    uint256 public constant KUSD_MINT_CAP_DEFAULT = 10000000 * 10e18; // 10M
-
     // KUSD mint caps per asset
     mapping(address => uint256) public KUSDMintCap;
 
