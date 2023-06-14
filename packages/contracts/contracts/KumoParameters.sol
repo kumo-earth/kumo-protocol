@@ -306,13 +306,6 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         emit RedemptionFeeFloorChanged(oldRedemptionFeeFloor, newRedemptionFeeFloor);
     }
 
-    function setKUSDMintCap(address _asset, uint256 _newCap) public onlyOwner {
-        uint256 _oldCap = KUSDMintCap[_asset];
-        KUSDMintCap[_asset] = _newCap;
-
-        emit KUSDMintCapChanged(_asset, _oldCap, _newCap);
-    }
-
     function removeRedemptionBlock(address _asset) external override onlyOwner {
         redemptionBlock[_asset] = block.timestamp;
 
