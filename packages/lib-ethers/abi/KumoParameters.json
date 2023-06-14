@@ -179,6 +179,31 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "oldMintCap",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newMintCap",
+        "type": "uint256"
+      }
+    ],
+    "name": "KUSDMintCapChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "_newKUSDTokenAddress",
         "type": "address"
       }
@@ -476,6 +501,25 @@
         "type": "address"
       }
     ],
+    "name": "KUSDMintCap",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "KUSD_GAS_COMPENSATION",
     "outputs": [
       {
@@ -490,6 +534,19 @@
   {
     "inputs": [],
     "name": "KUSD_GAS_COMPENSATION_DEFAULT",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "KUSD_MINT_CAP_DEFAULT",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1098,6 +1155,24 @@
       }
     ],
     "name": "setKUMOGasCompensation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_asset",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_newCap",
+        "type": "uint256"
+      }
+    ],
+    "name": "setKUSDMintCap",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

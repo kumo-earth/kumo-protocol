@@ -131,6 +131,9 @@ contract("BorrowerOperations", async accounts => {
       // Mint token to each acccount
       await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 20);
 
+      // Set KUSD mint cap to 1 trillion
+      await kumoParams.setKUSDMintCap(assetAddress1, dec(1, 30));
+
       // for (account of accounts.slice(0, 10)) {
       //   await th.openTrove(contracts, { asset: assetAddress1, extraKUSDAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
       // }
@@ -2024,6 +2027,46 @@ contract("BorrowerOperations", async accounts => {
       th.assertIsApproximatelyEqual(
         activePool_KUSD_After,
         activePool_KUSD_Before.add(toBN(dec(10000, 18)))
+      );
+    });
+
+    it("withdrawKUSD(): not minting new KUSDToken if mint cap is reached", async () => {
+      // check before
+      const alice_KUSDTokenBalance_Before = await kusdToken.balanceOf(alice);
+      assert.equal(alice_KUSDTokenBalance_Before, 0);
+
+      // Call deployed TroveManager contract to read the latest borrowing fee
+      const expectedFee = await troveManager.getBorrowingFeeWithDecay(assetAddress1, dec(10000, 18));
+
+      // Set up KUSD mint cap to 10001 KUSD + liquidation reserve and latest borrowing fee
+      await kumoParams.setKUSDMintCap(
+        assetAddress1,
+        toBN(dec(10001, 18)).add(KUSD_GAS_COMPENSATION).add(expectedFee)
+      );
+
+      // Open a trove, mint 10000 KUSD + liquidation reserve and latest borrowing fee
+      await borrowerOperations.openTrove(
+        assetAddress1,
+        dec(100, "ether"),
+        th._100pct,
+        dec(10000, 18),
+        alice,
+        alice,
+        { from: alice }
+      );
+
+      // Withdraw 1 KUSD
+      await borrowerOperations.withdrawKUSD(assetAddress1, th._100pct, dec(1, 18), alice, alice, {
+        from: alice
+      });
+
+      // Withdraw 5 KUSD
+      // check for an error
+      await th.assertRevert(
+        borrowerOperations.withdrawKUSD(assetAddress1, th._100pct, dec(5, 18), alice, alice, {
+          from: alice
+        }),
+        "KUSD mint cap is reached"
       );
     });
 
@@ -4666,9 +4709,67 @@ contract("BorrowerOperations", async accounts => {
         B,
         { from: B }
       );
-
       // B attempts to repay all his debt
       await assertRevert(repayKUSDPromise_B, "revert");
+    });
+
+    it("adjustTrove(): not minting new KUSDToken if mint cap is reached", async () => {
+      // check before
+      const alice_KUSDTokenBalance_Before = await kusdToken.balanceOf(alice);
+      assert.equal(alice_KUSDTokenBalance_Before, 0);
+
+      // Call deployed TroveManager contract to read the latest borrowing fee
+      const expectedFee = await troveManager.getBorrowingFeeWithDecay(assetAddress1, dec(10000, 18));
+
+      // Set up KUSD mint cap to 10001 KUSD + liquidation reserve and latest borrowing fee
+      await kumoParams.setKUSDMintCap(
+        assetAddress1,
+        toBN(dec(10001, 18)).add(KUSD_GAS_COMPENSATION).add(expectedFee)
+      );
+
+      // Open a trove, it mints 10000 KUSD + liquidation reserve and latest borrowing fee
+      await borrowerOperations.openTrove(
+        assetAddress1,
+        dec(300, "ether"),
+        th._100pct,
+        dec(10000, 18),
+        alice,
+        alice,
+        { from: alice }
+      );
+
+      // Withdraw 1 KUSD to drain all available KUSD for minting
+      await borrowerOperations.adjustTrove(
+        assetAddress1,
+        0,
+        th._100pct,
+        0,
+        dec(1, 18),
+        true,
+        alice,
+        alice,
+        {
+          from: alice
+        }
+      );
+
+      // Trying to withdraw 5 KUSD
+      await th.assertRevert(
+        borrowerOperations.adjustTrove(
+          assetAddress1,
+          0,
+          th._100pct,
+          0,
+          dec(5, 18),
+          true,
+          alice,
+          alice,
+          {
+            from: alice
+          }
+        ),
+        "KUSD mint cap is reached"
+      );
     });
 
     // --- Internal _adjustTrove() ---
@@ -6943,6 +7044,62 @@ contract("BorrowerOperations", async accounts => {
       assert.equal(alice_KUSDTokenBalance_After, dec(10000, 18));
     });
 
+    it("openTrove(): not minting new KUSDToken if mint cap is reached", async () => {
+      // check before
+      const alice_KUSDTokenBalance_Before = await kusdToken.balanceOf(alice);
+      assert.equal(alice_KUSDTokenBalance_Before, 0);
+
+      // Call deployed TroveManager contract to read the latest borrowing fee
+      const expectedFee = await troveManager.getBorrowingFeeWithDecay(assetAddress1, dec(10000, 18));
+
+      // Set up KUSD mint cap to 10001 KUSD + (liquidation reserve and latest borrowing fee
+      await kumoParams.setKUSDMintCap(
+        assetAddress1,
+        toBN(dec(10001, 18)).add(expectedFee).add(KUSD_GAS_COMPENSATION)
+      );
+
+      // Open a trove, mint 10000 KUSD + liquidation reserve and latest borrowing fee
+      await borrowerOperations.openTrove(
+        assetAddress1,
+        dec(100, "ether"),
+        th._100pct,
+        dec(10000, 18),
+        alice,
+        alice,
+        { from: alice }
+      );
+
+      // Withdraw 1 KUSD to drain all available KUSD for minting
+      await borrowerOperations.adjustTrove(
+        assetAddress1,
+        0,
+        th._100pct,
+        0,
+        dec(1, 18),
+        true,
+        alice,
+        alice,
+        {
+          from: alice
+        }
+      );
+
+      // Open a trove, mint 5 KUSD
+      // check for an error
+      await th.assertRevert(
+        borrowerOperations.openTrove(
+          assetAddress1,
+          dec(1, "ether"),
+          th._100pct,
+          dec(5, 18),
+          alice,
+          alice,
+          { from: alice }
+        ),
+        "KUSD mint cap is reached"
+      );
+    });
+
     //  --- getNewICRFromTroveChange - (external wrapper in Tester contract calls internal function) ---
 
     describe("getNewICRFromTroveChange() returns the correct ICR", async () => {
@@ -7674,6 +7831,114 @@ contract("BorrowerOperations", async accounts => {
 
         assert.isTrue(newTCR.eq(expectedTCR));
       });
+    });
+
+    it("KUSDMintRemainder - returns correct value", async () => {
+      // Set KUSD mint cap to 1 million
+      let mintCap = toBN(dec(1, 24));
+      await kumoParams.setKUSDMintCap(assetAddress1, mintCap);
+
+      const troveColl = toBN(dec(1000, "ether"));
+      const amountMinted = toBN(dec(123456, 18));
+
+      // mint 123456 KUSD
+      await borrowerOperations.openTrove(
+        assetAddress1,
+        troveColl,
+        th._100pct,
+        amountMinted,
+        alice,
+        alice,
+        { from: alice }
+      );
+
+      let KUSDMintRemainder = await borrowerOperations.KUSDMintRemainder(assetAddress1);
+      const expectedFee = await troveManager.getBorrowingFeeWithDecay(assetAddress1, amountMinted);
+
+      // check remainder
+      assert.equal(
+        KUSDMintRemainder.toString(),
+        mintCap.sub(amountMinted).sub(expectedFee).sub(KUSD_GAS_COMPENSATION).toString()
+      );
+
+      // decrease mint cap to 200000
+      mintCap = toBN(dec(2, 23));
+      await kumoParams.setKUSDMintCap(assetAddress1, mintCap);
+
+      KUSDMintRemainder = await borrowerOperations.KUSDMintRemainder(assetAddress1);
+
+      // check remainder
+      assert.equal(
+        KUSDMintRemainder.toString(),
+        mintCap.sub(amountMinted).sub(expectedFee).sub(KUSD_GAS_COMPENSATION).toString()
+      );
+
+      // repay 23456 KUSD
+      const KUSDRepayment = toBN(dec(23456, 18));
+      await borrowerOperations.repayKUSD(assetAddress1, KUSDRepayment, alice, alice, {
+        from: alice
+      });
+
+      KUSDMintRemainder = await borrowerOperations.KUSDMintRemainder(assetAddress1);
+
+      // check remainder
+      assert.equal(
+        KUSDMintRemainder.toString(),
+        mintCap
+          .sub(amountMinted)
+          .sub(expectedFee)
+          .sub(KUSD_GAS_COMPENSATION)
+          .add(KUSDRepayment)
+          .toString()
+      );
+    });
+
+    it("setKUSDMintCap() - works correctly", async () => {
+      // Set KUSD mint cap to 1 million
+      let mintCap = toBN(dec(1, 24));
+      await kumoParams.setKUSDMintCap(assetAddress1, mintCap);
+
+      const troveColl = toBN(dec(10000, "ether"));
+      const amountMinted = toBN(dec(123456, 18));
+
+      // mint 123456 KUSD
+      await borrowerOperations.openTrove(
+        assetAddress1,
+        troveColl,
+        th._100pct,
+        amountMinted,
+        alice,
+        alice,
+        { from: alice }
+      );
+
+      // Set KUSD mint cap to 100_000 KUSD
+      mintCap = toBN(dec(1, 23));
+
+      // mint should fail
+      assertRevert(
+        await borrowerOperations.withdrawKUSD(
+          assetAddress1,
+          th._100pct,
+          toBN(dec(1, 1)),
+          alice,
+          alice,
+          { from: alice }
+        )
+      );
+
+      // Set KUSD mint cap to 200_000 KUSD
+      mintCap = toBN(dec(2, 23));
+
+      // should mint 70_000 KUSD
+      await borrowerOperations.withdrawKUSD(
+        assetAddress1,
+        th._100pct,
+        toBN(dec(70, 21)),
+        alice,
+        alice,
+        { from: alice }
+      );
     });
 
     if (!withProxy) {

@@ -13,6 +13,8 @@ import "./Interfaces/IKUMOStaking.sol";
 import "./Interfaces/IStabilityPoolFactory.sol";
 import "./Dependencies/KumoBase.sol";
 import "./Dependencies/CheckContract.sol";
+import "hardhat/console.sol";
+
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/SafetyTransfer.sol";
 
@@ -175,6 +177,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         address _upperHint,
         address _lowerHint
     ) external payable override assetIsInitialized(_asset) {
+        checkKUSDMintCap(_asset, _KUSDAmount);
         kumoParams.sanitizeParameters(_asset);
         ContractsCache memory contractsCache = ContractsCache(
             troveManager,
@@ -310,6 +313,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         address _upperHint,
         address _lowerHint
     ) external override {
+        checkKUSDMintCap(_asset, _KUSDAmount);
         _adjustTrove(
             _asset,
             0,
@@ -343,6 +347,10 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         address _upperHint,
         address _lowerHint
     ) external payable override {
+        if (_isDebtIncrease) {
+            checkKUSDMintCap(_asset, _KUSDChange);
+        }
+
         _adjustTrove(
             _asset,
             _assetSent,
@@ -678,6 +686,16 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         _kusdToken.burn(_account, _KUSD);
     }
 
+    function KUSDMintRemainder(address _asset) external view returns (uint256) {
+        int256 remainder = int256(kumoParams.KUSDMintCap(_asset) - kusdToken.totalSupply());
+
+        if (remainder < 0) {
+            return 0;
+        } else {
+            return uint256(remainder);
+        }
+    }
+
     // --- 'Require' wrapper functions ---
 
     function _requireSingularCollChange(uint256 _collWithdrawal, uint256 _amountSent) internal pure {
@@ -953,5 +971,12 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         uint256 _debt
     ) external view override returns (uint256) {
         return _getCompositeDebt(_asset, _debt);
+    }
+
+    function checkKUSDMintCap(address _asset, uint256 _KUSDAmount) internal {
+        require(
+            kusdToken.totalSupply() + _KUSDAmount <= kumoParams.KUSDMintCap(_asset),
+            "KUSD mint cap is reached for this asset"
+        );
     }
 }
