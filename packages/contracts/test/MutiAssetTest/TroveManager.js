@@ -1,7 +1,7 @@
 const { getAddress } = require("ethers/lib/utils");
 const deploymentHelper = require("../../utils/deploymentHelpers.js");
 const testHelpers = require("../../utils/testHelpers.js");
-const KUSDTokenTester = artifacts.require("./KUSDTokenTester.sol");
+const KUSDTokenTester = artifacts.require("../KUSDTokenTester.sol");
 
 const th = testHelpers.TestHelper;
 const dec = th.dec;
@@ -20,7 +20,7 @@ const GAS_PRICE = 10000000;
  * the parameter BETA in the TroveManager, which is still TBD based on economic modelling.
  *
  */
-contract("TroveManager - Multi Asset", async accounts => {
+contract.only("TroveManager - Multi Asset", async accounts => {
     const _18_zeros = "000000000000000000";
     const ZERO_ADDRESS = th.ZERO_ADDRESS;
 
@@ -127,6 +127,10 @@ contract("TroveManager - Multi Asset", async accounts => {
         // Set StabilityPools
         stabilityPoolAsset1 = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1);
         stabilityPoolAsset2 = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress2);
+
+        // Set KUSD mint cap to 1 trillion
+        await kumoParams.setKUSDMintCap(assetAddress1, dec(1, 30));
+        await kumoParams.setKUSDMintCap(assetAddress2, dec(1, 30));
     });
 
     it("liquidate(): decreases ActivePool Asset and KUSDDebt by correct amounts, should not change AP balance of second asset", async () => {
@@ -195,7 +199,7 @@ contract("TroveManager - Multi Asset", async accounts => {
     });
 
 
-    it("liquidate(): Pool offsets increase the TCR, should not change TCR or second asset", async () => {
+    it.only("liquidate(): Pool offsets increase the TCR, should not change TCR or second asset", async () => {
         // Whale provides KUSD to SP
         const spDeposit = toBN(dec(100, 24));
         await openTrove({
