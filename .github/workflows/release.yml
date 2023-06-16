@@ -41,6 +41,29 @@ jobs:
 
       - name: Test SDK & UI
         run: yarn test
+      - name: Run e2e tests (headful)
+        run: |
+          Xvfb :0 -screen 0 1024x768x24 -listen tcp -ac &
+          fluxbox &
+          pnpm test:e2e:anvil
+        env:
+          SECRET_WORDS: ${'test test test test test test test test test test test junk'}
+          NETWORK_NAME: ${'Polygon Mumbai'}
+          RPC_URL: ${'https://rpc-mumbai.maticvigil.com/'}
+          CHAIN_ID: 80001
+          SYMBOL: 'MATIC'
+          IS_TESTNET: true
+          BLOCK_EXPLORER: 'https://mumbai.polygonscan.com/'
+
+      - name: Archive e2e artifacts
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # pin@v2
+        if: always()
+        with:
+          name: e2e-artifacts
+          path: |
+            tests/e2e/videos
+            tests/e2e/screenshots
+        continue-on-error: true
 
       # - name: Test SDK integration against live contracts
       #   if: ${{ github.ref == 'refs/heads/main' }}
