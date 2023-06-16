@@ -58,11 +58,6 @@ jobs:
         uses: cypress-io/github-action@cdbbcd60fb5d967d7a37d8eb148add76a7ded7b6 # pin@v5.1.0
         with:
           run: yarn test
-          command: pnpm test:e2e:ci:cypress-action
-          wait-on: 'https://dev.kumo.earth'
-          wait-on-timeout: 18000
-          browser: chrome
-          spec: tests/e2e/specs/*
         env:
           SECRET_WORDS: 'test test test test test test test test test test test junk'
           NETWORK_NAME: 'Polygon Mumbai'
