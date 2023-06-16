@@ -54,6 +54,7 @@ jobs:
           SYMBOL: 'MATIC'
           IS_TESTNET: true
           BLOCK_EXPLORER: 'https://mumbai.polygonscan.com/'
+          CI: true
 
       - name: Archive e2e artifacts
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # pin@v2
