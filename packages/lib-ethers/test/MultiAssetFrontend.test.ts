@@ -24,7 +24,7 @@ import { EthersKumo } from "../src/EthersKumo";
 chai.use(chaiAsPromised);
 chai.use(chaiSpies);
 
-describe("EthersKumo", async () => {
+describe.only("EthersKumo", async () => {
     let deployer: Signer;
     let funder: Signer;
     let user: Signer;

@@ -47,9 +47,9 @@ jobs:
           fluxbox &
           pnpm test:e2e:anvil
         env:
-          SECRET_WORDS: ${'test test test test test test test test test test test junk'}
-          NETWORK_NAME: ${'Polygon Mumbai'}
-          RPC_URL: ${'https://rpc-mumbai.maticvigil.com/'}
+          SECRET_WORDS: 'test test test test test test test test test test test junk'
+          NETWORK_NAME: 'Polygon Mumbai'
+          RPC_URL: 'https://rpc-mumbai.maticvigil.com/'
           CHAIN_ID: 80001
           SYMBOL: 'MATIC'
           IS_TESTNET: true
@@ -62,7 +62,6 @@ jobs:
           name: e2e-artifacts
           path: |
             tests/e2e/videos
-            tests/e2e/screenshots
         continue-on-error: true
 
       # - name: Test SDK integration against live contracts
