@@ -3,7 +3,7 @@ const synpressPlugins = require('@synthetixio/synpress/plugins');
  
 module.exports = defineConfig({
   e2e: {
-    baseUrl: 'https://dev.kumo.earth/',
+    baseUrl: 'http://localhost:3000/',
     specPattern: 'tests/e2e/specs',
     supportFile: 'tests/support/index.js',
     videosFolder: 'tests/e2e/videos',
