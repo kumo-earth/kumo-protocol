@@ -3,8 +3,11 @@ describe('connect wallet spec', () => {
       cy.visit('/');
       cy.contains('CONNECT').click();
       cy.contains('MetaMask').click();
-      cy.acceptMetamaskAccess();
-      cy.wait(500000)
+      cy.wait(3000)
+      cy.switchToMetamaskWindow();
+      cy.acceptMetamaskAccess().should("be.true");
+      cy.switchToCypressWindow();
+      cy.wait(100000)
       cy.contains('DISCONNECT').should('be.visible');
     });
 });
