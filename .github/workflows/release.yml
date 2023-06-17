@@ -40,14 +40,22 @@ jobs:
       - run: yarn build
       - name: Run e2e tests (cypress-action)
         run: yarn test
+        # env:
+        #   SECRET_WORDS: 'test test test test test test test test test test test junk'
+        #   NETWORK_NAME: 'Polygon Mumbai'
+        #   RPC_URL: 'https://rpc-mumbai.maticvigil.com/'
+        #   CHAIN_ID: 80001
+        #   SYMBOL: 'MATIC'
+        #   IS_TESTNET: true
+        #   BLOCK_EXPLORER: 'https://mumbai.polygonscan.com/'
+        #   CI: true
         env:
           SECRET_WORDS: 'test test test test test test test test test test test junk'
-          NETWORK_NAME: 'Polygon Mumbai'
-          RPC_URL: 'https://rpc-mumbai.maticvigil.com/'
-          CHAIN_ID: 80001
-          SYMBOL: 'MATIC'
+          NETWORK_NAME: 'Dev - Localhost'
+          RPC_URL: 'http://localhost:8545'
+          CHAIN_ID: 17
+          SYMBOL: 'ETH'
           IS_TESTNET: true
-          BLOCK_EXPLORER: 'https://mumbai.polygonscan.com/'
           CI: true
 
       - name: Archive e2e artifacts
@@ -56,8 +64,7 @@ jobs:
         with:
           name: e2e-artifacts
           path: |
-            tests/e2e/videos
-            tests/e2e/screenshots
+            ./packages/dev-frontend/tests/e2e/videos
         continue-on-error: true
 
       # - name: Test SDK integration against live contracts
