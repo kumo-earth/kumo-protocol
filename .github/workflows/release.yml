@@ -44,15 +44,20 @@ jobs:
           fluxbox \
           xvfb
 
-      - name: Run xvfb and fluxbox
+      # - name: Run xvfb and fluxbox
+      #   run: |
+      #     Xvfb :0 -screen 0 1024x768x24 -listen tcp -ac &
+      #     fluxbox &
+      #   env:
+      #     DISPLAY: :0.0
+      #     CI: true
+      - name: Run e2e tests (cypress-action)
         run: |
           Xvfb :0 -screen 0 1024x768x24 -listen tcp -ac &
           fluxbox &
-        env:
-          DISPLAY: :0.0
-          CI: true
-      - name: Run e2e tests (cypress-action)
-        run: yarn test
+          yarn test
+
+      
         # env:
         #   SECRET_WORDS: 'test test test test test test test test test test test junk'
         #   NETWORK_NAME: 'Polygon Mumbai'
