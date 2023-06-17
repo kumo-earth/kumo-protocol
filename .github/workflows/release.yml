@@ -45,13 +45,6 @@ jobs:
           fluxbox \
           xvfb
 
-      - name: Run xvfb and fluxbox
-        run: |
-          Xvfb :0 -screen 0 1024x768x24 -listen tcp -ac &
-          fluxbox &
-        env:
-          DISPLAY: :0.0
-
       - name: Test SDK
         run: |
             yarn test:lib-base \
