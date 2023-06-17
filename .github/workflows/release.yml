@@ -52,10 +52,17 @@ jobs:
         env:
           DISPLAY: :0.0
 
-      - name: Test lib-base
-        run: yarn test:lib-base
-      - name: Test lib-base
-        run: yarn test:lib-ethers
+      - name: Test SDK
+        run: |
+            yarn test:lib-base \
+            yarn test:lib-ethers
+            
+      - name: Run xvfb and fluxbox
+        run: |
+          Xvfb :0 -screen 0 1024x768x24 -listen tcp -ac &
+          fluxbox &
+        env:
+          DISPLAY: :0.0
       - name: Run e2e tests (cypress-action)
         uses: cypress-io/github-action@cdbbcd60fb5d967d7a37d8eb148add76a7ded7b6 # pin@v5.1.0
         with:
