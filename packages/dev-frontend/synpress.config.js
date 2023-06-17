@@ -22,6 +22,9 @@ module.exports = defineConfig({
     chromeWebSecurity: true,
     setupNodeEvents(on, config) {
       synpressPlugins(on, config);
+      if (config.env.browser === "chrome") {
+        config.env.DISABLE_GPU = "1";
+      }
       return config
     },
   }
