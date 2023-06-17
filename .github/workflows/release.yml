@@ -44,12 +44,6 @@ jobs:
           sudo apt-get install --no-install-recommends -y \
           fluxbox \
           xvfb
-
-      - name: Test SDK
-        run: |
-            yarn test:lib-base \
-            yarn test:lib-ethers
-            
       - name: Run xvfb and fluxbox
         run: |
           Xvfb :0 -screen 0 1024x768x24 -listen tcp -ac &
@@ -59,7 +53,7 @@ jobs:
       - name: Run e2e tests (cypress-action)
         uses: cypress-io/github-action@cdbbcd60fb5d967d7a37d8eb148add76a7ded7b6 # pin@v5.1.0
         with:
-          run: yarn test:dev-frontend
+          run: yarn test
         env:
           SECRET_WORDS: 'test test test test test test test test test test test junk'
           NETWORK_NAME: 'Polygon Mumbai'
