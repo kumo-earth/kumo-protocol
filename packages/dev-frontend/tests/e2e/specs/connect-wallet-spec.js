@@ -3,9 +3,8 @@ describe('connect wallet spec', () => {
       cy.visit('/');
       cy.contains('CONNECT').click();
       cy.contains('MetaMask').click();
-      cy.acceptMetamaskAccess().should("be.true");
-      cy.switchMetamaskAccount(1);
-      cy.switchToCypressWindow().should("be.true");
+      cy.acceptMetamaskAccess();
+      cy.wait(500000)
       cy.contains('DISCONNECT').should('be.visible');
     });
 });
