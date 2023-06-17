@@ -1,9 +1,9 @@
 const { defineConfig } = require('cypress');
 const synpressPlugins = require('@synthetixio/synpress/plugins');
-
+ 
 module.exports = defineConfig({
   env: {
-    "coverage": false
+    "ELECTRON_DISABLE_GPU": "1"
   },
   e2e: {
     browser: 'chrome',
@@ -17,20 +17,12 @@ module.exports = defineConfig({
     defaultCommandTimeout: 40000,
     pageLoadTimeout: 180000,
     requestTimeout: 40000,
-    // viewportWidth: 1366,
-    // viewportHeight: 850,
+    viewportWidth: 1366,
+    viewportHeight: 850,
     chromeWebSecurity: true,
     setupNodeEvents(on, config) {
-      on('before:browser:launch', (browser = {}, launchOptions) => {
-        console.log(launchOptions.args)
-
-        if (browser.family == 'chromium') {
-          launchOptions.args.push('--disable-gpu')
-        }
-
-        return launchOptions
-      });
-      return require('./tests/cypress/plugins/index.js')(on, config)
+      synpressPlugins(on, config);
+      return config
     },
   }
 });
