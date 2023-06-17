@@ -49,7 +49,7 @@ jobs:
           Xvfb :0 -screen 0 1024x768x24 -listen tcp -ac &
           fluxbox &
         env:
-          DISPLAY: :0.0
+          DISPLAY: localhost:0.0
       - name: Run e2e tests (cypress-action)
         run: yarn test
         # env:
