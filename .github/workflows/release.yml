@@ -66,7 +66,7 @@ jobs:
       - name: Run e2e tests (cypress-action)
         uses: cypress-io/github-action@cdbbcd60fb5d967d7a37d8eb148add76a7ded7b6 # pin@v5.1.0
         with:
-          command: yarn test
+          run: yarn test:dev-frontend
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 1000000
           browser: chrome
