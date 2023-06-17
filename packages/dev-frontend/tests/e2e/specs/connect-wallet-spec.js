@@ -3,7 +3,7 @@ describe('connect wallet spec', () => {
       cy.visit('/');
       cy.contains('CONNECT').click();
       cy.contains('MetaMask').click();
-      cy.acceptMetamaskAccess();
+      cy.acceptMetamaskAccess({allAccounts: true, confirmSignatureRequest: true});
       cy.contains('DISCONNECT').should('be.visible');
     });
 });

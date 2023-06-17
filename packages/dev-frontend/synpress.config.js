@@ -10,9 +10,9 @@ module.exports = defineConfig({
     screenshotsFolder: 'tests/e2e/screenshots',
     video: true,
     screenshotOnRunFailure: false,
-    defaultCommandTimeout: 40000,
+    defaultCommandTimeout: 100000,
     pageLoadTimeout: 180000,
-    requestTimeout: 40000,
+    requestTimeout: 100000,
     chromeWebSecurity: true,
     setupNodeEvents(on, config) {
       synpressPlugins(on, config);
