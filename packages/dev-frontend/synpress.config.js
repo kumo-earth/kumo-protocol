@@ -2,6 +2,9 @@ const { defineConfig } = require('cypress');
 const synpressPlugins = require('@synthetixio/synpress/plugins');
  
 module.exports = defineConfig({
+  env: {
+    "coverage": false
+  },
   e2e: {
     baseUrl: 'http://localhost:3000/',
     specPattern: 'tests/e2e/specs',
