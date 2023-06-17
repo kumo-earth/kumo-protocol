@@ -64,7 +64,7 @@ jobs:
         #   BLOCK_EXPLORER: 'https://mumbai.polygonscan.com/'
         #   CI: true
       - name: Start Dev - Chain
-          run: yarn test:dev-frontend:start-dev-chain
+        run: yarn test:dev-frontend:start-dev-chain
           
       - name: Run e2e tests (cypress-action)
         uses: cypress-io/github-action@cdbbcd60fb5d967d7a37d8eb148add76a7ded7b6 # pin@v5.1.0
@@ -92,7 +92,7 @@ jobs:
         continue-on-error: true
 
       - name: Start Dev - Chain
-          run: test:dev-frontend:stop-dev-chain
+        run: test:dev-frontend:stop-dev-chain
 
       # - name: Test SDK integration against live contracts
       #   if: ${{ github.ref == 'refs/heads/main' }}
