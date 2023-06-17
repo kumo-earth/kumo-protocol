@@ -13,6 +13,8 @@ module.exports = defineConfig({
     defaultCommandTimeout: 40000,
     pageLoadTimeout: 180000,
     requestTimeout: 40000,
+    viewportWidth: 1366,
+    viewportHeight: 850,
     chromeWebSecurity: true,
     setupNodeEvents(on, config) {
       synpressPlugins(on, config);
