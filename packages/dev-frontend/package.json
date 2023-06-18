@@ -52,14 +52,14 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start:local": "env-cmd -f .env react-scripts start",
-    "start": "env-cmd -f .env.local react-scripts start",
+    "start": "env-cmd -f .env react-scripts start",
+    "start:local": "env-cmd -f .env.local react-scripts start",
     "start-demo": "cross-env REACT_APP_DEMO_MODE=true run-s start",
     "build": "run-s build:*",
     "build:set-version": "node scripts/set-version.js",
     "build:react": "env-cmd -f .env react-scripts build",
-    "test": "synpress run --configFile synpress.config.js",
-    "ci": "start-server-and-test 'yarn start' http://localhost:3000 'yarn test'",
+    "test": "env-cmd -f .env.local synpress run --configFile synpress.config.js",
+    "ci": "start-server-and-test 'yarn start:local' http://localhost:3000 'yarn test'",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
