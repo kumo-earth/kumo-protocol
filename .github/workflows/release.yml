@@ -44,29 +44,16 @@ jobs:
           fluxbox \
           xvfb
 
-      # - name: Run xvfb and fluxbox
-      #   run: |
-      #     Xvfb :0 -screen 0 1024x768x24 -listen tcp -ac &
-      #     fluxbox &
-      #   env:
-      #     DISPLAY: :0.0
-      #     CI: true
+      - name: Run SDK tests
+        run: |
+          yarn test:lib-base &
+          yarn test:lib-ethers
+
       - name: Run e2e tests (cypress-action)
         run: |
           Xvfb :0 -screen 0 1024x768x24 -listen tcp -ac &
           fluxbox &
-          yarn test
-
-      
-        # env:
-        #   SECRET_WORDS: 'test test test test test test test test test test test junk'
-        #   NETWORK_NAME: 'Polygon Mumbai'
-        #   RPC_URL: 'https://rpc-mumbai.maticvigil.com/'
-        #   CHAIN_ID: 80001
-        #   SYMBOL: 'MATIC'
-        #   IS_TESTNET: true
-        #   BLOCK_EXPLORER: 'https://mumbai.polygonscan.com/'
-        #   CI: true
+          yarn test:dev-frontend
         env:
           SECRET_WORDS: 'test test test test test test test test test test test junk'
           NETWORK_NAME: 'Localhost'
