@@ -73,8 +73,7 @@ jobs:
           RPC_URL: 'http://127.0.0.1:8545'
           CHAIN_ID: 17
           SYMBOL: 'ETH'
-          IS_TESTNET: true
-          CI: true
+          DISPLAY: :0.0
 
       - name: Archive e2e artifacts
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # pin@v2
