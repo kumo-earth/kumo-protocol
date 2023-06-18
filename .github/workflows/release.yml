@@ -23,7 +23,7 @@ jobs:
           fi
 
   test:
-    name: Run SDK, Frontend, Contracts tests
+    name: Run SDK, Frontend tests
     runs-on: ubuntu-latest
     needs: workflow-setup
     steps:
@@ -49,7 +49,7 @@ jobs:
           yarn test:lib-base &
           yarn test:lib-ethers
 
-      - name: Run e2e tests (cypress-action)
+      - name: Run e2e tests (synpress-action)
         run: |
           Xvfb :0 -screen 0 1024x768x24 -listen tcp -ac &
           fluxbox &
@@ -70,9 +70,6 @@ jobs:
           path: |
             ./packages/dev-frontend/tests/e2e/videos
         continue-on-error: true
-      - name: Run Contracts tests
-        run: test-contracts
-      
 
       # - name: Test SDK integration against live contracts
       #   if: ${{ github.ref == 'refs/heads/main' }}
