@@ -23,7 +23,6 @@ interface ActivePoolCalls {
   owner(_overrides?: CallOverrides): Promise<string>;
   stabilityPoolFactory(_overrides?: CallOverrides): Promise<string>;
   troveManagerAddress(_overrides?: CallOverrides): Promise<string>;
-  troveRedemptorAddress(_overrides?: CallOverrides): Promise<string>;
 }
 
 interface ActivePoolTransactions {

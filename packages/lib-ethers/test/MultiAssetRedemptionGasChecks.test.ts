@@ -28,7 +28,7 @@ chai.use(chaiSpies);
 const provider = ethers.provider;
 
 
-describe("EthersKumoRedemptionGasChecks", async () => {
+describe("EthersKumoRedemptionGasChecks", function () {
     let deployer: Signer;
     let funder: Signer;
     let user: Signer;
@@ -48,13 +48,30 @@ describe("EthersKumoRedemptionGasChecks", async () => {
     let amountToDeposit: Decimal
     let amountToRedeem: Decimal
 
+    const massivePrice = Decimal.from(1000000);
+
+    const amountToBorrowPerTrove = Decimal.from(2000);
+    const netDebtPerTrove = MINIMUM_BORROWING_RATE.add(1).mul(amountToBorrowPerTrove);
+    const collateralPerTrove = netDebtPerTrove
+        .add(KUSD_LIQUIDATION_RESERVE)
+        .mulDiv(1.5, massivePrice);
+
+    amountToRedeem = netDebtPerTrove.mul(_redeemMaxIterations);
+    amountToDeposit = MINIMUM_BORROWING_RATE.add(1)
+        .mul(amountToRedeem)
+        .add(KUSD_LIQUIDATION_RESERVE)
+        .mulDiv(2, massivePrice);
+
+    this.timeout("3m");
 
     before(async function () {
+        
         if (network.name !== "hardhat") {
             // Redemptions are only allowed after a bootstrap phase of 2 weeks.
             // Since fast-forwarding only works on Hardhat EVM, skip these tests elsewhere.
             this.skip();
         }
+        
 
         // Deploy new instances of the contracts, for a clean state
         [deployer, funder, user, ...otherUsers] = await ethers.getSigners();
@@ -74,86 +91,55 @@ describe("EthersKumoRedemptionGasChecks", async () => {
         ]);
         await sendToEach(otherUsersSubset, funder, 0.1);
 
+        mockAssetAddress = deployment.addresses['mockAsset1'];
+        await deployerKumo.setPrice(mockAssetAddress, massivePrice);
+        for await (const otherKumo of otherKumos) {
+            await otherKumo.openTrove(
+                {
+                    depositCollateral: collateralPerTrove,
+                    borrowKUSD: amountToBorrowPerTrove
+                },
+                mockAssetAddress,
+
+                undefined,
+                { gasLimit }
+            );
+        }
+
+    });
+
+    beforeEach(async () => {
+        const targetBalance = BigNumber.from(STARTING_BALANCE.hex);
+
+        await setUpInitialUserBalance(user, funder, gasLimit);
+        expect(`${await user.getBalance()}`).to.equal(`${targetBalance}`);
+    });
+
+    it(`should redeem using the maximum iterations and almost all gas`, async () => {
+        await increaseTime(60 * 60 * 24 * 15);
+
+        await kumo.openTrove(
+            {
+                depositCollateral: amountToDeposit,
+                borrowKUSD: amountToRedeem
+            },
+            mockAssetAddress,
+
+            undefined,
+            { gasLimit }
+        );
+
+        const { rawReceipt } = await waitForSuccess(kumo.send.redeemKUSD(mockAssetAddress, amountToRedeem));
+
+        const gasUsed = rawReceipt.gasUsed.toNumber();
+        // gasUsed is ~half the real used amount because of how refunds work, see:
+        // https://ethereum.stackexchange.com/a/859/9205
+        expect(gasUsed).to.be.at.least(4900000, "should use close to 10M gas");
     });
 
     mockAssetContracts.forEach(async mockAssetContract => {
-        describe("Bootstrap Phase Multi Asset", function () {
-            this.timeout("5m");
-            const massivePrice = Decimal.from(1000000);
-
-            const amountToBorrowPerTrove = Decimal.from(2000);
-            const netDebtPerTrove = MINIMUM_BORROWING_RATE.add(1).mul(amountToBorrowPerTrove);
-            const collateralPerTrove = netDebtPerTrove
-                .add(KUSD_LIQUIDATION_RESERVE)
-                .mulDiv(1.5, massivePrice);
-
-            amountToRedeem = netDebtPerTrove.mul(_redeemMaxIterations);
-            amountToDeposit = MINIMUM_BORROWING_RATE.add(1)
-                .mul(amountToRedeem)
-                .add(KUSD_LIQUIDATION_RESERVE)
-                .mulDiv(2, massivePrice);
-            before(async () => {
-                mockAssetAddress = deployment.addresses[mockAssetContract.contract];
-                await deployerKumo.setPrice(mockAssetAddress, massivePrice);
-                for await (const otherKumo of otherKumos) {
-                    await otherKumo.openTrove(
-                        {
-                            depositCollateral: collateralPerTrove,
-                            borrowKUSD: amountToBorrowPerTrove
-                        },
-                        mockAssetAddress,
-
-                        undefined,
-                        { gasLimit }
-                    );
-                }
-                await increaseTime(60 * 60 * 24 * 15);
-            })
-            it(`should be true for Bootstrap phase ${mockAssetContract.name}`, async () => {
-                expect(`test_for_bootstrap_phase`).to.equal(`test_for_bootstrap_phase`);
-            })
-        })
-        describe(`Redemption gas checks Multi Asset ${mockAssetContract.name}`, function () {
-            this.timeout("5m");
-            before(async function () {
-                mockAssetAddress = deployment.addresses[mockAssetContract.contract];
-            });
-            // Always setup same initial balance for user
-            beforeEach(async () => {
-                const targetBalance = BigNumber.from(STARTING_BALANCE.hex);
-
-                await setUpInitialUserBalance(user, funder, gasLimit);
-                expect(`${await user.getBalance()}`).to.equal(`${targetBalance}`);
-            });
-
-
-            it(`should redeem using the maximum iterations and almost all gas ${mockAssetContract.name}`, async () => {
-
-                await kumo.openTrove(
-                    {
-                        depositCollateral: amountToDeposit,
-                        borrowKUSD: amountToRedeem
-                    },
-                    mockAssetAddress,
-
-                    undefined,
-                    { gasLimit }
-                );
-
-                const { rawReceipt } = await waitForSuccess(kumo.send.redeemKUSD(mockAssetAddress, amountToRedeem));
-
-                const gasUsed = rawReceipt.gasUsed.toNumber();
-                // gasUsed is ~half the real used amount because of how refunds work, see:
-                // https://ethereum.stackexchange.com/a/859/9205
-                expect(gasUsed).to.be.at.least(4900000, "should use close to 10M gas");
-            });
-
-        });
-    })
-
-    mockAssetContracts.forEach(async mockAssetContract => {
         describe(`Redemption gas checks Multi Asset Independent tests ${mockAssetContract.name}`, function () {
-            this.timeout("5m");
+            this.timeout("3m");
 
             const massivePrice = Decimal.from(1000000);
 
