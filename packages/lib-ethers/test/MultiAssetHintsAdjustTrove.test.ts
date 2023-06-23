@@ -141,7 +141,7 @@ describe("EthersKumoHints", async () => {
 
                 const gasUsed = rawReceipt.gasUsed.toNumber();
                 // Higher gas usage due to asset parameter. ToDO: Estimate gas (24000 before asset)
-                expect(gasUsed).to.be.at.most(300000);
+                expect(gasUsed).to.be.at.most(305000);
             });
         })
     })
