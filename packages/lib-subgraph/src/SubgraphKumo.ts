@@ -197,6 +197,9 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
       }
     });
   }
+  getTestTokensTransferState(assetAddress: string, userAddress: string): Promise<boolean> {
+    throw new Error("Method not implemented.");
+  }
   
   getTotalRedistributed() {
     return totalRedistributed.get(this.client, undefined);

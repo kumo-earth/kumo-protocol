@@ -74,22 +74,11 @@ const select = ({ vaults, blockTag }: BlockPolledKumoStoreState) => ({
 
 export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
   const { account } = useWeb3React<Web3Provider>();
-  const [assetType, setAssetType] = useState("ctx");
   const { vaults, blockTag } = useKumoSelector(select);
   const { kumo } = useKumo();
-  let numberOfTroves = 0;
-  let price = Decimal.ZERO;
-  let assetAddress = AddressZero;
+  const [assetType, setAssetType] = useState("nbc");
+  const [assetDetails, setAssetDetails] = useState({ numberOfTroves: 0, price: Decimal.ZERO, assetAddress: AddressZero })
 
-  if (assetType === "ctx" || assetType === "cty") {
-    const vault = vaults.find(vault => vault.asset === assetType);
-    if (vault) {
-      price = vault.price;
-      assetAddress = vault.assetAddress;
-      numberOfTroves = vault?.numberOfTroves || 0;
-    }
-
-  }
 
   const [loading, setLoading] = useState(true);
   const [troves, setTroves] = useState<UpdatedUserTrove[]>();
@@ -98,7 +87,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
   const forceReload = useCallback(() => setReload({}), []);
 
   const [page, setPage] = useState(0);
-  const numberOfPages = Math.ceil(numberOfTroves / pageSize) || 1;
+  const numberOfPages = Math.ceil(assetDetails.numberOfTroves / pageSize) || 1;
   const clampedPage = Math.min(page, numberOfPages - 1);
 
   const nextPage = () => {
@@ -121,13 +110,12 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
 
   useEffect(() => {
     let mounted = true;
-
     setLoading(true);
-
-    if (assetType === "ctx" || assetType === "cty") {
-      const tempVault = vaults.find(vault => vault.asset === assetType);
-      if (tempVault) {
-        const { asset, assetAddress, price, total, kusdInStabilityPool } = tempVault;
+    
+    const selectedVault = vaults.find(vault => vault.asset === assetType);
+    if (selectedVault) {
+        const { asset, numberOfTroves, assetAddress, price, total, kusdInStabilityPool } = selectedVault;
+        setAssetDetails({numberOfTroves, price, assetAddress})
         const recoveryMode = total.collateralRatioIsBelowCritical(price);
         const totalCollateralRatio = total.collateralRatio(price);
         kumo
@@ -163,7 +151,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
               setLoading(false);
             }
           });
-      }
+    
     }
 
     // Promise.all(getAllTroves).then(troves => {
@@ -200,7 +188,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
 
   useEffect(() => {
     forceReload();
-  }, [forceReload, numberOfTroves, price]);
+  }, [forceReload, assetDetails.numberOfTroves, assetDetails.price]);
 
   const [copied, setCopied] = useState<string>();
 
@@ -221,17 +209,17 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
   }, [copied]);
 
   return (
-    <Card sx={{ width: "100%", height: "100%", bg: "#f0cfdc", borderRadius: 20 }}>
-      <Heading sx={{ display: "flex", justifyContent: "space-between" }}>
+    <Card sx={{ width: "100%", minWidth: "300px", height: "100%", bg: "#f0cfdc", borderRadius: 20 }}>
+      <Heading sx={{ display: "flex", height: ['max-content !important', "60px"],  justifyContent: "space-between", flexDirection: [ 'column', "row" ] }}>
         <Flex sx={{ alignItems: "center" }}>
-          {numberOfTroves !== 0 && (
+          {assetDetails.numberOfTroves !== 0 && (
             <>
               <Abbreviation
                 short={`page ${clampedPage + 1} / ${numberOfPages}`}
                 sx={{ mr: [0, 3], fontWeight: "body", fontSize: [1, 2], letterSpacing: [-1, 0] }}
               >
-                {clampedPage * pageSize + 1}-{Math.min((clampedPage + 1) * pageSize, numberOfTroves)}{" "}
-                of {numberOfTroves}
+                {clampedPage * pageSize + 1}-{Math.min((clampedPage + 1) * pageSize, assetDetails.numberOfTroves)}{" "}
+                of {assetDetails.numberOfTroves}
               </Abbreviation>
 
               <Button variant="titleIcon" onClick={previousPage} disabled={clampedPage <= 0}>
@@ -257,15 +245,14 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
         </Flex>
         <Box>
           {
-            ((account && troves) && (CORE_TEAM_ACCOUNTS.includes(account) && troves?.length > 0)) ? <PriceManager price={price} assetAddress={assetAddress} /> : null
+            ((account && troves) && (CORE_TEAM_ACCOUNTS.includes(account) && troves?.length > 0)) ? <PriceManager price={assetDetails.price} assetAddress={assetDetails.assetAddress} /> : null
           }
-
         </Box>
-        <Box sx={{ display: "flex", mr: 7 }}>
-          <Text sx={{ fontSize: 4 }}>Riskiest Vaults:</Text>
+        <Box sx={{ display: "flex", mr: 2, alignItems: 'center' }}>
+          <Text sx={{ fontSize: ["10px", "14px"] }}>Riskiest Vaults:</Text>
           <Select value={assetType} onChange={event => setAssetType(event.target.value)}>
-            <option value={"ctx"}>CTX</option>
-            <option value={"cty"}>CTY</option>
+            <option value={"nbc"}>NBC</option>
+            <option value={"csc"}>CSC</option>
           </Select>
         </Box>
       </Heading>

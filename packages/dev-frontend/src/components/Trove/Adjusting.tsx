@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Flex, Button, Box, Card, Heading } from "theme-ui";
+import { Flex, Button, Box, Card, Heading, Text } from "theme-ui";
 import {
   KumoStoreState,
   Decimal,
@@ -175,24 +175,24 @@ export const Adjusting: React.FC = () => {
   return (
     <Card variant="base">
       <Heading>
-        {vault?.asset.toUpperCase()} Vault
+        {vault?.asset.toUpperCase()} Vault <Text variant="assetName">({vault.assetName})</Text>
         {isDirty && !isTransactionPending && (
           <Button variant="titleIcon" sx={{ ":enabled:hover": { color: "danger" } }} onClick={reset}>
-            <Icon name="history" size="sm" />
+            <Icon name="history" size="xs" />
           </Button>
         )}
       </Heading>
 
-      <Box sx={{ p: [2, 3] }}>
+      <Box sx={{ py: 4, px: [3, 5] }}>
         <EditableRow
           label="Collateral"
           inputId="trove-collateral"
-          amount={collateral.prettify(4)}
+          amount={collateral.prettify(0)}
           maxAmount={maxCollateral.toString()}
           maxedOut={collateralMaxedOut}
           editingState={editingState}
           unit={collateralType?.toUpperCase()}
-          editedAmount={collateral.toString(4)}
+          editedAmount={collateral.toString(0)}
           setEditedAmount={(amount: string) => {
             setCollateral(Decimal.from(amount));
           }}
@@ -317,9 +317,6 @@ export const Adjusting: React.FC = () => {
             </TroveAction>
           ) : (
             <Button
-              sx={{
-                mb: 2
-              }}
               variant="primaryInActive"
               disabled
             >

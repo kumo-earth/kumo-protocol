@@ -48,16 +48,17 @@ export const SideNav: React.FC = () => {
           <Link to="/staking">Staking</Link>
           <Link to="/redemption">Redemption</Link>
           <Link to="/stats">Stats</Link>
+          <Link to="/faucet">Faucet</Link>
         </Box>
       </Flex>
 
       <Divider sx={{ color: "muted" }} />
       <Flex sx={{ flexDirection: "column", pl: 6 }} variant="layout.newTabLinks">
         <Link to={{ pathname: " https://docs.kumo.earth" }} target="_blank" style={{ color: 'black' }}>Documentation</Link>
-        <Link to={{ pathname: "https://discord.gg/smxnnmG6" }} target="_blank" style={{ color: 'black' }}>Discord</Link>
-        <Link to={{ pathname: "https://twitter.com/Kumo_DAO" }} target="_blank" style={{ color: 'black' }}>Twitter</Link>
+        <Link to={{ pathname: "https://discord.gg/EfMyuxMmeN" }} target="_blank" style={{ color: 'black' }}>Discord</Link>
+        <Link to={{ pathname: "https://twitter.com/Kumo_earth" }} target="_blank" style={{ color: 'black' }}>Twitter</Link>
       </Flex>
-      <Box sx={{ display: ["flex", "none"], flexDirection: 'column', pl: 3, mt: 1 }} onClick={() => setIsVisible(false)}><UserAccount /></Box>
+      <Box sx={{ display: ["flex", "none"], flexDirection: 'column', pl: 3, mt: 3 }} onClick={() => setIsVisible(false)}><UserAccount /></Box>
     </Container>
   );
 };

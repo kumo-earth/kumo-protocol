@@ -186,16 +186,22 @@ const deployContracts = async (
     unipool: await deployContract(deployer, getContractFactory, "Unipool", { ...overrides }),
 
 
-    mockAsset1: await deployContract(deployer, getContractFactory, "ERC20Test", "Carbon Token X", "CTX",  { ...overrides }),
-    mockAsset2: await deployContract(deployer, getContractFactory, "ERC20Test", "Carbon Token Y", "CTY", { ...overrides })
-
-
+    mockAsset1: await deployContract(deployer, getContractFactory, "ERC20Test", "Nature-based Carbon", "NBC",  { ...overrides }),
+    mockAsset2: await deployContract(deployer, getContractFactory, "ERC20Test", "Cookstove Carbon", "CSC", { ...overrides })
 
   };
 
   return [
     {
       ...addresses,
+      kumoFaucet: await deployContract(
+        deployer,
+        getContractFactory,
+        "KumoFaucet",
+        addresses.mockAsset1,
+        addresses.mockAsset2,
+        { ...overrides }
+      ),
       kusdToken: await deployContract(
         deployer,
         getContractFactory,
@@ -482,6 +488,8 @@ const addMockAssetsToSystem = async (
 
 // // Mint token to each acccount / un-comment and only use for prototype server
 // const mintMockAssets = async (signers: SignerWithAddress[], { mockAsset1, mockAsset2 }: _KumoContracts) => {
+//   // await mockAsset1.mint((await signers[0].getAddress()), BigNumber.from("100000000000000000000000000000000000000"));
+//   // await mockAsset2.mint((await signers[0].getAddress()), BigNumber.from("100000000000000000000000000000000000000"));
 //   for (let i = 0; i < signers.length; ++i) {
 //     if(i < 3) {
 //       await mockAsset1.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000000000000000000000"));
@@ -500,9 +508,6 @@ const mintMockAssets = async (signers: SignerWithAddress[], { mockAsset1, mockAs
     await mockAsset2.mint((await signers[i].getAddress()), BigNumber.from("100000000000000000000"))
   }
 };
-
-
-
 
 export const deployAndSetupContracts = async (
   deployer: Signer,

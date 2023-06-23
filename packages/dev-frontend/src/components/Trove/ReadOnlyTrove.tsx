@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { Card, Heading, Box, Flex, Button } from "theme-ui";
+import { Card, Heading, Box, Flex, Button, Text } from "theme-ui";
 import { KumoStoreState, Vault } from "@kumodao/lib-base";
 import { DisabledEditableRow } from "./Editor";
 import { useTroveView } from "./context/TroveViewContext";
@@ -33,8 +33,8 @@ export const ReadOnlyTrove: React.FC = () => {
 
   return (
     <Card variant="base">
-      <Heading as="h2">{vault?.asset.toUpperCase()} Vault</Heading>
-      <Box sx={{ p: [2, 3] }}>
+      <Heading as="h2">{vault?.asset.toUpperCase()} Vault <Text variant="assetName">({vault.assetName})</Text></Heading>
+      <Box sx={{ py: 4, px: [3, 5] }}>
         <Box>
           <DisabledEditableRow
             label="Collateral"
@@ -67,9 +67,6 @@ export const ReadOnlyTrove: React.FC = () => {
           </Button>
           <Button
             onClick={handleAdjustTrove}
-            sx={{
-              mb: 2
-            }}
           >
             <Icon name="pen" size="sm" />
             &nbsp;ADJUST

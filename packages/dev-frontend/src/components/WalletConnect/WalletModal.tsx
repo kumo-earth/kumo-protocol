@@ -1,12 +1,15 @@
 import React, { useEffect } from "react";
 import { useWeb3React } from "@web3-react/core";
+import { Card, Box, Heading, Button, Text } from "theme-ui";
+import { useDialogState } from "reakit/Dialog";
 
 import { useSwitchNetwork } from "../../hooks/useSwitchNetwork";
 import { useWalletView } from "./context/WalletViewContext";
-import { Card, Box, Heading, Button } from "theme-ui";
-import { useDialogState } from "reakit/Dialog";
+import { detectMob } from "../../utils/detectMob";
+
 import { injectedConnector, WalletConnect } from "../../connectors/injectedConnector";
 import { Icon } from "../Icon";
+import { InfoIcon } from "../InfoIcon";
 
 export const WalletModal: React.FC = () => {
   const { activate } = useWeb3React<unknown>();
@@ -32,7 +35,7 @@ export const WalletModal: React.FC = () => {
           <Icon name="window-close" size={"1x"} color="#da357a" />
         </span>
       </Heading>
-      <Box sx={{ p: [4, 3], mt: 3, display: "flex", justifyContent: "center" }}>
+      {!(detectMob()) && <Box sx={{ p: [4, 3], mt: 3, display: "flex", justifyContent: "center" }}>
         <Button
           onClick={e => {
             activate(injectedConnector, undefined, true).catch(async error => {
@@ -48,7 +51,7 @@ export const WalletModal: React.FC = () => {
                 } catch (error) {
                   console.log(error);
                 }
-              } else if (error.name === "NoEthereumProviderError") {
+              } else if (error.name === "NoEthereumProviderError" || error?.message?.includes("No Ethereum provider")) {
                 alert("Please Intall MetaMask Extension");
               }
             });
@@ -64,10 +67,14 @@ export const WalletModal: React.FC = () => {
           <Box sx={{ ml: 2 }}>MetaMask</Box>
         </Button>
       </Box>
-      <Box sx={{ p: [4, 3], mb: 3, display: "flex", justifyContent: "center" }}>
+      }
+
+      <Box sx={{ p: [4, 3], mb: [0, 3], display: "flex", justifyContent: "center" }}>
         <Button
           onClick={e => {
-            activate(WalletConnect);
+            activate(WalletConnect, undefined, true).catch(async error => {
+              console.log(error)
+            })
             dispatchEvent("CLOSE_WALLET_MODAL_PRESSED");
             e.stopPropagation();
           }}
@@ -78,7 +85,25 @@ export const WalletModal: React.FC = () => {
         >
           <Box sx={{ ml: 2 }}>WalletConnect</Box>
         </Button>
+
       </Box>
+      {detectMob() &&
+        <Box sx={{ ml: [3, 3], mb: 3, display: "flex", justifyContent: "center" }}>
+          <Text sx={{ fontWeight: 500 }}>Please install MetaMask App and follow instructions <InfoIcon
+            tooltip={
+              <Card variant="tooltip" sx={{ maxWidth: "270px", wordBreak: 'break-word' }}>
+                <Text sx={{ fontWeight: 'bold' }}>1: Add Network</Text>
+                <br/>Network Name: <Text sx={{ fontWeight: 'bold' }}>{`${process.env.REACT_APP_CHAIN_NAME}`}</Text>
+                <br/>New RPC URL: <Text sx={{ fontWeight: 'bold' }}>{`${process.env.REACT_APP_RPC_URL_WALLET}`}</Text>
+                <br/>Chain ID: <Text sx={{ fontWeight: 'bold' }}>{`${process.env.REACT_APP_CHAIN_ID}`}</Text>
+                <br/>Currency Symbol: <Text sx={{ fontWeight: 'bold' }}>{`${process.env.REACT_APP_CURRENCY_SYMBOL}`}</Text>
+                <br/><Text sx={{ fontWeight: 'bold' }}>2: Use In App MetaMask browser for better experience</Text>
+                <br/><Text sx={{ fontWeight: 'bold' }}>3: If loading takes longer please wait, retry or reload page</Text><br/><br/>
+              </Card>
+            }
+          /></Text>
+        </Box>
+      }
     </Card>
   );
 };

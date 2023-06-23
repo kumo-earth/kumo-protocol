@@ -37,11 +37,13 @@ Implemented by [SendableEthersKumo](./lib-ethers.sendableetherskumo.md)<!-- -->.
 |  [redeemKUSD(asset, amount, maxRedemptionRate)](./lib-base.sendablekumo.redeemkusd.md) | Redeem KUSD to native currency (e.g. Ether) at face value. |
 |  [registerFrontend(assetName, kickbackRate)](./lib-base.sendablekumo.registerfrontend.md) | Register current wallet address as a Kumo frontend. |
 |  [repayKUSD(asset, amount)](./lib-base.sendablekumo.repaykusd.md) | Adjust existing Trove by repaying some of its debt. |
+|  [requestTestToken(\_tokenAddress)](./lib-base.sendablekumo.requesttesttoken.md) | Request Test tokens to an address. |
 |  [sendKUMO(toAddress, amount)](./lib-base.sendablekumo.sendkumo.md) | Send KUMO tokens to an address. |
 |  [sendKUSD(toAddress, amount)](./lib-base.sendablekumo.sendkusd.md) | Send KUSD tokens to an address. |
 |  [stakeKUMO(amount)](./lib-base.sendablekumo.stakekumo.md) | Stake KUMO to start earning fee revenue or increase existing stake. |
 |  [stakeUniTokens(amount)](./lib-base.sendablekumo.stakeunitokens.md) | Stake Uniswap ETH/KUSD LP tokens to participate in liquidity mining and earn KUMO. |
 |  [transferCollateralGainToTrove(asset, assetName)](./lib-base.sendablekumo.transfercollateralgaintotrove.md) | Transfer [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) from Stability Deposit to Trove. |
+|  [transferTestTokens(tokenAddress, toAddress, amount)](./lib-base.sendablekumo.transfertesttokens.md) | Request Test tokens to an address. |
 |  [unstakeKUMO(amount)](./lib-base.sendablekumo.unstakekumo.md) | Withdraw KUMO from staking. |
 |  [unstakeUniTokens(amount)](./lib-base.sendablekumo.unstakeunitokens.md) | Withdraw Uniswap ETH/KUSD LP tokens from liquidity mining. |
 |  [withdrawCollateral(asset, amount)](./lib-base.sendablekumo.withdrawcollateral.md) | Adjust existing Trove by withdrawing some of its collateral. |

@@ -14,13 +14,14 @@ export const Sidebar: React.FC = () => {
           <Link to="/staking">Staking</Link>
           <Link to="/redemption">Redemption</Link>
           <Link to="/stats">Stats</Link>
+          <Link to="/faucet">Faucet</Link>
         </Box>
       </Flex>
       <Divider sx={{ color: "muted" }} />
       <Flex sx={{ flexDirection: "column", pl: 4, pb: 4 }} variant="layout.newTabLinks">
         <Link to={{ pathname: " https://docs.kumo.earth" }} target="_blank"  style={{  color: 'black' }} className="link">Documentation</Link>
-        <Link to={{ pathname: "https://discord.gg/smxnnmG6" }} target="_blank" style={{  color: 'black' }} className="link">Discord</Link>
-        <Link to={{ pathname: "https://twitter.com/Kumo_DAO" }} target="_blank" style={{  color: 'black' }} className="link">Twitter</Link>
+        <Link to={{ pathname: "https://discord.gg/EfMyuxMmeN" }} target="_blank" style={{  color: 'black' }} className="link">Discord</Link>
+        <Link to={{ pathname: "https://twitter.com/Kumo_earth" }} target="_blank" style={{  color: 'black' }} className="link">Twitter</Link>
       </Flex>
     </Container>
   );

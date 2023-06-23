@@ -387,6 +387,29 @@ export interface TransactableKumo {
   sendKUSD(toAddress: string, amount: Decimalish): Promise<void>;
 
   /**
+   * Request Test tokens to an address.
+   *
+   * @param tokenAddress - Address of test token contract.
+   *
+   * @throws
+   * Throws {@link TransactionFailedError} in case of transaction failure.
+   */
+  requestTestToken(tokenAddress: string): Promise<void>;
+
+
+  /**
+   * Request Test tokens to an address.
+   *
+   * @param tokenAddress - Address of test token contract.
+   *
+   * @throws
+   * Throws {@link TransactionFailedError} in case of transaction failure.
+   */
+  transferTestTokens(tokenAddress: string,
+    toAddress: string,
+    amount: Decimalish): Promise<void>;
+
+  /**
    * Send KUMO tokens to an address.
    *
    * @param toAddress - Address of receipient.

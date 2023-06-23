@@ -57,8 +57,8 @@ export const TokenUsd: React.FC<TokenUsdProps> = ({
         position: "absolute",
         pt: "12px",
         right: right,
-        top: "25px",
-        fontSize: 2,
+        top: ["40px", "30px"],
+        fontSize: ["10px", 2],
         fontWeight: "bold",
         border: 1,
         borderColor: "transparent"
@@ -143,10 +143,9 @@ export const StaticAmounts: React.FC<StaticAmountsProps & SxProp> = ({
         {unit && (
           <>
             &nbsp;
-            <Text sx={{ fontWeight: "mediumBold", opacity: 0.5 }}>{unit}</Text>
+            <Text sx={{ fontSize: ['14px', '20px'], fontWeight: "mediumBold", opacity: 0.5 }}>{unit}</Text>
           </>
         )}
-
         {pendingAmount && (
           <>
             &nbsp;
@@ -308,9 +307,9 @@ export const EditableRow: React.FC<EditableRowProps> = ({
         {maxAmount && (
           <Button
             sx={{
-              fontSize: 1,
+              fontSize: ["12px", 1],
               py: 1,
-              px: 3,
+              px: [2, 3],
               borderRadius: '72px'
             }}
             onClick={event => {

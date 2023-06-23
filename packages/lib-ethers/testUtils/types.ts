@@ -1,5 +1,5 @@
 // const assertion
-export const mockAssetContracts = [{ name: "ctx", contract: "mockAsset1" }, { name: "cty", contract: "mockAsset2" }] as const
+export const mockAssetContracts = [{ name: "nbc", contract: "mockAsset1" }, { name: "csc", contract: "mockAsset2" }] as const
 
 // interfaces
 export interface MockAssets {

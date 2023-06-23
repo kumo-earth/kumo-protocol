@@ -24,13 +24,13 @@ export const AssetStats: React.FC<SystemStatsProps> = ({
 }) => {
 
   return (
-    <Card variant="base" sx={{ py: 4, px: 5 }}>
+    <Card variant="base" sx={{ py: 4, px: 5, mt: [ 3,"20px"] }}>
       <Flex sx={{ flexDirection: "column", justifyContent: "space-between", mb: 1 }}>
         <Text as="p" variant="normalBold">
           TOTAL COLLATERAL RATIO{" "}
           <InfoIcon
             tooltip={
-              <Card variant="tooltip" sx={{ width: "220px" }}>
+              <Card variant="tooltip" >
                 {`The Total Collateral Ratio or TCR is the ratio of the Dollar value of the entire
                 system collateral at the current ${toUpper(
                   collateralType
@@ -43,7 +43,7 @@ export const AssetStats: React.FC<SystemStatsProps> = ({
           {totalCollateralRatioPct}
         </Text>
       </Flex>
-      <Flex sx={{ justifyContent: "space-between", mt: 4 }}>
+      <Flex sx={{ justifyContent: "space-between", mt: 4, flexWrap: 'wrap' }}>
         <Text as="p" variant="medium">
           TOTAL MINTED
         </Text>
@@ -58,7 +58,7 @@ export const AssetStats: React.FC<SystemStatsProps> = ({
           sx={{ height: "12px", backgroundColor: "#F0CFDC" }}
         ></Progress>
       </Box>
-      <Flex sx={{ justifyContent: "space-between" }}>
+      <Flex sx={{ justifyContent: "space-between", flexWrap: 'wrap' }}>
         <Text as="p" variant="medium">
           MINT CAP
         </Text>
@@ -68,7 +68,7 @@ export const AssetStats: React.FC<SystemStatsProps> = ({
       </Flex>
       <Divider sx={{ my: 3, color: "#E6E6E6" }} />
       <Box sx={{ my: 2 }}>
-        <Flex sx={{ justifyContent: "space-between", mb: 2 }}>
+        <Flex sx={{ justifyContent: "space-between", mb: 2, flexWrap: 'wrap' }}>
           <Text as="p" variant="small">
             MIN. NET DEBT
           </Text>
@@ -76,7 +76,7 @@ export const AssetStats: React.FC<SystemStatsProps> = ({
             ${minNetDebt.toString()}
           </Text>
         </Flex>
-        <Flex sx={{ justifyContent: "space-between", mb: 2 }}>
+        <Flex sx={{ justifyContent: "space-between", mb: 2, flexWrap: 'wrap' }}>
           <Text as="p" variant="small">
             MIN. COLLATERAL RATIO
           </Text>

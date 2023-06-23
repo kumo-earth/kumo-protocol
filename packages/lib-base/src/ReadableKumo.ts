@@ -224,4 +224,12 @@ export interface ReadableKumo {
    * @param address - Address to check.
    */
   getFrontendStatus(asset: string, address: string): Promise<FrontendStatus>;
+
+
+  /**
+   * Check whether an Test Tokens already transfered or not.
+   *
+   * @param assetAddress - MockAsset Address.
+   */
+  getTestTokensTransferState(assetAddress: string, userAddress: string): Promise<boolean>;
 }

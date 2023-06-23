@@ -67,6 +67,7 @@ export interface ActivePool
 
 interface BorrowerOperationsCalls {
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
+  KUSDMintRemainder(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   MIN_NET_DEBT(_overrides?: CallOverrides): Promise<BigNumber>;
   NAME(_overrides?: CallOverrides): Promise<string>;
   getCompositeDebt(_asset: string, _debt: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
@@ -1060,8 +1061,10 @@ interface KumoParametersCalls {
   CCR(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
   CCR_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
   DECIMAL_PRECISION(_overrides?: CallOverrides): Promise<BigNumber>;
+  KUSDMintCap(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
   KUSD_GAS_COMPENSATION(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
   KUSD_GAS_COMPENSATION_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
+  KUSD_MINT_CAP_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
   MAX_BORROWING_FEE(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
   MAX_BORROWING_FEE_DEFAULT(_overrides?: CallOverrides): Promise<BigNumber>;
   MCR(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
@@ -1102,6 +1105,7 @@ interface KumoParametersTransactions {
   setCCR(_asset: string, newCCR: BigNumberish, _overrides?: Overrides): Promise<void>;
   setCollateralParameters(_asset: string, newMCR: BigNumberish, newCCR: BigNumberish, gasCompensation: BigNumberish, minNetDebt: BigNumberish, precentDivisor: BigNumberish, borrowingFeeFloor: BigNumberish, maxBorrowingFee: BigNumberish, redemptionFeeFloor: BigNumberish, _overrides?: Overrides): Promise<void>;
   setKUMOGasCompensation(_asset: string, gasCompensation: BigNumberish, _overrides?: Overrides): Promise<void>;
+  setKUSDMintCap(_asset: string, _newCap: BigNumberish, _overrides?: Overrides): Promise<void>;
   setMCR(_asset: string, newMCR: BigNumberish, _overrides?: Overrides): Promise<void>;
   setMaxBorrowingFee(_asset: string, maxBorrowingFee: BigNumberish, _overrides?: Overrides): Promise<void>;
   setMinNetDebt(_asset: string, minNetDebt: BigNumberish, _overrides?: Overrides): Promise<void>;
@@ -1123,6 +1127,7 @@ export interface KumoParameters
     GasPoolAddressChanged(_gasPoolAddress?: null): EventFilter;
     KUMOStakingAddressChanged(_kumoStakingAddress?: null): EventFilter;
     KUMOTokenAddressChanged(_kumoTokenAddress?: null): EventFilter;
+    KUSDMintCapChanged(_asset?: null, oldMintCap?: null, newMintCap?: null): EventFilter;
     KUSDTokenAddressChanged(_newKUSDTokenAddress?: null): EventFilter;
     MCRChanged(oldMCR?: null, newMCR?: null): EventFilter;
     MaxBorrowingFeeChanged(oldMaxBorrowingFee?: null, newMaxBorrowingFee?: null): EventFilter;
@@ -1147,6 +1152,7 @@ export interface KumoParameters
   extractEvents(logs: Log[], name: "GasPoolAddressChanged"): _TypedLogDescription<{ _gasPoolAddress: string }>[];
   extractEvents(logs: Log[], name: "KUMOStakingAddressChanged"): _TypedLogDescription<{ _kumoStakingAddress: string }>[];
   extractEvents(logs: Log[], name: "KUMOTokenAddressChanged"): _TypedLogDescription<{ _kumoTokenAddress: string }>[];
+  extractEvents(logs: Log[], name: "KUSDMintCapChanged"): _TypedLogDescription<{ _asset: string; oldMintCap: BigNumber; newMintCap: BigNumber }>[];
   extractEvents(logs: Log[], name: "KUSDTokenAddressChanged"): _TypedLogDescription<{ _newKUSDTokenAddress: string }>[];
   extractEvents(logs: Log[], name: "MCRChanged"): _TypedLogDescription<{ oldMCR: BigNumber; newMCR: BigNumber }>[];
   extractEvents(logs: Log[], name: "MaxBorrowingFeeChanged"): _TypedLogDescription<{ oldMaxBorrowingFee: BigNumber; newMaxBorrowingFee: BigNumber }>[];
@@ -1192,4 +1198,47 @@ export interface ERC20Test
   };
   extractEvents(logs: Log[], name: "Approval"): _TypedLogDescription<{ owner: string; spender: string; value: BigNumber }>[];
   extractEvents(logs: Log[], name: "Transfer"): _TypedLogDescription<{ from: string; to: string; value: BigNumber }>[];
+}
+
+interface KumoFaucetCalls {
+  allowance(owner: string, spender: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  balanceOf(account: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  decimals(_overrides?: CallOverrides): Promise<number>;
+  getBalance(_tokenAddress: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  getTestTokensTransferState(_tokenAddress: string, _userAddress: string, _overrides?: CallOverrides): Promise<boolean>;
+  name(_overrides?: CallOverrides): Promise<string>;
+  owner(_overrides?: CallOverrides): Promise<string>;
+  symbol(_overrides?: CallOverrides): Promise<string>;
+  totalSupply(_overrides?: CallOverrides): Promise<BigNumber>;
+  withdrawalAmount(_overrides?: CallOverrides): Promise<BigNumber>;
+}
+
+interface KumoFaucetTransactions {
+  approve(spender: string, amount: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  decreaseAllowance(spender: string, subtractedValue: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  increaseAllowance(spender: string, addedValue: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  renounceOwnership(_overrides?: Overrides): Promise<void>;
+  requestTokens(_tokenAddress: string, _overrides?: Overrides): Promise<boolean>;
+  setWithdrawalAmount(amount: BigNumberish, _overrides?: Overrides): Promise<void>;
+  transfer(to: string, amount: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  transferFrom(from: string, to: string, amount: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  transferOwnership(newOwner: string, _overrides?: Overrides): Promise<void>;
+  transferTestTokens(_tokenAddress: string, to: string, amount: BigNumberish, _overrides?: Overrides): Promise<boolean>;
+  withdraw(_tokenAddress: string, _overrides?: Overrides): Promise<void>;
+}
+
+export interface KumoFaucet
+  extends _TypedKumoContract<KumoFaucetCalls, KumoFaucetTransactions> {
+  readonly filters: {
+    Approval(owner?: string | null, spender?: string | null, value?: null): EventFilter;
+    Deposit(from?: string | null, amount?: BigNumberish | null): EventFilter;
+    OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): EventFilter;
+    Transfer(from?: string | null, to?: string | null, value?: null): EventFilter;
+    Withdrawal(to?: string | null, amount?: BigNumberish | null): EventFilter;
+  };
+  extractEvents(logs: Log[], name: "Approval"): _TypedLogDescription<{ owner: string; spender: string; value: BigNumber }>[];
+  extractEvents(logs: Log[], name: "Deposit"): _TypedLogDescription<{ from: string; amount: BigNumber }>[];
+  extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
+  extractEvents(logs: Log[], name: "Transfer"): _TypedLogDescription<{ from: string; to: string; value: BigNumber }>[];
+  extractEvents(logs: Log[], name: "Withdrawal"): _TypedLogDescription<{ to: string; amount: BigNumber }>[];
 }

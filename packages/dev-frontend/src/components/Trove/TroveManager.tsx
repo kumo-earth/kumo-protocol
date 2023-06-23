@@ -291,9 +291,6 @@ export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) 
           </TroveAction>
         ) : (
           <Button
-            sx={{
-              mb: 2
-            }}
             variant="primaryInActive"
             disabled
           >

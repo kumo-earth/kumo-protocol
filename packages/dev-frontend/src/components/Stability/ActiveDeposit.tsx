@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Card, Heading, Box, Flex, Button } from "theme-ui";
+import { Card, Heading, Box, Flex, Button, Text } from "theme-ui";
 
 import { KumoStoreState, Vault } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
@@ -25,7 +25,7 @@ export const ActiveDeposit: React.FC = () => {
   const { collateralType } = useParams<{ collateralType: string }>();
   const { vaults } = useKumoSelector(select);
   const vault = vaults.find(vault => vault.asset === collateralType) || new Vault();
-  const { stabilityDeposit, trove, kusdInStabilityPool } = vault;
+  const { stabilityDeposit, trove, kusdInStabilityPool, assetName } = vault;
   const poolShare = stabilityDeposit.currentKUSD.mulDiv(100, kusdInStabilityPool);
 
   const handleAdjustDeposit = useCallback(() => {
@@ -51,7 +51,7 @@ export const ActiveDeposit: React.FC = () => {
   return (
     <Card variant="modalCard">
       <Heading as="h2">
-        {collateralType?.toUpperCase()} Stability Pool
+        {collateralType?.toUpperCase()} Stability Pool <Text variant="assetName">({assetName})</Text>
         <span
           style={{ marginLeft: "auto", cursor: "pointer" }}
           onClick={() => dispatchEvent("CLOSE_MODAL_PRESSED")}

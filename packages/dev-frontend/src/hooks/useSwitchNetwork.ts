@@ -46,7 +46,7 @@ export function useSwitchNetwork(): {
                   chainId: toHex(chainId),
                   nativeCurrency: { name: `${process.env.REACT_APP_CURRENCY_NAME}`, decimals: 18, symbol: `${process.env.REACT_APP_CURRENCY_SYMBOL}` },
                   rpcUrls: [
-                    `${process.env.REACT_APP_RPC_URL}`
+                    `${process.env.REACT_APP_RPC_URL_WALLET}`
                   ]
                 }
               ]

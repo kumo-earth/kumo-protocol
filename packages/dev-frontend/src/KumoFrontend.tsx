@@ -1,5 +1,5 @@
 import React from "react";
-import { Flex, Container, Box } from "theme-ui";
+import { Flex, Container, Box, Text } from "theme-ui";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import { Wallet } from "@ethersproject/wallet";
 
@@ -26,14 +26,15 @@ import { StabilityPoolStaking } from "./pages/StabilityPoolStaking";
 import { StakingType } from "./pages/StakingType";
 import { DashboardProvider } from "./hooks/DashboardContext";
 import { useWeb3React } from "@web3-react/core";
-// import { DomainSafetyBanner } from "./components/DomainSafetyBanner";
-
+import { Banner } from "./components/Banner";
 import appBackground from "./asset/images/appBackground.svg";
 import UserView from "./components/UserView";
 import { Portfolio } from "./pages/Portfolio";
 import { Stats } from "./pages/stats";
 import { LiquidityStaking } from "./pages/LiquidityStaking";
 import { SystemStatsPopup } from "./components/SystemStatsPopup";
+import { Link } from "./components/Link";
+import Faucet from "./pages/Faucet";
 
 type KumoFrontendProps = {
   loader?: React.ReactNode;
@@ -52,6 +53,7 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
     Wallet
   });
 
+
   return (
     <KumoStoreProvider {...{ loader }} store={kumo.store}>
       <Router>
@@ -60,7 +62,15 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
             <StabilityViewProvider>
               <StakingViewProvider>
                 <FarmViewProvider>
-                  {/* <DomainSafetyBanner /> */}
+                  <Banner bannerHeading="Information" visibility={1000} viewId="testToken">
+                    <Text sx={{ fontWeight: 500 }}> This is the KUMO test version. Please connect and then request test tokens at the faucet. For feedback and questions, reach out to <Text sx={{ fontWeight: "bold" }}>contact@kumo.earth</Text>.</Text>
+                  </Banner>
+                  {/* {
+                    account && <Banner bannerHeading="Faucet links for test MATICS" visibility={1000} viewId="matics">
+                      <Link to={{ pathname: "https://mumbaifaucet.com/" }} target="_blank" sx={{ p: 0, pt: 2, pb: 1, textTransform: "lowercase" }}>https://mumbaifaucet.com/</Link>
+                      <Link to={{ pathname: "https://faucet.polygon.technology/" }} target="_blank" sx={{ p: 0, pb: 2, textTransform: "lowercase"  }}>https://faucet.polygon.technology/</Link>
+                    </Banner>
+                  } */}
                   <Flex variant="layout.app" sx={{ backgroundImage: `url(${appBackground})` }}>
                     <Sidebar />
                     <Flex
@@ -114,6 +124,9 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                           </Route>
                           <Route path="/redemption" exact>
                             <RedemptionPage />
+                          </Route>
+                          <Route path="/faucet" exact>
+                            <Faucet />
                           </Route>
                           <Route path="*">
                             <Redirect from="*" to="/dashboard" exact />

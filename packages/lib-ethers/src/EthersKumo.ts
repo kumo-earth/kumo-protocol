@@ -345,6 +345,15 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     return this._readable.getFrontendStatus(asset, address, overrides);
   }
 
+  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTestTokensTransferState} */
+  getTestTokensTransferState(
+    assetAddress: string,
+    userAddress: string,
+    overrides?: EthersCallOverrides
+  ): Promise<boolean> {
+    return this._readable.getTestTokensTransferState(assetAddress, userAddress, overrides);
+  }
+
   /**
    * {@inheritDoc @kumodao/lib-base#TransactableKumo.openTrove}
    *
@@ -563,6 +572,36 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     overrides?: EthersTransactionOverrides
   ): Promise<void> {
     return this.send.sendKUSD(toAddress, amount, overrides).then(waitForSuccess);
+  }
+
+  /**
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.requestTestToken}
+   *
+   * @throws
+   * Throws {@link EthersTransactionFailedError} in case of transaction failure.
+   * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
+   */
+  requestTestToken(
+    tokenAddress: string,
+    overrides?: EthersTransactionOverrides
+  ): Promise<void> {
+    return this.send.requestTestToken(tokenAddress, overrides).then(waitForSuccess);
+  }
+
+  /**
+   * {@inheritDoc @kumodao/lib-base#TransactableKumo.transferTestTokens}
+   *
+   * @throws
+   * Throws {@link EthersTransactionFailedError} in case of transaction failure.
+   * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
+   */
+  transferTestTokens(
+    tokenAddress: string,
+    toAddress: string,
+    amount: Decimalish,
+    overrides?: EthersTransactionOverrides
+  ): Promise<void> {
+    return this.send.transferTestTokens(tokenAddress, toAddress, amount, overrides).then(waitForSuccess);
   }
 
   /**

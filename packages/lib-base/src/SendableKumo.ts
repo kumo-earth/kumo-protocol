@@ -232,6 +232,16 @@ export interface SendableKumo<R = unknown, S = unknown>
     amount: Decimalish
   ): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
 
+  /** {@inheritDoc TransactableKumo.requestTestToken} */
+  requestTestToken(_tokenAddress: string): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
+
+
+  /** {@inheritDoc TransactableKumo.transferTestTokens} */
+  transferTestTokens(tokenAddress: string,
+    toAddress: string,
+    amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
+
+
   /** {@inheritDoc TransactableKumo.sendKUMO} */
   sendKUMO(
     toAddress: string,

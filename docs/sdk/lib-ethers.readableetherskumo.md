@@ -43,6 +43,7 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [getRemainingLiquidityMiningKUMOReward(overrides)](./lib-ethers.readableetherskumo.getremainingliquidityminingkumoreward.md) |  | Get the remaining KUMO that will be collectively rewarded to liquidity miners. |
 |  [getRemainingStabilityPoolKUMOReward(overrides)](./lib-ethers.readableetherskumo.getremainingstabilitypoolkumoreward.md) |  | Get the remaining KUMO that will be collectively rewarded to stability depositors. |
 |  [getStabilityDeposit(assetName, address, overrides)](./lib-ethers.readableetherskumo.getstabilitydeposit.md) |  | Get the current state of a Stability Deposit. |
+|  [getTestTokensTransferState(assetAddress, userAddress, overrides)](./lib-ethers.readableetherskumo.gettesttokenstransferstate.md) |  | Check whether an Test Tokens already transfered or not. |
 |  [getTotal(asset, overrides)](./lib-ethers.readableetherskumo.gettotal.md) |  | Get the total amount of collateral and debt in the Kumo system. |
 |  [getTotalRedistributed(asset, overrides)](./lib-ethers.readableetherskumo.gettotalredistributed.md) |  | Get the total collateral and debt per stake that has been liquidated through redistribution. |
 |  [getTotalStakedKUMO(overrides)](./lib-ethers.readableetherskumo.gettotalstakedkumo.md) |  | Get the total amount of KUMO currently staked. |
