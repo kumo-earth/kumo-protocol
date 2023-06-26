@@ -192,7 +192,7 @@ contract("BorrowerOperations", async accounts => {
       // alice creates a Trove and adds first collateral
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: alice } });
 
-      const alice_Trove_Before = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_Before = await troveManager.Troves(assetAddress1, alice);
       const coll_before = toBN(alice_Trove_Before[2]);
       const status_Before = toBN(alice_Trove_Before[4]);
 
@@ -205,7 +205,7 @@ contract("BorrowerOperations", async accounts => {
         value: dec(1, "ether")
       });
 
-      const alice_Trove_After = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_After = await troveManager.Troves(assetAddress1, alice);
       const coll_After = toBN(alice_Trove_After[2]);
       const status_After = toBN(alice_Trove_After[4]);
 
@@ -240,7 +240,7 @@ contract("BorrowerOperations", async accounts => {
       //  Alice creates initial Trove with 1 ether
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: alice } });
 
-      const alice_Trove_Before = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_Before = await troveManager.Troves(assetAddress1, alice);
       const alice_Stake_Before = toBN(alice_Trove_Before[3]);
       const totalStakes_Before = await troveManager.totalStakes(assetAddress1);
 
@@ -252,7 +252,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check stake and total stakes get updated
-      const alice_Trove_After = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_After = await troveManager.Troves(assetAddress1, alice);
       const alice_Stake_After = toBN(alice_Trove_After[3]);
       const totalStakes_After = await troveManager.totalStakes(assetAddress1);
 
@@ -296,11 +296,11 @@ contract("BorrowerOperations", async accounts => {
       const L_KUSDDebt = await troveManager.L_KUSDDebts(assetAddress1);
 
       // check Alice and Bob's reward snapshots are zero before they alter their Troves
-      const alice_rewardSnapshot_Before = await troveManager.rewardSnapshots(alice, assetAddress1);
+      const alice_rewardSnapshot_Before = await troveManager.rewardSnapshots(assetAddress1, alice);
       const alice_ETHrewardSnapshot_Before = alice_rewardSnapshot_Before[0];
       const alice_KUSDDebtRewardSnapshot_Before = alice_rewardSnapshot_Before[1];
 
-      const bob_rewardSnapshot_Before = await troveManager.rewardSnapshots(bob, assetAddress1);
+      const bob_rewardSnapshot_Before = await troveManager.rewardSnapshots(assetAddress1, bob);
       const bob_ETHrewardSnapshot_Before = bob_rewardSnapshot_Before[0];
       const bob_KUSDDebtRewardSnapshot_Before = bob_rewardSnapshot_Before[1];
 
@@ -348,11 +348,11 @@ contract("BorrowerOperations", async accounts => {
 
       /* Check that both Alice and Bob's snapshots of the rewards-per-unit-staked metrics should be updated
        to the latest values of L_ETH and L_KUSDDebt */
-      const alice_rewardSnapshot_After = await troveManager.rewardSnapshots(alice, assetAddress1);
+      const alice_rewardSnapshot_After = await troveManager.rewardSnapshots(assetAddress1, alice);
       const alice_ETHrewardSnapshot_After = alice_rewardSnapshot_After[0];
       const alice_KUSDDebtRewardSnapshot_After = alice_rewardSnapshot_After[1];
 
-      const bob_rewardSnapshot_After = await troveManager.rewardSnapshots(bob, assetAddress1);
+      const bob_rewardSnapshot_After = await troveManager.rewardSnapshots(assetAddress1, bob);
       const bob_ETHrewardSnapshot_After = bob_rewardSnapshot_After[0];
       const bob_KUSDDebtRewardSnapshot_After = bob_rewardSnapshot_After[1];
 
@@ -460,7 +460,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check Alice's collateral
-      const aliceCollAfter = toBN((await troveManager.Troves(alice, assetAddress1))[2]);
+      const aliceCollAfter = toBN((await troveManager.Troves(assetAddress1, alice))[2]);
       assert.isTrue(aliceCollAfter.eq(aliceCollBefore.add(collTopUp)));
     });
 
@@ -644,7 +644,7 @@ contract("BorrowerOperations", async accounts => {
       const aliceColl = (await troveManager.getEntireDebtAndColl(alice, assetAddress1))[2];
 
       // Check Trove is active
-      const alice_Trove_Before = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_Before = await troveManager.Troves(assetAddress1, alice);
       const status_Before = alice_Trove_Before[4];
       assert.equal(status_Before, 1);
       assert.isTrue(await sortedTroves.contains(assetAddress1, alice));
@@ -661,7 +661,7 @@ contract("BorrowerOperations", async accounts => {
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: alice } });
 
       // Check Trove is active
-      const alice_Trove_Before = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_Before = await troveManager.Troves(assetAddress1, alice);
       const status_Before = alice_Trove_Before[4];
       assert.equal(status_Before, 1);
       assert.isTrue(await sortedTroves.contains(assetAddress1, alice));
@@ -672,7 +672,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check Trove is still active
-      const alice_Trove_After = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_After = await troveManager.Troves(assetAddress1, alice);
       const status_After = alice_Trove_After[4];
       assert.equal(status_After, 1);
       assert.isTrue(await sortedTroves.contains(assetAddress1, alice));
@@ -688,7 +688,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check 1 ether remaining
-      const alice_Trove_After = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_After = await troveManager.Troves(assetAddress1, alice);
       const aliceCollAfter = await getTroveEntireColl(alice, assetAddress1);
 
       assert.isTrue(aliceCollAfter.eq(aliceCollBefore.sub(toBN(dec(1, "ether")))));
@@ -725,7 +725,7 @@ contract("BorrowerOperations", async accounts => {
       const aliceColl = await getTroveEntireColl(alice, assetAddress1);
       assert.isTrue(aliceColl.gt(toBN("0")));
 
-      const alice_Trove_Before = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_Before = await troveManager.Troves(assetAddress1, alice);
       const alice_Stake_Before = toBN(alice_Trove_Before[2]);
       const totalStakes_Before = await troveManager.totalStakes(assetAddress1);
 
@@ -738,7 +738,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check stake and total stakes get updated
-      const alice_Trove_After = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_After = await troveManager.Troves(assetAddress1, alice);
       const alice_Stake_After = toBN(alice_Trove_After[2]);
       const totalStakes_After = await troveManager.totalStakes(assetAddress1);
 
@@ -866,11 +866,11 @@ contract("BorrowerOperations", async accounts => {
 
       /* After top up, both Alice and Bob's snapshots of the rewards-per-unit-staked metrics should be updated
        to the latest values of L_ETH and L_KUSDDebt */
-      const alice_rewardSnapshot_After = await troveManager.rewardSnapshots(alice, assetAddress1);
+      const alice_rewardSnapshot_After = await troveManager.rewardSnapshots(assetAddress1, alice);
       const alice_ETHrewardSnapshot_After = alice_rewardSnapshot_After[0];
       const alice_KUSDDebtRewardSnapshot_After = alice_rewardSnapshot_After[1];
 
-      const bob_rewardSnapshot_After = await troveManager.rewardSnapshots(bob, assetAddress1);
+      const bob_rewardSnapshot_After = await troveManager.rewardSnapshots(assetAddress1, bob);
       const bob_ETHrewardSnapshot_After = bob_rewardSnapshot_After[0];
       const bob_KUSDDebtRewardSnapshot_After = bob_rewardSnapshot_After[1];
 
@@ -1554,7 +1554,7 @@ contract("BorrowerOperations", async accounts => {
         const emittedFee = toBN(th.getKUSDFeeFromKUSDBorrowingEvent(withdrawalTx));
         assert.isTrue(emittedFee.gt(toBN("0")));
 
-        const newDebt = (await troveManager.Troves(D, assetAddress1))[TroveData.debt];
+        const newDebt = (await troveManager.Troves(assetAddress1, D))[TroveData.debt];
 
         // Check debt on Trove struct equals initial debt + withdrawal + emitted fee
         th.assertIsApproximatelyEqual(
@@ -3027,7 +3027,7 @@ contract("BorrowerOperations", async accounts => {
         const emittedFee = toBN(th.getKUSDFeeFromKUSDBorrowingEvent(adjustmentTx));
         assert.isTrue(emittedFee.gt(toBN("0")));
 
-        const D_newDebt = toBN((await troveManager.Troves(D, assetAddress1))[TroveData.debt]);
+        const D_newDebt = toBN((await troveManager.Troves(assetAddress1, D))[TroveData.debt]);
 
         // Check debt on Trove struct equals initila debt plus drawn debt plus emitted fee
         assert.isTrue(D_newDebt.eq(D_debtBefore.add(withdrawal_D).add(emittedFee)));
@@ -5037,7 +5037,7 @@ contract("BorrowerOperations", async accounts => {
       // Alice attempts to close trove
       await borrowerOperations.closeTrove(assetAddress1, { from: alice });
 
-      const stakeAfter = (await troveManager.Troves(alice, assetAddress1))[2].toString();
+      const stakeAfter = (await troveManager.Troves(assetAddress1, alice))[2].toString();
       assert.equal(stakeAfter, "0");
       // check withdrawal was successful
     });
@@ -5086,9 +5086,9 @@ contract("BorrowerOperations", async accounts => {
       await priceFeed.setPrice(assetAddress1, dec(100, 18));
 
       // Get Alice's pending reward snapshots
-      const L_ETH_A_Snapshot = toBN((await troveManager.rewardSnapshots(alice, assetAddress1))[0]);
+      const L_ETH_A_Snapshot = toBN((await troveManager.rewardSnapshots(assetAddress1, alice))[0]);
       const L_KUSDDebt_A_Snapshot = toBN(
-        (await troveManager.rewardSnapshots(alice, assetAddress1))[1]
+        (await troveManager.rewardSnapshots(assetAddress1, alice))[1]
       );
       assert.isTrue(L_ETH_A_Snapshot.gt(toBN("0")));
       assert.isTrue(L_KUSDDebt_A_Snapshot.gt(toBN("0")));
@@ -5099,10 +5099,10 @@ contract("BorrowerOperations", async accounts => {
 
       // Get Alice's pending reward snapshots after Carol's liquidation. Check above 0
       const L_ETH_Snapshot_A_AfterLiquidation = toBN(
-        (await troveManager.rewardSnapshots(alice, assetAddress1))[0]
+        (await troveManager.rewardSnapshots(assetAddress1, alice))[0]
       );
       const L_KUSDDebt_Snapshot_A_AfterLiquidation = toBN(
-        (await troveManager.rewardSnapshots(alice, assetAddress1))[1]
+        (await troveManager.rewardSnapshots(assetAddress1, alice))[1]
       );
 
       assert.isTrue(L_ETH_Snapshot_A_AfterLiquidation.gt(toBN("0")));
@@ -5144,7 +5144,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check Trove is active
-      const alice_Trove_Before = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_Before = await troveManager.Troves(assetAddress1, alice);
       const status_Before = alice_Trove_Before[4];
 
       assert.equal(status_Before, 1);
@@ -5156,7 +5156,7 @@ contract("BorrowerOperations", async accounts => {
       // Close the trove
       await borrowerOperations.closeTrove(assetAddress1, { from: alice });
 
-      const alice_Trove_After = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_After = await troveManager.Troves(assetAddress1, alice);
       const status_After = alice_Trove_After[4];
 
       assert.equal(status_After, 2);
@@ -5410,11 +5410,11 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // check Alice and Bob's reward snapshots are zero before they alter their Troves
-      const alice_rewardSnapshot_Before = await troveManager.rewardSnapshots(alice, assetAddress1);
+      const alice_rewardSnapshot_Before = await troveManager.rewardSnapshots(assetAddress1, alice);
       const alice_ETHrewardSnapshot_Before = alice_rewardSnapshot_Before[0];
       const alice_KUSDDebtRewardSnapshot_Before = alice_rewardSnapshot_Before[1];
 
-      const bob_rewardSnapshot_Before = await troveManager.rewardSnapshots(bob, assetAddress1);
+      const bob_rewardSnapshot_Before = await troveManager.rewardSnapshots(assetAddress1, bob);
       const bob_ETHrewardSnapshot_Before = bob_rewardSnapshot_Before[0];
       const bob_KUSDDebtRewardSnapshot_Before = bob_rewardSnapshot_Before[1];
 
@@ -6298,7 +6298,7 @@ contract("BorrowerOperations", async accounts => {
         const emittedFee = toBN(th.getKUSDFeeFromKUSDBorrowingEvent(openTroveTx));
         assert.isTrue(toBN(emittedFee).gt(toBN("0")));
 
-        const newDebt = (await troveManager.Troves(D, assetAddress1))[TroveData.debt];
+        const newDebt = (await troveManager.Troves(assetAddress1, D))[TroveData.debt];
 
         // Check debt on Trove struct equals drawn debt plus emitted fee
         th.assertIsApproximatelyEqual(
@@ -6923,7 +6923,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check Bob's snapshots of L_ETH and L_KUSD equal the respective current values
-      const bob_rewardSnapshot = await troveManager.rewardSnapshots(bob, assetAddress1);
+      const bob_rewardSnapshot = await troveManager.rewardSnapshots(assetAddress1, bob);
       const bob_ETHrewardSnapshot = bob_rewardSnapshot[0];
       const bob_KUSDDebtRewardSnapshot = bob_rewardSnapshot[1];
 
@@ -6953,7 +6953,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check Trove is active
-      const alice_Trove_1 = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_1 = await troveManager.Troves(assetAddress1, alice);
       const status_1 = alice_Trove_1[4];
       assert.equal(status_1, 1);
       assert.isTrue(await sortedTroves.contains(assetAddress1, alice));
@@ -6965,7 +6965,7 @@ contract("BorrowerOperations", async accounts => {
       await borrowerOperations.closeTrove(assetAddress1, { from: alice });
 
       // Check Trove is closed
-      const alice_Trove_2 = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_2 = await troveManager.Troves(assetAddress1, alice);
       const status_2 = alice_Trove_2[4];
       assert.equal(status_2, 2);
       assert.isFalse(await sortedTroves.contains(assetAddress1, alice));
@@ -6979,7 +6979,7 @@ contract("BorrowerOperations", async accounts => {
       });
 
       // Check Trove is re-opened
-      const alice_Trove_3 = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_3 = await troveManager.Troves(assetAddress1, alice);
       const status_3 = alice_Trove_3[4];
       assert.equal(status_3, 1);
       assert.isTrue(await sortedTroves.contains(assetAddress1, alice));
@@ -6987,7 +6987,7 @@ contract("BorrowerOperations", async accounts => {
 
     it("openTrove(): increases the Trove's KUSD debt by the correct amount", async () => {
       // check before
-      const alice_Trove_Before = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_Before = await troveManager.Troves(assetAddress1, alice);
       const debt_Before = alice_Trove_Before[1];
       assert.equal(debt_Before, 0);
 
@@ -7002,7 +7002,7 @@ contract("BorrowerOperations", async accounts => {
       );
 
       // check after
-      const alice_Trove_After = await troveManager.Troves(alice, assetAddress1);
+      const alice_Trove_After = await troveManager.Troves(assetAddress1, alice);
       const debt_After = alice_Trove_After[1];
       th.assertIsApproximatelyEqual(debt_After, dec(10000, 18), 10000);
     });

@@ -162,9 +162,9 @@ contract("TroveManager - in Recovery Mode - back to normal mode in 1 tx", async 
       assert.isFalse(await sortedTroves.contains(assetAddress1, carol));
 
       // Confirm troves have status 'closed by liquidation' (Status enum element idx 3)
-      assert.equal((await troveManager.Troves(alice, assetAddress1))[TroveData.status], "3");
-      assert.equal((await troveManager.Troves(bob, assetAddress1))[TroveData.status], "3");
-      assert.equal((await troveManager.Troves(carol, assetAddress1))[TroveData.status], "3");
+      assert.equal((await troveManager.Troves(assetAddress1, alice))[TroveData.status], "3");
+      assert.equal((await troveManager.Troves(assetAddress1, bob))[TroveData.status], "3");
+      assert.equal((await troveManager.Troves(assetAddress1, carol))[TroveData.status], "3");
     });
 
     it("Stability Pool profit matches", async () => {
@@ -180,8 +180,8 @@ contract("TroveManager - in Recovery Mode - back to normal mode in 1 tx", async 
       assert.isFalse(await sortedTroves.contains(assetAddress1, carol));
 
       // Confirm troves have status 'closed by liquidation' (Status enum element idx 3)
-      assert.equal((await troveManager.Troves(alice, assetAddress1))[TroveData.status], "3");
-      assert.equal((await troveManager.Troves(carol, assetAddress1))[TroveData.status], "3");
+      assert.equal((await troveManager.Troves(assetAddress1, alice))[TroveData.status], "3");
+      assert.equal((await troveManager.Troves(assetAddress1, carol))[TroveData.status], "3");
 
       const spEthAfter = await stabilityPoolAsset1.getAssetBalance();
       const spKusdAfter = await stabilityPoolAsset1.getTotalKUSDDeposits();
@@ -274,10 +274,10 @@ contract("TroveManager - in Recovery Mode - back to normal mode in 1 tx", async 
       assert.isTrue(await sortedTroves.contains(assetAddress1, carol));
 
       // Confirm troves have status 'closed by liquidation' (Status enum element idx 3)
-      assert.equal((await troveManager.Troves(bob, assetAddress1))[TroveData.status], "3");
+      assert.equal((await troveManager.Troves(assetAddress1, bob))[TroveData.status], "3");
       // Confirm troves have status 'open' (Status enum element idx 1)
-      assert.equal((await troveManager.Troves(alice, assetAddress1))[TroveData.status], "1");
-      assert.equal((await troveManager.Troves(carol, assetAddress1))[TroveData.status], "1");
+      assert.equal((await troveManager.Troves(assetAddress1, alice))[TroveData.status], "1");
+      assert.equal((await troveManager.Troves(assetAddress1, carol))[TroveData.status], "1");
     });
   });
 
@@ -349,8 +349,8 @@ contract("TroveManager - in Recovery Mode - back to normal mode in 1 tx", async 
       assert.isFalse(await sortedTroves.contains(assetAddress1, bob));
 
       // Confirm troves have status 'closed by liquidation' (Status enum element idx 3)
-      assert.equal((await troveManager.Troves(alice, assetAddress1))[TroveData.status], "3");
-      assert.equal((await troveManager.Troves(bob, assetAddress1))[TroveData.status], "3");
+      assert.equal((await troveManager.Troves(assetAddress1, alice))[TroveData.status], "3");
+      assert.equal((await troveManager.Troves(assetAddress1, bob))[TroveData.status], "3");
     });
   });
 });

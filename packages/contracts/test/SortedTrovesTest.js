@@ -126,9 +126,9 @@ contract("SortedTroves", async accounts => {
       });
 
       // Confirm trove statuses became active
-      assert.equal((await troveManager.Troves(alice, assetAddress1))[TroveData.status], "1");
-      assert.equal((await troveManager.Troves(bob, assetAddress1))[TroveData.status], "1");
-      assert.equal((await troveManager.Troves(carol, assetAddress1))[TroveData.status], "1");
+      assert.equal((await troveManager.Troves(assetAddress1, alice))[TroveData.status], "1");
+      assert.equal((await troveManager.Troves(assetAddress1, bob))[TroveData.status], "1");
+      assert.equal((await troveManager.Troves(assetAddress1, carol))[TroveData.status], "1");
 
       // Check sorted list contains troves
       assert.isTrue(await sortedTroves.contains(assetAddress1, alice));
@@ -150,8 +150,8 @@ contract("SortedTroves", async accounts => {
       });
 
       // Confirm troves have non-existent status
-      assert.equal((await troveManager.Troves(dennis, assetAddress1))[TroveData.status], "0");
-      assert.equal((await troveManager.Troves(erin, assetAddress1))[TroveData.status], "0");
+      assert.equal((await troveManager.Troves(assetAddress1, dennis))[TroveData.status], "0");
+      assert.equal((await troveManager.Troves(assetAddress1, erin))[TroveData.status], "0");
 
       // Check sorted list do not contain troves
       assert.isFalse(await sortedTroves.contains(assetAddress1, dennis));
@@ -189,9 +189,9 @@ contract("SortedTroves", async accounts => {
       await borrowerOperations.closeTrove(assetAddress1, { from: carol });
 
       // Confirm trove statuses became closed
-      assert.equal((await troveManager.Troves(alice, assetAddress1))[TroveData.status], "2");
-      assert.equal((await troveManager.Troves(bob, assetAddress1))[TroveData.status], "2");
-      assert.equal((await troveManager.Troves(carol, assetAddress1))[TroveData.status], "2");
+      assert.equal((await troveManager.Troves(assetAddress1, alice))[TroveData.status], "2");
+      assert.equal((await troveManager.Troves(assetAddress1, bob))[TroveData.status], "2");
+      assert.equal((await troveManager.Troves(assetAddress1, carol))[TroveData.status], "2");
 
       // Check sorted list does not contain troves
       assert.isFalse(await sortedTroves.contains(assetAddress1, alice));
@@ -231,9 +231,9 @@ contract("SortedTroves", async accounts => {
       await borrowerOperations.closeTrove(assetAddress1, { from: carol });
 
       // Confirm trove statuses became closed
-      assert.equal((await troveManager.Troves(alice, assetAddress1))[TroveData.status], "2");
-      assert.equal((await troveManager.Troves(bob, assetAddress1))[TroveData.status], "2");
-      assert.equal((await troveManager.Troves(carol, assetAddress1))[TroveData.status], "2");
+      assert.equal((await troveManager.Troves(assetAddress1, alice))[TroveData.status], "2");
+      assert.equal((await troveManager.Troves(assetAddress1, bob))[TroveData.status], "2");
+      assert.equal((await troveManager.Troves(assetAddress1, carol))[TroveData.status], "2");
 
       await openTrove({
         asset: assetAddress1,
@@ -252,9 +252,9 @@ contract("SortedTroves", async accounts => {
       });
 
       // Confirm trove statuses became open again
-      assert.equal((await troveManager.Troves(alice, assetAddress1))[TroveData.status], "1");
-      assert.equal((await troveManager.Troves(bob, assetAddress1))[TroveData.status], "1");
-      assert.equal((await troveManager.Troves(carol, assetAddress1))[TroveData.status], "1");
+      assert.equal((await troveManager.Troves(assetAddress1, alice))[TroveData.status], "1");
+      assert.equal((await troveManager.Troves(assetAddress1, bob))[TroveData.status], "1");
+      assert.equal((await troveManager.Troves(assetAddress1, carol))[TroveData.status], "1");
 
       // Check sorted list does  contain troves
       assert.isTrue(await sortedTroves.contains(assetAddress1, alice));
