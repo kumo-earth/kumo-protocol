@@ -2,14 +2,11 @@ const deploymentHelper = require("../../utils/deploymentHelpers.js");
 const testHelpers = require("../../utils/testHelpers.js");
 
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol");
-const NonPayable = artifacts.require("NonPayable.sol");
-const KUSDTokenTester = artifacts.require("./KUSDTokenTester");
 
 const th = testHelpers.TestHelper;
 
 const dec = th.dec;
 const toBN = th.toBN;
-const mv = testHelpers.MoneyValues;
 const timeValues = testHelpers.TimeValues;
 const TroveData = testHelpers.TroveData;
 
@@ -40,13 +37,7 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
     C,
     D,
     E,
-    F,
-    G,
-    H,
-    defaulter_1, defaulter_2,
-    frontEnd_1,
-    frontEnd_2,
-    frontEnd_3
+    defaulter_1,
   ] = accounts;
 
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000);
@@ -61,8 +52,6 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
   let activePool;
   let collSurplusPool;
   let stabilityPool1;
-  let stabilityPool2;
-  let defaultPool;
   let borrowerOperations;
   let kumoStaking;
   let kumoToken;
@@ -73,20 +62,10 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
 
   let contracts;
 
-  const getOpenTroveKUSDAmount = async (totalDebt, asset) =>
-    th.getOpenTroveKUSDAmount(contracts, totalDebt, asset);
   const getNetBorrowingAmount = async (debtWithFee, asset) =>
     th.getNetBorrowingAmount(contracts, debtWithFee, asset);
-  const getActualDebtFromComposite = async compositeDebt =>
-    th.getActualDebtFromComposite(compositeDebt, contracts, asset);
   const openTrove = async params => th.openTrove(contracts, params);
-  const getTroveEntireColl = async (trove, asset) => th.getTroveEntireColl(contracts, trove, asset);
-  const getTroveEntireDebt = async (trove, asset) => th.getTroveEntireDebt(contracts, trove, asset);
-  const getTroveStake = async (trove, asset) => th.getTroveStake(contracts, trove, asset);
 
-  let KUSD_GAS_COMPENSATION;
-  let MIN_NET_DEBT;
-  let BORROWING_FEE_FLOOR;
   let kumoParams;
 
   before(async () => { });
@@ -129,18 +108,9 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
       activePool = contracts.activePool;
       collSurplusPool = contracts.collSurplusPool;
       stabilityPool1 = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress1);
-      stabilityPool2 = await deploymentHelper.getStabilityPoolByAsset(contracts, assetAddress2);
-      defaultPool = contracts.defaultPool;
       borrowerOperations = contracts.borrowerOperations;
-      hintHelpers = contracts.hintHelpers;
       kumoStaking = KUMOContracts.kumoStaking;
       kumoToken = KUMOContracts.kumoToken;
-      communityIssuance = KUMOContracts.communityIssuance;
-      lockupContractFactory = KUMOContracts.lockupContractFactory;
-
-      KUSD_GAS_COMPENSATION = await kumoParams.KUSD_GAS_COMPENSATION(assetAddress1);
-      MIN_NET_DEBT = await kumoParams.MIN_NET_DEBT(assetAddress1);
-      BORROWING_FEE_FLOOR = await kumoParams.BORROWING_FEE_FLOOR(assetAddress1);
 
       // Mint token to each acccount
       await deploymentHelper.mintMockAssets(erc20Asset1, accounts, 20);

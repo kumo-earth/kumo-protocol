@@ -1,4 +1,3 @@
-const { getAddress } = require("ethers/lib/utils");
 const deploymentHelper = require("../../utils/deploymentHelpers.js");
 const testHelpers = require("../../utils/testHelpers.js");
 const KUSDTokenTester = artifacts.require("../KUSDTokenTester.sol");
@@ -6,12 +5,7 @@ const KUSDTokenTester = artifacts.require("../KUSDTokenTester.sol");
 const th = testHelpers.TestHelper;
 const dec = th.dec;
 const toBN = th.toBN;
-const assertRevert = th.assertRevert;
-const mv = testHelpers.MoneyValues;
 const timeValues = testHelpers.TimeValues;
-const TroveData = testHelpers.TroveData;
-
-const GAS_PRICE = 10000000;
 
 /* NOTE: Some tests involving ETH redemption fees do not test for specific fee values.
  * Some only test that the fees are non-zero when they should occur.
@@ -20,8 +14,7 @@ const GAS_PRICE = 10000000;
  * the parameter BETA in the TroveManager, which is still TBD based on economic modelling.
  *
  */
-contract.only("TroveManager - Multi Asset", async accounts => {
-    const _18_zeros = "000000000000000000";
+contract("TroveManager - Multi Asset", async accounts => {
     const ZERO_ADDRESS = th.ZERO_ADDRESS;
 
     const [
@@ -31,20 +24,11 @@ contract.only("TroveManager - Multi Asset", async accounts => {
         carol,
         dennis,
         erin,
-        flyn,
-        graham,
-        harriet,
-        ida,
         defaulter_1,
         defaulter_2,
         defaulter_3,
         defaulter_4,
-        whale,
-        A,
-        B,
-        C,
-        D,
-        E
+        whale
     ] = accounts;
 
     const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000);
@@ -54,10 +38,6 @@ contract.only("TroveManager - Multi Asset", async accounts => {
     let sortedTroves;
     let troveManager;
     let activePool;
-    let stabilityPoolFactory;
-    let collSurplusPool;
-    let defaultPool;
-    let borrowerOperations;
     let hintHelpers;
     let kumoParams;
     let KUMOContracts;
@@ -68,15 +48,7 @@ contract.only("TroveManager - Multi Asset", async accounts => {
 
     let contracts;
 
-    const getOpenTroveTotalDebt = async kusdAmount => th.getOpenTroveTotalDebt(contracts, kusdAmount);
-    const getOpenTroveKUSDAmount = async (totalDebt, asset) =>
-        th.getOpenTroveKUSDAmount(contracts, totalDebt, asset);
-    const getActualDebtFromComposite = async compositeDebt =>
-        th.getActualDebtFromComposite(compositeDebt, contracts);
-    const getNetBorrowingAmount = async (debtWithFee, asset) =>
-        th.getNetBorrowingAmount(contracts, debtWithFee, asset);
     const openTrove = async params => th.openTrove(contracts, params);
-    const withdrawKUSD = async params => th.withdrawKUSD(contracts, params);
 
     beforeEach(async () => {
         contracts = await deploymentHelper.deployKumoCore();
@@ -96,17 +68,9 @@ contract.only("TroveManager - Multi Asset", async accounts => {
         sortedTroves = contracts.sortedTroves;
         troveManager = contracts.troveManager;
         activePool = contracts.activePool;
-        defaultPool = contracts.defaultPool;
-        collSurplusPool = contracts.collSurplusPool;
-        borrowerOperations = contracts.borrowerOperations;
         hintHelpers = contracts.hintHelpers;
         kumoParams = contracts.kumoParameters;
-        stabilityPoolFactory = contracts.stabilityPoolFactory;
 
-        kumoStaking = KUMOContracts.kumoStaking;
-        kumoToken = KUMOContracts.kumoToken;
-        communityIssuance = KUMOContracts.communityIssuance;
-        lockupContractFactory = KUMOContracts.lockupContractFactory;
         erc20Asset1 = await deploymentHelper.deployERC20Asset("Carbon Token X", "CTX");
         assetAddress1 = erc20Asset1.address;
         erc20Asset2 = await deploymentHelper.deployERC20Asset("Carbon Token Y", "CTY");
@@ -199,7 +163,7 @@ contract.only("TroveManager - Multi Asset", async accounts => {
     });
 
 
-    it.only("liquidate(): Pool offsets increase the TCR, should not change TCR or second asset", async () => {
+    it("liquidate(): Pool offsets increase the TCR, should not change TCR or second asset", async () => {
         // Whale provides KUSD to SP
         const spDeposit = toBN(dec(100, 24));
         await openTrove({

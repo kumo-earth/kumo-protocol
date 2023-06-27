@@ -4,42 +4,18 @@ const testHelpers = require("../../utils/testHelpers.js");
 const th = testHelpers.TestHelper;
 const dec = th.dec;
 const toBN = th.toBN;
-const mv = testHelpers.MoneyValues;
-const timeValues = testHelpers.TimeValues;
-const TroveData = testHelpers.TroveData;
 
 const KUSDToken = artifacts.require("KUSDToken");
-const NonPayable = artifacts.require("NonPayable.sol");
-const StabilityPool = artifacts.require("./StabilityPool.sol");
-
-const ZERO = toBN("0");
-const maxBytes32 = th.maxBytes32;
-
-const GAS_PRICE = 10000000;
-
-const getFrontEndTag = async (stabilityPool, depositor) => {
-  return (await stabilityPool.deposits(depositor))[1];
-};
 
 contract("StabilityPool - Multiple Assets", async accounts => {
   const [
     owner,
     defaulter_1,
     defaulter_2,
-    defaulter_3,
     whale,
     alice,
     bob,
     carol,
-    dennis,
-    erin,
-    flyn,
-    A,
-    B,
-    C,
-    D,
-    E,
-    F,
     frontEnd_1,
     frontEnd_2,
     frontEnd_3
@@ -51,31 +27,18 @@ contract("StabilityPool - Multiple Assets", async accounts => {
   let contracts;
   let priceFeed;
   let kusdToken;
-  let sortedTroves;
   let troveManager;
   let activePool;
-  let stabilityPoolFactory;
   let defaultPool;
-  let borrowerOperations;
-  let kumoToken;
   let KUMOContracts;
   let erc20Asset1;
   let erc20Asset2;
   let stabilityPoolAsset1;
   let stabilityPoolAsset2;
 
-  let gasPriceInWei;
-
-  const getOpenTroveKUSDAmount = async (totalDebt, asset) =>
-    th.getOpenTroveKUSDAmount(contracts, totalDebt, asset);
   const openTrove = async params => th.openTrove(contracts, params);
-  const assertRevert = th.assertRevert;
 
   describe("Stability Pool Mechanisms - Multi Asset", async () => {
-    before(async () => {
-      gasPriceInWei = await web3.eth.getGasPrice();
-    });
-
     beforeEach(async () => {
       contracts = await deploymentHelper.deployKumoCore();
 
@@ -92,17 +55,11 @@ contract("StabilityPool - Multiple Assets", async accounts => {
 
       priceFeed = contracts.priceFeedTestnet;
       kusdToken = contracts.kusdToken;
-      sortedTroves = contracts.sortedTroves;
       troveManager = contracts.troveManager;
       activePool = contracts.activePool;
-      stabilityPoolFactory = contracts.stabilityPoolFactory;
       defaultPool = contracts.defaultPool;
-      borrowerOperations = contracts.borrowerOperations;
       hintHelpers = contracts.hintHelpers;
-      kumoParams = contracts.kumoParameters;
-
-      kumoToken = KUMOContracts.kumoToken;
-      communityIssuance = KUMOContracts.communityIssuance;
+      
       erc20Asset1 = await deploymentHelper.deployERC20Asset("Carbon Token X", "CTX");
       assetAddress1 = erc20Asset1.address;
       erc20Asset2 = await deploymentHelper.deployERC20Asset("Carbon Token Y", "CTY");

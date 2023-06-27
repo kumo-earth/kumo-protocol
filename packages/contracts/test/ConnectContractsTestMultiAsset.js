@@ -3,8 +3,6 @@ const deploymentHelper = require("../utils/deploymentHelpers.js");
 contract(
   "Deployment script - Sets correct contract addresses dependencies after deployment-MultiAsset",
   async accounts => {
-    const [owner] = accounts;
-
     const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000);
 
     let priceFeed;
@@ -15,7 +13,6 @@ contract(
     let stabilityPool;
     let stabilityPoolFactory;
     let defaultPool;
-    let functionCaller;
     let borrowerOperations;
     let kumoStaking;
     let kumoToken;
