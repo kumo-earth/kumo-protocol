@@ -76,7 +76,7 @@ contract MultiTroveGetter {
         for (uint256 idx = 0; idx < _count; ++idx) {
             _troves[idx].owner = currentTroveowner;
 
-            Trove memory trove = troveManager.Troves(currentTroveowner, _asset);
+            Trove memory trove = troveManager.Troves(_asset, currentTroveowner);
 
             _troves[idx].asset = trove.asset;
             _troves[idx].debt = trove.debt;
@@ -84,8 +84,8 @@ contract MultiTroveGetter {
             _troves[idx].stake = trove.stake;
 
             RewardSnapshot memory rewardSnapshot = troveManager.rewardSnapshots(
-                currentTroveowner,
-                _asset
+                _asset,
+                currentTroveowner
             );
 
             _troves[idx].snapshotAsset = rewardSnapshot.asset;
@@ -111,7 +111,7 @@ contract MultiTroveGetter {
         for (uint256 idx = 0; idx < _count; ++idx) {
             _troves[idx].owner = currentTroveowner;
 
-            Trove memory trove = troveManager.Troves(currentTroveowner, _asset);
+            Trove memory trove = troveManager.Troves(_asset, currentTroveowner);
 
             _troves[idx].asset = trove.asset;
             _troves[idx].debt = trove.debt;
@@ -119,8 +119,8 @@ contract MultiTroveGetter {
             _troves[idx].stake = trove.stake;
 
             RewardSnapshot memory rewardSnapshot = troveManager.rewardSnapshots(
-                currentTroveowner,
-                _asset
+                _asset,
+                currentTroveowner
             );
 
             _troves[idx].snapshotAsset = rewardSnapshot.asset;

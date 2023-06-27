@@ -45,8 +45,8 @@ library LibTroveManager {
         uint256 pendingReward = _getPendingReward(_asset, _borrower);
         uint256 pendingKUSDDebtReward = _getPendingKUSDDebtReward(_asset, _borrower);
 
-        uint256 currentAsset = s.Troves[_borrower][_asset].coll + pendingReward;
-        uint256 currentKUSDDebt = s.Troves[_borrower][_asset].debt + pendingKUSDDebtReward;
+        uint256 currentAsset = s.Troves[_asset][_borrower].coll + pendingReward;
+        uint256 currentKUSDDebt = s.Troves[_asset][_borrower].debt + pendingKUSDDebtReward;
 
         return (currentAsset, currentKUSDDebt);
     }
@@ -55,12 +55,12 @@ library LibTroveManager {
     function _getPendingReward(address _asset, address _borrower) internal view returns (uint256) {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
-        uint256 snapshotAsset = s.rewardSnapshots[_borrower][_asset].asset;
+        uint256 snapshotAsset = s.rewardSnapshots[_asset][_borrower].asset;
         uint256 rewardPerUnitStaked = s.L_ASSETS[_asset] - snapshotAsset;
         if (rewardPerUnitStaked == 0 || !_isTroveActive(_asset, _borrower)) {
             return 0;
         }
-        uint256 stake = s.Troves[_borrower][_asset].stake;
+        uint256 stake = s.Troves[_asset][_borrower].stake;
         uint256 pendingAssetReward = (stake * rewardPerUnitStaked) / KumoMath.DECIMAL_PRECISION;
         return pendingAssetReward;
     }
@@ -72,7 +72,7 @@ library LibTroveManager {
     function _getTroveStatus(address _asset, address _borrower) internal view returns (uint256) {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
-        return uint256(s.Troves[_borrower][_asset].status);
+        return uint256(s.Troves[_asset][_borrower].status);
     }
 
     // Get the borrower's pending accumulated KUSD reward, earned by their stake
@@ -82,14 +82,14 @@ library LibTroveManager {
     ) internal view returns (uint256) {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
-        uint256 snapshotKUSDDebt = s.rewardSnapshots[_borrower][_asset].KUSDDebt;
+        uint256 snapshotKUSDDebt = s.rewardSnapshots[_asset][_borrower].KUSDDebt;
         uint256 rewardPerUnitStaked = s.L_KUSDDebts[_asset] - snapshotKUSDDebt;
 
         if (rewardPerUnitStaked == 0 || !_isTroveActive(_asset, _borrower)) {
             return 0;
         }
 
-        uint256 stake = s.Troves[_borrower][_asset].stake;
+        uint256 stake = s.Troves[_asset][_borrower].stake;
 
         uint256 pendingKUSDDebtReward = (stake * rewardPerUnitStaked) / KumoMath.DECIMAL_PRECISION;
 
@@ -140,9 +140,9 @@ library LibTroveManager {
     function _removeStake(address _asset, address _borrower) internal {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
-        uint256 stake = s.Troves[_borrower][_asset].stake;
+        uint256 stake = s.Troves[_asset][_borrower].stake;
         s.totalStakes[_asset] = s.totalStakes[_asset] - stake;
-        s.Troves[_borrower][_asset].stake = 0;
+        s.Troves[_asset][_borrower].stake = 0;
     }
 
     function _closeTrove(address _asset, address _borrower, Status closedStatus) internal {
@@ -153,12 +153,12 @@ library LibTroveManager {
         uint256 TroveOwnersArrayLength = s.TroveOwners[_asset].length;
         _requireMoreThanOneTroveInSystem(_asset, TroveOwnersArrayLength);
 
-        s.Troves[_borrower][_asset].status = closedStatus;
-        s.Troves[_borrower][_asset].coll = 0;
-        s.Troves[_borrower][_asset].debt = 0;
+        s.Troves[_asset][_borrower].status = closedStatus;
+        s.Troves[_asset][_borrower].coll = 0;
+        s.Troves[_asset][_borrower].debt = 0;
 
-        s.rewardSnapshots[_borrower][_asset].asset = 0;
-        s.rewardSnapshots[_borrower][_asset].KUSDDebt = 0;
+        s.rewardSnapshots[_asset][_borrower].asset = 0;
+        s.rewardSnapshots[_asset][_borrower].KUSDDebt = 0;
 
         _removeTroveOwner(_asset, _borrower, TroveOwnersArrayLength);
         s.sortedTroves.remove(_asset, _borrower);
@@ -187,11 +187,11 @@ library LibTroveManager {
     ) internal {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
-        Status troveStatus = s.Troves[_borrower][_asset].status;
+        Status troveStatus = s.Troves[_asset][_borrower].status;
         // It’s set in caller function `_closeTrove`
         assert(troveStatus != Status.nonExistent && troveStatus != Status.active);
 
-        uint128 index = s.Troves[_borrower][_asset].arrayIndex;
+        uint128 index = s.Troves[_asset][_borrower].arrayIndex;
         uint256 length = TroveOwnersArrayLength;
         uint256 idxLast = length - 1;
 
@@ -200,7 +200,7 @@ library LibTroveManager {
         address addressToMove = s.TroveOwners[_asset][idxLast];
 
         s.TroveOwners[_asset][index] = addressToMove;
-        s.Troves[addressToMove][_asset].arrayIndex = index;
+        s.Troves[_asset][addressToMove].arrayIndex = index;
         emit TroveIndexUpdated(_asset, addressToMove, index);
 
         s.TroveOwners[_asset].pop();
@@ -209,8 +209,8 @@ library LibTroveManager {
     function _updateTroveRewardSnapshots(address _asset, address _borrower) internal {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
-        s.rewardSnapshots[_borrower][_asset].asset = s.L_ASSETS[_asset];
-        s.rewardSnapshots[_borrower][_asset].KUSDDebt = s.L_KUSDDebts[_asset];
+        s.rewardSnapshots[_asset][_borrower].asset = s.L_ASSETS[_asset];
+        s.rewardSnapshots[_asset][_borrower].KUSDDebt = s.L_KUSDDebts[_asset];
         emit TroveSnapshotsUpdated(_asset, s.L_ASSETS[_asset], s.L_KUSDDebts[_asset]);
     }
 
@@ -256,8 +256,8 @@ library LibTroveManager {
     {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
-        debt = s.Troves[_borrower][_asset].debt;
-        coll = s.Troves[_borrower][_asset].coll;
+        debt = s.Troves[_asset][_borrower].debt;
+        coll = s.Troves[_asset][_borrower].coll;
 
         pendingKUSDDebtReward = _getPendingKUSDDebtReward(_asset, _borrower);
         pendingReward = _getPendingReward(_asset, _borrower);

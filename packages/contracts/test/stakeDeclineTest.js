@@ -196,7 +196,7 @@ contract("TroveManager - stakeDecline", async accounts => {
       `B pending ETH reward after L1: ${await troveManager.getPendingReward(assetAddress1, B)}`
     );
     console.log(
-      `B stake after L1: ${(await troveManager.Troves(B, assetAddress1))[TroveData.stake]}`
+      `B stake after L1: ${(await troveManager.Troves(assetAddress1, B))[TroveData.stake]}`
     );
 
     // adjust trove B 1 wei: apply rewards
@@ -212,7 +212,7 @@ contract("TroveManager - stakeDecline", async accounts => {
       { from: B }
     ); // B repays 1 wei
     console.log(
-      `B stake after A1: ${(await troveManager.Troves(B, assetAddress1))[TroveData.stake]}`
+      `B stake after A1: ${(await troveManager.Troves(assetAddress1, B))[TroveData.stake]}`
     );
     console.log(`Snapshots ratio after A1: ${await getSnapshotsRatio(assetAddress1)}`);
 
@@ -223,7 +223,7 @@ contract("TroveManager - stakeDecline", async accounts => {
       await troveManager.liquidate(assetAddress1, trove);
       console.log(
         `B stake after L${idx + 2}: ${
-          (await troveManager.Troves(B, assetAddress1))[TroveData.stake]
+          (await troveManager.Troves(assetAddress1, B))[TroveData.stake]
         }`
       );
       console.log(`Snapshots ratio after L${idx + 2}: ${await getSnapshotsRatio(assetAddress1)}`);
@@ -240,7 +240,7 @@ contract("TroveManager - stakeDecline", async accounts => {
       ); // A repays 1 wei
       console.log(
         `B stake after A${idx + 2}: ${
-          (await troveManager.Troves(B, assetAddress1))[TroveData.stake]
+          (await troveManager.Troves(assetAddress1, B))[TroveData.stake]
         }`
       );
     }

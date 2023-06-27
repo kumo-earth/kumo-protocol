@@ -697,7 +697,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         for (vars.i = 0; vars.i < _troveArray.length; vars.i++) {
             vars.user = _troveArray[vars.i];
             // Skip non-active troves
-            if (s.Troves[vars.user][_asset].status != Status.active) {
+            if (s.Troves[_asset][vars.user].status != Status.active) {
                 continue;
             }
             vars.ICR = LibTroveManager._getCurrentICR(_asset, vars.user, _price);
@@ -866,15 +866,15 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         // Determine the remaining amount (lot) to be redeemed, capped by the entire debt of the Trove minus the liquidation reserve
         singleRedemption.KUSDLot = KumoMath._min(
             _maxKUSDamount,
-            s.Troves[_borrower][vars._asset].debt - s.kumoParams.KUSD_GAS_COMPENSATION(_asset)
+            s.Troves[vars._asset][_borrower].debt - s.kumoParams.KUSD_GAS_COMPENSATION(_asset)
         );
 
         // Get the ETHLot of equivalent value in USD
         singleRedemption.AssetLot = (singleRedemption.KUSDLot * KumoMath.DECIMAL_PRECISION) / _price;
 
         // Decrease the debt and collateral of the current Trove according to the KUSD lot and corresponding Asset to send
-        uint256 newDebt = s.Troves[vars._borrower][vars._asset].debt - singleRedemption.KUSDLot;
-        uint256 newColl = s.Troves[vars._borrower][vars._asset].coll - singleRedemption.AssetLot;
+        uint256 newDebt = s.Troves[vars._asset][vars._borrower].debt - singleRedemption.KUSDLot;
+        uint256 newColl = s.Troves[vars._asset][vars._borrower].coll - singleRedemption.AssetLot;
 
         if (newDebt == s.kumoParams.KUSD_GAS_COMPENSATION(vars._asset)) {
             // No debt left in the Trove (except for the liquidation reserve), therefore the trove gets closed
@@ -920,8 +920,8 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
                 _lowerPartialRedemptionHint
             );
 
-            s.Troves[vars._borrower][vars._asset].debt = newDebt;
-            s.Troves[vars._borrower][vars._asset].coll = newColl;
+            s.Troves[vars._asset][vars._borrower].debt = newDebt;
+            s.Troves[vars._asset][vars._borrower].coll = newColl;
             _updateStakeAndTotalStakes(vars._asset, vars._borrower);
 
             emit TroveUpdated(
@@ -929,7 +929,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
                 vars._borrower,
                 newDebt,
                 newColl,
-                s.Troves[vars._borrower][vars._asset].stake,
+                s.Troves[vars._asset][vars._borrower].stake,
                 TroveManagerOperation.redeemCollateral
             );
         }
@@ -1172,7 +1172,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
             return false;
         }
 
-        return (s.rewardSnapshots[_borrower][_asset].asset < s.L_ASSETS[_asset]);
+        return (s.rewardSnapshots[_asset][_borrower].asset < s.L_ASSETS[_asset]);
     }
 
     function applyPendingRewards(address _asset, address _borrower) external {
@@ -1193,9 +1193,9 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
             );
 
             // Apply pending rewards to trove's state
-            s.Troves[_borrower][_asset].coll = s.Troves[_borrower][_asset].coll + pendingReward;
-            s.Troves[_borrower][_asset].debt =
-                s.Troves[_borrower][_asset].debt +
+            s.Troves[_asset][_borrower].coll = s.Troves[_asset][_borrower].coll + pendingReward;
+            s.Troves[_asset][_borrower].debt =
+                s.Troves[_asset][_borrower].debt +
                 pendingKUSDDebtReward;
 
             LibTroveManager._updateTroveRewardSnapshots(_asset, _borrower);
@@ -1210,9 +1210,9 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
             emit TroveUpdated(
                 _asset,
                 _borrower,
-                s.Troves[_borrower][_asset].debt,
-                s.Troves[_borrower][_asset].coll,
-                s.Troves[_borrower][_asset].stake,
+                s.Troves[_asset][_borrower].debt,
+                s.Troves[_asset][_borrower].coll,
+                s.Troves[_asset][_borrower].stake,
                 TroveManagerOperation.applyPendingRewards
             );
         }
@@ -1220,7 +1220,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
 
     function _requireTroveIsActive(address _asset, address _borrower) internal view {
         require(
-            s.Troves[_borrower][_asset].status == Status.active,
+            s.Troves[_asset][_borrower].status == Status.active,
             "TroveManager: Trove does not exist or is closed"
         );
     }
@@ -1276,9 +1276,9 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         address _asset,
         address _borrower
     ) internal returns (uint256) {
-        uint256 newStake = _computeNewStake(_asset, s.Troves[_borrower][_asset].coll);
-        uint256 oldStake = s.Troves[_borrower][_asset].stake;
-        s.Troves[_borrower][_asset].stake = newStake;
+        uint256 newStake = _computeNewStake(_asset, s.Troves[_asset][_borrower].coll);
+        uint256 oldStake = s.Troves[_asset][_borrower].stake;
+        s.Troves[_asset][_borrower].stake = newStake;
 
         s.totalStakes[_asset] = s.totalStakes[_asset] - oldStake + newStake;
         emit TotalStakesUpdated(_asset, s.totalStakes[_asset]);
