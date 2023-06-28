@@ -6011,6 +6011,63 @@ contract("TroveManager", async accounts => {
     assert.isFalse(initialBaseRate === postBaseRate);
   });
 
+  it("redeemCollateral(): base rate of assets one and two should decrease over time", async () => {
+    // --- SETUP ---
+    const { kusdAmount } = await openTrove({
+      asset: assetAddress1,
+      ICR: toBN(dec(200, 16)),
+      extraKUSDAmount: dec(1, 24),
+      extraParams: { from: alice }
+    });
+    await openTrove({ asset: assetAddress2, ICR: toBN(dec(150, 16)), extraParams: { from: bob } });
+
+    const price = await priceFeed.getPrice(assetAddress1);
+    assert.equal(price, dec(200, 18));
+
+    // --- TEST ---
+
+    // skip bootstrapping phase
+    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider);
+
+    // Find hints for redeeming
+    const { firstRedemptionHint, partialRedemptionHintNICR } = await hintHelpers.getRedemptionHints(
+      assetAddress1,
+      kusdAmount,
+      price,
+      0
+    );
+
+    // redeem against asset1
+    const redemptionTx = await troveManager.redeemCollateral(
+      assetAddress1,
+      kusdAmount,
+      firstRedemptionHint,
+      assetAddress1,
+      alice,
+      partialRedemptionHintNICR,
+      0,
+      th._100pct,
+      {
+        from: alice,
+        gasPrice: GAS_PRICE
+      }
+    );
+
+    // save after redemption base rate
+    const firstBaseRate = await troveManager.baseRate();
+
+    // fast forward time
+    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_DAY, web3.currentProvider);
+
+    // decay base rate
+    await troveManager.unprotectedDecayBaseRateFromBorrowing();
+
+    // save second redemption base rate
+    const secondBaseRate = await troveManager.baseRate();
+
+    assert.isTrue(secondBaseRate < firstBaseRate);
+  });
+
   it("getPendingKUSDDebtReward(): Returns 0 if there is no pending KUSDDebt reward", async () => {
     // Make some troves
     const { totalDebt } = await openTrove({
