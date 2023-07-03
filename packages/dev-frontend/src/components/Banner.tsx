@@ -34,7 +34,7 @@ export const Banner: React.FC<{ bannerHeading: string, visibility: number, viewI
     >
       <Heading as="h3" sx={{ color: "black", width: "100%", display: "flex", justifyContent: "space-between", mb: 2, mr: 2 }}>
         {bannerHeading}
-        <span style={{ marginLeft: "auto", cursor: "pointer" }} onClick={onClick}>
+        <span style={{ marginLeft: "auto", cursor: "pointer" }} onClick={onClick} id="close-window">
           <Icon name="window-close" size={"1x"} color="white" />
         </span>
       </Heading>
