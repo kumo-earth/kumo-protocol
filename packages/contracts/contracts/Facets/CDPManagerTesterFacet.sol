@@ -14,7 +14,7 @@ contract CDPManagerTesterFacet is Modifiers {
         uint256 _debt,
         uint256 _price
     ) external pure returns (uint256) {
-        return KumoMath._computeCR(_coll, _debt, _price);
+        return KumoMath._computeCR(_coll * _price, _debt);
     }
 
     function getCollGasCompensation(address _asset, uint256 _coll) external view returns (uint256) {
@@ -49,19 +49,17 @@ contract CDPManagerTesterFacet is Modifiers {
         s.baseRate[_asset] = _baseRate;
     }
 
-    function callGetRedemptionFee(address _asset, uint256 _ETHDrawn)
-        external
-        view
-        returns (uint256)
-    {
+    function callGetRedemptionFee(
+        address _asset,
+        uint256 _ETHDrawn
+    ) external view returns (uint256) {
         return LibTroveManager._getRedemptionFee(_asset, _ETHDrawn);
     }
 
-    function getActualDebtFromComposite(address _asset, uint256 _debtVal)
-        external
-        view
-        returns (uint256)
-    {
+    function getActualDebtFromComposite(
+        address _asset,
+        uint256 _debtVal
+    ) external view returns (uint256) {
         return LibKumoBase._getNetDebt(_asset, _debtVal);
     }
 

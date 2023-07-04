@@ -43,11 +43,10 @@ contract KumoBase is BaseMath, Ownable, IKumoBase {
     }
 
     // Return the amount of ETH to be drawn from a trove's collateral and sent as gas compensation.
-    function _getCollGasCompensation(address _asset, uint256 _entireColl)
-        internal
-        view
-        returns (uint256)
-    {
+    function _getCollGasCompensation(
+        address _asset,
+        uint256 _entireColl
+    ) internal view returns (uint256) {
         return _entireColl / kumoParams.PERCENT_DIVISOR(_asset);
     }
 
@@ -68,7 +67,7 @@ contract KumoBase is BaseMath, Ownable, IKumoBase {
         uint256 entireSystemColl = getEntireSystemColl(_asset);
         uint256 entireSystemDebt = getEntireSystemDebt(_asset);
 
-        TCR = KumoMath._computeCR(entireSystemColl, entireSystemDebt, _price);
+        TCR = KumoMath._computeCR(entireSystemColl * _price, entireSystemDebt);
 
         return TCR;
     }

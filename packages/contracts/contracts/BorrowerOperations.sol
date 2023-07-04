@@ -212,7 +212,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         vars.compositeDebt = _getCompositeDebt(vars.asset, vars.netDebt);
         assert(vars.compositeDebt > 0);
 
-        vars.ICR = KumoMath._computeCR(_tokenAmount, vars.compositeDebt, vars.price);
+        vars.ICR = KumoMath._computeCR(_tokenAmount * vars.price, vars.compositeDebt);
         vars.NICR = KumoMath._computeNominalCR(_tokenAmount, vars.compositeDebt);
 
         if (isRecoveryMode) {
@@ -433,7 +433,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         vars.coll = contractsCache.troveManager.getTroveColl(vars.asset, _borrower);
 
         // Get the trove's old ICR before the adjustment, and what its new ICR will be after the adjustment
-        vars.oldICR = KumoMath._computeCR(vars.coll, vars.debt, vars.price);
+        vars.oldICR = KumoMath._computeCR(vars.coll * vars.price, vars.debt);
         vars.newICR = _getNewICRFromTroveChange(
             vars.coll,
             vars.debt,
@@ -927,7 +927,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
             _isDebtIncrease
         );
 
-        uint256 newICR = KumoMath._computeCR(newColl, newDebt, _price);
+        uint256 newICR = KumoMath._computeCR(newColl * _price, newDebt);
         return newICR;
     }
 
@@ -962,7 +962,7 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         totalColl = _isCollIncrease ? totalColl.add(_collChange) : totalColl.sub(_collChange);
         totalDebt = _isDebtIncrease ? totalDebt.add(_debtChange) : totalDebt.sub(_debtChange);
 
-        uint256 newTCR = KumoMath._computeCR(totalColl, totalDebt, _price);
+        uint256 newTCR = KumoMath._computeCR(totalColl * _price, totalDebt);
         return newTCR;
     }
 

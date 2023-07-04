@@ -527,9 +527,8 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
                 }
 
                 uint256 TCR = KumoMath._computeCR(
-                    vars.entireSystemColl,
-                    vars.entireSystemDebt,
-                    _price
+                    vars.entireSystemColl * _price,
+                    vars.entireSystemDebt
                 );
                 singleLiquidation = _liquidateRecoveryMode(
                     assetVars._asset,
@@ -709,9 +708,8 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
                 }
 
                 uint256 TCR = KumoMath._computeCR(
-                    vars.entireSystemColl,
-                    vars.entireSystemDebt,
-                    _price
+                    vars.entireSystemColl * _price,
+                    vars.entireSystemDebt
                 );
 
                 singleLiquidation = _liquidateRecoveryMode(
@@ -1311,7 +1309,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
         uint256 _entireSystemDebt,
         uint256 _price
     ) internal view returns (bool) {
-        uint256 TCR = KumoMath._computeCR(_entireSystemColl, _entireSystemDebt, _price);
+        uint256 TCR = KumoMath._computeCR(_entireSystemColl * _price, _entireSystemDebt);
 
         return TCR < s.kumoParams.CCR(_asset);
     }
