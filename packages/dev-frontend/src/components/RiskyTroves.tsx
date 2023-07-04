@@ -234,6 +234,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
                 <Icon name="chevron-right" size="sm" />
               </Button>
               <Button
+                id="reload-btn"
                 variant="titleIcon"
                 sx={{ opacity: loading ? 0 : 1, ml: [0, 3], mr: [0, 3] }}
                 onClick={forceReload}
@@ -267,6 +268,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
         <Box sx={{ p: [2, 3] }}>
           <Box
             as="table"
+            id="risky-vaults-table"
             sx={{
               mt: 2,
               pl: [1, 4],
@@ -408,7 +410,7 @@ export const RiskyTroves: React.FC<RiskyTrovesProps> = ({ pageSize = 10 }) => {
                             trove.userTrove.ownerAddress
                           )}
                         >
-                          <Button variant="dangerIcon">
+                          <Button variant="dangerIcon" id="liq-btn">
                             <Icon name="trash" />
                           </Button>
                         </Transaction>
