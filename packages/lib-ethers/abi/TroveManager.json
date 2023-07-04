@@ -739,12 +739,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_borrower",
+        "name": "_asset",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_asset",
+        "name": "_borrower",
         "type": "address"
       }
     ],
@@ -1707,12 +1707,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_borrower",
+        "name": "_asset",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_asset",
+        "name": "_borrower",
         "type": "address"
       }
     ],
