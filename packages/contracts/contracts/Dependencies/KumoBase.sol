@@ -7,9 +7,6 @@ pragma solidity 0.8.11;
 import "./BaseMath.sol";
 import "./KumoMath.sol";
 import "./Ownable.sol";
-import "../Interfaces/IActivePool.sol";
-import "../Interfaces/IDefaultPool.sol";
-import "../Interfaces/IPriceFeed.sol";
 import "../Interfaces/IKumoBase.sol";
 
 // import "hardhat/console.sol";
@@ -72,9 +69,31 @@ contract KumoBase is BaseMath, Ownable, IKumoBase {
         return TCR;
     }
 
+    function _getSystemWideTCR() internal view returns (uint256 TCR) {
+        uint256 entireSystemCollSum = 0;
+        uint256 entireSystemDebt = 0;
+
+        for (uint8 i = 0; i < kumoParams.supportedAssetsCounter(); i++) {
+            address _asset = kumoParams.supportedAssets(i);
+            uint256 _assetColl = getEntireSystemColl(_asset);
+            uint256 _assetDebt = getEntireSystemDebt(_asset);
+            uint256 _price = kumoParams.priceFeed().getPrice(_asset);
+
+            entireSystemCollSum += _assetColl * _price;
+            entireSystemDebt += _assetDebt;
+        }
+
+        TCR = KumoMath._computeCR(entireSystemCollSum, entireSystemDebt);
+
+        return TCR;
+    }
+
     function _checkRecoveryMode(address _asset, uint256 _price) internal view returns (bool) {
+        uint256 systemTCR = _getSystemWideTCR();
         uint256 TCR = _getTCR(_asset, _price);
-        return TCR < kumoParams.CCR(_asset);
+        uint256 CCR = kumoParams.CCR(_asset); // Do we need system-wide CCR? Or maybe we can calculate it as an average?
+
+        return (TCR < CCR || systemTCR < CCR);
     }
 
     function _requireUserAcceptsFee(

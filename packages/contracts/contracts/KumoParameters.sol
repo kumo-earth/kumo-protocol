@@ -51,6 +51,8 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
     mapping(address => uint256) public override redemptionBlock;
 
     mapping(address => bool) public override hasCollateralConfigured;
+    address[] public supportedAssets;
+    uint8 public supportedAssetsCounter;
 
     IActivePool public override activePool;
     IDefaultPool public override defaultPool;
@@ -153,6 +155,11 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
     // }
 
     function _setAsDefault(address _asset) private {
+        if (hasCollateralConfigured[_asset] == false) {
+            supportedAssets.push(_asset);
+            supportedAssetsCounter++;
+        }
+
         hasCollateralConfigured[_asset] = true;
 
         MCR[_asset] = MCR_DEFAULT;
@@ -177,6 +184,11 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         uint256 maxBorrowingFee,
         uint256 redemptionFeeFloor
     ) public onlyOwner {
+        if (hasCollateralConfigured[_asset] == false) {
+            supportedAssets.push(_asset);
+            supportedAssetsCounter++;
+        }
+
         hasCollateralConfigured[_asset] = true;
 
         setMCR(_asset, newMCR);

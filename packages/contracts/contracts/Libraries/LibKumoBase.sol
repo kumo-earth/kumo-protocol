@@ -68,11 +68,34 @@ library LibKumoBase {
         return TCR;
     }
 
+    function _getSystemWideTCR() internal view returns (uint256 TCR) {
+        AppStorage storage s = LibAppStorage.diamondStorage();
+
+        uint256 entireSystemCollSum = 0;
+        uint256 entireSystemDebt = 0;
+
+        for (uint8 i = 0; i < s.kumoParams.supportedAssetsCounter(); i++) {
+            address _asset = s.kumoParams.supportedAssets(i);
+            uint256 _assetColl = _getEntireSystemColl(_asset);
+            uint256 _assetDebt = _getEntireSystemDebt(_asset);
+            uint256 _price = s.kumoParams.priceFeed().getPrice(_asset);
+
+            entireSystemCollSum += _assetColl * _price;
+            entireSystemDebt += _assetDebt;
+        }
+
+        TCR = KumoMath._computeCR(entireSystemCollSum, entireSystemDebt);
+
+        return TCR;
+    }
+
     function _checkRecoveryMode(address _asset, uint256 _price) internal view returns (bool) {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
+        uint256 systemTCR = _getSystemWideTCR();
         uint256 TCR = _getTCR(_asset, _price);
-        return TCR < s.kumoParams.CCR(_asset);
+        uint256 CCR = s.kumoParams.CCR(_asset); // Do we need system-wide CCR? Or maybe we can calculate it as an average?
+        return (TCR < CCR || systemTCR < CCR);
     }
 
     function _requireUserAcceptsFee(

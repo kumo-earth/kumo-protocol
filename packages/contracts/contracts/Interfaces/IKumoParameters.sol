@@ -135,4 +135,8 @@ interface IKumoParameters {
     function removeRedemptionBlock(address _asset) external;
 
     function hasCollateralConfigured(address _asset) external view returns (bool);
+
+    function supportedAssets(uint256 _index) external view returns (address);
+
+    function supportedAssetsCounter() external view returns (uint8);
 }
