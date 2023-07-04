@@ -25,6 +25,28 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('DISCONNECT').should('be.visible');
   })
 
+  it('should check sidebar navigation', () => {
+    cy.visit('/');
+    cy.contains('CONNECT').click();
+    cy.contains('MetaMask').click();
+    cy.contains('DISCONNECT').should('be.visible');
+    if (cy.get('#close-window')) {
+      cy.get('#close-window').click();
+    }
+    cy.contains('a', 'Dashboard').click();
+    cy.get('h1').should('have.text', 'Dashboard');
+    cy.contains('a', 'Portfolio').click();
+    cy.get('h1').should('have.text', 'Portfolio');
+    cy.contains('a', 'Staking').click();
+    cy.get('h1').should('have.text', 'Staking');
+    cy.contains('a', 'Redemption').click();
+    cy.get('h1').should('have.text', 'Redemption');
+    cy.contains('a', 'Stats').click();
+    cy.get('h1').first().should('have.text', 'Stats Protocol');
+    cy.contains('a', 'Faucet').click();
+    cy.get('h1').should('have.text', 'Faucet');
+  })
+
   it('should open the NBC vault with Account 2', () => {
     cy.visit('/');
     cy.contains('CONNECT').click();
@@ -48,6 +70,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.get('#trove-collateral-ratio > div > span').should('have.text', '159.3%');
     cy.contains('ADJUST').should('be.visible');
   })
+
   it('should adjust the NBC vault with Account 2', () => {
     cy.visit('/');
     cy.reload();
@@ -72,7 +95,8 @@ describe('KUMO App e2e testing spec', () => {
     cy.get('#trove-collateral-ratio > div > span').should('have.text', '179.2%');
     cy.contains('ADJUST').should('be.visible');
   })
-  it('should stake KUSD in NBC stability pool with Account 2', () => {
+
+  it('should stake KUSD in NBC Stability Pool with Account 2', () => {
     cy.visit('/');
     cy.reload();
     cy.contains('CONNECT').click();
@@ -97,6 +121,149 @@ describe('KUMO App e2e testing spec', () => {
     cy.get('#deposit-kusd > div > span').should('have.text', '500.00KUSD')
     cy.get('#deposit-reward > div > span').first().invoke('text').then(parseInt).should('equal', 0);
     cy.contains('ADJUST').should('be.visible');
+  })
+
+  it('should adjust KUSD in NBC Stability Pool with Account 2', () => {
+    cy.visit('/');
+    cy.reload();
+    cy.contains('CONNECT').click();
+    cy.contains('MetaMask').click();
+    cy.contains('DISCONNECT').should('be.visible');
+    if (cy.get('#close-window')) {
+      cy.get('#close-window').click();
+    }
+    cy.contains('Staking').click();
+    cy.contains('Stability Pool Staking').click();
+    cy.contains('NBC Stability Pool Staking').click();
+    cy.contains('ADJUST').click();
+    cy.get('#deposit-kumo').click();
+    cy.get('#deposit-kumo').clear();
+    cy.get('#deposit-kumo').type(600);
+    cy.contains("CONFIRM").click();
+    cy.wait(10000);
+    cy.switchToMetamaskNotification();
+    cy.confirmMetamaskTransaction();
+    cy.switchToCypressWindow();
+    cy.wait(10000);
+    cy.get('#deposit-kusd > div > span').should('have.text', '600.00KUSD')
+    cy.get('#deposit-reward > div > span').first().invoke('text').then(parseInt).should('equal', 0);
+    cy.contains('ADJUST').should('be.visible');
+  })
+
+  it('should open the CSC vault with Account 2', () => {
+    cy.visit('/');
+    cy.contains('CONNECT').click();
+    cy.contains('MetaMask').click();
+    cy.contains('DISCONNECT').should('be.visible');
+    if (cy.get('#close-window')) {
+      cy.get('#close-window').click();
+    }
+    cy.contains('CSC Vault').click();
+    cy.contains('OPEN VAULT').click();
+    cy.get('#trove-collateral').click();
+    cy.get('#trove-collateral').clear();
+    cy.get('#trove-collateral').type(16);
+    cy.contains("CONFIRM").click();
+    cy.wait(10000);
+    cy.switchToMetamaskNotification();
+    cy.confirmMetamaskTransaction();
+    cy.switchToCypressWindow();
+    cy.wait(10000);
+    cy.get('#trove-collateral > div > span').should('have.text', '16CSC');
+    cy.get('#trove-collateral-ratio > div > span').should('have.text', '159.3%');
+    cy.contains('ADJUST').should('be.visible');
+  })
+
+  it('should adjust the CSC vault with Account 2', () => {
+    cy.visit('/');
+    cy.reload();
+    cy.contains('CONNECT').click();
+    cy.contains('MetaMask').click();
+    cy.contains('DISCONNECT').should('be.visible');
+    if (cy.get('#close-window')) {
+      cy.get('#close-window').click();
+    }
+    cy.contains('CSC Vault').click();
+    cy.contains('ADJUST').click();
+    cy.get('#trove-collateral').click();
+    cy.get('#trove-collateral').clear();
+    cy.get('#trove-collateral').type(18);
+    cy.contains("CONFIRM").click();
+    cy.wait(10000);
+    cy.switchToMetamaskNotification();
+    cy.confirmMetamaskTransaction();
+    cy.switchToCypressWindow();
+    cy.wait(10000);
+    cy.get('#trove-collateral > div > span').should('have.text', '18CSC')
+    cy.get('#trove-collateral-ratio > div > span').should('have.text', '179.2%');
+    cy.contains('ADJUST').should('be.visible');
+  })
+
+  it('should stake KUSD in CSC stability pool with Account 2', () => {
+    cy.visit('/');
+    cy.reload();
+    cy.contains('CONNECT').click();
+    cy.contains('MetaMask').click();
+    cy.contains('DISCONNECT').should('be.visible');
+    if (cy.get('#close-window')) {
+      cy.get('#close-window').click();
+    }
+    cy.contains('Staking').click();
+    cy.contains('Stability Pool Staking').click();
+    cy.contains('CSC Stability Pool Staking').click();
+    cy.contains('DEPOSIT').click();
+    cy.get('#deposit-kumo').click();
+    cy.get('#deposit-kumo').clear();
+    cy.get('#deposit-kumo').type(500);
+    cy.contains("CONFIRM").click();
+    cy.wait(10000);
+    cy.switchToMetamaskNotification();
+    cy.confirmMetamaskTransaction();
+    cy.switchToCypressWindow();
+    cy.wait(10000);
+    cy.get('#deposit-kusd > div > span').should('have.text', '500.00KUSD')
+    cy.get('#deposit-reward > div > span').first().invoke('text').then(parseInt).should('equal', 0);
+    cy.contains('ADJUST').should('be.visible');
+  })
+
+  it('should adjust KUSD in CSC Stability Pool with Account 2', () => {
+    cy.visit('/');
+    cy.reload();
+    cy.contains('CONNECT').click();
+    cy.contains('MetaMask').click();
+    cy.contains('DISCONNECT').should('be.visible');
+    if (cy.get('#close-window')) {
+      cy.get('#close-window').click();
+    }
+    cy.contains('Staking').click();
+    cy.contains('Stability Pool Staking').click();
+    cy.contains('CSC Stability Pool Staking').click();
+    cy.contains('ADJUST').click();
+    cy.get('#deposit-kumo').click();
+    cy.get('#deposit-kumo').clear();
+    cy.get('#deposit-kumo').type(600);
+    cy.contains("CONFIRM").click();
+    cy.wait(10000);
+    cy.switchToMetamaskNotification();
+    cy.confirmMetamaskTransaction();
+    cy.switchToCypressWindow();
+    cy.wait(10000);
+    cy.get('#deposit-kusd > div > span').should('have.text', '600.00KUSD')
+    cy.get('#deposit-reward > div > span').first().invoke('text').then(parseInt).should('equal', 0);
+    cy.contains('ADJUST').should('be.visible');
+  })
+
+  it('should check correct values for TCR, MINTED KUSD and Carbon Credits', () => {
+    cy.visit('/');
+    cy.contains('CONNECT').click();
+    cy.contains('MetaMask').click();
+    cy.contains('DISCONNECT').should('be.visible');
+    if (cy.get('#close-window')) {
+      cy.get('#close-window').click();
+    }
+    cy.contains('p', 'TOTAL COLLATERAL').next().should('have.text', '$7,200');
+    cy.contains('p', 'TOTAL MINTED KUSD').next().should('have.text', '$4,018');
+    cy.contains('p', 'TOTAL CARBON CREDITS').next().should('have.text', '36');
   })
 
   it('should switch to Account 3 and open the Vault', () => {
