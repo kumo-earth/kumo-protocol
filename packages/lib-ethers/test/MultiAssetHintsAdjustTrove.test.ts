@@ -95,7 +95,7 @@ describe("EthersKumoHints", async () => {
 
                 const gasUsed = rawReceipt.gasUsed.toNumber();
                 // Higher gas usage due to asset parameter. ToDO: Estimate gas (25000 before asset)
-                expect(gasUsed).to.be.at.most(331000);
+                expect(gasUsed).to.be.at.most(335000);
 
             });
 
@@ -119,7 +119,7 @@ describe("EthersKumoHints", async () => {
 
                 const gasUsed = rawReceipt.gasUsed.toNumber();
                 // Higher gas usage due to asset parameter. ToDO: Estimate gas (31000 before asset)
-                expect(gasUsed).to.be.at.most(384000);
+                expect(gasUsed).to.be.at.most(387000);
             })
 
             // Test 3

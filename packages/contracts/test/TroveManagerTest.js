@@ -6038,7 +6038,7 @@ contract("TroveManager", async accounts => {
     );
 
     // redeem against asset1
-    const redemptionTx = await troveManager.redeemCollateral(
+    await troveManager.redeemCollateral(
       assetAddress1,
       kusdAmount,
       firstRedemptionHint,
@@ -6066,6 +6066,95 @@ contract("TroveManager", async accounts => {
     const secondBaseRate = await troveManager.baseRate();
 
     assert.isTrue(secondBaseRate < firstBaseRate);
+  });
+
+  it("redeemCollateral(): REDEMPTION_FEE_FLOOR and BORROWING_FEE_FLOOR per asset", async () => {
+    // --- SETUP ---
+    const { kusdAmount } = await openTrove({
+      asset: assetAddress1,
+      ICR: toBN(dec(200, 16)),
+      extraKUSDAmount: dec(1, 24),
+      extraParams: { from: alice }
+    });
+    await openTrove({ asset: assetAddress2, ICR: toBN(dec(150, 16)), extraParams: { from: bob } });
+
+    const price = await priceFeed.getPrice(assetAddress1);
+    assert.equal(price, dec(200, 18));
+
+    // --- TEST ---
+
+    // skip bootstrapping phase
+    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider);
+
+    // Find hints for redeeming
+    const { firstRedemptionHint, partialRedemptionHintNICR } = await hintHelpers.getRedemptionHints(
+      assetAddress1,
+      kusdAmount,
+      price,
+      0
+    );
+
+    // Change rates for both assets
+    await kumoParams.setBorrowingFeeFloor(assetAddress1, 100); // 1%
+    await kumoParams.setBorrowingFeeFloor(assetAddress2, 300); // 3%
+
+    await kumoParams.setRedemptionFeeFloor(assetAddress1, 200); // 2%
+    await kumoParams.setRedemptionFeeFloor(assetAddress2, 400); // 4%
+
+    const borrowingFeeAsset1Old = await troveManager.getBorrowingFee(assetAddress1, 100);
+    const borrowingFeeAsset2Old = await troveManager.getBorrowingFee(assetAddress2, 100);
+
+    const redemptionFeeAsset1Old = await troveManager.getRedemptionFee(assetAddress1, 100);
+    const redemptionFeeAsset2Old = await troveManager.getRedemptionFee(assetAddress2, 100);
+
+    // redeem against asset1
+    await troveManager.redeemCollateral(
+      assetAddress1,
+      kusdAmount,
+      firstRedemptionHint,
+      assetAddress1,
+      alice,
+      partialRedemptionHintNICR,
+      0,
+      th._100pct,
+      {
+        from: alice,
+        gasPrice: GAS_PRICE
+      }
+    );
+
+    // see that new rates are higher than old ones
+    assert.isTrue((await troveManager.getBorrowingFee(assetAddress1, 100)) > borrowingFeeAsset1Old);
+    assert.isTrue((await troveManager.getBorrowingFee(assetAddress2, 100)) > borrowingFeeAsset2Old);
+
+    assert.isTrue(
+      (await troveManager.getRedemptionFee(assetAddress1, 100)) > redemptionFeeAsset1Old
+    );
+    assert.isTrue(
+      (await troveManager.getRedemptionFee(assetAddress2, 100)) > redemptionFeeAsset2Old
+    );
+
+    // fast forward time
+    await th.fastForwardTime(timeValues.SECONDS_IN_ONE_DAY * 30, web3.currentProvider);
+
+    // after some time fees should decay to default values
+    assert.equal(
+      (await troveManager.getBorrowingFeeWithDecay(assetAddress1, 100)).toString(),
+      borrowingFeeAsset1Old.toString()
+    );
+    assert.equal(
+      (await troveManager.getBorrowingFeeWithDecay(assetAddress2, 100)).toString(),
+      borrowingFeeAsset2Old.toString()
+    );
+
+    assert.equal(
+      (await troveManager.getRedemptionFeeWithDecay(assetAddress1, 100)).toString(),
+      redemptionFeeAsset1Old.toString()
+    );
+    assert.equal(
+      (await troveManager.getRedemptionFeeWithDecay(assetAddress2, 100)).toString(),
+      redemptionFeeAsset2Old.toString()
+    );
   });
 
   it("getPendingKUSDDebtReward(): Returns 0 if there is no pending KUSDDebt reward", async () => {
