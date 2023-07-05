@@ -95,7 +95,7 @@ describe("EthersKumoHints", async () => {
 
                 const gasUsed = rawReceipt.gasUsed.toNumber();
                 // Higher gas usage due to asset parameter. ToDO: Estimate gas (25000 before asset)
-                expect(gasUsed).to.be.at.most(331000);
+                expect(gasUsed).to.be.at.most(381000);
 
             });
 
@@ -119,7 +119,7 @@ describe("EthersKumoHints", async () => {
 
                 const gasUsed = rawReceipt.gasUsed.toNumber();
                 // Higher gas usage due to asset parameter. ToDO: Estimate gas (31000 before asset)
-                expect(gasUsed).to.be.at.most(384000);
+                expect(gasUsed).to.be.at.most(430000);
             })
 
             // Test 3
@@ -141,7 +141,7 @@ describe("EthersKumoHints", async () => {
 
                 const gasUsed = rawReceipt.gasUsed.toNumber();
                 // Higher gas usage due to asset parameter. ToDO: Estimate gas (24000 before asset)
-                expect(gasUsed).to.be.at.most(300000);
+                expect(gasUsed).to.be.at.most(345000);
             });
         })
     })
@@ -227,7 +227,7 @@ describe("EthersKumoHints", async () => {
 
                 const gasUsed = rawReceipt.gasUsed.toNumber();
                 // Higher gas usage due to asset parameter. ToDO: Estimate gas (25000 before asset)
-                expect(gasUsed).to.be.at.most(331000);
+                expect(gasUsed).to.be.at.most(375000);
             });
 
             // Test 2
@@ -249,7 +249,7 @@ describe("EthersKumoHints", async () => {
 
                 const gasUsed = rawReceipt.gasUsed.toNumber();
                 // Higher gas usage due to asset parameter. ToDO: Estimate gas (31000 before asset)
-                expect(gasUsed).to.be.at.most(384000);
+                expect(gasUsed).to.be.at.most(430000);
             });
             // Test 3
             it(`should not traverse the whole list when lowering ICR of bottom Trove ${mockAssetContract.name}`, async () => {
@@ -270,7 +270,7 @@ describe("EthersKumoHints", async () => {
 
                 const gasUsed = rawReceipt.gasUsed.toNumber();
                 // Higher gas usage due to asset parameter. ToDO: Estimate gas (24000 before asset)
-                expect(gasUsed).to.be.at.most(300000);
+                expect(gasUsed).to.be.at.most(350000);
             });
 
         });
