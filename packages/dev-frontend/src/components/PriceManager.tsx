@@ -28,6 +28,7 @@ export const PriceManager: React.FC<{ price: Decimal; assetAddress: string }> = 
       <Flex sx={{ alignItems: "stretch" }}>
         <Label variant="unitSecondary" sx={{ fontSize: ["10px", "14px"],  borderTopLeftRadius : '12px', borderBottomLeftRadius : '12px' }}>$</Label>
         <Input
+          name="price-manager"
           type={canSetPrice ? "number" : "text"}
           step="any"
           value={editedPrice}
@@ -50,6 +51,7 @@ export const PriceManager: React.FC<{ price: Decimal; assetAddress: string }> = 
               }}
             >
               <Button
+                id="set-price-btn"
                 sx={{
                   height: [30, 34],
                   width: 34

@@ -174,7 +174,7 @@ export const StabilityDepositManager: React.FC = () => {
             change={validChange}
             asset={collateralType}
           >
-            Confirm
+            CONFIRM
           </StabilityDepositAction>
         ) : (
           <Button variant="primaryInActive" disabled sx={{ mb: 2 }}>CONFIRM</Button>
