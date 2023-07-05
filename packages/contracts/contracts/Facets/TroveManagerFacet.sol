@@ -59,8 +59,8 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         return s.lastFeeOperationTime;
     }
 
-    function Troves(address _borrower, address _asset) external view returns (Trove memory) {
-        return s.Troves[_borrower][_asset];
+    function Troves(address _asset, address _borrower) external view returns (Trove memory) {
+        return s.Troves[_asset][_borrower];
     }
 
     function totalStakes(address _asset) external view returns (uint256) {
@@ -84,10 +84,10 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
     }
 
     function rewardSnapshots(
-        address _borrower,
-        address _asset
+        address _asset,
+        address _borrower
     ) external view returns (RewardSnapshot memory) {
-        return s.rewardSnapshots[_borrower][_asset];
+        return s.rewardSnapshots[_asset][_borrower];
     }
 
     function TroveOwners(address _asset, uint256 _index) external view returns (address) {
@@ -165,8 +165,8 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         uint256 pendingReward = LibTroveManager._getPendingReward(_asset, _borrower);
         uint256 pendingKUSDDebtReward = LibTroveManager._getPendingKUSDDebtReward(_asset, _borrower);
 
-        uint256 currentAsset = s.Troves[_borrower][_asset].coll + pendingReward;
-        uint256 currentKUSDDebt = s.Troves[_borrower][_asset].debt + pendingKUSDDebtReward;
+        uint256 currentAsset = s.Troves[_asset][_borrower].coll + pendingReward;
+        uint256 currentKUSDDebt = s.Troves[_asset][_borrower].debt + pendingKUSDDebtReward;
 
         return (currentAsset, currentKUSDDebt);
     }
@@ -176,12 +176,12 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         address _asset,
         address _borrower
     ) public view override returns (uint256) {
-        uint256 snapshotAsset = s.rewardSnapshots[_borrower][_asset].asset;
+        uint256 snapshotAsset = s.rewardSnapshots[_asset][_borrower].asset;
         uint256 rewardPerUnitStaked = s.L_ASSETS[_asset] - (snapshotAsset);
         if (rewardPerUnitStaked == 0 || !_isTroveActive(_asset, _borrower)) {
             return 0;
         }
-        uint256 stake = s.Troves[_borrower][_asset].stake;
+        uint256 stake = s.Troves[_asset][_borrower].stake;
         uint256 pendingAssetReward = (stake * (rewardPerUnitStaked)) / (KumoMath.DECIMAL_PRECISION);
         return pendingAssetReward;
     }
@@ -237,7 +237,7 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
 
         // Record the index of the new Troveowner on their Trove struct
         index = uint128(s.TroveOwners[_asset].length - 1);
-        s.Troves[_borrower][_asset].arrayIndex = index;
+        s.Troves[_asset][_borrower].arrayIndex = index;
 
         return index;
     }
@@ -350,28 +350,28 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         address _asset,
         address _borrower
     ) external view override returns (uint256) {
-        return uint256(s.Troves[_borrower][_asset].status);
+        return uint256(s.Troves[_asset][_borrower].status);
     }
 
     function getTroveStake(
         address _asset,
         address _borrower
     ) external view override returns (uint256) {
-        return s.Troves[_borrower][_asset].stake;
+        return s.Troves[_asset][_borrower].stake;
     }
 
     function getTroveDebt(
         address _asset,
         address _borrower
     ) external view override returns (uint256) {
-        return s.Troves[_borrower][_asset].debt;
+        return s.Troves[_asset][_borrower].debt;
     }
 
     function getTroveColl(
         address _asset,
         address _borrower
     ) external view override returns (uint256) {
-        return s.Troves[_borrower][_asset].coll;
+        return s.Troves[_asset][_borrower].coll;
     }
 
     function getEntireSystemColl(address _asset) external view returns (uint256 entireSystemColl) {
@@ -386,8 +386,8 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
 
     function setTroveStatus(address _asset, address _borrower, uint256 _num) external override {
         _requireCallerIsBorrowerOperations();
-        s.Troves[_borrower][_asset].asset = _asset;
-        s.Troves[_borrower][_asset].status = Status(_num);
+        s.Troves[_asset][_borrower].asset = _asset;
+        s.Troves[_asset][_borrower].status = Status(_num);
     }
 
     function increaseTroveColl(
@@ -396,8 +396,8 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         uint256 _collIncrease
     ) external override returns (uint256) {
         _requireCallerIsBorrowerOperations();
-        uint256 newColl = s.Troves[_borrower][_asset].coll + _collIncrease;
-        s.Troves[_borrower][_asset].coll = newColl;
+        uint256 newColl = s.Troves[_asset][_borrower].coll + _collIncrease;
+        s.Troves[_asset][_borrower].coll = newColl;
         return newColl;
     }
 
@@ -407,8 +407,8 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         uint256 _collDecrease
     ) external override returns (uint256) {
         _requireCallerIsBorrowerOperations();
-        uint256 newColl = s.Troves[_borrower][_asset].coll - _collDecrease;
-        s.Troves[_borrower][_asset].coll = newColl;
+        uint256 newColl = s.Troves[_asset][_borrower].coll - _collDecrease;
+        s.Troves[_asset][_borrower].coll = newColl;
         return newColl;
     }
 
@@ -418,8 +418,8 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         uint256 _debtIncrease
     ) external override returns (uint256) {
         _requireCallerIsBorrowerOperations();
-        uint256 newDebt = s.Troves[_borrower][_asset].debt + _debtIncrease;
-        s.Troves[_borrower][_asset].debt = newDebt;
+        uint256 newDebt = s.Troves[_asset][_borrower].debt + _debtIncrease;
+        s.Troves[_asset][_borrower].debt = newDebt;
         return newDebt;
     }
 
@@ -429,8 +429,8 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         uint256 _debtDecrease
     ) external override returns (uint256) {
         _requireCallerIsBorrowerOperations();
-        uint256 newDebt = s.Troves[_borrower][_asset].debt - _debtDecrease;
-        s.Troves[_borrower][_asset].debt = newDebt;
+        uint256 newDebt = s.Troves[_asset][_borrower].debt - _debtDecrease;
+        s.Troves[_asset][_borrower].debt = newDebt;
         return newDebt;
     }
 }

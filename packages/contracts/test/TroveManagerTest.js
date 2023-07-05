@@ -187,11 +187,11 @@ contract("TroveManager", async accounts => {
     await troveManager.liquidate(assetAddress2, alice, { from: owner });
 
     // check the Trove is successfully closed, and removed from sortedList
-    const statusAsset1 = (await troveManager.Troves(alice, assetAddress1))[TroveData.status];
+    const statusAsset1 = (await troveManager.Troves(assetAddress1, alice))[TroveData.status];
     assert.equal(statusAsset1, 3); // status enum 3 corresponds to "Closed by liquidation"
     const alice_Trove_isInSortedList_Asset1 = await sortedTroves.contains(assetAddress1, alice);
     assert.isFalse(alice_Trove_isInSortedList_Asset1);
-    const statusAsset2 = (await troveManager.Troves(alice, assetAddress2))[TroveData.status];
+    const statusAsset2 = (await troveManager.Troves(assetAddress2, alice))[TroveData.status];
     assert.equal(statusAsset2, 3); // status enum 3 corresponds to "Closed by liquidation"
     const alice_Trove_isInSortedList_Asset2 = await sortedTroves.contains(assetAddress2, alice);
     assert.isFalse(alice_Trove_isInSortedList_Asset2);
@@ -394,13 +394,13 @@ contract("TroveManager", async accounts => {
 
     // Check correct indices recorded on the active trove structs
     //  (await troveManager.Troves(assetAddress1, alice, assetAddress1))[4]
-    const whale_arrayIndex = (await troveManager.Troves(whale, assetAddress1))[TroveData.arrayIndex];
-    const alice_arrayIndex = (await troveManager.Troves(alice, assetAddress1))[TroveData.arrayIndex];
-    const bob_arrayIndex = (await troveManager.Troves(bob, assetAddress1))[TroveData.arrayIndex];
-    const dennis_arrayIndex = (await troveManager.Troves(dennis, assetAddress1))[
+    const whale_arrayIndex = (await troveManager.Troves(assetAddress1, whale))[TroveData.arrayIndex];
+    const alice_arrayIndex = (await troveManager.Troves(assetAddress1, alice))[TroveData.arrayIndex];
+    const bob_arrayIndex = (await troveManager.Troves(assetAddress1, bob))[TroveData.arrayIndex];
+    const dennis_arrayIndex = (await troveManager.Troves(assetAddress1, dennis))[
       TroveData.arrayIndex
     ];
-    const erin_arrayIndex = (await troveManager.Troves(erin, assetAddress1))[TroveData.arrayIndex];
+    const erin_arrayIndex = (await troveManager.Troves(assetAddress1, erin))[TroveData.arrayIndex];
 
     // [W, A, B, E, D]
     assert.equal(whale_arrayIndex, 0);
@@ -1124,7 +1124,7 @@ contract("TroveManager", async accounts => {
 
     // Confirm Bob's trove has been closed
     assert.isFalse(await sortedTroves.contains(assetAddress1, bob));
-    const bob_Trove_Status = (await troveManager.Troves(bob, assetAddress1))[
+    const bob_Trove_Status = (await troveManager.Troves(assetAddress1, bob))[
       TroveData.status
     ].toString();
     assert.equal(bob_Trove_Status, 3); // check closed by liquidation
@@ -1319,8 +1319,8 @@ contract("TroveManager", async accounts => {
 
     /* Though Bob's true ICR (including pending rewards) is below the MCR,
     check that Bob's raw coll and debt has not changed, and that his "raw" ICR is above the MCR */
-    const bob_Coll = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll]);
-    const bob_Debt = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.debt]);
+    const bob_Coll = toBN((await troveManager.Troves(assetAddress1, bob))[TroveData.coll]);
+    const bob_Debt = toBN((await troveManager.Troves(assetAddress1, bob))[TroveData.debt]);
 
     const bob_rawICR = bob_Coll.mul(toBN(dec(100, 18))).div(bob_Debt);
     assert.isTrue(bob_rawICR.gte(mv._MCR));
@@ -1345,12 +1345,12 @@ contract("TroveManager", async accounts => {
 
     // Check trove statuses - A active (1),  B and C liquidated (3)
     assert.equal(
-      (await troveManager.Troves(alice, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, alice))[TroveData.status].toString(),
       "1"
     );
-    assert.equal((await troveManager.Troves(bob, assetAddress1))[TroveData.status].toString(), "3");
+    assert.equal((await troveManager.Troves(assetAddress1, bob))[TroveData.status].toString(), "3");
     assert.equal(
-      (await troveManager.Troves(carol, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, carol))[TroveData.status].toString(),
       "3"
     );
   });
@@ -1585,16 +1585,16 @@ contract("TroveManager", async accounts => {
 
     // Check all troves A-E are now closed by liquidation
     assert.equal(
-      (await troveManager.Troves(alice, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, alice))[TroveData.status].toString(),
       "3"
     );
-    assert.equal((await troveManager.Troves(bob, assetAddress1))[TroveData.status].toString(), "3");
+    assert.equal((await troveManager.Troves(assetAddress1, bob))[TroveData.status].toString(), "3");
     assert.equal(
-      (await troveManager.Troves(carol, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, carol))[TroveData.status].toString(),
       "3"
     );
-    assert.equal((await troveManager.Troves(erin, assetAddress1))[TroveData.status].toString(), "3");
-    assert.equal((await troveManager.Troves(flyn, assetAddress1))[TroveData.status].toString(), "3");
+    assert.equal((await troveManager.Troves(assetAddress1, erin))[TroveData.status].toString(), "3");
+    assert.equal((await troveManager.Troves(assetAddress1, flyn))[TroveData.status].toString(), "3");
 
     // Check sorted list has been reduced to length 4
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), "4");
@@ -1753,8 +1753,8 @@ contract("TroveManager", async accounts => {
     assert.isTrue(carol_ICR_After.lte(mv._MCR));
 
     /* Though Bob's true ICR (including pending rewards) is below the MCR, check that Bob's raw coll and debt has not changed */
-    const bob_Coll = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.coll]);
-    const bob_Debt = toBN((await troveManager.Troves(bob, assetAddress1))[TroveData.debt]);
+    const bob_Coll = toBN((await troveManager.Troves(assetAddress1, bob))[TroveData.coll]);
+    const bob_Debt = toBN((await troveManager.Troves(assetAddress1, bob))[TroveData.debt]);
 
     const bob_rawICR = bob_Coll.mul(toBN(dec(100, 18))).div(bob_Debt);
     assert.isTrue(bob_rawICR.gte(mv._MCR));
@@ -1780,12 +1780,12 @@ contract("TroveManager", async accounts => {
 
     // check trove statuses - A active (1),  B and C closed by liquidation (3)
     assert.equal(
-      (await troveManager.Troves(alice, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, alice))[TroveData.status].toString(),
       "1"
     );
-    assert.equal((await troveManager.Troves(bob, assetAddress1))[TroveData.status].toString(), "3");
+    assert.equal((await troveManager.Troves(assetAddress1, bob))[TroveData.status].toString(), "3");
     assert.equal(
-      (await troveManager.Troves(carol, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, carol))[TroveData.status].toString(),
       "3"
     );
   });
@@ -2516,12 +2516,12 @@ contract("TroveManager", async accounts => {
 
     // Check all troves A-C are now closed by liquidation
     assert.equal(
-      (await troveManager.Troves(alice, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, alice))[TroveData.status].toString(),
       "3"
     );
-    assert.equal((await troveManager.Troves(bob, assetAddress1))[TroveData.status].toString(), "3");
+    assert.equal((await troveManager.Troves(assetAddress1, bob))[TroveData.status].toString(), "3");
     assert.equal(
-      (await troveManager.Troves(carol, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, carol))[TroveData.status].toString(),
       "3"
     );
 
@@ -2580,10 +2580,10 @@ contract("TroveManager", async accounts => {
 
     // Check all troves A-B are now closed by liquidation
     assert.equal(
-      (await troveManager.Troves(alice, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, alice))[TroveData.status].toString(),
       "3"
     );
-    assert.equal((await troveManager.Troves(bob, assetAddress1))[TroveData.status].toString(), "3");
+    assert.equal((await troveManager.Troves(assetAddress1, bob))[TroveData.status].toString(), "3");
 
     // Confirm troves C-E remain in the system
     assert.isTrue(await sortedTroves.contains(assetAddress1, carol));
@@ -2592,14 +2592,14 @@ contract("TroveManager", async accounts => {
 
     // Check all troves C-E are still active
     assert.equal(
-      (await troveManager.Troves(carol, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, carol))[TroveData.status].toString(),
       "1"
     );
     assert.equal(
-      (await troveManager.Troves(dennis, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, dennis))[TroveData.status].toString(),
       "1"
     );
-    assert.equal((await troveManager.Troves(erin, assetAddress1))[TroveData.status].toString(), "1");
+    assert.equal((await troveManager.Troves(assetAddress1, erin))[TroveData.status].toString(), "1");
 
     // Check sorted list has been reduced to length 4
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), "4");
@@ -2656,10 +2656,10 @@ contract("TroveManager", async accounts => {
 
     // Check all troves D-E and whale remain active
     assert.equal(
-      (await troveManager.Troves(dennis, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, dennis))[TroveData.status].toString(),
       "1"
     );
-    assert.equal((await troveManager.Troves(erin, assetAddress1))[TroveData.status].toString(), "1");
+    assert.equal((await troveManager.Troves(assetAddress1, erin))[TroveData.status].toString(), "1");
     assert.isTrue(await sortedTroves.contains(assetAddress1, whale));
 
     // Check sorted list has been reduced to length 3
@@ -2769,10 +2769,10 @@ contract("TroveManager", async accounts => {
 
     // Check all troves A-B are now closed by liquidation
     assert.equal(
-      (await troveManager.Troves(alice, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, alice))[TroveData.status].toString(),
       "3"
     );
-    assert.equal((await troveManager.Troves(bob, assetAddress1))[TroveData.status].toString(), "3");
+    assert.equal((await troveManager.Troves(assetAddress1, bob))[TroveData.status].toString(), "3");
 
     // Check sorted list has been reduced to length 3
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), "3");
@@ -2780,7 +2780,7 @@ contract("TroveManager", async accounts => {
     // Confirm trove C non-existent
     assert.isFalse(await sortedTroves.contains(assetAddress1, carol));
     assert.equal(
-      (await troveManager.Troves(carol, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, carol))[TroveData.status].toString(),
       "0"
     );
 
@@ -2871,13 +2871,13 @@ contract("TroveManager", async accounts => {
 
     // Check all troves A-B are now closed by liquidation
     assert.equal(
-      (await troveManager.Troves(alice, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, alice))[TroveData.status].toString(),
       "3"
     );
-    assert.equal((await troveManager.Troves(bob, assetAddress1))[TroveData.status].toString(), "3");
+    assert.equal((await troveManager.Troves(assetAddress1, bob))[TroveData.status].toString(), "3");
     // Trove C still closed by user
     assert.equal(
-      (await troveManager.Troves(carol, assetAddress1))[TroveData.status].toString(),
+      (await troveManager.Troves(assetAddress1, carol))[TroveData.status].toString(),
       "2"
     );
 
@@ -3143,9 +3143,9 @@ contract("TroveManager", async accounts => {
 
     const ETHFee = th.getEmittedRedemptionValues(redemptionTx)[3];
 
-    const alice_Trove_After = await troveManager.Troves(alice, assetAddress1);
-    const bob_Trove_After = await troveManager.Troves(bob, assetAddress1);
-    const carol_Trove_After = await troveManager.Troves(carol, assetAddress1);
+    const alice_Trove_After = await troveManager.Troves(assetAddress1, alice);
+    const bob_Trove_After = await troveManager.Troves(assetAddress1, bob);
+    const carol_Trove_After = await troveManager.Troves(assetAddress1, carol);
 
     const alice_debt_After = alice_Trove_After[TroveData.debt].toString();
     const bob_debt_After = bob_Trove_After[TroveData.debt].toString();
@@ -3248,9 +3248,9 @@ contract("TroveManager", async accounts => {
 
     const ETHFee = th.getEmittedRedemptionValues(redemptionTx)[3];
 
-    const alice_Trove_After = await troveManager.Troves(alice, assetAddress1);
-    const bob_Trove_After = await troveManager.Troves(bob, assetAddress1);
-    const carol_Trove_After = await troveManager.Troves(carol, assetAddress1);
+    const alice_Trove_After = await troveManager.Troves(assetAddress1, alice);
+    const bob_Trove_After = await troveManager.Troves(assetAddress1, bob);
+    const carol_Trove_After = await troveManager.Troves(assetAddress1, carol);
 
     const alice_debt_After = alice_Trove_After[TroveData.debt].toString();
     const bob_debt_After = bob_Trove_After[TroveData.debt].toString();
@@ -3354,9 +3354,9 @@ contract("TroveManager", async accounts => {
 
     const ETHFee = th.getEmittedRedemptionValues(redemptionTx)[3];
 
-    const alice_Trove_After = await troveManager.Troves(alice, assetAddress1);
-    const bob_Trove_After = await troveManager.Troves(bob, assetAddress1);
-    const carol_Trove_After = await troveManager.Troves(carol, assetAddress1);
+    const alice_Trove_After = await troveManager.Troves(assetAddress1, alice);
+    const bob_Trove_After = await troveManager.Troves(assetAddress1, bob);
+    const carol_Trove_After = await troveManager.Troves(assetAddress1, carol);
 
     const alice_debt_After = alice_Trove_After[TroveData.debt].toString();
     const bob_debt_After = bob_Trove_After[TroveData.debt].toString();
@@ -3465,9 +3465,9 @@ contract("TroveManager", async accounts => {
 
     const ETHFee = th.getEmittedRedemptionValues(redemptionTx)[3];
 
-    const alice_Trove_After = await troveManager.Troves(alice, assetAddress1);
-    const bob_Trove_After = await troveManager.Troves(bob, assetAddress1);
-    const carol_Trove_After = await troveManager.Troves(carol, assetAddress1);
+    const alice_Trove_After = await troveManager.Troves(assetAddress1, alice);
+    const bob_Trove_After = await troveManager.Troves(assetAddress1, bob);
+    const carol_Trove_After = await troveManager.Troves(assetAddress1, carol);
 
     const alice_debt_After = alice_Trove_After[TroveData.debt].toString();
     const bob_debt_After = bob_Trove_After[TroveData.debt].toString();
@@ -4007,11 +4007,11 @@ contract("TroveManager", async accounts => {
     );
 
     // Alice's Trove was cleared of debt
-    const { debt: alice_Debt_After } = await troveManager.Troves(alice, assetAddress1);
+    const { debt: alice_Debt_After } = await troveManager.Troves(assetAddress1, alice);
     assert.equal(alice_Debt_After, "0");
 
     // Bob's Trove was left untouched
-    const { debt: bob_Debt_After } = await troveManager.Troves(bob, assetAddress1);
+    const { debt: bob_Debt_After } = await troveManager.Troves(assetAddress1, bob);
     th.assertIsApproximatelyEqual(bob_Debt_After, B_totalDebt_Asset1);
   });
 
@@ -4081,16 +4081,16 @@ contract("TroveManager", async accounts => {
       { from: dennis }
     );
 
-    const { debt: alice_Debt_After } = await troveManager.Troves(alice, assetAddress1);
+    const { debt: alice_Debt_After } = await troveManager.Troves(assetAddress1, alice);
     assert.equal(alice_Debt_After, "0");
 
-    const { debt: bob_Debt_After } = await troveManager.Troves(bob, assetAddress1);
+    const { debt: bob_Debt_After } = await troveManager.Troves(assetAddress1, bob);
     assert.equal(bob_Debt_After, "0");
 
-    const { debt: carol_Debt_After } = await troveManager.Troves(carol, assetAddress1);
+    const { debt: carol_Debt_After } = await troveManager.Troves(assetAddress1, carol);
     assert.equal(carol_Debt_After, "0");
 
-    const { debt: dennis_Debt_After } = await troveManager.Troves(dennis, assetAddress1);
+    const { debt: dennis_Debt_After } = await troveManager.Troves(assetAddress1, dennis);
     th.assertIsApproximatelyEqual(dennis_Debt_After, D_totalDebt);
   });
 
