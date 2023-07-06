@@ -1,7 +1,7 @@
 name: Release SDK & UI
 
 env:
-  CI: false #Set back to true after fixing all warnings
+  CI: true #Set back to true after fixing all warnings
   FORCE_COLOR: true
 
 on: [ push, pull_request ]
