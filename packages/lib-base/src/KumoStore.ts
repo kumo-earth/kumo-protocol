@@ -1,7 +1,8 @@
 import assert from "assert";
 
 import { Decimal } from "./Decimal";
-import { TroveWithPendingRedistribution, UserTrove } from "./Trove";
+import { UserTrove } from "./Trove";
+// import { TroveWithPendingRedistribution } from "./Trove";
 import { Fees } from "./Fees";
 import { KUMOStake } from "./KUMOStake";
 import { FrontendStatus } from "./ReadableKumo";

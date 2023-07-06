@@ -33,7 +33,6 @@ import { Portfolio } from "./pages/Portfolio";
 import { Stats } from "./pages/stats";
 import { LiquidityStaking } from "./pages/LiquidityStaking";
 import { SystemStatsPopup } from "./components/SystemStatsPopup";
-import { Link } from "./components/Link";
 import Faucet from "./pages/Faucet";
 
 type KumoFrontendProps = {

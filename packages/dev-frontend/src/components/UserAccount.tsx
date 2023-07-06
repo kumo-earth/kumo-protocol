@@ -28,7 +28,7 @@ export const UserAccount: React.FC = () => {
   const { deactivate, active } = useWeb3React<Web3Provider>();
   const dialog = useDialogState();
   const { showModal, dispatchEvent } = useWalletView();
-  const { showAddAssetModal, dispatchEvent: dispatch } = useAddAssetModal()
+  const { showAddAssetModal } = useAddAssetModal()
   const { showSwitchModal } = useSwitchNetworkView();
   const { account } = useWeb3React();
   const history = useHistory()
@@ -84,21 +84,6 @@ export const UserAccount: React.FC = () => {
               }}
             >Kumo Faucet
             </Button>
-            {/* <Button
-              onClick={() => {
-                dispatch("OPEN_ADD_ASSET_MODAL_PRESSED")
-              }}
-              sx={{
-                py: 2,
-                px: 3,
-                mr: 2,
-                outline: "none",
-                fontSize: '14px'
-              }}
-            >
-              {" "}
-              ADD TEST TOKENS TO WALLET
-            </Button> */}
             <Tooltip message={account}>
               <Button
                 onClick={() => {
