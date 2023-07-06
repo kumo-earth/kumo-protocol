@@ -25,7 +25,6 @@ import {
   PopulatedEthersKumoTransaction,
   SentEthersKumoTransaction
 } from "./PopulatableEthersKumo";
-import { _getContracts } from "./EthersKumoConnection";
 
 const sendTransaction = <T>(tx: PopulatedEthersKumoTransaction<T>) => tx.send();
 
