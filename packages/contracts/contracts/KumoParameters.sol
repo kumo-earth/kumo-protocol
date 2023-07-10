@@ -318,7 +318,7 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         uint256 _oldCap = KUSDMintCap[_asset];
         KUSDMintCap[_asset] = _newCap;
 
-        // emit KUSDMintCapChanged(_asset, _oldCap, _newCap);
+        emit KUSDMintCapChanged(_asset, _oldCap, _newCap);
     }
 
     modifier safeCheck(
