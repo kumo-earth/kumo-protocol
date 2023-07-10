@@ -15,6 +15,7 @@ export const useViewBanner = (visibility: number, viewId: string) => {
   );
   useEffect(() => {
     sessionStorage.setItem(viewId, JSON.stringify(isViewBannerCheck));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isViewBannerCheck]);
 
   useEffect(() => {

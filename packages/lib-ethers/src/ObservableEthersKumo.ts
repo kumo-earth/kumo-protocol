@@ -8,9 +8,8 @@ import {
   Trove,
   TroveWithPendingRedistribution
 } from "@kumodao/lib-base";
-import { _KumoContract, _KumoContracts } from "./contracts";
 
-import { _getContracts, _InternalEthersKumoConnection, _requireAddress, _getStabilityPoolByAsset } from "./EthersKumoConnection";
+import { _getContracts , _requireAddress, _getStabilityPoolByAsset } from "./EthersKumoConnection";
 import { ReadableEthersKumo } from "./ReadableEthersKumo";
 
 const debouncingDelayMs = 50;

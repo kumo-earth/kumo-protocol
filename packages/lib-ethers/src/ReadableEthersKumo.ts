@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 
 import iERC20Abi from "../abi/IERC20.json";
 
@@ -16,8 +16,7 @@ import {
   TroveListingParams,
   TroveWithPendingRedistribution,
   UserTrove,
-  UserTroveStatus,
-  ASSET_TOKENS
+  UserTroveStatus
 } from "@kumodao/lib-base";
 
 import { MultiTroveGetter } from "../types";
@@ -34,7 +33,6 @@ import {
   _getContracts,
   _requireAddress,
   _requireFrontendAddress,
-  _requireSigner,
   _getStabilityPoolByAsset
 } from "./EthersKumoConnection";
 
