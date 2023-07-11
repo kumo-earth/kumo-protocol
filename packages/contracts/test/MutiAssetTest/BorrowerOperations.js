@@ -14,7 +14,6 @@ const assertRevert = th.assertRevert;
 
 const GAS_PRICE = 10000000;
 
-
 /* NOTE: Some of the borrowing tests do not test for specific KUSD fee values. They only test that the
  * fees are non-zero when they should occur, and that they decay over time.
  *
@@ -24,21 +23,8 @@ const GAS_PRICE = 10000000;
  *
  */
 
-contract("BorrowerOperations - Multiple Assets", async accounts => {
-  const [
-    owner,
-    alice,
-    bob,
-    carol,
-    dennis,
-    whale,
-    A,
-    B,
-    C,
-    D,
-    E,
-    defaulter_1,
-  ] = accounts;
+contract.only("BorrowerOperations - Multiple Assets", async accounts => {
+  const [owner, alice, bob, carol, dennis, whale, A, B, C, D, E, defaulter_1] = accounts;
 
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000);
   const ZERO_ADDRESS = th.ZERO_ADDRESS;
@@ -68,7 +54,7 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
 
   let kumoParams;
 
-  before(async () => { });
+  before(async () => {});
 
   const testCorpus = ({ withProxy = false }) => {
     beforeEach(async () => {
@@ -145,7 +131,6 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
 
       assert.isTrue(TCR_Before_Asset2 == TCR_After_Asset2.toString());
       assert.isTrue(TCR_Before_Asset1 < TCR_After_Asset1.toString());
-
     });
 
     it("addColl(), change in collateral changing TCR for one asset shouldn't change it for another", async () => {
@@ -171,7 +156,6 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
 
       assert.isTrue(TCR_Before_Asset2 == TCR_After_Asset2.toString());
       assert.isTrue(TCR_Before_Asset1 < TCR_After_Asset1.toString());
-
     });
 
     it("addColl(): Increases the activePool ETH and raw ether balance changing TCR for one asset shouldn't change it for another", async () => {
@@ -187,14 +171,11 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
         extraParams: { from: alice }
       });
 
-
-
       const Price_Before_Asset1 = await priceFeed.getPrice(assetAddress1);
       const Price_Before_Asset2 = await priceFeed.getPrice(assetAddress2);
 
       const TCR_Before_Asset1 = await troveManager.getTCR(assetAddress1, Price_Before_Asset1);
       const TCR_Before_Asset2 = await troveManager.getTCR(assetAddress2, Price_Before_Asset2);
-
 
       // alice add collateral for the first asset, changing TCR
       await borrowerOperations.addColl(assetAddress1, dec(1, "ether"), alice, alice, {
@@ -202,15 +183,12 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
         value: dec(1, "ether")
       });
 
-
       // TCR for the first asset changes, TCR for the second asset stays the same
       const TCR_After_Asset1 = await troveManager.getTCR(assetAddress1, Price_Before_Asset1);
       const TCR_After_Asset2 = await troveManager.getTCR(assetAddress2, Price_Before_Asset2);
 
-
       assert.isTrue(TCR_Before_Asset2 == TCR_After_Asset2.toString());
       assert.isTrue(TCR_Before_Asset1 < TCR_After_Asset1.toString());
-
     });
 
     it("addColl(): can add collateral in Recovery Mode changing TCR for one asset shouldn't change it for another", async () => {
@@ -219,13 +197,11 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
 
       await priceFeed.setPrice(assetAddress1, "105000000000000000000");
 
-
       const Price_Before_Asset1 = await priceFeed.getPrice(assetAddress1);
       const Price_Before_Asset2 = await priceFeed.getPrice(assetAddress2);
 
       const TCR_Before_Asset1 = await troveManager.getTCR(assetAddress1, Price_Before_Asset1);
       const TCR_Before_Asset2 = await troveManager.getTCR(assetAddress2, Price_Before_Asset2);
-
 
       const collTopUp = toBN(dec(1, "ether"));
 
@@ -241,8 +217,6 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
 
       assert.isTrue(TCR_Before_Asset2 == TCR_After_Asset2.toString());
       assert.isTrue(TCR_Before_Asset1 < TCR_After_Asset1.toString());
-
-
     });
 
     it("withdrawColl(): reduces the Trove's collateral changing TCR for one asset shouldn't change it for another", async () => {
@@ -266,13 +240,11 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
 
       assert.isTrue(TCR_Before_Asset2 == TCR_After_Asset2.toString());
       assert.isTrue(TCR_Before_Asset1 > TCR_After_Asset1.toString());
-
     });
 
     it("withdrawColl(): reduces ActivePool ETH and raw ether changing TCR for one asset shouldn't change it for another", async () => {
       await openTrove({ asset: assetAddress1, ICR: toBN(dec(2, 18)), extraParams: { from: alice } });
       await openTrove({ asset: assetAddress2, ICR: toBN(dec(2, 18)), extraParams: { from: alice } });
-
 
       const Price_Before_Asset1 = await priceFeed.getPrice(assetAddress1);
       const Price_Before_Asset2 = await priceFeed.getPrice(assetAddress2);
@@ -290,7 +262,6 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
 
       assert.isTrue(TCR_Before_Asset2 == TCR_After_Asset2.toString());
       assert.isTrue(TCR_Before_Asset1 > TCR_After_Asset1.toString());
-
     });
 
     it("adjustTrove(): updates borrower's debt and coll changing TCR for one asset shouldn't change it for another", async () => {
@@ -321,7 +292,6 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
       const TCRBeforeAsset1 = await troveManager.getTCR(assetAddress1, priceBeforeAsset1);
       const TCRBeforeAsset2 = await troveManager.getTCR(assetAddress2, priceBeforeAsset2);
 
-
       // Alice adjusts trove. Coll and debt increase(+1 ETH, +50KUSD), changing TCR
       await borrowerOperations.adjustTrove(
         assetAddress1,
@@ -341,7 +311,6 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
 
       assert.isTrue(TCRBeforeAsset2 == TCRAfterAsset2.toString());
       assert.isTrue(TCRBeforeAsset1 < TCRAfterAsset1.toString());
-
     });
 
     it("closeTrove(): sets trove's status to closed changing ActivePool balance for one asset shouldn't change it for another", async () => {
@@ -366,7 +335,6 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
         extraParams: { from: alice }
       });
 
-
       const activePoolBeforeBalance1 = await activePool.getAssetBalance(assetAddress1);
       const activePoolBeforeBalance2 = await activePool.getAssetBalance(assetAddress2);
 
@@ -384,7 +352,7 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
       assert.isTrue(activePoolBeforeBalance1 > activePoolAfterBalance1.toString());
     });
 
-    const redeemCollateral3Full1Partial = async (assetAddress) => {
+    const redeemCollateral3Full1Partial = async assetAddress => {
       // time fast-forwards 1 year, and multisig stakes 1 KUMO
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider);
       await kumoToken.approve(kumoStaking.address, dec(1, 18), { from: multisig });
@@ -515,7 +483,6 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
         "CollSurplusPool: Caller is not Borrower Operations"
       );
 
-
       const collSurplusPoolBeforeBalance1 = await collSurplusPool.getAssetBalance(assetAddress1);
       const collSurplusPoolBeforeBalance2 = await collSurplusPool.getAssetBalance(assetAddress2);
 
@@ -523,14 +490,12 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
       await borrowerOperations.claimCollateral(assetAddress1, { from: B, gasPrice: GAS_PRICE });
       await borrowerOperations.claimCollateral(assetAddress1, { from: C, gasPrice: GAS_PRICE });
 
-
       // collSurplusPool asset balance changhes for first asset, doesn't change for second asset
       const collSurplusPoolAfterBalance1 = await collSurplusPool.getAssetBalance(assetAddress1);
       const collSurplusPoolAfterBalance2 = await collSurplusPool.getAssetBalance(assetAddress2);
 
       assert.isTrue(collSurplusPoolBeforeBalance2 == collSurplusPoolAfterBalance2.toString());
       assert.isTrue(collSurplusPoolBeforeBalance1 > collSurplusPoolAfterBalance1.toString());
-
     });
 
     it("withdrawAssetGainToTrove(): Applies kusdLoss to user's deposit changing TCR for one asset shouldn't change it for another", async () => {
@@ -587,9 +552,7 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
 
       assert.isTrue(TCRBeforeAsset2 == TCRAfterAsset2.toString());
       assert.isTrue(TCRBeforeAsset1 < TCRAfterAsset1.toString());
-
     });
-
   };
 
   describe("Without proxy", async () => {
@@ -600,6 +563,4 @@ contract("BorrowerOperations - Multiple Assets", async accounts => {
   // })
 });
 
-
-
-contract("Reset chain state", async accounts => { });
+contract("Reset chain state", async accounts => {});
