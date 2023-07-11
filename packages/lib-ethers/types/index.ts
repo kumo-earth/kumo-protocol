@@ -900,6 +900,7 @@ interface TroveManagerCalls {
   getBorrowingRate(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getBorrowingRateWithDecay(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getCurrentICR(_asset: string, _borrower: string, _price: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
+  getEntireDebtAndColl(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<{ debt: BigNumber; coll: BigNumber; pendingKUSDDebtReward: BigNumber; pendingReward: BigNumber }>;
   getEntireSystemColl(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getEntireSystemDebt(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getNominalICR(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<BigNumber>;
@@ -931,8 +932,8 @@ interface TroveManagerCalls {
   totalCollateralSnapshot(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   totalStakes(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   totalStakesSnapshot(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  getEntireDebtAndColl(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<{ debt: BigNumber; coll: BigNumber; pendingKUSDDebtReward: BigNumber; pendingReward: BigNumber }>;
   hasPendingRewards(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<boolean>;
+  MIN_NET_DEBT(_overrides?: CallOverrides): Promise<BigNumber>;
 }
 
 interface TroveManagerTransactions {
@@ -974,6 +975,10 @@ export interface TroveManager
     TotalStakesUpdated(_asset?: string | null, _newTotalStakes?: null): EventFilter;
     TroveLiquidated(_asset?: string | null, _borrower?: string | null, _debt?: null, _coll?: null, _operation?: null): EventFilter;
     TroveUpdated(_asset?: string | null, _borrower?: string | null, _debt?: null, _coll?: null, _stake?: null, _operation?: null): EventFilter;
+    BaseRateUpdated(_asset?: string | null, _baseRate?: null): EventFilter;
+    LastFeeOpTimeUpdated(_asset?: string | null, _lastFeeOpTime?: null): EventFilter;
+    TroveIndexUpdated(_asset?: string | null, _borrower?: null, _newIndex?: null): EventFilter;
+    TroveSnapshotsUpdated(_asset?: string | null, _L_ETH?: null, _L_KUSDDebt?: null): EventFilter;
   };
   extractEvents(logs: Log[], name: "DiamondCut"): _TypedLogDescription<{ _diamondCut: { facetAddress: string; action: number; functionSelectors: string[] }[]; _init: string; _calldata: string }>[];
   extractEvents(logs: Log[], name: "OwnershipTransferred"): _TypedLogDescription<{ previousOwner: string; newOwner: string }>[];
@@ -984,6 +989,10 @@ export interface TroveManager
   extractEvents(logs: Log[], name: "TotalStakesUpdated"): _TypedLogDescription<{ _asset: string; _newTotalStakes: BigNumber }>[];
   extractEvents(logs: Log[], name: "TroveLiquidated"): _TypedLogDescription<{ _asset: string; _borrower: string; _debt: BigNumber; _coll: BigNumber; _operation: number }>[];
   extractEvents(logs: Log[], name: "TroveUpdated"): _TypedLogDescription<{ _asset: string; _borrower: string; _debt: BigNumber; _coll: BigNumber; _stake: BigNumber; _operation: number }>[];
+  extractEvents(logs: Log[], name: "BaseRateUpdated"): _TypedLogDescription<{ _asset: string; _baseRate: BigNumber }>[];
+  extractEvents(logs: Log[], name: "LastFeeOpTimeUpdated"): _TypedLogDescription<{ _asset: string; _lastFeeOpTime: BigNumber }>[];
+  extractEvents(logs: Log[], name: "TroveIndexUpdated"): _TypedLogDescription<{ _asset: string; _borrower: string; _newIndex: BigNumber }>[];
+  extractEvents(logs: Log[], name: "TroveSnapshotsUpdated"): _TypedLogDescription<{ _asset: string; _L_ETH: BigNumber; _L_KUSDDebt: BigNumber }>[];
 }
 
 interface TroveManagerDiamondCalls {
