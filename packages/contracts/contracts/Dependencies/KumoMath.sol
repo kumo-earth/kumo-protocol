@@ -103,9 +103,9 @@ library KumoMath {
         }
     }
 
-    function _computeCR(uint256 _collPrice, uint256 _debt) internal pure returns (uint256) {
+    function _computeCR(uint256 _collValue, uint256 _debt) internal pure returns (uint256) {
         if (_debt > 0) {
-            uint256 newCollRatio = _collPrice / _debt;
+            uint256 newCollRatio = _collValue / _debt;
 
             return newCollRatio;
         }

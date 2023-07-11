@@ -91,9 +91,10 @@ contract KumoBase is BaseMath, Ownable, IKumoBase {
     function _checkRecoveryMode(address _asset, uint256 _price) internal view returns (bool) {
         uint256 systemTCR = _getSystemWideTCR();
         uint256 TCR = _getTCR(_asset, _price);
-        uint256 CCR = kumoParams.CCR(_asset); // Do we need system-wide CCR? Or maybe we can calculate it as an average?
+        uint256 CCR = kumoParams.CCR(_asset);
+        uint256 SCCR = kumoParams.SCCR();
 
-        return (TCR < CCR || systemTCR < CCR);
+        return (TCR < CCR || systemTCR < SCCR);
     }
 
     function _requireUserAcceptsFee(

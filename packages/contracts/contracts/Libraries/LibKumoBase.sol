@@ -94,8 +94,10 @@ library LibKumoBase {
 
         uint256 systemTCR = _getSystemWideTCR();
         uint256 TCR = _getTCR(_asset, _price);
-        uint256 CCR = s.kumoParams.CCR(_asset); // Do we need system-wide CCR? Or maybe we can calculate it as an average?
-        return (TCR < CCR || systemTCR < CCR);
+        uint256 CCR = s.kumoParams.CCR(_asset);
+        uint256 SCCR = s.kumoParams.SCCR();
+
+        return (TCR < CCR || systemTCR < SCCR);
     }
 
     function _requireUserAcceptsFee(

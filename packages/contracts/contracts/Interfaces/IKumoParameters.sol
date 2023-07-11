@@ -19,6 +19,7 @@ interface IKumoParameters {
 
     event MCRChanged(uint256 oldMCR, uint256 newMCR);
     event CCRChanged(uint256 oldCCR, uint256 newCCR);
+    event SCCRChanged(uint256 oldSCCR, uint256 newSCCR);
     event GasCompensationChanged(uint256 oldGasComp, uint256 newGasComp);
     event MinNetDebtChanged(uint256 oldMinNet, uint256 newMinNet);
     event PercentDivisorChanged(uint256 oldPercentDiv, uint256 newPercentDiv);
@@ -51,8 +52,11 @@ interface IKumoParameters {
     // Minimum collateral ratio for individual troves
     function MCR(address _asset) external view returns (uint256);
 
-    // Critical system collateral ratio. If the system's total collateral ratio (TCR) falls below the CCR, Recovery Mode is triggered.
+    // Critical system collateral by asset. If the system's total collateral ratio (TCR) falls below the CCR, Recovery Mode is triggered.
     function CCR(address _asset) external view returns (uint256);
+
+    // System critical system collateral
+    function SCCR() external view returns (uint256);
 
     function KUSD_GAS_COMPENSATION(address _asset) external view returns (uint256);
 
@@ -111,6 +115,8 @@ interface IKumoParameters {
     function setMCR(address _asset, uint256 newMCR) external;
 
     function setCCR(address _asset, uint256 newCCR) external;
+
+    function setSCCR(uint256 newCCR) external;
 
     function sanitizeParameters(address _asset) external;
 
