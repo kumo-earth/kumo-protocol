@@ -7,9 +7,6 @@ pragma solidity 0.8.11;
 import "./BaseMath.sol";
 import "./KumoMath.sol";
 import "./Ownable.sol";
-import "../Interfaces/IActivePool.sol";
-import "../Interfaces/IDefaultPool.sol";
-import "../Interfaces/IPriceFeed.sol";
 import "../Interfaces/IKumoBase.sol";
 
 // import "hardhat/console.sol";
@@ -43,11 +40,10 @@ contract KumoBase is BaseMath, Ownable, IKumoBase {
     }
 
     // Return the amount of ETH to be drawn from a trove's collateral and sent as gas compensation.
-    function _getCollGasCompensation(address _asset, uint256 _entireColl)
-        internal
-        view
-        returns (uint256)
-    {
+    function _getCollGasCompensation(
+        address _asset,
+        uint256 _entireColl
+    ) internal view returns (uint256) {
         return _entireColl / kumoParams.PERCENT_DIVISOR(_asset);
     }
 
@@ -68,14 +64,37 @@ contract KumoBase is BaseMath, Ownable, IKumoBase {
         uint256 entireSystemColl = getEntireSystemColl(_asset);
         uint256 entireSystemDebt = getEntireSystemDebt(_asset);
 
-        TCR = KumoMath._computeCR(entireSystemColl, entireSystemDebt, _price);
+        TCR = KumoMath._computeCR(entireSystemColl * _price, entireSystemDebt);
+
+        return TCR;
+    }
+
+    function _getSystemWideTCR() internal view returns (uint256 TCR) {
+        uint256 entireSystemCollSum = 0;
+        uint256 entireSystemDebt = 0;
+
+        for (uint8 i = 0; i < kumoParams.supportedAssetsCounter(); i++) {
+            address _asset = kumoParams.supportedAssets(i);
+            uint256 _assetColl = getEntireSystemColl(_asset);
+            uint256 _assetDebt = getEntireSystemDebt(_asset);
+            uint256 _price = kumoParams.priceFeed().getPrice(_asset);
+
+            entireSystemCollSum += _assetColl * _price;
+            entireSystemDebt += _assetDebt;
+        }
+
+        TCR = KumoMath._computeCR(entireSystemCollSum, entireSystemDebt);
 
         return TCR;
     }
 
     function _checkRecoveryMode(address _asset, uint256 _price) internal view returns (bool) {
+        uint256 systemTCR = _getSystemWideTCR();
         uint256 TCR = _getTCR(_asset, _price);
-        return TCR < kumoParams.CCR(_asset);
+        uint256 CCR = kumoParams.CCR(_asset);
+        uint256 SCCR = kumoParams.SCCR();
+
+        return (TCR < CCR || systemTCR < SCCR);
     }
 
     function _requireUserAcceptsFee(

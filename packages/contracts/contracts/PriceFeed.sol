@@ -88,10 +88,10 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
 
     // --- Dependency setters ---
 
-    function setAddresses(address _priceAggregatorAddress, address _tellorCallerAddress)
-        external
-        onlyOwner
-    {
+    function setAddresses(
+        address _priceAggregatorAddress,
+        address _tellorCallerAddress
+    ) external onlyOwner {
         // require(!isInitialized);
         checkContract(_priceAggregatorAddress);
         checkContract(_tellorCallerAddress);
@@ -124,6 +124,11 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
     }
 
     // --- Functions ---
+
+    // temp, added to emulate lastGoodPrice (public view function) to ease the process.
+    function getPrice(address _asset) external view returns (uint256) {
+        return lastGoodPrice;
+    }
 
     /*
      * fetchPrice():
@@ -507,11 +512,10 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
         return percentPriceDifference <= MAX_PRICE_DIFFERENCE_BETWEEN_ORACLES;
     }
 
-    function _scaleChainlinkPriceByDigits(uint256 _price, uint256 _answerDigits)
-        internal
-        pure
-        returns (uint256)
-    {
+    function _scaleChainlinkPriceByDigits(
+        uint256 _price,
+        uint256 _answerDigits
+    ) internal pure returns (uint256) {
         /*
          * Convert the price returned by the Chainlink oracle to an 18-digit decimal for use by Kumo.
          * At date of Kumo launch, Chainlink uses an 8-digit price, but we also handle the possibility of
@@ -521,16 +525,16 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
         uint256 price;
         if (_answerDigits >= TARGET_DIGITS) {
             // Scale the returned price value down to Kumo's target precision
-            price = _price.div(10**(_answerDigits - TARGET_DIGITS));
+            price = _price.div(10 ** (_answerDigits - TARGET_DIGITS));
         } else if (_answerDigits < TARGET_DIGITS) {
             // Scale the returned price value up to Kumo's target precision
-            price = _price.mul(10**(TARGET_DIGITS - _answerDigits));
+            price = _price.mul(10 ** (TARGET_DIGITS - _answerDigits));
         }
         return price;
     }
 
     function _scaleTellorPriceByDigits(uint256 _price) internal pure returns (uint256) {
-        return _price.mul(10**(TARGET_DIGITS - TELLOR_DIGITS));
+        return _price.mul(10 ** (TARGET_DIGITS - TELLOR_DIGITS));
     }
 
     function _changeStatus(Status _status) internal {
@@ -550,10 +554,9 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
         return scaledTellorPrice;
     }
 
-    function _storeChainlinkPrice(ChainlinkResponse memory _chainlinkResponse)
-        internal
-        returns (uint256)
-    {
+    function _storeChainlinkPrice(
+        ChainlinkResponse memory _chainlinkResponse
+    ) internal returns (uint256) {
         uint256 scaledChainlinkPrice = _scaleChainlinkPriceByDigits(
             uint256(_chainlinkResponse.answer),
             _chainlinkResponse.decimals
@@ -606,7 +609,7 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
         try priceAggregator.latestRoundData() returns (
             uint80 roundId,
             int256 answer,
-            uint256, /* startedAt */
+            uint256 /* startedAt */,
             uint256 timestamp,
             uint80 /* answeredInRound */
         ) {
@@ -622,11 +625,10 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
         }
     }
 
-    function _getPrevChainlinkResponse(uint80 _currentRoundId, uint8 _currentDecimals)
-        internal
-        view
-        returns (ChainlinkResponse memory prevChainlinkResponse)
-    {
+    function _getPrevChainlinkResponse(
+        uint80 _currentRoundId,
+        uint8 _currentDecimals
+    ) internal view returns (ChainlinkResponse memory prevChainlinkResponse) {
         /*
          * NOTE: Chainlink only offers a current decimals() value - there is no way to obtain the decimal precision used in a
          * previous round.  We assume the decimals used in the previous round are the same as the current round.
@@ -636,7 +638,7 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, IPriceFeed {
         try priceAggregator.getRoundData(_currentRoundId - 1) returns (
             uint80 roundId,
             int256 answer,
-            uint256, /* startedAt */
+            uint256 /* startedAt */,
             uint256 timestamp,
             uint80 /* answeredInRound */
         ) {

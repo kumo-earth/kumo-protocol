@@ -201,7 +201,7 @@ contract EchidnaTester {
         uint256 price = priceFeedTestnet.getPrice(_asset);
         uint256 KUSDAmount = _KUSDAmount;
         uint256 compositeDebt = KUSDAmount.add(kumoParams.KUSD_GAS_COMPENSATION(_asset));
-        uint256 ICR = KumoMath._computeCR(ASSET, compositeDebt, price);
+        uint256 ICR = KumoMath._computeCR(ASSET * price, compositeDebt);
         if (ICR < ratio) {
             compositeDebt = ASSET.mul(price).div(ratio);
             KUSDAmount = compositeDebt.sub(kumoParams.KUSD_GAS_COMPENSATION(_asset));

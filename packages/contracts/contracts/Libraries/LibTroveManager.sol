@@ -32,7 +32,7 @@ library LibTroveManager {
     ) internal view returns (uint256) {
         (uint256 currentAsset, uint256 currentKUSDDebt) = _getCurrentTroveAmounts(_asset, _borrower);
 
-        uint256 ICR = KumoMath._computeCR(currentAsset, currentKUSDDebt, _price);
+        uint256 ICR = KumoMath._computeCR(currentAsset * _price, currentKUSDDebt);
         return ICR;
     }
 

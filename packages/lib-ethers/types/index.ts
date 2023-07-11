@@ -569,6 +569,7 @@ interface PriceFeedCalls {
   TARGET_DIGITS(_overrides?: CallOverrides): Promise<BigNumber>;
   TELLOR_DIGITS(_overrides?: CallOverrides): Promise<BigNumber>;
   TIMEOUT(_overrides?: CallOverrides): Promise<BigNumber>;
+  getPrice(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   isOwner(_overrides?: CallOverrides): Promise<boolean>;
   lastGoodPrice(_overrides?: CallOverrides): Promise<BigNumber>;
   owner(_overrides?: CallOverrides): Promise<string>;
@@ -1095,6 +1096,8 @@ interface KumoParametersCalls {
   redemptionBlock(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
   sortedTroves(_overrides?: CallOverrides): Promise<string>;
   stabilityPoolFactory(_overrides?: CallOverrides): Promise<string>;
+  supportedAssets(arg0: BigNumberish, _overrides?: CallOverrides): Promise<string>;
+  supportedAssetsCounter(_overrides?: CallOverrides): Promise<number>;
 }
 
 interface KumoParametersTransactions {

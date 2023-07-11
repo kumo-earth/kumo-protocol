@@ -154,15 +154,7 @@ contract HintHelpers is KumoBase, CheckContract {
         uint256 _CR,
         uint256 _numTrials,
         uint256 _inputRandomSeed
-    )
-        external
-        view
-        returns (
-            address hintAddress,
-            uint256 diff,
-            uint256 latestRandomSeed
-        )
-    {
+    ) external view returns (address hintAddress, uint256 diff, uint256 latestRandomSeed) {
         uint256 arrayLength = troveManager.getTroveOwnersCount(_asset);
 
         if (arrayLength == 0) {
@@ -202,6 +194,6 @@ contract HintHelpers is KumoBase, CheckContract {
         uint256 _debt,
         uint256 _price
     ) external pure returns (uint256) {
-        return KumoMath._computeCR(_coll, _debt, _price);
+        return KumoMath._computeCR(_coll * _price, _debt);
     }
 }

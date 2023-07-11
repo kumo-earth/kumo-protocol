@@ -6176,6 +6176,18 @@ contract("TroveManager", async accounts => {
     assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1));
   });
 
+  it("checkRecoveryMode(): System-wide recovery mode", async () => {
+    await priceFeed.setPrice(assetAddress1, dec(100, 18));
+    await priceFeed.setPrice(assetAddress2, dec(100, 18));
+
+    await openTrove({ asset: assetAddress1, ICR: toBN(dec(150, 16)), extraParams: { from: alice } });
+    await openTrove({ asset: assetAddress2, ICR: toBN(dec(150, 16)), extraParams: { from: bob } });
+
+    await priceFeed.setPrice(assetAddress1, 0);
+
+    assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress2));
+  });
+
   // --- Getters ---
 
   it("getTroveStake(): Returns stake", async () => {

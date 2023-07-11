@@ -33,11 +33,10 @@ library LibKumoBase {
     }
 
     // Return the amount of ETH to be drawn from a trove's collateral and sent as gas compensation.
-    function _getCollGasCompensation(address _asset, uint256 _entireColl)
-        internal
-        view
-        returns (uint256)
-    {
+    function _getCollGasCompensation(
+        address _asset,
+        uint256 _entireColl
+    ) internal view returns (uint256) {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
         return _entireColl / s.kumoParams.PERCENT_DIVISOR(_asset);
@@ -64,7 +63,28 @@ library LibKumoBase {
         uint256 entireSystemColl = _getEntireSystemColl(_asset);
         uint256 entireSystemDebt = _getEntireSystemDebt(_asset);
 
-        TCR = KumoMath._computeCR(entireSystemColl, entireSystemDebt, _price);
+        TCR = KumoMath._computeCR(entireSystemColl * _price, entireSystemDebt);
+
+        return TCR;
+    }
+
+    function _getSystemWideTCR() internal view returns (uint256 TCR) {
+        AppStorage storage s = LibAppStorage.diamondStorage();
+
+        uint256 entireSystemCollSum = 0;
+        uint256 entireSystemDebt = 0;
+
+        for (uint8 i = 0; i < s.kumoParams.supportedAssetsCounter(); i++) {
+            address _asset = s.kumoParams.supportedAssets(i);
+            uint256 _assetColl = _getEntireSystemColl(_asset);
+            uint256 _assetDebt = _getEntireSystemDebt(_asset);
+            uint256 _price = s.kumoParams.priceFeed().getPrice(_asset);
+
+            entireSystemCollSum += _assetColl * _price;
+            entireSystemDebt += _assetDebt;
+        }
+
+        TCR = KumoMath._computeCR(entireSystemCollSum, entireSystemDebt);
 
         return TCR;
     }
@@ -72,8 +92,12 @@ library LibKumoBase {
     function _checkRecoveryMode(address _asset, uint256 _price) internal view returns (bool) {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
+        uint256 systemTCR = _getSystemWideTCR();
         uint256 TCR = _getTCR(_asset, _price);
-        return TCR < s.kumoParams.CCR(_asset);
+        uint256 CCR = s.kumoParams.CCR(_asset);
+        uint256 SCCR = s.kumoParams.SCCR();
+
+        return (TCR < CCR || systemTCR < SCCR);
     }
 
     function _requireUserAcceptsFee(

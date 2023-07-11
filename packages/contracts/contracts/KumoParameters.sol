@@ -23,6 +23,7 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
     uint256 public constant MCR_DEFAULT = 1100000000000000000; // 110%
     // Critical system collateral ratio. If the system's total collateral ratio (TCR) falls below the CCR, Recovery Mode is triggered.
     uint256 public constant CCR_DEFAULT = 1500000000000000000; // 150%
+    uint256 public constant SCCR_DEFAULT = 1500000000000000000; // 150%
     // Minimum amount of net KUSD debt a trove must have
     uint256 public constant MIN_NET_DEBT_DEFAULT = 1800e18;
     // uint256 constant public MIN_NET_DEBT = 0;
@@ -39,8 +40,9 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
     mapping(address => uint256) public KUSDMintCap;
     // Minimum collateral ratio for individual troves
     mapping(address => uint256) public override MCR;
-    // Critical system collateral ratio. If the system's total collateral ratio (TCR) falls below the CCR, Recovery Mode is triggered.
+    // Critical collateral ratio by asset. If the system's total collateral ratio (TCR) falls below the CCR, Recovery Mode is triggered.
     mapping(address => uint256) public override CCR;
+    uint256 public SCCR; // System Critical Collateral Ratio
 
     mapping(address => uint256) public override KUSD_GAS_COMPENSATION; // Amount of KUSD to be locked in gas pool on opening troves
     mapping(address => uint256) public override MIN_NET_DEBT; // Minimum amount of net KUSD debt a trove must have
@@ -51,6 +53,8 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
     mapping(address => uint256) public override redemptionBlock;
 
     mapping(address => bool) public override hasCollateralConfigured;
+    address[] public supportedAssets;
+    uint8 public supportedAssetsCounter;
 
     IActivePool public override activePool;
     IDefaultPool public override defaultPool;
@@ -153,10 +157,16 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
     // }
 
     function _setAsDefault(address _asset) private {
+        if (hasCollateralConfigured[_asset] == false) {
+            supportedAssets.push(_asset);
+            supportedAssetsCounter++;
+        }
+
         hasCollateralConfigured[_asset] = true;
 
         MCR[_asset] = MCR_DEFAULT;
         CCR[_asset] = CCR_DEFAULT;
+        SCCR = SCCR_DEFAULT;
         KUSD_GAS_COMPENSATION[_asset] = KUSD_GAS_COMPENSATION_DEFAULT;
         MIN_NET_DEBT[_asset] = MIN_NET_DEBT_DEFAULT;
         PERCENT_DIVISOR[_asset] = PERCENT_DIVISOR_DEFAULT;
@@ -177,6 +187,11 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         uint256 maxBorrowingFee,
         uint256 redemptionFeeFloor
     ) public onlyOwner {
+        if (hasCollateralConfigured[_asset] == false) {
+            supportedAssets.push(_asset);
+            supportedAssetsCounter++;
+        }
+
         hasCollateralConfigured[_asset] = true;
 
         setMCR(_asset, newMCR);
@@ -217,6 +232,13 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         CCR[_asset] = newCCR;
 
         emit CCRChanged(oldCCR, newCCR);
+    }
+
+    function setSCCR(uint256 newSCCR) public onlyOwner {
+        uint256 oldSCCR = SCCR;
+        SCCR = newSCCR;
+
+        emit SCCRChanged(oldSCCR, newSCCR);
     }
 
     function setPercentDivisor(
