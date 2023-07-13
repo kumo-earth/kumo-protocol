@@ -129,85 +129,80 @@ contract KUMOToken is CheckContract, IKUMOToken {
         checkContract(_communityIssuanceAddress);
         checkContract(_kumoStakingAddress);
         checkContract(_lockupFactoryAddress);
-
         multisigAddress = _multisigAddress;
         deploymentStartTime = block.timestamp;
-
         communityIssuanceAddress = _communityIssuanceAddress;
         kumoStakingAddress = _kumoStakingAddress;
         lockupContractFactory = ILockupContractFactory(_lockupFactoryAddress);
-
         bytes32 hashedName = keccak256(bytes(_NAME));
         bytes32 hashedVersion = keccak256(bytes(_VERSION));
-
         _HASHED_NAME = hashedName;
         _HASHED_VERSION = hashedVersion;
         _CACHED_CHAIN_ID = _chainID();
         _CACHED_DOMAIN_SEPARATOR = _buildDomainSeparator(_TYPE_HASH, hashedName, hashedVersion);
-
         // --- Initial KUMO allocations ---
-
         uint256 bountyEntitlement = _1_MILLION.mul(2); // Allocate 2 million for bounties/hackathons
-        _mint(_bountyAddress, bountyEntitlement);
-
+        // _mint(_bountyAddress, bountyEntitlement);
         uint256 depositorsAndFrontEndsEntitlement = _1_MILLION.mul(32); // Allocate 32 million to the algorithmic issuance schedule
-        _mint(_communityIssuanceAddress, depositorsAndFrontEndsEntitlement);
-
+        // _mint(_communityIssuanceAddress, depositorsAndFrontEndsEntitlement);
         uint256 _lpRewardsEntitlement = _1_MILLION.mul(4).div(3); // Allocate 1.33 million for LP rewards
         lpRewardsEntitlement = _lpRewardsEntitlement;
-        _mint(_lpRewardsAddress, _lpRewardsEntitlement);
-
+        // _mint(_lpRewardsAddress, _lpRewardsEntitlement);
         // Allocate the remainder to the KUMO Multisig: (100 - 2 - 32 - 1.33) million = 64.66 million
-        uint256 multisigEntitlement = _1_MILLION
-            .mul(100)
-            .sub(bountyEntitlement)
-            .sub(depositorsAndFrontEndsEntitlement)
-            .sub(_lpRewardsEntitlement);
-
-        _mint(_multisigAddress, multisigEntitlement);
+        // uint256 multisigEntitlement = _1_MILLION
+        //     .mul(100)
+        //     .sub(bountyEntitlement)
+        //     .sub(depositorsAndFrontEndsEntitlement)
+        //     .sub(_lpRewardsEntitlement);
+        // _mint(_multisigAddress, multisigEntitlement);
     }
 
     // --- External functions ---
 
     function totalSupply() external view override returns (uint256) {
-        return _totalSupply;
+        // return _totalSupply;
+        return 0;
     }
 
     function balanceOf(address account) external view override returns (uint256) {
-        return _balances[account];
+        // return _balances[account];
+        return 0;
     }
 
     function getDeploymentStartTime() external view override returns (uint256) {
-        return deploymentStartTime;
+        // return deploymentStartTime;
+        return 0;
     }
 
     function getLpRewardsEntitlement() external view override returns (uint256) {
-        return lpRewardsEntitlement;
+        // return lpRewardsEntitlement;
+        return 0;
     }
 
     function transfer(address recipient, uint256 amount) external override returns (bool) {
-        // Restrict the multisig's transfers in first year
-        if (_callerIsMultisig() && _isFirstYear()) {
-            _requireRecipientIsRegisteredLC(recipient);
-        }
+        // // Restrict the multisig's transfers in first year
+        // if (_callerIsMultisig() && _isFirstYear()) {
+        //     _requireRecipientIsRegisteredLC(recipient);
+        // }
 
-        _requireValidRecipient(recipient);
+        // _requireValidRecipient(recipient);
 
-        // Otherwise, standard transfer functionality
-        _transfer(msg.sender, recipient, amount);
+        // // Otherwise, standard transfer functionality
+        // _transfer(msg.sender, recipient, amount);
         return true;
     }
 
     function allowance(address owner, address spender) external view override returns (uint256) {
-        return _allowances[owner][spender];
+        // return _allowances[owner][spender];
+        return 0;
     }
 
     function approve(address spender, uint256 amount) external override returns (bool) {
-        if (_isFirstYear()) {
-            _requireCallerIsNotMultisig();
-        }
+        // if (_isFirstYear()) {
+        //     _requireCallerIsNotMultisig();
+        // }
 
-        _approve(msg.sender, spender, amount);
+        // _approve(msg.sender, spender, amount);
         return true;
     }
 
@@ -216,69 +211,68 @@ contract KUMOToken is CheckContract, IKUMOToken {
         address recipient,
         uint256 amount
     ) external override returns (bool) {
-        if (_isFirstYear()) {
-            _requireSenderIsNotMultisig(sender);
-        }
-        _requireValidRecipient(recipient);
+        // if (_isFirstYear()) {
+        //     _requireSenderIsNotMultisig(sender);
+        // }
+        // _requireValidRecipient(recipient);
 
-        _transfer(sender, recipient, amount);
-        _approve(
-            sender,
-            msg.sender,
-            _allowances[sender][msg.sender].sub(amount, "ERC20: transfer amount exceeds allowance")
-        );
+        // _transfer(sender, recipient, amount);
+        // _approve(
+        //     sender,
+        //     msg.sender,
+        //     _allowances[sender][msg.sender].sub(amount, "ERC20: transfer amount exceeds allowance")
+        // );
         return true;
     }
 
-    function increaseAllowance(address spender, uint256 addedValue)
-        external
-        override
-        returns (bool)
-    {
-        if (_isFirstYear()) {
-            _requireCallerIsNotMultisig();
-        }
+    function increaseAllowance(
+        address spender,
+        uint256 addedValue
+    ) external override returns (bool) {
+        // if (_isFirstYear()) {
+        //     _requireCallerIsNotMultisig();
+        // }
 
-        _approve(msg.sender, spender, _allowances[msg.sender][spender].add(addedValue));
+        // _approve(msg.sender, spender, _allowances[msg.sender][spender].add(addedValue));
         return true;
     }
 
-    function decreaseAllowance(address spender, uint256 subtractedValue)
-        external
-        override
-        returns (bool)
-    {
-        if (_isFirstYear()) {
-            _requireCallerIsNotMultisig();
-        }
+    function decreaseAllowance(
+        address spender,
+        uint256 subtractedValue
+    ) external override returns (bool) {
+        // if (_isFirstYear()) {
+        //     _requireCallerIsNotMultisig();
+        // }
 
-        _approve(
-            msg.sender,
-            spender,
-            _allowances[msg.sender][spender].sub(
-                subtractedValue,
-                "ERC20: decreased allowance below zero"
-            )
-        );
+        // _approve(
+        //     msg.sender,
+        //     spender,
+        //     _allowances[msg.sender][spender].sub(
+        //         subtractedValue,
+        //         "ERC20: decreased allowance below zero"
+        //     )
+        // );
         return true;
     }
 
     function sendToKUMOStaking(address _sender, uint256 _amount) external override {
-        _requireCallerIsKUMOStaking();
-        if (_isFirstYear()) {
-            _requireSenderIsNotMultisig(_sender);
-        } // Prevent the multisig from staking KUMO
-        _transfer(_sender, kumoStakingAddress, _amount);
+        // _requireCallerIsKUMOStaking();
+        // if (_isFirstYear()) {
+        //     _requireSenderIsNotMultisig(_sender);
+        // } // Prevent the multisig from staking KUMO
+        // _transfer(_sender, kumoStakingAddress, _amount);
     }
 
     // --- EIP 2612 functionality ---
 
     function domainSeparator() public view override returns (bytes32) {
-        if (_chainID() == _CACHED_CHAIN_ID) {
-            return _CACHED_DOMAIN_SEPARATOR;
-        } else {
-            return _buildDomainSeparator(_TYPE_HASH, _HASHED_NAME, _HASHED_VERSION);
-        }
+        // if (_chainID() == _CACHED_CHAIN_ID) {
+        //     return _CACHED_DOMAIN_SEPARATOR;
+        // } else {
+        //     return _buildDomainSeparator(_TYPE_HASH, _HASHED_NAME, _HASHED_VERSION);
+        // }
+        return bytes32(0);
     }
 
     function permit(
@@ -290,24 +284,25 @@ contract KUMOToken is CheckContract, IKUMOToken {
         bytes32 r,
         bytes32 s
     ) external override {
-        require(deadline >= block.timestamp, "KUMO: expired deadline");
-        bytes32 digest = keccak256(
-            abi.encodePacked(
-                "\x19\x01",
-                domainSeparator(),
-                keccak256(
-                    abi.encode(_PERMIT_TYPEHASH, owner, spender, amount, _nonces[owner]++, deadline)
-                )
-            )
-        );
-        address recoveredAddress = ecrecover(digest, v, r, s);
-        require(recoveredAddress == owner, "KUMO: invalid signature");
-        _approve(owner, spender, amount);
+        // require(deadline >= block.timestamp, "KUMO: expired deadline");
+        // bytes32 digest = keccak256(
+        //     abi.encodePacked(
+        //         "\x19\x01",
+        //         domainSeparator(),
+        //         keccak256(
+        //             abi.encode(_PERMIT_TYPEHASH, owner, spender, amount, _nonces[owner]++, deadline)
+        //         )
+        //     )
+        // );
+        // address recoveredAddress = ecrecover(digest, v, r, s);
+        // require(recoveredAddress == owner, "KUMO: invalid signature");
+        // _approve(owner, spender, amount);
     }
 
     function nonces(address owner) external view override returns (uint256) {
         // FOR EIP 2612
-        return _nonces[owner];
+        // return _nonces[owner];
+        return 0;
     }
 
     // --- Internal operations ---
@@ -326,11 +321,7 @@ contract KUMOToken is CheckContract, IKUMOToken {
         return keccak256(abi.encode(typeHash, _name, _version, _chainID(), address(this)));
     }
 
-    function _transfer(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) internal {
+    function _transfer(address sender, address recipient, uint256 amount) internal {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
 
@@ -347,11 +338,7 @@ contract KUMOToken is CheckContract, IKUMOToken {
         emit Transfer(address(0), account, amount);
     }
 
-    function _approve(
-        address owner,
-        address spender,
-        uint256 amount
-    ) internal {
+    function _approve(address owner, address spender, uint256 amount) internal {
         require(owner != address(0), "ERC20: approve from the zero address");
         require(spender != address(0), "ERC20: approve to the zero address");
 

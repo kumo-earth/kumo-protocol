@@ -66,11 +66,10 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
         deploymentTime = block.timestamp;
     }
 
-    function setAddresses(address _kumoTokenAddress, address _stabilityPoolFactoryAddress)
-        external
-        override
-        onlyOwner
-    {
+    function setAddresses(
+        address _kumoTokenAddress,
+        address _stabilityPoolFactoryAddress
+    ) external override onlyOwner {
         // require(!isInitialized, "Already initialized");
         checkContract(_kumoTokenAddress);
         checkContract(_stabilityPoolFactoryAddress);
@@ -82,8 +81,8 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
         stabilityPoolFactory = IStabilityPoolFactory(_stabilityPoolFactoryAddress);
 
         // When KUMOToken deployed, it should have transferred CommunityIssuance's KUMO entitlement
-        uint256 KUMOBalance = kumoToken.balanceOf(address(this));
-        assert(KUMOBalance >= KUMOSupplyCap);
+        // uint256 KUMOBalance = kumoToken.balanceOf(address(this));
+        // assert(KUMOBalance >= KUMOSupplyCap);
 
         emit KUMOTokenAddressSet(_kumoTokenAddress);
         emit StabilityPoolFactoryAddressSet(_stabilityPoolFactoryAddress);
@@ -124,9 +123,8 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
     }
 
     function sendKUMO(address _account, uint256 _KUMOamount) external override {
-        _requireCallerIsStabilityPool();
-
-        kumoToken.transfer(_account, _KUMOamount);
+        // _requireCallerIsStabilityPool();
+        // kumoToken.transfer(_account, _KUMOamount);
     }
 
     // --- 'require' functions ---
