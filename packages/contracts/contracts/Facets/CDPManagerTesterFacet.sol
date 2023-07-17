@@ -29,39 +29,37 @@ contract CDPManagerTesterFacet is Modifiers {
         return LibKumoBase._getCompositeDebt(_asset, _debt);
     }
 
-    function unprotectedDecayBaseRateFromBorrowing(address _asset) external returns (uint256) {
-        s.baseRate[_asset] = LibTroveManager._calcDecayedBaseRate(_asset);
-        assert(s.baseRate[_asset] >= 0 && s.baseRate[_asset] <= KumoMath.DECIMAL_PRECISION);
+    function unprotectedDecayBaseRateFromBorrowing() external returns (uint256) {
+        s.baseRate = LibTroveManager._calcDecayedBaseRate();
+        assert(s.baseRate >= 0 && s.baseRate <= KumoMath.DECIMAL_PRECISION);
 
-        LibTroveManager._updateLastFeeOpTime(_asset);
-        return s.baseRate[_asset];
+        LibTroveManager._updateLastFeeOpTime();
+        return s.baseRate;
     }
 
-    function minutesPassedSinceLastFeeOp(address _asset) external view returns (uint256) {
-        return LibTroveManager._minutesPassedSinceLastFeeOp(_asset);
+    function minutesPassedSinceLastFeeOp() external view returns (uint256) {
+        return LibTroveManager._minutesPassedSinceLastFeeOp();
     }
 
-    function setLastFeeOpTimeToNow(address _asset) external {
-        s.lastFeeOperationTime[_asset] = block.timestamp;
+    function setLastFeeOpTimeToNow() external {
+        s.lastFeeOperationTime = block.timestamp;
     }
 
-    function setBaseRate(address _asset, uint256 _baseRate) external {
-        s.baseRate[_asset] = _baseRate;
+    function setBaseRate(uint256 _baseRate) external {
+        s.baseRate = _baseRate;
     }
 
-    function callGetRedemptionFee(address _asset, uint256 _ETHDrawn)
-        external
-        view
-        returns (uint256)
-    {
+    function callGetRedemptionFee(
+        address _asset,
+        uint256 _ETHDrawn
+    ) external view returns (uint256) {
         return LibTroveManager._getRedemptionFee(_asset, _ETHDrawn);
     }
 
-    function getActualDebtFromComposite(address _asset, uint256 _debtVal)
-        external
-        view
-        returns (uint256)
-    {
+    function getActualDebtFromComposite(
+        address _asset,
+        uint256 _debtVal
+    ) external view returns (uint256) {
         return LibKumoBase._getNetDebt(_asset, _debtVal);
     }
 

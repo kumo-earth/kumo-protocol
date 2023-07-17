@@ -21,8 +21,8 @@ library LibTroveManager {
 
     // Events
     event TroveSnapshotsUpdated(address indexed _asset, uint256 _L_ETH, uint256 _L_KUSDDebt);
-    event BaseRateUpdated(address indexed _asset, uint256 _baseRate);
-    event LastFeeOpTimeUpdated(address indexed _asset, uint256 _lastFeeOpTime);
+    event BaseRateUpdated(uint256 _baseRate);
+    event LastFeeOpTimeUpdated(uint256 _lastFeeOpTime);
     event TroveIndexUpdated(address indexed _asset, address _borrower, uint256 _newIndex);
 
     function _getCurrentICR(
@@ -109,30 +109,30 @@ library LibTroveManager {
         s.defaultPool.sendAssetToActivePool(_asset, _amount);
     }
 
-    function _calcDecayedBaseRate(address _asset) internal view returns (uint256) {
+    function _calcDecayedBaseRate() internal view returns (uint256) {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
-        uint256 minutesPassed = _minutesPassedSinceLastFeeOp(_asset);
+        uint256 minutesPassed = _minutesPassedSinceLastFeeOp();
         uint256 decayFactor = KumoMath._decPow(MINUTE_DECAY_FACTOR, minutesPassed);
 
-        return (s.baseRate[_asset] * decayFactor) / KumoMath.DECIMAL_PRECISION;
+        return (s.baseRate * decayFactor) / KumoMath.DECIMAL_PRECISION;
     }
 
-    function _minutesPassedSinceLastFeeOp(address _asset) internal view returns (uint256) {
+    function _minutesPassedSinceLastFeeOp() internal view returns (uint256) {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
-        return (block.timestamp - s.lastFeeOperationTime[_asset]) / SECONDS_IN_ONE_MINUTE;
+        return (block.timestamp - s.lastFeeOperationTime) / SECONDS_IN_ONE_MINUTE;
     }
 
     // Update the last fee operation time only if time passed >= decay interval. This prevents base rate griefing.
-    function _updateLastFeeOpTime(address _asset) internal {
+    function _updateLastFeeOpTime() internal {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
-        uint256 timePassed = block.timestamp - s.lastFeeOperationTime[_asset];
+        uint256 timePassed = block.timestamp - s.lastFeeOperationTime;
 
         if (timePassed >= SECONDS_IN_ONE_MINUTE) {
-            s.lastFeeOperationTime[_asset] = block.timestamp;
-            emit LastFeeOpTimeUpdated(_asset, block.timestamp);
+            s.lastFeeOperationTime = block.timestamp;
+            emit LastFeeOpTimeUpdated(block.timestamp);
         }
     }
 
@@ -239,7 +239,7 @@ library LibTroveManager {
     function _getRedemptionRate(address _asset) internal view returns (uint256) {
         AppStorage storage s = LibAppStorage.diamondStorage();
 
-        return _calcRedemptionRate(_asset, s.baseRate[_asset]);
+        return _calcRedemptionRate(_asset, s.baseRate);
     }
 
     function _getRedemptionFee(address _asset, uint256 _assetDraw) internal view returns (uint256) {

@@ -34,7 +34,6 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     address public defaultPoolAddress;
     address public kumoStakingAddress;
     address public collSurplusPoolAddress;
-    address public troveRedemptorAddress;
 
     IStabilityPoolFactory public stabilityPoolFactory;
 
@@ -102,12 +101,8 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     }
 
     // --- Pool functionality ---
-    function sendAsset(
-        address _asset,
-        address _account,
-        uint256 _amount
-    ) external override {
-        _requireCallerIsBOorTroveMorSPorTroveR();
+    function sendAsset(address _asset, address _account, uint256 _amount) external override {
+        _requireCallerIsBOorTroveMorSP();
 
         uint256 safetyTransferAmount = SafetyTransfer.decimalsCorrection(_asset, _amount);
         if (safetyTransferAmount == 0) return;
@@ -137,7 +132,7 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
     }
 
     function decreaseKUSDDebt(address _asset, uint256 _amount) external override {
-        _requireCallerIsBOorTroveMorSPorTroveR();
+        _requireCallerIsBOorTroveMorSP();
         KUSDDebts[_asset] = KUSDDebts[_asset].sub(_amount);
         emit ActivePoolKUSDDebtUpdated(_asset, KUSDDebts[_asset]);
     }
@@ -151,13 +146,12 @@ contract ActivePool is Ownable, CheckContract, IActivePool {
         );
     }
 
-    function _requireCallerIsBOorTroveMorSPorTroveR() internal view {
+    function _requireCallerIsBOorTroveMorSP() internal view {
         require(
             msg.sender == borrowerOperationsAddress ||
                 msg.sender == troveManagerAddress ||
-                msg.sender == troveRedemptorAddress ||
                 stabilityPoolFactory.isRegisteredStabilityPool(msg.sender),
-            "ActivePool: Caller is neither BorrowerOperations nor TroveManager nor StabilityPool nor TroveRedemptor"
+            "ActivePool: Caller is neither BorrowerOperations nor TroveManager nor StabilityPool"
         );
     }
 

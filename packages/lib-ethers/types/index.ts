@@ -23,7 +23,6 @@ interface ActivePoolCalls {
   owner(_overrides?: CallOverrides): Promise<string>;
   stabilityPoolFactory(_overrides?: CallOverrides): Promise<string>;
   troveManagerAddress(_overrides?: CallOverrides): Promise<string>;
-  troveRedemptorAddress(_overrides?: CallOverrides): Promise<string>;
 }
 
 interface ActivePoolTransactions {
@@ -877,7 +876,7 @@ interface TroveManagerCalls {
   getCollGasCompensation(_asset: string, _coll: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
   getCompositeDebt(_asset: string, _debt: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
   getkusdGasCompensation(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  minutesPassedSinceLastFeeOp(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  minutesPassedSinceLastFeeOp(_overrides?: CallOverrides): Promise<BigNumber>;
   facetAddress(_functionSelector: BytesLike, _overrides?: CallOverrides): Promise<string>;
   facetAddresses(_overrides?: CallOverrides): Promise<string[]>;
   facetFunctionSelectors(_facet: string, _overrides?: CallOverrides): Promise<string[]>;
@@ -892,7 +891,7 @@ interface TroveManagerCalls {
   SECONDS_IN_ONE_MINUTE(_overrides?: CallOverrides): Promise<BigNumber>;
   TroveOwners(_asset: string, _index: BigNumberish, _overrides?: CallOverrides): Promise<string>;
   Troves(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<{ asset: string; debt: BigNumber; coll: BigNumber; stake: BigNumber; status: number; arrayIndex: BigNumber }>;
-  baseRate(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  baseRate(_overrides?: CallOverrides): Promise<BigNumber>;
   borrowerOperationsAddress(_overrides?: CallOverrides): Promise<string>;
   checkRecoveryMode(_asset: string, _price: BigNumberish, _overrides?: CallOverrides): Promise<boolean>;
   getBorrowingFee(_asset: string, _KUSDDebt: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
@@ -923,7 +922,7 @@ interface TroveManagerCalls {
   kumoToken(_overrides?: CallOverrides): Promise<string>;
   kusdToken(_overrides?: CallOverrides): Promise<string>;
   lastAssetError_Redistribution(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  lastFeeOperationTime(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
+  lastFeeOperationTime(_overrides?: CallOverrides): Promise<BigNumber>;
   lastKUSDDebtError_Redistribution(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   redemptionWhitelist(_asset: string, _overrides?: CallOverrides): Promise<boolean>;
   rewardSnapshots(_asset: string, _borrower: string, _overrides?: CallOverrides): Promise<{ asset: BigNumber; KUSDDebt: BigNumber }>;
@@ -938,15 +937,15 @@ interface TroveManagerCalls {
 
 interface TroveManagerTransactions {
   callInternalRemoveTroveOwner(_asset: string, _troveOwner: string, _overrides?: Overrides): Promise<void>;
-  setBaseRate(_asset: string, _baseRate: BigNumberish, _overrides?: Overrides): Promise<void>;
-  setLastFeeOpTimeToNow(_asset: string, _overrides?: Overrides): Promise<void>;
-  unprotectedDecayBaseRateFromBorrowing(_asset: string, _overrides?: Overrides): Promise<BigNumber>;
+  setBaseRate(_baseRate: BigNumberish, _overrides?: Overrides): Promise<void>;
+  setLastFeeOpTimeToNow(_overrides?: Overrides): Promise<void>;
+  unprotectedDecayBaseRateFromBorrowing(_overrides?: Overrides): Promise<BigNumber>;
   diamondCut(_diamondCut: { facetAddress: string; action: BigNumberish; functionSelectors: BytesLike[] }[], _init: string, _calldata: BytesLike, _overrides?: Overrides): Promise<void>;
   transferOwnership(_newOwner: string, _overrides?: Overrides): Promise<void>;
   addNewAsset(_asset: string, _overrides?: Overrides): Promise<void>;
   addTroveOwnerToArray(_asset: string, _borrower: string, _overrides?: Overrides): Promise<BigNumber>;
   closeTrove(_asset: string, _borrower: string, _overrides?: Overrides): Promise<void>;
-  decayBaseRateFromBorrowing(_asset: string, _overrides?: Overrides): Promise<void>;
+  decayBaseRateFromBorrowing(_overrides?: Overrides): Promise<void>;
   decreaseTroveColl(_asset: string, _borrower: string, _collDecrease: BigNumberish, _overrides?: Overrides): Promise<BigNumber>;
   decreaseTroveDebt(_asset: string, _borrower: string, _debtDecrease: BigNumberish, _overrides?: Overrides): Promise<BigNumber>;
   increaseTroveColl(_asset: string, _borrower: string, _collIncrease: BigNumberish, _overrides?: Overrides): Promise<BigNumber>;
@@ -975,8 +974,8 @@ export interface TroveManager
     TotalStakesUpdated(_asset?: string | null, _newTotalStakes?: null): EventFilter;
     TroveLiquidated(_asset?: string | null, _borrower?: string | null, _debt?: null, _coll?: null, _operation?: null): EventFilter;
     TroveUpdated(_asset?: string | null, _borrower?: string | null, _debt?: null, _coll?: null, _stake?: null, _operation?: null): EventFilter;
-    BaseRateUpdated(_asset?: string | null, _baseRate?: null): EventFilter;
-    LastFeeOpTimeUpdated(_asset?: string | null, _lastFeeOpTime?: null): EventFilter;
+    BaseRateUpdated(_baseRate?: null): EventFilter;
+    LastFeeOpTimeUpdated(_lastFeeOpTime?: null): EventFilter;
     TroveIndexUpdated(_asset?: string | null, _borrower?: null, _newIndex?: null): EventFilter;
     TroveSnapshotsUpdated(_asset?: string | null, _L_ETH?: null, _L_KUSDDebt?: null): EventFilter;
   };
@@ -989,8 +988,8 @@ export interface TroveManager
   extractEvents(logs: Log[], name: "TotalStakesUpdated"): _TypedLogDescription<{ _asset: string; _newTotalStakes: BigNumber }>[];
   extractEvents(logs: Log[], name: "TroveLiquidated"): _TypedLogDescription<{ _asset: string; _borrower: string; _debt: BigNumber; _coll: BigNumber; _operation: number }>[];
   extractEvents(logs: Log[], name: "TroveUpdated"): _TypedLogDescription<{ _asset: string; _borrower: string; _debt: BigNumber; _coll: BigNumber; _stake: BigNumber; _operation: number }>[];
-  extractEvents(logs: Log[], name: "BaseRateUpdated"): _TypedLogDescription<{ _asset: string; _baseRate: BigNumber }>[];
-  extractEvents(logs: Log[], name: "LastFeeOpTimeUpdated"): _TypedLogDescription<{ _asset: string; _lastFeeOpTime: BigNumber }>[];
+  extractEvents(logs: Log[], name: "BaseRateUpdated"): _TypedLogDescription<{ _baseRate: BigNumber }>[];
+  extractEvents(logs: Log[], name: "LastFeeOpTimeUpdated"): _TypedLogDescription<{ _lastFeeOpTime: BigNumber }>[];
   extractEvents(logs: Log[], name: "TroveIndexUpdated"): _TypedLogDescription<{ _asset: string; _borrower: string; _newIndex: BigNumber }>[];
   extractEvents(logs: Log[], name: "TroveSnapshotsUpdated"): _TypedLogDescription<{ _asset: string; _L_ETH: BigNumber; _L_KUSDDebt: BigNumber }>[];
 }
