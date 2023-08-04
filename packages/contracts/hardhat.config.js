@@ -17,6 +17,7 @@ const getSecret = (secretKey, defaultValue = "") => {
     const { secrets } = require(SECRETS_FILE);
     if (secrets[secretKey]) {
       secret = secrets[secretKey];
+      // Comment here
     }
   }
 
@@ -38,8 +39,7 @@ let abiMap = {};
 
 module.exports = {
   paths: {
-    // contracts: "./contracts",
-    // artifacts: "./artifacts"
+  // artifacts: "./artifacts"
   },
   solidity: {
     compilers: [
@@ -49,6 +49,7 @@ module.exports = {
           optimizer: {
             enabled: true,
             runs: 200
+            /// dasdsad
           }
         }
       }
