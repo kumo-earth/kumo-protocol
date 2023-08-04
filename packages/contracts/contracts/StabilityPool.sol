@@ -170,22 +170,12 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
     address internal assetAddress;
 
-    uint256 internal assetBalance; // deposited ether tracker
+    uint256 internal assetBalance; // deposited asset tracker
 
     // Tracker for KUSD held in the pool. Changes when users deposit/withdraw, and when Trove debt is offset.
     uint256 internal totalKUSDDeposits;
 
     // --- Data structures ---
-
-    struct FrontEnd {
-        uint256 kickbackRate;
-        bool registered;
-    }
-
-    struct Deposit {
-        uint256 initialValue;
-        address frontEndTag;
-    }
 
     struct Snapshots {
         uint256 S;
@@ -195,12 +185,8 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         uint128 epoch;
     }
 
-    mapping(address => Deposit) public deposits; // depositor address -> Deposit struct
+    mapping(address => uint256) public deposits; // depositor address -> uint256 value
     mapping(address => Snapshots) public depositSnapshots; // depositor address -> snapshots struct
-
-    mapping(address => FrontEnd) public frontEnds; // front end address -> FrontEnd struct
-    mapping(address => uint256) public frontEndStakes; // front end address -> last recorded total deposits, tagged with that front end
-    mapping(address => Snapshots) public frontEndSnapshots; // front end address -> snapshots struct
 
     /*  Product 'P': Running product by which to multiply an initial deposit, in order to find the current compounded deposit,
      * after a series of liquidations have occurred, each of which cancel some KUSD debt with the deposit.
@@ -308,40 +294,23 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     /*  provideToSP():
      *
      * - Triggers a KUMO issuance, based on time passed since the last issuance. The KUMO issuance is shared between *all* depositors and front ends
-     * - Tags the deposit with the provided front end tag param, if it's a new deposit
      * - Sends depositor's accumulated gains (KUMO, ETH) to depositor
-     * - Sends the tagged front end's accumulated KUMO gains to the tagged front end
-     * - Increases deposit and tagged front end's stake, and takes new snapshots for each.
+     * - Increases deposit and takes new snapshot.
      */
-    function provideToSP(uint256 _amount, address _frontEndTag) external override {
-        _requireFrontEndIsRegisteredOrZero(_frontEndTag);
-        _requireFrontEndNotRegistered(msg.sender);
+    function provideToSP(uint256 _amount) external override {
         _requireNonZeroAmount(_amount);
-
-        uint256 initialDeposit = deposits[msg.sender].initialValue;
 
         ICommunityIssuance communityIssuanceCached = communityIssuance;
         _triggerKUMOIssuance(communityIssuanceCached);
 
-        if (initialDeposit == 0) {
-            _setFrontEndTag(msg.sender, _frontEndTag);
-        }
+        uint256 initialDeposit = deposits[msg.sender];
 
         uint256 depositorAssetGain = getDepositorAssetGain(msg.sender);
 
         uint256 compoundedKUSDDeposit = getCompoundedKUSDDeposit(msg.sender);
         uint256 KUSDLoss = initialDeposit.sub(compoundedKUSDDeposit); // Needed only for event log
 
-        // First pay out any KUMO gains
-        address frontEnd = deposits[msg.sender].frontEndTag;
-        _payOutKUMOGains(communityIssuanceCached, msg.sender, frontEnd);
-
-        // Update front end stake
-        uint256 compoundedFrontEndStake = getCompoundedFrontEndStake(frontEnd);
-        uint256 newFrontEndStake = compoundedFrontEndStake.add(_amount);
-        _updateFrontEndStakeAndSnapshots(frontEnd, newFrontEndStake);
-        emit FrontEndStakeChanged(frontEnd, newFrontEndStake, msg.sender);
-
+        _payOutKUMOGains(communityIssuanceCached, msg.sender);
         _sendKUSDtoStabilityPool(msg.sender, _amount);
 
         uint256 newDeposit = compoundedKUSDDeposit.add(_amount);
@@ -356,10 +325,8 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     /*  withdrawFromSP():
      *
      * - Triggers a KUMO issuance, based on time passed since the last issuance. The KUMO issuance is shared between *all* depositors and front ends
-     * - Removes the deposit's front end tag if it is a full withdrawal
      * - Sends all depositor's accumulated gains (KUMO, ETH) to depositor
-     * - Sends the tagged front end's accumulated KUMO gains to the tagged front end
-     * - Decreases deposit and tagged front end's stake, and takes new snapshots for each.
+     * - Decreases deposit and takes new snapshot.
      *
      * If _amount > userDeposit, the user withdraws all of their compounded deposit.
      */
@@ -367,7 +334,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         if (_amount != 0) {
             _requireNoUnderCollateralizedTroves();
         }
-        uint256 initialDeposit = deposits[msg.sender].initialValue;
+        uint256 initialDeposit = deposits[msg.sender];
         _requireUserHasDeposit(initialDeposit);
 
         ICommunityIssuance communityIssuanceCached = communityIssuance;
@@ -380,16 +347,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         uint256 KUSDtoWithdraw = KumoMath._min(_amount, compoundedKUSDDeposit);
         uint256 KUSDLoss = initialDeposit.sub(compoundedKUSDDeposit); // Needed only for event log
 
-        // First pay out any KUMO gains
-        address frontEnd = deposits[msg.sender].frontEndTag;
-        _payOutKUMOGains(communityIssuanceCached, msg.sender, frontEnd);
-
-        // Update front end stake
-        uint256 compoundedFrontEndStake = getCompoundedFrontEndStake(frontEnd);
-        uint256 newFrontEndStake = compoundedFrontEndStake.sub(KUSDtoWithdraw);
-        _updateFrontEndStakeAndSnapshots(frontEnd, newFrontEndStake);
-        emit FrontEndStakeChanged(frontEnd, newFrontEndStake, msg.sender);
-
+        _payOutKUMOGains(communityIssuanceCached, msg.sender);
         _sendKUSDToDepositor(msg.sender, KUSDtoWithdraw);
 
         // Update deposit
@@ -405,12 +363,11 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     /* withdrawAssetGainToTrove:
      * - Triggers a KUMO issuance, based on time passed since the last issuance. The KUMO issuance is shared between *all* depositors and front ends
      * - Sends all depositor's KUMO gain to  depositor
-     * - Sends all tagged front end's KUMO gain to the tagged front end
      * - Transfers the depositor's entire ETH gain from the Stability Pool to the caller's trove
      * - Leaves their compounded deposit in the Stability Pool
-     * - Updates snapshots for deposit and tagged front end stake */
+     * - Updates snapshot for deposit */
     function withdrawAssetGainToTrove(address _upperHint, address _lowerHint) external {
-        uint256 initialDeposit = deposits[msg.sender].initialValue;
+        uint256 initialDeposit = deposits[msg.sender];
         _requireUserHasDeposit(initialDeposit);
         _requireUserHasTrove(msg.sender);
         _requireUserHasAssetGain(msg.sender);
@@ -424,15 +381,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         uint256 compoundedKUSDDeposit = getCompoundedKUSDDeposit(msg.sender);
         uint256 KUSDLoss = initialDeposit.sub(compoundedKUSDDeposit); // Needed only for event log
 
-        // First pay out any KUMO gains
-        address frontEnd = deposits[msg.sender].frontEndTag;
-        _payOutKUMOGains(communityIssuanceCached, msg.sender, frontEnd);
-
-        // Update front end stake
-        uint256 compoundedSystemStake = getCompoundedFrontEndStake(frontEnd);
-        _updateFrontEndStakeAndSnapshots(frontEnd, compoundedSystemStake);
-        emit FrontEndStakeChanged(frontEnd, compoundedSystemStake, msg.sender);
-
+        _payOutKUMOGains(communityIssuanceCached, msg.sender);
         _updateDepositAndSnapshots(msg.sender, compoundedKUSDDeposit);
 
         /* Emit events before transferring Asset gain to Trove.
@@ -482,10 +431,10 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         emit G_Updated(epochToScaleToG[currentEpoch][currentScale], currentEpoch, currentScale);
     }
 
-    function _computeKUMOPerUnitStaked(uint256 _KUMOIssuance, uint256 _totalKUSDDeposits)
-        internal
-        returns (uint256)
-    {
+    function _computeKUMOPerUnitStaked(
+        uint256 _KUMOIssuance,
+        uint256 _totalKUSDDeposits
+    ) internal returns (uint256) {
         /*
          * Calculate the KUMO-per-unit staked.  Division uses a "feedback" error correction, to keep the
          * cumulative error low in the running total G:
@@ -649,9 +598,9 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         emit StabilityPoolKUSDBalanceUpdated(newtotalKUSDDeposits);
     }
 
-    // --- Reward calculator functions for depositor and front end ---
+    // --- Reward calculator functions for depositor ---
     function getDepositorAssetGain(address _depositor) public view override returns (uint256) {
-        uint256 initialDeposit = deposits[_depositor].initialValue;
+        uint256 initialDeposit = deposits[_depositor];
 
         if (initialDeposit == 0) {
             return 0;
@@ -666,11 +615,10 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
             );
     }
 
-    function _getAssetGainFromSnapshots(uint256 initialDeposit, Snapshots memory snapshots)
-        internal
-        view
-        returns (uint256)
-    {
+    function _getAssetGainFromSnapshots(
+        uint256 initialDeposit,
+        Snapshots memory snapshots
+    ) internal view returns (uint256) {
         /*
          * Grab the sum 'S' from the epoch at which the stake was made. The ETH gain may span up to one scale change.
          * If it does, the second portion of the ETH gain is scaled by 1e9.
@@ -693,11 +641,10 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         return AssetGain;
     }
 
-    function _getETHGainFromSnapshots(uint256 initialDeposit, Snapshots memory snapshots)
-        internal
-        view
-        returns (uint256)
-    {
+    function _getETHGainFromSnapshots(
+        uint256 initialDeposit,
+        Snapshots memory snapshots
+    ) internal view returns (uint256) {
         /*
          * Grab the sum 'S' from the epoch at which the stake was made. The ETH gain may span up to one scale change.
          * If it does, the second portion of the ETH gain is scaled by 1e9.
@@ -727,21 +674,17 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
      * d0 is the last recorded deposit value.
      */
     function getDepositorKUMOGain(address _depositor) public view override returns (uint256) {
-        uint256 initialDeposit = deposits[_depositor].initialValue;
+        uint256 initialDeposit = deposits[_depositor];
         if (initialDeposit == 0) {
             return 0;
         }
-
-        address frontEndTag = deposits[_depositor].frontEndTag;
 
         /*
          * If not tagged with a front end, the depositor gets a 100% cut of what their deposit earned.
          * Otherwise, their cut of the deposit's earnings is equal to the kickbackRate, set by the front end through
          * which they made their deposit.
          */
-        uint256 kickbackRate = frontEndTag == address(0)
-            ? DECIMAL_PRECISION
-            : frontEnds[frontEndTag].kickbackRate;
+        uint256 kickbackRate = DECIMAL_PRECISION;
 
         Snapshots memory snapshots = depositSnapshots[_depositor];
 
@@ -752,34 +695,10 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         return KUMOGain;
     }
 
-    /*
-     * Return the KUMO gain earned by the front end. Given by the formula:  E = D0 * (G - G(0))/P(0)
-     * where G(0) and P(0) are the depositor's snapshots of the sum G and product P, respectively.
-     *
-     * D0 is the last recorded value of the front end's total tagged deposits.
-     */
-    function getFrontEndKUMOGain(address _frontEnd) public view override returns (uint256) {
-        uint256 frontEndStake = frontEndStakes[_frontEnd];
-        if (frontEndStake == 0) {
-            return 0;
-        }
-
-        uint256 kickbackRate = frontEnds[_frontEnd].kickbackRate;
-        uint256 frontEndShare = uint256(DECIMAL_PRECISION).sub(kickbackRate);
-
-        Snapshots memory snapshots = frontEndSnapshots[_frontEnd];
-
-        uint256 KUMOGain = frontEndShare
-            .mul(_getKUMOGainFromSnapshots(frontEndStake, snapshots))
-            .div(DECIMAL_PRECISION);
-        return KUMOGain;
-    }
-
-    function _getKUMOGainFromSnapshots(uint256 initialStake, Snapshots memory snapshots)
-        internal
-        view
-        returns (uint256)
-    {
+    function _getKUMOGainFromSnapshots(
+        uint256 initialStake,
+        Snapshots memory snapshots
+    ) internal view returns (uint256) {
         /*
          * Grab the sum 'G' from the epoch at which the stake was made. The KUMO gain may span up to one scale change.
          * If it does, the second portion of the KUMO gain is scaled by 1e9.
@@ -802,30 +721,11 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         return KUMOGain;
     }
 
-    // --- Compounded deposit and compounded front end stake ---
-    /*
-     * Return the system's compounded stake. Given by the formula:  D = D0 * P/P(0)
-     * where P(0) is the depositor's snapshot of the product P
-     *
-     * The system's compounded stake is equal to the sum of its depositors' compounded deposits.
-     */
-    function getCompoundedFrontEndStake(address _frontEnd) public view returns (uint256) {
-        uint256 frontEndStake = frontEndStakes[_frontEnd];
-        if (frontEndStake == 0) {
-            return 0;
-        }
-
-        Snapshots memory snapshots = frontEndSnapshots[_frontEnd];
-
-        return _getCompoundedStakeFromSnapshots(frontEndStake, snapshots);
-    }
-
     // Internal function, used to calculcate compounded deposits and compounded stakes.
-    function _getCompoundedStakeFromSnapshots(uint256 initialStake, Snapshots memory snapshots)
-        internal
-        view
-        returns (uint256)
-    {
+    function _getCompoundedStakeFromSnapshots(
+        uint256 initialStake,
+        Snapshots memory snapshots
+    ) internal view returns (uint256) {
         uint256 snapshot_P = snapshots.P;
         uint128 scaleSnapshot = snapshots.scale;
         uint128 epochSnapshot = snapshots.epoch;
@@ -871,7 +771,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
      * where P(0) is the depositor's snapshot of the product P, taken when they last updated their deposit.
      */
     function getCompoundedKUSDDeposit(address _depositor) public view override returns (uint256) {
-        uint256 initialDeposit = deposits[_depositor].initialValue;
+        uint256 initialDeposit = deposits[_depositor];
         if (initialDeposit == 0) {
             return 0;
         }
@@ -902,29 +802,10 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         _decreaseKUSD(KUSDWithdrawal);
     }
 
-    // --- External Front End functions ---
-
-    // Front end makes a one-time selection of kickback rate upon registering
-    function registerFrontEnd(uint256 _kickbackRate) external override {
-        _requireFrontEndNotRegistered(msg.sender);
-        _requireUserHasNoDeposit(msg.sender);
-        _requireValidKickbackRate(_kickbackRate);
-
-        frontEnds[msg.sender].kickbackRate = _kickbackRate;
-        frontEnds[msg.sender].registered = true;
-
-        emit FrontEndRegistered(msg.sender, _kickbackRate);
-    }
-
     // --- Stability Pool Deposit Functionality ---
 
-    function _setFrontEndTag(address _depositor, address _frontEndTag) internal {
-        deposits[_depositor].frontEndTag = _frontEndTag;
-        emit FrontEndTagSet(_depositor, _frontEndTag);
-    }
-
     function _updateDepositAndSnapshots(address _depositor, uint256 _newValue) internal {
-        deposits[_depositor].initialValue = _newValue;
+        deposits[_depositor] = _newValue;
 
         if (_newValue == 0) {
             delete deposits[_depositor];
@@ -948,31 +829,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         depositSnapshots[_depositor].epoch = currentEpochCached;
 
         emit DepositSnapshotUpdated(_depositor, currentP, currentS, currentG);
-    }
-
-    function _updateFrontEndStakeAndSnapshots(address _frontEnd, uint256 _newValue) internal {
-        frontEndStakes[_frontEnd] = _newValue;
-
-        if (_newValue == 0) {
-            delete frontEndSnapshots[_frontEnd];
-            emit FrontEndSnapshotUpdated(_frontEnd, 0, 0);
-            return;
-        }
-
-        uint128 currentScaleCached = currentScale;
-        uint128 currentEpochCached = currentEpoch;
-        uint256 currentP = P;
-
-        // Get G for the current epoch and current scale
-        uint256 currentG = epochToScaleToG[currentEpochCached][currentScaleCached];
-
-        // Record new snapshots of the latest running product P and sum G for the front end
-        frontEndSnapshots[_frontEnd].P = currentP;
-        frontEndSnapshots[_frontEnd].G = currentG;
-        frontEndSnapshots[_frontEnd].scale = currentScaleCached;
-        frontEndSnapshots[_frontEnd].epoch = currentEpochCached;
-
-        emit FrontEndSnapshotUpdated(_frontEnd, currentP, currentG);
     }
 
     // --- Sender functions for KUMO deposit, ETH gains and KUMOA gains ---
@@ -1009,18 +865,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
     // --- Stability Pool Deposit Functionality ---
 
-    function _payOutKUMOGains(
-        ICommunityIssuance _communityIssuance,
-        address _depositor,
-        address _frontEnd
-    ) internal {
-        // Pay out front end's KUMO gain
-        if (_frontEnd != address(0)) {
-            uint256 frontEndKUMOGain = getFrontEndKUMOGain(_frontEnd);
-            _communityIssuance.sendKUMO(_frontEnd, frontEndKUMOGain);
-            emit KUMOPaidToFrontEnd(_frontEnd, frontEndKUMOGain);
-        }
-
+    function _payOutKUMOGains(ICommunityIssuance _communityIssuance, address _depositor) internal {
         // Pay out depositor's KUMO gain
         uint256 depositorKUMOGain = getDepositorKUMOGain(_depositor);
         _communityIssuance.sendKUMO(_depositor, depositorKUMOGain);
@@ -1055,7 +900,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     }
 
     function _requireUserHasNoDeposit(address _address) internal view {
-        uint256 initialDeposit = deposits[_address].initialValue;
+        uint256 initialDeposit = deposits[_address];
         require(initialDeposit == 0, "StabilityPool: User must have no deposit");
     }
 
@@ -1073,27 +918,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     function _requireUserHasAssetGain(address _depositor) internal view {
         uint256 AssetGain = getDepositorAssetGain(_depositor);
         require(AssetGain > 0, "StabilityPool: caller must have non-zero Asset Gain");
-    }
-
-    function _requireFrontEndNotRegistered(address _address) internal view {
-        require(
-            !frontEnds[_address].registered,
-            "StabilityPool: must not already be a registered front end"
-        );
-    }
-
-    function _requireFrontEndIsRegisteredOrZero(address _address) internal view {
-        require(
-            frontEnds[_address].registered || _address == address(0),
-            "StabilityPool: Tag must be a registered front end, or the zero address"
-        );
-    }
-
-    function _requireValidKickbackRate(uint256 _kickbackRate) internal pure {
-        require(
-            _kickbackRate <= DECIMAL_PRECISION,
-            "StabilityPool: Kickback rate must be in range [0,1]"
-        );
     }
 
     function receivedERC20(address _asset, uint256 _amount) external override {
