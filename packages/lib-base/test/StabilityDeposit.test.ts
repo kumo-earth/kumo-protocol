@@ -10,7 +10,7 @@ const arbitraryDeposit = () =>
     .filter(([initialKUSD, currentKUSD]) => initialKUSD >= currentKUSD)
     .map(
       ([a, b, c, d]) =>
-        new StabilityDeposit(Decimal.from(a), Decimal.from(b), Decimal.from(c), Decimal.from(d), "")
+        new StabilityDeposit(Decimal.from(a), Decimal.from(b), Decimal.from(c), Decimal.from(d))
     );
 
 const nonZeroDeposit = () => arbitraryDeposit().filter(({ currentKUSD }) => !currentKUSD.isZero);
