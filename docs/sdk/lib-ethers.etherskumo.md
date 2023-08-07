@@ -36,12 +36,11 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [closeTrove(asset, overrides)](./lib-ethers.etherskumo.closetrove.md) |  | Close existing Trove by repaying all debt and withdrawing all collateral. |
 |  [connect(signerOrProvider, optionalParams)](./lib-ethers.etherskumo.connect_1.md) | <code>static</code> | Connect to the Kumo protocol and create an <code>EthersKumo</code> object. |
 |  [depositCollateral(asset, amount, overrides)](./lib-ethers.etherskumo.depositcollateral.md) |  | Adjust existing Trove by depositing more collateral. |
-|  [depositKUSDInStabilityPool(amount, asset, frontendTag, overrides)](./lib-ethers.etherskumo.depositkusdinstabilitypool.md) |  | Make a new Stability Deposit, or top up existing one. |
+|  [depositKUSDInStabilityPool(amount, asset, overrides)](./lib-ethers.etherskumo.depositkusdinstabilitypool.md) |  | Make a new Stability Deposit, or top up existing one. |
 |  [exitLiquidityMining(overrides)](./lib-ethers.etherskumo.exitliquiditymining.md) |  | Withdraw all staked LP tokens from liquidity mining and claim reward. |
 |  [getAssetBalance(address, assetType, provider, overrides)](./lib-ethers.etherskumo.getassetbalance.md) |  |  |
 |  [getCollateralSurplusBalance(asset, address, overrides)](./lib-ethers.etherskumo.getcollateralsurplusbalance.md) |  | Get the amount of leftover collateral available for withdrawal by an address. |
 |  [getFees(asset, overrides)](./lib-ethers.etherskumo.getfees.md) |  | Get a calculator for current fees. |
-|  [getFrontendStatus(asset, address, overrides)](./lib-ethers.etherskumo.getfrontendstatus.md) |  | Check whether an address is registered as a Kumo frontend, and what its kickback rate is. |
 |  [getKUMOBalance(address, overrides)](./lib-ethers.etherskumo.getkumobalance.md) |  | Get the amount of KUMO held by an address. |
 |  [getKUMOStake(asset, address, overrides)](./lib-ethers.etherskumo.getkumostake.md) |  | Get the current state of an KUMO Stake. |
 |  [getKUSDBalance(address, overrides)](./lib-ethers.etherskumo.getkusdbalance.md) |  | Get the amount of KUSD held by an address. |
@@ -69,7 +68,6 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [liquidateUpTo(asset, maximumNumberOfTrovesToLiquidate, overrides)](./lib-ethers.etherskumo.liquidateupto.md) |  | Liquidate the least collateralized Troves up to a maximum number. |
 |  [openTrove(params, asset, maxBorrowingRateOrOptionalParams, overrides)](./lib-ethers.etherskumo.opentrove.md) |  | Open a new Trove by depositing collateral and borrowing KUSD. |
 |  [redeemKUSD(asset, amount, maxRedemptionRate, overrides)](./lib-ethers.etherskumo.redeemkusd.md) |  | Redeem KUSD to native currency (e.g. Ether) at face value. |
-|  [registerFrontend(assetName, kickbackRate, overrides)](./lib-ethers.etherskumo.registerfrontend.md) |  | Register current wallet address as a Kumo frontend. |
 |  [repayKUSD(asset, amount, overrides)](./lib-ethers.etherskumo.repaykusd.md) |  | Adjust existing Trove by repaying some of its debt. |
 |  [requestTestToken(tokenAddress, overrides)](./lib-ethers.etherskumo.requesttesttoken.md) |  | Request Test tokens to an address. |
 |  [sendKUMO(toAddress, amount, overrides)](./lib-ethers.etherskumo.sendkumo.md) |  | Send KUMO tokens to an address. |

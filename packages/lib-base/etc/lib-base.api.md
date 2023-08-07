@@ -19,8 +19,6 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     // (undocumented)
     getFees(asset: string, ...extraParams: T): Promise<Fees>;
     // (undocumented)
-    getFrontendStatus(asset: string, address: string, ...extraParams: T): Promise<FrontendStatus>;
-    // (undocumented)
     getKUMOBalance(address: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
     getKUMOStake(asset: string, address: string, ...extraParams: T): Promise<KUMOStake>;
@@ -215,14 +213,6 @@ export class Fees {
     toString(): string;
 }
 
-// @public
-export type FrontendStatus = {
-    status: "unregistered";
-} | {
-    status: "registered";
-    kickbackRate: Decimal;
-};
-
 // @internal (undocumented)
 export interface _KumoReadCache<T extends unknown[]> extends _KumoReadCacheBase<T> {
     // (undocumented)
@@ -288,7 +278,6 @@ export abstract class KumoStore<T = unknown> {
 
 // @public
 export interface KumoStoreBaseState {
-    frontend: FrontendStatus;
     kumoBalance: Decimal;
     kumoStake: KUMOStake;
     kumoToken: string;
@@ -296,7 +285,6 @@ export interface KumoStoreBaseState {
     kusdToken: string;
     liquidityMiningKUMOReward: Decimal;
     liquidityMiningStake: Decimal;
-    ownFrontend: FrontendStatus;
     remainingLiquidityMiningKUMOReward: Decimal;
     remainingStabilityPoolKUMOReward: Decimal;
     totalStakedKUMO: Decimal;
@@ -458,7 +446,6 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown> extends 
     liquidateUpTo(asset: string, maximumNumberOfTrovesToLiquidate: number): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>>;
     openTrove(params: TroveCreationParams<Decimalish>, asset: string, maxBorrowingRate?: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveCreationDetails>>>>;
     redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<PopulatedRedemption<P, S, R>>;
-    registerFrontend(assetName: string, kickbackRate: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     repayKUSD(asset: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
     requestTestToken(tokenAddress: string): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
     sendKUMO(toAddress: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
@@ -497,7 +484,6 @@ export interface ReadableKumo {
     getAssetBalance(address: string, assetType: string, provider: Provider): Promise<Decimal>;
     getCollateralSurplusBalance(asset: string, address: string): Promise<Decimal>;
     getFees(asset: string): Promise<Fees>;
-    getFrontendStatus(asset: string, address: string): Promise<FrontendStatus>;
     getKUMOBalance(address: string): Promise<Decimal>;
     getKUMOStake(asset: string, address: string): Promise<KUMOStake>;
     getKUSDBalance(address: string): Promise<Decimal>;
@@ -569,7 +555,6 @@ export interface SendableKumo<R = unknown, S = unknown> extends _SendableFrom<Tr
     liquidateUpTo(asset: string, maximumNumberOfTrovesToLiquidate: number): Promise<SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>;
     openTrove(params: TroveCreationParams<Decimalish>, asset: string, maxBorrowingRate?: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveCreationDetails>>>;
     redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, RedemptionDetails>>>;
-    registerFrontend(assetName: string, kickbackRate: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     repayKUSD(asset: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
     requestTestToken(_tokenAddress: string): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
     sendKUMO(toAddress: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
@@ -599,12 +584,11 @@ export interface SentKumoTransaction<S = unknown, T extends KumoReceipt = KumoRe
 // @public
 export class StabilityDeposit {
     // @internal
-    constructor(initialKUSD: Decimal, currentKUSD: Decimal, collateralGain: Decimal, kumoReward: Decimal, frontendTag: string);
+    constructor(initialKUSD: Decimal, currentKUSD: Decimal, collateralGain: Decimal, kumoReward: Decimal);
     apply(change: StabilityDepositChange<Decimalish> | undefined): Decimal;
     readonly collateralGain: Decimal;
     readonly currentKUSD: Decimal;
     equals(that: StabilityDeposit): boolean;
-    readonly frontendTag: string;
     readonly initialKUSD: Decimal;
     // (undocumented)
     get isEmpty(): boolean;
@@ -661,7 +645,6 @@ export interface TransactableKumo {
     liquidateUpTo(asset: string, maximumNumberOfTrovesToLiquidate: number): Promise<LiquidationDetails>;
     openTrove(params: TroveCreationParams<Decimalish>, asset: string, maxBorrowingRate?: Decimalish): Promise<TroveCreationDetails>;
     redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish): Promise<RedemptionDetails>;
-    registerFrontend(assetName: string, kickbackRate: Decimalish): Promise<void>;
     repayKUSD(asset: string, amount: Decimalish): Promise<TroveAdjustmentDetails>;
     requestTestToken(tokenAddress: string): Promise<void>;
     sendKUMO(toAddress: string, amount: Decimalish): Promise<void>;

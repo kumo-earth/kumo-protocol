@@ -4,7 +4,7 @@ import { Fees } from "./Fees";
 import { KUMOStake } from "./KUMOStake";
 import { StabilityDeposit } from "./StabilityDeposit";
 import { Trove, TroveWithPendingRedistribution, UserTrove } from "./Trove";
-import { FrontendStatus, ReadableKumo, TroveListingParams } from "./ReadableKumo";
+import { ReadableKumo, TroveListingParams } from "./ReadableKumo";
 
 /** @internal */
 export type _ReadableKumoWithExtraParamsBase<T extends unknown[]> = {
@@ -254,13 +254,6 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     return (
       this._cache.getTotalStakedKUMO(...extraParams) ??
       this._readable.getTotalStakedKUMO(...extraParams)
-    );
-  }
-
-  async getFrontendStatus(asset:string, address: string, ...extraParams: T): Promise<FrontendStatus> {
-    return (
-      this._cache.getFrontendStatus(asset, address, ...extraParams) ??
-      this._readable.getFrontendStatus(asset, address, ...extraParams)
     );
   }
   

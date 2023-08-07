@@ -5,7 +5,6 @@ import { UserTrove } from "./Trove";
 // import { TroveWithPendingRedistribution } from "./Trove";
 import { Fees } from "./Fees";
 import { KUMOStake } from "./KUMOStake";
-import { FrontendStatus } from "./ReadableKumo";
 import { Vault } from "./Vault";
 
 /**
@@ -14,12 +13,6 @@ import { Vault } from "./Vault";
  * @public
  */
 export interface KumoStoreBaseState {
-  /** Status of currently used frontend. */
-  frontend: FrontendStatus;
-
-  /** Status of user's own frontend. */
-  ownFrontend: FrontendStatus;
-
   /** Number of Troves that are currently open. */
   // numberOfTroves: number;
 
@@ -191,16 +184,6 @@ const strictEquals = <T>(a: T, b: T) => a === b;
 const eq = <T extends { eq(that: T): boolean }>(a: T, b: T) => a.eq(b);
 const equals = <T extends { equals(that: T): boolean }>(a: T, b: T) => a.equals(b);
 
-const frontendStatusEquals = (a: FrontendStatus, b: FrontendStatus) =>
-  a.status === "unregistered"
-    ? b.status === "unregistered"
-    : b.status === "registered" && a.kickbackRate.eq(b.kickbackRate);
-
-const showFrontendStatus = (x: FrontendStatus) =>
-  x.status === "unregistered"
-    ? '{ status: "unregistered" }'
-    : `{ status: "registered", kickbackRate: ${x.kickbackRate} }`;
-
 const wrap =
   <A extends unknown[], R>(f: (...args: A) => R) =>
   (...args: A) =>
@@ -339,22 +322,6 @@ export abstract class KumoStore<T = unknown> {
     baseStateUpdate: Partial<KumoStoreBaseState>
   ): KumoStoreBaseState {
     return {
-      frontend: this._updateIfChanged(
-        frontendStatusEquals,
-        "frontend",
-        baseState.frontend,
-        baseStateUpdate.frontend,
-        showFrontendStatus
-      ),
-
-      ownFrontend: this._updateIfChanged(
-        frontendStatusEquals,
-        "ownFrontend",
-        baseState.ownFrontend,
-        baseStateUpdate.ownFrontend,
-        showFrontendStatus
-      ),
-
       // numberOfTroves: this._updateIfChanged(
       //   strictEquals,
       //   "numberOfTroves",

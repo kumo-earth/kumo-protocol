@@ -670,13 +670,8 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "initialValue",
+        "name": "",
         "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "frontEndTag",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -731,88 +726,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "frontEndSnapshots",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "S",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "P",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "G",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint128",
-        "name": "scale",
-        "type": "uint128"
-      },
-      {
-        "internalType": "uint128",
-        "name": "epoch",
-        "type": "uint128"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "frontEndStakes",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "frontEnds",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "kickbackRate",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bool",
-        "name": "registered",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "getAssetBalance",
     "outputs": [
@@ -833,25 +746,6 @@
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_frontEnd",
-        "type": "address"
-      }
-    ],
-    "name": "getCompoundedFrontEndStake",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -946,25 +840,6 @@
       {
         "internalType": "uint256",
         "name": "entireSystemDebt",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_frontEnd",
-        "type": "address"
-      }
-    ],
-    "name": "getFrontEndKUMOGain",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
         "type": "uint256"
       }
     ],
@@ -1112,11 +987,6 @@
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_frontEndTag",
-        "type": "address"
       }
     ],
     "name": "provideToSP",
@@ -1138,19 +1008,6 @@
       }
     ],
     "name": "receivedERC20",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_kickbackRate",
-        "type": "uint256"
-      }
-    ],
-    "name": "registerFrontEnd",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

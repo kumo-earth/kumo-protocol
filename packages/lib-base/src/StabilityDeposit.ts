@@ -27,28 +27,18 @@ export class StabilityDeposit {
   /** Amount of KUMO rewarded since the last modification of the Stability Deposit. */
   readonly kumoReward: Decimal;
 
-  /**
-   * Address of frontend through which this Stability Deposit was made.
-   *
-   * @remarks
-   * If the Stability Deposit was made through a frontend that doesn't tag deposits, this will be
-   * the zero-address.
-   */
-  readonly frontendTag: string;
 
   /** @internal */
   constructor(
     initialKUSD: Decimal,
     currentKUSD: Decimal,
     collateralGain: Decimal,
-    kumoReward: Decimal,
-    frontendTag: string
+    kumoReward: Decimal
   ) {
     this.initialKUSD = initialKUSD;
     this.currentKUSD = currentKUSD;
     this.collateralGain = collateralGain;
     this.kumoReward = kumoReward;
-    this.frontendTag = frontendTag;
 
     if (this.currentKUSD.gt(this.initialKUSD)) {
       throw new Error("currentKUSD can't be greater than initialKUSD");
@@ -70,8 +60,7 @@ export class StabilityDeposit {
       `{ initialKUSD: ${this.initialKUSD}` +
       `, currentKUSD: ${this.currentKUSD}` +
       `, collateralGain: ${this.collateralGain}` +
-      `, kumoReward: ${this.kumoReward}` +
-      `, frontendTag: "${this.frontendTag}" }`
+      `, kumoReward: ${this.kumoReward}`
     );
   }
 
@@ -83,8 +72,7 @@ export class StabilityDeposit {
       this.initialKUSD.eq(that.initialKUSD) &&
       this.currentKUSD.eq(that.currentKUSD) &&
       this.collateralGain.eq(that.collateralGain) &&
-      this.kumoReward.eq(that.kumoReward) &&
-      this.frontendTag === that.frontendTag
+      this.kumoReward.eq(that.kumoReward)
     );
   }
 

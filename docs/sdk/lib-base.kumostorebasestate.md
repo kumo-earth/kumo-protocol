@@ -16,7 +16,6 @@ export interface KumoStoreBaseState
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [frontend](./lib-base.kumostorebasestate.frontend.md) |  | [FrontendStatus](./lib-base.frontendstatus.md) | Status of currently used frontend. |
 |  [kumoBalance](./lib-base.kumostorebasestate.kumobalance.md) |  | [Decimal](./lib-base.decimal.md) | User's KUMO token balance. |
 |  [kumoStake](./lib-base.kumostorebasestate.kumostake.md) |  | [KUMOStake](./lib-base.kumostake.md) | User's KUMO stake. |
 |  [kumoToken](./lib-base.kumostorebasestate.kumotoken.md) |  | string | KUSD token address |
@@ -24,7 +23,6 @@ export interface KumoStoreBaseState
 |  [kusdToken](./lib-base.kumostorebasestate.kusdtoken.md) |  | string | KUSD token address |
 |  [liquidityMiningKUMOReward](./lib-base.kumostorebasestate.liquidityminingkumoreward.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUMO the user has earned through mining liquidity. |
 |  [liquidityMiningStake](./lib-base.kumostorebasestate.liquidityminingstake.md) |  | [Decimal](./lib-base.decimal.md) | Amount of Uniswap ETH/KUSD LP tokens the user has staked in liquidity mining. |
-|  [ownFrontend](./lib-base.kumostorebasestate.ownfrontend.md) |  | [FrontendStatus](./lib-base.frontendstatus.md) | Status of user's own frontend. |
 |  [remainingLiquidityMiningKUMOReward](./lib-base.kumostorebasestate.remainingliquidityminingkumoreward.md) |  | [Decimal](./lib-base.decimal.md) | Remaining KUMO that will be collectively rewarded to liquidity miners. |
 |  [remainingStabilityPoolKUMOReward](./lib-base.kumostorebasestate.remainingstabilitypoolkumoreward.md) |  | [Decimal](./lib-base.decimal.md) | Remaining KUMO that will be collectively rewarded to stability depositors. |
 |  [totalStakedKUMO](./lib-base.kumostorebasestate.totalstakedkumo.md) |  | [Decimal](./lib-base.decimal.md) | Total amount of KUMO currently staked. |

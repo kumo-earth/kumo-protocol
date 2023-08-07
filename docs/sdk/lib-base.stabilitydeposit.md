@@ -22,7 +22,6 @@ The constructor for this class is marked as internal. Third-party code should no
 |  --- | --- | --- | --- |
 |  [collateralGain](./lib-base.stabilitydeposit.collateralgain.md) |  | [Decimal](./lib-base.decimal.md) | Amount of native currency (e.g. Ether) received in exchange for the used-up KUSD. |
 |  [currentKUSD](./lib-base.stabilitydeposit.currentkusd.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUSD left in the Stability Deposit. |
-|  [frontendTag](./lib-base.stabilitydeposit.frontendtag.md) |  | string | Address of frontend through which this Stability Deposit was made. |
 |  [initialKUSD](./lib-base.stabilitydeposit.initialkusd.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUSD in the Stability Deposit at the time of the last direct modification. |
 |  [isEmpty](./lib-base.stabilitydeposit.isempty.md) |  | boolean |  |
 |  [kumoReward](./lib-base.stabilitydeposit.kumoreward.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUMO rewarded since the last modification of the Stability Deposit. |
