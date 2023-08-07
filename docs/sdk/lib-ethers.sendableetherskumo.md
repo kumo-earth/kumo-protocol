@@ -29,13 +29,12 @@ export declare class SendableEthersKumo implements SendableKumo<EthersTransactio
 |  [claimCollateralSurplus(asset, overrides)](./lib-ethers.sendableetherskumo.claimcollateralsurplus.md) |  | Claim leftover collateral after a liquidation or redemption. |
 |  [closeTrove(asset, overrides)](./lib-ethers.sendableetherskumo.closetrove.md) |  | Close existing Trove by repaying all debt and withdrawing all collateral. |
 |  [depositCollateral(asset, amount, overrides)](./lib-ethers.sendableetherskumo.depositcollateral.md) |  | Adjust existing Trove by depositing more collateral. |
-|  [depositKUSDInStabilityPool(amount, asset, frontendTag, overrides)](./lib-ethers.sendableetherskumo.depositkusdinstabilitypool.md) |  | Make a new Stability Deposit, or top up existing one. |
+|  [depositKUSDInStabilityPool(amount, asset, overrides)](./lib-ethers.sendableetherskumo.depositkusdinstabilitypool.md) |  | Make a new Stability Deposit, or top up existing one. |
 |  [exitLiquidityMining(overrides)](./lib-ethers.sendableetherskumo.exitliquiditymining.md) |  | Withdraw all staked LP tokens from liquidity mining and claim reward. |
 |  [liquidate(asset, address, overrides)](./lib-ethers.sendableetherskumo.liquidate.md) |  | Liquidate one or more undercollateralized Troves. |
 |  [liquidateUpTo(asset, maximumNumberOfTrovesToLiquidate, overrides)](./lib-ethers.sendableetherskumo.liquidateupto.md) |  | Liquidate the least collateralized Troves up to a maximum number. |
 |  [openTrove(params, asset, maxBorrowingRateOrOptionalParams, overrides)](./lib-ethers.sendableetherskumo.opentrove.md) |  | Open a new Trove by depositing collateral and borrowing KUSD. |
 |  [redeemKUSD(asset, amount, maxRedemptionRate, overrides)](./lib-ethers.sendableetherskumo.redeemkusd.md) |  | Redeem KUSD to native currency (e.g. Ether) at face value. |
-|  [registerFrontend(assetName, kickbackRate, overrides)](./lib-ethers.sendableetherskumo.registerfrontend.md) |  | Register current wallet address as a Kumo frontend. |
 |  [repayKUSD(asset, amount, overrides)](./lib-ethers.sendableetherskumo.repaykusd.md) |  | Adjust existing Trove by repaying some of its debt. |
 |  [requestTestToken(tokenAddress, overrides)](./lib-ethers.sendableetherskumo.requesttesttoken.md) |  | Send KUSD tokens to an address. |
 |  [sendKUMO(toAddress, amount, overrides)](./lib-ethers.sendableetherskumo.sendkumo.md) |  | Send KUMO tokens to an address. |

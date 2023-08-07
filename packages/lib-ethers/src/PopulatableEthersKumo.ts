@@ -1132,7 +1132,6 @@ export class PopulatableEthersKumo
   async depositKUSDInStabilityPool(
     amount: Decimalish,
     assetName: string,
-    frontendTag?: string,
     overrides?: EthersTransactionOverrides
   ): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>> {
     const stabilityPool = _getStabilityPoolByAsset(assetName, this._readable.connection);
@@ -1145,8 +1144,7 @@ export class PopulatableEthersKumo
       await stabilityPool.estimateAndPopulate.provideToSP(
         { ...overrides },
         addGasForKUMOIssuance,
-        depositKUSD.hex,
-        frontendTag ?? this._readable.connection.frontendTag ?? AddressZero
+        depositKUSD.hex
       )
     );
   }
@@ -1394,23 +1392,6 @@ export class PopulatableEthersKumo
     return this.unstakeKUMO(Decimal.ZERO, overrides);
   }
 
-  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.registerFrontend} */
-  async registerFrontend(
-    assetName: string,
-    kickbackRate: Decimalish,
-    overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersKumoTransaction<void>> {
-    const stabilityPool = _getStabilityPoolByAsset(assetName, this._readable.connection);
-    // const { stabilityPool } = _getContracts(this._readable.connection);
-
-    return this._wrapSimpleTransaction(
-      await stabilityPool.estimateAndPopulate.registerFrontEnd(
-        { ...overrides },
-        id,
-        Decimal.from(kickbackRate).hex
-      )
-    );
-  }
 
   /** @internal */
   async _mintUniToken(
