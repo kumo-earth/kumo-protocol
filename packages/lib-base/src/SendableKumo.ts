@@ -281,7 +281,4 @@ export interface SendableKumo<R = unknown, S = unknown>
 
   /** {@inheritDoc TransactableKumo.exitLiquidityMining} */
   exitLiquidityMining(): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-
-  /** {@inheritDoc TransactableKumo.registerFrontend} */
-  registerFrontend(assetName: string, kickbackRate: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
 }

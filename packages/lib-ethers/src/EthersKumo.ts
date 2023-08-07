@@ -6,7 +6,6 @@ import {
   Decimalish,
   FailedReceipt,
   Fees,
-  FrontendStatus,
   LiquidationDetails,
   KumoStore,
   KUMOStake,
@@ -336,15 +335,6 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     return this._readable.getTotalStakedKUMO(overrides);
   }
 
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getFrontendStatus} */
-  getFrontendStatus(
-    asset: string,
-    address: string,
-    overrides?: EthersCallOverrides
-  ): Promise<FrontendStatus> {
-    return this._readable.getFrontendStatus(asset, address, overrides);
-  }
-
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTestTokensTransferState} */
   getTestTokensTransferState(
     assetAddress: string,
@@ -509,10 +499,9 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   depositKUSDInStabilityPool(
     amount: Decimalish,
     asset: string,
-    frontendTag?: string,
     overrides?: EthersTransactionOverrides
   ): Promise<StabilityDepositChangeDetails> {
-    return this.send.depositKUSDInStabilityPool(amount, asset, frontendTag, overrides).then(waitForSuccess);
+    return this.send.depositKUSDInStabilityPool(amount, asset, overrides).then(waitForSuccess);
   }
 
   /**
@@ -679,16 +668,6 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     return this.send.withdrawGainsFromStaking(overrides).then(waitForSuccess);
   }
 
-  /**
-   * {@inheritDoc @kumodao/lib-base#TransactableKumo.registerFrontend}
-   *
-   * @throws
-   * Throws {@link EthersTransactionFailedError} in case of transaction failure.
-   * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
-   */
-  registerFrontend(assetName: string, kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<void> {
-    return this.send.registerFrontend(assetName, kickbackRate, overrides).then(waitForSuccess);
-  }
 
   /** @internal */
   _mintUniToken(
