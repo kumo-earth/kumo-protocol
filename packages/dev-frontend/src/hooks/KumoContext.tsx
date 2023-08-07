@@ -64,7 +64,6 @@ export const KumoProvider: React.FC<KumoProviderProps> = ({
         chainId,
         {
           userAddress: account,
-          frontendTag: config.frontendTag,
           useStore: "blockPolled"
         },
         provider.getSigner(account)
@@ -72,7 +71,6 @@ export const KumoProvider: React.FC<KumoProviderProps> = ({
     } else if (config && readprovider?.provider && readprovider?.chainId) {
       return _connectByChainId(readprovider.provider, readprovider.chainId, {
         // userAddress: account,
-        frontendTag: config.frontendTag,
         useStore: "blockPolled"
       });
     }
