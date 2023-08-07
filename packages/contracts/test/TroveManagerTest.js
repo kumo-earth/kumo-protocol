@@ -570,7 +570,7 @@ contract("TroveManager", async accounts => {
     });
 
     // Alice proves 10 KUSD to SP
-    await stabilityPoolAsset1.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: alice });
+    await stabilityPoolAsset1.provideToSP(dec(10, 18), { from: alice });
 
     // Set ETH:USD price to 105
     await priceFeed.setPrice(assetAddress1, "105000000000000000000");
@@ -696,7 +696,7 @@ contract("TroveManager", async accounts => {
       extraKUSDAmount: spDeposit,
       extraParams: { from: whale }
     });
-    await stabilityPoolAsset1.provideToSP(spDeposit, ZERO_ADDRESS, { from: whale });
+    await stabilityPoolAsset1.provideToSP(spDeposit, { from: whale });
 
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(10, 18)), extraParams: { from: alice } });
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(70, 18)), extraParams: { from: bob } });
@@ -770,7 +770,7 @@ contract("TroveManager", async accounts => {
       extraKUSDAmount: spDeposit,
       extraParams: { from: whale }
     });
-    await stabilityPoolAsset1.provideToSP(spDeposit, ZERO_ADDRESS, { from: whale });
+    await stabilityPoolAsset1.provideToSP(spDeposit, { from: whale });
 
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(10, 18)), extraParams: { from: alice } });
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(70, 18)), extraParams: { from: bob } });
@@ -976,7 +976,7 @@ contract("TroveManager", async accounts => {
     await kusdToken.transfer(dennis, spDeposit, { from: bob });
 
     //Dennis provides KUSD to SP
-    await stabilityPoolAsset1.provideToSP(spDeposit, ZERO_ADDRESS, { from: dennis });
+    await stabilityPoolAsset1.provideToSP(spDeposit, { from: dennis });
 
     // Carol gets liquidated
     await priceFeed.setPrice(assetAddress1, dec(100, 18));
@@ -1035,7 +1035,7 @@ contract("TroveManager", async accounts => {
     });
 
     //Bob provides KUSD to SP
-    await stabilityPoolAsset1.provideToSP(spDeposit, ZERO_ADDRESS, { from: bob });
+    await stabilityPoolAsset1.provideToSP(spDeposit, { from: bob });
 
     // Carol gets liquidated
     await priceFeed.setPrice(assetAddress1, dec(100, 18));
@@ -1098,7 +1098,7 @@ contract("TroveManager", async accounts => {
     });
 
     //Bob provides KUSD to SP
-    await stabilityPoolAsset1.provideToSP(B_spDeposit, ZERO_ADDRESS, { from: bob });
+    await stabilityPoolAsset1.provideToSP(B_spDeposit, { from: bob });
 
     // Carol gets liquidated
     await priceFeed.setPrice(assetAddress1, dec(100, 18));
@@ -1114,7 +1114,7 @@ contract("TroveManager", async accounts => {
     );
 
     // Alice provides KUSD to SP
-    await stabilityPoolAsset1.provideToSP(A_spDeposit, ZERO_ADDRESS, { from: alice });
+    await stabilityPoolAsset1.provideToSP(A_spDeposit, { from: alice });
 
     // Confirm system is not in Recovery Mode
     assert.isFalse(await th.checkRecoveryMode(contracts, assetAddress1));
@@ -1370,7 +1370,7 @@ contract("TroveManager", async accounts => {
     });
 
     // B provides to SP
-    await stabilityPoolAsset1.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B });
+    await stabilityPoolAsset1.provideToSP(dec(100, 18), { from: B });
     assert.equal(await stabilityPoolAsset1.getTotalKUSDDeposits(), dec(100, 18));
 
     const G_Before = await stabilityPoolAsset1.epochToScaleToG(0, 0);
@@ -1407,7 +1407,7 @@ contract("TroveManager", async accounts => {
     });
 
     // B provides to SP
-    await stabilityPoolAsset1.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B });
+    await stabilityPoolAsset1.provideToSP(dec(100, 18), { from: B });
 
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider);
 
@@ -1461,7 +1461,7 @@ contract("TroveManager", async accounts => {
     assert.isFalse(await sortedTroves.contains(assetAddress1, A));
 
     // A adds 10 KUSD to the SP, but less than C's debt
-    await stabilityPoolAsset1.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: A });
+    await stabilityPoolAsset1.provideToSP(dec(10, 18), { from: A });
 
     // Price drops
     await priceFeed.setPrice(assetAddress1, dec(100, 18));
@@ -1508,8 +1508,8 @@ contract("TroveManager", async accounts => {
     assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1));
 
     // D and E fill the Stability Pool, enough to completely absorb C's debt of 70
-    await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: D });
-    await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: E });
+    await stabilityPoolAsset1.provideToSP(dec(50, 18), { from: D });
+    await stabilityPoolAsset1.provideToSP(dec(50, 18), { from: E });
 
     await priceFeed.setPrice(assetAddress1, dec(50, 18));
 
@@ -1547,7 +1547,7 @@ contract("TroveManager", async accounts => {
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(80, 18)), extraParams: { from: ida } });
 
     // Whale puts some tokens in Stability Pool
-    await stabilityPoolAsset1.provideToSP(dec(300, 18), ZERO_ADDRESS, { from: whale });
+    await stabilityPoolAsset1.provideToSP(dec(300, 18), { from: whale });
 
     // --- TEST ---
 
@@ -1946,7 +1946,7 @@ contract("TroveManager", async accounts => {
       extraKUSDAmount: toBN(dec(500, 18)),
       extraParams: { from: whale }
     });
-    await stabilityPoolAsset1.provideToSP(dec(500, 18), ZERO_ADDRESS, { from: whale });
+    await stabilityPoolAsset1.provideToSP(dec(500, 18), { from: whale });
 
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(4, 18)), extraParams: { from: alice } });
     await openTrove({ asset: assetAddress1, ICR: toBN(dec(28, 18)), extraParams: { from: bob } });
@@ -2130,7 +2130,7 @@ contract("TroveManager", async accounts => {
       extraKUSDAmount: whaleDeposit,
       extraParams: { from: whale }
     });
-    await stabilityPoolAsset1.provideToSP(whaleDeposit, ZERO_ADDRESS, { from: whale });
+    await stabilityPoolAsset1.provideToSP(whaleDeposit, { from: whale });
 
     const A_deposit = toBN(dec(10000, 18));
     const B_deposit = toBN(dec(30000, 18));
@@ -2156,8 +2156,8 @@ contract("TroveManager", async accounts => {
     const liquidatedDebt = A_debt.add(B_debt).add(C_debt);
 
     // A, B provide 100, 300 to the SP
-    await stabilityPoolAsset1.provideToSP(A_deposit, ZERO_ADDRESS, { from: alice });
-    await stabilityPoolAsset1.provideToSP(B_deposit, ZERO_ADDRESS, { from: bob });
+    await stabilityPoolAsset1.provideToSP(A_deposit, { from: alice });
+    await stabilityPoolAsset1.provideToSP(B_deposit, { from: bob });
 
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), "4");
 
@@ -2296,7 +2296,7 @@ contract("TroveManager", async accounts => {
     });
 
     // B provides to SP
-    await stabilityPoolAsset1.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B });
+    await stabilityPoolAsset1.provideToSP(dec(100, 18), { from: B });
     assert.equal(await stabilityPoolAsset1.getTotalKUSDDeposits(), dec(100, 18));
 
     const G_Before = await stabilityPoolAsset1.epochToScaleToG(0, 0);
@@ -2344,7 +2344,7 @@ contract("TroveManager", async accounts => {
     });
 
     // B provides to SP
-    await stabilityPoolAsset1.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B });
+    await stabilityPoolAsset1.provideToSP(dec(100, 18), { from: B });
 
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider);
 
@@ -2404,7 +2404,7 @@ contract("TroveManager", async accounts => {
     assert.isFalse(await sortedTroves.contains(assetAddress1, A));
 
     // A adds 10 KUSD to the SP, but less than C's debt
-    await stabilityPoolAsset1.provideToSP(dec(10, 18), ZERO_ADDRESS, { from: A });
+    await stabilityPoolAsset1.provideToSP(dec(10, 18), { from: A });
 
     // Price drops
     await priceFeed.setPrice(assetAddress1, dec(100, 18));
@@ -2451,8 +2451,8 @@ contract("TroveManager", async accounts => {
     assert.isTrue(await th.checkRecoveryMode(contracts, assetAddress1));
 
     // D and E fill the Stability Pool, enough to completely absorb C's debt of 70
-    await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: D });
-    await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: E });
+    await stabilityPoolAsset1.provideToSP(dec(50, 18), { from: D });
+    await stabilityPoolAsset1.provideToSP(dec(50, 18), { from: E });
 
     await priceFeed.setPrice(assetAddress1, dec(50, 18));
 
@@ -2483,7 +2483,7 @@ contract("TroveManager", async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), "6");
 
     // Whale puts some tokens in Stability Pool
-    await stabilityPoolAsset1.provideToSP(dec(300, 18), ZERO_ADDRESS, { from: whale });
+    await stabilityPoolAsset1.provideToSP(dec(300, 18), { from: whale });
 
     // --- TEST ---
 
@@ -2553,7 +2553,7 @@ contract("TroveManager", async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), "6");
 
     // Whale puts some tokens in Stability Pool
-    await stabilityPoolAsset1.provideToSP(dec(300, 18), ZERO_ADDRESS, { from: whale });
+    await stabilityPoolAsset1.provideToSP(dec(300, 18), { from: whale });
 
     // --- TEST ---
 
@@ -2623,7 +2623,7 @@ contract("TroveManager", async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), "6");
 
     // Whale puts some tokens in Stability Pool
-    await stabilityPoolAsset1.provideToSP(dec(300, 18), ZERO_ADDRESS, { from: whale });
+    await stabilityPoolAsset1.provideToSP(dec(300, 18), { from: whale });
 
     // --- TEST ---
 
@@ -2684,7 +2684,7 @@ contract("TroveManager", async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), "6");
 
     // Whale puts some tokens in Stability Pool
-    await stabilityPoolAsset1.provideToSP(dec(300, 18), ZERO_ADDRESS, { from: whale });
+    await stabilityPoolAsset1.provideToSP(dec(300, 18), { from: whale });
 
     // --- TEST ---
 
@@ -2737,7 +2737,7 @@ contract("TroveManager", async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), "5");
 
     // Whale puts some tokens in Stability Pool
-    await stabilityPoolAsset1.provideToSP(spDeposit, ZERO_ADDRESS, { from: whale });
+    await stabilityPoolAsset1.provideToSP(spDeposit, { from: whale });
 
     // --- TEST ---
 
@@ -2828,7 +2828,7 @@ contract("TroveManager", async accounts => {
     assert.equal((await sortedTroves.getSize(assetAddress1)).toString(), "6");
 
     // Whale puts some tokens in Stability Pool
-    await stabilityPoolAsset1.provideToSP(spDeposit, ZERO_ADDRESS, { from: whale });
+    await stabilityPoolAsset1.provideToSP(spDeposit, { from: whale });
 
     // Whale transfers to Carol so she can close her trove
     await kusdToken.transfer(carol, dec(100, 18), { from: whale });
@@ -2914,7 +2914,7 @@ contract("TroveManager", async accounts => {
     });
 
     // B provides to SP
-    await stabilityPoolAsset1.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B });
+    await stabilityPoolAsset1.provideToSP(dec(100, 18), { from: B });
     assert.equal(await stabilityPoolAsset1.getTotalKUSDDeposits(), dec(100, 18));
 
     const G_Before = await stabilityPoolAsset1.epochToScaleToG(0, 0);
@@ -2957,7 +2957,7 @@ contract("TroveManager", async accounts => {
     });
 
     // B provides to SP
-    await stabilityPoolAsset1.provideToSP(dec(100, 18), ZERO_ADDRESS, { from: B });
+    await stabilityPoolAsset1.provideToSP(dec(100, 18), { from: B });
 
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider);
 
@@ -4482,9 +4482,9 @@ contract("TroveManager", async accounts => {
     await kusdToken.transfer(erin, redemptionAmount, { from: alice });
 
     // B, C, D deposit some of their tokens to the Stability Pool
-    await stabilityPoolAsset1.provideToSP(dec(50, 18), ZERO_ADDRESS, { from: bob });
-    await stabilityPoolAsset1.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: carol });
-    await stabilityPoolAsset1.provideToSP(dec(200, 18), ZERO_ADDRESS, { from: dennis });
+    await stabilityPoolAsset1.provideToSP(dec(50, 18), { from: bob });
+    await stabilityPoolAsset1.provideToSP(dec(150, 18), { from: carol });
+    await stabilityPoolAsset1.provideToSP(dec(200, 18), { from: dennis });
 
     let price = await priceFeed.getPrice(assetAddress1);
     const bob_ICR_before = await troveManager.getCurrentICR(assetAddress1, bob, price);
@@ -6179,7 +6179,7 @@ contract("TroveManager", async accounts => {
       extraKUSDAmount: totalDebt,
       extraParams: { from: whale }
     });
-    await stabilityPoolAsset1.provideToSP(totalDebt, ZERO_ADDRESS, { from: whale });
+    await stabilityPoolAsset1.provideToSP(totalDebt, { from: whale });
 
     // Price drops
     await priceFeed.setPrice(assetAddress1, dec(100, 18));
@@ -6225,7 +6225,7 @@ contract("TroveManager", async accounts => {
       extraKUSDAmount: totalDebt,
       extraParams: { from: whale }
     });
-    await stabilityPoolAsset1.provideToSP(totalDebt, ZERO_ADDRESS, { from: whale });
+    await stabilityPoolAsset1.provideToSP(totalDebt, { from: whale });
 
     // Price drops
     await priceFeed.setPrice(assetAddress1, dec(100, 18));
