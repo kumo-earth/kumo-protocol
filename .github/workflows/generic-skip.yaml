@@ -1,4 +1,4 @@
-name: Test contracts
+name: Test contracts (Generic Skip)
 # Handles skipped but required checks
 
 on:
