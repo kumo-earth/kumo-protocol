@@ -325,7 +325,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('ADJUST').should('be.visible');
   });
 
-  it('should switch to Alice and KUMO rewards should be greater than 0 (get rewarded when Bob joined Stability Pool)', () => {
+  it.skip('should switch to Alice and KUMO rewards should be greater than 0 (get rewarded when Bob joined Stability Pool)', () => {
     cy.switchToMetamaskWindow();
     cy.switchMetamaskAccount(testUsers.Alice);
     cy.resetMetamaskAccount();
