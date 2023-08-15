@@ -4,12 +4,40 @@ env:
   CI: true
   FORCE_COLOR: true
 
-on: [ push, pull_request ]
+on:
+  push:
+    paths-ignore:
+      # In future file changes, we can delete the following line
+      # and uncomment the one below. 
+      - ".github/**"
+      # - ".github/workflows/release.yml"
+      - 'docs/**'
+      - 'packages/contracts/**'
+      - 'README.md'
+      - 'LICENSE'
+      - 'papers/**'
+      - 'images/**'
+  pull_request:
+    paths-ignore:
+      # In future file changes, we can delete the following line
+      # and uncomment the one below. 
+      - ".github/**"
+      # - ".github/workflows/release.yml"
+      - 'docs/**'
+      - 'packages/contracts/**'
+      - 'README.md'
+      - 'LICENSE'
+      - 'papers/**'
+      - 'images/**'
 
 jobs:
   workflow-setup:
     name: Initialize Workflow
     runs-on: ubuntu-latest
+
+    # This condition checks if the pull request is not a draft
+    if: github.event.pull_request.draft == false
+
     outputs: 
       publish: ${{ steps.build-flags.outputs.publish }}
     steps:

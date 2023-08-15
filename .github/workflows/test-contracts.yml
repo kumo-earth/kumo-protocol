@@ -7,16 +7,21 @@ env:
 on:
   push:
     paths:
-      - ".github/**"
+      # In future file changes, we can uncomment the following line
+      # - ".github/workflows/test-contracts.yml"
       - "packages/contracts/**"
   pull_request:
     paths:
-      - ".github/**"
+      # In future file changes, we can uncomment the following line
+      # - ".github/workflows/test-contracts.yml"
       - "packages/contracts/**"
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    # This condition checks if the pull request is not a draft
+    if: github.event.pull_request.draft == false
 
     steps:
       - uses: actions/checkout@v3
