@@ -48,6 +48,7 @@
     "docs:collect-sdk-apis": "node scripts/collect-sdk-apis.js",
     "docs:api-documenter": "api-documenter generate -i temp/sdk-apis -o docs/sdk",
     "fuzzer": "yarn workspace @kumodao/fuzzer fuzzer",
+    "postinstall": "husky install",
     "prepare": "run-s prepare:*",
     "prepare:contracts": "yarn workspace @kumodao/contracts prepare",
     "prepare:lib-base": "yarn workspace @kumodao/lib-base prepare",
@@ -58,7 +59,7 @@
     "prepare:subgraph": "yarn workspace @kumodao/subgraph prepare",
     "prepare:docs": "run-s docs",
     "prettier:check": "prettier --check .",
-    "prettier:fix": "prettier --write .",
+    "prettier:write": "prettier --write .",
     "prettier:list-different": "prettier --list-different .",
     "rebuild": "run-s prepare build",
     "release": "run-s release:*",
@@ -91,6 +92,11 @@
     "test-live:lib-ethers": "yarn workspace @kumodao/lib-ethers test-live",
     "coverage": "run-s coverage:*",
     "coverage:contracts": "yarn workspace @kumodao/contracts coverage"
+  },
+  "lint-staged": {
+    "*": [
+      "yarn prettier:write"
+    ]
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.3",
