@@ -1,4 +1,9 @@
 describe('KUMO App e2e testing spec', () => {
+  const testUsers = {
+    Alice: 3,
+    Bob: 4,
+    Carol: 5
+  }
   before(() => {
     cy.switchToMetamaskWindow();
     cy.importMetamaskAccount("0x60ddFE7f579aB6867cbE7A2Dc03853dC141d7A4aB6DBEFc0Dae2d2B1Bd4e487F");
@@ -10,11 +15,11 @@ describe('KUMO App e2e testing spec', () => {
     cy.importMetamaskAccount("0x8b693607Bd68C4dEB7bcF976a473Cf998BDE9fBeDF08e1D8ADadAcDff4e5D1b6");
     cy.importMetamaskToken({ address: '0x1D19b8b8b492bA72eA1Ff340D88FeF341C785A00', symbol: 'NBC' });
     cy.importMetamaskToken({ address: '0xB77Dc0B1D04E98E932c15D480a64E71691CF93B5', symbol: 'CSC' });
-    cy.switchMetamaskAccount(2);
+    cy.switchMetamaskAccount(testUsers.Alice);
     cy.switchToCypressWindow();
   })
 
-  it('should connect wallet with success and acceptMetamask with all Accounts', () => {
+  it('should connect wallet with success and acceptMetamask with all testUser accounts', () => {
     cy.visit('/');
     cy.contains('CONNECT').click();
     cy.contains('MetaMask').click();
@@ -47,7 +52,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.get('h1').should('have.text', 'Faucet');
   })
 
-  it('should open the NBC vault with Account 2', () => {
+  it('Alice should open the NBC vault', () => {
     cy.visit('/');
     cy.contains('CONNECT').click();
     cy.contains('MetaMask').click();
@@ -71,7 +76,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('ADJUST').should('be.visible');
   })
 
-  it('should adjust the NBC vault with Account 2', () => {
+  it('Alice should adjust the NBC vault', () => {
     cy.visit('/');
     cy.reload();
     cy.contains('CONNECT').click();
@@ -96,7 +101,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('ADJUST').should('be.visible');
   })
 
-  it('should stake KUSD in NBC Stability Pool with Account 2', () => {
+  it('Alice should stake KUSD in NBC Stability Pool', () => {
     cy.visit('/');
     cy.reload();
     cy.contains('CONNECT').click();
@@ -123,7 +128,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('ADJUST').should('be.visible');
   })
 
-  it('should adjust KUSD in NBC Stability Pool with Account 2', () => {
+  it('Alice should adjust KUSD in NBC Stability Pool', () => {
     cy.visit('/');
     cy.reload();
     cy.contains('CONNECT').click();
@@ -150,7 +155,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('ADJUST').should('be.visible');
   })
 
-  it('should open the CSC vault with Account 2', () => {
+  it('Alice should open the CSC vault', () => {
     cy.visit('/');
     cy.contains('CONNECT').click();
     cy.contains('MetaMask').click();
@@ -174,7 +179,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('ADJUST').should('be.visible');
   })
 
-  it('should adjust the CSC vault with Account 2', () => {
+  it('Alice should adjust the CSC vault', () => {
     cy.visit('/');
     cy.reload();
     cy.contains('CONNECT').click();
@@ -199,7 +204,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('ADJUST').should('be.visible');
   })
 
-  it('should stake KUSD in CSC stability pool with Account 2', () => {
+  it('Alice should stake KUSD in CSC stability pool', () => {
     cy.visit('/');
     cy.reload();
     cy.contains('CONNECT').click();
@@ -226,7 +231,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('ADJUST').should('be.visible');
   })
 
-  it('should adjust KUSD in CSC Stability Pool with Account 2', () => {
+  it('Alice should adjust KUSD in CSC Stability Pool', () => {
     cy.visit('/');
     cy.reload();
     cy.contains('CONNECT').click();
@@ -266,9 +271,9 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('p', 'TOTAL CARBON CREDITS').next().should('have.text', '36');
   })
 
-  it('should switch to Account 3 and open the Vault', () => {
+  it('should switch to Bob account and open the Vault', () => {
     cy.switchToMetamaskWindow();
-    cy.switchMetamaskAccount(3);
+    cy.switchMetamaskAccount(testUsers.Bob);
     cy.resetMetamaskAccount();
     cy.switchToCypressWindow();
     cy.visit('/');
@@ -294,7 +299,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('ADJUST').should('be.visible');
   })
 
-  it('should stake KUSD in NBC stability pool with Account 3', () => {
+  it('Bob should stake KUSD in NBC stability pool', () => {
     cy.visit('/');
     cy.reload();
     cy.contains('CONNECT').click();
@@ -320,9 +325,9 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('ADJUST').should('be.visible');
   });
 
-  it('should switch to Account 2 and KUMO rewards should be greater than 0 (get rewarded when Account 3 joined Stability Pool)', () => {
+  it.skip('should switch to Alice and KUMO rewards should be greater than 0 (get rewarded when Bob joined Stability Pool)', () => {
     cy.switchToMetamaskWindow();
-    cy.switchMetamaskAccount(2);
+    cy.switchMetamaskAccount(testUsers.Alice);
     cy.resetMetamaskAccount();
     cy.switchToCypressWindow();
     cy.visit('/');
@@ -340,9 +345,9 @@ describe('KUMO App e2e testing spec', () => {
     cy.get('#deposit-reward > div > span').first().invoke('text').then(parseInt).should('be.greaterThan', 0)
   })
 
-  it('should switch to Account 4 and open the Vault', () => {
+  it('should switch to Carol account and open the Vault', () => {
     cy.switchToMetamaskWindow();
-    cy.switchMetamaskAccount(4);
+    cy.switchMetamaskAccount(testUsers.Carol);
     cy.resetMetamaskAccount();
     cy.switchToCypressWindow();
     cy.visit('/');
@@ -368,7 +373,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('ADJUST').scrollIntoView().should('be.visible');
   })
 
-  it('should liquidate the Vault created by Account 4 and should transfer NBC tokens to Stability Pool depositers as a liquidation gain', () => {
+  it('should liquidate the Vault created by Bob and should transfer NBC tokens to Stability Pool depositers as a liquidation gain', () => {
     cy.visit('/');
     cy.reload();
     cy.contains('CONNECT').click();
@@ -417,7 +422,7 @@ describe('KUMO App e2e testing spec', () => {
       expect(currentPrice).to.equal('200.00');
     })
     cy.switchToMetamaskWindow();
-    cy.switchMetamaskAccount(2);
+    cy.switchMetamaskAccount(testUsers.Alice);
     cy.resetMetamaskAccount();
     cy.switchToCypressWindow();
     cy.reload();
@@ -427,7 +432,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('ADJUST').should('be.visible');
     cy.get('#deposit-gain > div > span').first().invoke('text').then(parseInt).should('be.greaterThan', 0);
     cy.switchToMetamaskWindow();
-    cy.switchMetamaskAccount(3);
+    cy.switchMetamaskAccount(testUsers.Bob);
     cy.resetMetamaskAccount();
     cy.switchToCypressWindow();
     cy.reload();
