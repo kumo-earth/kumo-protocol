@@ -99,7 +99,7 @@
     ]
   },
   "devDependencies": {
-    "@commitlint/cli": "^16.2.3",
+    "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^16.2.1",
     "@microsoft/api-documenter": "^7.17.14",
     "fs-extra": "^9.1.0",
