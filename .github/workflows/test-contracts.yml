@@ -1,4 +1,4 @@
-name: Test contracts workflow
+name: Test contracts
 
 env:
   CI: true

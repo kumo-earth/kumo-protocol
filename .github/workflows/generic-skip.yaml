@@ -1,9 +1,12 @@
-name: (Generic Skip) Test contracts workflow
+name: Test contracts (Generic Skip) 
 # Handles skipped but required checks
 
 on:
   pull_request:
     paths-ignore:
+      # In future file changes, we can uncomment the following line
+      - ".github/workflows/generic-skip.yml"
+      - ".github/workflows/test-contracts.yml"
       - "packages/contracts/**"
 
 jobs:
