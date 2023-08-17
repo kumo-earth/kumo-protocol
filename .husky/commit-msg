@@ -1,0 +1,6 @@
+if grep -q 'WIP' "$1"; then
+  echo "Commit with 'WIP' detected - skipping commitlint."
+  exit 0
+fi
+
+yarn commitlint --edit "$1"

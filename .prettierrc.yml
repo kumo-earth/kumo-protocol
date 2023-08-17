@@ -1,0 +1,8 @@
+trailingComma: none
+arrowParens: avoid
+printWidth: 101
+# overrides:
+#   - files: 'someDir/for/example/**/*'
+#     options:
+#       singleQuote: true
+

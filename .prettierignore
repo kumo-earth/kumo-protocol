@@ -1,0 +1,53 @@
+# Docs
+docs/
+README.md
+##
+
+# Contracts 
+packages/contracts/
+packages/contracts/artifacts/
+packages/contracts/mainnetDeployment/
+
+# Fuzzer
+packages/fuzzer/
+
+# Subgraph
+packages/subgraph/
+packages/lib-subgraph/
+
+# Frontend
+packages/dev-frontend/
+
+# SDK
+packages/providers/src/
+packages/providers/README.md
+packages/lib-ethers/
+packages/lib-base/
+packages/lib-react/
+
+# Explicitly ignore config files without prettier parser (needed for lint-staged)
+commitlint.config.js
+.editorconfig
+.gitblameignore
+.gitmodules
+.gitignore
+.github/
+.husky
+.prettierignore
+yarn.lock
+*.plantuml
+.env.*
+*.png
+*.svg
+*.ico
+*.jpg
+*.jpeg
+*.otf
+*.properties
+remix-compiler.config.js
+Makefile
+*.puml
+*.archive
+*.sh
+.vscode/settings.json
+.yarn/
