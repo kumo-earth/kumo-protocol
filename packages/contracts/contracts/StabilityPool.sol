@@ -620,6 +620,13 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         activePoolCached.sendAsset(assetAddress, address(this), _collToAdd);
     }
 
+    function _increaseKUSD(uint256 _amount) internal {
+        uint256 newtotalKUSDDeposits = totalKUSDDeposits.add(_amount);
+        totalKUSDDeposits = newtotalKUSDDeposits;
+
+        emit StabilityPoolKUSDBalanceUpdated(newtotalKUSDDeposits);
+    }
+
     function _decreaseKUSD(uint256 _amount) internal {
         uint256 newtotalKUSDDeposits = totalKUSDDeposits.sub(_amount);
         totalKUSDDeposits = newtotalKUSDDeposits;
@@ -836,9 +843,8 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     // Transfer the KUSD tokens from the user to the Stability Pool's address, and update its recorded KUSD
     function _sendKUSDtoStabilityPool(address _address, uint256 _amount) internal {
         kusdToken.sendToPool(_address, address(this), _amount);
-        uint256 newtotalKUSDDeposits = totalKUSDDeposits.add(_amount);
-        totalKUSDDeposits = newtotalKUSDDeposits;
-        emit StabilityPoolKUSDBalanceUpdated(newtotalKUSDDeposits);
+
+        _increaseKUSD(_amount);
     }
 
     // Send KUSD to user and decrease KUSD in Pool
