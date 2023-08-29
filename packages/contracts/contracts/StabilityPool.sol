@@ -897,7 +897,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         deposits[_depositor] = _newValue;
 
         if (_newValue == 0) {
-            delete deposits[_depositor];
             delete depositSnapshots[_depositor];
             emit DepositSnapshotUpdated(_depositor, 0, 0, 0);
             return;
