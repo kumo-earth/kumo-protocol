@@ -334,6 +334,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         uint256 initialDeposit = deposits[msg.sender];
 
         uint256 depositorAssetGain = getDepositorAssetGain(msg.sender);
+        uint256 depositorKUSDGain = getDepositorKUSDGain(msg.sender);
 
         uint256 compoundedKUSDDeposit = getCompoundedKUSDDeposit(msg.sender);
         uint256 KUSDLoss = initialDeposit.sub(compoundedKUSDDeposit); // Needed only for event log
@@ -346,8 +347,10 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
         emit UserDepositChanged(msg.sender, newDeposit);
         emit AssetGainWithdrawn(msg.sender, depositorAssetGain, KUSDLoss); // KUSD Loss required for event log
+        emit KUSDGainWithdrawn(msg.sender, depositorKUSDGain);
 
         _sendAssetGainToDepositor(depositorAssetGain);
+        _sendKUSDGainToDepositor(msg.sender, depositorKUSDGain);
     }
 
     /*  withdrawFromSP():
@@ -370,6 +373,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         _triggerKUMOIssuance(communityIssuanceCached);
 
         uint256 depositorAssetGain = getDepositorAssetGain(msg.sender);
+        uint256 depositorKUSDGain = getDepositorKUSDGain(msg.sender);
 
         uint256 compoundedKUSDDeposit = getCompoundedKUSDDeposit(msg.sender);
         uint256 KUSDtoWithdraw = KumoMath._min(_amount, compoundedKUSDDeposit);
@@ -381,11 +385,13 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         // Update deposit
         uint256 newDeposit = compoundedKUSDDeposit.sub(KUSDtoWithdraw);
         _updateDepositAndSnapshots(msg.sender, newDeposit);
-        emit UserDepositChanged(msg.sender, newDeposit);
 
+        emit UserDepositChanged(msg.sender, newDeposit);
         emit AssetGainWithdrawn(msg.sender, depositorAssetGain, KUSDLoss); // KUSD Loss required for event log
+        emit KUSDGainWithdrawn(msg.sender, depositorKUSDGain);
 
         _sendAssetGainToDepositor(depositorAssetGain);
+        _sendKUSDGainToDepositor(msg.sender, depositorKUSDGain);
     }
 
     /* withdrawAssetGainToTrove:
@@ -405,6 +411,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         _triggerKUMOIssuance(communityIssuanceCached);
 
         uint256 depositorAssetGain = getDepositorAssetGain(msg.sender);
+        uint256 depositorKUSDGain = getDepositorKUSDGain(msg.sender);
 
         uint256 compoundedKUSDDeposit = getCompoundedKUSDDeposit(msg.sender);
         uint256 KUSDLoss = initialDeposit.sub(compoundedKUSDDeposit); // Needed only for event log
@@ -416,6 +423,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
          This lets the event log make more sense (i.e. so it appears that first the Asset gain is withdrawn
         and then it is deposited into the Trove, not the other way around). */
         emit AssetGainWithdrawn(msg.sender, depositorAssetGain, KUSDLoss);
+        emit KUSDGainWithdrawn(msg.sender, depositorKUSDGain);
         emit UserDepositChanged(msg.sender, compoundedKUSDDeposit);
 
         assetBalance = assetBalance.sub(depositorAssetGain);
@@ -429,6 +437,8 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
             _upperHint,
             _lowerHint
         );
+
+        _sendKUSDGainToDepositor(msg.sender, depositorKUSDGain);
     }
 
     // --- KUMO issuance functions ---
@@ -661,7 +671,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         return
             SafetyTransfer.decimalsCorrection(
                 assetAddress,
-                _getAssetGainFromSnapshots(initialDeposit, snapshots)
+                _getAssetGainFromSnapshots(initialDeposit, snapshots, _depositor)
             );
     }
 
@@ -783,6 +793,21 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         );
 
         return KUMOGain;
+    }
+
+    function getDepositorKUSDGain(address _depositor) public view override returns (uint256) {
+        return
+            SafetyTransfer.decimalsCorrection(
+                address(kusdToken),
+                _getKUSDGainFromSnapshots(_depositor)
+            );
+    }
+
+    function _getKUSDGainFromSnapshots(address _user) internal view returns (uint256) {
+        uint256 F_KUSD_Snapshot = stakingSnapshots[_user].F_KUSD_Snapshot;
+        uint256 KUSDGain = deposits[_user].mul(F_KUSD.sub(F_KUSD_Snapshot)).div(DECIMAL_PRECISION);
+
+        return KUSDGain;
     }
 
     // Internal function, used to calculcate compounded deposits and compounded stakes.

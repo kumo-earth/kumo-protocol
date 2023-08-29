@@ -74,6 +74,7 @@ interface IStabilityPool is IDeposit {
     event UserDepositChanged(address indexed _depositor, uint256 _newDeposit);
 
     event AssetGainWithdrawn(address indexed _depositor, uint256 _Asset, uint256 _kusdLoss);
+    event KUSDGainWithdrawn(address indexed _depositor, uint256 _value);
 
     event KUMOPaidToDepositor(address indexed _depositor, uint256 _KUMO);
     event AssetSent(address _to, uint256 _amount);
@@ -176,6 +177,8 @@ interface IStabilityPool is IDeposit {
      * Calculates the ETH gain earned by the deposit since its last snapshots were taken.
      */
     function getDepositorAssetGain(address _depositor) external view returns (uint256);
+
+    function getDepositorKUSDGain(address _depositor) external view returns (uint256);
 
     /*
      * Return the front end's compounded stake.
