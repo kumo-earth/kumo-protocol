@@ -1013,6 +1013,8 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         }
         F_ASSET = F_ASSET.add(AssetFeePerKUSDDeposited);
         emit F_AssetUpdated(assetAddress, F_ASSET);
+
+        assetBalance = assetBalance.add(_AssetFee);
     }
 
     function increaseF_KUSD(uint256 _KUSDFee) external override {
