@@ -241,6 +241,18 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         uint256 F_KUSD_Snapshot;
     }
 
+    struct LocalVariables_AssetGainFromSnapshots {
+        uint128 epochSnapshot;
+        uint128 scaleSnapshot;
+        uint256 S_Snapshot;
+        uint256 P_Snapshot;
+        uint256 firstPortion;
+        uint256 secondPortion;
+        uint256 SPAssetGain;
+        uint256 F_ASSET_Snapshot;
+        uint256 StakingAssetGain;
+    }
+
     // --- Contract setters ---
     function getNameBytes() external pure override returns (bytes32) {
         return STABILITY_POOL_NAME_BYTES;
@@ -636,21 +648,27 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
          * If it does, the second portion of the ETH gain is scaled by 1e9.
          * If the gain spans no scale change, the second portion will be 0.
          */
-        uint128 epochSnapshot = snapshots.epoch;
-        uint128 scaleSnapshot = snapshots.scale;
-        uint256 S_Snapshot = snapshots.S;
-        uint256 P_Snapshot = snapshots.P;
 
-        uint256 firstPortion = epochToScaleToSum[epochSnapshot][scaleSnapshot].sub(S_Snapshot);
-        uint256 secondPortion = epochToScaleToSum[epochSnapshot][scaleSnapshot.add(1)].div(
+        LocalVariables_AssetGainFromSnapshots memory vars;
+
+        vars.epochSnapshot = snapshots.epoch;
+        vars.scaleSnapshot = snapshots.scale;
+        vars.S_Snapshot = snapshots.S;
+        vars.P_Snapshot = snapshots.P;
+
+        vars.firstPortion = epochToScaleToSum[vars.epochSnapshot][vars.scaleSnapshot].sub(
+            vars.S_Snapshot
+        );
+        vars.secondPortion = epochToScaleToSum[vars.epochSnapshot][vars.scaleSnapshot.add(1)].div(
             SCALE_FACTOR
         );
 
-        uint256 AssetGain = initialDeposit.mul(firstPortion.add(secondPortion)).div(P_Snapshot).div(
-            DECIMAL_PRECISION
-        );
+        vars.SPAssetGain = initialDeposit
+            .mul(vars.firstPortion.add(vars.secondPortion))
+            .div(vars.P_Snapshot)
+            .div(DECIMAL_PRECISION);
 
-        return AssetGain;
+        return vars.SPAssetGain;
     }
 
     function _getETHGainFromSnapshots(
