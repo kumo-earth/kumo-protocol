@@ -72,7 +72,6 @@ interface IStabilityPool is IDeposit {
     event UserDepositChanged(address indexed _depositor, uint256 _newDeposit);
 
     event AssetGainWithdrawn(address indexed _depositor, uint256 _Asset, uint256 _kusdLoss);
-    event SystemSnapshotUpdated(uint256 _P, uint256 _G);
 
     event KUMOPaidToDepositor(address indexed _depositor, uint256 _KUMO);
     event AssetSent(address _to, uint256 _amount);
