@@ -580,9 +580,14 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
 
         _requireUserAcceptsFee(KUSDFee, _KUSDAmount, _maxFeePercentage);
 
-        // Send fee to KUMO staking contract
-        kumoStaking.increaseF_KUSD(KUSDFee);
-        _kusdToken.mint(_asset, kumoStakingAddress, KUSDFee);
+        // Send fee to Stability Pool providers
+        stabilityPoolFactory.getStabilityPoolByAsset(_asset).increaseF_KUSD(KUSDFee);
+
+        _kusdToken.mint(
+            _asset,
+            address(stabilityPoolFactory.getStabilityPoolByAsset(_asset)),
+            KUSDFee
+        );
 
         return KUSDFee;
     }
