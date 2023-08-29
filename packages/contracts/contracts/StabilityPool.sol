@@ -667,8 +667,10 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
     function _getAssetGainFromSnapshots(
         uint256 initialDeposit,
-        Snapshots memory snapshots
+        Snapshots memory snapshots,
+        address _depositor
     ) internal view returns (uint256) {
+        // --- Stability Pool gains ---
         /*
          * Grab the sum 'S' from the epoch at which the stake was made. The ETH gain may span up to one scale change.
          * If it does, the second portion of the ETH gain is scaled by 1e9.
@@ -694,7 +696,13 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
             .div(vars.P_Snapshot)
             .div(DECIMAL_PRECISION);
 
-        return vars.SPAssetGain;
+        // --- Protocol revenue (prev. staking) gains ---
+        vars.F_ASSET_Snapshot = stakingSnapshots[_depositor].F_ASSET_Snapshot;
+        vars.StakingAssetGain = deposits[_depositor].mul(F_ASSET.sub(vars.F_ASSET_Snapshot)).div(
+            DECIMAL_PRECISION
+        );
+
+        return vars.SPAssetGain + vars.StakingAssetGain;
     }
 
     function _getETHGainFromSnapshots(
