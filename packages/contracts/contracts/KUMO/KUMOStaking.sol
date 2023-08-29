@@ -251,13 +251,13 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
         return _getPendingAssetGain(_asset, _user);
     }
 
-    function _getPendingAssetGain(address _asset, address _user) internal view returns (uint256) {
-        uint256 F_ASSET_Snapshot = snapshots[_user].F_ASSET_Snapshot[_asset];
-        uint256 AssetGain = stakes[_user].mul(F_ASSETS[_asset].sub(F_ASSET_Snapshot)).div(
-            DECIMAL_PRECISION
-        );
-        return AssetGain;
-    }
+    // function _getPendingAssetGain(address _asset, address _user) internal view returns (uint256) {
+    //     uint256 F_ASSET_Snapshot = snapshots[_user].F_ASSET_Snapshot[_asset];
+    //     uint256 AssetGain = stakes[_user].mul(F_ASSETS[_asset].sub(F_ASSET_Snapshot)).div(
+    //         DECIMAL_PRECISION
+    //     );
+    //     return AssetGain;
+    // }
 
     function getPendingKUSDGain(address _user) external view override returns (uint256) {
         return _getPendingKUSDGain(_user);
