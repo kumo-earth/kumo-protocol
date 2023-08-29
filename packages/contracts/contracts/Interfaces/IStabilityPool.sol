@@ -190,4 +190,14 @@ interface IStabilityPool is IDeposit {
      * Only callable by Active Pool, it just accounts for ETH received
      * receive() external payable;
      */
+
+    // --- Events and functions from the Staking contract
+
+    event F_AssetUpdated(address indexed _asset, uint256 _F_ASSET);
+    event F_KUSDUpdated(uint256 _F_KUSD);
+    event StakerSnapshotsUpdated(address _staker, uint256 _F_Asset, uint256 _F_KUSD);
+
+    function increaseF_Asset(uint256 _AssetFee) external;
+
+    function increaseF_KUSD(uint256 _KUMOFee) external;
 }

@@ -27,18 +27,18 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
     mapping(address => uint256) public stakes;
     uint256 public totalKUMOStaked;
 
-    mapping(address => uint256) public F_ASSETS; // Running sum of ETH fees per-KUMO-staked
-    uint256 public F_KUSD; // Running sum of KUMO fees per-KUMO-staked
+    // mapping(address => uint256) public F_ASSETS; // Running sum of ETH fees per-KUMO-staked
+    // uint256 public F_KUSD; // Running sum of KUMO fees per-KUMO-staked
 
     // User snapshots of F_ASSETS and F_KUSD, taken at the point at which their latest deposit was made
-    mapping(address => Snapshot) public snapshots;
+    // mapping(address => Snapshot) public snapshots;
 
     mapping(address => uint256) internal assetsBalance;
 
-    struct Snapshot {
-        mapping(address => uint256) F_ASSET_Snapshot;
-        uint256 F_KUSD_Snapshot;
-    }
+    // struct Snapshot {
+    //     mapping(address => uint256) F_ASSET_Snapshot;
+    //     uint256 F_KUSD_Snapshot;
+    // }
 
     address[] ASSET_TYPE;
     mapping(address => bool) isAssetTracked;
@@ -210,35 +210,35 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
 
     // --- Reward-per-unit-staked increase functions. Called by Kumo core contracts ---
 
-    function increaseF_Asset(address _asset, uint256 _AssetFee) external override {
-        _requireCallerIsTroveManager();
+    // function increaseF_Asset(address _asset, uint256 _AssetFee) external override {
+    //     _requireCallerIsTroveManager();
 
-        if (!isAssetTracked[_asset]) {
-            isAssetTracked[_asset] = true;
-            ASSET_TYPE.push(_asset);
-        }
+    //     if (!isAssetTracked[_asset]) {
+    //         isAssetTracked[_asset] = true;
+    //         ASSET_TYPE.push(_asset);
+    //     }
 
-        uint256 AssetFeePerKUMOStaked;
+    //     uint256 AssetFeePerKUMOStaked;
 
-        if (totalKUMOStaked > 0) {
-            AssetFeePerKUMOStaked = _AssetFee.mul(DECIMAL_PRECISION).div(totalKUMOStaked);
-        }
+    //     if (totalKUMOStaked > 0) {
+    //         AssetFeePerKUMOStaked = _AssetFee.mul(DECIMAL_PRECISION).div(totalKUMOStaked);
+    //     }
 
-        F_ASSETS[_asset] = F_ASSETS[_asset].add(AssetFeePerKUMOStaked);
-        emit F_AssetUpdated(_asset, F_ASSETS[_asset]);
-    }
+    //     F_ASSETS[_asset] = F_ASSETS[_asset].add(AssetFeePerKUMOStaked);
+    //     emit F_AssetUpdated(_asset, F_ASSETS[_asset]);
+    // }
 
-    function increaseF_KUSD(uint256 _KUSDFee) external override {
-        _requireCallerIsBorrowerOperations();
-        uint256 KUSDFeePerKUMOStaked;
+    // function increaseF_KUSD(uint256 _KUSDFee) external override {
+    //     _requireCallerIsBorrowerOperations();
+    //     uint256 KUSDFeePerKUMOStaked;
 
-        if (totalKUMOStaked > 0) {
-            KUSDFeePerKUMOStaked = _KUSDFee.mul(DECIMAL_PRECISION).div(totalKUMOStaked);
-        }
+    //     if (totalKUMOStaked > 0) {
+    //         KUSDFeePerKUMOStaked = _KUSDFee.mul(DECIMAL_PRECISION).div(totalKUMOStaked);
+    //     }
 
-        F_KUSD = F_KUSD.add(KUSDFeePerKUMOStaked);
-        emit F_KUSDUpdated(F_KUSD);
-    }
+    //     F_KUSD = F_KUSD.add(KUSDFeePerKUMOStaked);
+    //     emit F_KUSDUpdated(F_KUSD);
+    // }
 
     // --- Pending reward functions ---
 
