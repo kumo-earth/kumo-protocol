@@ -271,11 +271,11 @@ contract KUMOStaking is IKUMOStaking, Ownable, CheckContract, BaseMath {
 
     // --- Internal helper functions ---
 
-    function _updateUserSnapshots(address _asset, address _user) internal {
-        snapshots[_user].F_ASSET_Snapshot[_asset] = F_ASSETS[_asset];
-        snapshots[_user].F_KUSD_Snapshot = F_KUSD;
-        emit StakerSnapshotsUpdated(_user, F_ASSETS[_asset], F_KUSD);
-    }
+    // function _updateUserSnapshots(address _asset, address _user) internal {
+    //     snapshots[_user].F_ASSET_Snapshot[_asset] = F_ASSETS[_asset];
+    //     snapshots[_user].F_KUSD_Snapshot = F_KUSD;
+    //     emit StakerSnapshotsUpdated(_user, F_ASSETS[_asset], F_KUSD);
+    // }
 
     function _sendAssetGainToUser(address _asset, uint256 _assetGain) internal {
         _sendAsset(msg.sender, _asset, _assetGain);
