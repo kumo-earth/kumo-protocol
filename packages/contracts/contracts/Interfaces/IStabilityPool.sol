@@ -41,6 +41,8 @@ interface IStabilityPool is IDeposit {
     event StabilityPoolAssetBalanceUpdated(uint256 _newBalance);
     event StabilityPoolKUSDBalanceUpdated(uint256 _newBalance);
 
+    event StabilityPoolKUSDGainsBalanceUpdated(uint256 _newtotalKUSDGains);
+
     event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
     event TroveManagerAddressChanged(address _newTroveManagerAddress);
     event ActivePoolAddressChanged(address _newActivePoolAddress);

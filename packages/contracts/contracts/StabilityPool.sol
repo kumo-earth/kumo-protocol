@@ -230,6 +230,10 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     uint256 public lastKUSDLossError_Offset;
 
     // --- Moved staking capabilities ---
+
+    // Tracker for KUSD from fees held in the pool. Changes when users borrow/redeem, and when users withdraw gains.
+    uint256 internal totalKUSDGains;
+
     uint256 public F_ASSET; // Running sum of Asset fees per-KUMO-staked
     uint256 public F_KUSD; // Running sum of KUMO fees per-KUMO-staked
 
@@ -619,7 +623,22 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     function _decreaseKUSD(uint256 _amount) internal {
         uint256 newtotalKUSDDeposits = totalKUSDDeposits.sub(_amount);
         totalKUSDDeposits = newtotalKUSDDeposits;
+
         emit StabilityPoolKUSDBalanceUpdated(newtotalKUSDDeposits);
+    }
+
+    function _increaseKUSDGains(uint256 _amount) internal {
+        uint256 newtotalKUSDGains = totalKUSDGains.add(_amount);
+        totalKUSDGains = newtotalKUSDGains;
+
+        emit StabilityPoolKUSDGainsBalanceUpdated(newtotalKUSDGains);
+    }
+
+    function _decreaseKUSDGains(uint256 _amount) internal {
+        uint256 newtotalKUSDGains = totalKUSDGains.sub(_amount);
+        totalKUSDGains = newtotalKUSDGains;
+
+        emit StabilityPoolKUSDGainsBalanceUpdated(newtotalKUSDGains);
     }
 
     // --- Reward calculator functions for depositor ---
@@ -883,6 +902,16 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         emit AssetSent(msg.sender, _amount);
     }
 
+    // Send KUSD gains to user and decrease KUSD gains in Pool
+    function _sendKUSDGainToDepositor(address _depositor, uint256 KUSDWithdrawal) internal {
+        if (KUSDWithdrawal == 0) {
+            return;
+        }
+
+        kusdToken.returnFromPool(address(this), _depositor, KUSDWithdrawal);
+        _decreaseKUSDGains(KUSDWithdrawal);
+    }
+
     // Send KUMO to user and decrease KUMO in Pool
     function _sendKUMOToDepositor(address _depositor, uint256 KUSDWithdrawal) internal {
         if (KUSDWithdrawal == 0) {
@@ -988,5 +1017,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         }
         F_KUSD = F_KUSD.add(KUSDFeePerKUSDDeposited);
         emit F_KUSDUpdated(F_KUSD);
+
+        _increaseKUSDGains(_KUSDFee);
     }
 }
