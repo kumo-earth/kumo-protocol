@@ -229,6 +229,18 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     uint256 public lastETHError_Offset;
     uint256 public lastKUSDLossError_Offset;
 
+    // --- Moved staking capabilities ---
+    uint256 public F_ASSET; // Running sum of Asset fees per-KUMO-staked
+    uint256 public F_KUSD; // Running sum of KUMO fees per-KUMO-staked
+
+    // User snapshots of F_ASSET and F_KUSD, taken at the point at which their latest deposit was made
+    mapping(address => StakingSnapshot) public stakingSnapshots;
+
+    struct StakingSnapshot {
+        uint256 F_ASSET_Snapshot;
+        uint256 F_KUSD_Snapshot;
+    }
+
     // --- Contract setters ---
     function getNameBytes() external pure override returns (bytes32) {
         return STABILITY_POOL_NAME_BYTES;
@@ -885,6 +897,13 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         require(msg.sender == address(troveManager), "StabilityPool: Caller is not TroveManager");
     }
 
+    function _requireCallerIsBorrowerOperations() internal view {
+        require(
+            msg.sender == address(borrowerOperations),
+            "StabilityPool: Caller is not BorrowerOperations"
+        );
+    }
+
     function _requireNoUnderCollateralizedTroves() internal {
         uint256 price = kumoParams.priceFeed().fetchPrice(assetAddress);
         address lowestTrove = sortedTroves.getLast(assetAddress);
@@ -927,5 +946,29 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
         assetBalance = assetBalance.add(_amount);
         emit StabilityPoolAssetBalanceUpdated(assetBalance);
+    }
+
+    // --- Moved staking functions ---
+
+    // --- Reward-per-unit-staked increase functions. Called by Kumo core contracts ---
+    function increaseF_Asset(uint256 _AssetFee) external override {
+        _requireCallerIsTroveManager();
+
+        uint256 AssetFeePerKUSDDeposited;
+        if (totalKUSDDeposits > 0) {
+            AssetFeePerKUSDDeposited = _AssetFee.mul(DECIMAL_PRECISION).div(totalKUSDDeposits);
+        }
+        F_ASSET = F_ASSET.add(AssetFeePerKUSDDeposited);
+        emit F_AssetUpdated(assetAddress, F_ASSET);
+    }
+
+    function increaseF_KUSD(uint256 _KUSDFee) external override {
+        _requireCallerIsBorrowerOperations();
+        uint256 KUSDFeePerKUSDDeposited;
+        if (totalKUSDDeposits > 0) {
+            KUSDFeePerKUSDDeposited = _KUSDFee.mul(DECIMAL_PRECISION).div(totalKUSDDeposits);
+        }
+        F_KUSD = F_KUSD.add(KUSDFeePerKUSDDeposited);
+        emit F_KUSDUpdated(F_KUSD);
     }
 }
