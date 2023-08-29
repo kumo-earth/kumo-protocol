@@ -868,6 +868,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     // --- Stability Pool Deposit Functionality ---
 
     function _updateDepositAndSnapshots(address _depositor, uint256 _newValue) internal {
+        // --- SP part ---
         deposits[_depositor] = _newValue;
 
         if (_newValue == 0) {
@@ -892,6 +893,11 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         depositSnapshots[_depositor].epoch = currentEpochCached;
 
         emit DepositSnapshotUpdated(_depositor, currentP, currentS, currentG);
+
+        // --- Staking part ---
+        stakingSnapshots[_depositor].F_ASSET_Snapshot = F_ASSET;
+        stakingSnapshots[_depositor].F_KUSD_Snapshot = F_KUSD;
+        emit StakerSnapshotsUpdated(_depositor, F_ASSET, F_KUSD);
     }
 
     // --- Sender functions for KUMO deposit, ETH gains and KUMOA gains ---
