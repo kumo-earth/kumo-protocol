@@ -1,18 +1,21 @@
 describe('KUMO App e2e testing spec', () => {
   const testUsers = {
-    Alice: 3,
-    Bob: 4,
-    Carol: 5
+    Alice: "Alice",
+    Bob: "Bob",
+    Carol: "Carol"
   }
   before(() => {
     cy.switchToMetamaskWindow();
     cy.importMetamaskAccount("0x60ddFE7f579aB6867cbE7A2Dc03853dC141d7A4aB6DBEFc0Dae2d2B1Bd4e487F");
+    cy.renameMetamaskAccount("Alice");
     cy.importMetamaskToken({ address: '0x1D19b8b8b492bA72eA1Ff340D88FeF341C785A00', symbol: 'NBC' });
     cy.importMetamaskToken({ address: '0xB77Dc0B1D04E98E932c15D480a64E71691CF93B5', symbol: 'CSC' });
     cy.importMetamaskAccount("0xeaa445c85f7b438dEd6e831d06a4eD0CEBDc2f8527f84Fcda6EBB5fCfAd4C0e9");
+    cy.renameMetamaskAccount("Bob");
     cy.importMetamaskToken({ address: '0x1D19b8b8b492bA72eA1Ff340D88FeF341C785A00', symbol: 'NBC' });
     cy.importMetamaskToken({ address: '0xB77Dc0B1D04E98E932c15D480a64E71691CF93B5', symbol: 'CSC' });
     cy.importMetamaskAccount("0x8b693607Bd68C4dEB7bcF976a473Cf998BDE9fBeDF08e1D8ADadAcDff4e5D1b6");
+    cy.renameMetamaskAccount("Carol");
     cy.importMetamaskToken({ address: '0x1D19b8b8b492bA72eA1Ff340D88FeF341C785A00', symbol: 'NBC' });
     cy.importMetamaskToken({ address: '0xB77Dc0B1D04E98E932c15D480a64E71691CF93B5', symbol: 'CSC' });
     cy.switchMetamaskAccount(testUsers.Alice);
