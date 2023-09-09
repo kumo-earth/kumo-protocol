@@ -6,7 +6,7 @@
 
 Get the amount of Uniswap ETH/KUSD LP tokens held by an address.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getUniTokenBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
@@ -19,7 +19,7 @@ getUniTokenBalance(address?: string, overrides?: EthersCallOverrides): Promise<D
 |  address | string | Address whose balance should be retrieved. |
 |  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt;
 

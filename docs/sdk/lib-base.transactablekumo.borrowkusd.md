@@ -6,7 +6,7 @@
 
 Adjust existing Trove by borrowing more KUSD.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 borrowKUSD(asset: string, amount: Decimalish, maxBorrowingRate?: Decimalish): Promise<TroveAdjustmentDetails>;
@@ -20,7 +20,7 @@ borrowKUSD(asset: string, amount: Decimalish, maxBorrowingRate?: Decimalish): Pr
 |  amount | [Decimalish](./lib-base.decimalish.md) | The amount of KUSD to borrow. |
 |  maxBorrowingRate | [Decimalish](./lib-base.decimalish.md) | Maximum acceptable [borrowing rate](./lib-base.fees.borrowingrate.md)<!-- -->. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[TroveAdjustmentDetails](./lib-base.troveadjustmentdetails.md)<!-- -->&gt;
 

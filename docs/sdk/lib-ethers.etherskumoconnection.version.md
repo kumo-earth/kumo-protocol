@@ -6,7 +6,7 @@
 
 Version of the Kumo contracts (Git commit hash).
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly version: string;

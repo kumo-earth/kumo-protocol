@@ -6,7 +6,7 @@
 
 Transfer [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) from Stability Deposit to Trove.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 transferCollateralGainToTrove(asset: string, assetName: string): Promise<SentKumoTransaction<S, KumoReceipt<R, CollateralGainTransferDetails>>>;
@@ -19,7 +19,7 @@ transferCollateralGainToTrove(asset: string, assetName: string): Promise<SentKum
 |  asset | string |  |
 |  assetName | string |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, [CollateralGainTransferDetails](./lib-base.collateralgaintransferdetails.md)<!-- -->&gt;&gt;&gt;
 

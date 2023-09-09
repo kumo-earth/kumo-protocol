@@ -6,7 +6,7 @@
 
 Amount of native currency (e.g. Ether) collateralized.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly collateral: Decimal;

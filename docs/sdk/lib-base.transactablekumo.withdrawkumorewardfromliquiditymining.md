@@ -6,12 +6,12 @@
 
 Withdraw KUMO that has been earned by mining liquidity.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 withdrawKUMORewardFromLiquidityMining(): Promise<void>;
 ```
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;void&gt;
 

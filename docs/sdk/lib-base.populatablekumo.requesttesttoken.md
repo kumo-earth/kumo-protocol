@@ -6,7 +6,7 @@
 
 Request Test tokens to an address.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 requestTestToken(tokenAddress: string): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
@@ -18,7 +18,7 @@ requestTestToken(tokenAddress: string): Promise<PopulatedKumoTransaction<P, Sent
 |  --- | --- | --- |
 |  tokenAddress | string | Address of test token contract. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[PopulatedKumoTransaction](./lib-base.populatedkumotransaction.md)<!-- -->&lt;P, [SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, void&gt;&gt;&gt;&gt;
 

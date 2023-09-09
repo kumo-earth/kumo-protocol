@@ -6,7 +6,7 @@
 
 Implementation-specific populated transaction object.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly rawPopulatedTransaction: P;

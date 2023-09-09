@@ -6,7 +6,7 @@
 
 Implementation-specific sent transaction object.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly rawSentTransaction: S;

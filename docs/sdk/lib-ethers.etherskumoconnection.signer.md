@@ -6,7 +6,7 @@
 
 Ethers `Signer` used for sending transactions.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly signer?: EthersSigner;

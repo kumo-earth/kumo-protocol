@@ -6,7 +6,7 @@
 
 Stake KUMO to start earning fee revenue or increase existing stake.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 stakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
@@ -19,7 +19,7 @@ stakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<S
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUMO to add to new or existing stake. |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[SentEthersKumoTransaction](./lib-ethers.sentetherskumotransaction.md)<!-- -->&lt;void&gt;&gt;
 

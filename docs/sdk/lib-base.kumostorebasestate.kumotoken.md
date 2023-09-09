@@ -6,7 +6,7 @@
 
 KUSD token address
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 kumoToken: string;

@@ -4,7 +4,7 @@
 
 ## Vault.troveBeforeRedistribution property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly troveBeforeRedistribution: TroveWithPendingRedistribution;

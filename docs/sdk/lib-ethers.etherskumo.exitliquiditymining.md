@@ -6,7 +6,7 @@
 
 Withdraw all staked LP tokens from liquidity mining and claim reward.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<void>;
@@ -18,7 +18,7 @@ exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<void>;
 |  --- | --- | --- |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;void&gt;
 

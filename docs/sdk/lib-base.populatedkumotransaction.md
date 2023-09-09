@@ -6,7 +6,7 @@
 
 A transaction that has been prepared for sending.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface PopulatedKumoTransaction<P = unknown, T extends SentKumoTransaction = SentKumoTransaction> 

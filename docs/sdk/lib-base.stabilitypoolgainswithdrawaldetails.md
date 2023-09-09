@@ -6,7 +6,7 @@
 
 Details of a [withdrawGainsFromStabilityPool()](./lib-base.transactablekumo.withdrawgainsfromstabilitypool.md) transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface StabilityPoolGainsWithdrawalDetails 

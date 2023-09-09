@@ -6,7 +6,7 @@
 
 Total amount of KUMO currently staked.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 totalStakedKUMO: Decimal;

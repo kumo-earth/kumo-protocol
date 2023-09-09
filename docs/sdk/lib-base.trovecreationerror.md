@@ -6,7 +6,7 @@
 
 Describes why a Trove could not be created.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare type TroveCreationError = "missingLiquidationReserve";

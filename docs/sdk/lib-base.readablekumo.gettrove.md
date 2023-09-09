@@ -6,7 +6,7 @@
 
 Get the current state of a Trove.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getTrove(asset: string, address: string): Promise<UserTrove>;
@@ -19,7 +19,7 @@ getTrove(asset: string, address: string): Promise<UserTrove>;
 |  asset | string | Address of the ERC20 Asset |
 |  address | string | Address that owns the Trove. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[UserTrove](./lib-base.usertrove.md)<!-- -->&gt;
 

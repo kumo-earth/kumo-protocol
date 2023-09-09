@@ -4,7 +4,7 @@
 
 ## TransactionFailedError.failedReceipt property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly failedReceipt: T;

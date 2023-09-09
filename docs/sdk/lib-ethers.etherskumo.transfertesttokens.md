@@ -6,7 +6,7 @@
 
 Request Test tokens to an address.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 transferTestTokens(tokenAddress: string, toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
@@ -21,7 +21,7 @@ transferTestTokens(tokenAddress: string, toAddress: string, amount: Decimalish, 
 |  amount | [Decimalish](./lib-base.decimalish.md) |  |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;void&gt;
 

@@ -4,7 +4,7 @@
 
 ## Decimal.prettify() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 prettify(precision?: number): string;
@@ -16,7 +16,7 @@ prettify(precision?: number): string;
 |  --- | --- | --- |
 |  precision | number |  |
 
-<b>Returns:</b>
+**Returns:**
 
 string
 

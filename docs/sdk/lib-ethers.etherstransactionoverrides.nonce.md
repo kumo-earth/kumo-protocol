@@ -4,7 +4,7 @@
 
 ## EthersTransactionOverrides.nonce property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 nonce?: BigNumberish;

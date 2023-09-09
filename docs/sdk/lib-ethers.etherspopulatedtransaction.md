@@ -6,7 +6,7 @@
 
 Alias of Ethers' `PopulatedTransaction` type, which implements [UnsignedTransaction](https://docs.ethers.io/v5/api/utils/transactions/#UnsignedTransaction)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare type EthersPopulatedTransaction = PopulatedTransaction;

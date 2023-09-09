@@ -6,7 +6,7 @@
 
 Stake KUMO to start earning fee revenue or increase existing stake.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 stakeKUMO(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
@@ -18,7 +18,7 @@ stakeKUMO(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, voi
 |  --- | --- | --- |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUMO to add to new or existing stake. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, void&gt;&gt;&gt;
 

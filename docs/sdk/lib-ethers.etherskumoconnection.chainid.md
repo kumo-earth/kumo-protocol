@@ -6,7 +6,7 @@
 
 Chain ID of the connected network.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly chainId: number;

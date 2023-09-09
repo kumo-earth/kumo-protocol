@@ -6,7 +6,7 @@
 
 Send Kumo transactions and wait for them to succeed.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface TransactableKumo 

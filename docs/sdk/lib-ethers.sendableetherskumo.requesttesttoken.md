@@ -6,7 +6,7 @@
 
 Send KUSD tokens to an address.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 requestTestToken(tokenAddress: string, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
@@ -19,7 +19,7 @@ requestTestToken(tokenAddress: string, overrides?: EthersTransactionOverrides): 
 |  tokenAddress | string |  |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[SentEthersKumoTransaction](./lib-ethers.sentetherskumotransaction.md)<!-- -->&lt;void&gt;&gt;
 

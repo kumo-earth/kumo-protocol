@@ -6,12 +6,12 @@
 
 Convenience class that combines multiple interfaces of the library in one object.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class EthersKumo implements ReadableEthersKumo, TransactableKumo 
 ```
-<b>Implements:</b> [ReadableEthersKumo](./lib-ethers.readableetherskumo.md)<!-- -->, [TransactableKumo](./lib-base.transactablekumo.md)
+**Implements:** [ReadableEthersKumo](./lib-ethers.readableetherskumo.md)<!-- -->, [TransactableKumo](./lib-base.transactablekumo.md)
 
 ## Remarks
 

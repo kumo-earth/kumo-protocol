@@ -4,7 +4,7 @@
 
 ## Vault.minNetDebt property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly minNetDebt: Decimal;

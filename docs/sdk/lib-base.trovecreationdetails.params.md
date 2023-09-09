@@ -6,7 +6,7 @@
 
 How much was deposited and borrowed.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 params: TroveCreationParams<Decimal>;

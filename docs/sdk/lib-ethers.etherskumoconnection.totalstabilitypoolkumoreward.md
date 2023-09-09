@@ -6,7 +6,7 @@
 
 Total amount of KUMO allocated for rewarding stability depositors.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly totalStabilityPoolKUMOReward: Decimal;

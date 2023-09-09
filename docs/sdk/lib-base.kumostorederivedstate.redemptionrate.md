@@ -6,7 +6,7 @@
 
 Current redemption rate.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 redemptionRate: Decimal;

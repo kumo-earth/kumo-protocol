@@ -6,7 +6,7 @@
 
 Addresses whose Troves were liquidated by the transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 liquidatedAddresses: string[];

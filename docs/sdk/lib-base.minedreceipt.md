@@ -6,10 +6,10 @@
 
 Either a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](./lib-base.successfulreceipt.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare type MinedReceipt<R = unknown, D = unknown> = FailedReceipt<R> | SuccessfulReceipt<R, D>;
 ```
-<b>References:</b> [FailedReceipt](./lib-base.failedreceipt.md)<!-- -->, [SuccessfulReceipt](./lib-base.successfulreceipt.md)
+**References:** [FailedReceipt](./lib-base.failedreceipt.md)<!-- -->, [SuccessfulReceipt](./lib-base.successfulreceipt.md)
 

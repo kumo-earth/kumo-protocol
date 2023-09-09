@@ -6,12 +6,12 @@
 
 Variant of [EthersKumo](./lib-ethers.etherskumo.md) that exposes a [KumoStore](./lib-base.kumostore.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface EthersKumoWithStore<T extends KumoStore = KumoStore> extends EthersKumo 
 ```
-<b>Extends:</b> [EthersKumo](./lib-ethers.etherskumo.md)
+**Extends:** [EthersKumo](./lib-ethers.etherskumo.md)
 
 ## Properties
 

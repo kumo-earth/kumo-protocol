@@ -6,7 +6,7 @@
 
 Alias of Ethers' abstract [Provider](https://docs.ethers.io/v5/api/providers/) type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare type EthersProvider = Provider;

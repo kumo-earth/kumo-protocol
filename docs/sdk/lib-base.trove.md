@@ -6,7 +6,7 @@
 
 A combination of collateral and debt.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class Trove 

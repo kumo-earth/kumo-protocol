@@ -4,7 +4,7 @@
 
 ## EthersTransactionCancelledError.rawReplacementReceipt property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly rawReplacementReceipt: EthersTransactionReceipt;

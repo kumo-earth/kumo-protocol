@@ -6,7 +6,7 @@
 
 Maximum amount of KUSD that is currently redeemable from `attemptedKUSDAmount`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly redeemableKUSDAmount: Decimal;

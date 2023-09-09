@@ -4,7 +4,7 @@
 
 ## Decimal.ONE property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static readonly ONE: Decimal;

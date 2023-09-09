@@ -6,10 +6,10 @@
 
 Types that can be converted into a Decimal.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare type Decimalish = Decimal | number | string;
 ```
-<b>References:</b> [Decimal](./lib-base.decimal.md)
+**References:** [Decimal](./lib-base.decimal.md)
 

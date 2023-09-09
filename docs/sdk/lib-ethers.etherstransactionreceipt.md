@@ -6,7 +6,7 @@
 
 Alias of Ethers' [TransactionReceipt](https://docs.ethers.io/v5/api/providers/types/#providers-TransactionReceipt) type.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare type EthersTransactionReceipt = TransactionReceipt;

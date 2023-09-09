@@ -6,7 +6,7 @@
 
 Get the liquidity mining contract's allowance of a holder's Uniswap ETH/KUSD LP tokens.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getUniTokenAllowance(address: string): Promise<Decimal>;
@@ -18,7 +18,7 @@ getUniTokenAllowance(address: string): Promise<Decimal>;
 |  --- | --- | --- |
 |  address | string | Address holding the Uniswap ETH/KUSD LP tokens. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt;
 

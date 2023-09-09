@@ -6,7 +6,7 @@
 
 State variables derived from [KumoStoreBaseState](./lib-base.kumostorebasestate.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface KumoStoreDerivedState 

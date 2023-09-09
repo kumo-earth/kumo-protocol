@@ -6,7 +6,7 @@
 
 Get the remaining KUMO that will be collectively rewarded to stability depositors.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getRemainingStabilityPoolKUMOReward(overrides?: EthersCallOverrides): Promise<Decimal>;
@@ -18,7 +18,7 @@ getRemainingStabilityPoolKUMOReward(overrides?: EthersCallOverrides): Promise<De
 |  --- | --- | --- |
 |  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt;
 

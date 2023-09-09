@@ -6,7 +6,7 @@
 
 Allow the liquidity mining contract to use Uniswap ETH/KUSD LP tokens for [staking](./lib-base.transactablekumo.stakeunitokens.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 approveUniTokens(allowance?: Decimalish): Promise<void>;
@@ -18,7 +18,7 @@ approveUniTokens(allowance?: Decimalish): Promise<void>;
 |  --- | --- | --- |
 |  allowance | [Decimalish](./lib-base.decimalish.md) | Maximum amount of LP tokens that will be transferrable to liquidity mining (<code>2^256 - 1</code> by default). |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;void&gt;
 

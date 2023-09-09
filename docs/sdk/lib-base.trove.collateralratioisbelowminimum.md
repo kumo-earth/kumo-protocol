@@ -6,7 +6,7 @@
 
 Whether the Trove is undercollateralized at a given price.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 collateralRatioIsBelowMinimum(price: Decimalish): boolean;
@@ -18,7 +18,7 @@ collateralRatioIsBelowMinimum(price: Decimalish): boolean;
 |  --- | --- | --- |
 |  price | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 boolean
 

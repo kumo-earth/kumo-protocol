@@ -6,7 +6,7 @@
 
 Calculate the difference between this `KUMOStake` and `thatStakedKUMO`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 whatChanged(thatStakedKUMO: Decimalish): KUMOStakeChange<Decimal> | undefined;
@@ -18,7 +18,7 @@ whatChanged(thatStakedKUMO: Decimalish): KUMOStakeChange<Decimal> | undefined;
 |  --- | --- | --- |
 |  thatStakedKUMO | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [KUMOStakeChange](./lib-base.kumostakechange.md)<!-- -->&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt; \| undefined
 

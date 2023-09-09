@@ -6,7 +6,7 @@
 
 Withdraw Uniswap ETH/KUSD LP tokens from liquidity mining.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 unstakeUniTokens(amount: Decimalish): Promise<void>;
@@ -18,7 +18,7 @@ unstakeUniTokens(amount: Decimalish): Promise<void>;
 |  --- | --- | --- |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of LP tokens to withdraw. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;void&gt;
 

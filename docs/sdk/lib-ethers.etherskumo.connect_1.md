@@ -6,7 +6,7 @@
 
 Connect to the Kumo protocol and create an `EthersKumo` object.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static connect(signerOrProvider: EthersSigner | EthersProvider, optionalParams?: EthersKumoConnectionOptionalParams): Promise<EthersKumo>;
@@ -19,7 +19,7 @@ static connect(signerOrProvider: EthersSigner | EthersProvider, optionalParams?:
 |  signerOrProvider | [EthersSigner](./lib-ethers.etherssigner.md) \| [EthersProvider](./lib-ethers.ethersprovider.md) | Ethers <code>Signer</code> or <code>Provider</code> to use for connecting to the Ethereum network. |
 |  optionalParams | [EthersKumoConnectionOptionalParams](./lib-ethers.etherskumoconnectionoptionalparams.md) | Optional parameters that can be used to customize the connection. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[EthersKumo](./lib-ethers.etherskumo.md)<!-- -->&gt;
 

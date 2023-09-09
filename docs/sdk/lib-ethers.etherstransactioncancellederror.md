@@ -6,12 +6,12 @@
 
 Thrown when a transaction is cancelled or replaced by a different transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class EthersTransactionCancelledError extends Error 
 ```
-<b>Extends:</b> Error
+**Extends:** Error
 
 ## Remarks
 

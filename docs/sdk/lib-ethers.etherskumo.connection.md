@@ -6,7 +6,7 @@
 
 Information about the connection to the Kumo protocol.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly connection: EthersKumoConnection;

@@ -6,7 +6,7 @@
 
 Fixed-point decimal bignumber with 18 digits of precision.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class Decimal 

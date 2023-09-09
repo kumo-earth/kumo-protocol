@@ -6,7 +6,7 @@
 
 Collateral ratio below which a Trove can be liquidated in normal mode.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 MINIMUM_COLLATERAL_RATIO: Decimal

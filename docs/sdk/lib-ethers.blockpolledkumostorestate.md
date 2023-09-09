@@ -6,10 +6,10 @@
 
 The type of [BlockPolledKumoStore](./lib-ethers.blockpolledkumostore.md)<!-- -->'s [state](./lib-base.kumostore.state.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare type BlockPolledKumoStoreState = KumoStoreState<BlockPolledKumoStoreExtraState>;
 ```
-<b>References:</b> [KumoStoreState](./lib-base.kumostorestate.md)<!-- -->, [BlockPolledKumoStoreExtraState](./lib-ethers.blockpolledkumostoreextrastate.md)
+**References:** [KumoStoreState](./lib-base.kumostorestate.md)<!-- -->, [BlockPolledKumoStoreExtraState](./lib-ethers.blockpolledkumostoreextrastate.md)
 

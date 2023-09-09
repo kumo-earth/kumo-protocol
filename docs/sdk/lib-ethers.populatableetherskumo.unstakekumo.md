@@ -6,7 +6,7 @@
 
 Withdraw KUMO from staking.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 unstakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
@@ -19,7 +19,7 @@ unstakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUMO to withdraw. |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[PopulatedEthersKumoTransaction](./lib-ethers.populatedetherskumotransaction.md)<!-- -->&lt;void&gt;&gt;
 

@@ -6,12 +6,12 @@
 
 Information about a connection to the Kumo protocol.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface EthersKumoConnection extends EthersKumoConnectionOptionalParams 
 ```
-<b>Extends:</b> [EthersKumoConnectionOptionalParams](./lib-ethers.etherskumoconnectionoptionalparams.md)
+**Extends:** [EthersKumoConnectionOptionalParams](./lib-ethers.etherskumoconnectionoptionalparams.md)
 
 ## Remarks
 
@@ -29,7 +29,7 @@ Exposed through [ReadableEthersKumo.connection](./lib-ethers.readableetherskumo.
 |  [deploymentDate](./lib-ethers.etherskumoconnection.deploymentdate.md) |  | Date | Date when the Kumo contracts were deployed. |
 |  [liquidityMiningKUMORewardRate](./lib-ethers.etherskumoconnection.liquidityminingkumorewardrate.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUMO collectively rewarded to stakers of the liquidity mining pool per second. |
 |  [provider](./lib-ethers.etherskumoconnection.provider.md) |  | [EthersProvider](./lib-ethers.ethersprovider.md) | Ethers <code>Provider</code> used for connecting to the network. |
-|  [signer?](./lib-ethers.etherskumoconnection.signer.md) |  | [EthersSigner](./lib-ethers.etherssigner.md) | <i>(Optional)</i> Ethers <code>Signer</code> used for sending transactions. |
+|  [signer?](./lib-ethers.etherskumoconnection.signer.md) |  | [EthersSigner](./lib-ethers.etherssigner.md) | _(Optional)_ Ethers <code>Signer</code> used for sending transactions. |
 |  [startBlock](./lib-ethers.etherskumoconnection.startblock.md) |  | number | Number of block in which the first Kumo contract was deployed. |
 |  [totalStabilityPoolKUMOReward](./lib-ethers.etherskumoconnection.totalstabilitypoolkumoreward.md) |  | [Decimal](./lib-base.decimal.md) | Total amount of KUMO allocated for rewarding stability depositors. |
 |  [version](./lib-ethers.etherskumoconnection.version.md) |  | string | Version of the Kumo contracts (Git commit hash). |

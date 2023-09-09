@@ -6,7 +6,7 @@
 
 Custom Vault Array for each Asset type
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 vaults: Vault[];

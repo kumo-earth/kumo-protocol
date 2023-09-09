@@ -6,12 +6,12 @@
 
 Get the total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getTotalStakedUniTokens(): Promise<Decimal>;
 ```
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt;
 

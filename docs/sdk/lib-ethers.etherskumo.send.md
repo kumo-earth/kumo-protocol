@@ -6,7 +6,7 @@
 
 Can be used to send transactions without waiting for them to be mined.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly send: SendableEthersKumo;

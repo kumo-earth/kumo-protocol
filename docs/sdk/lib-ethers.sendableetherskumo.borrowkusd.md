@@ -6,7 +6,7 @@
 
 Adjust existing Trove by borrowing more KUSD.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 borrowKUSD(asset: string, amount: Decimalish, maxBorrowingRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<TroveAdjustmentDetails>>;
@@ -21,7 +21,7 @@ borrowKUSD(asset: string, amount: Decimalish, maxBorrowingRate?: Decimalish, ove
 |  maxBorrowingRate | [Decimalish](./lib-base.decimalish.md) | Maximum acceptable [borrowing rate](./lib-base.fees.borrowingrate.md)<!-- -->. |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[SentEthersKumoTransaction](./lib-ethers.sentetherskumotransaction.md)<!-- -->&lt;[TroveAdjustmentDetails](./lib-base.troveadjustmentdetails.md)<!-- -->&gt;&gt;
 

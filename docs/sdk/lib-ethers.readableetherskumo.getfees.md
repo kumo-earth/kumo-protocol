@@ -6,7 +6,7 @@
 
 Get a calculator for current fees.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getFees(asset: string, overrides?: EthersCallOverrides): Promise<Fees>;
@@ -19,7 +19,7 @@ getFees(asset: string, overrides?: EthersCallOverrides): Promise<Fees>;
 |  asset | string |  |
 |  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[Fees](./lib-base.fees.md)<!-- -->&gt;
 

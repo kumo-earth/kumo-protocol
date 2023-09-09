@@ -6,7 +6,7 @@
 
 Represents the change between two Stability Deposit states.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare type StabilityDepositChange<T> = {

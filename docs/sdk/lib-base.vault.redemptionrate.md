@@ -4,7 +4,7 @@
 
 ## Vault.redemptionRate property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly redemptionRate: Decimal;

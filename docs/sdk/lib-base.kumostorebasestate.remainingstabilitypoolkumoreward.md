@@ -6,7 +6,7 @@
 
 Remaining KUMO that will be collectively rewarded to stability depositors.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 remainingStabilityPoolKUMOReward: Decimal;

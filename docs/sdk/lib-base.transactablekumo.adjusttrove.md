@@ -6,7 +6,7 @@
 
 Adjust existing Trove by changing its collateral, debt, or both.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 adjustTrove(params: TroveAdjustmentParams<Decimalish>, asset: string, maxBorrowingRate?: Decimalish): Promise<TroveAdjustmentDetails>;
@@ -20,7 +20,7 @@ adjustTrove(params: TroveAdjustmentParams<Decimalish>, asset: string, maxBorrowi
 |  asset | string |  |
 |  maxBorrowingRate | [Decimalish](./lib-base.decimalish.md) | Maximum acceptable [borrowing rate](./lib-base.fees.borrowingrate.md) if <code>params</code> includes <code>borrowKUSD</code>. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[TroveAdjustmentDetails](./lib-base.troveadjustmentdetails.md)<!-- -->&gt;
 

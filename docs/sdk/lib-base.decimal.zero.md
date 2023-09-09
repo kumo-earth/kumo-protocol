@@ -4,7 +4,7 @@
 
 ## Decimal.ZERO property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static readonly ZERO: Decimal;

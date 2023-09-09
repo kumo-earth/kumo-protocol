@@ -6,7 +6,7 @@
 
 Parameters passed to [KumoStore](./lib-base.kumostore.md) listeners.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface KumoStoreListenerParams<T = unknown> 

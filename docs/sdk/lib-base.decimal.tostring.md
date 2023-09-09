@@ -4,7 +4,7 @@
 
 ## Decimal.toString() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 toString(precision?: number): string;
@@ -16,7 +16,7 @@ toString(precision?: number): string;
 |  --- | --- | --- |
 |  precision | number |  |
 
-<b>Returns:</b>
+**Returns:**
 
 string
 

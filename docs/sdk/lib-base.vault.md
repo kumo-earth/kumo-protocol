@@ -6,7 +6,7 @@
 
 A Vault that is associated with each asset.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class Vault 

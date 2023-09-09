@@ -6,7 +6,7 @@
 
 Apply a [KUMOStakeChange](./lib-base.kumostakechange.md) to this `KUMOStake`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 apply(change: KUMOStakeChange<Decimalish> | undefined): Decimal;
@@ -18,7 +18,7 @@ apply(change: KUMOStakeChange<Decimalish> | undefined): Decimal;
 |  --- | --- | --- |
 |  change | [KUMOStakeChange](./lib-base.kumostakechange.md)<!-- -->&lt;[Decimalish](./lib-base.decimalish.md)<!-- -->&gt; \| undefined |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Decimal](./lib-base.decimal.md)
 

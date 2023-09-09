@@ -6,7 +6,7 @@
 
 Maximum acceptable [borrowing rate](./lib-base.fees.borrowingrate.md) (default: current borrowing rate plus 0.5%).
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 maxBorrowingRate?: Decimalish;

@@ -6,7 +6,7 @@
 
 A Stability Deposit and its accrued gains.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class StabilityDeposit 

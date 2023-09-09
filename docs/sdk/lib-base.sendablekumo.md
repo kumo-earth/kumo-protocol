@@ -6,12 +6,12 @@
 
 Send Kumo transactions.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface SendableKumo<R = unknown, S = unknown> extends _SendableFrom<TransactableKumo, R, S> 
 ```
-<b>Extends:</b> \_SendableFrom&lt;[TransactableKumo](./lib-base.transactablekumo.md)<!-- -->, R, S&gt;
+**Extends:** \_SendableFrom&lt;[TransactableKumo](./lib-base.transactablekumo.md)<!-- -->, R, S&gt;
 
 ## Remarks
 

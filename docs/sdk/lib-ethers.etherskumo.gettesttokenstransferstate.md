@@ -6,7 +6,7 @@
 
 Check whether an Test Tokens already transfered or not.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getTestTokensTransferState(assetAddress: string, userAddress: string, overrides?: EthersCallOverrides): Promise<boolean>;
@@ -20,7 +20,7 @@ getTestTokensTransferState(assetAddress: string, userAddress: string, overrides?
 |  userAddress | string |  |
 |  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;boolean&gt;
 

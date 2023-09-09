@@ -4,7 +4,7 @@
 
 ## Trove.subtractDebt() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 subtractDebt(debt: Decimalish): Trove;
@@ -16,7 +16,7 @@ subtractDebt(debt: Decimalish): Trove;
 |  --- | --- | --- |
 |  debt | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Trove](./lib-base.trove.md)
 

@@ -4,7 +4,7 @@
 
 ## Vault.testTokensTransfered property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly testTokensTransfered: boolean;

@@ -6,7 +6,7 @@
 
 Send KUMO tokens to an address.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 sendKUMO(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
@@ -20,7 +20,7 @@ sendKUMO(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOve
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUMO to send. |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[SentEthersKumoTransaction](./lib-ethers.sentetherskumotransaction.md)<!-- -->&lt;void&gt;&gt;
 

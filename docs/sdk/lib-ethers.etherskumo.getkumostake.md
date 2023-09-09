@@ -6,7 +6,7 @@
 
 Get the current state of an KUMO Stake.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getKUMOStake(asset: string, address: string, overrides?: EthersCallOverrides): Promise<KUMOStake>;
@@ -20,7 +20,7 @@ getKUMOStake(asset: string, address: string, overrides?: EthersCallOverrides): P
 |  address | string | Address that owns the KUMO Stake. |
 |  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[KUMOStake](./lib-base.kumostake.md)<!-- -->&gt;
 

@@ -6,7 +6,7 @@
 
 Compare to another instance of `KUMOStake`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 equals(that: KUMOStake): boolean;
@@ -18,7 +18,7 @@ equals(that: KUMOStake): boolean;
 |  --- | --- | --- |
 |  that | [KUMOStake](./lib-base.kumostake.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 boolean
 

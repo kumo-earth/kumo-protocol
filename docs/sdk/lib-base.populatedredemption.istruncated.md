@@ -6,7 +6,7 @@
 
 Whether `redeemableKUSDAmount` is less than `attemptedKUSDAmount`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly isTruncated: boolean;

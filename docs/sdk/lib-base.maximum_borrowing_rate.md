@@ -6,7 +6,7 @@
 
 Value that the [borrowing rate](./lib-base.fees.borrowingrate.md) will never exceed.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 MAXIMUM_BORROWING_RATE: Decimal

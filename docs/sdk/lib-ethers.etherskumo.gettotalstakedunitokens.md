@@ -6,7 +6,7 @@
 
 Get the total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getTotalStakedUniTokens(overrides?: EthersCallOverrides): Promise<Decimal>;
@@ -18,7 +18,7 @@ getTotalStakedUniTokens(overrides?: EthersCallOverrides): Promise<Decimal>;
 |  --- | --- | --- |
 |  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt;
 

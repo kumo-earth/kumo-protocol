@@ -4,7 +4,7 @@
 
 ## Vault.haveUndercollateralizedTroves property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly haveUndercollateralizedTroves: boolean;

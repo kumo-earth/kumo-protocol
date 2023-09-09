@@ -4,7 +4,7 @@
 
 ## Vault.price property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly price: Decimal;

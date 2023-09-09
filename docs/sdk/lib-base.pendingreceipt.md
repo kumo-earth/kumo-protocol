@@ -6,7 +6,7 @@
 
 Indicates that the transaction hasn't been mined yet.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare type PendingReceipt = {

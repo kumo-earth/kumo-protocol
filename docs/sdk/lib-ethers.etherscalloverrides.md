@@ -6,7 +6,7 @@
 
 Optional parameters taken by [ReadableEthersKumo](./lib-ethers.readableetherskumo.md) functions.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface EthersCallOverrides 
@@ -16,5 +16,5 @@ export interface EthersCallOverrides
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [blockTag?](./lib-ethers.etherscalloverrides.blocktag.md) |  | BlockTag | <i>(Optional)</i> |
+|  [blockTag?](./lib-ethers.etherscalloverrides.blocktag.md) |  | BlockTag | _(Optional)_ |
 

@@ -6,7 +6,7 @@
 
 Send KUMO tokens to an address.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 sendKUMO(toAddress: string, amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
@@ -19,7 +19,7 @@ sendKUMO(toAddress: string, amount: Decimalish): Promise<SentKumoTransaction<S, 
 |  toAddress | string | Address of receipient. |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUMO to send. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, void&gt;&gt;&gt;
 

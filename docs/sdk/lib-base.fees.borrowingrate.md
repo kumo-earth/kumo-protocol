@@ -6,7 +6,7 @@
 
 Calculate the current borrowing rate.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 borrowingRate(when?: Date): Decimal;
@@ -18,7 +18,7 @@ borrowingRate(when?: Date): Decimal;
 |  --- | --- | --- |
 |  when | Date | Optional timestamp that can be used to calculate what the borrowing rate would decay to at a point of time in the future. |
 
-<b>Returns:</b>
+**Returns:**
 
 [Decimal](./lib-base.decimal.md)
 

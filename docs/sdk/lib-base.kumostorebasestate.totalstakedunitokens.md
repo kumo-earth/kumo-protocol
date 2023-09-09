@@ -6,7 +6,7 @@
 
 Total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 totalStakedUniTokens: Decimal;

@@ -6,7 +6,7 @@
 
 The amount of KUMO that's staked.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly stakedKUMO: Decimal;

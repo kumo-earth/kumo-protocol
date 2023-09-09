@@ -6,12 +6,12 @@
 
 A transaction that has already been sent.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class SentEthersKumoTransaction<T = unknown> implements SentKumoTransaction<EthersTransactionResponse, KumoReceipt<EthersTransactionReceipt, T>> 
 ```
-<b>Implements:</b> [SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;[EthersTransactionResponse](./lib-ethers.etherstransactionresponse.md)<!-- -->, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;[EthersTransactionReceipt](./lib-ethers.etherstransactionreceipt.md)<!-- -->, T&gt;&gt;
+**Implements:** [SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;[EthersTransactionResponse](./lib-ethers.etherstransactionresponse.md)<!-- -->, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;[EthersTransactionReceipt](./lib-ethers.etherstransactionreceipt.md)<!-- -->, T&gt;&gt;
 
 ## Remarks
 

@@ -6,7 +6,7 @@
 
 Withdraw [collateral gain](./lib-base.kumostake.collateralgain.md) and [KUSD gain](./lib-base.kumostake.kusdgain.md) from KUMO stake.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 withdrawGainsFromStaking(overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
@@ -18,7 +18,7 @@ withdrawGainsFromStaking(overrides?: EthersTransactionOverrides): Promise<SentEt
 |  --- | --- | --- |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[SentEthersKumoTransaction](./lib-ethers.sentetherskumotransaction.md)<!-- -->&lt;void&gt;&gt;
 

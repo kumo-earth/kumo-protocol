@@ -4,7 +4,7 @@
 
 ## Vault.borrowingRate property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly borrowingRate: Decimal;

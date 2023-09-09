@@ -6,7 +6,7 @@
 
 Read the state of the Kumo protocol.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface ReadableKumo 

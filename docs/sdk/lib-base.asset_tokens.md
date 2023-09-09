@@ -6,7 +6,7 @@
 
 Assets Types
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 ASSET_TOKENS: ASSET_TOKENS_TYPES<AssetType>

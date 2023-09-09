@@ -6,7 +6,7 @@
 
 Represents the change between two states of an KUMO Stake.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare type KUMOStakeChange<T> = {

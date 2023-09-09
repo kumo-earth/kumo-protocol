@@ -6,7 +6,7 @@
 
 The Trove that was created by the transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 newTrove: Trove;

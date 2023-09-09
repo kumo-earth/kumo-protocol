@@ -6,7 +6,7 @@
 
 Provides more information when the UserTrove is empty.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly status: UserTroveStatus;

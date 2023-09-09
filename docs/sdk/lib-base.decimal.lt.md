@@ -4,7 +4,7 @@
 
 ## Decimal.lt() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 lt(that: Decimalish): boolean;
@@ -16,7 +16,7 @@ lt(that: Decimalish): boolean;
 |  --- | --- | --- |
 |  that | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 boolean
 

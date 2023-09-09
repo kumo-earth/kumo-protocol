@@ -6,12 +6,12 @@
 
 Withdraw all staked LP tokens from liquidity mining and claim reward.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 exitLiquidityMining(): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
 ```
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, void&gt;&gt;&gt;
 

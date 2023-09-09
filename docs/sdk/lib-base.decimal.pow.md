@@ -4,7 +4,7 @@
 
 ## Decimal.pow() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 pow(exponent: number): Decimal;
@@ -16,7 +16,7 @@ pow(exponent: number): Decimal;
 |  --- | --- | --- |
 |  exponent | number |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Decimal](./lib-base.decimal.md)
 

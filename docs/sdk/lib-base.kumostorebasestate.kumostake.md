@@ -6,7 +6,7 @@
 
 User's KUMO stake.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 kumoStake: KUMOStake;

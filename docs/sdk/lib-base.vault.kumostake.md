@@ -4,7 +4,7 @@
 
 ## Vault.kumoStake property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly kumoStake: KUMOStake;

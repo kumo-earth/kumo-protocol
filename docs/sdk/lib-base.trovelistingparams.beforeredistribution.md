@@ -6,7 +6,7 @@
 
 When set to `true`<!-- -->, the retrieved Troves won't include the liquidation shares received since the last time they were directly modified.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly beforeRedistribution?: boolean;

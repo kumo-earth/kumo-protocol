@@ -4,7 +4,7 @@
 
 ## EthersTransactionOverrides.gasPrice property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 gasPrice?: BigNumberish;

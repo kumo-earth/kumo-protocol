@@ -6,12 +6,12 @@
 
 Ethers-based implementation of [ReadableKumo](./lib-base.readablekumo.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class ReadableEthersKumo implements ReadableKumo 
 ```
-<b>Implements:</b> [ReadableKumo](./lib-base.readablekumo.md)
+**Implements:** [ReadableKumo](./lib-base.readablekumo.md)
 
 ## Remarks
 

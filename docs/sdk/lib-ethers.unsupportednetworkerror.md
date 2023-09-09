@@ -6,12 +6,12 @@
 
 Thrown when trying to connect to a network where Kumo is not deployed.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class UnsupportedNetworkError extends Error 
 ```
-<b>Extends:</b> Error
+**Extends:** Error
 
 ## Remarks
 

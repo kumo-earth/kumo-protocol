@@ -6,12 +6,12 @@
 
 A Trove that is associated with a single owner.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class UserTrove extends Trove 
 ```
-<b>Extends:</b> [Trove](./lib-base.trove.md)
+**Extends:** [Trove](./lib-base.trove.md)
 
 ## Remarks
 

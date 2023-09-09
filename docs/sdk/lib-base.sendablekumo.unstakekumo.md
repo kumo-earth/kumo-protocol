@@ -6,7 +6,7 @@
 
 Withdraw KUMO from staking.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 unstakeKUMO(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
@@ -18,7 +18,7 @@ unstakeKUMO(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, v
 |  --- | --- | --- |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUMO to withdraw. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, void&gt;&gt;&gt;
 

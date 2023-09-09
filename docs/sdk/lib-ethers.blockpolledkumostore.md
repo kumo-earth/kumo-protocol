@@ -6,12 +6,12 @@
 
 Ethers-based [KumoStore](./lib-base.kumostore.md) that updates state whenever there's a new block.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraState> 
 ```
-<b>Extends:</b> [KumoStore](./lib-base.kumostore.md)<!-- -->&lt;[BlockPolledKumoStoreExtraState](./lib-ethers.blockpolledkumostoreextrastate.md)<!-- -->&gt;
+**Extends:** [KumoStore](./lib-base.kumostore.md)<!-- -->&lt;[BlockPolledKumoStoreExtraState](./lib-ethers.blockpolledkumostoreextrastate.md)<!-- -->&gt;
 
 ## Constructors
 

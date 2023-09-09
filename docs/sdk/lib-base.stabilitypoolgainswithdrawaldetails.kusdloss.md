@@ -6,7 +6,7 @@
 
 Amount of KUSD burned from the deposit by liquidations since the last modification.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 kusdLoss: Decimal;

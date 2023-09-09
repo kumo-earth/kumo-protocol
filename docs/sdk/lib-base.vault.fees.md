@@ -4,7 +4,7 @@
 
 ## Vault.fees property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly fees: Fees;

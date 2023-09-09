@@ -6,7 +6,7 @@
 
 A transaction that has already been sent.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface SentKumoTransaction<S = unknown, T extends KumoReceipt = KumoReceipt> 

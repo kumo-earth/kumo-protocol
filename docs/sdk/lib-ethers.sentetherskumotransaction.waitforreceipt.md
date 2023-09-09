@@ -6,12 +6,12 @@
 
 Wait for the transaction to be mined, and check whether it was successful.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 waitForReceipt(): Promise<MinedReceipt<EthersTransactionReceipt, T>>;
 ```
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[MinedReceipt](./lib-base.minedreceipt.md)<!-- -->&lt;[EthersTransactionReceipt](./lib-ethers.etherstransactionreceipt.md)<!-- -->, T&gt;&gt;
 

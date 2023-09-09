@@ -6,7 +6,7 @@
 
 Adjust existing Trove by withdrawing some of its collateral.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 withdrawCollateral(asset: string, amount: Decimalish): Promise<TroveAdjustmentDetails>;
@@ -19,7 +19,7 @@ withdrawCollateral(asset: string, amount: Decimalish): Promise<TroveAdjustmentDe
 |  asset | string |  |
 |  amount | [Decimalish](./lib-base.decimalish.md) | The amount of collateral to withdraw from the Trove. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[TroveAdjustmentDetails](./lib-base.troveadjustmentdetails.md)<!-- -->&gt;
 

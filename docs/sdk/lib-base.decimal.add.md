@@ -4,7 +4,7 @@
 
 ## Decimal.add() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 add(addend: Decimalish): Decimal;
@@ -16,7 +16,7 @@ add(addend: Decimalish): Decimal;
 |  --- | --- | --- |
 |  addend | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Decimal](./lib-base.decimal.md)
 

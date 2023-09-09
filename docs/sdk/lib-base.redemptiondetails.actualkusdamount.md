@@ -6,7 +6,7 @@
 
 Amount of KUSD that was actually redeemed by the transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 actualKUSDAmount: Decimal;

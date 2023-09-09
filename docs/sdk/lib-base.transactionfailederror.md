@@ -6,12 +6,12 @@
 
 Thrown by [TransactableKumo](./lib-base.transactablekumo.md) functions in case of transaction failure.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class TransactionFailedError<T extends FailedReceipt = FailedReceipt> extends Error 
 ```
-<b>Extends:</b> Error
+**Extends:** Error
 
 ## Remarks
 

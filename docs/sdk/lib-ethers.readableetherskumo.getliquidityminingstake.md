@@ -6,7 +6,7 @@
 
 Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in liquidity mining.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getLiquidityMiningStake(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
@@ -19,7 +19,7 @@ getLiquidityMiningStake(address?: string, overrides?: EthersCallOverrides): Prom
 |  address | string | Address whose LP stake should be retrieved. |
 |  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt;
 

@@ -6,7 +6,7 @@
 
 Total collateral ratio below which recovery mode is triggered.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 CRITICAL_COLLATERAL_RATIO: Decimal

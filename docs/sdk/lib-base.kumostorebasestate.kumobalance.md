@@ -6,7 +6,7 @@
 
 User's KUMO token balance.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 kumoBalance: Decimal;

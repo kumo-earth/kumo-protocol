@@ -6,12 +6,12 @@
 
 Ethers-based implementation of [SendableKumo](./lib-base.sendablekumo.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class SendableEthersKumo implements SendableKumo<EthersTransactionReceipt, EthersTransactionResponse> 
 ```
-<b>Implements:</b> [SendableKumo](./lib-base.sendablekumo.md)<!-- -->&lt;[EthersTransactionReceipt](./lib-ethers.etherstransactionreceipt.md)<!-- -->, [EthersTransactionResponse](./lib-ethers.etherstransactionresponse.md)<!-- -->&gt;
+**Implements:** [SendableKumo](./lib-base.sendablekumo.md)<!-- -->&lt;[EthersTransactionReceipt](./lib-ethers.etherstransactionreceipt.md)<!-- -->, [EthersTransactionResponse](./lib-ethers.etherstransactionresponse.md)<!-- -->&gt;
 
 ## Constructors
 

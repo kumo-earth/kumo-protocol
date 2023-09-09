@@ -6,7 +6,7 @@
 
 Request Test tokens to an address.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 requestTestToken(tokenAddress: string, overrides?: EthersTransactionOverrides): Promise<void>;
@@ -19,7 +19,7 @@ requestTestToken(tokenAddress: string, overrides?: EthersTransactionOverrides): 
 |  tokenAddress | string | Address of test token contract. |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;void&gt;
 

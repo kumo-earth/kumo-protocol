@@ -4,7 +4,7 @@
 
 ## Vault.\_riskiestTroveBeforeRedistribution property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly _riskiestTroveBeforeRedistribution: TroveWithPendingRedistribution;

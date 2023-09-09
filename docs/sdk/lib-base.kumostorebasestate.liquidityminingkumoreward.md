@@ -6,7 +6,7 @@
 
 Amount of KUMO the user has earned through mining liquidity.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 liquidityMiningKUMOReward: Decimal;

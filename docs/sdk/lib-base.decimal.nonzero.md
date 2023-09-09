@@ -4,7 +4,7 @@
 
 ## Decimal.nonZero property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 get nonZero(): this | undefined;

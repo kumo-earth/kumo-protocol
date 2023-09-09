@@ -6,7 +6,7 @@
 
 Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in liquidity mining.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getLiquidityMiningStake(address: string): Promise<Decimal>;
@@ -18,7 +18,7 @@ getLiquidityMiningStake(address: string): Promise<Decimal>;
 |  --- | --- | --- |
 |  address | string | Address whose LP stake should be retrieved. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt;
 

@@ -6,7 +6,7 @@
 
 State variables read from the blockchain.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface KumoStoreBaseState 

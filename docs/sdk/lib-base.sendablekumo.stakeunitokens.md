@@ -6,7 +6,7 @@
 
 Stake Uniswap ETH/KUSD LP tokens to participate in liquidity mining and earn KUMO.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 stakeUniTokens(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
@@ -18,7 +18,7 @@ stakeUniTokens(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R
 |  --- | --- | --- |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of LP tokens to add to new or existing stake. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, void&gt;&gt;&gt;
 

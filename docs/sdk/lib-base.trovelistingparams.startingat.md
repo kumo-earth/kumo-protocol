@@ -6,7 +6,7 @@
 
 Index of the first Trove to retrieve from the sorted list.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly startingAt?: number;

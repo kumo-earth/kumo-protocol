@@ -6,7 +6,7 @@
 
 Get the current state of a Trove.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getTrove(asset: string, address?: string, overrides?: EthersCallOverrides): Promise<UserTrove>;
@@ -20,7 +20,7 @@ getTrove(asset: string, address?: string, overrides?: EthersCallOverrides): Prom
 |  address | string | Address that owns the Trove. |
 |  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[UserTrove](./lib-base.usertrove.md)<!-- -->&gt;
 

@@ -6,7 +6,7 @@
 
 Calculate the result of an [openTrove()](./lib-base.transactablekumo.opentrove.md) transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static create(params: TroveCreationParams<Decimalish>, borrowingRate?: Decimalish): Trove;
@@ -19,7 +19,7 @@ static create(params: TroveCreationParams<Decimalish>, borrowingRate?: Decimalis
 |  params | [TroveCreationParams](./lib-base.trovecreationparams.md)<!-- -->&lt;[Decimalish](./lib-base.decimalish.md)<!-- -->&gt; | Parameters of the transaction. |
 |  borrowingRate | [Decimalish](./lib-base.decimalish.md) | Borrowing rate to use when calculating the Trove's debt. |
 
-<b>Returns:</b>
+**Returns:**
 
 [Trove](./lib-base.trove.md)
 

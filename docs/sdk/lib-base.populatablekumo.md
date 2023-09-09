@@ -6,12 +6,12 @@
 
 Prepare Kumo transactions for sending.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface PopulatableKumo<R = unknown, S = unknown, P = unknown> extends _PopulatableFrom<SendableKumo<R, S>, P> 
 ```
-<b>Extends:</b> \_PopulatableFrom&lt;[SendableKumo](./lib-base.sendablekumo.md)<!-- -->&lt;R, S&gt;, P&gt;
+**Extends:** \_PopulatableFrom&lt;[SendableKumo](./lib-base.sendablekumo.md)<!-- -->&lt;R, S&gt;, P&gt;
 
 ## Remarks
 

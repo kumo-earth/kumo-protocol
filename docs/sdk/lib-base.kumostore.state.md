@@ -6,7 +6,7 @@
 
 The current store state.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 get state(): KumoStoreState<T>;

@@ -4,7 +4,7 @@
 
 ## Vault.collateralSurplusBalance property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly collateralSurplusBalance: Decimal;

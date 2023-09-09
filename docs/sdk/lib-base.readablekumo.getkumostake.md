@@ -6,7 +6,7 @@
 
 Get the current state of an KUMO Stake.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getKUMOStake(asset: string, address: string): Promise<KUMOStake>;
@@ -19,7 +19,7 @@ getKUMOStake(asset: string, address: string): Promise<KUMOStake>;
 |  asset | string |  |
 |  address | string | Address that owns the KUMO Stake. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[KUMOStake](./lib-base.kumostake.md)<!-- -->&gt;
 
