@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.11;
+pragma solidity 0.8.15;
 
 import {LibDiamond} from "../Libraries/LibDiamond.sol";
 import {IERC173} from "../Interfaces/IERC173.sol";
