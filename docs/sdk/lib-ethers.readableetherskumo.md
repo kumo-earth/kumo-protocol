@@ -31,7 +31,6 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [getAssetBalance(address, asset, provider, overrides)](./lib-ethers.readableetherskumo.getassetbalance.md) |  |  |
 |  [getCollateralSurplusBalance(asset, address, overrides)](./lib-ethers.readableetherskumo.getcollateralsurplusbalance.md) |  | Get the amount of leftover collateral available for withdrawal by an address. |
 |  [getFees(asset, overrides)](./lib-ethers.readableetherskumo.getfees.md) |  | Get a calculator for current fees. |
-|  [getFrontendStatus(assetName, address, overrides)](./lib-ethers.readableetherskumo.getfrontendstatus.md) |  | Check whether an address is registered as a Kumo frontend, and what its kickback rate is. |
 |  [getKUMOBalance(address, overrides)](./lib-ethers.readableetherskumo.getkumobalance.md) |  | Get the amount of KUMO held by an address. |
 |  [getKUMOStake(asset, address, overrides)](./lib-ethers.readableetherskumo.getkumostake.md) |  | Get the current state of an KUMO Stake. |
 |  [getKUSDBalance(address, overrides)](./lib-ethers.readableetherskumo.getkusdbalance.md) |  | Get the amount of KUSD held by an address. |

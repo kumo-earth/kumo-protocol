@@ -6,21 +6,6 @@ import { Fees } from "./Fees";
 import { KUMOStake } from "./KUMOStake";
 
 /**
- * Represents whether an address has been registered as a Kumo frontend.
- *
- * @remarks
- * Returned by the {@link ReadableKumo.getFrontendStatus | getFrontendStatus()} function.
- *
- * When `status` is `"registered"`, `kickbackRate` gives the frontend's kickback rate as a
- * {@link Decimal} between 0 and 1.
- *
- * @public
- */
-export type FrontendStatus =
-  | { status: "unregistered" }
-  | { status: "registered"; kickbackRate: Decimal };
-
-/**
  * Parameters of the {@link ReadableKumo.(getTroves:2) | getTroves()} function.
  *
  * @public
@@ -217,14 +202,6 @@ export interface ReadableKumo {
    * Get the total amount of KUMO currently staked.
    */
   getTotalStakedKUMO(): Promise<Decimal>;
-
-  /**
-   * Check whether an address is registered as a Kumo frontend, and what its kickback rate is.
-   *
-   * @param address - Address to check.
-   */
-  getFrontendStatus(asset: string, address: string): Promise<FrontendStatus>;
-
 
   /**
    * Check whether an Test Tokens already transfered or not.

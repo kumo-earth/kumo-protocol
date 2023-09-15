@@ -1,14 +1,9 @@
-import { AddressZero } from "@ethersproject/constants";
-import { isAddress, getAddress } from "@ethersproject/address";
-
 export type KumoFrontendConfig = {
-  frontendTag: string;
   alchemyApiKey?: string;
   testnetOnly?: boolean;
 };
 
 const defaultConfig: KumoFrontendConfig = {
-  frontendTag: AddressZero,
   alchemyApiKey: process.env.REACT_APP_ALCHEMY_API
 };
 
@@ -20,17 +15,6 @@ const parseConfig = (json: unknown): KumoFrontendConfig => {
   const config = { ...defaultConfig };
 
   if (typeof json === "object" && json !== null) {
-    if (hasKey(json, "frontendTag") && json.frontendTag !== "") {
-      const { frontendTag } = json;
-
-      if (typeof frontendTag === "string" && isAddress(frontendTag)) {
-        config.frontendTag = getAddress(frontendTag);
-      } else {
-        console.error("Malformed frontendTag:");
-        console.log(frontendTag);
-      }
-    }
-
     if (hasKey(json, "alchemyApiKey") && json.alchemyApiKey !== "") {
       const { alchemyApiKey } = json;
 

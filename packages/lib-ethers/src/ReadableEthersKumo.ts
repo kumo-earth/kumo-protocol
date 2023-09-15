@@ -7,7 +7,6 @@ import { BlockTag } from "@ethersproject/abstract-provider";
 import {
   Decimal,
   Fees,
-  FrontendStatus,
   KumoStore,
   KUMOStake,
   ReadableKumo,
@@ -32,7 +31,6 @@ import {
   _getBlockTimestamp,
   _getContracts,
   _requireAddress,
-  _requireFrontendAddress,
   _getStabilityPoolByAsset
 } from "./EthersKumoConnection";
 
@@ -264,7 +262,7 @@ export class ReadableEthersKumo implements ReadableKumo {
     address ??= _requireAddress(this.connection);
     const stabilityPool = _getStabilityPoolByAsset(assetName, this.connection);
     // const { stabilityPool } = _getContracts(this.connection);
-    const [{ frontEndTag, initialValue }, currentKUSD, collateralGain, kumoReward] =
+    const [initialValue, currentKUSD, collateralGain, kumoReward] =
       await Promise.all([
         stabilityPool.deposits(address, { ...overrides }),
         stabilityPool.getCompoundedKUSDDeposit(address, { ...overrides }),
@@ -276,8 +274,7 @@ export class ReadableEthersKumo implements ReadableKumo {
       decimalify(initialValue),
       decimalify(currentKUSD),
       decimalify(collateralGain),
-      decimalify(kumoReward),
-      frontEndTag
+      decimalify(kumoReward)
     );
   }
 
@@ -523,21 +520,6 @@ export class ReadableEthersKumo implements ReadableKumo {
     return kumoStaking.totalKUMOStaked({ ...overrides }).then(decimalify);
   }
 
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getFrontendStatus} */
-  async getFrontendStatus(
-    assetName: string,
-    address: string,
-    overrides?: EthersCallOverrides
-  ): Promise<FrontendStatus> {
-    address ??= _requireFrontendAddress(this.connection);
-    const stabilityPool = _getStabilityPoolByAsset(assetName, this.connection);
-    const { registered, kickbackRate } = await stabilityPool.frontEnds(address, { ...overrides });
-
-    return registered
-      ? { status: "registered", kickbackRate: decimalify(kickbackRate) }
-      : { status: "unregistered" };
-  }
-
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTestTokensTransferState} */
   async getTestTokensTransferState(
     assetAddress: string,
@@ -604,13 +586,6 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
     return (
       this._blockHit(overrides) &&
       (address === undefined || address === this.store.connection.userAddress)
-    );
-  }
-
-  private _frontendHit(address: string, overrides?: EthersCallOverrides): boolean {
-    return (
-      this._blockHit(overrides) &&
-      (address === undefined || address === this.store.connection.frontendTag)
     );
   }
 
@@ -805,16 +780,6 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
     return this._blockHit(overrides)
       ? this.store.state.totalStakedKUMO
       : this._readable.getTotalStakedKUMO(overrides);
-  }
-
-  async getFrontendStatus(
-    asset: string,
-    address: string,
-    overrides?: EthersCallOverrides
-  ): Promise<FrontendStatus> {
-    return this._frontendHit(address, overrides)
-      ? this.store.state.frontend
-      : this._readable.getFrontendStatus(asset, address, overrides);
   }
 
   async getTestTokensTransferState(

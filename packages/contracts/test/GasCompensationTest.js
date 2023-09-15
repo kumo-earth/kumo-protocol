@@ -485,11 +485,11 @@ contract("Gas compensation tests", async accounts => {
     });
 
     // D, E each provide KUSD to SP
-    await stabilityPool.provideToSP(A_totalDebt, ZERO_ADDRESS, {
+    await stabilityPool.provideToSP(A_totalDebt, {
       from: dennis,
       gasPrice: GAS_PRICE
     });
-    await stabilityPool.provideToSP(B_totalDebt.add(C_totalDebt), ZERO_ADDRESS, {
+    await stabilityPool.provideToSP(B_totalDebt.add(C_totalDebt), {
       from: erin,
       gasPrice: GAS_PRICE
     });
@@ -653,8 +653,8 @@ contract("Gas compensation tests", async accounts => {
     });
 
     // D, E each provide 10000 KUSD to SP
-    await stabilityPool.provideToSP(dec(1, 23), ZERO_ADDRESS, { from: dennis, gasPrice: GAS_PRICE });
-    await stabilityPool.provideToSP(dec(1, 23), ZERO_ADDRESS, { from: erin, gasPrice: GAS_PRICE });
+    await stabilityPool.provideToSP(dec(1, 23), { from: dennis, gasPrice: GAS_PRICE });
+    await stabilityPool.provideToSP(dec(1, 23), { from: erin, gasPrice: GAS_PRICE });
 
     const KUSDinSP_0 = await stabilityPool.getTotalKUSDDeposits();
     const ETHinSP_0 = await stabilityPool.getAssetBalance();
@@ -794,8 +794,8 @@ contract("Gas compensation tests", async accounts => {
     });
 
     // D, E each provide 10000 KUSD to SP
-    await stabilityPool.provideToSP(dec(1, 23), ZERO_ADDRESS, { from: dennis, gasPrice: GAS_PRICE });
-    await stabilityPool.provideToSP(dec(1, 23), ZERO_ADDRESS, { from: erin, gasPrice: GAS_PRICE });
+    await stabilityPool.provideToSP(dec(1, 23), { from: dennis, gasPrice: GAS_PRICE });
+    await stabilityPool.provideToSP(dec(1, 23), { from: erin, gasPrice: GAS_PRICE });
 
     const KUSDinSP_0 = await stabilityPool.getTotalKUSDDeposits();
     const ETHinSP_0 = await stabilityPool.getAssetBalance();
@@ -930,8 +930,8 @@ contract("Gas compensation tests", async accounts => {
     });
 
     // D, E each provide KUSD to SP
-    await stabilityPool.provideToSP(A_totalDebt, ZERO_ADDRESS, { from: dennis });
-    await stabilityPool.provideToSP(B_totalDebt, ZERO_ADDRESS, { from: erin });
+    await stabilityPool.provideToSP(A_totalDebt, { from: dennis });
+    await stabilityPool.provideToSP(B_totalDebt, { from: erin });
 
     const KUSDinSP_0 = await stabilityPool.getTotalKUSDDeposits();
 
@@ -1040,8 +1040,8 @@ contract("Gas compensation tests", async accounts => {
     });
 
     // D, E each provide 10000 KUSD to SP
-    await stabilityPool.provideToSP(dec(1, 23), ZERO_ADDRESS, { from: dennis });
-    await stabilityPool.provideToSP(dec(1, 23), ZERO_ADDRESS, { from: erin });
+    await stabilityPool.provideToSP(dec(1, 23), { from: dennis });
+    await stabilityPool.provideToSP(dec(1, 23), { from: erin });
 
     const KUSDinSP_0 = await stabilityPool.getTotalKUSDDeposits();
     const ETHinSP_0 = await stabilityPool.getAssetBalance();
@@ -1171,8 +1171,8 @@ contract("Gas compensation tests", async accounts => {
     });
 
     // D, E each provide 10000 KUSD to SP
-    await stabilityPool.provideToSP(dec(1, 23), ZERO_ADDRESS, { from: dennis });
-    await stabilityPool.provideToSP(dec(1, 23), ZERO_ADDRESS, { from: erin });
+    await stabilityPool.provideToSP(dec(1, 23), { from: dennis });
+    await stabilityPool.provideToSP(dec(1, 23), { from: erin });
 
     const KUSDinSP_0 = await stabilityPool.getTotalKUSDDeposits();
     const ETHinSP_0 = await stabilityPool.getAssetBalance();
@@ -1292,8 +1292,8 @@ contract("Gas compensation tests", async accounts => {
     });
 
     // D, E each provide 10000 KUSD to SP
-    await stabilityPool.provideToSP(dec(1, 23), ZERO_ADDRESS, { from: erin });
-    await stabilityPool.provideToSP(dec(1, 23), ZERO_ADDRESS, { from: flyn });
+    await stabilityPool.provideToSP(dec(1, 23), { from: erin });
+    await stabilityPool.provideToSP(dec(1, 23), { from: flyn });
 
     const KUSDinSP_0 = await stabilityPool.getTotalKUSDDeposits();
 
@@ -1520,8 +1520,8 @@ contract("Gas compensation tests", async accounts => {
     });
 
     // D, E each provide 10000 KUSD to SP
-    await stabilityPool.provideToSP(dec(1, 23), ZERO_ADDRESS, { from: erin });
-    await stabilityPool.provideToSP(dec(1, 23), ZERO_ADDRESS, { from: flyn });
+    await stabilityPool.provideToSP(dec(1, 23), { from: erin });
+    await stabilityPool.provideToSP(dec(1, 23), { from: flyn });
 
     const KUSDinSP_0 = await stabilityPool.getTotalKUSDDeposits();
 

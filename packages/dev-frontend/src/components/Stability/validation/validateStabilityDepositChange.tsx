@@ -13,7 +13,6 @@ import { StabilityActionDescription } from "../StabilityActionDescription";
 type SelectForStabilityDepositChangeValidationType = {
   trove: UserTrove;
   kusdBalance: Decimal;
-  haveOwnFrontend: boolean;
   haveUndercollateralizedTroves: boolean;
 }
 
@@ -25,7 +24,6 @@ export const validateStabilityDepositChange = (
   editedKUSD: Decimal,
   {
     kusdBalance,
-    haveOwnFrontend,
     haveUndercollateralizedTroves
   }: StabilityDepositChangeValidationContext
 ): [
@@ -33,15 +31,6 @@ export const validateStabilityDepositChange = (
     description: JSX.Element | undefined
   ] => {
   const change = originalDeposit.whatChanged(editedKUSD);
-
-  if (haveOwnFrontend) {
-    return [
-      undefined,
-      <ErrorDescription>
-        You can’t deposit using a wallet address that is registered as a frontend.
-      </ErrorDescription>
-    ];
-  }
 
   if (!change) {
     return [undefined, undefined];

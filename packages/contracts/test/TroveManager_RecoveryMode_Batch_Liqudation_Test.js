@@ -110,7 +110,7 @@ contract("TroveManager - in Recovery Mode - back to normal mode in 1 tx", async 
         extraKUSDAmount: totalLiquidatedDebt,
         extraParams: { from: whale }
       });
-      await stabilityPoolAsset1.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale });
+      await stabilityPoolAsset1.provideToSP(totalLiquidatedDebt, { from: whale });
 
       // Price drops
       await priceFeed.setPrice(assetAddress1, dec(100, 18));
@@ -244,7 +244,7 @@ contract("TroveManager - in Recovery Mode - back to normal mode in 1 tx", async 
         extraKUSDAmount: totalLiquidatedDebt,
         extraParams: { from: whale }
       });
-      await stabilityPoolAsset1.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale });
+      await stabilityPoolAsset1.provideToSP(totalLiquidatedDebt, { from: whale });
 
       // Price drops
       await priceFeed.setPrice(assetAddress1, dec(100, 18));
@@ -302,7 +302,7 @@ contract("TroveManager - in Recovery Mode - back to normal mode in 1 tx", async 
         extraKUSDAmount: totalLiquidatedDebt,
         extraParams: { from: whale }
       });
-      await stabilityPoolAsset1.provideToSP(totalLiquidatedDebt, ZERO_ADDRESS, { from: whale });
+      await stabilityPoolAsset1.provideToSP(totalLiquidatedDebt, { from: whale });
 
       // Price drops
       await priceFeed.setPrice(assetAddress1, dec(100, 18));
