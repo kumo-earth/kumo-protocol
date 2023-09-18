@@ -92,7 +92,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
   private async _get(
     blockTag?: number
   ): Promise<[baseState: KumoStoreBaseState, extraState: BlockPolledKumoStoreExtraState]> {
-    const { userAddress, frontendTag, provider, addresses : { kusdToken, kumoToken } } = this.connection;
+    const { userAddress, provider, addresses : { kusdToken, kumoToken } } = this.connection;
     let asset = AddressZero;
 
     const vaultState: Vault[] = [];
@@ -155,8 +155,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
                 Decimal.ZERO,
                 Decimal.ZERO,
                 Decimal.ZERO,
-                Decimal.ZERO,
-                AddressZero
+                Decimal.ZERO
               ),
               kumoStake: new KUMOStake(),
               testTokensTransfered: false
@@ -216,10 +215,6 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
           blockTag
         }),
 
-        frontend: frontendTag
-          ? this._readable.getFrontendStatus("nbc", frontendTag, { blockTag })
-          : { status: "unregistered" as const },
-
         ...(userAddress
           ? {
               accountBalance: this._provider.getBalance(userAddress, blockTag).then(decimalify),
@@ -249,7 +244,6 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
               // ),
               // stabilityDeposit: this._readable.getStabilityDeposit("nbc", userAddress, { blockTag }),
               kumoStake: this._readable.getKUMOStake(asset, userAddress, { blockTag }),
-              ownFrontend: this._readable.getFrontendStatus("nbc", userAddress, { blockTag }),
               
             }
           : {
@@ -272,8 +266,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
               //   Decimal.ZERO,
               //   AddressZero
               // ),
-              kumoStake: new KUMOStake(),
-              ownFrontend: { status: "unregistered" as const }
+              kumoStake: new KUMOStake()
             })
       });
 

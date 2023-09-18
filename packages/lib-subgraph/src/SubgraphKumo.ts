@@ -6,7 +6,6 @@ import { Provider } from "@ethersproject/abstract-provider";
 import {
   Decimal,
   Fees,
-  FrontendStatus,
   KUMOStake,
   ObservableKumo,
   ReadableKumo,
@@ -343,10 +342,6 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
   }
 
   getTotalStakedKUMO(): Promise<Decimal> {
-    throw new Error("Method not implemented.");
-  }
-
-  getFrontendStatus(address?: string): Promise<FrontendStatus> {
     throw new Error("Method not implemented.");
   }
 

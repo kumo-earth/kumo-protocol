@@ -175,10 +175,6 @@ export const _requireAddress = (
   overrides?.from ?? connection.userAddress ?? panic(new Error("A user address is required"));
 
 /** @internal */
-export const _requireFrontendAddress = (connection: EthersKumoConnection): string =>
-  connection.frontendTag ?? panic(new Error("A frontend address is required"));
-
-/** @internal */
 export const _usingStore = (
   connection: EthersKumoConnection
 ): connection is EthersKumoConnection & { useStore: EthersKumoStoreOption } =>
@@ -263,17 +259,6 @@ export interface EthersKumoConnectionOptionalParams {
    * will be automatically determined from the `Signer`.
    */
   readonly userAddress?: string;
-
-  /**
-   * Address that will receive KUMO rewards from newly created Stability Deposits by default.
-   *
-   * @remarks
-   * For example
-   * {@link EthersKumo.depositKUSDInStabilityPool | depositKUSDInStabilityPool(amount, asset, frontendTag?)}
-   * will tag newly made Stability Deposits with this address when its `frontendTag` parameter is
-   * omitted.
-   */
-  readonly frontendTag?: string;
 
   /**
    * Create a {@link @kumodao/lib-base#KumoStore} and expose it as the `store` property.

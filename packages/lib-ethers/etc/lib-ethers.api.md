@@ -12,7 +12,6 @@ import { Decimalish } from '@kumodao/lib-base';
 import { ErrorCode } from '@ethersproject/logger';
 import { FailedReceipt } from '@kumodao/lib-base';
 import { Fees } from '@kumodao/lib-base';
-import { FrontendStatus } from '@kumodao/lib-base';
 import { KumoReceipt } from '@kumodao/lib-base';
 import { KUMOStake } from '@kumodao/lib-base';
 import { KumoStore } from '@kumodao/lib-base';
@@ -114,7 +113,7 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     // (undocumented)
     depositCollateral(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<TroveAdjustmentDetails>;
     // (undocumented)
-    depositKUSDInStabilityPool(amount: Decimalish, asset: string, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<StabilityDepositChangeDetails>;
+    depositKUSDInStabilityPool(amount: Decimalish, asset: string, overrides?: EthersTransactionOverrides): Promise<StabilityDepositChangeDetails>;
     // (undocumented)
     exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<void>;
     // @internal (undocumented)
@@ -137,8 +136,6 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     getFees(asset: string, overrides?: EthersCallOverrides): Promise<Fees>;
     // @internal (undocumented)
     _getFeesFactory(asset: string, overrides?: EthersCallOverrides): Promise<(blockTimestamp: number, recoveryMode: boolean) => Fees>;
-    // (undocumented)
-    getFrontendStatus(asset: string, address: string, overrides?: EthersCallOverrides): Promise<FrontendStatus>;
     // (undocumented)
     getKUMOBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
@@ -201,8 +198,6 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     // (undocumented)
     redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<RedemptionDetails>;
     // (undocumented)
-    registerFrontend(assetName: string, kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
-    // (undocumented)
     repayKUSD(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<TroveAdjustmentDetails>;
     // (undocumented)
     requestTestToken(tokenAddress: string, overrides?: EthersTransactionOverrides): Promise<void>;
@@ -259,7 +254,6 @@ export interface EthersKumoConnection extends EthersKumoConnectionOptionalParams
 
 // @public
 export interface EthersKumoConnectionOptionalParams {
-    readonly frontendTag?: string;
     readonly userAddress?: string;
     readonly useStore?: EthersKumoStoreOption;
 }
@@ -351,7 +345,7 @@ export class PopulatableEthersKumo implements PopulatableKumo<EthersTransactionR
     // (undocumented)
     depositCollateral(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    depositKUSDInStabilityPool(amount: Decimalish, assetName: string, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>>;
+    depositKUSDInStabilityPool(amount: Decimalish, assetName: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>>;
     // (undocumented)
     exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
@@ -364,8 +358,6 @@ export class PopulatableEthersKumo implements PopulatableKumo<EthersTransactionR
     openTrove(params: TroveCreationParams<Decimalish>, asset: string, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveCreationDetails>>;
     // (undocumented)
     redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersRedemption>;
-    // (undocumented)
-    registerFrontend(assetName: string, kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
     repayKUSD(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
@@ -485,8 +477,6 @@ export class ReadableEthersKumo implements ReadableKumo {
     // @internal (undocumented)
     _getFeesFactory(asset: string, overrides?: EthersCallOverrides): Promise<(blockTimestamp: number, recoveryMode: boolean) => Fees>;
     // (undocumented)
-    getFrontendStatus(assetName: string, address: string, overrides?: EthersCallOverrides): Promise<FrontendStatus>;
-    // (undocumented)
     getKUMOBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal>;
     // (undocumented)
     getKUMOStake(asset: string, address: string, overrides?: EthersCallOverrides): Promise<KUMOStake>;
@@ -562,7 +552,7 @@ export class SendableEthersKumo implements SendableKumo<EthersTransactionReceipt
     // (undocumented)
     depositCollateral(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<TroveAdjustmentDetails>>;
     // (undocumented)
-    depositKUSDInStabilityPool(amount: Decimalish, asset: string, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<StabilityDepositChangeDetails>>;
+    depositKUSDInStabilityPool(amount: Decimalish, asset: string, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<StabilityDepositChangeDetails>>;
     // (undocumented)
     exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)
@@ -575,8 +565,6 @@ export class SendableEthersKumo implements SendableKumo<EthersTransactionReceipt
     openTrove(params: TroveCreationParams<Decimalish>, asset: string, maxBorrowingRateOrOptionalParams?: Decimalish | BorrowingOperationOptionalParams, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<TroveCreationDetails>>;
     // (undocumented)
     redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<RedemptionDetails>>;
-    // (undocumented)
-    registerFrontend(assetName: string, kickbackRate: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<void>>;
     // (undocumented)
     repayKUSD(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<SentEthersKumoTransaction<TroveAdjustmentDetails>>;
     // (undocumented)

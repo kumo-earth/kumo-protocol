@@ -659,20 +659,17 @@ export interface SortedTroves
 interface IStabilityPoolCalls {
   getAssetBalance(_overrides?: CallOverrides): Promise<BigNumber>;
   getAssetType(_overrides?: CallOverrides): Promise<string>;
-  getCompoundedFrontEndStake(_frontEnd: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getCompoundedKUSDDeposit(_depositor: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getDepositorAssetGain(_depositor: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getDepositorKUMOGain(_depositor: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  getFrontEndKUMOGain(_frontEnd: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getNameBytes(_overrides?: CallOverrides): Promise<string>;
   getTotalKUSDDeposits(_overrides?: CallOverrides): Promise<BigNumber>;
 }
 
 interface IStabilityPoolTransactions {
   offset(_debt: BigNumberish, _coll: BigNumberish, _overrides?: Overrides): Promise<void>;
-  provideToSP(_amount: BigNumberish, _frontEndTag: string, _overrides?: Overrides): Promise<void>;
+  provideToSP(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   receivedERC20(_asset: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
-  registerFrontEnd(_kickbackRate: BigNumberish, _overrides?: Overrides): Promise<void>;
   setAddresses(_assetAddress: string, _borrowerOperationsAddress: string, _troveManagerAddress: string, _kusdTokenAddress: string, _sortedTrovesAddress: string, _communityIssuanceAddress: string, _kumoParamsAddress: string, _overrides?: Overrides): Promise<void>;
   withdrawAssetGainToTrove(_upperHint: string, _lowerHint: string, _overrides?: Overrides): Promise<void>;
   withdrawFromSP(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
@@ -748,21 +745,16 @@ interface StabilityPoolCalls {
   currentEpoch(_overrides?: CallOverrides): Promise<BigNumber>;
   currentScale(_overrides?: CallOverrides): Promise<BigNumber>;
   depositSnapshots(arg0: string, _overrides?: CallOverrides): Promise<{ S: BigNumber; P: BigNumber; G: BigNumber; scale: BigNumber; epoch: BigNumber }>;
-  deposits(arg0: string, _overrides?: CallOverrides): Promise<{ initialValue: BigNumber; frontEndTag: string }>;
+  deposits(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
   epochToScaleToG(arg0: BigNumberish, arg1: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
   epochToScaleToSum(arg0: BigNumberish, arg1: BigNumberish, _overrides?: CallOverrides): Promise<BigNumber>;
-  frontEndSnapshots(arg0: string, _overrides?: CallOverrides): Promise<{ S: BigNumber; P: BigNumber; G: BigNumber; scale: BigNumber; epoch: BigNumber }>;
-  frontEndStakes(arg0: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  frontEnds(arg0: string, _overrides?: CallOverrides): Promise<{ kickbackRate: BigNumber; registered: boolean }>;
   getAssetBalance(_overrides?: CallOverrides): Promise<BigNumber>;
   getAssetType(_overrides?: CallOverrides): Promise<string>;
-  getCompoundedFrontEndStake(_frontEnd: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getCompoundedKUSDDeposit(_depositor: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getDepositorAssetGain(_depositor: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getDepositorKUMOGain(_depositor: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getEntireSystemColl(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getEntireSystemDebt(_asset: string, _overrides?: CallOverrides): Promise<BigNumber>;
-  getFrontEndKUMOGain(_frontEnd: string, _overrides?: CallOverrides): Promise<BigNumber>;
   getNameBytes(_overrides?: CallOverrides): Promise<string>;
   getTotalKUSDDeposits(_overrides?: CallOverrides): Promise<BigNumber>;
   isOwner(_overrides?: CallOverrides): Promise<boolean>;
@@ -778,9 +770,8 @@ interface StabilityPoolCalls {
 
 interface StabilityPoolTransactions {
   offset(_debtToOffset: BigNumberish, _collToAdd: BigNumberish, _overrides?: Overrides): Promise<void>;
-  provideToSP(_amount: BigNumberish, _frontEndTag: string, _overrides?: Overrides): Promise<void>;
+  provideToSP(_amount: BigNumberish, _overrides?: Overrides): Promise<void>;
   receivedERC20(_asset: string, _amount: BigNumberish, _overrides?: Overrides): Promise<void>;
-  registerFrontEnd(_kickbackRate: BigNumberish, _overrides?: Overrides): Promise<void>;
   setAddresses(_assetAddress: string, _borrowerOperationsAddress: string, _troveManagerAddress: string, _kusdTokenAddress: string, _sortedTrovesAddress: string, _communityIssuanceAddress: string, _kumoParamsAddress: string, _overrides?: Overrides): Promise<void>;
   setKumoParameters(_kumoParamsAddress: string, _overrides?: Overrides): Promise<void>;
   withdrawAssetGainToTrove(_upperHint: string, _lowerHint: string, _overrides?: Overrides): Promise<void>;

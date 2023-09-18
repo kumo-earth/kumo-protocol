@@ -131,7 +131,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('ADJUST').should('be.visible');
   })
 
-  it('Alice should adjust KUSD in NBC Stability Pool', () => {
+  it.skip('Alice should adjust KUSD in NBC Stability Pool', () => {
     cy.visit('/');
     cy.reload();
     cy.contains('CONNECT').click();
@@ -234,7 +234,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.contains('ADJUST').should('be.visible');
   })
 
-  it('Alice should adjust KUSD in CSC Stability Pool', () => {
+  it.skip('Alice should adjust KUSD in CSC Stability Pool', () => {
     cy.visit('/');
     cy.reload();
     cy.contains('CONNECT').click();

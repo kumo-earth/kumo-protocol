@@ -538,16 +538,4 @@ export interface TransactableKumo {
    * Throws {@link TransactionFailedError} in case of transaction failure.
    */
   exitLiquidityMining(): Promise<void>;
-
-  /**
-   * Register current wallet address as a Kumo frontend.
-   *
-   * @param assetName - Symbol of the asset token as string
-   * @param kickbackRate - The portion of KUMO rewards to pass onto users of the frontend
-   *                       (between 0 and 1).
-   *
-   * @throws
-   * Throws {@link TransactionFailedError} in case of transaction failure.
-   */
-  registerFrontend(assetName: string, kickbackRate: Decimalish): Promise<void>;
 }

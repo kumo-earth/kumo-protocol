@@ -64,7 +64,6 @@
 |  --- | --- |
 |  [Decimalish](./lib-base.decimalish.md) | Types that can be converted into a Decimal. |
 |  [FailedReceipt](./lib-base.failedreceipt.md) | Indicates that the transaction has been mined, but it failed. |
-|  [FrontendStatus](./lib-base.frontendstatus.md) | Represents whether an address has been registered as a Kumo frontend. |
 |  [KumoReceipt](./lib-base.kumoreceipt.md) | One of either a [PendingReceipt](./lib-base.pendingreceipt.md)<!-- -->, a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](./lib-base.successfulreceipt.md)<!-- -->. |
 |  [KUMOStakeChange](./lib-base.kumostakechange.md) | Represents the change between two states of an KUMO Stake. |
 |  [KumoStoreState](./lib-base.kumostorestate.md) | Type of [KumoStore](./lib-base.kumostore.md)<!-- -->'s [state](./lib-base.kumostore.state.md)<!-- -->. |

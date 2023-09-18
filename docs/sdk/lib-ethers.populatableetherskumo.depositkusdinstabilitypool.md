@@ -9,7 +9,7 @@ Make a new Stability Deposit, or top up existing one.
 <b>Signature:</b>
 
 ```typescript
-depositKUSDInStabilityPool(amount: Decimalish, assetName: string, frontendTag?: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>>;
+depositKUSDInStabilityPool(amount: Decimalish, assetName: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>>;
 ```
 
 ## Parameters
@@ -18,7 +18,6 @@ depositKUSDInStabilityPool(amount: Decimalish, assetName: string, frontendTag?: 
 |  --- | --- | --- |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUSD to add to new or existing deposit. |
 |  assetName | string |  |
-|  frontendTag | string | Address that should receive a share of this deposit's KUMO rewards. |
 |  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
 
 <b>Returns:</b>

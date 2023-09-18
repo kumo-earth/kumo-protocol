@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.11;
+pragma solidity 0.8.15;
 
 import "../Interfaces/ITroveManagerDiamond.sol";
 import "../BorrowerOperations.sol";
@@ -149,13 +149,9 @@ contract EchidnaProxy {
     }
 
     // Pool Manager
-    function provideToSPPrx(
-        address _asset,
-        uint256 _amount,
-        address _frontEndTag
-    ) external {
+    function provideToSPPrx(address _asset, uint256 _amount, address _frontEndTag) external {
         IStabilityPool stabilityPoolCached = stabilityPoolFactory.getStabilityPoolByAsset(_asset);
-        stabilityPoolCached.provideToSP(_amount, _frontEndTag);
+        stabilityPoolCached.provideToSP(_amount);
     }
 
     function withdrawFromSPPrx(address _asset, uint256 _amount) external {

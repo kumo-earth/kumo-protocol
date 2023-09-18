@@ -117,7 +117,6 @@
   "resolutions": {
     "react-error-overlay": "6.0.9",
     "@types/react": "^17.0.3",
-    "@types/react-dom": "^18.0.2",
-    "cypress": "^12.14.0"
+    "@types/react-dom": "^18.0.2"
   }
 }

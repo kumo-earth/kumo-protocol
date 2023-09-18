@@ -301,10 +301,4 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
   exitLiquidityMining(): Promise<
     PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>
   >;
-
-  /** {@inheritDoc TransactableKumo.registerFrontend} */
-  registerFrontend(
-    assetName: string,
-    kickbackRate: Decimalish
-  ): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
 }

@@ -52,7 +52,6 @@ export class Vault {
       Decimal.ZERO,
       Decimal.ZERO,
       Decimal.ZERO,
-      ""
     );
     this.kumoStake = new KUMOStake();
     this.kusdMintedCap = Decimal.ZERO;

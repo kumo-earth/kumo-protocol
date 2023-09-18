@@ -284,12 +284,12 @@
 //     const whaleDeposit = toBN(dec(2350, 18))
 //     await openTrove({ asset: assetAddress1, extraKUSDAmount: whaleDeposit, ICR: toBN(dec(4, 18)), extraParams: { from: whale } })
 //     // Whale deposits 1850 KUSD in StabilityPool
-//     await stabilityPool.provideToSP(whaleDeposit, erc20.address, { from: whale })
+//     await stabilityPool.provideToSP(whaleDeposit, { from: whale })
 
 //     // alice opens trove and provides 150 KUSD to StabilityPool
 //     const aliceDeposit = toBN(dec(150, 18))
 //     await openTrove({ asset: assetAddress1, extraKUSDAmount: aliceDeposit, ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
-//     await stabilityPool.provideToSP(aliceDeposit, erc20.address, { from: alice })
+//     await stabilityPool.provideToSP(aliceDeposit, { from: alice })
 
 //     // Defaulter Trove opened
 //     const { kusdAmount, netDebt, collateral } = await openTrove({ asset: assetAddress1, ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })

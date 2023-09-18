@@ -146,11 +146,10 @@ export class SendableEthersKumo
   depositKUSDInStabilityPool(
     amount: Decimalish,
     asset: string,
-    frontendTag?: string,
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersKumoTransaction<StabilityDepositChangeDetails>> {
     return this._populate
-      .depositKUSDInStabilityPool(amount, asset, frontendTag, overrides)
+      .depositKUSDInStabilityPool(amount, asset, overrides)
       .then(sendTransaction);
   }
 
@@ -259,15 +258,6 @@ export class SendableEthersKumo
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersKumoTransaction<void>> {
     return this._populate.withdrawGainsFromStaking(overrides).then(sendTransaction);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#SendableKumo.registerFrontend} */
-  registerFrontend(
-    assetName: string,
-    kickbackRate: Decimalish,
-    overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersKumoTransaction<void>> {
-    return this._populate.registerFrontend(assetName, kickbackRate, overrides).then(sendTransaction);
   }
 
   /** @internal */
