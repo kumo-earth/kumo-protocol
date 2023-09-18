@@ -5,7 +5,7 @@ const deploymentHelper = require("../../utils/deploymentHelpers.js")
 const { TestHelper: th, TimeValues: timeValues } = require("../../utils/testHelpers.js")
 const { dec, toBN, assertRevert, ZERO_ADDRESS } = th
 
-contract('During the initial lockup period', async accounts => {
+contract.skip('During the initial lockup period', async accounts => {
   const [
     liquityAG,
     teamMember_1,

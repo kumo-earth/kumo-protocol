@@ -1474,8 +1474,8 @@ class TestHelper {
     return Number(days) * (60 * 60 * 24);
   }
 
-  static async getTimeFromSystemDeployment(kumoToken, web3, timePassedSinceDeployment) {
-    const deploymentTime = await kumoToken.getDeploymentStartTime();
+  static async getTimeFromSystemDeployment(kusdToken, web3, timePassedSinceDeployment) {
+    const deploymentTime = await kusdToken.getDeploymentStartTime();
     return this.toBN(deploymentTime).add(this.toBN(timePassedSinceDeployment));
   }
 

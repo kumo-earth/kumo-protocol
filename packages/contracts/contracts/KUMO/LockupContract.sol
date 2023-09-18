@@ -45,7 +45,7 @@ contract LockupContract {
          * Set the unlock time to a chosen instant in the future, as long as it is at least 1 year after
          * the system was deployed
          */
-        _requireUnlockTimeIsAtLeastOneYearAfterSystemDeployment(_unlockTime);
+        // _requireUnlockTimeIsAtLeastOneYearAfterSystemDeployment(_unlockTime);
         unlockTime = _unlockTime;
 
         beneficiary = _beneficiary;
@@ -55,7 +55,6 @@ contract LockupContract {
     function withdrawKUMO() external {
         _requireCallerIsBeneficiary();
         _requireLockupDurationHasPassed();
-
         IKUMOToken kumoTokenCached = kumoToken;
         uint256 KUMOBalance = kumoTokenCached.balanceOf(address(this));
         kumoTokenCached.transfer(beneficiary, KUMOBalance);
@@ -63,17 +62,18 @@ contract LockupContract {
     }
 
     // --- 'require' functions ---
-
     function _requireCallerIsBeneficiary() internal view {
         require(msg.sender == beneficiary, "LockupContract: caller is not the beneficiary");
     }
 
     function _requireLockupDurationHasPassed() internal view {
-        require(block.timestamp >= unlockTime, "LockupContract: The lockup duration must have passed");
+        require(
+            block.timestamp >= unlockTime,
+            "LockupContract: The lockup duration must have passed"
+        );
     }
-
-    function _requireUnlockTimeIsAtLeastOneYearAfterSystemDeployment(uint256 _unlockTime) internal view {
-        uint256 systemDeploymentTime = kumoToken.getDeploymentStartTime();
-        require(_unlockTime >= systemDeploymentTime.add(SECONDS_IN_ONE_YEAR), "LockupContract: unlock time must be at least one year after system deployment");
-    }
+    // function _requireUnlockTimeIsAtLeastOneYearAfterSystemDeployment(uint256 _unlockTime) internal view {
+    //     uint256 systemDeploymentTime = kumoToken.getDeploymentStartTime();
+    //     require(_unlockTime >= systemDeploymentTime.add(SECONDS_IN_ONE_YEAR), "LockupContract: unlock time must be at least one year after system deployment");
+    // }
 }

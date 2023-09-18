@@ -302,7 +302,7 @@ describe("EthersKumoGasEstimation", async () => {
                 const mockAssetAddress = deployment.addresses[mockAssetContract.contract];
                 const price = await kumo.getPrice(mockAssetAddress);
                 const initialTrove = await kumo.getTrove(mockAssetAddress);
-                const kusdBalance = await kumo.getKUMOBalance(mockAssetAddress);
+                const kusdBalance = await kumo.getKUSDBalance(mockAssetAddress);
                 const kusdShortage = initialTrove.netDebt.sub(kusdBalance);
 
                 let funderTrove = Trove.create({ depositCollateral: 1, borrowKUSD: kusdShortage });
@@ -477,7 +477,7 @@ describe("EthersKumoGasEstimation", async () => {
                 const mockAssetAddress = deployment.addresses[mockAssetContract.contract];
                 const price = await kumo.getPrice(mockAssetAddress);
                 const initialTrove = await kumo.getTrove(mockAssetAddress);
-                const kusdBalance = await kumo.getKUMOBalance(mockAssetAddress);
+                const kusdBalance = await kumo.getKUSDBalance(mockAssetAddress);
                 const kusdShortage = initialTrove.netDebt.sub(kusdBalance);
 
                 let funderTrove = Trove.create({ depositCollateral: 1, borrowKUSD: kusdShortage });

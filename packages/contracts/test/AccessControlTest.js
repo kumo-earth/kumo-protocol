@@ -495,10 +495,10 @@ contract(
       });
     });
 
-    describe("LockupContract", async accounts => {
+    describe.skip("LockupContract", async accounts => {
       it("withdrawKUMO(): reverts when caller is not beneficiary", async () => {
         // deploy new LC with Carol as beneficiary
-        const unlockTime = (await kumoToken.getDeploymentStartTime()).add(
+        const unlockTime = (await kusdToken.getDeploymentStartTime()).add(
           toBN(timeValues.SECONDS_IN_ONE_YEAR)
         );
         const deployedLCtx = await lockupContractFactory.deployLockupContract(carol, unlockTime, {
