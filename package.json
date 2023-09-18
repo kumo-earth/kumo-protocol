@@ -3,7 +3,13 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/contracts",
+      "packages/dev-frontend",
+      "packages/lib-base",
+      "packages/lib-ethers",
+      "packages/lib-react",
+      "packages/lib-react",
+      "packages/providers"
     ],
     "nohoist": [
       "**/web3-eth-abi/@ethersproject/abi",
@@ -42,21 +48,17 @@
   "scripts": {
     "build": "run-s build:*",
     "build:dev-frontend": "yarn workspace @kumodao/dev-frontend build",
-    "build:subgraph": "yarn workspace @kumodao/subgraph build",
     "deploy": "yarn workspace @kumodao/lib-ethers hardhat deploy",
     "docs": "run-s docs:*",
     "docs:collect-sdk-apis": "node scripts/collect-sdk-apis.js",
     "docs:api-documenter": "api-documenter generate -i temp/sdk-apis -o docs/sdk",
-    "fuzzer": "yarn workspace @kumodao/fuzzer fuzzer",
     "postinstall": "husky install",
     "prepare": "run-s prepare:*",
     "prepare:contracts": "yarn workspace @kumodao/contracts prepare",
     "prepare:lib-base": "yarn workspace @kumodao/lib-base prepare",
     "prepare:lib-ethers": "yarn workspace @kumodao/lib-ethers prepare",
     "prepare:lib-react": "yarn workspace @kumodao/lib-react prepare",
-    "prepare:lib-subgraph": "yarn workspace @kumodao/lib-subgraph prepare",
     "prepare:providers": "yarn workspace @kumodao/providers prepare",
-    "prepare:subgraph": "yarn workspace @kumodao/subgraph prepare",
     "prepare:docs": "run-s docs",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier --write .",
@@ -101,22 +103,17 @@
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
-    "@microsoft/api-documenter": "^7.22.33",
+    "@microsoft/api-documenter": "^7.23.0",
     "fs-extra": "^11.1.1",
     "husky": "^8.0.3",
     "lint-staged": "^14.0.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.0.3",
-    "semantic-release": "^19.0.3",
+    "semantic-release": "^21.1.2",
     "semantic-release-monorepo": "^7.0.5"
   },
   "engineStrict": true,
   "engines": {
-    "node": "16.16.0"
-  },
-  "resolutions": {
-    "react-error-overlay": "6.0.9",
-    "@types/react": "^17.0.3",
-    "@types/react-dom": "^18.0.2"
+    "node": "^18.17.1"
   }
 }
