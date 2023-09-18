@@ -1,7 +1,7 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Grid } from "theme-ui";
 
-export const DashboadContent: React.FC = ({ children }) => {
+export const DashboadContent: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <Grid
       sx={{

@@ -1,9 +1,10 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Button } from "theme-ui";
 import { useKumo } from "../../../hooks/KumoContext";
 import { useTransactionFunction } from "../../Transaction";
 
 type ClaimAndMoveProps = {
+  children: ReactNode,
   disabled?: boolean;
   asset: string;
   assetName: string;

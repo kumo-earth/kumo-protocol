@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { Text, Flex, Label, Input, SxProp, Box, Button, ThemeUICSSProperties } from "theme-ui";
 import { Decimal } from "@kumodao/lib-base";
 import { Icon } from "../Icon";
 
 type RowProps = SxProp & {
+  children?: ReactNode,
   label: string;
   labelId?: string;
   labelFor?: string;
@@ -96,6 +97,7 @@ const PendingAmount: React.FC<PendingAmountProps & SxProp> = ({ sx, value }) => 
 );
 
 type StaticAmountsProps = {
+  children?: ReactNode,
   inputId: string;
   labelledBy?: string;
   amount: string;

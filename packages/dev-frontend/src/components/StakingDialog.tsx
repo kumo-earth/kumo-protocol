@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Heading, Flex, Card, Button, Box } from "theme-ui";
 import { Stability } from "../components/Stability/Stability";
 
@@ -7,6 +7,7 @@ import { Icon } from "./Icon";
 type DialogIntent = "success" | "warning" | "danger" | "info";
 
 type DialogProps = {
+  children: ReactNode,
   intent?: DialogIntent;
   title: string;
   icon?: React.ReactNode;

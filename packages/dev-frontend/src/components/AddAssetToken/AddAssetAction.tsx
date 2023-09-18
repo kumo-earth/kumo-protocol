@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { Button } from "theme-ui";
 
 import { useKumo } from "../../hooks/KumoContext";
@@ -5,6 +6,7 @@ import { useTransactionFunction } from "../Transaction";
 
 
 type AddAssetActionProps = {
+    children: ReactNode
     transactionId: string;
     isTransactionConfirmed : boolean;
     type: string;

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef, ReactNode } from "react";
 import { WalletViewContext } from "./WalletViewContext";
 import type { WalletView, WalletEvent } from "./types";
 
@@ -18,7 +18,7 @@ const transition = (view: WalletView, event: WalletEvent): WalletView => {
   return nextView;
 };
 
-export const WalletViewProvider: React.FC = props => {
+export const WalletViewProvider: React.FC<{ children: ReactNode }> = props => {
   const { children } = props;
 
   const [view, setView] = useState<WalletView>("NONE");

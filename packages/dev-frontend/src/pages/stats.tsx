@@ -1,17 +1,17 @@
 import { useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Box, Flex } from "theme-ui";
 import { Link } from "../components/Link";
 import { StatsRiskyTroves } from "../components/StatsRiskyTroves/StatsRiskyTroves";
 import { ProtocolStats } from "./ProtocolStats";
 
 export const Stats: React.FC = () => {
-  const { statsType } = useParams<{ statsType: string }>();
-  const history = useHistory();
+  const { statsType = "protocol" || "vaults" } = useParams<{ statsType: string }>();
+  const navigate = useNavigate();
   
   useEffect(() => {
      if(statsType === 'protocol' || statsType !== 'vaults'){
-      history.push('/stats/protocol')
+      navigate('/stats/protocol')
      }
      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statsType])

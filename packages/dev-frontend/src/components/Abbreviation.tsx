@@ -1,7 +1,8 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Box, BoxProps } from "theme-ui";
 
 type AbbreviationProps = BoxProps & {
+  children: ReactNode,
   short: React.ReactNode;
 };
 

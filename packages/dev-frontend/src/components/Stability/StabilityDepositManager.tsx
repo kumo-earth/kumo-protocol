@@ -96,7 +96,7 @@ const select = ({ vaults, kusdBalance }: KumoStoreState) => ({
 });
 
 export const StabilityDepositManager: React.FC = () => {
-  const { collateralType } = useParams<{ collateralType: string }>();
+  const { collateralType = "nbc" || "csc" } = useParams<{ collateralType: string }>();
   const { vaults, kusdBalance } = useKumoSelector(select);
   const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
   const { stabilityDeposit, trove, haveUndercollateralizedTroves } = vault;

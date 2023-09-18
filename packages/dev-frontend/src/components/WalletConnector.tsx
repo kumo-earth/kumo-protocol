@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, ReactNode } from "react";
 import { useWeb3React } from "@web3-react/core";
 import { AbstractConnector } from "@web3-react/abstract-connector";
 import { Button, Text, Flex, Link, Box } from "theme-ui";
@@ -83,7 +83,8 @@ const connectionReducer: React.Reducer<ConnectionState, ConnectionAction> = (sta
 const detectMetaMask = () => (window as MaybeHasMetaMask).ethereum?.isMetaMask ?? false;
 
 type WalletConnectorProps = {
-  loader?: React.ReactNode;
+  children: ReactNode;
+  loader?: ReactNode;
 };
 
 export const WalletConnector: React.FC<WalletConnectorProps> = ({ children, loader }) => {

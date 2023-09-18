@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
 import { useAuthorizedConnection } from "../hooks/useAuthorizedConnection";
 import { networkConnector } from "../connectors/injectedConnector";
 import { BatchedWebSocketAugmentedWeb3Provider } from "@kumodao/providers";
@@ -33,7 +33,8 @@ type KumoContextValue =
 const KumoContext = createContext<KumoContextValue | undefined>(undefined);
 
 type KumoProviderProps = {
-  loader?: React.ReactNode;
+  children: ReactNode;
+  loader?: ReactNode;
   unsupportedNetworkFallback?: (chainId: number) => React.ReactNode;
   unsupportedMainnetFallback?: React.ReactNode;
 };

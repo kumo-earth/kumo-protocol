@@ -1,6 +1,6 @@
 import React from "react";
 import { Flex, Container, Box, Text } from "theme-ui";
-import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { Wallet } from "@ethersproject/wallet";
 
 import { Decimal, Difference, Trove } from "@kumodao/lib-base";
@@ -55,7 +55,6 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
 
   return (
     <KumoStoreProvider {...{ loader }} store={kumo.store}>
-      <Router>
         <DashboardProvider>
           <TroveViewProvider>
             <StabilityViewProvider>
@@ -88,49 +87,25 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                       </Header>
 
                       <Container variant="main">
-                        <Switch>
-                          <Redirect from="/" to="/dashboard" exact />
-                          <Route path="/dashboard" exact >
-                            <PageSwitcher />
-                          </Route>
-                          <Route path="/dashboard/:collateralType" exact>
-                            <Collateral />
-                          </Route>
-                          <Route path="/portfolio" exact>
-                            <Portfolio />
-                          </Route>
-                          <Route path="/staking" exact>
-                            <StabilityPoolStaking />
-                          </Route>
-                          <Route path="/staking/liquidity" exact>
-                            <LiquidityStaking />
-                          </Route>
-                          <Route path="/staking/:stakingType" exact>
-                            <StakingType />
-                          </Route>
-                          <Route path="/staking/:stakingType/:collateralType" exact>
-                            <StakingType />
-                          </Route>
-                          <Redirect from="/stats" to="/stats/protocol" exact />
-                          <Route path="/stats/:statsType" exact >
-                            <Stats />
-                          </Route>
-                          <Route path="/farm" exact>
-                            <Farm />
-                          </Route>
-                          <Route path="/risky-troves" exact>
-                            <RiskyTrovesPage />
-                          </Route>
-                          <Route path="/redemption" exact>
-                            <RedemptionPage />
-                          </Route>
-                          <Route path="/faucet" exact>
-                            <Faucet />
-                          </Route>
+                        <Routes>
+                          <Route path="/" element={<Navigate to="/dashboard" />} />
+                          <Route path="/dashboard" element={<PageSwitcher />} />
+                          <Route path="/dashboard/:collateralType" element={<Collateral />} />
+                          <Route path="/portfolio" element={<Portfolio />} />
+                          <Route path="/staking" element={<StabilityPoolStaking />} />
+                          <Route path="/staking/liquidity" element={<LiquidityStaking />} />
+                          <Route path="/staking/:stakingType" element={<StakingType />} />
+                          <Route path="/staking/:stakingType/:collateralType" element={<StakingType />} />
+                          <Route path="/stats" element={<Navigate to="/stats/protocol" />} />
+                          <Route path="/stats/:statsType" element={<Stats />} />
+                          <Route path="/farm" element={<Farm />} />
+                          <Route path="/risky-troves" element={<RiskyTrovesPage />} />
+                          <Route path="/redemption" element={<RedemptionPage />} />
+                          <Route path="/faucet" element={<Faucet />} />
                           <Route path="*">
-                            <Redirect from="*" to="/dashboard" exact />
+                            <Route path="*" element={<Navigate to="/dashboard" />} />
                           </Route>
-                        </Switch>
+                        </Routes>
                       </Container>
                     </Flex>
                   </Flex>
@@ -139,7 +114,6 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
             </StabilityViewProvider>
           </TroveViewProvider>
         </DashboardProvider>
-      </Router>
       <TransactionMonitor />
     </KumoStoreProvider>
   );

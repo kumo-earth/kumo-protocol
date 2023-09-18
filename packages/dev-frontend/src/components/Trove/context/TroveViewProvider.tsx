@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef, ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import { KumoStoreState, UserTroveStatus, Vault } from "@kumodao/lib-base";
 
@@ -85,8 +85,7 @@ const select = ({ vaults }: KumoStoreState) => ({
   vaults
 });
 
-export const TroveViewProvider: React.FC = props => {
-  const { children } = props;
+export const TroveViewProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { vaults } = useKumoSelector(select);
   const location = useLocation();
 

@@ -1,9 +1,10 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Text, Box } from "theme-ui";
 
 import { WaitingDialog } from "./WaitingDialog";
 
 type ConnectionConfirmationDialogProps = {
+  children: ReactNode,
   title: string;
   icon?: React.ReactNode;
   onCancel: () => void;
