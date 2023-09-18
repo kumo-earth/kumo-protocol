@@ -17,8 +17,8 @@ getCollateralSurplusBalance(asset: string, address?: string, overrides?: EthersC
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  asset | string |  |
-|  address | string |  |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  address | string | _(Optional)_ |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
 **Returns:**
 

@@ -18,7 +18,7 @@ withdrawKUSDFromStabilityPool(amount: Decimalish, asset: string, overrides?: Eth
 |  --- | --- | --- |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUSD to withdraw. |
 |  asset | string |  |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 

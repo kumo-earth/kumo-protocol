@@ -20,15 +20,15 @@ Used by Kumo libraries to precisely represent native currency (e.g. Ether), KUSD
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [finite](./lib-base.decimal.finite.md) |  | this \| undefined |  |
-|  [HALF](./lib-base.decimal.half.md) | <code>static</code> | [Decimal](./lib-base.decimal.md) |  |
-|  [infinite](./lib-base.decimal.infinite.md) |  | this \| undefined |  |
-|  [INFINITY](./lib-base.decimal.infinity.md) | <code>static</code> | [Decimal](./lib-base.decimal.md) |  |
-|  [isZero](./lib-base.decimal.iszero.md) |  | boolean |  |
-|  [nonZero](./lib-base.decimal.nonzero.md) |  | this \| undefined |  |
-|  [ONE](./lib-base.decimal.one.md) | <code>static</code> | [Decimal](./lib-base.decimal.md) |  |
-|  [zero](./lib-base.decimal.zero.md) |  | this \| undefined |  |
-|  [ZERO](./lib-base.decimal.zero.md) | <code>static</code> | [Decimal](./lib-base.decimal.md) |  |
+|  [finite](./lib-base.decimal.finite.md) | <code>readonly</code> | this \| undefined |  |
+|  [HALF](./lib-base.decimal.half.md) | <p><code>static</code></p><p><code>readonly</code></p> | [Decimal](./lib-base.decimal.md) |  |
+|  [infinite](./lib-base.decimal.infinite.md) | <code>readonly</code> | this \| undefined |  |
+|  [INFINITY](./lib-base.decimal.infinity.md) | <p><code>static</code></p><p><code>readonly</code></p> | [Decimal](./lib-base.decimal.md) |  |
+|  [isZero](./lib-base.decimal.iszero.md) | <code>readonly</code> | boolean |  |
+|  [nonZero](./lib-base.decimal.nonzero.md) | <code>readonly</code> | this \| undefined |  |
+|  [ONE](./lib-base.decimal.one.md) | <p><code>static</code></p><p><code>readonly</code></p> | [Decimal](./lib-base.decimal.md) |  |
+|  [zero](./lib-base.decimal.zero.md) | <code>readonly</code> | this \| undefined |  |
+|  [ZERO](./lib-base.decimal.zero.md) | <p><code>static</code></p><p><code>readonly</code></p> | [Decimal](./lib-base.decimal.md) |  |
 
 ## Methods
 

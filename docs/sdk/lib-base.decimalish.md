@@ -9,7 +9,7 @@ Types that can be converted into a Decimal.
 **Signature:**
 
 ```typescript
-export declare type Decimalish = Decimal | number | string;
+export type Decimalish = Decimal | number | string;
 ```
 **References:** [Decimal](./lib-base.decimal.md)
 

@@ -9,5 +9,5 @@ Represents whether a UserTrove is open or not, or why it was closed.
 **Signature:**
 
 ```typescript
-export declare type UserTroveStatus = "nonExistent" | "open" | "closedByOwner" | "closedByLiquidation" | "closedByRedemption";
+export type UserTroveStatus = "nonExistent" | "open" | "closedByOwner" | "closedByLiquidation" | "closedByRedemption";
 ```

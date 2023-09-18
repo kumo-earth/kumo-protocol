@@ -20,7 +20,7 @@ Implemented by [PopulatedEthersKumoTransaction](./lib-ethers.populatedetherskumo
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [rawPopulatedTransaction](./lib-base.populatedkumotransaction.rawpopulatedtransaction.md) |  | P | Implementation-specific populated transaction object. |
+|  [rawPopulatedTransaction](./lib-base.populatedkumotransaction.rawpopulatedtransaction.md) | <code>readonly</code> | P | Implementation-specific populated transaction object. |
 
 ## Methods
 

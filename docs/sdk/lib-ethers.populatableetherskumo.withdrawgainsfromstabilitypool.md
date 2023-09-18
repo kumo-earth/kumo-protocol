@@ -17,7 +17,7 @@ withdrawGainsFromStabilityPool(assetName: string, overrides?: EthersTransactionO
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  assetName | string |  |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 

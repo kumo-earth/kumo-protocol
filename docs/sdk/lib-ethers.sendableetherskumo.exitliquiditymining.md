@@ -16,7 +16,7 @@ exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<SentEthersK
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 

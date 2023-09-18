@@ -21,9 +21,9 @@ The constructor for this class is marked as internal. Third-party code should no
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [connection](./lib-ethers.etherskumo.connection.md) |  | [EthersKumoConnection](./lib-ethers.etherskumoconnection.md) | Information about the connection to the Kumo protocol. |
-|  [populate](./lib-ethers.etherskumo.populate.md) |  | [PopulatableEthersKumo](./lib-ethers.populatableetherskumo.md) | Can be used to create populated (unsigned) transactions. |
-|  [send](./lib-ethers.etherskumo.send.md) |  | [SendableEthersKumo](./lib-ethers.sendableetherskumo.md) | Can be used to send transactions without waiting for them to be mined. |
+|  [connection](./lib-ethers.etherskumo.connection.md) | <code>readonly</code> | [EthersKumoConnection](./lib-ethers.etherskumoconnection.md) | Information about the connection to the Kumo protocol. |
+|  [populate](./lib-ethers.etherskumo.populate.md) | <code>readonly</code> | [PopulatableEthersKumo](./lib-ethers.populatableetherskumo.md) | Can be used to create populated (unsigned) transactions. |
+|  [send](./lib-ethers.etherskumo.send.md) | <code>readonly</code> | [SendableEthersKumo](./lib-ethers.sendableetherskumo.md) | Can be used to send transactions without waiting for them to be mined. |
 
 ## Methods
 

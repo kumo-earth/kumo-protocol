@@ -17,7 +17,7 @@ adjust(params: TroveAdjustmentParams<Decimalish>, borrowingRate?: Decimalish): T
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  params | [TroveAdjustmentParams](./lib-base.troveadjustmentparams.md)<!-- -->&lt;[Decimalish](./lib-base.decimalish.md)<!-- -->&gt; | Parameters of the transaction. |
-|  borrowingRate | [Decimalish](./lib-base.decimalish.md) | Borrowing rate to use when adding to the Trove's debt. |
+|  borrowingRate | [Decimalish](./lib-base.decimalish.md) | _(Optional)_ Borrowing rate to use when adding to the Trove's debt. |
 
 **Returns:**
 

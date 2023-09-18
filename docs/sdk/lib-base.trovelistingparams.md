@@ -16,8 +16,8 @@ export interface TroveListingParams
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [beforeRedistribution?](./lib-base.trovelistingparams.beforeredistribution.md) |  | boolean | _(Optional)_ When set to <code>true</code>, the retrieved Troves won't include the liquidation shares received since the last time they were directly modified. |
-|  [first](./lib-base.trovelistingparams.first.md) |  | number | Number of Troves to retrieve. |
-|  [sortedBy](./lib-base.trovelistingparams.sortedby.md) |  | "ascendingCollateralRatio" \| "descendingCollateralRatio" | How the Troves should be sorted. |
-|  [startingAt?](./lib-base.trovelistingparams.startingat.md) |  | number | _(Optional)_ Index of the first Trove to retrieve from the sorted list. |
+|  [beforeRedistribution?](./lib-base.trovelistingparams.beforeredistribution.md) | <code>readonly</code> | boolean | _(Optional)_ When set to <code>true</code>, the retrieved Troves won't include the liquidation shares received since the last time they were directly modified. |
+|  [first](./lib-base.trovelistingparams.first.md) | <code>readonly</code> | number | Number of Troves to retrieve. |
+|  [sortedBy](./lib-base.trovelistingparams.sortedby.md) | <code>readonly</code> | "ascendingCollateralRatio" \| "descendingCollateralRatio" | How the Troves should be sorted. |
+|  [startingAt?](./lib-base.trovelistingparams.startingat.md) | <code>readonly</code> | number | _(Optional)_ Index of the first Trove to retrieve from the sorted list. |
 

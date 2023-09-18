@@ -18,7 +18,7 @@ getAssetBalance(address: string, assetType: string, provider: EthersProvider, ov
 |  address | string |  |
 |  assetType | string |  |
 |  provider | [EthersProvider](./lib-ethers.ethersprovider.md) |  |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
 **Returns:**
 

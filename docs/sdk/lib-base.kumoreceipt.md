@@ -9,7 +9,7 @@ One of either a [PendingReceipt](./lib-base.pendingreceipt.md)<!-- -->, a [Faile
 **Signature:**
 
 ```typescript
-export declare type KumoReceipt<R = unknown, D = unknown> = PendingReceipt | MinedReceipt<R, D>;
+export type KumoReceipt<R = unknown, D = unknown> = PendingReceipt | MinedReceipt<R, D>;
 ```
 **References:** [PendingReceipt](./lib-base.pendingreceipt.md)<!-- -->, [MinedReceipt](./lib-base.minedreceipt.md)
 

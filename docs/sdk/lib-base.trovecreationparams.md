@@ -9,7 +9,7 @@ Parameters of an [openTrove()](./lib-base.transactablekumo.opentrove.md) transac
 **Signature:**
 
 ```typescript
-export declare type TroveCreationParams<T = unknown> = _CollateralDeposit<T> & _NoCollateralWithdrawal & _KUSDBorrowing<T> & _NoKUSDRepayment;
+export type TroveCreationParams<T = unknown> = _CollateralDeposit<T> & _NoCollateralWithdrawal & _KUSDBorrowing<T> & _NoKUSDRepayment;
 ```
 
 ## Remarks

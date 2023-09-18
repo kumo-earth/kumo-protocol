@@ -15,7 +15,7 @@ static connect(signerOrProvider: EthersSigner | EthersProvider, optionalParams?:
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  signerOrProvider | [EthersSigner](./lib-ethers.etherssigner.md) \| [EthersProvider](./lib-ethers.ethersprovider.md) |  |
-|  optionalParams | [EthersKumoConnectionOptionalParams](./lib-ethers.etherskumoconnectionoptionalparams.md) |  |
+|  optionalParams | [EthersKumoConnectionOptionalParams](./lib-ethers.etherskumoconnectionoptionalparams.md) | _(Optional)_ |
 
 **Returns:**
 

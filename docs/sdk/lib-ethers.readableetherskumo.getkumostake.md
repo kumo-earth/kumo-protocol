@@ -18,7 +18,7 @@ getKUMOStake(asset: string, address: string, overrides?: EthersCallOverrides): P
 |  --- | --- | --- |
 |  asset | string |  |
 |  address | string | Address that owns the KUMO Stake. |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
 **Returns:**
 

@@ -18,8 +18,8 @@ adjustTrove(params: TroveAdjustmentParams<Decimalish>, asset: string, maxBorrowi
 |  --- | --- | --- |
 |  params | [TroveAdjustmentParams](./lib-base.troveadjustmentparams.md)<!-- -->&lt;[Decimalish](./lib-base.decimalish.md)<!-- -->&gt; | Parameters of the adjustment. |
 |  asset | string |  |
-|  maxBorrowingRateOrOptionalParams | [Decimalish](./lib-base.decimalish.md) \| [BorrowingOperationOptionalParams](./lib-ethers.borrowingoperationoptionalparams.md) |  |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  maxBorrowingRateOrOptionalParams | [Decimalish](./lib-base.decimalish.md) \| [BorrowingOperationOptionalParams](./lib-ethers.borrowingoperationoptionalparams.md) | _(Optional)_ |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 

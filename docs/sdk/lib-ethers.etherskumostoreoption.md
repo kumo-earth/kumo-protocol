@@ -9,7 +9,7 @@ Possible values for the optional [useStore](./lib-ethers.etherskumoconnectionopt
 **Signature:**
 
 ```typescript
-export declare type EthersKumoStoreOption = "blockPolled";
+export type EthersKumoStoreOption = "blockPolled";
 ```
 
 ## Remarks

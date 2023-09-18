@@ -22,10 +22,10 @@ The constructor for this class is marked as internal. Third-party code should no
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [collateralGain](./lib-base.kumostake.collateralgain.md) |  | [Decimal](./lib-base.decimal.md) | Collateral gain available to withdraw. |
-|  [isEmpty](./lib-base.kumostake.isempty.md) |  | boolean |  |
-|  [kusdGain](./lib-base.kumostake.kusdgain.md) |  | [Decimal](./lib-base.decimal.md) | KUSD gain available to withdraw. |
-|  [stakedKUMO](./lib-base.kumostake.stakedkumo.md) |  | [Decimal](./lib-base.decimal.md) | The amount of KUMO that's staked. |
+|  [collateralGain](./lib-base.kumostake.collateralgain.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) | Collateral gain available to withdraw. |
+|  [isEmpty](./lib-base.kumostake.isempty.md) | <code>readonly</code> | boolean |  |
+|  [kusdGain](./lib-base.kumostake.kusdgain.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) | KUSD gain available to withdraw. |
+|  [stakedKUMO](./lib-base.kumostake.stakedkumo.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) | The amount of KUMO that's staked. |
 
 ## Methods
 

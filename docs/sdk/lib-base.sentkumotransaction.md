@@ -20,7 +20,7 @@ Implemented by [SentEthersKumoTransaction](./lib-ethers.sentetherskumotransactio
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [rawSentTransaction](./lib-base.sentkumotransaction.rawsenttransaction.md) |  | S | Implementation-specific sent transaction object. |
+|  [rawSentTransaction](./lib-base.sentkumotransaction.rawsenttransaction.md) | <code>readonly</code> | S | Implementation-specific sent transaction object. |
 
 ## Methods
 

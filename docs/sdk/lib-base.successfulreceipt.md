@@ -9,7 +9,7 @@ Indicates that the transaction has succeeded.
 **Signature:**
 
 ```typescript
-export declare type SuccessfulReceipt<R = unknown, D = unknown> = {
+export type SuccessfulReceipt<R = unknown, D = unknown> = {
     status: "succeeded";
     rawReceipt: R;
     details: D;

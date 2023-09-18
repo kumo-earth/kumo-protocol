@@ -9,7 +9,7 @@ Represents the change between two states of an KUMO Stake.
 **Signature:**
 
 ```typescript
-export declare type KUMOStakeChange<T> = {
+export type KUMOStakeChange<T> = {
     stakeKUMO: T;
     unstakeKUMO?: undefined;
 } | {

@@ -21,5 +21,5 @@ The constructor for this class is marked as internal. Third-party code should no
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [failedReceipt](./lib-base.transactionfailederror.failedreceipt.md) |  | T |  |
+|  [failedReceipt](./lib-base.transactionfailederror.failedreceipt.md) | <code>readonly</code> | T |  |
 

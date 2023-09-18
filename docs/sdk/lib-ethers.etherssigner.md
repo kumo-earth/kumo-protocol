@@ -9,5 +9,5 @@ Alias of Ethers' abstract [Signer](https://docs.ethers.io/v5/api/signer/) type.
 **Signature:**
 
 ```typescript
-export declare type EthersSigner = Signer;
+export type EthersSigner = Signer;
 ```

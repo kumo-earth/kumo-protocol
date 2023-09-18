@@ -9,7 +9,7 @@ Either a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](.
 **Signature:**
 
 ```typescript
-export declare type MinedReceipt<R = unknown, D = unknown> = FailedReceipt<R> | SuccessfulReceipt<R, D>;
+export type MinedReceipt<R = unknown, D = unknown> = FailedReceipt<R> | SuccessfulReceipt<R, D>;
 ```
 **References:** [FailedReceipt](./lib-base.failedreceipt.md)<!-- -->, [SuccessfulReceipt](./lib-base.successfulreceipt.md)
 

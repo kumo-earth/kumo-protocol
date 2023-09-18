@@ -16,8 +16,8 @@ getLiquidityMiningStake(address?: string, overrides?: EthersCallOverrides): Prom
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  address | string | Address whose LP stake should be retrieved. |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  address | string | _(Optional)_ Address whose LP stake should be retrieved. |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
 **Returns:**
 

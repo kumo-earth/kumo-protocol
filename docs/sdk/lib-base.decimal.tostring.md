@@ -14,7 +14,7 @@ toString(precision?: number): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  precision | number |  |
+|  precision | number | _(Optional)_ |
 
 **Returns:**
 

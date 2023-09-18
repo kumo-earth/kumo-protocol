@@ -22,27 +22,27 @@ export declare class Vault
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [\_feesInNormalMode](./lib-base.vault._feesinnormalmode.md) |  | [Fees](./lib-base.fees.md) |  |
-|  [\_riskiestTroveBeforeRedistribution](./lib-base.vault._riskiesttrovebeforeredistribution.md) |  | [TroveWithPendingRedistribution](./lib-base.trovewithpendingredistribution.md) |  |
-|  [accountBalance](./lib-base.vault.accountbalance.md) |  | [Decimal](./lib-base.decimal.md) |  |
-|  [asset](./lib-base.vault.asset.md) |  | string |  |
-|  [assetAddress](./lib-base.vault.assetaddress.md) |  | string |  |
-|  [assetName](./lib-base.vault.assetname.md) |  | string |  |
-|  [borrowingRate](./lib-base.vault.borrowingrate.md) |  | [Decimal](./lib-base.decimal.md) |  |
-|  [collateralSurplusBalance](./lib-base.vault.collateralsurplusbalance.md) |  | [Decimal](./lib-base.decimal.md) |  |
-|  [fees](./lib-base.vault.fees.md) |  | [Fees](./lib-base.fees.md) |  |
-|  [haveUndercollateralizedTroves](./lib-base.vault.haveundercollateralizedtroves.md) |  | boolean |  |
-|  [kumoStake](./lib-base.vault.kumostake.md) |  | [KUMOStake](./lib-base.kumostake.md) |  |
-|  [kusdInStabilityPool](./lib-base.vault.kusdinstabilitypool.md) |  | [Decimal](./lib-base.decimal.md) |  |
-|  [kusdMintedCap](./lib-base.vault.kusdmintedcap.md) |  | [Decimal](./lib-base.decimal.md) |  |
-|  [minNetDebt](./lib-base.vault.minnetdebt.md) |  | [Decimal](./lib-base.decimal.md) |  |
-|  [numberOfTroves](./lib-base.vault.numberoftroves.md) |  | number |  |
-|  [price](./lib-base.vault.price.md) |  | [Decimal](./lib-base.decimal.md) |  |
-|  [redemptionRate](./lib-base.vault.redemptionrate.md) |  | [Decimal](./lib-base.decimal.md) |  |
-|  [stabilityDeposit](./lib-base.vault.stabilitydeposit.md) |  | [StabilityDeposit](./lib-base.stabilitydeposit.md) |  |
-|  [testTokensTransfered](./lib-base.vault.testtokenstransfered.md) |  | boolean |  |
-|  [total](./lib-base.vault.total.md) |  | [Trove](./lib-base.trove.md) |  |
-|  [totalRedistributed](./lib-base.vault.totalredistributed.md) |  | [Trove](./lib-base.trove.md) |  |
-|  [trove](./lib-base.vault.trove.md) |  | [UserTrove](./lib-base.usertrove.md) |  |
-|  [troveBeforeRedistribution](./lib-base.vault.trovebeforeredistribution.md) |  | [TroveWithPendingRedistribution](./lib-base.trovewithpendingredistribution.md) |  |
+|  [\_feesInNormalMode](./lib-base.vault._feesinnormalmode.md) | <code>readonly</code> | [Fees](./lib-base.fees.md) |  |
+|  [\_riskiestTroveBeforeRedistribution](./lib-base.vault._riskiesttrovebeforeredistribution.md) | <code>readonly</code> | [TroveWithPendingRedistribution](./lib-base.trovewithpendingredistribution.md) |  |
+|  [accountBalance](./lib-base.vault.accountbalance.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) |  |
+|  [asset](./lib-base.vault.asset.md) | <code>readonly</code> | string |  |
+|  [assetAddress](./lib-base.vault.assetaddress.md) | <code>readonly</code> | string |  |
+|  [assetName](./lib-base.vault.assetname.md) | <code>readonly</code> | string |  |
+|  [borrowingRate](./lib-base.vault.borrowingrate.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) |  |
+|  [collateralSurplusBalance](./lib-base.vault.collateralsurplusbalance.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) |  |
+|  [fees](./lib-base.vault.fees.md) | <code>readonly</code> | [Fees](./lib-base.fees.md) |  |
+|  [haveUndercollateralizedTroves](./lib-base.vault.haveundercollateralizedtroves.md) | <code>readonly</code> | boolean |  |
+|  [kumoStake](./lib-base.vault.kumostake.md) | <code>readonly</code> | [KUMOStake](./lib-base.kumostake.md) |  |
+|  [kusdInStabilityPool](./lib-base.vault.kusdinstabilitypool.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) |  |
+|  [kusdMintedCap](./lib-base.vault.kusdmintedcap.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) |  |
+|  [minNetDebt](./lib-base.vault.minnetdebt.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) |  |
+|  [numberOfTroves](./lib-base.vault.numberoftroves.md) | <code>readonly</code> | number |  |
+|  [price](./lib-base.vault.price.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) |  |
+|  [redemptionRate](./lib-base.vault.redemptionrate.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) |  |
+|  [stabilityDeposit](./lib-base.vault.stabilitydeposit.md) | <code>readonly</code> | [StabilityDeposit](./lib-base.stabilitydeposit.md) |  |
+|  [testTokensTransfered](./lib-base.vault.testtokenstransfered.md) | <code>readonly</code> | boolean |  |
+|  [total](./lib-base.vault.total.md) | <code>readonly</code> | [Trove](./lib-base.trove.md) |  |
+|  [totalRedistributed](./lib-base.vault.totalredistributed.md) | <code>readonly</code> | [Trove](./lib-base.trove.md) |  |
+|  [trove](./lib-base.vault.trove.md) | <code>readonly</code> | [UserTrove](./lib-base.usertrove.md) |  |
+|  [troveBeforeRedistribution](./lib-base.vault.trovebeforeredistribution.md) | <code>readonly</code> | [TroveWithPendingRedistribution](./lib-base.trovewithpendingredistribution.md) |  |
 

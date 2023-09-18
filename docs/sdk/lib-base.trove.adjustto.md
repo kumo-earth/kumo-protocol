@@ -17,7 +17,7 @@ adjustTo(that: Trove, borrowingRate?: Decimalish): TroveAdjustmentParams<Decimal
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  that | [Trove](./lib-base.trove.md) | The desired result of the transaction. |
-|  borrowingRate | [Decimalish](./lib-base.decimalish.md) | Current borrowing rate. |
+|  borrowingRate | [Decimalish](./lib-base.decimalish.md) | _(Optional)_ Current borrowing rate. |
 
 **Returns:**
 

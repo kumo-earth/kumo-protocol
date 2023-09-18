@@ -18,7 +18,7 @@ getFrontendStatus(asset: string, address: string, overrides?: EthersCallOverride
 |  --- | --- | --- |
 |  asset | string |  |
 |  address | string | Address to check. |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
 **Returns:**
 

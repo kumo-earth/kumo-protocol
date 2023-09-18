@@ -18,7 +18,7 @@ borrowKUSD(asset: string, amount: Decimalish, maxBorrowingRate?: Decimalish): Pr
 |  --- | --- | --- |
 |  asset | string |  |
 |  amount | [Decimalish](./lib-base.decimalish.md) | The amount of KUSD to borrow. |
-|  maxBorrowingRate | [Decimalish](./lib-base.decimalish.md) | Maximum acceptable [borrowing rate](./lib-base.fees.borrowingrate.md)<!-- -->. |
+|  maxBorrowingRate | [Decimalish](./lib-base.decimalish.md) | _(Optional)_ Maximum acceptable [borrowing rate](./lib-base.fees.borrowingrate.md)<!-- -->. |
 
 **Returns:**
 

@@ -9,7 +9,7 @@ Describes why a Trove could not be created.
 **Signature:**
 
 ```typescript
-export declare type TroveCreationError = "missingLiquidationReserve";
+export type TroveCreationError = "missingLiquidationReserve";
 ```
 
 ## Remarks

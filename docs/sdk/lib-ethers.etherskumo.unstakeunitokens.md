@@ -17,7 +17,7 @@ unstakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Pr
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of LP tokens to withdraw. |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 

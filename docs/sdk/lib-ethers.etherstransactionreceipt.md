@@ -9,5 +9,5 @@ Alias of Ethers' [TransactionReceipt](https://docs.ethers.io/v5/api/providers/ty
 **Signature:**
 
 ```typescript
-export declare type EthersTransactionReceipt = TransactionReceipt;
+export type EthersTransactionReceipt = TransactionReceipt;
 ```

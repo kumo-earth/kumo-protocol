@@ -17,7 +17,7 @@ getTotalRedistributed(asset: string, overrides?: EthersCallOverrides): Promise<T
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  asset | string |  |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
 **Returns:**
 

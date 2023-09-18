@@ -19,7 +19,7 @@ transferTestTokens(tokenAddress: string, toAddress: string, amount: Decimalish, 
 |  tokenAddress | string | Address of test token contract. |
 |  toAddress | string |  |
 |  amount | [Decimalish](./lib-base.decimalish.md) |  |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 

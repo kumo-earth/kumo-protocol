@@ -23,7 +23,7 @@ The constructor for this class is marked as internal. Third-party code should no
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [rawSentTransaction](./lib-ethers.sentetherskumotransaction.rawsenttransaction.md) |  | [EthersTransactionResponse](./lib-ethers.etherstransactionresponse.md) | Ethers' representation of a sent transaction. |
+|  [rawSentTransaction](./lib-ethers.sentetherskumotransaction.rawsenttransaction.md) | <code>readonly</code> | [EthersTransactionResponse](./lib-ethers.etherstransactionresponse.md) | Ethers' representation of a sent transaction. |
 
 ## Methods
 

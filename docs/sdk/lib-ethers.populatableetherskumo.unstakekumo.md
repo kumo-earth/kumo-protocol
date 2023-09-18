@@ -17,7 +17,7 @@ unstakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUMO to withdraw. |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 

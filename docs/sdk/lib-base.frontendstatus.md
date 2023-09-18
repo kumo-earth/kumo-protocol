@@ -9,7 +9,7 @@ Represents whether an address has been registered as a Kumo frontend.
 **Signature:**
 
 ```typescript
-export declare type FrontendStatus = {
+export type FrontendStatus = {
     status: "unregistered";
 } | {
     status: "registered";

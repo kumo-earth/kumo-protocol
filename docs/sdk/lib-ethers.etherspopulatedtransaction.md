@@ -9,5 +9,5 @@ Alias of Ethers' `PopulatedTransaction` type, which implements [UnsignedTransact
 **Signature:**
 
 ```typescript
-export declare type EthersPopulatedTransaction = PopulatedTransaction;
+export type EthersPopulatedTransaction = PopulatedTransaction;
 ```

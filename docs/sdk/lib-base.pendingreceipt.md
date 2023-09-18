@@ -9,7 +9,7 @@ Indicates that the transaction hasn't been mined yet.
 **Signature:**
 
 ```typescript
-export declare type PendingReceipt = {
+export type PendingReceipt = {
     status: "pending";
 };
 ```

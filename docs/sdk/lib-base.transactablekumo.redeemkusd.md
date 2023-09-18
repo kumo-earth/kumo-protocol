@@ -18,7 +18,7 @@ redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish): P
 |  --- | --- | --- |
 |  asset | string |  |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUSD to be redeemed. |
-|  maxRedemptionRate | [Decimalish](./lib-base.decimalish.md) | Maximum acceptable [redemption rate](./lib-base.fees.redemptionrate.md)<!-- -->. |
+|  maxRedemptionRate | [Decimalish](./lib-base.decimalish.md) | _(Optional)_ Maximum acceptable [redemption rate](./lib-base.fees.redemptionrate.md)<!-- -->. |
 
 **Returns:**
 

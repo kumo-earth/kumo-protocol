@@ -9,7 +9,7 @@ Indicates that the transaction has been mined, but it failed.
 **Signature:**
 
 ```typescript
-export declare type FailedReceipt<R = unknown> = {
+export type FailedReceipt<R = unknown> = {
     status: "failed";
     rawReceipt: R;
 };

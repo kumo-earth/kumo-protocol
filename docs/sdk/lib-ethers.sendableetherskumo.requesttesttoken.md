@@ -17,7 +17,7 @@ requestTestToken(tokenAddress: string, overrides?: EthersTransactionOverrides): 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  tokenAddress | string |  |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 

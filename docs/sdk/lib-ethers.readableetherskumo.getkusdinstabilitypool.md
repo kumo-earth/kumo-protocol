@@ -17,7 +17,7 @@ getKUSDInStabilityPool(assetName: string, overrides?: EthersCallOverrides): Prom
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  assetName | string |  |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
 **Returns:**
 

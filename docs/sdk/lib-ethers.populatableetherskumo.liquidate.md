@@ -18,7 +18,7 @@ liquidate(asset: string, address: string | string[], overrides?: EthersTransacti
 |  --- | --- | --- |
 |  asset | string |  |
 |  address | string \| string\[\] | Address or array of addresses whose Troves to liquidate. |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 

@@ -23,5 +23,5 @@ export declare class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStore
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [connection](./lib-ethers.blockpolledkumostore.connection.md) |  | [EthersKumoConnection](./lib-ethers.etherskumoconnection.md) |  |
+|  [connection](./lib-ethers.blockpolledkumostore.connection.md) | <code>readonly</code> | [EthersKumoConnection](./lib-ethers.etherskumoconnection.md) |  |
 

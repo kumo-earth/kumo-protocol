@@ -16,8 +16,8 @@ getKUSDBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decim
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  address | string | Address whose balance should be retrieved. |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  address | string | _(Optional)_ Address whose balance should be retrieved. |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
 **Returns:**
 

@@ -18,7 +18,7 @@ repayKUSD(asset: string, amount: Decimalish, overrides?: EthersTransactionOverri
 |  --- | --- | --- |
 |  asset | string |  |
 |  amount | [Decimalish](./lib-base.decimalish.md) | The amount of KUSD to repay. |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 

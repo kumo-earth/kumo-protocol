@@ -17,7 +17,7 @@ stakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Prom
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of LP tokens to add to new or existing stake. |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 

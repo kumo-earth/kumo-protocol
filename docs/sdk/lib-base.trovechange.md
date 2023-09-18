@@ -9,7 +9,7 @@ Represents the change between two Trove states.
 **Signature:**
 
 ```typescript
-export declare type TroveChange<T> = {
+export type TroveChange<T> = {
     type: "invalidCreation";
     invalidTrove: Trove;
     error: TroveCreationError;

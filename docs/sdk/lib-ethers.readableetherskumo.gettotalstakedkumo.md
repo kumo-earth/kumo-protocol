@@ -16,7 +16,7 @@ getTotalStakedKUMO(overrides?: EthersCallOverrides): Promise<Decimal>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
 **Returns:**
 

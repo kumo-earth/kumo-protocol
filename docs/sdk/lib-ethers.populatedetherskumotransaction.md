@@ -23,8 +23,8 @@ The constructor for this class is marked as internal. Third-party code should no
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [gasHeadroom?](./lib-ethers.populatedetherskumotransaction.gasheadroom.md) |  | number | _(Optional)_ Extra gas added to the transaction's <code>gasLimit</code> on top of the estimated minimum requirement. |
-|  [rawPopulatedTransaction](./lib-ethers.populatedetherskumotransaction.rawpopulatedtransaction.md) |  | [EthersPopulatedTransaction](./lib-ethers.etherspopulatedtransaction.md) | Unsigned transaction object populated by Ethers. |
+|  [gasHeadroom?](./lib-ethers.populatedetherskumotransaction.gasheadroom.md) | <code>readonly</code> | number | _(Optional)_ Extra gas added to the transaction's <code>gasLimit</code> on top of the estimated minimum requirement. |
+|  [rawPopulatedTransaction](./lib-ethers.populatedetherskumotransaction.rawpopulatedtransaction.md) | <code>readonly</code> | [EthersPopulatedTransaction](./lib-ethers.etherspopulatedtransaction.md) | Unsigned transaction object populated by Ethers. |
 
 ## Methods
 

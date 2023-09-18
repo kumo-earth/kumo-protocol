@@ -9,7 +9,7 @@ Parameters of a [closeTrove()](./lib-base.transactablekumo.closetrove.md) transa
 **Signature:**
 
 ```typescript
-export declare type TroveClosureParams<T> = _CollateralWithdrawal<T> & _NoCollateralDeposit & Partial<_KUSDRepayment<T>> & _NoKUSDBorrowing;
+export type TroveClosureParams<T> = _CollateralWithdrawal<T> & _NoCollateralDeposit & Partial<_KUSDRepayment<T>> & _NoKUSDBorrowing;
 ```
 
 ## Remarks

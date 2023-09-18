@@ -18,7 +18,7 @@ registerFrontend(assetName: string, kickbackRate: Decimalish, overrides?: Ethers
 |  --- | --- | --- |
 |  assetName | string | Symbol of the asset token as string |
 |  kickbackRate | [Decimalish](./lib-base.decimalish.md) | The portion of KUMO rewards to pass onto users of the frontend (between 0 and 1). |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 

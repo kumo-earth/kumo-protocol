@@ -18,7 +18,7 @@ liquidateUpTo(asset: string, maximumNumberOfTrovesToLiquidate: number, overrides
 |  --- | --- | --- |
 |  asset | string |  |
 |  maximumNumberOfTrovesToLiquidate | number | Stop after liquidating this many Troves. |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 

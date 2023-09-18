@@ -18,7 +18,7 @@ depositCollateral(asset: string, amount: Decimalish, overrides?: EthersTransacti
 |  --- | --- | --- |
 |  asset | string |  |
 |  amount | [Decimalish](./lib-base.decimalish.md) | The amount of collateral to add to the Trove's existing collateral. |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 

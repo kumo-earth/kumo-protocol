@@ -25,9 +25,9 @@ When [redeemKUSD()](./lib-base.populatablekumo.redeemkusd.md) is called with an 
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [attemptedKUSDAmount](./lib-ethers.populatedethersredemption.attemptedkusdamount.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUSD the redeemer is trying to redeem. |
-|  [isTruncated](./lib-ethers.populatedethersredemption.istruncated.md) |  | boolean | Whether <code>redeemableKUSDAmount</code> is less than <code>attemptedKUSDAmount</code>. |
-|  [redeemableKUSDAmount](./lib-ethers.populatedethersredemption.redeemablekusdamount.md) |  | [Decimal](./lib-base.decimal.md) | Maximum amount of KUSD that is currently redeemable from <code>attemptedKUSDAmount</code>. |
+|  [attemptedKUSDAmount](./lib-ethers.populatedethersredemption.attemptedkusdamount.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) | Amount of KUSD the redeemer is trying to redeem. |
+|  [isTruncated](./lib-ethers.populatedethersredemption.istruncated.md) | <code>readonly</code> | boolean | Whether <code>redeemableKUSDAmount</code> is less than <code>attemptedKUSDAmount</code>. |
+|  [redeemableKUSDAmount](./lib-ethers.populatedethersredemption.redeemablekusdamount.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) | Maximum amount of KUSD that is currently redeemable from <code>attemptedKUSDAmount</code>. |
 
 ## Methods
 

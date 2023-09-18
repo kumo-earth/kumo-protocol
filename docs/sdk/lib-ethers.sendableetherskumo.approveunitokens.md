@@ -16,8 +16,8 @@ approveUniTokens(allowance?: Decimalish, overrides?: EthersTransactionOverrides)
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  allowance | [Decimalish](./lib-base.decimalish.md) | Maximum amount of LP tokens that will be transferrable to liquidity mining (<code>2^256 - 1</code> by default). |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  allowance | [Decimalish](./lib-base.decimalish.md) | _(Optional)_ Maximum amount of LP tokens that will be transferrable to liquidity mining (<code>2^256 - 1</code> by default). |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 

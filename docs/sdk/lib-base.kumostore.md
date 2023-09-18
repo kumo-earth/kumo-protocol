@@ -24,7 +24,7 @@ Implemented by [BlockPolledKumoStore](./lib-ethers.blockpolledkumostore.md)<!-- 
 |  --- | --- | --- | --- |
 |  [logging](./lib-base.kumostore.logging.md) |  | boolean | Turn console logging on/off. |
 |  [onLoaded?](./lib-base.kumostore.onloaded.md) |  | () =&gt; void | _(Optional)_ Called after the state is fetched for the first time. |
-|  [state](./lib-base.kumostore.state.md) |  | [KumoStoreState](./lib-base.kumostorestate.md)<!-- -->&lt;T&gt; | The current store state. |
+|  [state](./lib-base.kumostore.state.md) | <code>readonly</code> | [KumoStoreState](./lib-base.kumostorestate.md)<!-- -->&lt;T&gt; | The current store state. |
 
 ## Methods
 

@@ -9,7 +9,7 @@ Represents the change between two Stability Deposit states.
 **Signature:**
 
 ```typescript
-export declare type StabilityDepositChange<T> = {
+export type StabilityDepositChange<T> = {
     depositKUSD: T;
     withdrawKUSD?: undefined;
 } | {

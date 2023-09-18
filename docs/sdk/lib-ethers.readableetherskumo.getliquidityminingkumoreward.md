@@ -16,8 +16,8 @@ getLiquidityMiningKUMOReward(address?: string, overrides?: EthersCallOverrides):
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  address | string | Address whose KUMO reward should be retrieved. |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  address | string | _(Optional)_ Address whose KUMO reward should be retrieved. |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
 **Returns:**
 

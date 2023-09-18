@@ -18,7 +18,7 @@ getTestTokensTransferState(assetAddress: string, userAddress: string, overrides?
 |  --- | --- | --- |
 |  assetAddress | string | MockAsset Address. |
 |  userAddress | string |  |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
 **Returns:**
 

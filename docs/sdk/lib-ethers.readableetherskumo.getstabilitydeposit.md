@@ -17,8 +17,8 @@ getStabilityDeposit(assetName: string, address?: string, overrides?: EthersCallO
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  assetName | string |  |
-|  address | string | Address that owns the Stability Deposit. |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  address | string | _(Optional)_ Address that owns the Stability Deposit. |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
 **Returns:**
 

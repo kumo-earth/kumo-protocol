@@ -18,7 +18,7 @@ adjustTrove(params: TroveAdjustmentParams<Decimalish>, asset: string, maxBorrowi
 |  --- | --- | --- |
 |  params | [TroveAdjustmentParams](./lib-base.troveadjustmentparams.md)<!-- -->&lt;[Decimalish](./lib-base.decimalish.md)<!-- -->&gt; | Parameters of the adjustment. |
 |  asset | string |  |
-|  maxBorrowingRate | [Decimalish](./lib-base.decimalish.md) | Maximum acceptable [borrowing rate](./lib-base.fees.borrowingrate.md) if <code>params</code> includes <code>borrowKUSD</code>. |
+|  maxBorrowingRate | [Decimalish](./lib-base.decimalish.md) | _(Optional)_ Maximum acceptable [borrowing rate](./lib-base.fees.borrowingrate.md) if <code>params</code> includes <code>borrowKUSD</code>. |
 
 **Returns:**
 

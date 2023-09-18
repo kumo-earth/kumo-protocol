@@ -23,9 +23,9 @@ When [redeemKUSD()](./lib-base.populatablekumo.redeemkusd.md) is called with an 
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [attemptedKUSDAmount](./lib-base.populatedredemption.attemptedkusdamount.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUSD the redeemer is trying to redeem. |
-|  [isTruncated](./lib-base.populatedredemption.istruncated.md) |  | boolean | Whether <code>redeemableKUSDAmount</code> is less than <code>attemptedKUSDAmount</code>. |
-|  [redeemableKUSDAmount](./lib-base.populatedredemption.redeemablekusdamount.md) |  | [Decimal](./lib-base.decimal.md) | Maximum amount of KUSD that is currently redeemable from <code>attemptedKUSDAmount</code>. |
+|  [attemptedKUSDAmount](./lib-base.populatedredemption.attemptedkusdamount.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) | Amount of KUSD the redeemer is trying to redeem. |
+|  [isTruncated](./lib-base.populatedredemption.istruncated.md) | <code>readonly</code> | boolean | Whether <code>redeemableKUSDAmount</code> is less than <code>attemptedKUSDAmount</code>. |
+|  [redeemableKUSDAmount](./lib-base.populatedredemption.redeemablekusdamount.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) | Maximum amount of KUSD that is currently redeemable from <code>attemptedKUSDAmount</code>. |
 
 ## Methods
 

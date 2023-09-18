@@ -21,7 +21,7 @@ The constructor for this class is marked as internal. Third-party code should no
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [connection](./lib-ethers.readableetherskumo.connection.md) |  | [EthersKumoConnection](./lib-ethers.etherskumoconnection.md) |  |
+|  [connection](./lib-ethers.readableetherskumo.connection.md) | <code>readonly</code> | [EthersKumoConnection](./lib-ethers.etherskumoconnection.md) |  |
 
 ## Methods
 

@@ -16,8 +16,8 @@ getUniTokenAllowance(address?: string, overrides?: EthersCallOverrides): Promise
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  address | string | Address holding the Uniswap ETH/KUSD LP tokens. |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  address | string | _(Optional)_ Address holding the Uniswap ETH/KUSD LP tokens. |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
 **Returns:**
 

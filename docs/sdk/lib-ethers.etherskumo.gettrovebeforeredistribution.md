@@ -18,7 +18,7 @@ getTroveBeforeRedistribution(asset: string, address: string, overrides?: EthersC
 |  --- | --- | --- |
 |  asset | string | Address of the ERC20 Asset |
 |  address | string | Address that owns the Trove. |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
 **Returns:**
 

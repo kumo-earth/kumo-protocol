@@ -18,8 +18,8 @@ borrowKUSD(asset: string, amount: Decimalish, maxBorrowingRate?: Decimalish, ove
 |  --- | --- | --- |
 |  asset | string |  |
 |  amount | [Decimalish](./lib-base.decimalish.md) | The amount of KUSD to borrow. |
-|  maxBorrowingRate | [Decimalish](./lib-base.decimalish.md) | Maximum acceptable [borrowing rate](./lib-base.fees.borrowingrate.md)<!-- -->. |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  maxBorrowingRate | [Decimalish](./lib-base.decimalish.md) | _(Optional)_ Maximum acceptable [borrowing rate](./lib-base.fees.borrowingrate.md)<!-- -->. |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
 **Returns:**
 
