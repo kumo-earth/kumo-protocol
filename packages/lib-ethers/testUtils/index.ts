@@ -27,13 +27,11 @@ export const increaseTime = async (timeJumpSeconds: number) => {
 
 export const connectToDeployment = async (
     deployment: _KumoDeploymentJSON,
-    signer: Signer,
-    frontendTag?: string
+    signer: Signer
 ) =>
     EthersKumo._from(
         _connectToDeployment(deployment, signer, {
-            userAddress: await signer.getAddress(),
-            frontendTag
+            userAddress: await signer.getAddress()
         })
     );
 

@@ -23,7 +23,6 @@ Implemented by [EthersKumo](./lib-ethers.etherskumo.md)<!-- -->.
 |  [getAssetBalance(address, assetType, provider)](./lib-base.readablekumo.getassetbalance.md) | Get the amount of BCT held by an address. |
 |  [getCollateralSurplusBalance(asset, address)](./lib-base.readablekumo.getcollateralsurplusbalance.md) | Get the amount of leftover collateral available for withdrawal by an address. |
 |  [getFees(asset)](./lib-base.readablekumo.getfees.md) | Get a calculator for current fees. |
-|  [getFrontendStatus(asset, address)](./lib-base.readablekumo.getfrontendstatus.md) | Check whether an address is registered as a Kumo frontend, and what its kickback rate is. |
 |  [getKUMOBalance(address)](./lib-base.readablekumo.getkumobalance.md) | Get the amount of KUMO held by an address. |
 |  [getKUMOStake(asset, address)](./lib-base.readablekumo.getkumostake.md) | Get the current state of an KUMO Stake. |
 |  [getKUSDBalance(address)](./lib-base.readablekumo.getkusdbalance.md) | Get the amount of KUSD held by an address. |

@@ -105,7 +105,7 @@ interface IStabilityPool is IDeposit {
      * - Sends the tagged front end's accumulated KUMO gains to the tagged front end
      * - Increases deposit and tagged front end's stake, and takes new snapshots for each.
      */
-    function provideToSP(uint256 _amount, address _frontEndTag) external;
+    function provideToSP(uint256 _amount) external;
 
     /*
      * Initial checks:
@@ -139,16 +139,6 @@ interface IStabilityPool is IDeposit {
 
     /*
      * Initial checks:
-     * - Frontend (sender) not already registered
-     * - User (sender) has no deposit
-     * - _kickbackRate is in the range [0, 100%]
-     * ---
-     * Front end makes a one-time selection of kickback rate upon registering
-     */
-    function registerFrontEnd(uint256 _kickbackRate) external;
-
-    /*
-     * Initial checks:
      * - Caller is TroveManager
      * ---
      * Cancels out the specified debt against the KUSD contained in the Stability Pool (as far as possible)
@@ -177,21 +167,9 @@ interface IStabilityPool is IDeposit {
     function getDepositorKUMOGain(address _depositor) external view returns (uint256);
 
     /*
-     * Return the KUMO gain earned by the front end.
-     */
-    function getFrontEndKUMOGain(address _frontEnd) external view returns (uint256);
-
-    /*
      * Return the user's compounded deposit.
      */
     function getCompoundedKUSDDeposit(address _depositor) external view returns (uint256);
-
-    /*
-     * Return the front end's compounded stake.
-     *
-     * The front end's compounded stake is equal to the sum of its depositors' compounded deposits.
-     */
-    function getCompoundedFrontEndStake(address _frontEnd) external view returns (uint256);
 
     /*
      * Calculates the ETH gain earned by the deposit since its last snapshots were taken.

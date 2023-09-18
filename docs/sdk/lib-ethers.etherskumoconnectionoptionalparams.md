@@ -16,7 +16,6 @@ export interface EthersKumoConnectionOptionalParams
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [frontendTag?](./lib-ethers.etherskumoconnectionoptionalparams.frontendtag.md) |  | string | <i>(Optional)</i> Address that will receive KUMO rewards from newly created Stability Deposits by default. |
 |  [userAddress?](./lib-ethers.etherskumoconnectionoptionalparams.useraddress.md) |  | string | <i>(Optional)</i> Address whose Trove, Stability Deposit, KUMO Stake and balances will be read by default. |
 |  [useStore?](./lib-ethers.etherskumoconnectionoptionalparams.usestore.md) |  | [EthersKumoStoreOption](./lib-ethers.etherskumostoreoption.md) | <i>(Optional)</i> Create a [KumoStore](./lib-base.kumostore.md) and expose it as the <code>store</code> property. |
 
