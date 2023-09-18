@@ -64,7 +64,7 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     getUniTokenAllowance(address: string, ...extraParams: T): Promise<Decimal>;
     // (undocumented)
     getUniTokenBalance(address: string, ...extraParams: T): Promise<Decimal>;
-    }
+}
 
 // @internal (undocumented)
 export type _CollateralChange<T> = (_CollateralDeposit<T> & _NoCollateralWithdrawal) | (_CollateralWithdrawal<T> & _NoCollateralDeposit);
@@ -274,7 +274,7 @@ export abstract class KumoStore<T = unknown> {
     subscribe(listener: (params: KumoStoreListenerParams<T>) => void): () => void;
     // @internal (undocumented)
     protected _update(baseStateUpdate?: Partial<KumoStoreBaseState>, extraStateUpdate?: Partial<T>): void;
-    }
+}
 
 // @public
 export interface KumoStoreBaseState {
@@ -629,7 +629,7 @@ export type SuccessfulReceipt<R = unknown, D = unknown> = {
 };
 
 // @internal (undocumented)
-export const _successfulReceipt: <R, D>(rawReceipt: R, details: D, toString?: (() => string) | undefined) => SuccessfulReceipt<R, D>;
+export const _successfulReceipt: <R, D>(rawReceipt: R, details: D, toString?: () => string) => SuccessfulReceipt<R, D>;
 
 // @public
 export interface TransactableKumo {
@@ -796,7 +796,7 @@ export class TroveWithPendingRedistribution extends UserTrove {
     applyRedistribution(totalRedistributed: Trove): UserTrove;
     // (undocumented)
     equals(that: TroveWithPendingRedistribution): boolean;
-    }
+}
 
 // @public
 export class UserTrove extends Trove {
@@ -863,7 +863,6 @@ export class Vault {
     // (undocumented)
     readonly troveBeforeRedistribution: TroveWithPendingRedistribution;
 }
-
 
 // (No @packageDocumentation comment for this package)
 
