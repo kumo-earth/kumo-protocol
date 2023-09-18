@@ -25,4 +25,6 @@ interface IKUSDToken is IERC20, IERC2612 {
     function sendToPool(address _sender, address poolAddress, uint256 _amount) external;
 
     function returnFromPool(address poolAddress, address user, uint256 _amount) external;
+
+    function getDeploymentStartTime() external view returns (uint256);
 }

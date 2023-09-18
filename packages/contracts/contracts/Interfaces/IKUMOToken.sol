@@ -16,7 +16,7 @@ interface IKUMOToken is IERC20, IERC2612 {
 
     function sendToKUMOStaking(address _sender, uint256 _amount) external;
 
-    function getDeploymentStartTime() external view returns (uint256);
+    // function getDeploymentStartTime() external view returns (uint256);
 
     function getLpRewardsEntitlement() external view returns (uint256);
 }
