@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useCallback } from "react";
+import React, { useState, useContext, useEffect, useCallback, ReactNode } from "react";
 import { Flex, Text, Box } from "theme-ui";
 import { Provider, TransactionResponse, TransactionReceipt } from "@ethersproject/abstract-provider";
 import { hexDataSlice, hexDataLength } from "@ethersproject/bytes";
@@ -88,7 +88,7 @@ const TransactionContext = React.createContext<
   [TransactionState, (state: TransactionState) => void] | undefined
 >(undefined);
 
-export const TransactionProvider: React.FC = ({ children }) => {
+export const TransactionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const transactionState = useState<TransactionState>({ type: "idle" });
   return (
     <TransactionContext.Provider value={transactionState}>{children}</TransactionContext.Provider>

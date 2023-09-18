@@ -1,5 +1,5 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Card, Heading, Box, Text } from "theme-ui";
 import { Vault } from "@kumodao/lib-base";
 import { DisabledEditableRow } from "./Editor";
@@ -8,7 +8,7 @@ import { CollateralRatio } from "./CollateralRatio";
 
 
 export const PortfolioTrove: React.FC<{ vault: Vault }> = ({ vault = new Vault() }) => {
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const { trove } = vault;
   const price = vault?.price
@@ -16,7 +16,7 @@ export const PortfolioTrove: React.FC<{ vault: Vault }> = ({ vault = new Vault()
 
   // console.log("READONLY TROVE", trove.collateral.prettify(4));
   return (
-    <Card variant="portfolioCard" onClick={() => history.push(`/dashboard/${vault?.asset}`)}>
+    <Card variant="portfolioCard" onClick={() => navigate(`/dashboard/${vault?.asset}`)}>
       <Heading as="h2">{vault?.asset.toUpperCase()} Vault <Text variant="assetName">({vault.assetName})</Text></Heading>
       <Box sx={{ py: 4, px: 5 }}>
         <Box>

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef, ReactNode } from "react";
 import { KumoStoreState, Decimal } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { FarmViewContext } from "./FarmViewContext";
@@ -30,7 +30,7 @@ const selector = ({
   liquidityMiningKUMOReward
 });
 
-export const FarmViewProvider: React.FC = props => {
+export const FarmViewProvider: React.FC<{ children: ReactNode }> = props => {
   const { children } = props;
   const {
     liquidityMiningStake,

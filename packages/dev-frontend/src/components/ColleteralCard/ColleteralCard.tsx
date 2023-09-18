@@ -1,6 +1,6 @@
 import { Decimal, Trove } from "@kumodao/lib-base";
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Flex, Progress, Box, Card, Text, Heading } from "theme-ui";
 import { useTroveView } from "../Trove/context/TroveViewContext";
 import { InfoIcon } from "../InfoIcon";
@@ -25,13 +25,13 @@ export const CollateralCard: React.FC<CollateralCardProps> = ({
   kusdMintedCap
 }) => {
   const { dispatchEvent, view } = useTroveView();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleClick = () => {
     if (view === "ADJUSTING") {
       dispatchEvent("CANCEL_ADJUST_TROVE_PRESSED");
     }
-    history.push(`/dashboard/${collateralType}`);
+    navigate(`/dashboard/${collateralType}`);
   };
   return (
     <Card variant="collateralCard" sx={{ mb: 5 }} onClick={() => handleClick()}>

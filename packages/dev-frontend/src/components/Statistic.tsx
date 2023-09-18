@@ -1,8 +1,9 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Flex, Card } from "theme-ui";
 import { InfoIcon } from "./InfoIcon";
 
 type StatisticProps = {
+  children: ReactNode,
   name: React.ReactNode;
   tooltip?: React.ReactNode;
 };

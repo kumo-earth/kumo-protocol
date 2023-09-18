@@ -237,7 +237,7 @@ export const WebSocketAugmented = <T extends new (...args: any[]) => BaseProvide
         passReceipt(undefined);
 
         return this._addBlockListener(listener, passReceipt);
-      } else if (eventName === "block") {
+      } else if (typeof eventName === 'string' && eventName === 'block') {
         return this._addBlockListener(...this._wrap(listener, pass));
       } else {
         return super.on(eventName, listener);
@@ -263,7 +263,7 @@ export const WebSocketAugmented = <T extends new (...args: any[]) => BaseProvide
         passReceiptOnce(undefined);
 
         return this._addBlockListener(listener, passReceiptOnce);
-      } else if (eventName === "block") {
+      } else if (typeof eventName === 'string' && eventName === 'block') {
         return this._addBlockListener(...this._wrap(listener, passOnce));
       } else {
         return super.once(eventName, listener);
@@ -271,7 +271,7 @@ export const WebSocketAugmented = <T extends new (...args: any[]) => BaseProvide
     }
 
     off(eventName: EventType, listener: Listener) {
-      if (isTransactionHash(eventName) || eventName === "block") {
+      if (isTransactionHash(eventName) || (typeof eventName === 'string' && eventName === 'block')) {
         return this._removeBlockListener(listener);
       } else {
         return super.off(eventName, listener);

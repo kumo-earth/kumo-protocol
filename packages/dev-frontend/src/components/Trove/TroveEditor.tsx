@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Heading, Box, Card, Text } from "theme-ui";
 
 import {
@@ -21,6 +21,7 @@ import { InfoIcon } from "../InfoIcon";
 import { useParams } from "react-router-dom";
 
 type TroveEditorProps = {
+  children: ReactNode,
   original: Trove;
   edited: Trove;
   fee: Decimal;

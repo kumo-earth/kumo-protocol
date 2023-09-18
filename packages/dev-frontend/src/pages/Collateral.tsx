@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Decimal, KumoStoreState, Percent, Vault } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { Grid, Flex, Text, Box } from "theme-ui";
@@ -27,10 +27,10 @@ const style = {
 
 export const Collateral: React.FC = () => {
   const dialog = useDialogState();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { showModal,view, dispatchEvent } = useStabilityView();
   const { vaults } = useKumoSelector(select);
-  const { collateralType } = useParams<{ collateralType: string }>();
+  const { collateralType = "nbc" || "csc"} = useParams<{ collateralType: string }>();
   const vault = vaults.find(vault => vault.asset === collateralType) ?? new Vault();
   const totalCollateralRatioPct = !vault?.total?.isEmpty ? new Percent(vault.total.collateralRatio(vault?.price)).toString(0) : `${Decimal.from(0).prettify(0)} %`;
 
@@ -44,7 +44,7 @@ export const Collateral: React.FC = () => {
   useEffect(() => {
     const vault = vaults.find(vault => vault.asset === collateralType)
      if(!vault){
-      history.push('/')
+      navigate('/')
      }
      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collateralType])

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef, ReactNode } from "react";
 import { SwitchNetworkViewContext } from "./SwitchNetworkViewContext";
 import type { SwitchNetworkView, SwitchNetworkEvent } from "./types";
 
@@ -19,9 +19,7 @@ const transition = (view: SwitchNetworkView, event: SwitchNetworkEvent): SwitchN
   };
 
 
-export const SwitchNetworkViewProvider: React.FC = props => {
-  const { children } = props;
-  
+export const SwitchNetworkViewProvider: React.FC<{ children: ReactNode }> = ({ children }) => {  
   const [view, setView] = useState<SwitchNetworkView>("NONE");
   const [showSwitchModal, setShowSwitchModal] = useState(false)
   const viewRef = useRef<SwitchNetworkView>(view);

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { Decimal, KumoStoreState } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";
 
@@ -22,7 +22,7 @@ const select = ({ vaults }: KumoStoreState) => ({
 });
 
 
-export const DashboardProvider: React.FC = ({ children }) => {
+export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { vaults } = useKumoSelector(select);
   const [assetTotalCollDebt, setAssetTotalCollDebt] = useState<{ [key: string]: { assetCollateral: Decimal, assetDebt: Decimal } }>();
 

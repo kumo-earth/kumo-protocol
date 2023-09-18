@@ -1,9 +1,10 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Box, Button, Flex } from "theme-ui";
 
 import { Dialog } from "./Dialog";
 
 type RetryDialogProps = {
+  children: ReactNode, 
   title: string;
   cancelLabel?: string;
   retryLabel?: string;

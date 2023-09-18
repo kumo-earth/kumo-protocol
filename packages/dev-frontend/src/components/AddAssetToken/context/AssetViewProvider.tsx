@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef, ReactNode } from "react";
 import { AddAssetViewContext } from "./AssetViewContext";
 import type { AddAssetView, AddAssetEvent } from "./types";
 
@@ -18,7 +18,7 @@ const transition = (view: AddAssetView, event: AddAssetEvent): AddAssetView => {
   return nextView;
 };
 
-export const AddAssetViewProvider: React.FC = props => {
+export const AddAssetViewProvider: React.FC<{ children: ReactNode }> = props => {
   const { children } = props;
 
   const [view, setView] = useState<AddAssetView>("NONE");

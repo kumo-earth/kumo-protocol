@@ -1,16 +1,11 @@
 import { useState, useEffect } from "react";
-import { useRouteMatch, useLocation } from "react-router-dom";
+import { useMatch, useLocation } from "react-router-dom";
 import { startCase } from 'lodash'
-
-type UserView = {
-  collateralType: string;
-  stakingType: string;
-};
 
 const useUserViewParam = (): string => {
   const [userViewParam, setUserViewParam] = useState("");
-  const collateralTypeRoute = useRouteMatch<UserView>("/dashboard/:collateralType");
-  const stakingTypeRoute = useRouteMatch<UserView>("/staking/:stakingType");
+  const collateralTypeRoute = useMatch("/dashboard/:collateralType");
+  const stakingTypeRoute = useMatch("/staking/:stakingType");
 
   const location = useLocation();
 

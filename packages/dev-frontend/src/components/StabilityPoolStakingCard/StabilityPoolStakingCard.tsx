@@ -1,5 +1,5 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Box, Card, Heading, Text } from "theme-ui";
 import stabilityPoolStaking from "../../asset/images/stability_pool_gradient.png";
 import stabilityMiningGradient from "../../asset/images/liquidity_mining_gradient.png";
@@ -15,7 +15,7 @@ export const StabilityPoolStakingCard: React.FC<CollateralCardProps> = ({
   description,
   stakingType
 }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const getStakingImg = (sType: string) => {
     if (sType === "stability") {
@@ -25,7 +25,7 @@ export const StabilityPoolStakingCard: React.FC<CollateralCardProps> = ({
     }
   };
   return (
-    <Card variant="StabilityPoolStakingCard" onClick={() => history.push(`/staking/${stakingType}`)}>
+    <Card variant="StabilityPoolStakingCard" onClick={() => navigate(`/staking/${stakingType}`)}>
       <Box
         sx={{
           width: "100%",

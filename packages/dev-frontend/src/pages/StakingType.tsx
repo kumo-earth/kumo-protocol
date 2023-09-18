@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Grid, Box } from "theme-ui";
 import { Stability } from "../components/Stability/Stability";
 import { StakingTypeCard } from "../components/StakingTypeCard/StakingTypeCard";
@@ -17,12 +17,12 @@ export const StakingType: React.FC = () => {
   const { showModal, view, dispatchEvent } = useStabilityView();
   const dialog = useDialogState();
   const { vaults } = useKumoSelector(select);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!dialog.visible || !showModal) {
       dispatchEvent("CLOSE_MODAL_PRESSED");
-      history.push("/staking/stability");
+      navigate("/staking/stability");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dialog.visible, showModal]);
@@ -77,7 +77,7 @@ export const StakingType: React.FC = () => {
             handleViewStakeDeposit={() => {
               dispatchEvent("OPEN_MODAL_PRESSED");
               dialog.setVisible(true);
-              history.push(`/staking/stability/${vault.asset}`);
+              navigate(`/staking/stability/${vault.asset}`);
             }}
           />
         );

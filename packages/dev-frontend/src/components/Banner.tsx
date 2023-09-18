@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, ReactNode } from "react";
 import { Progress, Alert, Heading } from "theme-ui";
 import { useViewBanner } from "../hooks/useViewBanner";
 import { Icon } from "./Icon";
 
-export const Banner: React.FC<{ bannerHeading: string, visibility: number, viewId: string }> = ({ bannerHeading, visibility, viewId, children }) => {
+export const Banner: React.FC<{ children: ReactNode, bannerHeading: string, visibility: number, viewId: string }> = ({ bannerHeading, visibility, viewId, children }) => {
   const { isViewBannerCheck, changeInProgress } = useViewBanner(visibility, viewId);
   const [isView, setIsView] = useState(true);
 

@@ -34,7 +34,7 @@ const GAS_ROOM_ETH = Decimal.from(0.1);
 
 export const Opening: React.FC = () => {
   const { dispatchEvent } = useTroveView();
-  const { collateralType } = useParams<{ collateralType: string }>();
+  const { collateralType = "nbc" || "csc" } = useParams<{ collateralType: string }>();
 
   const { accountBalance, fees, price, total, kusdMintedCap, assetName, validationContext } = useKumoSelector((state: KumoStoreState) => {
     const { vaults, kusdBalance } = state;
@@ -235,7 +235,7 @@ export const Opening: React.FC = () => {
 
           {gasEstimationState.type === "inProgress" ? (
             <Button disabled>
-              <Spinner size="24px" sx={{ color: "background" }} />
+              <Spinner size={24} sx={{ color: "background" }} />
             </Button>
           ) : (stableTroveChange && !isMintCapReached) ? (
             <TroveAction
