@@ -18,11 +18,11 @@ import "../Interfaces/IKUMOToken.sol";
 */
 contract LockupContract {
     using SafeMath for uint256;
-	// bool public isInitialized;
+    // bool public isInitialized;
     // --- Data ---
-    string constant public NAME = "LockupContract";
+    string public constant NAME = "LockupContract";
 
-    uint256 constant public SECONDS_IN_ONE_YEAR = 31536000; 
+    uint256 public constant SECONDS_IN_ONE_YEAR = 31536000;
 
     address public immutable beneficiary;
 
@@ -38,23 +38,17 @@ contract LockupContract {
 
     // --- Functions ---
 
-    constructor
-    (
-        address _kumoTokenAddress, 
-        address _beneficiary, 
-        uint256 _unlockTime
-    ) 
-    {
+    constructor(address _kumoTokenAddress, address _beneficiary, uint256 _unlockTime) {
         kumoToken = IKUMOToken(_kumoTokenAddress);
 
         /*
-        * Set the unlock time to a chosen instant in the future, as long as it is at least 1 year after
-        * the system was deployed 
-        */
+         * Set the unlock time to a chosen instant in the future, as long as it is at least 1 year after
+         * the system was deployed
+         */
         _requireUnlockTimeIsAtLeastOneYearAfterSystemDeployment(_unlockTime);
         unlockTime = _unlockTime;
-        
-        beneficiary =  _beneficiary;
+
+        beneficiary = _beneficiary;
         emit LockupContractCreated(_beneficiary, _unlockTime);
     }
 
