@@ -390,7 +390,7 @@ export class PopulatableEthersKumo implements PopulatableKumo<EthersTransactionR
     withdrawKUMORewardFromLiquidityMining(overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
     // (undocumented)
     withdrawKUSDFromStabilityPool(amount: Decimalish, assetName: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<StabilityDepositChangeDetails>>;
-    }
+}
 
 // @public
 export class PopulatedEthersKumoTransaction<T = unknown> implements PopulatedKumoTransaction<EthersPopulatedTransaction, SentEthersKumoTransaction<T>> {
@@ -626,7 +626,6 @@ export class UnsupportedNetworkError extends Error {
     constructor(chainId: number);
     readonly chainId: number;
 }
-
 
 // (No @packageDocumentation comment for this package)
 
