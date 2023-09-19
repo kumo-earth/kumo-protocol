@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Box, Flex } from "theme-ui";
 import { Link } from "../components/Link";
 import { StatsRiskyTroves } from "../components/StatsRiskyTroves/StatsRiskyTroves";
@@ -7,25 +6,15 @@ import { ProtocolStats } from "./ProtocolStats";
 
 export const Stats: React.FC = () => {
   const { statsType = "protocol" || "vaults" } = useParams<{ statsType: string }>();
-  const navigate = useNavigate();
-  
-  useEffect(() => {
-     if(statsType === 'protocol' || statsType !== 'vaults'){
-      navigate('/stats/protocol')
-     }
-     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statsType])
-  
+
   const renderStatsView = (view: string) => {
     switch (view) {
       case "protocol":
-        return  <ProtocolStats />;
+        return <ProtocolStats />;
       case "vaults":
-        return  <StatsRiskyTroves />;
-      // case "liquidations":
-      //     return <StatsLiquidation />;
+        return <StatsRiskyTroves />;
       default:
-        return <Box>protocol</Box>;
+        return <ProtocolStats />;
     }
   };
 
@@ -33,7 +22,7 @@ export const Stats: React.FC = () => {
     <Flex sx={{ py: 4, px: [3, 5], height: "100%", flexDirection: "column" }}>
       <Flex>
         <Link
-          to="protocol"
+          to="/stats/protocol"
           sx={{
             py: [1, 2],
             px: [2, 3],
@@ -50,7 +39,7 @@ export const Stats: React.FC = () => {
           PROTOCOL STATISTICS
         </Link>
         <Link
-          to="vaults"
+          to="/stats/vaults"
           sx={{
             py: [1, 2],
             px: [2, 3],

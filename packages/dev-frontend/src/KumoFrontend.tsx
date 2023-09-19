@@ -96,7 +96,6 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
                           <Route path="/staking/liquidity" element={<LiquidityStaking />} />
                           <Route path="/staking/:stakingType" element={<StakingType />} />
                           <Route path="/staking/:stakingType/:collateralType" element={<StakingType />} />
-                          <Route path="/stats" element={<Navigate to="/stats/protocol" />} />
                           <Route path="/stats/:statsType" element={<Stats />} />
                           <Route path="/farm" element={<Farm />} />
                           <Route path="/risky-troves" element={<RiskyTrovesPage />} />
