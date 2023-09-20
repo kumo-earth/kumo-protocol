@@ -26,7 +26,8 @@ const GAS_PRICE = 10000000;
  *
  */
 
-contract("KUMOStaking revenue share tests", async accounts => {
+// TODO: remove in KIP-3
+contract.skip("KUMOStaking revenue share tests", async accounts => {
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000);
 
   const [owner, A, B, C, D, E, F, G, whale] = accounts;

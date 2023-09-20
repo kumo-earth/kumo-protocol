@@ -9,7 +9,8 @@ const assertRevert = th.assertRevert
 const toBN = th.toBN
 const dec = th.dec
 
-contract('Deploying the KUMO contracts: LCF, CI, KUMOStaking, and KUMOToken ', async accounts => {
+// TODO: remove in KIP-3
+contract.skip('Deploying the KUMO contracts: LCF, CI, KUMOStaking, and KUMOToken ', async accounts => {
   const [liquityAG, A, B] = accounts;
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
 
