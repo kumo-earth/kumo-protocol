@@ -51,6 +51,8 @@ contract KUSDToken is CheckContract, IKUSDToken {
     bytes32 private immutable _HASHED_NAME;
     bytes32 private immutable _HASHED_VERSION;
 
+    uint256 internal immutable deploymentStartTime;
+
     mapping(address => uint256) private _nonces;
 
     // User data for KUSD token
@@ -96,6 +98,7 @@ contract KUSDToken is CheckContract, IKUSDToken {
         _HASHED_VERSION = hashedVersion;
         _CACHED_CHAIN_ID = _chainID();
         _CACHED_DOMAIN_SEPARATOR = _buildDomainSeparator(_TYPE_HASH, hashedName, hashedVersion);
+        deploymentStartTime = block.timestamp;
     }
 
     // --- Functions for intra-Kumo calls ---
@@ -369,5 +372,9 @@ contract KUSDToken is CheckContract, IKUSDToken {
 
     function permitTypeHash() external pure override returns (bytes32) {
         return _PERMIT_TYPEHASH;
+    }
+
+    function getDeploymentStartTime() external view override returns (uint256) {
+        return deploymentStartTime;
     }
 }

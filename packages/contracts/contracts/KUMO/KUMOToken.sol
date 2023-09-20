@@ -87,7 +87,7 @@ contract KUMOToken is CheckContract, IKUMOToken {
     // uint256 for use with SafeMath
     uint256 internal _1_MILLION = 1e24; // 1e6 * 1e18 = 1e24
 
-    uint256 internal immutable deploymentStartTime;
+    // uint256 internal immutable deploymentStartTime;
     address public immutable multisigAddress;
 
     address public immutable communityIssuanceAddress;
@@ -131,7 +131,7 @@ contract KUMOToken is CheckContract, IKUMOToken {
         checkContract(_lockupFactoryAddress);
 
         multisigAddress = _multisigAddress;
-        deploymentStartTime = block.timestamp;
+        // deploymentStartTime = block.timestamp;
 
         communityIssuanceAddress = _communityIssuanceAddress;
         kumoStakingAddress = _kumoStakingAddress;
@@ -177,9 +177,9 @@ contract KUMOToken is CheckContract, IKUMOToken {
         return _balances[account];
     }
 
-    function getDeploymentStartTime() external view override returns (uint256) {
-        return deploymentStartTime;
-    }
+    // function getDeploymentStartTime() external view override returns (uint256) {
+    //     return deploymentStartTime;
+    // }
 
     function getLpRewardsEntitlement() external view override returns (uint256) {
         return lpRewardsEntitlement;
@@ -366,7 +366,8 @@ contract KUMOToken is CheckContract, IKUMOToken {
     }
 
     function _isFirstYear() internal view returns (bool) {
-        return (block.timestamp.sub(deploymentStartTime) < ONE_YEAR_IN_SECONDS);
+        // return (block.timestamp.sub(deploymentStartTime) < ONE_YEAR_IN_SECONDS);
+        return true;
     }
 
     // --- 'require' functions ---

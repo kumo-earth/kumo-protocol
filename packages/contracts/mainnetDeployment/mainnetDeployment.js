@@ -91,7 +91,7 @@ async function mainnetDeploy(configParams) {
   console.log(`Unipool address: ${unipool.address}`)
   
   // let latestBlock = await ethers.provider.getBlockNumber()
-  let deploymentStartTime = await LQTYContracts.kumoToken.getDeploymentStartTime()
+  let deploymentStartTime = await liquityCore.kusdToken.getDeploymentStartTime()
 
   console.log(`deployment start time: ${deploymentStartTime}`)
   const oneYearFromDeployment = (Number(deploymentStartTime) + timeVals.SECONDS_IN_ONE_YEAR).toString()

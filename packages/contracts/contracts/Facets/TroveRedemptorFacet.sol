@@ -1342,7 +1342,7 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
     }
 
     function _requireAfterBootstrapPeriod() internal view {
-        uint256 systemDeploymentTime = s.kumoToken.getDeploymentStartTime();
+        uint256 systemDeploymentTime = s.kusdToken.getDeploymentStartTime();
         require(
             block.timestamp >= systemDeploymentTime + s.kumoParams.BOOTSTRAP_PERIOD(),
             "TroveManager: Redemptions are not allowed during bootstrap phase"

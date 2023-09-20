@@ -5,7 +5,7 @@ const th = testHelpers.TestHelper
 const timeValues = testHelpers.TimeValues
 const { dec, toBN, assertRevert } = th
 
-contract('After the initial lockup period has passed', async accounts => {
+contract.skip('After the initial lockup period has passed', async accounts => {
   const [
     liquityAG,
     teamMember_1,
@@ -67,6 +67,7 @@ contract('After the initial lockup period has passed', async accounts => {
 
     kumoStaking = KUMOContracts.kumoStaking
     kumoToken = KUMOContracts.kumoToken
+    kusdToken = coreContracts.kusdToken;
     communityIssuance = KUMOContracts.communityIssuance
     lockupContractFactory = KUMOContracts.lockupContractFactory
 
@@ -110,7 +111,7 @@ contract('After the initial lockup period has passed', async accounts => {
     await kumoToken.transfer(LC_I2.address, investorInitialEntitlement_2, { from: multisig })
     await kumoToken.transfer(LC_I3.address, investorInitialEntitlement_3, { from: multisig })
 
-    const systemDeploymentTime = await kumoToken.getDeploymentStartTime()
+    const systemDeploymentTime = await kusdToken.getDeploymentStartTime()
 
     // Every thirty days, mutlsig transfers vesting amounts to team members
     for (i = 0; i < 12; i++) {

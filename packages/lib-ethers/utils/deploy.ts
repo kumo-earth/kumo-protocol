@@ -565,7 +565,7 @@ export const deployAndSetupContracts = async (
   await mintMockAssets(signers, contracts);
 
 
-  const kumoTokenDeploymentTime = await contracts.kumoToken.getDeploymentStartTime();
+  const kumoTokenDeploymentTime = await contracts.kusdToken.getDeploymentStartTime();
   // const bootstrapPeriod = await contracts.troveManager.BOOTSTRAP_PERIOD();
   const bootstrapPeriod = await contracts.kumoParameters.REDEMPTION_BLOCK_DAY();
   const totalStabilityPoolKUMOReward = await contracts.communityIssuance.KUMOSupplyCap();

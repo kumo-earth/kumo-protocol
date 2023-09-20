@@ -385,6 +385,7 @@ interface KUSDTokenCalls {
   decimals(_overrides?: CallOverrides): Promise<number>;
   domainSeparator(_overrides?: CallOverrides): Promise<string>;
   emergencyStopMintingCollateral(arg0: string, _overrides?: CallOverrides): Promise<boolean>;
+  getDeploymentStartTime(_overrides?: CallOverrides): Promise<BigNumber>;
   name(_overrides?: CallOverrides): Promise<string>;
   nonces(owner: string, _overrides?: CallOverrides): Promise<BigNumber>;
   permitTypeHash(_overrides?: CallOverrides): Promise<string>;
@@ -505,7 +506,6 @@ interface KUMOTokenCalls {
   communityIssuanceAddress(_overrides?: CallOverrides): Promise<string>;
   decimals(_overrides?: CallOverrides): Promise<number>;
   domainSeparator(_overrides?: CallOverrides): Promise<string>;
-  getDeploymentStartTime(_overrides?: CallOverrides): Promise<BigNumber>;
   getLpRewardsEntitlement(_overrides?: CallOverrides): Promise<BigNumber>;
   kumoStakingAddress(_overrides?: CallOverrides): Promise<string>;
   lockupContractFactory(_overrides?: CallOverrides): Promise<string>;

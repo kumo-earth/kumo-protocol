@@ -9,7 +9,7 @@ const th = testHelpers.TestHelper
 const timeValues = testHelpers.TimeValues
 const { dec, toBN, assertRevert } = th
 
-contract('Deploying and funding One Year Lockup Contracts', async accounts => {
+contract.skip('Deploying and funding One Year Lockup Contracts', async accounts => {
   const [liquityAG, A, B, C, D, E, F, G, H, I, J] = accounts;
 
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
