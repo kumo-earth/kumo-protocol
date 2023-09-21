@@ -9,6 +9,7 @@
     "@fortawesome/free-regular-svg-icons": "5.15.2",
     "@fortawesome/free-solid-svg-icons": "5.15.2",
     "@fortawesome/react-fontawesome": "0.1.14",
+    "@mdx-js/react": "^2.3.0",
     "@metamask/providers": "^9.0.0",
     "@popperjs/core": "2.9.1",
     "@testing-library/dom": "8.14.0",
@@ -48,6 +49,7 @@
     "source-map-explorer": "2.5.2",
     "theme-ui": "0.6.0-canary.1544.5359f8a1e408a4dfeb74a9ae39688270286e534a.0",
     "typescript": "4.1.5",
+    "update-browserslist-db": "^1.0.11",
     "web3-providers-http": "^1.7.3"
   },
   "scripts": {
