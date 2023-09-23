@@ -14,7 +14,7 @@ const select = ({
   vaults
 });
 
-export const NoDeposit: React.FC = props => {
+export const NoDeposit: React.FC = () => {
   const { vaults } = useKumoSelector(select);
   const { dispatchEvent } = useStabilityView();
   const { collateralType } = useParams<{ collateralType: string }>();

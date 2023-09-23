@@ -1,6 +1,7 @@
+import React from "react";
 import { Heading } from "theme-ui";
 import useUserViewParam from "../hooks/useUserViewParam";
-import _ from "lodash";
+import { startCase } from "lodash";
 
 const UserView = () => {
   const userViewParam = useUserViewParam();
@@ -9,9 +10,9 @@ const UserView = () => {
     .map(param => {
       const prm = param.toLocaleLowerCase();
       if (prm === "nbc" || prm === "csc") {
-        return _.toUpper(prm);
+        return prm.toUpperCase();
       } else {
-        return _.startCase(prm);
+        return startCase(prm);
       }
     })
     .join(" ");

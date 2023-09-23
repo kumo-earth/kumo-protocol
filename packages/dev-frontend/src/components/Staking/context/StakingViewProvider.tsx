@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 
 import { KumoStoreState, KUMOStake } from "@kumodao/lib-base";
 import { KumoStoreUpdate, useKumoReducer } from "@kumodao/lib-react";

@@ -1,3 +1,4 @@
+import React from "react";
 import { Grid } from "theme-ui";
 import { MiningTypeCard } from "../components/MiningTypeCard/MiningTypeCard";
 

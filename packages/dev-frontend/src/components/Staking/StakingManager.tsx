@@ -12,10 +12,8 @@ import { StakingEditor } from "./StakingEditor";
 import { StakingManagerAction } from "./StakingManagerAction";
 import { ActionDescription, Amount } from "../ActionDescription";
 import { ErrorDescription } from "../ErrorDescription";
-import { useLocation } from "react-router-dom";
 
 const init = ({ kumoStake }: KumoStoreState) => {
-  const location = useLocation();
   return {
     originalStake: kumoStake,
     editedKUMO: kumoStake.stakedKUMO

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Decimal, KumoStoreState, Percent, Vault } from "@kumodao/lib-base";
 import { useKumoSelector } from "@kumodao/lib-react";

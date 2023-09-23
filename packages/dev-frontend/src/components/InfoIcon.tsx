@@ -9,7 +9,7 @@ export type InfoIconProps = Pick<TippyProps, "placement"> &
     color?: string;
   };
 
-export const InfoIcon: React.FC<InfoIconProps> = ({ placement = "right", tooltip, color = "#da357a", size = "1x" }) => {
+export const InfoIcon: React.FC<InfoIconProps> = ({ tooltip, color = "#da357a", size = "1x" }) => {
   return (
     <Tippy interactive={true} content={tooltip}>
       <span>

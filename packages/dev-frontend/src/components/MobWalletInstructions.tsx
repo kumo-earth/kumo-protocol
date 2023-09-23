@@ -8,7 +8,7 @@ type SystemStatsProps = {
   showBalances?: boolean;
 };
 
-export const MobWalletInstructons: React.FC<SystemStatsProps> = ({ variant = "info", showBalances }) => {
+export const MobWalletInstructons: React.FC<SystemStatsProps> = () => {
   const { systemTotalCollDebt } = useDashboard();
 
   return (

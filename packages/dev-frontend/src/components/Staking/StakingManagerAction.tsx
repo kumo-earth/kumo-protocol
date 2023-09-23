@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { Button } from "theme-ui";
 
 import { Decimal, KUMOStakeChange } from "@kumodao/lib-base";

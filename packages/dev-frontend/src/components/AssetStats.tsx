@@ -2,7 +2,6 @@ import React from "react";
 import { Card, Box, Text, Flex, Progress, Divider } from "theme-ui";
 import { Decimal, Trove } from "@kumodao/lib-base";
 
-import { toUpper } from "lodash";
 import { InfoIcon } from "./InfoIcon";
 
 type SystemStatsProps = {
@@ -32,9 +31,9 @@ export const AssetStats: React.FC<SystemStatsProps> = ({
             tooltip={
               <Card variant="tooltip" >
                 {`The Total Collateral Ratio or TCR is the ratio of the Dollar value of the entire
-                system collateral at the current ${toUpper(
-                  collateralType
-                )}:USD price, to the entire system debt.`}
+                system collateral at the current ${
+                  collateralType.toUpperCase
+                }:USD price, to the entire system debt.`}
               </Card>
             }
           />

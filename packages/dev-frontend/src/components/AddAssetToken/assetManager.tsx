@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Flex, Label, Input } from "theme-ui";
+import { Flex, Label, Input } from "theme-ui";
 
 export const AssetManager: React.FC<{ toAddress: string }> = ({
   toAddress

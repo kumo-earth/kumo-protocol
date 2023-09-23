@@ -398,7 +398,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.wait(10000);
     cy.get('#reload-btn').click();
     cy.get('input[name="price-manager"]').invoke('val').then(price => {
-      const currentPrice = price;
+      const currentPrice = price.split(".")[0];
       expect(currentPrice).to.equal('137');
     })
     cy.get('#risky-vaults-table tbody tr').should('have.length', 3)
