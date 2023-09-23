@@ -399,7 +399,7 @@ describe('KUMO App e2e testing spec', () => {
     cy.get('#reload-btn').click();
     cy.get('input[name="price-manager"]').invoke('val').then(price => {
       const currentPrice = price;
-      expect(currentPrice).to.equal('137.00');
+      expect(currentPrice).to.equal('137');
     })
     cy.get('#risky-vaults-table tbody tr').should('have.length', 3)
     cy.contains('td', '109.1%').siblings().get('#liq-btn').click();

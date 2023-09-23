@@ -55,64 +55,63 @@ export const KumoFrontend: React.FC<KumoFrontendProps> = ({ loader }) => {
 
   return (
     <KumoStoreProvider {...{ loader }} store={kumo.store}>
-        <DashboardProvider>
-          <TroveViewProvider>
-            <StabilityViewProvider>
-              <StakingViewProvider>
-                <FarmViewProvider>
-                  <Banner bannerHeading="Information" visibility={1000} viewId="testToken">
-                    <Text sx={{ fontWeight: 500 }}> This is the KUMO test version. Please connect and then request test tokens at the faucet. For feedback and questions, reach out to <Text sx={{ fontWeight: "bold" }}>contact@kumo.earth</Text>.</Text>
-                  </Banner>
-                  {/* {
+      <DashboardProvider>
+        <TroveViewProvider>
+          <StabilityViewProvider>
+            <StakingViewProvider>
+              <FarmViewProvider>
+                <Banner bannerHeading="Information" visibility={1000} viewId="testToken">
+                  <Text sx={{ fontWeight: 500 }}> This is the KUMO test version. Please connect and then request test tokens at the faucet. For feedback and questions, reach out to <Text sx={{ fontWeight: "bold" }}>contact@kumo.earth</Text>.</Text>
+                </Banner>
+                {/* {
                     account && <Banner bannerHeading="Faucet links for test MATICS" visibility={1000} viewId="matics">
                       <Link to={{ pathname: "https://mumbaifaucet.com/" }} target="_blank" sx={{ p: 0, pt: 2, pb: 1, textTransform: "lowercase" }}>https://mumbaifaucet.com/</Link>
                       <Link to={{ pathname: "https://faucet.polygon.technology/" }} target="_blank" sx={{ p: 0, pb: 2, textTransform: "lowercase"  }}>https://faucet.polygon.technology/</Link>
                     </Banner>
                   } */}
-                  <Flex variant="layout.app" sx={{ backgroundImage: `url(${appBackground})` }}>
-                    <Sidebar />
-                    <Flex
-                      sx={{
-                        flexDirection: "column",
-                        p: 0,
-                        flexGrow: 1,
-                        height: "100%",
-                        width: ["100vw", "calc(100vw - 20vw)"]
-                      }}
-                    >
-                      <Header>
-                        <UserView />
-                        <Box sx={{ display: ["none", "flex"] }}><UserAccount /></Box>
-                        <SystemStatsPopup />
-                      </Header>
-
-                      <Container variant="main">
-                        <Routes>
-                          <Route path="/" element={<Navigate to="/dashboard" />} />
-                          <Route path="/dashboard" element={<PageSwitcher />} />
-                          <Route path="/dashboard/:collateralType" element={<Collateral />} />
-                          <Route path="/portfolio" element={<Portfolio />} />
-                          <Route path="/staking" element={<StabilityPoolStaking />} />
-                          <Route path="/staking/liquidity" element={<LiquidityStaking />} />
-                          <Route path="/staking/:stakingType" element={<StakingType />} />
-                          <Route path="/staking/:stakingType/:collateralType" element={<StakingType />} />
-                          <Route path="/stats/:statsType" element={<Stats />} />
-                          <Route path="/farm" element={<Farm />} />
-                          <Route path="/risky-troves" element={<RiskyTrovesPage />} />
-                          <Route path="/redemption" element={<RedemptionPage />} />
-                          <Route path="/faucet" element={<Faucet />} />
-                          <Route path="*">
-                            <Route path="*" element={<Navigate to="/dashboard" />} />
-                          </Route>
-                        </Routes>
-                      </Container>
-                    </Flex>
+                <Flex variant="layout.app" sx={{ backgroundImage: `url(${appBackground})` }}>
+                  <Sidebar />
+                  <Flex
+                    sx={{
+                      flexDirection: "column",
+                      p: 0,
+                      flexGrow: 1,
+                      height: "100%",
+                      width: ["100vw", "calc(100vw - 20vw)"]
+                    }}
+                  >
+                    <Header>
+                      <UserView />
+                      <Box sx={{ display: ["none", "flex"] }}><UserAccount /></Box>
+                      <SystemStatsPopup />
+                    </Header>
+                    <Container variant="main">
+                      <Routes>
+                        <Route path="/" element={<Navigate to="/dashboard" />} />
+                        <Route path="/dashboard" element={<PageSwitcher />} />
+                        <Route path="/dashboard/:collateralType" element={<Collateral />} />
+                        <Route path="/portfolio" element={<Portfolio />} />
+                        <Route path="/staking" element={<StabilityPoolStaking />} />
+                        <Route path="/staking/liquidity" element={<LiquidityStaking />} />
+                        <Route path="/staking/:stakingType" element={<StakingType />} />
+                        <Route path="/staking/:stakingType/:collateralType" element={<StakingType />} />
+                        <Route path="/stats/:statsType" element={<Stats />} />
+                        <Route path="/farm" element={<Farm />} />
+                        <Route path="/risky-troves" element={<RiskyTrovesPage />} />
+                        <Route path="/redemption" element={<RedemptionPage />} />
+                        <Route path="/faucet" element={<Faucet />} />
+                        <Route path="*">
+                          <Route path="*" element={<Navigate to="/dashboard" />} />
+                        </Route>
+                      </Routes>
+                    </Container>
                   </Flex>
-                </FarmViewProvider>
-              </StakingViewProvider>
-            </StabilityViewProvider>
-          </TroveViewProvider>
-        </DashboardProvider>
+                </Flex>
+              </FarmViewProvider>
+            </StakingViewProvider>
+          </StabilityViewProvider>
+        </TroveViewProvider>
+      </DashboardProvider>
       <TransactionMonitor />
     </KumoStoreProvider>
   );

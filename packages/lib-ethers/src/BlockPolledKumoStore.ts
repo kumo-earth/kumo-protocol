@@ -287,59 +287,35 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
     ];
   }
 
-  // /** @internal @override */
-  // protected _doStart(): () => void {
-  //   this._get()
-  //     .then(state => {
-  //       if (!this._loaded) {
-  //         this._load(...state);
-  //       }
-  //     })
-  //     .catch(error => {
-  //       if (!this._isError) {
-  //         this._isError = true;
-  //       }
-  //       console.log(error?.message);
-  //     });
-
-  //   const blockListener = async (blockTag: number) => {
-  //     if (this.connection.signer || this._isError) {
-  //       this._isError = false;
-  //       this._get(blockTag)
-  //         .then(state => {
-  //           if (this._loaded) {
-  //             this._update(...state);
-  //           } else {
-  //             this._load(...state);
-  //           }
-  //         })
-  //         .catch(error => {
-  //           console.log(error?.message);
-  //         });
-  //     }
-  //   };
-
-  //   this._provider.on("block", blockListener);
-
-  //   return () => {
-  //     this._provider.off("block", blockListener);
-  //   };
-  // }
   /** @internal @override */
   protected _doStart(): () => void {
-    const assetNumbers = Object.keys(ASSET_TOKENS).length;
-    this._get().then(state => {
-      if ((!this._loaded && state[0].vaults.length === assetNumbers) || this.connection?._isDev) {
-        this._load(...state);
-      }
-    });
+    this._get()
+      .then(state => {
+        if (!this._loaded) {
+          this._load(...state);
+        }
+      })
+      .catch(error => {
+        if (!this._isError) {
+          this._isError = true;
+        }
+        console.log(error?.message);
+      });
 
     const blockListener = async (blockTag: number) => {
-      const state = await this._get(blockTag);
-      if (this._loaded && state[0].vaults.length === assetNumbers) {
-        this._update(...state);
-      } else if (state[0].vaults.length === assetNumbers) {
-        this._load(...state);
+      if (this.connection.signer || this._isError) {
+        this._isError = false;
+        this._get(blockTag)
+          .then(state => {
+            if (this._loaded) {
+              this._update(...state);
+            } else {
+              this._load(...state);
+            }
+          })
+          .catch(error => {
+            console.log(error?.message);
+          });
       }
     };
 
@@ -349,6 +325,30 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
       this._provider.off("block", blockListener);
     };
   }
+  /** @internal @override */
+  // protected _doStart(): () => void {
+  //   const assetNumbers = Object.keys(ASSET_TOKENS).length;
+  //   this._get().then(state => {
+  //     if ((!this._loaded && state[0].vaults.length === assetNumbers) || this.connection?._isDev) {
+  //       this._load(...state);
+  //     }
+  //   });
+
+  //   const blockListener = async (blockTag: number) => {
+  //     const state = await this._get(blockTag);
+  //     if (this._loaded && state[0].vaults.length === assetNumbers) {
+  //       this._update(...state);
+  //     } else if (state[0].vaults.length === assetNumbers) {
+  //       this._load(...state);
+  //     }
+  //   };
+
+  //   this._provider.on("block", blockListener);
+
+  //   return () => {
+  //     this._provider.off("block", blockListener);
+  //   };
+  // }
 
   /** @internal @override */
   protected _reduceExtra(

@@ -4,7 +4,7 @@ export type KumoFrontendConfig = {
 };
 
 const defaultConfig: KumoFrontendConfig = {
-  alchemyApiKey: process.env.REACT_APP_ALCHEMY_API
+  alchemyApiKey: import.meta.env.VITE_ALCHEMY_API
 };
 
 function hasKey<K extends string>(o: object, k: K): o is Record<K, unknown> {

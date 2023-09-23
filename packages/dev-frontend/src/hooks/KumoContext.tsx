@@ -1,14 +1,13 @@
 import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
 import { useAuthorizedConnection } from "../hooks/useAuthorizedConnection";
 import { networkConnector } from "../connectors/injectedConnector";
-import { BatchedWebSocketAugmentedWeb3Provider } from "@kumodao/providers";
 import { Provider } from "@ethersproject/abstract-provider";
 import { getNetwork } from "@ethersproject/networks";
 import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 import { useSwitchNetwork } from "./useSwitchNetwork";
 
-import { isBatchedProvider, isWebSocketAugmentedProvider } from "@kumodao/providers";
+import { isBatchedProvider, isWebSocketAugmentedProvider, BatchedWebSocketAugmentedWeb3Provider } from "@kumodao/providers";
 import {
   BlockPolledKumoStore,
   EthersKumo,
@@ -130,9 +129,9 @@ export const KumoProvider: React.FC<KumoProviderProps> = ({
           config.alchemyApiKey &&
           account
         ) {
-          provider.openWebSocket(`${process.env.REACT_APP_WSS_URL}`, chainId);
+          provider.openWebSocket(`${import.meta.env.VITE_WSS_URL}`, chainId);
         } else if (connection._isDev) {
-          provider.openWebSocket(`${process.env.REACT_APP_WSS_URL}`, chainId);
+          provider.openWebSocket(`${import.meta.env.VITE_WSS_URL}`, chainId);
         }
         return () => {
           provider.closeWebSocket();

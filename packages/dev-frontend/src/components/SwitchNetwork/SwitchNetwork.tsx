@@ -1,3 +1,4 @@
+import React from "react";
 import { useSwitchNetwork } from "../../hooks/useSwitchNetwork";
 
 import { useSwitchNetworkView } from "./context/SwitchNetworkViewContext";

@@ -100,8 +100,7 @@ export const RedemptionManager: React.FC = () => {
 
   return (
     <Card variant="collateralCard" sx={{ width: '70%', minWidth: "270px" }}>
-      <Heading
-        as="h2"
+      <Box
         sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
       >
         <Heading as="h2">Redeem<Text variant="assetName">({assetName})</Text></Heading>
@@ -121,7 +120,7 @@ export const RedemptionManager: React.FC = () => {
             <option value={"csc"}>CSC</option>
           </Select>
         </Box>
-      </Heading>
+      </Box>
 
       <Box sx={{ p: [2, 3] }}>
         <EditableRow
