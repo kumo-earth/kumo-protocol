@@ -715,32 +715,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         return vars.SPAssetGain + vars.StakingAssetGain;
     }
 
-    function _getETHGainFromSnapshots(
-        uint256 initialDeposit,
-        Snapshots memory snapshots
-    ) internal view returns (uint256) {
-        /*
-         * Grab the sum 'S' from the epoch at which the stake was made. The ETH gain may span up to one scale change.
-         * If it does, the second portion of the ETH gain is scaled by 1e9.
-         * If the gain spans no scale change, the second portion will be 0.
-         */
-        uint128 epochSnapshot = snapshots.epoch;
-        uint128 scaleSnapshot = snapshots.scale;
-        uint256 S_Snapshot = snapshots.S;
-        uint256 P_Snapshot = snapshots.P;
-
-        uint256 firstPortion = epochToScaleToSum[epochSnapshot][scaleSnapshot].sub(S_Snapshot);
-        uint256 secondPortion = epochToScaleToSum[epochSnapshot][scaleSnapshot.add(1)].div(
-            SCALE_FACTOR
-        );
-
-        uint256 ETHGain = initialDeposit.mul(firstPortion.add(secondPortion)).div(P_Snapshot).div(
-            DECIMAL_PRECISION
-        );
-
-        return ETHGain;
-    }
-
     /*
      * Calculate the KUMO gain earned by a deposit since its last snapshots were taken.
      * Given by the formula:  KUMO = d0 * (G - G(0))/P(0)
