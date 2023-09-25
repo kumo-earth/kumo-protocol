@@ -1096,8 +1096,13 @@ contract TroveRedemptorFacet is ITroveRedemptorFacet, Modifiers {
             _maxFeePercentage
         );
 
-        s.activePool.sendAsset(_asset, address(s.kumoStaking), totals.AssetFee);
-        s.kumoStaking.increaseF_Asset(_asset, totals.AssetFee);
+        // Send the fee to Stability Pool providers
+        s.activePool.sendAsset(
+            _asset,
+            address(s.stabilityPoolFactory.getStabilityPoolByAsset(_asset)),
+            totals.AssetFee
+        );
+        s.stabilityPoolFactory.getStabilityPoolByAsset(_asset).increaseF_Asset(totals.AssetFee);
 
         totals.AssetToSendToRedeemer = totals.totalAssetDrawn - totals.AssetFee;
 

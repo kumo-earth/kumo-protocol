@@ -229,6 +229,34 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     uint256 public lastETHError_Offset;
     uint256 public lastKUSDLossError_Offset;
 
+    // --- Moved staking capabilities ---
+
+    // Tracker for KUSD from fees held in the pool. Changes when users borrow/redeem, and when users withdraw gains.
+    uint256 internal totalKUSDGains;
+
+    uint256 public F_ASSET; // Running sum of Asset fees per-KUMO-staked
+    uint256 public F_KUSD; // Running sum of KUMO fees per-KUMO-staked
+
+    // User snapshots of F_ASSET and F_KUSD, taken at the point at which their latest deposit was made
+    mapping(address => StakingSnapshot) public stakingSnapshots;
+
+    struct StakingSnapshot {
+        uint256 F_ASSET_Snapshot;
+        uint256 F_KUSD_Snapshot;
+    }
+
+    struct LocalVariables_AssetGainFromSnapshots {
+        uint128 epochSnapshot;
+        uint128 scaleSnapshot;
+        uint256 S_Snapshot;
+        uint256 P_Snapshot;
+        uint256 firstPortion;
+        uint256 secondPortion;
+        uint256 SPAssetGain;
+        uint256 F_ASSET_Snapshot;
+        uint256 StakingAssetGain;
+    }
+
     // --- Contract setters ---
     function getNameBytes() external pure override returns (bytes32) {
         return STABILITY_POOL_NAME_BYTES;
@@ -306,6 +334,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         uint256 initialDeposit = deposits[msg.sender];
 
         uint256 depositorAssetGain = getDepositorAssetGain(msg.sender);
+        uint256 depositorKUSDGain = getDepositorKUSDGain(msg.sender);
 
         uint256 compoundedKUSDDeposit = getCompoundedKUSDDeposit(msg.sender);
         uint256 KUSDLoss = initialDeposit.sub(compoundedKUSDDeposit); // Needed only for event log
@@ -318,8 +347,10 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
         emit UserDepositChanged(msg.sender, newDeposit);
         emit AssetGainWithdrawn(msg.sender, depositorAssetGain, KUSDLoss); // KUSD Loss required for event log
+        emit KUSDGainWithdrawn(msg.sender, depositorKUSDGain);
 
         _sendAssetGainToDepositor(depositorAssetGain);
+        _sendKUSDGainToDepositor(msg.sender, depositorKUSDGain);
     }
 
     /*  withdrawFromSP():
@@ -342,6 +373,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         _triggerKUMOIssuance(communityIssuanceCached);
 
         uint256 depositorAssetGain = getDepositorAssetGain(msg.sender);
+        uint256 depositorKUSDGain = getDepositorKUSDGain(msg.sender);
 
         uint256 compoundedKUSDDeposit = getCompoundedKUSDDeposit(msg.sender);
         uint256 KUSDtoWithdraw = KumoMath._min(_amount, compoundedKUSDDeposit);
@@ -353,11 +385,13 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         // Update deposit
         uint256 newDeposit = compoundedKUSDDeposit.sub(KUSDtoWithdraw);
         _updateDepositAndSnapshots(msg.sender, newDeposit);
-        emit UserDepositChanged(msg.sender, newDeposit);
 
+        emit UserDepositChanged(msg.sender, newDeposit);
         emit AssetGainWithdrawn(msg.sender, depositorAssetGain, KUSDLoss); // KUSD Loss required for event log
+        emit KUSDGainWithdrawn(msg.sender, depositorKUSDGain);
 
         _sendAssetGainToDepositor(depositorAssetGain);
+        _sendKUSDGainToDepositor(msg.sender, depositorKUSDGain);
     }
 
     /* withdrawAssetGainToTrove:
@@ -377,6 +411,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         _triggerKUMOIssuance(communityIssuanceCached);
 
         uint256 depositorAssetGain = getDepositorAssetGain(msg.sender);
+        uint256 depositorKUSDGain = getDepositorKUSDGain(msg.sender);
 
         uint256 compoundedKUSDDeposit = getCompoundedKUSDDeposit(msg.sender);
         uint256 KUSDLoss = initialDeposit.sub(compoundedKUSDDeposit); // Needed only for event log
@@ -388,6 +423,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
          This lets the event log make more sense (i.e. so it appears that first the Asset gain is withdrawn
         and then it is deposited into the Trove, not the other way around). */
         emit AssetGainWithdrawn(msg.sender, depositorAssetGain, KUSDLoss);
+        emit KUSDGainWithdrawn(msg.sender, depositorKUSDGain);
         emit UserDepositChanged(msg.sender, compoundedKUSDDeposit);
 
         assetBalance = assetBalance.sub(depositorAssetGain);
@@ -401,6 +437,8 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
             _upperHint,
             _lowerHint
         );
+
+        _sendKUSDGainToDepositor(msg.sender, depositorKUSDGain);
     }
 
     // --- KUMO issuance functions ---
@@ -592,10 +630,32 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         activePoolCached.sendAsset(assetAddress, address(this), _collToAdd);
     }
 
+    function _increaseKUSD(uint256 _amount) internal {
+        uint256 newtotalKUSDDeposits = totalKUSDDeposits.add(_amount);
+        totalKUSDDeposits = newtotalKUSDDeposits;
+
+        emit StabilityPoolKUSDBalanceUpdated(newtotalKUSDDeposits);
+    }
+
     function _decreaseKUSD(uint256 _amount) internal {
         uint256 newtotalKUSDDeposits = totalKUSDDeposits.sub(_amount);
         totalKUSDDeposits = newtotalKUSDDeposits;
+
         emit StabilityPoolKUSDBalanceUpdated(newtotalKUSDDeposits);
+    }
+
+    function _increaseKUSDGains(uint256 _amount) internal {
+        uint256 newtotalKUSDGains = totalKUSDGains.add(_amount);
+        totalKUSDGains = newtotalKUSDGains;
+
+        emit StabilityPoolKUSDGainsBalanceUpdated(newtotalKUSDGains);
+    }
+
+    function _decreaseKUSDGains(uint256 _amount) internal {
+        uint256 newtotalKUSDGains = totalKUSDGains.sub(_amount);
+        totalKUSDGains = newtotalKUSDGains;
+
+        emit StabilityPoolKUSDGainsBalanceUpdated(newtotalKUSDGains);
     }
 
     // --- Reward calculator functions for depositor ---
@@ -611,34 +671,48 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         return
             SafetyTransfer.decimalsCorrection(
                 assetAddress,
-                _getAssetGainFromSnapshots(initialDeposit, snapshots)
+                _getAssetGainFromSnapshots(initialDeposit, snapshots, _depositor)
             );
     }
 
     function _getAssetGainFromSnapshots(
         uint256 initialDeposit,
-        Snapshots memory snapshots
+        Snapshots memory snapshots,
+        address _depositor
     ) internal view returns (uint256) {
+        // --- Stability Pool gains ---
         /*
          * Grab the sum 'S' from the epoch at which the stake was made. The ETH gain may span up to one scale change.
          * If it does, the second portion of the ETH gain is scaled by 1e9.
          * If the gain spans no scale change, the second portion will be 0.
          */
-        uint128 epochSnapshot = snapshots.epoch;
-        uint128 scaleSnapshot = snapshots.scale;
-        uint256 S_Snapshot = snapshots.S;
-        uint256 P_Snapshot = snapshots.P;
 
-        uint256 firstPortion = epochToScaleToSum[epochSnapshot][scaleSnapshot].sub(S_Snapshot);
-        uint256 secondPortion = epochToScaleToSum[epochSnapshot][scaleSnapshot.add(1)].div(
+        LocalVariables_AssetGainFromSnapshots memory vars;
+
+        vars.epochSnapshot = snapshots.epoch;
+        vars.scaleSnapshot = snapshots.scale;
+        vars.S_Snapshot = snapshots.S;
+        vars.P_Snapshot = snapshots.P;
+
+        vars.firstPortion = epochToScaleToSum[vars.epochSnapshot][vars.scaleSnapshot].sub(
+            vars.S_Snapshot
+        );
+        vars.secondPortion = epochToScaleToSum[vars.epochSnapshot][vars.scaleSnapshot.add(1)].div(
             SCALE_FACTOR
         );
 
-        uint256 AssetGain = initialDeposit.mul(firstPortion.add(secondPortion)).div(P_Snapshot).div(
+        vars.SPAssetGain = initialDeposit
+            .mul(vars.firstPortion.add(vars.secondPortion))
+            .div(vars.P_Snapshot)
+            .div(DECIMAL_PRECISION);
+
+        // --- Protocol revenue (prev. staking) gains ---
+        vars.F_ASSET_Snapshot = stakingSnapshots[_depositor].F_ASSET_Snapshot;
+        vars.StakingAssetGain = deposits[_depositor].mul(F_ASSET.sub(vars.F_ASSET_Snapshot)).div(
             DECIMAL_PRECISION
         );
 
-        return AssetGain;
+        return vars.SPAssetGain + vars.StakingAssetGain;
     }
 
     function _getETHGainFromSnapshots(
@@ -721,6 +795,21 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         return KUMOGain;
     }
 
+    function getDepositorKUSDGain(address _depositor) public view override returns (uint256) {
+        return
+            SafetyTransfer.decimalsCorrection(
+                address(kusdToken),
+                _getKUSDGainFromSnapshots(_depositor)
+            );
+    }
+
+    function _getKUSDGainFromSnapshots(address _user) internal view returns (uint256) {
+        uint256 F_KUSD_Snapshot = stakingSnapshots[_user].F_KUSD_Snapshot;
+        uint256 KUSDGain = deposits[_user].mul(F_KUSD.sub(F_KUSD_Snapshot)).div(DECIMAL_PRECISION);
+
+        return KUSDGain;
+    }
+
     // Internal function, used to calculcate compounded deposits and compounded stakes.
     function _getCompoundedStakeFromSnapshots(
         uint256 initialStake,
@@ -787,9 +876,8 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     // Transfer the KUSD tokens from the user to the Stability Pool's address, and update its recorded KUSD
     function _sendKUSDtoStabilityPool(address _address, uint256 _amount) internal {
         kusdToken.sendToPool(_address, address(this), _amount);
-        uint256 newtotalKUSDDeposits = totalKUSDDeposits.add(_amount);
-        totalKUSDDeposits = newtotalKUSDDeposits;
-        emit StabilityPoolKUSDBalanceUpdated(newtotalKUSDDeposits);
+
+        _increaseKUSD(_amount);
     }
 
     // Send KUSD to user and decrease KUSD in Pool
@@ -805,10 +893,10 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     // --- Stability Pool Deposit Functionality ---
 
     function _updateDepositAndSnapshots(address _depositor, uint256 _newValue) internal {
+        // --- SP part ---
         deposits[_depositor] = _newValue;
 
         if (_newValue == 0) {
-            delete deposits[_depositor];
             delete depositSnapshots[_depositor];
             emit DepositSnapshotUpdated(_depositor, 0, 0, 0);
             return;
@@ -829,6 +917,11 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         depositSnapshots[_depositor].epoch = currentEpochCached;
 
         emit DepositSnapshotUpdated(_depositor, currentP, currentS, currentG);
+
+        // --- Staking part ---
+        stakingSnapshots[_depositor].F_ASSET_Snapshot = F_ASSET;
+        stakingSnapshots[_depositor].F_KUSD_Snapshot = F_KUSD;
+        emit StakerSnapshotsUpdated(_depositor, F_ASSET, F_KUSD);
     }
 
     // --- Sender functions for KUMO deposit, ETH gains and KUMOA gains ---
@@ -851,6 +944,16 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
         emit StabilityPoolAssetBalanceUpdated(assetBalance);
         emit AssetSent(msg.sender, _amount);
+    }
+
+    // Send KUSD gains to user and decrease KUSD gains in Pool
+    function _sendKUSDGainToDepositor(address _depositor, uint256 KUSDWithdrawal) internal {
+        if (KUSDWithdrawal == 0) {
+            return;
+        }
+
+        kusdToken.returnFromPool(address(this), _depositor, KUSDWithdrawal);
+        _decreaseKUSDGains(KUSDWithdrawal);
     }
 
     // Send KUMO to user and decrease KUMO in Pool
@@ -883,6 +986,13 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
     function _requireCallerIsTroveManager() internal view {
         require(msg.sender == address(troveManager), "StabilityPool: Caller is not TroveManager");
+    }
+
+    function _requireCallerIsBorrowerOperations() internal view {
+        require(
+            msg.sender == address(borrowerOperations),
+            "StabilityPool: Caller is not BorrowerOperations"
+        );
     }
 
     function _requireNoUnderCollateralizedTroves() internal {
@@ -927,5 +1037,33 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
         assetBalance = assetBalance.add(_amount);
         emit StabilityPoolAssetBalanceUpdated(assetBalance);
+    }
+
+    // --- Moved staking functions ---
+
+    // --- Reward-per-unit-staked increase functions. Called by Kumo core contracts ---
+    function increaseF_Asset(uint256 _AssetFee) external override {
+        _requireCallerIsTroveManager();
+
+        uint256 AssetFeePerKUSDDeposited;
+        if (totalKUSDDeposits > 0) {
+            AssetFeePerKUSDDeposited = _AssetFee.mul(DECIMAL_PRECISION).div(totalKUSDDeposits);
+        }
+        F_ASSET = F_ASSET.add(AssetFeePerKUSDDeposited);
+        emit F_AssetUpdated(assetAddress, F_ASSET);
+
+        assetBalance = assetBalance.add(_AssetFee);
+    }
+
+    function increaseF_KUSD(uint256 _KUSDFee) external override {
+        _requireCallerIsBorrowerOperations();
+        uint256 KUSDFeePerKUSDDeposited;
+        if (totalKUSDDeposits > 0) {
+            KUSDFeePerKUSDDeposited = _KUSDFee.mul(DECIMAL_PRECISION).div(totalKUSDDeposits);
+        }
+        F_KUSD = F_KUSD.add(KUSDFeePerKUSDDeposited);
+        emit F_KUSDUpdated(F_KUSD);
+
+        _increaseKUSDGains(_KUSDFee);
     }
 }
