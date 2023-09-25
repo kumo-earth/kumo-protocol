@@ -42,7 +42,6 @@ interface IStabilityPool is IDeposit {
 
     event P_Updated(uint256 _P);
     event S_Updated(uint256 _S, uint128 _epoch, uint128 _scale);
-    event G_Updated(uint256 _G, uint128 _epoch, uint128 _scale);
     event EpochUpdated(uint128 _currentEpoch);
     event ScaleUpdated(uint128 _currentScale);
 
@@ -58,7 +57,7 @@ interface IStabilityPool is IDeposit {
     );
     event KUMOPaidToFrontEnd(address indexed _frontEnd, uint256 _KUMO);
 
-    event DepositSnapshotUpdated(address indexed _depositor, uint256 _P, uint256 _S, uint256 _G);
+    event DepositSnapshotUpdated(address indexed _depositor, uint256 _P, uint256 _S);
     event UserDepositChanged(address indexed _depositor, uint256 _newDeposit);
 
     event AssetGainWithdrawn(address indexed _depositor, uint256 _Asset, uint256 _kusdLoss);
