@@ -321,15 +321,11 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
     /*  provideToSP():
      *
-     * - Triggers a KUMO issuance, based on time passed since the last issuance. The KUMO issuance is shared between *all* depositors and front ends
-     * - Sends depositor's accumulated gains (KUMO, ETH) to depositor
+     * - Sends depositor's accumulated gains (Asset and KUSD, from the protocol revenue and stability pooling) to depositor.
      * - Increases deposit and takes new snapshot.
      */
     function provideToSP(uint256 _amount) external override {
         _requireNonZeroAmount(_amount);
-
-        ICommunityIssuance communityIssuanceCached = communityIssuance;
-        _triggerKUMOIssuance(communityIssuanceCached);
 
         uint256 initialDeposit = deposits[msg.sender];
 
@@ -339,7 +335,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         uint256 compoundedKUSDDeposit = getCompoundedKUSDDeposit(msg.sender);
         uint256 KUSDLoss = initialDeposit.sub(compoundedKUSDDeposit); // Needed only for event log
 
-        _payOutKUMOGains(communityIssuanceCached, msg.sender);
         _sendKUSDtoStabilityPool(msg.sender, _amount);
 
         uint256 newDeposit = compoundedKUSDDeposit.add(_amount);
@@ -355,8 +350,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
     /*  withdrawFromSP():
      *
-     * - Triggers a KUMO issuance, based on time passed since the last issuance. The KUMO issuance is shared between *all* depositors and front ends
-     * - Sends all depositor's accumulated gains (KUMO, ETH) to depositor
+     * - Sends all depositor's accumulated gains (Asset and KUSD, from the protocol revenue and stability pooling) to depositor
      * - Decreases deposit and takes new snapshot.
      *
      * If _amount > userDeposit, the user withdraws all of their compounded deposit.
@@ -368,10 +362,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         uint256 initialDeposit = deposits[msg.sender];
         _requireUserHasDeposit(initialDeposit);
 
-        ICommunityIssuance communityIssuanceCached = communityIssuance;
-
-        _triggerKUMOIssuance(communityIssuanceCached);
-
         uint256 depositorAssetGain = getDepositorAssetGain(msg.sender);
         uint256 depositorKUSDGain = getDepositorKUSDGain(msg.sender);
 
@@ -379,7 +369,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         uint256 KUSDtoWithdraw = KumoMath._min(_amount, compoundedKUSDDeposit);
         uint256 KUSDLoss = initialDeposit.sub(compoundedKUSDDeposit); // Needed only for event log
 
-        _payOutKUMOGains(communityIssuanceCached, msg.sender);
         _sendKUSDToDepositor(msg.sender, KUSDtoWithdraw);
 
         // Update deposit
@@ -395,9 +384,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     }
 
     /* withdrawAssetGainToTrove:
-     * - Triggers a KUMO issuance, based on time passed since the last issuance. The KUMO issuance is shared between *all* depositors and front ends
-     * - Sends all depositor's KUMO gain to  depositor
-     * - Transfers the depositor's entire ETH gain from the Stability Pool to the caller's trove
+     * - Transfers the depositor's entire Asset gain from the Stability Pool to the caller's trove
      * - Leaves their compounded deposit in the Stability Pool
      * - Updates snapshot for deposit */
     function withdrawAssetGainToTrove(address _upperHint, address _lowerHint) external {
@@ -406,17 +393,12 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         _requireUserHasTrove(msg.sender);
         _requireUserHasAssetGain(msg.sender);
 
-        ICommunityIssuance communityIssuanceCached = communityIssuance;
-
-        _triggerKUMOIssuance(communityIssuanceCached);
-
         uint256 depositorAssetGain = getDepositorAssetGain(msg.sender);
         uint256 depositorKUSDGain = getDepositorKUSDGain(msg.sender);
 
         uint256 compoundedKUSDDeposit = getCompoundedKUSDDeposit(msg.sender);
         uint256 KUSDLoss = initialDeposit.sub(compoundedKUSDDeposit); // Needed only for event log
 
-        _payOutKUMOGains(communityIssuanceCached, msg.sender);
         _updateDepositAndSnapshots(msg.sender, compoundedKUSDDeposit);
 
         /* Emit events before transferring Asset gain to Trove.
@@ -505,8 +487,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         if (totalKUSD == 0 || _debtToOffset == 0) {
             return;
         }
-
-        _triggerKUMOIssuance(communityIssuance);
 
         (uint256 ETHGainPerUnitStaked, uint256 KUSDLossPerUnitStaked) = _computeRewardsPerUnitStaked(
             _collToAdd,
