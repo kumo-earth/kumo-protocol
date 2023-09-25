@@ -164,7 +164,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     struct Snapshots {
         uint256 S;
         uint256 P;
-        uint256 G;
         uint128 scale;
         uint128 epoch;
     }
@@ -197,15 +196,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
      * - The outer mapping records the (scale => sum) mappings, for different epochs.
      */
     mapping(uint128 => mapping(uint128 => uint256)) public epochToScaleToSum;
-
-    /*
-     * Similarly, the sum 'G' is used to calculate KUMO gains. During it's lifetime, each deposit d_t earns a KUMO gain of
-     *  ( d_t * [G - G_t] )/P_t, where G_t is the depositor's snapshot of G taken at time t when  the deposit was made.
-     *
-     *  KUMO reward events occur are triggered by depositor operations (new deposit, topup, withdrawal), and liquidations.
-     *  In each case, the KUMO reward is issued (i.e. G is updated), before other state changes are made.
-     */
-    mapping(uint128 => mapping(uint128 => uint256)) public epochToScaleToG;
 
     // Error trackers for the error correction in the offset calculation
     uint256 public lastETHError_Offset;
@@ -729,25 +719,23 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
         if (_newValue == 0) {
             delete depositSnapshots[_depositor];
-            emit DepositSnapshotUpdated(_depositor, 0, 0, 0);
+            emit DepositSnapshotUpdated(_depositor, 0, 0);
             return;
         }
         uint128 currentScaleCached = currentScale;
         uint128 currentEpochCached = currentEpoch;
         uint256 currentP = P;
 
-        // Get S and G for the current epoch and current scale
+        // Get S for the current epoch and current scale
         uint256 currentS = epochToScaleToSum[currentEpochCached][currentScaleCached];
-        uint256 currentG = epochToScaleToG[currentEpochCached][currentScaleCached];
 
-        // Record new snapshots of the latest running product P, sum S, and sum G, for the depositor
+        // Record new snapshots of the latest running product P, and sum S, for the depositor
         depositSnapshots[_depositor].P = currentP;
         depositSnapshots[_depositor].S = currentS;
-        depositSnapshots[_depositor].G = currentG;
         depositSnapshots[_depositor].scale = currentScaleCached;
         depositSnapshots[_depositor].epoch = currentEpochCached;
 
-        emit DepositSnapshotUpdated(_depositor, currentP, currentS, currentG);
+        emit DepositSnapshotUpdated(_depositor, currentP, currentS);
 
         // --- Staking part ---
         stakingSnapshots[_depositor].F_ASSET_Snapshot = F_ASSET;
