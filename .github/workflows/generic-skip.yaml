@@ -3,6 +3,8 @@ name: Test contracts (Generic Skip)
 
 on:
   pull_request:
+    types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
+    branches: ['main', 'dev', 'KIP-3']
     paths-ignore:
       - "packages/contracts/**"
 

@@ -6,6 +6,8 @@ env:
 
 on:
   push:
+    types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
+    branches: ['main', 'dev', 'KIP-3']
     paths-ignore:
       # In future file changes, we can delete the following line
       # and uncomment the one below. 
@@ -18,6 +20,8 @@ on:
       - 'papers/**'
       - 'images/**'
   pull_request:
+    types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
+    branches: ['main', 'dev', 'KIP-3']
     paths-ignore:
       # In future file changes, we can delete the following line
       # and uncomment the one below. 

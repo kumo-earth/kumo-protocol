@@ -6,11 +6,15 @@ env:
 
 on:
   push:
+    types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
+    branches: ['main', 'dev', 'KIP-3']
     paths:
       # In future file changes, we can uncomment the following line
       # - ".github/workflows/test-contracts.yml"
       - "packages/contracts/**"
   pull_request:
+    types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
+    branches: ['main', 'dev', 'KIP-3']
     paths:
       # In future file changes, we can uncomment the following line
       # - ".github/workflows/test-contracts.yml"
@@ -42,7 +46,7 @@ jobs:
 
   coverage:
     runs-on: ubuntu-latest
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'coverage') }}
+
     continue-on-error: true
 
     steps:
