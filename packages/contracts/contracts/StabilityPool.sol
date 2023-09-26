@@ -314,6 +314,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
         _sendAssetGainToDepositor(depositorAssetGain);
         _sendKUSDGainToDepositor(msg.sender, depositorKUSDGain);
+        _sendGainsToKUMOTreasury(depositorAssetGain, depositorKUSDGain);
     }
 
     /*  withdrawFromSP():
@@ -349,6 +350,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
         _sendAssetGainToDepositor(depositorAssetGain);
         _sendKUSDGainToDepositor(msg.sender, depositorKUSDGain);
+        _sendGainsToKUMOTreasury(depositorAssetGain, depositorKUSDGain);
     }
 
     /* withdrawAssetGainToTrove:
@@ -389,6 +391,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         );
 
         _sendKUSDGainToDepositor(msg.sender, depositorKUSDGain);
+        _sendGainsToKUMOTreasury(depositorAssetGain, depositorKUSDGain);
     }
 
     // --- Liquidation functions ---
