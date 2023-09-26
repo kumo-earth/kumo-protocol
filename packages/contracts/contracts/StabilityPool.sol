@@ -150,8 +150,11 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     ISortedTroves public sortedTroves;
 
     address internal assetAddress;
+    address internal treasuryAddress;
 
     uint256 internal assetBalance; // deposited asset tracker
+    // Percent that goes to the KUMO Treasury. 1e17 = 10%, 1e18 = 100%. Must be in range [0, 1]
+    uint256 internal protocolFee;
 
     // Tracker for KUSD held in the pool. Changes when users deposit/withdraw, and when Trove debt is offset.
     uint256 internal totalKUSDDeposits;
