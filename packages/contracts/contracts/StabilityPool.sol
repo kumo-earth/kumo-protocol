@@ -616,7 +616,12 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
             DECIMAL_PRECISION
         );
 
-        return vars.SPAssetGain + vars.StakingAssetGain;
+        uint256 depositorShare = uint256(DECIMAL_PRECISION).sub(protocolFee);
+        uint256 assetGain = depositorShare.mul(vars.SPAssetGain + vars.StakingAssetGain).div(
+            DECIMAL_PRECISION
+        );
+
+        return assetGain;
     }
 
     function getDepositorKUSDGain(address _depositor) public view override returns (uint256) {
@@ -631,7 +636,10 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         uint256 F_KUSD_Snapshot = stakingSnapshots[_user].F_KUSD_Snapshot;
         uint256 KUSDGain = deposits[_user].mul(F_KUSD.sub(F_KUSD_Snapshot)).div(DECIMAL_PRECISION);
 
-        return KUSDGain;
+        uint256 depositorShare = uint256(DECIMAL_PRECISION).sub(protocolFee);
+        uint256 KUSDGainAfterFee = depositorShare.mul(KUSDGain).div(DECIMAL_PRECISION);
+
+        return KUSDGainAfterFee;
     }
 
     function _sendGainsToKUMOTreasury(uint256 _assetGain, uint256 _KUSDGain) internal {
