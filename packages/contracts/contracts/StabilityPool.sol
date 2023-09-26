@@ -634,6 +634,25 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         return KUSDGain;
     }
 
+    function _sendGainsToKUMOTreasury(uint256 _assetGain, uint256 _KUSDGain) internal {
+        if (_assetGain != 0) {
+            uint256 treasuryGain = protocolFee.mul(_assetGain).div(DECIMAL_PRECISION);
+
+            kusdToken.returnFromPool(address(this), treasuryAddress, treasuryGain);
+            IERC20Upgradeable(assetAddress).safeTransfer(treasuryAddress, treasuryGain);
+
+            assetBalance = assetBalance.sub(treasuryGain);
+            emit StabilityPoolAssetBalanceUpdated(assetBalance);
+        }
+
+        if (_KUSDGain != 0) {
+            uint256 treasuryGain = protocolFee.mul(_KUSDGain).div(DECIMAL_PRECISION);
+
+            kusdToken.returnFromPool(address(this), treasuryAddress, treasuryGain);
+            _decreaseKUSDGains(_KUSDGain);
+        }
+    }
+
     // Internal function, used to calculcate compounded deposits and compounded stakes.
     function _getCompoundedStakeFromSnapshots(
         uint256 initialStake,
