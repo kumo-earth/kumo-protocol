@@ -39,11 +39,14 @@ interface IStabilityPool is IDeposit {
     event SortedTrovesAddressChanged(address _newSortedTrovesAddress);
     event PriceFeedAddressChanged(address _newPriceFeedAddress);
     event CommunityIssuanceAddressChanged(address _newCommunityIssuanceAddress);
+    event KUMOTreasuryAddressChanged(address _kumoTreasuryAddress);
 
     event P_Updated(uint256 _P);
     event S_Updated(uint256 _S, uint128 _epoch, uint128 _scale);
     event EpochUpdated(uint128 _currentEpoch);
     event ScaleUpdated(uint128 _currentScale);
+
+    event ProtocolFeeChanged(uint256 _oldProtocolFee, uint256 _newProtocolFee);
 
     //  FrontEnd
 
@@ -78,7 +81,8 @@ interface IStabilityPool is IDeposit {
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
         address _communityIssuanceAddress,
-        address _kumoParamsAddress
+        address _kumoParamsAddress,
+        address _kumoTreasuryAddress
     ) external;
 
     /*
@@ -158,6 +162,8 @@ interface IStabilityPool is IDeposit {
     function getNameBytes() external view returns (bytes32);
 
     function getAssetType() external view returns (address);
+
+    function setProtocolFee(uint256 _newProtocolFee) external;
 
     /*
      * Fallback function

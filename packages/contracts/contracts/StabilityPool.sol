@@ -248,7 +248,8 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
         address _communityIssuanceAddress,
-        address _kumoParamsAddress
+        address _kumoParamsAddress,
+        address _kumoTreasuryAddress
     ) external override onlyOwner {
         // require(!isInitialized, "Already initialized");
         checkContract(_borrowerOperationsAddress);
@@ -257,6 +258,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         checkContract(_sortedTrovesAddress);
         checkContract(_communityIssuanceAddress);
         checkContract(_kumoParamsAddress);
+        checkContract(_kumoTreasuryAddress);
 
         // isInitialized = true;
         // __Ownable_init();
@@ -264,6 +266,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         checkContract(_assetAddress);
 
         assetAddress = _assetAddress;
+        treasuryAddress = _kumoTreasuryAddress;
 
         borrowerOperations = IBorrowerOperations(_borrowerOperationsAddress);
         troveManager = ITroveManagerDiamond(_troveManagerAddress);
@@ -278,6 +281,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         emit KUSDTokenAddressChanged(_kusdTokenAddress);
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit CommunityIssuanceAddressChanged(_communityIssuanceAddress);
+        emit KUMOTreasuryAddressChanged(_kumoTreasuryAddress);
 
         // _renounceOwnership(); --> Needs to be paused because of current test deployment with adding an asset to the system
     }
@@ -800,6 +804,15 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         _decreaseKUSDGains(KUSDWithdrawal);
     }
 
+    function setProtocolFee(uint256 _newProtocolFee) external {
+        _requireValidProtocolFee(_newProtocolFee);
+
+        uint256 _oldProtocolFee = protocolFee;
+        protocolFee = _newProtocolFee;
+
+        emit ProtocolFeeChanged(_oldProtocolFee, _newProtocolFee);
+    }
+
     // --- 'require' functions ---
 
     function _requireCallerIsActivePool() internal view {
@@ -853,6 +866,13 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     function _requireUserHasAssetGain(address _depositor) internal view {
         uint256 AssetGain = getDepositorAssetGain(_depositor);
         require(AssetGain > 0, "StabilityPool: caller must have non-zero Asset Gain");
+    }
+
+    function _requireValidProtocolFee(uint256 _protocolFee) internal pure {
+        require(
+            _protocolFee <= DECIMAL_PRECISION,
+            "StabilityPool: Protocol fee must be in range [0,1]"
+        );
     }
 
     function receivedERC20(address _asset, uint256 _amount) external override {
