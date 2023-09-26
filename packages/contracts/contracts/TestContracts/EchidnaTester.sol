@@ -98,7 +98,8 @@ contract EchidnaTester {
             address(troveManager),
             address(kusdToken),
             address(sortedTroves),
-            address(kumoParams)
+            address(kumoParams),
+            address(gasPool) // KUMO Treasury
         );
 
         collSurplusPool.setAddresses(
