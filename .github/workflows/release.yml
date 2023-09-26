@@ -6,6 +6,8 @@ env:
 
 on:
   push:
+    types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
+    branches: ['main', 'dev', 'KIP-3']
     paths-ignore:
       - 'docs/**'
       - 'packages/contracts/**'
@@ -14,6 +16,8 @@ on:
       - 'papers/**'
       - 'images/**'
   pull_request:
+    types: ['opened', 'edited', 'reopened', 'synchronize', 'ready_for_review']
+    branches: ['main', 'dev', 'KIP-3']
     paths-ignore:
 
       - 'docs/**'
