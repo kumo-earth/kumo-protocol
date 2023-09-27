@@ -80,7 +80,6 @@ contract EchidnaTester {
             address(collSurplusPool),
             address(sortedTroves),
             address(kusdToken),
-            address(0),
             address(kumoParams)
         );
 
@@ -89,8 +88,7 @@ contract EchidnaTester {
             address(troveManager),
             address(stabilityPoolFactory),
             address(defaultPool),
-            address(collSurplusPool),
-            address(0)
+            address(collSurplusPool)
         );
         defaultPool.setAddresses(address(troveManager), address(activePool));
 
@@ -100,7 +98,6 @@ contract EchidnaTester {
             address(troveManager),
             address(kusdToken),
             address(sortedTroves),
-            address(0),
             address(kumoParams)
         );
 

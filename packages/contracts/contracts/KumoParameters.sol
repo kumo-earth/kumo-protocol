@@ -61,8 +61,6 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
     IStabilityPoolFactory public override stabilityPoolFactory;
     address public gasPoolAddress;
     ISortedTroves public override sortedTroves;
-    IKUMOToken public override kumoToken;
-    IKUMOStaking public override kumoStaking;
     // address public adminContract;
 
     bool public isInitialized;
@@ -81,9 +79,7 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         address _collSurplusPoolAddress,
         address _kusdTokenAddress,
         address _stabilityPoolFactoryAddress,
-        address _sortedTrovesAddress,
-        address _kumoTokenAddress,
-        address _kumoStakingAddress
+        address _sortedTrovesAddress
     ) external onlyOwner {
         require(!isInitialized, "Already initalized");
         checkContract(_activePool);
@@ -94,8 +90,6 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         checkContract(_kusdTokenAddress);
         checkContract(_stabilityPoolFactoryAddress);
         checkContract(_sortedTrovesAddress);
-        checkContract(_kumoTokenAddress);
-        checkContract(_kumoStakingAddress);
         isInitialized = true;
 
         activePool = IActivePool(_activePool);
@@ -107,8 +101,6 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         stabilityPoolFactory = IStabilityPoolFactory(_stabilityPoolFactoryAddress);
         gasPoolAddress = _gasPoolAddress;
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
-        kumoToken = IKUMOToken(_kumoTokenAddress);
-        kumoStaking = IKUMOStaking(_kumoStakingAddress);
 
         emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
         emit StabilityPoolFactoryAddressChanged(_stabilityPoolFactoryAddress);
@@ -116,8 +108,6 @@ contract KumoParameters is IKumoParameters, Ownable, CheckContract {
         emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
         emit KUSDTokenAddressChanged(_kusdTokenAddress);
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
-        emit KUMOTokenAddressChanged(_kumoTokenAddress);
-        emit KUMOStakingAddressChanged(_kumoStakingAddress);
     }
 
     function setPriceFeed(address _priceFeed) external override onlyOwner {

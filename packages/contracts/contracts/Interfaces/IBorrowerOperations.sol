@@ -15,7 +15,6 @@ interface IBorrowerOperations {
     event PriceFeedAddressChanged(address _newPriceFeedAddress);
     event SortedTrovesAddressChanged(address _sortedTrovesAddress);
     event KUSDTokenAddressChanged(address _kusdTokenAddress);
-    event KUMOStakingAddressChanged(address _kumoStakingAddress);
 
     event TroveCreated(address indexed _asset, address indexed _borrower, uint256 arrayIndex);
     event TroveUpdated(
@@ -37,7 +36,6 @@ interface IBorrowerOperations {
         address _collSurplusPoolAddress,
         address _sortedTrovesAddress,
         address _kusdTokenAddress,
-        address _kumoStakingAddress,
         address _kumoParamsAddress
     ) external;
 
