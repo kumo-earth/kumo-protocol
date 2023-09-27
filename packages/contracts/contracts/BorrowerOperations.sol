@@ -9,7 +9,6 @@ import "./Interfaces/ITroveManagerDiamond.sol";
 import "./Interfaces/IKUSDToken.sol";
 import "./Interfaces/ICollSurplusPool.sol";
 import "./Interfaces/ISortedTroves.sol";
-import "./Interfaces/IKUMOStaking.sol";
 import "./Interfaces/IStabilityPoolFactory.sol";
 import "./Dependencies/KumoBase.sol";
 import "./Dependencies/CheckContract.sol";
@@ -32,9 +31,6 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
     address gasPoolAddress;
 
     ICollSurplusPool collSurplusPool;
-
-    IKUMOStaking public kumoStaking;
-    address public kumoStakingAddress;
 
     IKUSDToken public kusdToken;
 
@@ -127,7 +123,6 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         address _collSurplusPoolAddress,
         address _sortedTrovesAddress,
         address _kusdTokenAddress,
-        address _kumoStakingAddress,
         address _kumoParamsAddress
     ) external override onlyOwner {
         // This makes impossible to open a trove with zero withdrawn KUSD
@@ -139,7 +134,6 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         checkContract(_collSurplusPoolAddress);
         checkContract(_sortedTrovesAddress);
         checkContract(_kusdTokenAddress);
-        checkContract(_kumoStakingAddress);
         checkContract(_kumoParamsAddress);
         // isInitialized = true;
 
@@ -151,8 +145,6 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
         kusdToken = IKUSDToken(_kusdTokenAddress);
-        kumoStakingAddress = _kumoStakingAddress;
-        kumoStaking = IKUMOStaking(_kumoStakingAddress);
 
         setKumoParameters(_kumoParamsAddress);
 
@@ -162,7 +154,6 @@ contract BorrowerOperations is KumoBase, CheckContract, IBorrowerOperations {
         emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit KUSDTokenAddressChanged(_kusdTokenAddress);
-        emit KUMOStakingAddressChanged(_kumoStakingAddress);
 
         _renounceOwnership();
     }

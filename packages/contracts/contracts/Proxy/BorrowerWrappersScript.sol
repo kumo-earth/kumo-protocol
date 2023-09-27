@@ -9,10 +9,8 @@ import "../Interfaces/IBorrowerOperations.sol";
 import "../Interfaces/ITroveManagerDiamond.sol";
 import "../Interfaces/IStabilityPool.sol";
 import "../Interfaces/IPriceFeed.sol";
-import "../Interfaces/IKUMOStaking.sol";
 import "./BorrowerOperationsScript.sol";
 import "./ETHTransferScript.sol";
-import "./KUMOStakingScript.sol";
 import "hardhat/console.sol";
 
 contract BorrowerWrappersScript {

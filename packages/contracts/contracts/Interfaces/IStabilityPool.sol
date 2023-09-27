@@ -38,7 +38,6 @@ interface IStabilityPool is IDeposit {
     event KUSDTokenAddressChanged(address _newKUSDTokenAddress);
     event SortedTrovesAddressChanged(address _newSortedTrovesAddress);
     event PriceFeedAddressChanged(address _newPriceFeedAddress);
-    event CommunityIssuanceAddressChanged(address _newCommunityIssuanceAddress);
 
     event P_Updated(uint256 _P);
     event S_Updated(uint256 _S, uint128 _epoch, uint128 _scale);
@@ -65,7 +64,6 @@ interface IStabilityPool is IDeposit {
         address _troveManagerAddress,
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
-        address _communityIssuanceAddress,
         address _kumoParamsAddress
     ) external;
 

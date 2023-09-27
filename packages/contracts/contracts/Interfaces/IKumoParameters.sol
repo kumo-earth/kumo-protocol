@@ -11,8 +11,6 @@ import "./IKumoBase.sol";
 import "./IKUSDToken.sol";
 import "./IStabilityPoolFactory.sol";
 import "./ISortedTroves.sol";
-import "./IKUMOToken.sol";
-import "./IKUMOStaking.sol";
 
 interface IKumoParameters {
     error SafeCheckError(string parameter, uint256 valueEntered, uint256 minValue, uint256 maxValue);
@@ -38,8 +36,6 @@ interface IKumoParameters {
     event GasPoolAddressChanged(address _gasPoolAddress);
     event CollSurplusPoolAddressChanged(address _collSurplusPoolAddress);
     event SortedTrovesAddressChanged(address _sortedTrovesAddress);
-    event KUMOTokenAddressChanged(address _kumoTokenAddress);
-    event KUMOStakingAddressChanged(address _kumoStakingAddress);
     event TroveRedemptorAddressChanged(address _troveRedemptorAddress);
 
     function BOOTSTRAP_PERIOD() external view returns (uint256);
@@ -88,10 +84,6 @@ interface IKumoParameters {
 
     function sortedTroves() external view returns (ISortedTroves);
 
-    function kumoToken() external view returns (IKUMOToken);
-
-    function kumoStaking() external view returns (IKUMOStaking);
-
     function setAddresses(
         address _activePool,
         address _defaultPool,
@@ -101,9 +93,7 @@ interface IKumoParameters {
         address _collSurplusPoolAddress,
         address _kusdTokenAddress,
         address _stabilityPoolFactoryAddress,
-        address _sortedTrovesAddress,
-        address _kumoTokenAddress,
-        address _kumoStakingAddress
+        address _sortedTrovesAddress
     ) external;
 
     function setPriceFeed(address _priceFeed) external;
