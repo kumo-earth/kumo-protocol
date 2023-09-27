@@ -27,14 +27,6 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         return s.kusdToken;
     }
 
-    function kumoToken() external view returns (IKUMOToken) {
-        return s.kumoToken;
-    }
-
-    function kumoStaking() external view returns (IKUMOStaking) {
-        return s.kumoStaking;
-    }
-
     function sortedTroves() external view returns (ISortedTroves) {
         return s.sortedTroves;
     }
@@ -124,8 +116,6 @@ contract TroveManagerFacet is ITroveManagerFacet, Modifiers {
         s.collSurplusPool = s.kumoParams.collSurplusPool();
         s.kusdToken = s.kumoParams.kusdToken();
         s.sortedTroves = s.kumoParams.sortedTroves();
-        s.kumoToken = s.kumoParams.kumoToken();
-        s.kumoStaking = s.kumoParams.kumoStaking();
         s.stabilityPoolFactory = s.kumoParams.stabilityPoolFactory();
         s.defaultPool = s.kumoParams.defaultPool();
         s.activePool = s.kumoParams.activePool();
