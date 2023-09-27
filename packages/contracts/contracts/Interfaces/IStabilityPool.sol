@@ -45,18 +45,6 @@ interface IStabilityPool is IDeposit {
     event EpochUpdated(uint128 _currentEpoch);
     event ScaleUpdated(uint128 _currentScale);
 
-    //  FrontEnd
-
-    event FrontEndRegistered(address indexed _frontEnd, uint256 _kickbackRate);
-    event FrontEndTagSet(address indexed _depositor, address indexed _frontEnd);
-    event FrontEndSnapshotUpdated(address indexed _frontEnd, uint256 _P, uint256 _G);
-    event FrontEndStakeChanged(
-        address indexed _frontEnd,
-        uint256 _newFrontEndStake,
-        address _depositor
-    );
-    event KUMOPaidToFrontEnd(address indexed _frontEnd, uint256 _KUMO);
-
     event DepositSnapshotUpdated(address indexed _depositor, uint256 _P, uint256 _S);
     event UserDepositChanged(address indexed _depositor, uint256 _newDeposit);
 
