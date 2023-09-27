@@ -6,8 +6,6 @@ import "../Libraries/LibDiamond.sol";
 import "../Interfaces/ICollSurplusPool.sol";
 import "../Interfaces/IKUSDToken.sol";
 import "../Interfaces/ISortedTroves.sol";
-import "../Interfaces/IKUMOToken.sol";
-import "../Interfaces/IKUMOStaking.sol";
 import "../Interfaces/IKumoParameters.sol";
 import "../Interfaces/IStabilityPoolFactory.sol";
 import "../Interfaces/IActivePool.sol";
@@ -58,8 +56,6 @@ struct AppStorage {
     IStabilityPoolFactory stabilityPoolFactory;
     ICollSurplusPool collSurplusPool;
     IKUSDToken kusdToken;
-    IKUMOToken kumoToken;
-    IKUMOStaking kumoStaking;
     // A doubly linked list of Troves, sorted by their sorted by their collateral ratios
     ISortedTroves sortedTroves;
     IKumoParameters kumoParams;
