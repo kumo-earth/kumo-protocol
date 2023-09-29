@@ -7,10 +7,6 @@ env:
 on:
   push:
     paths-ignore:
-      # In future file changes, we can delete the following line
-      # and uncomment the one below. 
-      - ".github/**"
-      # - ".github/workflows/release.yml"
       - 'docs/**'
       - 'packages/contracts/**'
       - 'README.md'
@@ -19,10 +15,7 @@ on:
       - 'images/**'
   pull_request:
     paths-ignore:
-      # In future file changes, we can delete the following line
-      # and uncomment the one below. 
-      - ".github/**"
-      # - ".github/workflows/release.yml"
+
       - 'docs/**'
       - 'packages/contracts/**'
       - 'README.md'
@@ -55,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: workflow-setup
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v3
         env:
@@ -109,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ workflow-setup, test ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - uses: actions/setup-node@v3
         env:

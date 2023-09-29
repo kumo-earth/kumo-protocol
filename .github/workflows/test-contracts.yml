@@ -7,13 +7,11 @@ env:
 on:
   push:
     paths:
-      # In future file changes, we can uncomment the following line
-      # - ".github/workflows/test-contracts.yml"
+      - ".github/workflows/test-contracts.yml"
       - "packages/contracts/**"
   pull_request:
     paths:
-      # In future file changes, we can uncomment the following line
-      # - ".github/workflows/test-contracts.yml"
+      - ".github/workflows/test-contracts.yml"
       - "packages/contracts/**"
 
 jobs:
@@ -24,7 +22,7 @@ jobs:
     if: github.event.pull_request.draft == false
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v3
         env:
@@ -46,7 +44,7 @@ jobs:
     continue-on-error: true
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v3
         env:
