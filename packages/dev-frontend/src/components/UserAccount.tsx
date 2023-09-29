@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useHistory  } from "react-router-dom";
+import { useNavigate  } from "react-router-dom";
 import { Flex, Box, Button } from "theme-ui";
 import { useWalletView } from "../components/WalletConnect/context/WalletViewContext";
 import { useAddAssetModal } from "../components/AddAssetToken/context/AssetViewContext"
@@ -31,7 +31,7 @@ export const UserAccount: React.FC = () => {
   const { showAddAssetModal } = useAddAssetModal()
   const { showSwitchModal } = useSwitchNetworkView();
   const { account } = useWeb3React();
-  const history = useHistory()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!active) {
@@ -73,7 +73,7 @@ export const UserAccount: React.FC = () => {
           <>
             <Button
               onClick={() => {
-                history.push("/faucet")
+                navigate("/faucet")
               }}
               sx={{
                 py: 2,

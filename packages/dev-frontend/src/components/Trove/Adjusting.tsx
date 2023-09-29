@@ -73,7 +73,7 @@ const applyUnsavedNetDebtChanges = (unsavedChanges: Difference, trove: Trove) =>
 
 export const Adjusting: React.FC = () => {
   const { dispatchEvent } = useTroveView();
-  const { collateralType } = useParams<{ collateralType: string }>();
+  const { collateralType = "nbc" || "csc" } = useParams<{ collateralType: string }>();
   const { vault, price, trove, accountBalance, fees, validationContext } = useKumoSelector(
     (state: KumoStoreState) => {
       const { vaults, kusdBalance } = state;

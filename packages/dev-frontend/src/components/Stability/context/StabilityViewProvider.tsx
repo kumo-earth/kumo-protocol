@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef, ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { KumoStoreState, StabilityDeposit } from "@kumodao/lib-base";
@@ -47,8 +47,7 @@ const select = ({ vaults }: KumoStoreState) => ({
   vaults
 });
 
-export const StabilityViewProvider: React.FC = props => {
-  const { children } = props;
+export const StabilityViewProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const { vaults } = useKumoSelector(select);
   const location = useLocation();
 

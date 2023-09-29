@@ -159,7 +159,7 @@ export interface _RawTransactionReplacedError extends Error {
   receipt: EthersTransactionReceipt;
 }
 
-const hasProp = <T, P extends string>(o: T, p: P): o is T & { [_ in P]: unknown } => p in o;
+const hasProp = <T extends object, P extends string>(o: T, p: P): o is T & { [_ in P]: unknown } => p in o;
 
 const isTransactionFailedError = (error: Error): error is RawTransactionFailedError =>
   hasProp(error, "code") &&

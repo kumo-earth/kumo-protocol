@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Heading, Flex, Card, Button, Box } from "theme-ui";
 import { Stability } from "../components/Stability/Stability";
 
@@ -7,6 +7,7 @@ import { Icon } from "./Icon";
 type DialogIntent = "success" | "warning" | "danger" | "info";
 
 type DialogProps = {
+  children: ReactNode,
   intent?: DialogIntent;
   title: string;
   icon?: React.ReactNode;
@@ -33,8 +34,7 @@ export const StakingDialog: React.FC<DialogProps> = ({
   title,
   icon,
   cancelLabel,
-  onClose,
-  children
+  onClose
 }) => (
   <Card sx={{ p: 0, borderRadius: "4px" }}>
     {intent ? <Box sx={{ height: "4px", bg: intent, borderRadius: "3px 3px 0 0" }} /> : null}

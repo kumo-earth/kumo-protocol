@@ -17,7 +17,7 @@ export function useSwitchNetwork(): {
   const { dispatchEvent } = useSwitchNetworkView();
   const [networkSwitched, setNetworkSwitched] = useState(false);
   
-  const chainId: number = Number(process.env.REACT_APP_CHAIN_ID);
+  const chainId: number = Number(import.meta.env.VITE_CHAIN_ID);
   const toHex = (num: number) => {
     const val = Number(num);
     return "0x" + val.toString(16);
@@ -42,11 +42,11 @@ export function useSwitchNetwork(): {
               method: "wallet_addEthereumChain",
               params: [
                 {
-                  chainName: `${process.env.REACT_APP_CHAIN_NAME}` ,
+                  chainName: `${import.meta.env.VITE_CHAIN_NAME}` ,
                   chainId: toHex(chainId),
-                  nativeCurrency: { name: `${process.env.REACT_APP_CURRENCY_NAME}`, decimals: 18, symbol: `${process.env.REACT_APP_CURRENCY_SYMBOL}` },
+                  nativeCurrency: { name: `${import.meta.env.VITE_CURRENCY_NAME}`, decimals: 18, symbol: `${import.meta.env.VITE_CURRENCY_SYMBOL}` },
                   rpcUrls: [
-                    `${process.env.REACT_APP_RPC_URL_WALLET}`
+                    `${import.meta.env.VITE_RPC_URL_WALLET}`
                   ]
                 }
               ]

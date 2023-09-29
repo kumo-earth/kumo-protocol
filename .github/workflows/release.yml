@@ -61,7 +61,7 @@ jobs:
         env:
           FORCE_COLOR: 0
         with:
-          node-version: 16.16.0
+          node-version: 18.17.1
           cache: 'yarn'
 
       - run: yarn install --frozen-lockfile
@@ -115,7 +115,7 @@ jobs:
         env:
           FORCE_COLOR: 0
         with:
-          node-version: 16.16.0
+          node-version: 18.17.1
           cache: 'yarn'
 
       - run: yarn install --frozen-lockfile

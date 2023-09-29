@@ -168,11 +168,15 @@ export class _KumoContract extends Contract {
   }
 }
 
-/** @internal */
-export type _TypedKumoContract<T = unknown, U = unknown> = TypedContract<_KumoContract, T, U>;
+interface ArbitraryProps {
+  [key: string]: any;
+}
 
 /** @internal */
-export interface _KumoContracts {
+export type _TypedKumoContract<T = unknown, U = unknown> = TypedContract<_KumoContract, T, U> & { [key: string]: any };
+
+/** @internal */
+export interface _KumoContracts extends ArbitraryProps {
   activePool: ActivePool;
   borrowerOperations: BorrowerOperations;
   troveManager: TroveManager;

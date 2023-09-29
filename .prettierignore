@@ -51,3 +51,4 @@ Makefile
 *.sh
 .vscode/settings.json
 .yarn/
+.nvmrc

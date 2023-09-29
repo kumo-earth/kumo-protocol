@@ -6779,7 +6779,7 @@ contract("BorrowerOperations", async accounts => {
       assert.equal(status_Before, 0);
 
       const KUSDRequest = MIN_NET_DEBT;
-      borrowerOperations.openTrove(
+      await borrowerOperations.openTrove(
         assetAddress1,
         dec(100, "ether"),
         th._100pct,

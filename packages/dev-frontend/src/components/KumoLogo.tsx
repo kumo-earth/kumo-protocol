@@ -1,5 +1,5 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Box, Image } from "theme-ui";
 import kumoLogos from "../asset/images/kumoLogo.svg";
 
@@ -8,10 +8,10 @@ type KumoLogoProps = React.ComponentProps<typeof Box> & {
 };
 
 export const KumoLogo: React.FC<KumoLogoProps> = ({ height,  ...boxProps }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   return (
     <Box sx={{ lineHeight: 0 }} {...boxProps}>
-      <Image src={kumoLogos} sx={{ height }} variant="primary"  onClick={() => history.push("/dashboard")} />
+      <Image src={kumoLogos} sx={{ height }} variant="primary"  onClick={() => navigate("/dashboard")} />
     </Box>
   );
 };

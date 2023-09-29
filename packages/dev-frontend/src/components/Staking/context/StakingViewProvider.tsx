@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 
 import { KumoStoreState, KUMOStake } from "@kumodao/lib-base";
 import { KumoStoreUpdate, useKumoReducer } from "@kumodao/lib-react";
@@ -69,7 +69,7 @@ const reduce = (
   return state;
 };
 
-export const StakingViewProvider: React.FC = ({ children }) => {
+export const StakingViewProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const stakingTransactionState = useMyTransactionState("stake");
   const [{ adjusting, changePending, kumoStake }, dispatch] = useKumoReducer(reduce, init);
 

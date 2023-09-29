@@ -1,3 +1,4 @@
+import React from "react";
 import { Grid } from "theme-ui";
 import { StabilityPoolStakingCard } from "../components/StabilityPoolStakingCard/StabilityPoolStakingCard";
 

@@ -1,3 +1,4 @@
+import React, { ReactNode } from "react";
 import { Button } from "theme-ui";
 
 import { Decimal, KUMOStakeChange } from "@kumodao/lib-base";
@@ -6,6 +7,7 @@ import { useKumo } from "../../hooks/KumoContext";
 import { useTransactionFunction } from "../Transaction";
 
 type StakingActionProps = {
+  children: ReactNode,
   change: KUMOStakeChange<Decimal>;
 };
 

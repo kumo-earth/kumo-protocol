@@ -1164,6 +1164,7 @@ interface ERC20TestCalls {
   allowance(owner: string, spender: string, _overrides?: CallOverrides): Promise<BigNumber>;
   balanceOf(account: string, _overrides?: CallOverrides): Promise<BigNumber>;
   decimals(_overrides?: CallOverrides): Promise<number>;
+  eip712Domain(_overrides?: CallOverrides): Promise<{ fields: string; name: string; version: string; chainId: BigNumber; verifyingContract: string; salt: string; extensions: BigNumber[] }>;
   name(_overrides?: CallOverrides): Promise<string>;
   nonces(owner: string, _overrides?: CallOverrides): Promise<BigNumber>;
   symbol(_overrides?: CallOverrides): Promise<string>;
@@ -1185,9 +1186,11 @@ export interface ERC20Test
   extends _TypedKumoContract<ERC20TestCalls, ERC20TestTransactions> {
   readonly filters: {
     Approval(owner?: string | null, spender?: string | null, value?: null): EventFilter;
+    EIP712DomainChanged(): EventFilter;
     Transfer(from?: string | null, to?: string | null, value?: null): EventFilter;
   };
   extractEvents(logs: Log[], name: "Approval"): _TypedLogDescription<{ owner: string; spender: string; value: BigNumber }>[];
+  extractEvents(logs: Log[], name: "EIP712DomainChanged"): _TypedLogDescription<{  }>[];
   extractEvents(logs: Log[], name: "Transfer"): _TypedLogDescription<{ from: string; to: string; value: BigNumber }>[];
 }
 

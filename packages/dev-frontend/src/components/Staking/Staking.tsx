@@ -1,3 +1,4 @@
+import React from "react";
 import { useStakingView } from "./context/StakingViewContext";
 import { ReadOnlyStake } from "./ReadOnlyStake";
 import { StakingManager } from "./StakingManager";

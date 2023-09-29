@@ -1,3 +1,4 @@
+import React from "react";
 import { Container } from "theme-ui";
 import { Farm as FarmPanel } from "../components/Farm/Farm";
 

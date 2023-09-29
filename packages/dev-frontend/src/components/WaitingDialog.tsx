@@ -1,9 +1,10 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Box, Flex, Spinner } from "theme-ui";
 
 import { Dialog } from "./Dialog";
 
 type WaitingDialogProps = {
+  children: ReactNode,
   title: string;
   icon?: React.ReactNode;
   waitReason: React.ReactNode;
@@ -30,7 +31,7 @@ export const WaitingDialog: React.FC<WaitingDialogProps> = ({
           alignItems: ["center", "auto"]
         }}
       >
-        <Spinner size="3em" sx={{ mr: [0, 3], mb: [2, 0] }} />
+        <Spinner size={3} sx={{ mr: [0, 3], mb: [2, 0] }} />
         <Flex sx={{ flexDirection: "column", alignItems: ["center", "flex-start"] }}>
           {waitReason}
         </Flex>

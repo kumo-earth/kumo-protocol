@@ -1,3 +1,4 @@
+import React from "react";
 import { Heading, Box, Card, Flex, Button } from "theme-ui";
 
 import { KumoStoreState } from "@kumodao/lib-base";

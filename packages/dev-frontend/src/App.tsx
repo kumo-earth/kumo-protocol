@@ -1,6 +1,6 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Web3ReactProvider } from "@web3-react/core";
-import { Flex, Spinner, Heading, ThemeProvider, Paragraph, Link } from "theme-ui";
+import { Flex, Spinner, Heading, ThemeUIProvider, Paragraph, Link } from "theme-ui";
 
 import { BatchedWebSocketAugmentedWeb3Provider } from "@kumodao/providers";
 import { KumoProvider } from "./hooks/KumoContext";
@@ -21,7 +21,7 @@ if (window.ethereum) {
   Object.assign(window.ethereum, { autoRefreshOnNetworkChange: false });
 }
 
-if (process.env.REACT_APP_DEMO_MODE === "true") {
+if (import.meta.env.VITE_DEMO_MODE === "true") {
   const ethereum = new DisposableWalletProvider(
     `http://${window.location.hostname}:8545`,
     "0x4d5db4107d237df6a3d58ee5f70ae63d73d7658d4026f2eefd2f204c81682cb7"
@@ -37,7 +37,7 @@ getConfig().then(config => {
   Object.assign(window, { config });
 });
 
-const EthersWeb3ReactProvider: React.FC = ({ children }) => {
+const EthersWeb3ReactProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <Web3ReactProvider getLibrary={provider => new BatchedWebSocketAugmentedWeb3Provider(provider)}>
       {children}
@@ -74,7 +74,7 @@ const UnsupportedMainnetFallback: React.FC = () => (
 const App = () => {
   const loader = (
     <Flex sx={{ alignItems: "center", justifyContent: "center", height: "100vh" }}>
-      <Spinner sx={{ m: 2, color: "text" }} size="32px" />
+      <Spinner sx={{ m: 2, color: "text" }} size={32} />
       <Heading>Loading...</Heading>
     </Flex>
   );
@@ -100,7 +100,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <EthersWeb3ReactProvider>
-        <ThemeProvider theme={theme}>
+        <ThemeUIProvider theme={theme}>
           <WalletViewProvider>
             <SwitchNetworkViewProvider>
               <AddAssetViewProvider>
@@ -111,16 +111,14 @@ const App = () => {
                   unsupportedMainnetFallback={<UnsupportedMainnetFallback />}
                 >
                   <TransactionProvider>
-
                     <KumoFrontend loader={loader} />
-
                   </TransactionProvider>
                 </KumoProvider>
               </AddAssetViewProvider>
             </SwitchNetworkViewProvider>
             {/* </WalletConnector> */}
           </WalletViewProvider>
-        </ThemeProvider>
+        </ThemeUIProvider>
       </EthersWeb3ReactProvider>
     </BrowserRouter>
   );

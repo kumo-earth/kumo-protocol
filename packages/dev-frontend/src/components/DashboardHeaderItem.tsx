@@ -1,3 +1,4 @@
+import React from "react";
 import { Box, Flex, Text } from "theme-ui";
 
 type DashboadHeaderItemProps = React.ComponentProps<typeof Box> & {

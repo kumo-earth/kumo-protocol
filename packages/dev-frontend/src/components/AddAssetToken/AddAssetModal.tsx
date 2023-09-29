@@ -2,7 +2,6 @@ import React from "react";
 import { useKumoSelector } from "@kumodao/lib-react";
 import { Card, Box, Heading } from "theme-ui";
 import { ASSET_TOKENS } from "@kumodao/lib-base";
-import { toUpper } from "lodash";
 import { Icon } from "../Icon";
 import AddAssetButton from "../AddAssetButton";
 import { useAddAssetModal } from "./context/AssetViewContext";
@@ -26,7 +25,7 @@ export const AddAssetModal: React.FC = () => {
     <Card variant="modalCard">
       <Heading as="h2" sx={{ mr: 2, }}>
         Please Add the Tokens to Wallet{" "}
-        <span style={{ marginLeft: "auto", cursor: "pointer" }} onClick={e => dispatchEvent("CLOSE_ADD_ASSET_MODAL_PRESSED")}>
+        <span style={{ marginLeft: "auto", cursor: "pointer" }} onClick={() => dispatchEvent("CLOSE_ADD_ASSET_MODAL_PRESSED")}>
           <Icon name="window-close" size={"1x"} color="#da357a" />
         </span>
       </Heading>
@@ -40,7 +39,7 @@ export const AddAssetModal: React.FC = () => {
                 key={token}
                 assetName={assetName}
                 assetTokenAddress={assetAddress}
-                tokenSymbol={toUpper(token)}
+                tokenSymbol={token.toUpperCase()}
               />
             </Box>
           );

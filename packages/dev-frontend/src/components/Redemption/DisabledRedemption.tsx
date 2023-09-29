@@ -1,3 +1,4 @@
+import React from "react";
 import { Box, Card, Heading, Paragraph, Text } from "theme-ui";
 
 import { InfoMessage } from "../InfoMessage";

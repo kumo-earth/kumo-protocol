@@ -69,11 +69,12 @@ const validSortingOptions = ["ascendingCollateralRatio", "descendingCollateralRa
 
 const expectPositiveInt = <K extends string>(obj: { [P in K]?: number }, key: K) => {
   if (obj[key] !== undefined) {
-    if (!Number.isInteger(obj[key])) {
+    const value = obj[key] as number;
+    if (!Number.isInteger(value)) {
       throw new Error(`${key} must be an integer`);
     }
 
-    if (obj[key] < 0) {
+    if (value < 0) {
       throw new Error(`${key} must not be negative`);
     }
   }

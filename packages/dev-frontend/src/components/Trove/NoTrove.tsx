@@ -15,7 +15,7 @@ const select = ({
   vaults
 });
 
-export const NoTrove: React.FC = props => {
+export const NoTrove: React.FC = () => {
   const { vaults } = useKumoSelector(select);
   const { dispatchEvent } = useTroveView();
 

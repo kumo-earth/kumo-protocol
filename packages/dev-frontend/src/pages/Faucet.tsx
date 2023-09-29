@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, Button, Card, Heading, Text } from 'theme-ui';
 import { DashboadContent } from '../components/DashboardContent';
 import { ASSET_TOKENS } from '@kumodao/lib-base';

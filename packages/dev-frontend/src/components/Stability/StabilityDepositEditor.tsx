@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 
 import { Heading, Box, Card, Button, Text } from "theme-ui";
@@ -28,6 +28,7 @@ const select = ({ vaults, kusdBalance }: KumoStoreState) => ({
 });
 
 type StabilityDepositEditorProps = {
+  children: ReactNode,
   originalDeposit: StabilityDeposit;
   editedKUSD: Decimal;
   changePending: boolean;

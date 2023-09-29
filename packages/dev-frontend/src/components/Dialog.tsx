@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Heading, Flex, Card, Button, Box } from "theme-ui";
 
 import { Icon } from "./Icon";
@@ -6,9 +6,10 @@ import { Icon } from "./Icon";
 type DialogIntent = "success" | "warning" | "danger" | "info";
 
 type DialogProps = {
+  children: ReactNode,
   intent?: DialogIntent;
   title: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   cancelLabel?: string;
   onCancel: () => void;
 };

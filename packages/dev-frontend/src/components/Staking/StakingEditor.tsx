@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { Heading, Box, Card, Button } from "theme-ui";
 
 import { Decimal, Decimalish, Difference, KumoStoreState, KUMOStake } from "@kumodao/lib-base";
@@ -18,6 +18,7 @@ const select = ({ kumoBalance, totalStakedKUMO }: KumoStoreState) => ({
 });
 
 type StakingEditorProps = {
+  children: ReactNode,
   title: string;
   originalStake: KUMOStake;
   editedKUMO: Decimal;

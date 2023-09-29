@@ -1,3 +1,4 @@
+import React from "react";
 import { Card, Heading, Box, Flex, Button } from "theme-ui";
 
 import { GT } from "../../strings";

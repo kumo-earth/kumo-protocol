@@ -1,11 +1,12 @@
 import { KumoStore } from "@kumodao/lib-base";
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState,ReactNode } from "react";
 
 export const KumoStoreContext = createContext<KumoStore | undefined>(undefined);
 
 type KumoStoreProviderProps = {
   store: KumoStore;
-  loader?: React.ReactNode;
+  loader?: ReactNode;
+  children: ReactNode;
 };
 
 export const KumoStoreProvider: React.FC<KumoStoreProviderProps> = ({

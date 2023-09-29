@@ -1,8 +1,8 @@
+import React, { ReactNode } from "react";
 import { Box, Flex, Text } from "theme-ui";
-
 import { Icon } from "./Icon";
 
-export const ErrorDescription: React.FC = ({ children }) => (
+export const ErrorDescription: React.FC<{ children: ReactNode }> = ({ children }) => (
   <Box
     sx={{
       display: "flex",

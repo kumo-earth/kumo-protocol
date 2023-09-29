@@ -1,3 +1,4 @@
+import React, { ReactNode } from "react";
 import { Button } from "theme-ui";
 
 import { Decimal, TroveChange } from "@kumodao/lib-base";
@@ -6,6 +7,7 @@ import { useKumo } from "../../hooks/KumoContext";
 import { useTransactionFunction } from "../Transaction";
 
 type TroveActionProps = {
+  children: ReactNode,
   transactionId: string;
   change: Exclude<TroveChange<Decimal>, { type: "invalidCreation" }>;
   asset: string;

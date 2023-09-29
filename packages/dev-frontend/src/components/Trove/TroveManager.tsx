@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Flex, Button } from "theme-ui";
 
@@ -165,7 +165,7 @@ type TroveManagerProps = {
 };
 
 export const TroveManager: React.FC<TroveManagerProps> = ({ collateral, debt }) => {
-  const { collateralType } = useParams<{ collateralType: string }>();
+  const { collateralType = "nbc" || "csc"} = useParams<{ collateralType: string }>();
   const assetTokenAddress = ASSET_TOKENS[collateralType].assetAddress;
   const [{ original, edited, changePending }, dispatch] = useKumoReducer(
     reduce,

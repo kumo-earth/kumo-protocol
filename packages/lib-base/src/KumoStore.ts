@@ -189,10 +189,10 @@ const wrap =
   (...args: A) =>
     f(...args);
 
-const difference = <T>(a: T, b: T) =>
-  Object.fromEntries(
-    Object.entries(a).filter(([key, value]) => value !== (b as Record<string, unknown>)[key])
-  ) as Partial<T>;
+  const difference = <T extends Record<string, any>>(a: T, b: T) =>
+    Object.fromEntries(
+      Object.entries(a).filter(([key, value]) => value !== (b as Record<string, unknown>)[key])
+    ) as Partial<T>;
 
 /**
  * Abstract base class of Kumo data store implementations.

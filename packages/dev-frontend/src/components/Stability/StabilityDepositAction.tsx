@@ -1,10 +1,13 @@
+import React from "react";
 import { Button } from "theme-ui";
 import { Decimal, StabilityDepositChange } from "@kumodao/lib-base";
 
 import { useKumo } from "../../hooks/KumoContext";
 import { useTransactionFunction } from "../Transaction";
+import { ReactNode } from "react";
 
 type StabilityDepositActionProps = {
+  children: ReactNode
   transactionId: string;
   change: StabilityDepositChange<Decimal>;
   asset: string,

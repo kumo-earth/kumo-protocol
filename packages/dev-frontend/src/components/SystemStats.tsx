@@ -38,7 +38,7 @@ type SystemStatsProps = {
   onClose: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
-export const SystemStats: React.FC<SystemStatsProps> = ({ variant = "info", showBalances, onClose }) => {
+export const SystemStats: React.FC<SystemStatsProps> = ({ showBalances, onClose }) => {
   const { systemTotalCollDebt } = useDashboard();
 
   return (
