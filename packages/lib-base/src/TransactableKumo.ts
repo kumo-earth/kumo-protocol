@@ -318,7 +318,6 @@ export interface TransactableKumo {
    * Make a new Stability Deposit, or top up existing one.
    *
    * @param amount - Amount of KUSD to add to new or existing deposit.
-   * @param frontendTag - Address that should receive a share of this deposit's KUMO rewards.
    *
    * @throws
    * Throws {@link TransactionFailedError} in case of transaction failure.
@@ -328,6 +327,7 @@ export interface TransactableKumo {
    *
    * As a side-effect, the transaction will also pay out an existing Stability Deposit's
    * {@link @kumodao/lib-base#StabilityDeposit.collateralGain | collateral gain} and
+   * TODO: after KIP-3, change to `KUSD reward`
    * {@link @kumodao/lib-base#StabilityDeposit.kumoReward | KUMO reward}.
    */
   depositKUSDInStabilityPool(
@@ -409,17 +409,6 @@ export interface TransactableKumo {
     amount: Decimalish): Promise<void>;
 
   /**
-   * Send KUMO tokens to an address.
-   *
-   * @param toAddress - Address of receipient.
-   * @param amount - Amount of KUMO to send.
-   *
-   * @throws
-   * Throws {@link TransactionFailedError} in case of transaction failure.
-   */
-  sendKUMO(toAddress: string, amount: Decimalish): Promise<void>;
-
-  /**
    * Redeem KUSD to native currency (e.g. Ether) at face value.
    *
    * @param amount - Amount of KUSD to be redeemed.
@@ -446,95 +435,4 @@ export interface TransactableKumo {
    * Throws {@link TransactionFailedError} in case of transaction failure.
    */
   claimCollateralSurplus(asset: string): Promise<void>;
-
-  /**
-   * Stake KUMO to start earning fee revenue or increase existing stake.
-   *
-   * @param amount - Amount of KUMO to add to new or existing stake.
-   *
-   * @throws
-   * Throws {@link TransactionFailedError} in case of transaction failure.
-   *
-   * @remarks
-   * As a side-effect, the transaction will also pay out an existing KUMO stake's
-   * {@link @kumodao/lib-base#KUMOStake.collateralGain | collateral gain} and
-   * {@link @kumodao/lib-base#KUMOStake.kusdGain | KUSD gain}.
-   */
-  stakeKUMO(amount: Decimalish): Promise<void>;
-
-  /**
-   * Withdraw KUMO from staking.
-   *
-   * @param amount - Amount of KUMO to withdraw.
-   *
-   * @throws
-   * Throws {@link TransactionFailedError} in case of transaction failure.
-   *
-   * @remarks
-   * As a side-effect, the transaction will also pay out the KUMO stake's
-   * {@link @kumodao/lib-base#KUMOStake.collateralGain | collateral gain} and
-   * {@link @kumodao/lib-base#KUMOStake.kusdGain | KUSD gain}.
-   */
-  unstakeKUMO(amount: Decimalish): Promise<void>;
-
-  /**
-   * Withdraw {@link @kumodao/lib-base#KUMOStake.collateralGain | collateral gain} and
-   * {@link @kumodao/lib-base#KUMOStake.kusdGain | KUSD gain} from KUMO stake.
-   *
-   * @throws
-   * Throws {@link TransactionFailedError} in case of transaction failure.
-   */
-  withdrawGainsFromStaking(): Promise<void>;
-
-  /**
-   * Allow the liquidity mining contract to use Uniswap ETH/KUSD LP tokens for
-   * {@link @kumodao/lib-base#TransactableKumo.stakeUniTokens | staking}.
-   *
-   * @param allowance - Maximum amount of LP tokens that will be transferrable to liquidity mining
-   *                    (`2^256 - 1` by default).
-   *
-   * @remarks
-   * Must be performed before calling
-   * {@link @kumodao/lib-base#TransactableKumo.stakeUniTokens | stakeUniTokens()}.
-   *
-   * @throws
-   * Throws {@link TransactionFailedError} in case of transaction failure.
-   */
-  approveUniTokens(allowance?: Decimalish): Promise<void>;
-
-  /**
-   * Stake Uniswap ETH/KUSD LP tokens to participate in liquidity mining and earn KUMO.
-   *
-   * @param amount - Amount of LP tokens to add to new or existing stake.
-   *
-   * @throws
-   * Throws {@link TransactionFailedError} in case of transaction failure.
-   */
-  stakeUniTokens(amount: Decimalish): Promise<void>;
-
-  /**
-   * Withdraw Uniswap ETH/KUSD LP tokens from liquidity mining.
-   *
-   * @param amount - Amount of LP tokens to withdraw.
-   *
-   * @throws
-   * Throws {@link TransactionFailedError} in case of transaction failure.
-   */
-  unstakeUniTokens(amount: Decimalish): Promise<void>;
-
-  /**
-   * Withdraw KUMO that has been earned by mining liquidity.
-   *
-   * @throws
-   * Throws {@link TransactionFailedError} in case of transaction failure.
-   */
-  withdrawKUMORewardFromLiquidityMining(): Promise<void>;
-
-  /**
-   * Withdraw all staked LP tokens from liquidity mining and claim reward.
-   *
-   * @throws
-   * Throws {@link TransactionFailedError} in case of transaction failure.
-   */
-  exitLiquidityMining(): Promise<void>;
 }
