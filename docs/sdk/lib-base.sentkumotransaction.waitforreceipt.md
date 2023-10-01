@@ -6,12 +6,12 @@
 
 Wait for the transaction to be mined, and check whether it was successful.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 waitForReceipt(): Promise<Extract<T, MinedReceipt>>;
 ```
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;Extract&lt;T, [MinedReceipt](./lib-base.minedreceipt.md)<!-- -->&gt;&gt;
 

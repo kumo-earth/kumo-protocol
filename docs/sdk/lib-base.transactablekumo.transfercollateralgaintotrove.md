@@ -6,7 +6,7 @@
 
 Transfer [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) from Stability Deposit to Trove.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 transferCollateralGainToTrove(asset: string, assetName: string): Promise<CollateralGainTransferDetails>;
@@ -19,7 +19,7 @@ transferCollateralGainToTrove(asset: string, assetName: string): Promise<Collate
 |  asset | string |  |
 |  assetName | string |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[CollateralGainTransferDetails](./lib-base.collateralgaintransferdetails.md)<!-- -->&gt;
 
@@ -31,5 +31,5 @@ Throws [TransactionFailedError](./lib-base.transactionfailederror.md) in case of
 
 The collateral gain is transfered to the Trove as additional collateral.
 
-As a side-effect, the transaction will also pay out the Stability Deposit's [KUMO reward](./lib-base.stabilitydeposit.kumoreward.md)<!-- -->.
+As a side-effect, the transaction will also pay out the Stability Deposit's .
 

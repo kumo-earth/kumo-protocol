@@ -6,7 +6,7 @@
 
 Value that the [borrowing rate](./lib-base.fees.borrowingrate.md) will never decay below.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 MINIMUM_BORROWING_RATE: Decimal

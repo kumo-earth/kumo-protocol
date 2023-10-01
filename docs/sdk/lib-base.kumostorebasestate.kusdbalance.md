@@ -6,7 +6,7 @@
 
 User's KUSD token balance.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 kusdBalance: Decimal;

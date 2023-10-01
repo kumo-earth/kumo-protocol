@@ -6,7 +6,7 @@
 
 Called after the state is fetched for the first time.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 onLoaded?: () => void;

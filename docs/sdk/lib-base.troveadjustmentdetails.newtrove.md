@@ -6,7 +6,7 @@
 
 New state of the adjusted Trove directly after the transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 newTrove: Trove;

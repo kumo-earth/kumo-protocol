@@ -6,7 +6,7 @@
 
 Amount of KUSD left in the Stability Deposit.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly currentKUSD: Decimal;

@@ -4,7 +4,7 @@
 
 ## Decimal.eq() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 eq(that: Decimalish): boolean;
@@ -16,7 +16,7 @@ eq(that: Decimalish): boolean;
 |  --- | --- | --- |
 |  that | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 boolean
 

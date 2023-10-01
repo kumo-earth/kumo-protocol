@@ -6,7 +6,7 @@
 
 Request Test tokens to an address.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 requestTestToken(tokenAddress: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<void>>;
@@ -17,9 +17,9 @@ requestTestToken(tokenAddress: string, overrides?: EthersTransactionOverrides): 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  tokenAddress | string | Address of test token contract. |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[PopulatedEthersKumoTransaction](./lib-ethers.populatedetherskumotransaction.md)<!-- -->&lt;void&gt;&gt;
 

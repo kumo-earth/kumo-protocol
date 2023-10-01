@@ -6,7 +6,7 @@
 
 Send KUSD tokens to an address.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 sendKUSD(toAddress: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
@@ -19,7 +19,7 @@ sendKUSD(toAddress: string, amount: Decimalish): Promise<PopulatedKumoTransactio
 |  toAddress | string | Address of receipient. |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUSD to send. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[PopulatedKumoTransaction](./lib-base.populatedkumotransaction.md)<!-- -->&lt;P, [SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, void&gt;&gt;&gt;&gt;
 

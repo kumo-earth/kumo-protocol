@@ -6,7 +6,7 @@
 
 Optional parameters of [ReadableEthersKumo.connect()](./lib-ethers.readableetherskumo.connect_1.md) and [EthersKumo.connect()](./lib-ethers.etherskumo.connect_1.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface EthersKumoConnectionOptionalParams 
@@ -16,6 +16,6 @@ export interface EthersKumoConnectionOptionalParams
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [userAddress?](./lib-ethers.etherskumoconnectionoptionalparams.useraddress.md) |  | string | <i>(Optional)</i> Address whose Trove, Stability Deposit, KUMO Stake and balances will be read by default. |
-|  [useStore?](./lib-ethers.etherskumoconnectionoptionalparams.usestore.md) |  | [EthersKumoStoreOption](./lib-ethers.etherskumostoreoption.md) | <i>(Optional)</i> Create a [KumoStore](./lib-base.kumostore.md) and expose it as the <code>store</code> property. |
+|  [userAddress?](./lib-ethers.etherskumoconnectionoptionalparams.useraddress.md) | <code>readonly</code> | string | _(Optional)_ Address whose Trove, Stability Deposit, KUMO Stake and balances will be read by default. |
+|  [useStore?](./lib-ethers.etherskumoconnectionoptionalparams.usestore.md) | <code>readonly</code> | [EthersKumoStoreOption](./lib-ethers.etherskumostoreoption.md) | _(Optional)_ Create a [KumoStore](./lib-base.kumostore.md) and expose it as the <code>store</code> property. |
 

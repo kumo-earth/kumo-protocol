@@ -6,7 +6,7 @@
 
 Get the current state of a Stability Deposit.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getStabilityDeposit(assetName: string, address?: string, overrides?: EthersCallOverrides): Promise<StabilityDeposit>;
@@ -17,10 +17,10 @@ getStabilityDeposit(assetName: string, address?: string, overrides?: EthersCallO
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  assetName | string |  |
-|  address | string | Address that owns the Stability Deposit. |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  address | string | _(Optional)_ Address that owns the Stability Deposit. |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[StabilityDeposit](./lib-base.stabilitydeposit.md)<!-- -->&gt;
 

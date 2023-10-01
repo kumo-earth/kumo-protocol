@@ -4,7 +4,7 @@
 
 ## Decimal.mul() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 mul(multiplier: Decimalish): Decimal;
@@ -16,7 +16,7 @@ mul(multiplier: Decimalish): Decimal;
 |  --- | --- | --- |
 |  multiplier | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Decimal](./lib-base.decimal.md)
 

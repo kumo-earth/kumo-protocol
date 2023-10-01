@@ -6,7 +6,7 @@
 
 Ethers' representation of a sent transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly rawSentTransaction: EthersTransactionResponse;

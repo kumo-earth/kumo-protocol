@@ -4,9 +4,9 @@
 
 ## SendableKumo.withdrawGainsFromStabilityPool() method
 
-Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [KUMO reward](./lib-base.stabilitydeposit.kumoreward.md) from Stability Deposit.
+Withdraw [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and  from Stability Deposit.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 withdrawGainsFromStabilityPool(asset: string): Promise<SentKumoTransaction<S, KumoReceipt<R, StabilityPoolGainsWithdrawalDetails>>>;
@@ -18,7 +18,7 @@ withdrawGainsFromStabilityPool(asset: string): Promise<SentKumoTransaction<S, Ku
 |  --- | --- | --- |
 |  asset | string |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, [StabilityPoolGainsWithdrawalDetails](./lib-base.stabilitypoolgainswithdrawaldetails.md)<!-- -->&gt;&gt;&gt;
 

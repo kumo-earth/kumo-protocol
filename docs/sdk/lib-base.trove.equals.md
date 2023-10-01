@@ -4,7 +4,7 @@
 
 ## Trove.equals() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 equals(that: Trove): boolean;
@@ -16,7 +16,7 @@ equals(that: Trove): boolean;
 |  --- | --- | --- |
 |  that | [Trove](./lib-base.trove.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 boolean
 

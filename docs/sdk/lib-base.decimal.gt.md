@@ -4,7 +4,7 @@
 
 ## Decimal.gt() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 gt(that: Decimalish): boolean;
@@ -16,7 +16,7 @@ gt(that: Decimalish): boolean;
 |  --- | --- | --- |
 |  that | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 boolean
 

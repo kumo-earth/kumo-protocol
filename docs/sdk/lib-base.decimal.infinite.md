@@ -4,7 +4,7 @@
 
 ## Decimal.infinite property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 get infinite(): this | undefined;

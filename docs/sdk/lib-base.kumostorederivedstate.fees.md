@@ -6,7 +6,7 @@
 
 Calculator for current fees.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 fees: Fees;

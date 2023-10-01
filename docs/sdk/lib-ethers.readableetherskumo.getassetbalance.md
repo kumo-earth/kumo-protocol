@@ -4,7 +4,7 @@
 
 ## ReadableEthersKumo.getAssetBalance() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getAssetBalance(address: string, asset: string, provider: EthersProvider, overrides?: EthersCallOverrides): any;
@@ -17,9 +17,9 @@ getAssetBalance(address: string, asset: string, provider: EthersProvider, overri
 |  address | string |  |
 |  asset | string |  |
 |  provider | [EthersProvider](./lib-ethers.ethersprovider.md) |  |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 any
 

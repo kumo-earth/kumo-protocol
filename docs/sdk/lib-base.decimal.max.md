@@ -4,7 +4,7 @@
 
 ## Decimal.max() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static max(a: Decimalish, b: Decimalish): Decimal;
@@ -17,7 +17,7 @@ static max(a: Decimalish, b: Decimalish): Decimal;
 |  a | [Decimalish](./lib-base.decimalish.md) |  |
 |  b | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Decimal](./lib-base.decimal.md)
 

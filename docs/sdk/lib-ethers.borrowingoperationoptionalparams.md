@@ -6,7 +6,7 @@
 
 Optional parameters of a transaction that borrows KUSD.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface BorrowingOperationOptionalParams 
@@ -16,6 +16,6 @@ export interface BorrowingOperationOptionalParams
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [borrowingFeeDecayToleranceMinutes?](./lib-ethers.borrowingoperationoptionalparams.borrowingfeedecaytoleranceminutes.md) |  | number | <i>(Optional)</i> Control the amount of extra gas included attached to the transaction. |
-|  [maxBorrowingRate?](./lib-ethers.borrowingoperationoptionalparams.maxborrowingrate.md) |  | [Decimalish](./lib-base.decimalish.md) | <i>(Optional)</i> Maximum acceptable [borrowing rate](./lib-base.fees.borrowingrate.md) (default: current borrowing rate plus 0.5%). |
+|  [borrowingFeeDecayToleranceMinutes?](./lib-ethers.borrowingoperationoptionalparams.borrowingfeedecaytoleranceminutes.md) |  | number | _(Optional)_ Control the amount of extra gas included attached to the transaction. |
+|  [maxBorrowingRate?](./lib-ethers.borrowingoperationoptionalparams.maxborrowingrate.md) |  | [Decimalish](./lib-base.decimalish.md) | _(Optional)_ Maximum acceptable [borrowing rate](./lib-base.fees.borrowingrate.md) (default: current borrowing rate plus 0.5%). |
 

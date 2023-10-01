@@ -6,12 +6,12 @@
 
 A Trove in its state after the last direct modification.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class TroveWithPendingRedistribution extends UserTrove 
 ```
-<b>Extends:</b> [UserTrove](./lib-base.usertrove.md)
+**Extends:** [UserTrove](./lib-base.usertrove.md)
 
 ## Remarks
 

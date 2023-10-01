@@ -6,7 +6,7 @@
 
 Amount of KUSD the redeemer tried to redeem.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 attemptedKUSDAmount: Decimal;

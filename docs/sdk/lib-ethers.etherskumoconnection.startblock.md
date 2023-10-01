@@ -6,7 +6,7 @@
 
 Number of block in which the first Kumo contract was deployed.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly startBlock: number;

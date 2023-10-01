@@ -6,7 +6,7 @@
 
 Value that the [redemption rate](./lib-base.fees.redemptionrate.md) will never decay below.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 MINIMUM_REDEMPTION_RATE: Decimal

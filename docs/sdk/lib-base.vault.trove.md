@@ -4,7 +4,7 @@
 
 ## Vault.trove property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly trove: UserTrove;

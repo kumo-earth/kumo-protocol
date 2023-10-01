@@ -4,7 +4,7 @@
 
 ## Trove.multiply() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 multiply(multiplier: Decimalish): Trove;
@@ -16,7 +16,7 @@ multiply(multiplier: Decimalish): Trove;
 |  --- | --- | --- |
 |  multiplier | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Trove](./lib-base.trove.md)
 

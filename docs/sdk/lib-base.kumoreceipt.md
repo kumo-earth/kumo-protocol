@@ -6,10 +6,10 @@
 
 One of either a [PendingReceipt](./lib-base.pendingreceipt.md)<!-- -->, a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](./lib-base.successfulreceipt.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type KumoReceipt<R = unknown, D = unknown> = PendingReceipt | MinedReceipt<R, D>;
+export type KumoReceipt<R = unknown, D = unknown> = PendingReceipt | MinedReceipt<R, D>;
 ```
-<b>References:</b> [PendingReceipt](./lib-base.pendingreceipt.md)<!-- -->, [MinedReceipt](./lib-base.minedreceipt.md)
+**References:** [PendingReceipt](./lib-base.pendingreceipt.md)<!-- -->, [MinedReceipt](./lib-base.minedreceipt.md)
 

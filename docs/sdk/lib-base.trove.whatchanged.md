@@ -6,7 +6,7 @@
 
 Calculate the difference between this Trove and another.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 whatChanged(that: Trove, borrowingRate?: Decimalish): TroveChange<Decimal> | undefined;
@@ -17,9 +17,9 @@ whatChanged(that: Trove, borrowingRate?: Decimalish): TroveChange<Decimal> | und
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  that | [Trove](./lib-base.trove.md) | The other Trove. |
-|  borrowingRate | [Decimalish](./lib-base.decimalish.md) | Borrowing rate to use when calculating a borrowed amount. |
+|  borrowingRate | [Decimalish](./lib-base.decimalish.md) | _(Optional)_ Borrowing rate to use when calculating a borrowed amount. |
 
-<b>Returns:</b>
+**Returns:**
 
 [TroveChange](./lib-base.trovechange.md)<!-- -->&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt; \| undefined
 

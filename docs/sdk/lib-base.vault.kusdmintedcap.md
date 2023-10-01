@@ -4,7 +4,7 @@
 
 ## Vault.kusdMintedCap property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly kusdMintedCap: Decimal;

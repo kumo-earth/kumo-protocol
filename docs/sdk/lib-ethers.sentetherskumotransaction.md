@@ -6,12 +6,12 @@
 
 A transaction that has already been sent.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class SentEthersKumoTransaction<T = unknown> implements SentKumoTransaction<EthersTransactionResponse, KumoReceipt<EthersTransactionReceipt, T>> 
 ```
-<b>Implements:</b> [SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;[EthersTransactionResponse](./lib-ethers.etherstransactionresponse.md)<!-- -->, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;[EthersTransactionReceipt](./lib-ethers.etherstransactionreceipt.md)<!-- -->, T&gt;&gt;
+**Implements:** [SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;[EthersTransactionResponse](./lib-ethers.etherstransactionresponse.md)<!-- -->, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;[EthersTransactionReceipt](./lib-ethers.etherstransactionreceipt.md)<!-- -->, T&gt;&gt;
 
 ## Remarks
 
@@ -23,7 +23,7 @@ The constructor for this class is marked as internal. Third-party code should no
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [rawSentTransaction](./lib-ethers.sentetherskumotransaction.rawsenttransaction.md) |  | [EthersTransactionResponse](./lib-ethers.etherstransactionresponse.md) | Ethers' representation of a sent transaction. |
+|  [rawSentTransaction](./lib-ethers.sentetherskumotransaction.rawsenttransaction.md) | <code>readonly</code> | [EthersTransactionResponse](./lib-ethers.etherstransactionresponse.md) | Ethers' representation of a sent transaction. |
 
 ## Methods
 

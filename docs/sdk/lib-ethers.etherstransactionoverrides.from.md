@@ -4,7 +4,7 @@
 
 ## EthersTransactionOverrides.from property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 from?: string;

@@ -6,7 +6,7 @@
 
 Adjust existing Trove by depositing more collateral.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 depositCollateral(asset: string, amount: Decimalish): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>>;
@@ -19,7 +19,7 @@ depositCollateral(asset: string, amount: Decimalish): Promise<PopulatedKumoTrans
 |  asset | string |  |
 |  amount | [Decimalish](./lib-base.decimalish.md) | The amount of collateral to add to the Trove's existing collateral. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[PopulatedKumoTransaction](./lib-base.populatedkumotransaction.md)<!-- -->&lt;P, [SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, [TroveAdjustmentDetails](./lib-base.troveadjustmentdetails.md)<!-- -->&gt;&gt;&gt;&gt;
 

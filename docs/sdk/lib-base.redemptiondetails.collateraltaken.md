@@ -6,7 +6,7 @@
 
 Amount of collateral (e.g. Ether) taken from Troves by the transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 collateralTaken: Decimal;

@@ -4,7 +4,7 @@
 
 ## Vault.accountBalance property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly accountBalance: Decimal;

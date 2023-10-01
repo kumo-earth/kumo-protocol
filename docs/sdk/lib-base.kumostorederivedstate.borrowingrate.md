@@ -6,7 +6,7 @@
 
 Current borrowing rate.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 borrowingRate: Decimal;

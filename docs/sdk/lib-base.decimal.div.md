@@ -4,7 +4,7 @@
 
 ## Decimal.div() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 div(divider: Decimalish): Decimal;
@@ -16,7 +16,7 @@ div(divider: Decimalish): Decimal;
 |  --- | --- | --- |
 |  divider | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Decimal](./lib-base.decimal.md)
 

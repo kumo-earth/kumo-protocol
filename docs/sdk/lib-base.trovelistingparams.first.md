@@ -6,7 +6,7 @@
 
 Number of Troves to retrieve.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly first: number;

@@ -4,7 +4,7 @@
 
 ## Vault.kusdInStabilityPool property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly kusdInStabilityPool: Decimal;

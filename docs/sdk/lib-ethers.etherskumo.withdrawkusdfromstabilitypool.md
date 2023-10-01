@@ -6,7 +6,7 @@
 
 Withdraw KUSD from Stability Deposit.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 withdrawKUSDFromStabilityPool(amount: Decimalish, asset: string, overrides?: EthersTransactionOverrides): Promise<StabilityDepositChangeDetails>;
@@ -18,9 +18,9 @@ withdrawKUSDFromStabilityPool(amount: Decimalish, asset: string, overrides?: Eth
 |  --- | --- | --- |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUSD to withdraw. |
 |  asset | string |  |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[StabilityDepositChangeDetails](./lib-base.stabilitydepositchangedetails.md)<!-- -->&gt;
 
@@ -30,5 +30,5 @@ Throws [EthersTransactionFailedError](./lib-ethers.etherstransactionfailederror.
 
 ## Remarks
 
-As a side-effect, the transaction will also pay out the Stability Deposit's [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [KUMO reward](./lib-base.stabilitydeposit.kumoreward.md)<!-- -->.
+As a side-effect, the transaction will also pay out the Stability Deposit's [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and .
 

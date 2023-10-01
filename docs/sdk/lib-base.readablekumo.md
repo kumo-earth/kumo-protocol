@@ -6,7 +6,7 @@
 
 Read the state of the Kumo protocol.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface ReadableKumo 
@@ -23,25 +23,15 @@ Implemented by [EthersKumo](./lib-ethers.etherskumo.md)<!-- -->.
 |  [getAssetBalance(address, assetType, provider)](./lib-base.readablekumo.getassetbalance.md) | Get the amount of BCT held by an address. |
 |  [getCollateralSurplusBalance(asset, address)](./lib-base.readablekumo.getcollateralsurplusbalance.md) | Get the amount of leftover collateral available for withdrawal by an address. |
 |  [getFees(asset)](./lib-base.readablekumo.getfees.md) | Get a calculator for current fees. |
-|  [getKUMOBalance(address)](./lib-base.readablekumo.getkumobalance.md) | Get the amount of KUMO held by an address. |
-|  [getKUMOStake(asset, address)](./lib-base.readablekumo.getkumostake.md) | Get the current state of an KUMO Stake. |
 |  [getKUSDBalance(address)](./lib-base.readablekumo.getkusdbalance.md) | Get the amount of KUSD held by an address. |
 |  [getKUSDInStabilityPool(asset)](./lib-base.readablekumo.getkusdinstabilitypool.md) | Get the total amount of KUSD currently deposited in the Stability Pool. |
-|  [getLiquidityMiningKUMOReward(address)](./lib-base.readablekumo.getliquidityminingkumoreward.md) | Get the amount of KUMO earned by an address through mining liquidity. |
-|  [getLiquidityMiningStake(address)](./lib-base.readablekumo.getliquidityminingstake.md) | Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in liquidity mining. |
 |  [getNumberOfTroves(asset)](./lib-base.readablekumo.getnumberoftroves.md) | Get number of Troves that are currently open. |
 |  [getPrice(asset)](./lib-base.readablekumo.getprice.md) | Get the current price of the native currency (e.g. Ether) in USD. |
-|  [getRemainingLiquidityMiningKUMOReward()](./lib-base.readablekumo.getremainingliquidityminingkumoreward.md) | Get the remaining KUMO that will be collectively rewarded to liquidity miners. |
-|  [getRemainingStabilityPoolKUMOReward()](./lib-base.readablekumo.getremainingstabilitypoolkumoreward.md) | Get the remaining KUMO that will be collectively rewarded to stability depositors. |
 |  [getStabilityDeposit(asset, address)](./lib-base.readablekumo.getstabilitydeposit.md) | Get the current state of a Stability Deposit. |
 |  [getTestTokensTransferState(assetAddress, userAddress)](./lib-base.readablekumo.gettesttokenstransferstate.md) | Check whether an Test Tokens already transfered or not. |
 |  [getTotal(asset)](./lib-base.readablekumo.gettotal.md) | Get the total amount of collateral and debt in the Kumo system. |
 |  [getTotalRedistributed(asset)](./lib-base.readablekumo.gettotalredistributed.md) | Get the total collateral and debt per stake that has been liquidated through redistribution. |
-|  [getTotalStakedKUMO()](./lib-base.readablekumo.gettotalstakedkumo.md) | Get the total amount of KUMO currently staked. |
-|  [getTotalStakedUniTokens()](./lib-base.readablekumo.gettotalstakedunitokens.md) | Get the total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining. |
 |  [getTrove(asset, address)](./lib-base.readablekumo.gettrove.md) | Get the current state of a Trove. |
 |  [getTroveBeforeRedistribution(asset, address)](./lib-base.readablekumo.gettrovebeforeredistribution.md) | Get a Trove in its state after the last direct modification. |
 |  [getTroves(asset, params)](./lib-base.readablekumo.gettroves_1.md) | Get a slice from the list of Troves. |
-|  [getUniTokenAllowance(address)](./lib-base.readablekumo.getunitokenallowance.md) | Get the liquidity mining contract's allowance of a holder's Uniswap ETH/KUSD LP tokens. |
-|  [getUniTokenBalance(address)](./lib-base.readablekumo.getunitokenbalance.md) | Get the amount of Uniswap ETH/KUSD LP tokens held by an address. |
 

@@ -6,7 +6,7 @@
 
 Total collateral liquidated and debt cleared by the transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 totalLiquidated: Trove;

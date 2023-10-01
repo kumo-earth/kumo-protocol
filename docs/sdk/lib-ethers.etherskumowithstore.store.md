@@ -6,7 +6,7 @@
 
 An object that implements KumoStore.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly store: T;

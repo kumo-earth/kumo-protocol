@@ -6,7 +6,7 @@
 
 Request Test tokens to an address.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 requestTestToken(tokenAddress: string): Promise<void>;
@@ -18,7 +18,7 @@ requestTestToken(tokenAddress: string): Promise<void>;
 |  --- | --- | --- |
 |  tokenAddress | string | Address of test token contract. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;void&gt;
 

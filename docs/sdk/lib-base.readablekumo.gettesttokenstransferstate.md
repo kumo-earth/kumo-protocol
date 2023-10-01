@@ -6,7 +6,7 @@
 
 Check whether an Test Tokens already transfered or not.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getTestTokensTransferState(assetAddress: string, userAddress: string): Promise<boolean>;
@@ -19,7 +19,7 @@ getTestTokensTransferState(assetAddress: string, userAddress: string): Promise<b
 |  assetAddress | string | MockAsset Address. |
 |  userAddress | string |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;boolean&gt;
 

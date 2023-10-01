@@ -6,7 +6,7 @@
 
 Calculate the Trove's collateralization ratio at a given price.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 collateralRatio(price: Decimalish): Decimal;
@@ -18,7 +18,7 @@ collateralRatio(price: Decimalish): Decimal;
 |  --- | --- | --- |
 |  price | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Decimal](./lib-base.decimal.md)
 

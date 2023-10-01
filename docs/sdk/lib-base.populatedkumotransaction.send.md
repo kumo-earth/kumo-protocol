@@ -6,12 +6,12 @@
 
 Send the transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 send(): Promise<T>;
 ```
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;T&gt;
 

@@ -4,7 +4,7 @@
 
 ## Trove.add() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 add(that: Trove): Trove;
@@ -16,7 +16,7 @@ add(that: Trove): Trove;
 |  --- | --- | --- |
 |  that | [Trove](./lib-base.trove.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Trove](./lib-base.trove.md)
 

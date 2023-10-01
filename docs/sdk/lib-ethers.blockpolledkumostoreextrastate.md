@@ -6,7 +6,7 @@
 
 Extra state added to [KumoStoreState](./lib-base.kumostorestate.md) by [BlockPolledKumoStore](./lib-ethers.blockpolledkumostore.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface BlockPolledKumoStoreExtraState 
@@ -16,6 +16,6 @@ export interface BlockPolledKumoStoreExtraState
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [blockTag?](./lib-ethers.blockpolledkumostoreextrastate.blocktag.md) |  | number | <i>(Optional)</i> Number of block that the store state was fetched from. |
+|  [blockTag?](./lib-ethers.blockpolledkumostoreextrastate.blocktag.md) |  | number | _(Optional)_ Number of block that the store state was fetched from. |
 |  [blockTimestamp](./lib-ethers.blockpolledkumostoreextrastate.blocktimestamp.md) |  | number | Timestamp of latest block (number of seconds since epoch). |
 

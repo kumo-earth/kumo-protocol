@@ -6,10 +6,10 @@
 
 Represents the change between two Trove states.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type TroveChange<T> = {
+export type TroveChange<T> = {
     type: "invalidCreation";
     invalidTrove: Trove;
     error: TroveCreationError;
@@ -25,7 +25,7 @@ export declare type TroveChange<T> = {
     setToZero?: "collateral" | "debt";
 };
 ```
-<b>References:</b> [Trove](./lib-base.trove.md)<!-- -->, [TroveCreationError](./lib-base.trovecreationerror.md)<!-- -->, [TroveCreationParams](./lib-base.trovecreationparams.md)<!-- -->, [TroveClosureParams](./lib-base.troveclosureparams.md)<!-- -->, [TroveAdjustmentParams](./lib-base.troveadjustmentparams.md)
+**References:** [Trove](./lib-base.trove.md)<!-- -->, [TroveCreationError](./lib-base.trovecreationerror.md)<!-- -->, [TroveCreationParams](./lib-base.trovecreationparams.md)<!-- -->, [TroveClosureParams](./lib-base.troveclosureparams.md)<!-- -->, [TroveAdjustmentParams](./lib-base.troveadjustmentparams.md)
 
 ## Remarks
 

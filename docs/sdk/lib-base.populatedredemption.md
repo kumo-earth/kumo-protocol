@@ -6,12 +6,12 @@
 
 A redemption transaction that has been prepared for sending.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface PopulatedRedemption<P = unknown, S = unknown, R = unknown> extends PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, RedemptionDetails>>> 
 ```
-<b>Extends:</b> [PopulatedKumoTransaction](./lib-base.populatedkumotransaction.md)<!-- -->&lt;P, [SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, [RedemptionDetails](./lib-base.redemptiondetails.md)<!-- -->&gt;&gt;&gt;
+**Extends:** [PopulatedKumoTransaction](./lib-base.populatedkumotransaction.md)<!-- -->&lt;P, [SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, [RedemptionDetails](./lib-base.redemptiondetails.md)<!-- -->&gt;&gt;&gt;
 
 ## Remarks
 
@@ -23,9 +23,9 @@ When [redeemKUSD()](./lib-base.populatablekumo.redeemkusd.md) is called with an 
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [attemptedKUSDAmount](./lib-base.populatedredemption.attemptedkusdamount.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUSD the redeemer is trying to redeem. |
-|  [isTruncated](./lib-base.populatedredemption.istruncated.md) |  | boolean | Whether <code>redeemableKUSDAmount</code> is less than <code>attemptedKUSDAmount</code>. |
-|  [redeemableKUSDAmount](./lib-base.populatedredemption.redeemablekusdamount.md) |  | [Decimal](./lib-base.decimal.md) | Maximum amount of KUSD that is currently redeemable from <code>attemptedKUSDAmount</code>. |
+|  [attemptedKUSDAmount](./lib-base.populatedredemption.attemptedkusdamount.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) | Amount of KUSD the redeemer is trying to redeem. |
+|  [isTruncated](./lib-base.populatedredemption.istruncated.md) | <code>readonly</code> | boolean | Whether <code>redeemableKUSDAmount</code> is less than <code>attemptedKUSDAmount</code>. |
+|  [redeemableKUSDAmount](./lib-base.populatedredemption.redeemablekusdamount.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) | Maximum amount of KUSD that is currently redeemable from <code>attemptedKUSDAmount</code>. |
 
 ## Methods
 

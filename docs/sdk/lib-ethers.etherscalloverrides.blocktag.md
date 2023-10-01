@@ -4,7 +4,7 @@
 
 ## EthersCallOverrides.blockTag property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 blockTag?: BlockTag;

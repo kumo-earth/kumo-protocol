@@ -6,12 +6,12 @@
 
 Check whether this `EthersKumo` is an [EthersKumoWithStore](./lib-ethers.etherskumowithstore.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 hasStore(): this is EthersKumoWithStore;
 ```
-<b>Returns:</b>
+**Returns:**
 
 this is [EthersKumoWithStore](./lib-ethers.etherskumowithstore.md)
 

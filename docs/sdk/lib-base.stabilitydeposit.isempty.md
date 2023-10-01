@@ -4,7 +4,7 @@
 
 ## StabilityDeposit.isEmpty property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 get isEmpty(): boolean;

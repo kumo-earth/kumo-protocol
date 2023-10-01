@@ -4,7 +4,7 @@
 
 ## Vault.numberOfTroves property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly numberOfTroves: number;

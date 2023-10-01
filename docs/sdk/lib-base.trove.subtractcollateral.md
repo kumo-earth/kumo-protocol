@@ -4,7 +4,7 @@
 
 ## Trove.subtractCollateral() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 subtractCollateral(collateral: Decimalish): Trove;
@@ -16,7 +16,7 @@ subtractCollateral(collateral: Decimalish): Trove;
 |  --- | --- | --- |
 |  collateral | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Trove](./lib-base.trove.md)
 

@@ -6,12 +6,12 @@
 
 Ethers-based implementation of [ReadableKumo](./lib-base.readablekumo.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class ReadableEthersKumo implements ReadableKumo 
 ```
-<b>Implements:</b> [ReadableKumo](./lib-base.readablekumo.md)
+**Implements:** [ReadableKumo](./lib-base.readablekumo.md)
 
 ## Remarks
 
@@ -21,7 +21,7 @@ The constructor for this class is marked as internal. Third-party code should no
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [connection](./lib-ethers.readableetherskumo.connection.md) |  | [EthersKumoConnection](./lib-ethers.etherskumoconnection.md) |  |
+|  [connection](./lib-ethers.readableetherskumo.connection.md) | <code>readonly</code> | [EthersKumoConnection](./lib-ethers.etherskumoconnection.md) |  |
 
 ## Methods
 
@@ -31,27 +31,17 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [getAssetBalance(address, asset, provider, overrides)](./lib-ethers.readableetherskumo.getassetbalance.md) |  |  |
 |  [getCollateralSurplusBalance(asset, address, overrides)](./lib-ethers.readableetherskumo.getcollateralsurplusbalance.md) |  | Get the amount of leftover collateral available for withdrawal by an address. |
 |  [getFees(asset, overrides)](./lib-ethers.readableetherskumo.getfees.md) |  | Get a calculator for current fees. |
-|  [getKUMOBalance(address, overrides)](./lib-ethers.readableetherskumo.getkumobalance.md) |  | Get the amount of KUMO held by an address. |
-|  [getKUMOStake(asset, address, overrides)](./lib-ethers.readableetherskumo.getkumostake.md) |  | Get the current state of an KUMO Stake. |
 |  [getKUSDBalance(address, overrides)](./lib-ethers.readableetherskumo.getkusdbalance.md) |  | Get the amount of KUSD held by an address. |
 |  [getKUSDInStabilityPool(assetName, overrides)](./lib-ethers.readableetherskumo.getkusdinstabilitypool.md) |  | Get the total amount of KUSD currently deposited in the Stability Pool. |
-|  [getLiquidityMiningKUMOReward(address, overrides)](./lib-ethers.readableetherskumo.getliquidityminingkumoreward.md) |  | Get the amount of KUMO earned by an address through mining liquidity. |
-|  [getLiquidityMiningStake(address, overrides)](./lib-ethers.readableetherskumo.getliquidityminingstake.md) |  | Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in liquidity mining. |
 |  [getNumberOfTroves(asset, overrides)](./lib-ethers.readableetherskumo.getnumberoftroves.md) |  | Get number of Troves that are currently open. |
 |  [getPrice(asset, overrides)](./lib-ethers.readableetherskumo.getprice.md) |  | Get the current price of the native currency (e.g. Ether) in USD. |
-|  [getRemainingLiquidityMiningKUMOReward(overrides)](./lib-ethers.readableetherskumo.getremainingliquidityminingkumoreward.md) |  | Get the remaining KUMO that will be collectively rewarded to liquidity miners. |
-|  [getRemainingStabilityPoolKUMOReward(overrides)](./lib-ethers.readableetherskumo.getremainingstabilitypoolkumoreward.md) |  | Get the remaining KUMO that will be collectively rewarded to stability depositors. |
 |  [getStabilityDeposit(assetName, address, overrides)](./lib-ethers.readableetherskumo.getstabilitydeposit.md) |  | Get the current state of a Stability Deposit. |
 |  [getTestTokensTransferState(assetAddress, userAddress, overrides)](./lib-ethers.readableetherskumo.gettesttokenstransferstate.md) |  | Check whether an Test Tokens already transfered or not. |
 |  [getTotal(asset, overrides)](./lib-ethers.readableetherskumo.gettotal.md) |  | Get the total amount of collateral and debt in the Kumo system. |
 |  [getTotalRedistributed(asset, overrides)](./lib-ethers.readableetherskumo.gettotalredistributed.md) |  | Get the total collateral and debt per stake that has been liquidated through redistribution. |
-|  [getTotalStakedKUMO(overrides)](./lib-ethers.readableetherskumo.gettotalstakedkumo.md) |  | Get the total amount of KUMO currently staked. |
-|  [getTotalStakedUniTokens(overrides)](./lib-ethers.readableetherskumo.gettotalstakedunitokens.md) |  | Get the total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining. |
 |  [getTrove(asset, address, overrides)](./lib-ethers.readableetherskumo.gettrove.md) |  | Get the current state of a Trove. |
 |  [getTroveBeforeRedistribution(asset, address, overrides)](./lib-ethers.readableetherskumo.gettrovebeforeredistribution.md) |  | Get a Trove in its state after the last direct modification. |
 |  [getTroves(asset, params, overrides)](./lib-ethers.readableetherskumo.gettroves_1.md) |  | Get a slice from the list of Troves. |
-|  [getUniTokenAllowance(address, overrides)](./lib-ethers.readableetherskumo.getunitokenallowance.md) |  | Get the liquidity mining contract's allowance of a holder's Uniswap ETH/KUSD LP tokens. |
-|  [getUniTokenBalance(address, overrides)](./lib-ethers.readableetherskumo.getunitokenbalance.md) |  | Get the amount of Uniswap ETH/KUSD LP tokens held by an address. |
 |  [hasStore()](./lib-ethers.readableetherskumo.hasstore.md) |  | Check whether this <code>ReadableEthersKumo</code> is a [ReadableEthersKumoWithStore](./lib-ethers.readableetherskumowithstore.md)<!-- -->. |
 |  [hasStore(store)](./lib-ethers.readableetherskumo.hasstore_1.md) |  | Check whether this <code>ReadableEthersKumo</code> is a [ReadableEthersKumoWithStore](./lib-ethers.readableetherskumowithstore.md)<!-- -->&lt;[BlockPolledKumoStore](./lib-ethers.blockpolledkumostore.md)<!-- -->&gt;<!-- -->. |
 

@@ -4,7 +4,7 @@
 
 ## Vault.total property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly total: Trove;

@@ -6,7 +6,7 @@
 
 Apply a [StabilityDepositChange](./lib-base.stabilitydepositchange.md) to this Stability Deposit.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 apply(change: StabilityDepositChange<Decimalish> | undefined): Decimal;
@@ -18,7 +18,7 @@ apply(change: StabilityDepositChange<Decimalish> | undefined): Decimal;
 |  --- | --- | --- |
 |  change | [StabilityDepositChange](./lib-base.stabilitydepositchange.md)<!-- -->&lt;[Decimalish](./lib-base.decimalish.md)<!-- -->&gt; \| undefined |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Decimal](./lib-base.decimal.md)
 

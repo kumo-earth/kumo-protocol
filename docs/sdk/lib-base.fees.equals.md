@@ -6,7 +6,7 @@
 
 Compare to another instance of `Fees`<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 equals(that: Fees): boolean;
@@ -18,7 +18,7 @@ equals(that: Fees): boolean;
 |  --- | --- | --- |
 |  that | [Fees](./lib-base.fees.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 boolean
 

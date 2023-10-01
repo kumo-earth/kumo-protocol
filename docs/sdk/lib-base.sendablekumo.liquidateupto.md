@@ -6,7 +6,7 @@
 
 Liquidate the least collateralized Troves up to a maximum number.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 liquidateUpTo(asset: string, maximumNumberOfTrovesToLiquidate: number): Promise<SentKumoTransaction<S, KumoReceipt<R, LiquidationDetails>>>;
@@ -19,7 +19,7 @@ liquidateUpTo(asset: string, maximumNumberOfTrovesToLiquidate: number): Promise<
 |  asset | string |  |
 |  maximumNumberOfTrovesToLiquidate | number | Stop after liquidating this many Troves. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, [LiquidationDetails](./lib-base.liquidationdetails.md)<!-- -->&gt;&gt;&gt;
 

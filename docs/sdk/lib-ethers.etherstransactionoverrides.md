@@ -6,7 +6,7 @@
 
 Optional parameters taken by [EthersKumo](./lib-ethers.etherskumo.md) transaction functions.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface EthersTransactionOverrides 
@@ -16,8 +16,8 @@ export interface EthersTransactionOverrides
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [from?](./lib-ethers.etherstransactionoverrides.from.md) |  | string | <i>(Optional)</i> |
-|  [gasLimit?](./lib-ethers.etherstransactionoverrides.gaslimit.md) |  | BigNumberish | <i>(Optional)</i> |
-|  [gasPrice?](./lib-ethers.etherstransactionoverrides.gasprice.md) |  | BigNumberish | <i>(Optional)</i> |
-|  [nonce?](./lib-ethers.etherstransactionoverrides.nonce.md) |  | BigNumberish | <i>(Optional)</i> |
+|  [from?](./lib-ethers.etherstransactionoverrides.from.md) |  | string | _(Optional)_ |
+|  [gasLimit?](./lib-ethers.etherstransactionoverrides.gaslimit.md) |  | BigNumberish | _(Optional)_ |
+|  [gasPrice?](./lib-ethers.etherstransactionoverrides.gasprice.md) |  | BigNumberish | _(Optional)_ |
+|  [nonce?](./lib-ethers.etherstransactionoverrides.nonce.md) |  | BigNumberish | _(Optional)_ |
 

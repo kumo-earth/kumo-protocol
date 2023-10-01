@@ -6,7 +6,7 @@
 
 Whether the collateralization ratio is less than the [CRITICAL\_COLLATERAL\_RATIO](./lib-base.critical_collateral_ratio.md) at a given price.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 collateralRatioIsBelowCritical(price: Decimalish): boolean;
@@ -18,7 +18,7 @@ collateralRatioIsBelowCritical(price: Decimalish): boolean;
 |  --- | --- | --- |
 |  price | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 boolean
 

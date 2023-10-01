@@ -4,7 +4,7 @@
 
 ## EthersTransactionCancelledError.rawError property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly rawError: Error;

@@ -6,7 +6,7 @@
 
 Control the amount of extra gas included attached to the transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 borrowingFeeDecayToleranceMinutes?: number;

@@ -4,7 +4,7 @@
 
 ## Vault.assetAddress property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly assetAddress: string;

@@ -6,12 +6,12 @@
 
 Details of a [depositKUSDInStabilityPool()](./lib-base.transactablekumo.depositkusdinstabilitypool.md) or [withdrawKUSDFromStabilityPool()](./lib-base.transactablekumo.withdrawkusdfromstabilitypool.md) transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface StabilityDepositChangeDetails extends StabilityPoolGainsWithdrawalDetails 
 ```
-<b>Extends:</b> [StabilityPoolGainsWithdrawalDetails](./lib-base.stabilitypoolgainswithdrawaldetails.md)
+**Extends:** [StabilityPoolGainsWithdrawalDetails](./lib-base.stabilitypoolgainswithdrawaldetails.md)
 
 ## Properties
 

@@ -6,7 +6,7 @@
 
 Adjust existing Trove by changing its collateral, debt, or both.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 adjustTrove(params: TroveAdjustmentParams<Decimalish>, asset: string, maxBorrowingRate?: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, TroveAdjustmentDetails>>>;
@@ -18,9 +18,9 @@ adjustTrove(params: TroveAdjustmentParams<Decimalish>, asset: string, maxBorrowi
 |  --- | --- | --- |
 |  params | [TroveAdjustmentParams](./lib-base.troveadjustmentparams.md)<!-- -->&lt;[Decimalish](./lib-base.decimalish.md)<!-- -->&gt; | Parameters of the adjustment. |
 |  asset | string |  |
-|  maxBorrowingRate | [Decimalish](./lib-base.decimalish.md) | Maximum acceptable [borrowing rate](./lib-base.fees.borrowingrate.md) if <code>params</code> includes <code>borrowKUSD</code>. |
+|  maxBorrowingRate | [Decimalish](./lib-base.decimalish.md) | _(Optional)_ Maximum acceptable [borrowing rate](./lib-base.fees.borrowingrate.md) if <code>params</code> includes <code>borrowKUSD</code>. |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[SentKumoTransaction](./lib-base.sentkumotransaction.md)<!-- -->&lt;S, [KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;R, [TroveAdjustmentDetails](./lib-base.troveadjustmentdetails.md)<!-- -->&gt;&gt;&gt;
 

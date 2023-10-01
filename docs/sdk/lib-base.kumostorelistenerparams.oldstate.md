@@ -6,7 +6,7 @@
 
 The entire new state.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 oldState: KumoStoreState<T>;

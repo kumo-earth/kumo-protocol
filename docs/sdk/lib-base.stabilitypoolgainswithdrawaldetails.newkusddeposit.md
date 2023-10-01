@@ -6,7 +6,7 @@
 
 Amount of KUSD in the deposit directly after this transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 newKUSDDeposit: Decimal;

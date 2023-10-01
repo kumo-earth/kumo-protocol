@@ -6,7 +6,7 @@
 
 Calculator for fees.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class Fees 
