@@ -8,7 +8,6 @@ import {
   Fees,
   LiquidationDetails,
   KumoStore,
-  KUMOStake,
   RedemptionDetails,
   StabilityDeposit,
   StabilityDepositChangeDetails,
@@ -209,11 +208,6 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     return this._readable.getStabilityDeposit(assetName, address, overrides);
   }
 
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getRemainingStabilityPoolKUMOReward} */
-  getRemainingStabilityPoolKUMOReward(overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._readable.getRemainingStabilityPoolKUMOReward(overrides);
-  }
-
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDInStabilityPool} */
   getKUSDInStabilityPool(asset: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     return this._readable.getKUSDInStabilityPool(asset, overrides);
@@ -232,48 +226,6 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
     overrides?: EthersCallOverrides
   ): Promise<Decimal> {
     return this._readable.getAssetBalance(address, assetType, provider, overrides);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUMOBalance} */
-  getKUMOBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._readable.getKUMOBalance(address, overrides);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getUniTokenBalance} */
-  getUniTokenBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._readable.getUniTokenBalance(address, overrides);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getUniTokenAllowance} */
-  getUniTokenAllowance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._readable.getUniTokenAllowance(address, overrides);
-  }
-
-  /** @internal */
-  _getRemainingLiquidityMiningKUMORewardCalculator(
-    overrides?: EthersCallOverrides
-  ): Promise<(blockTimestamp: number) => Decimal> {
-    return this._readable._getRemainingLiquidityMiningKUMORewardCalculator(overrides);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getRemainingLiquidityMiningKUMOReward} */
-  getRemainingLiquidityMiningKUMOReward(overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._readable.getRemainingLiquidityMiningKUMOReward(overrides);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getLiquidityMiningStake} */
-  getLiquidityMiningStake(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._readable.getLiquidityMiningStake(address, overrides);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTotalStakedUniTokens} */
-  getTotalStakedUniTokens(overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._readable.getTotalStakedUniTokens(overrides);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getLiquidityMiningKUMOReward} */
-  getLiquidityMiningKUMOReward(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._readable.getLiquidityMiningKUMOReward(address, overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getCollateralSurplusBalance} */
@@ -323,16 +275,6 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getFees} */
   getFees(asset: string, overrides?: EthersCallOverrides): Promise<Fees> {
     return this._readable.getFees(asset, overrides);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUMOStake} */
-  getKUMOStake(asset: string, address: string, overrides?: EthersCallOverrides): Promise<KUMOStake> {
-    return this._readable.getKUMOStake(asset, address, overrides);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTotalStakedKUMO} */
-  getTotalStakedKUMO(overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._readable.getTotalStakedKUMO(overrides);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTestTokensTransferState} */
@@ -594,21 +536,6 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
   }
 
   /**
-   * {@inheritDoc @kumodao/lib-base#TransactableKumo.sendKUMO}
-   *
-   * @throws
-   * Throws {@link EthersTransactionFailedError} in case of transaction failure.
-   * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
-   */
-  sendKUMO(
-    toAddress: string,
-    amount: Decimalish,
-    overrides?: EthersTransactionOverrides
-  ): Promise<void> {
-    return this.send.sendKUMO(toAddress, amount, overrides).then(waitForSuccess);
-  }
-
-  /**
    * {@inheritDoc @kumodao/lib-base#TransactableKumo.redeemKUSD}
    *
    * @throws
@@ -633,104 +560,6 @@ export class EthersKumo implements ReadableEthersKumo, TransactableKumo {
    */
   claimCollateralSurplus(asset: string, overrides?: EthersTransactionOverrides): Promise<void> {
     return this.send.claimCollateralSurplus(asset, overrides).then(waitForSuccess);
-  }
-
-  /**
-   * {@inheritDoc @kumodao/lib-base#TransactableKumo.stakeKUMO}
-   *
-   * @throws
-   * Throws {@link EthersTransactionFailedError} in case of transaction failure.
-   * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
-   */
-  stakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<void> {
-    return this.send.stakeKUMO(amount, overrides).then(waitForSuccess);
-  }
-
-  /**
-   * {@inheritDoc @kumodao/lib-base#TransactableKumo.unstakeKUMO}
-   *
-   * @throws
-   * Throws {@link EthersTransactionFailedError} in case of transaction failure.
-   * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
-   */
-  unstakeKUMO(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<void> {
-    return this.send.unstakeKUMO(amount, overrides).then(waitForSuccess);
-  }
-
-  /**
-   * {@inheritDoc @kumodao/lib-base#TransactableKumo.withdrawGainsFromStaking}
-   *
-   * @throws
-   * Throws {@link EthersTransactionFailedError} in case of transaction failure.
-   * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
-   */
-  withdrawGainsFromStaking(overrides?: EthersTransactionOverrides): Promise<void> {
-    return this.send.withdrawGainsFromStaking(overrides).then(waitForSuccess);
-  }
-
-
-  /** @internal */
-  _mintUniToken(
-    amount: Decimalish,
-    address?: string,
-    overrides?: EthersTransactionOverrides
-  ): Promise<void> {
-    return this.send._mintUniToken(amount, address, overrides).then(waitForSuccess);
-  }
-
-  /**
-   * {@inheritDoc @kumodao/lib-base#TransactableKumo.approveUniTokens}
-   *
-   * @throws
-   * Throws {@link EthersTransactionFailedError} in case of transaction failure.
-   * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
-   */
-  approveUniTokens(allowance?: Decimalish, overrides?: EthersTransactionOverrides): Promise<void> {
-    return this.send.approveUniTokens(allowance, overrides).then(waitForSuccess);
-  }
-
-  /**
-   * {@inheritDoc @kumodao/lib-base#TransactableKumo.stakeUniTokens}
-   *
-   * @throws
-   * Throws {@link EthersTransactionFailedError} in case of transaction failure.
-   * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
-   */
-  stakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<void> {
-    return this.send.stakeUniTokens(amount, overrides).then(waitForSuccess);
-  }
-
-  /**
-   * {@inheritDoc @kumodao/lib-base#TransactableKumo.unstakeUniTokens}
-   *
-   * @throws
-   * Throws {@link EthersTransactionFailedError} in case of transaction failure.
-   * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
-   */
-  unstakeUniTokens(amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<void> {
-    return this.send.unstakeUniTokens(amount, overrides).then(waitForSuccess);
-  }
-
-  /**
-   * {@inheritDoc @kumodao/lib-base#TransactableKumo.withdrawKUMORewardFromLiquidityMining}
-   *
-   * @throws
-   * Throws {@link EthersTransactionFailedError} in case of transaction failure.
-   * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
-   */
-  withdrawKUMORewardFromLiquidityMining(overrides?: EthersTransactionOverrides): Promise<void> {
-    return this.send.withdrawKUMORewardFromLiquidityMining(overrides).then(waitForSuccess);
-  }
-
-  /**
-   * {@inheritDoc @kumodao/lib-base#TransactableKumo.exitLiquidityMining}
-   *
-   * @throws
-   * Throws {@link EthersTransactionFailedError} in case of transaction failure.
-   * Throws {@link EthersTransactionCancelledError} if the transaction is cancelled or replaced.
-   */
-  exitLiquidityMining(overrides?: EthersTransactionOverrides): Promise<void> {
-    return this.send.exitLiquidityMining(overrides).then(waitForSuccess);
   }
 }
 
