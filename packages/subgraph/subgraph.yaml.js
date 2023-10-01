@@ -131,10 +131,6 @@ dataSources:
           handler: handleUserDepositChanged
         - event: AssetGainWithdrawn(indexed address,uint256,uint256)
           handler: handleETHGainWithdrawn
-        - event: FrontEndRegistered(indexed address,uint256)
-          handler: handleFrontendRegistered
-        - event: FrontEndTagSet(indexed address,indexed address)
-          handler: handleFrontendTagSet
   - name: CollSurplusPool
     kind: ethereum/contract
     network: mainnet
@@ -160,43 +156,13 @@ dataSources:
       eventHandlers:
         - event: CollBalanceUpdated(indexed address,indexed address,uint256)
           handler: handleCollSurplusBalanceUpdated
-  - name: KUMOStaking
-    kind: ethereum/contract
-    network: mainnet
-    source:
-      abi: KUMOStaking
-      address: "${addresses.kumoStaking}"
-      startBlock: ${startBlock}
-    mapping:
-      file: ./src/mappings/KumoStake.ts
-      language: wasm/assemblyscript
-      kind: ethereum/events
-      apiVersion: 0.0.4
-      entities:
-        - Global
-        - User
-        - Transaction
-        - KumoStake
-        - KumoStakeChange
-      abis:
-        - name: KUMOStaking
-          file: ../lib-ethers/abi/KUMOStaking.json
-      eventHandlers:
-        - event: StakeChanged(indexed address,uint256)
-          handler: handleStakeChanged
-        - event: StakingGainsWithdrawn(indexed address,uint256,uint256)
-          handler: handleStakeGainsWithdrawn
-${[
-    ["KUSDToken", addresses.kusdToken],
-    ["KUMOToken", addresses.kumoToken]
-  ].map(
-    ([name, address]) => yaml`
-  - name: ${name}
+
+  - name: KUSDToken
     kind: ethereum/contract
     network: mainnet
     source:
       abi: ERC20
-      address: "${address}"
+      address: "${addresses.kumoToken}"
       startBlock: ${startBlock}
     mapping:
       file: ./src/mappings/Token.ts
@@ -217,6 +183,5 @@ ${[
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleTokenApproval
 `
-  )}`;
 
 fs.writeFileSync("subgraph.yaml", manifest);
