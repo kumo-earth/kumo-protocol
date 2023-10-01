@@ -6,16 +6,11 @@ import { Interface, ParamType } from "@ethersproject/abi";
 import ActivePool from "../../contracts/artifacts/contracts/ActivePool.sol/ActivePool.json";
 import BorrowerOperations from "../../contracts/artifacts/contracts/BorrowerOperations.sol/BorrowerOperations.json";
 import CollSurplusPool from "../../contracts/artifacts/contracts/CollSurplusPool.sol/CollSurplusPool.json";
-import CommunityIssuance from "../../contracts/artifacts/contracts/KUMO/CommunityIssuance.sol/CommunityIssuance.json";
 import DefaultPool from "../../contracts/artifacts/contracts/DefaultPool.sol/DefaultPool.json";
-import ERC20Mock from "../../contracts/artifacts/contracts/LPRewards/TestContracts/ERC20Mock.sol/ERC20Mock.json";
 import GasPool from "../../contracts/artifacts/contracts/GasPool.sol/GasPool.json";
 import HintHelpers from "../../contracts/artifacts/contracts/HintHelpers.sol/HintHelpers.json";
 import IERC20 from "../../contracts/artifacts/@openzeppelin/contracts/token/ERC20/IERC20.sol/IERC20.json";
-import LockupContractFactory from "../../contracts/artifacts/contracts/KUMO/LockupContractFactory.sol/LockupContractFactory.json";
 import KUSDToken from "../../contracts/artifacts/contracts/KUSDToken.sol/KUSDToken.json";
-import KUMOStaking from "../../contracts/artifacts/contracts/KUMO/KUMOStaking.sol/KUMOStaking.json";
-import KUMOToken from "../../contracts/artifacts/contracts/KUMO/KUMOToken.sol/KUMOToken.json";
 import MultiTroveGetter from "../../contracts/artifacts/contracts/MultiTroveGetter.sol/MultiTroveGetter.json";
 import PriceFeed from "../../contracts/artifacts/contracts/PriceFeed.sol/PriceFeed.json";
 import PriceFeedTestnet from "../../contracts/artifacts/contracts/TestContracts/PriceFeedTestnet.sol/PriceFeedTestnet.json";
@@ -25,7 +20,6 @@ import IStabilityPool from "../../contracts/artifacts/contracts/Interfaces/IStab
 import StabilityPoolFactory from "../../contracts/artifacts/contracts/StabilityPoolFactory.sol/StabilityPoolFactory.json";
 import TroveManager from "../../contracts/artifacts/hardhat-diamond-abi/HardhatDiamondABI.sol/TroveManager.json";
 import TroveManagerDiamond from "../../contracts/artifacts/contracts/TroveManagerDiamond.sol/TroveManagerDiamond.json";
-import Unipool from "../../contracts/artifacts/contracts/LPRewards/Unipool.sol/Unipool.json";
 import KumoParameters from "../../contracts/artifacts/contracts/KumoParameters.sol/KumoParameters.json";
 import ERC20Test from "../../contracts/artifacts/contracts/TestContracts/ERC20Test.sol/ERC20Test.json";
 import KumoFaucet from "../../contracts/artifacts/contracts/KumoFaucet.sol/KumoFaucet.json";
@@ -153,16 +147,11 @@ const contractArtifacts = [
   ActivePool,
   BorrowerOperations,
   CollSurplusPool,
-  CommunityIssuance,
   DefaultPool,
-  ERC20Mock,
   GasPool,
   HintHelpers,
   IERC20,
-  LockupContractFactory,
   KUSDToken,
-  KUMOStaking,
-  KUMOToken,
   MultiTroveGetter,
   PriceFeed,
   PriceFeedTestnet,
@@ -172,7 +161,6 @@ const contractArtifacts = [
   StabilityPoolFactory,
   TroveManager,
   TroveManagerDiamond,
-  Unipool,
   KumoParameters,
   ERC20Test,
   KumoFaucet
