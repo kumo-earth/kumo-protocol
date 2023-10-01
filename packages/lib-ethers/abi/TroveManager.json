@@ -1537,32 +1537,6 @@
   },
   {
     "inputs": [],
-    "name": "kumoStaking",
-    "outputs": [
-      {
-        "internalType": "contract IKUMOStaking",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "kumoToken",
-    "outputs": [
-      {
-        "internalType": "contract IKUMOToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "kusdToken",
     "outputs": [
       {
