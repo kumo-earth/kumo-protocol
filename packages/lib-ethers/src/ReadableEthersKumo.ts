@@ -8,7 +8,6 @@ import {
   Decimal,
   Fees,
   KumoStore,
-  KUMOStake,
   ReadableKumo,
   StabilityDeposit,
   Trove,

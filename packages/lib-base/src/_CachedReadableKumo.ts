@@ -1,7 +1,6 @@
 import { Provider } from "@ethersproject/abstract-provider";
 import { Decimal } from "./Decimal";
 import { Fees } from "./Fees";
-import { KUMOStake } from "./KUMOStake";
 import { StabilityDeposit } from "./StabilityDeposit";
 import { Trove, TroveWithPendingRedistribution, UserTrove } from "./Trove";
 import { ReadableKumo, TroveListingParams } from "./ReadableKumo";

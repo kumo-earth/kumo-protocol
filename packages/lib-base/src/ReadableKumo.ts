@@ -3,7 +3,6 @@ import { Decimal } from "./Decimal";
 import { Trove, TroveWithPendingRedistribution, UserTrove } from "./Trove";
 import { StabilityDeposit } from "./StabilityDeposit";
 import { Fees } from "./Fees";
-import { KUMOStake } from "./KUMOStake";
 
 /**
  * Parameters of the {@link ReadableKumo.(getTroves:2) | getTroves()} function.
