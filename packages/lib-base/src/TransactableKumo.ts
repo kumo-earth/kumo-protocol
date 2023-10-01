@@ -125,8 +125,7 @@ export interface StabilityPoolGainsWithdrawalDetails {
   /** Amount of native currency (e.g. Ether) paid out to the depositor in this transaction. */
   collateralGain: Decimal;
 
-  /** Amount of KUMO rewarded to the depositor in this transaction. */
-  kumoReward: Decimal;
+  // TODO: after KIP-3, https://github.com/kumodao/kumo-protocol/issues/425
 }
 
 /**

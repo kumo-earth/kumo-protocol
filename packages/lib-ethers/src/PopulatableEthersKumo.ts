@@ -614,15 +614,10 @@ export class PopulatableEthersKumo
       .extractEvents(logs, "AssetGainWithdrawn")
       .map(({ args: { _Asset, _kusdLoss } }) => [decimalify(_Asset), decimalify(_kusdLoss)]);
 
-    const [kumoReward] = stabilityPool
-      .extractEvents(logs, "KUMOPaidToDepositor")
-      .map(({ args: { _KUMO } }) => decimalify(_KUMO));
-
     return {
       kusdLoss,
       newKUSDDeposit,
-      collateralGain,
-      kumoReward
+      collateralGain
     };
   }
 
