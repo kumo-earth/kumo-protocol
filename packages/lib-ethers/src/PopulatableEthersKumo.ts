@@ -52,7 +52,7 @@ import {
 } from "./EthersKumoConnection";
 
 import { decimalify, promiseAllValues } from "./_utils";
-import { _priceFeedIsTestnet, _uniTokenIsMock } from "./contracts";
+import { _priceFeedIsTestnet } from "./contracts";
 import { logsToString } from "./parseLogs";
 import { ReadableEthersKumo } from "./ReadableEthersKumo";
 
@@ -1260,24 +1260,6 @@ export class PopulatableEthersKumo
     );
   }
 
-  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.sendKUMO} */
-  async sendKUMO(
-    toAddress: string,
-    amount: Decimalish,
-    overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersKumoTransaction<void>> {
-    const { kumoToken } = _getContracts(this._readable.connection);
-
-    return this._wrapSimpleTransaction(
-      await kumoToken.estimateAndPopulate.transfer(
-        { ...overrides },
-        id,
-        toAddress,
-        Decimal.from(amount).hex
-      )
-    );
-  }
-
   /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.redeemKUSD} */
   async redeemKUSD(
     asset: string,
@@ -1353,135 +1335,6 @@ export class PopulatableEthersKumo
       maxRedemptionRate,
       truncatedAmount,
       partialHints
-    );
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.stakeKUMO} */
-  async stakeKUMO(
-    amount: Decimalish,
-    overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersKumoTransaction<void>> {
-    const { kumoStaking } = _getContracts(this._readable.connection);
-
-    return this._wrapSimpleTransaction(
-      await kumoStaking.estimateAndPopulate.stake({ ...overrides }, id, Decimal.from(amount).hex)
-    );
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.unstakeKUMO} */
-  async unstakeKUMO(
-    amount: Decimalish,
-    overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersKumoTransaction<void>> {
-    const { kumoStaking } = _getContracts(this._readable.connection);
-
-    return this._wrapSimpleTransaction(
-      await kumoStaking.estimateAndPopulate.unstake({ ...overrides }, id, Decimal.from(amount).hex)
-    );
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.withdrawGainsFromStaking} */
-  withdrawGainsFromStaking(
-    overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersKumoTransaction<void>> {
-    return this.unstakeKUMO(Decimal.ZERO, overrides);
-  }
-
-
-  /** @internal */
-  async _mintUniToken(
-    amount: Decimalish,
-    address?: string,
-    overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersKumoTransaction<void>> {
-    address ??= _requireAddress(this._readable.connection, overrides);
-    const { uniToken } = _getContracts(this._readable.connection);
-
-    if (!_uniTokenIsMock(uniToken)) {
-      throw new Error("_mintUniToken() unavailable on this deployment of Kumo");
-    }
-
-    return this._wrapSimpleTransaction(
-      await uniToken.estimateAndPopulate.mint(
-        { ...overrides },
-        id,
-        address,
-        Decimal.from(amount).hex
-      )
-    );
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.approveUniTokens} */
-  async approveUniTokens(
-    allowance?: Decimalish,
-    overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersKumoTransaction<void>> {
-    const { uniToken, unipool } = _getContracts(this._readable.connection);
-
-    return this._wrapSimpleTransaction(
-      await uniToken.estimateAndPopulate.approve(
-        { ...overrides },
-        id,
-        unipool.address,
-        Decimal.from(allowance ?? Decimal.INFINITY).hex
-      )
-    );
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.stakeUniTokens} */
-  async stakeUniTokens(
-    amount: Decimalish,
-    overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersKumoTransaction<void>> {
-    const { unipool } = _getContracts(this._readable.connection);
-
-    return this._wrapSimpleTransaction(
-      await unipool.estimateAndPopulate.stake(
-        { ...overrides },
-        addGasForUnipoolRewardUpdate,
-        Decimal.from(amount).hex
-      )
-    );
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.unstakeUniTokens} */
-  async unstakeUniTokens(
-    amount: Decimalish,
-    overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersKumoTransaction<void>> {
-    const { unipool } = _getContracts(this._readable.connection);
-
-    return this._wrapSimpleTransaction(
-      await unipool.estimateAndPopulate.withdraw(
-        { ...overrides },
-        addGasForUnipoolRewardUpdate,
-        Decimal.from(amount).hex
-      )
-    );
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.withdrawKUMORewardFromLiquidityMining} */
-  async withdrawKUMORewardFromLiquidityMining(
-    overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersKumoTransaction<void>> {
-    const { unipool } = _getContracts(this._readable.connection);
-
-    return this._wrapSimpleTransaction(
-      await unipool.estimateAndPopulate.claimReward({ ...overrides }, addGasForUnipoolRewardUpdate)
-    );
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#PopulatableKumo.exitLiquidityMining} */
-  async exitLiquidityMining(
-    overrides?: EthersTransactionOverrides
-  ): Promise<PopulatedEthersKumoTransaction<void>> {
-    const { unipool } = _getContracts(this._readable.connection);
-
-    return this._wrapSimpleTransaction(
-      await unipool.estimateAndPopulate.withdrawAndClaim(
-        { ...overrides },
-        addGasForUnipoolRewardUpdate
-      )
     );
   }
 }
