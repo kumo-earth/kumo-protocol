@@ -263,31 +263,18 @@ export class ReadableEthersKumo implements ReadableKumo {
     address ??= _requireAddress(this.connection);
     const stabilityPool = _getStabilityPoolByAsset(assetName, this.connection);
     // const { stabilityPool } = _getContracts(this.connection);
-    const [initialValue, currentKUSD, collateralGain, kumoReward] =
+    const [initialValue, currentKUSD, collateralGain] =
       await Promise.all([
         stabilityPool.deposits(address, { ...overrides }),
         stabilityPool.getCompoundedKUSDDeposit(address, { ...overrides }),
-        stabilityPool.getDepositorAssetGain(address, { ...overrides }),
-        stabilityPool.getDepositorKUMOGain(address, { ...overrides })
+        stabilityPool.getDepositorAssetGain(address, { ...overrides })
       ]);
 
     return new StabilityDeposit(
       decimalify(initialValue),
       decimalify(currentKUSD),
-      decimalify(collateralGain),
-      decimalify(kumoReward)
+      decimalify(collateralGain)
     );
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getRemainingStabilityPoolKUMOReward} */
-  async getRemainingStabilityPoolKUMOReward(overrides?: EthersCallOverrides): Promise<Decimal> {
-    const { communityIssuance } = _getContracts(this.connection);
-
-    const issuanceCap = this.connection.totalStabilityPoolKUMOReward;
-    const totalKUMOIssued = decimalify(await communityIssuance.totalKUMOIssued({ ...overrides }));
-
-    // totalKUMOIssued approaches but never reaches issuanceCap
-    return issuanceCap.sub(totalKUMOIssued);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUSDInStabilityPool} */
@@ -314,82 +301,6 @@ export class ReadableEthersKumo implements ReadableKumo {
 
     const assetTokenContract = new ethers.Contract(asset, iERC20Abi, provider);
     return assetTokenContract.balanceOf(address, { ...overrides }).then(decimalify);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUMOBalance} */
-  getKUMOBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    address ??= _requireAddress(this.connection);
-    const { kumoToken } = _getContracts(this.connection);
-
-    return kumoToken.balanceOf(address, { ...overrides }).then(decimalify);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getUniTokenBalance} */
-  getUniTokenBalance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    address ??= _requireAddress(this.connection);
-    const { uniToken } = _getContracts(this.connection);
-
-    return uniToken.balanceOf(address, { ...overrides }).then(decimalify);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getUniTokenAllowance} */
-  getUniTokenAllowance(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    address ??= _requireAddress(this.connection);
-    const { uniToken, unipool } = _getContracts(this.connection);
-
-    return uniToken.allowance(address, unipool.address, { ...overrides }).then(decimalify);
-  }
-
-  /** @internal */
-  async _getRemainingLiquidityMiningKUMORewardCalculator(
-    overrides?: EthersCallOverrides
-  ): Promise<(blockTimestamp: number) => Decimal> {
-    const { unipool } = _getContracts(this.connection);
-
-    const [totalSupply, rewardRate, periodFinish, lastUpdateTime] = await Promise.all([
-      unipool.totalSupply({ ...overrides }),
-      unipool.rewardRate({ ...overrides }).then(decimalify),
-      unipool.periodFinish({ ...overrides }).then(numberify),
-      unipool.lastUpdateTime({ ...overrides }).then(numberify)
-    ]);
-
-    return (blockTimestamp: number) =>
-      rewardRate.mul(
-        Math.max(0, periodFinish - (totalSupply.isZero() ? lastUpdateTime : blockTimestamp))
-      );
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getRemainingLiquidityMiningKUMOReward} */
-  async getRemainingLiquidityMiningKUMOReward(overrides?: EthersCallOverrides): Promise<Decimal> {
-    const [calculateRemainingKUMO, blockTimestamp] = await Promise.all([
-      this._getRemainingLiquidityMiningKUMORewardCalculator(overrides),
-      this._getBlockTimestamp(overrides?.blockTag)
-    ]);
-
-    return calculateRemainingKUMO(blockTimestamp);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getLiquidityMiningStake} */
-  getLiquidityMiningStake(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    address ??= _requireAddress(this.connection);
-    const { unipool } = _getContracts(this.connection);
-
-    return unipool.balanceOf(address, { ...overrides }).then(decimalify);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTotalStakedUniTokens} */
-  getTotalStakedUniTokens(overrides?: EthersCallOverrides): Promise<Decimal> {
-    const { unipool } = _getContracts(this.connection);
-
-    return unipool.totalSupply({ ...overrides }).then(decimalify);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getLiquidityMiningKUMOReward} */
-  getLiquidityMiningKUMOReward(address?: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    address ??= _requireAddress(this.connection);
-    const { unipool } = _getContracts(this.connection);
-
-    return unipool.earned(address, { ...overrides }).then(decimalify);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getCollateralSurplusBalance} */
@@ -492,33 +403,6 @@ export class ReadableEthersKumo implements ReadableKumo {
     ]);
 
     return createFees(blockTimestamp, total.collateralRatioIsBelowCritical(price));
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getKUMOStake} */
-  async getKUMOStake(
-    asset: string,
-    address: string,
-    overrides?: EthersCallOverrides
-  ): Promise<KUMOStake> {
-    address ??= _requireAddress(this.connection);
-    const { kumoStaking } = _getContracts(this.connection);
-
-    const [stakedKUMO, collateralGain, kusdGain] = await Promise.all(
-      [
-        kumoStaking.stakes(address, { ...overrides }),
-        kumoStaking.getPendingAssetGain(asset, address, { ...overrides }),
-        kumoStaking.getPendingKUSDGain(address, { ...overrides })
-      ].map(getBigNumber => getBigNumber.then(decimalify))
-    );
-
-    return new KUMOStake(stakedKUMO, collateralGain, kusdGain);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTotalStakedKUMO} */
-  async getTotalStakedKUMO(overrides?: EthersCallOverrides): Promise<Decimal> {
-    const { kumoStaking } = _getContracts(this.connection);
-
-    return kumoStaking.totalKUMOStaked({ ...overrides }).then(decimalify);
   }
 
   /** {@inheritDoc @kumodao/lib-base#ReadableKumo.getTestTokensTransferState} */
@@ -655,12 +539,6 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
       : this._readable.getStabilityDeposit(asset, address, overrides);
   }
 
-  async getRemainingStabilityPoolKUMOReward(overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._blockHit(overrides)
-      ? this.store.state.remainingStabilityPoolKUMOReward
-      : this._readable.getRemainingStabilityPoolKUMOReward(overrides);
-  }
-
   async getKUSDInStabilityPool(asset: string, overrides?: EthersCallOverrides): Promise<Decimal> {
     const vault = this.store.state.vaults.find(vault => vault.asset === asset);
     return (this._blockHit(overrides) && vault)
@@ -687,51 +565,6 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
     } else {
       this._readable.getAssetBalance(address, assetType, provider, overrides);
     }
-  }
-
-  async getKUMOBalance(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._userHit(address, overrides)
-      ? this.store.state.kumoBalance
-      : this._readable.getKUMOBalance(address, overrides);
-  }
-
-  async getUniTokenBalance(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._userHit(address, overrides)
-      ? this.store.state.uniTokenBalance
-      : this._readable.getUniTokenBalance(address, overrides);
-  }
-
-  async getUniTokenAllowance(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._userHit(address, overrides)
-      ? this.store.state.uniTokenAllowance
-      : this._readable.getUniTokenAllowance(address, overrides);
-  }
-
-  async getRemainingLiquidityMiningKUMOReward(overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._blockHit(overrides)
-      ? this.store.state.remainingLiquidityMiningKUMOReward
-      : this._readable.getRemainingLiquidityMiningKUMOReward(overrides);
-  }
-
-  async getLiquidityMiningStake(address: string, overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._userHit(address, overrides)
-      ? this.store.state.liquidityMiningStake
-      : this._readable.getLiquidityMiningStake(address, overrides);
-  }
-
-  async getTotalStakedUniTokens(overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._blockHit(overrides)
-      ? this.store.state.totalStakedUniTokens
-      : this._readable.getTotalStakedUniTokens(overrides);
-  }
-
-  async getLiquidityMiningKUMOReward(
-    address: string,
-    overrides?: EthersCallOverrides
-  ): Promise<Decimal> {
-    return this._userHit(address, overrides)
-      ? this.store.state.liquidityMiningKUMOReward
-      : this._readable.getLiquidityMiningKUMOReward(address, overrides);
   }
 
   async getCollateralSurplusBalance(
@@ -765,22 +598,6 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
     return (this._blockHit(overrides) && vault)
       ? vault.fees
       : this._readable.getFees(asset, overrides);
-  }
-
-  async getKUMOStake(
-    asset: string,
-    address: string,
-    overrides?: EthersCallOverrides
-  ): Promise<KUMOStake> {
-    return this._userHit(address, overrides)
-      ? this.store.state.kumoStake
-      : this._readable.getKUMOStake(asset, address, overrides);
-  }
-
-  async getTotalStakedKUMO(overrides?: EthersCallOverrides): Promise<Decimal> {
-    return this._blockHit(overrides)
-      ? this.store.state.totalStakedKUMO
-      : this._readable.getTotalStakedKUMO(overrides);
   }
 
   async getTestTokensTransferState(
@@ -819,10 +636,6 @@ class _BlockPolledReadableEthersKumo implements ReadableEthersKumoWithStore<Bloc
   }
 
   _getDefaultPool(): Promise<Trove> {
-    throw new Error("Method not implemented.");
-  }
-
-  _getRemainingLiquidityMiningKUMORewardCalculator(): Promise<(blockTimestamp: number) => Decimal> {
     throw new Error("Method not implemented.");
   }
 }
