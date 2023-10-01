@@ -24,21 +24,15 @@ export class StabilityDeposit {
   /** Amount of native currency (e.g. Ether) received in exchange for the used-up KUSD. */
   readonly collateralGain: Decimal;
 
-  /** Amount of KUMO rewarded since the last modification of the Stability Deposit. */
-  readonly kumoReward: Decimal;
-
-
   /** @internal */
   constructor(
     initialKUSD: Decimal,
     currentKUSD: Decimal,
-    collateralGain: Decimal,
-    kumoReward: Decimal
+    collateralGain: Decimal
   ) {
     this.initialKUSD = initialKUSD;
     this.currentKUSD = currentKUSD;
     this.collateralGain = collateralGain;
-    this.kumoReward = kumoReward;
 
     if (this.currentKUSD.gt(this.initialKUSD)) {
       throw new Error("currentKUSD can't be greater than initialKUSD");
@@ -49,8 +43,7 @@ export class StabilityDeposit {
     return (
       this.initialKUSD.isZero &&
       this.currentKUSD.isZero &&
-      this.collateralGain.isZero &&
-      this.kumoReward.isZero
+      this.collateralGain.isZero
     );
   }
 
@@ -59,8 +52,7 @@ export class StabilityDeposit {
     return (
       `{ initialKUSD: ${this.initialKUSD}` +
       `, currentKUSD: ${this.currentKUSD}` +
-      `, collateralGain: ${this.collateralGain}` +
-      `, kumoReward: ${this.kumoReward}`
+      `, collateralGain: ${this.collateralGain}`
     );
   }
 
@@ -71,8 +63,7 @@ export class StabilityDeposit {
     return (
       this.initialKUSD.eq(that.initialKUSD) &&
       this.currentKUSD.eq(that.currentKUSD) &&
-      this.collateralGain.eq(that.collateralGain) &&
-      this.kumoReward.eq(that.kumoReward)
+      this.collateralGain.eq(that.collateralGain)
     );
   }
 
