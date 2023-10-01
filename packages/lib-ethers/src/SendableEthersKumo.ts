@@ -208,15 +208,6 @@ export class SendableEthersKumo
     return this._populate.transferTestTokens(tokenAddress, toAddress, amount, overrides).then(sendTransaction);
   }
 
-  /** {@inheritDoc @kumodao/lib-base#SendableKumo.sendKUMO} */
-  sendKUMO(
-    toAddress: string,
-    amount: Decimalish,
-    overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersKumoTransaction<void>> {
-    return this._populate.sendKUMO(toAddress, amount, overrides).then(sendTransaction);
-  }
-
   /** {@inheritDoc @kumodao/lib-base#SendableKumo.redeemKUSD} */
   redeemKUSD(
     asset: string,
@@ -235,75 +226,5 @@ export class SendableEthersKumo
     overrides?: EthersTransactionOverrides
   ): Promise<SentEthersKumoTransaction<void>> {
     return this._populate.claimCollateralSurplus(asset, overrides).then(sendTransaction);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#SendableKumo.stakeKUMO} */
-  stakeKUMO(
-    amount: Decimalish,
-    overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersKumoTransaction<void>> {
-    return this._populate.stakeKUMO(amount, overrides).then(sendTransaction);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#SendableKumo.unstakeKUMO} */
-  unstakeKUMO(
-    amount: Decimalish,
-    overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersKumoTransaction<void>> {
-    return this._populate.unstakeKUMO(amount, overrides).then(sendTransaction);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#SendableKumo.withdrawGainsFromStaking} */
-  withdrawGainsFromStaking(
-    overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersKumoTransaction<void>> {
-    return this._populate.withdrawGainsFromStaking(overrides).then(sendTransaction);
-  }
-
-  /** @internal */
-  _mintUniToken(
-    amount: Decimalish,
-    address?: string,
-    overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersKumoTransaction<void>> {
-    return this._populate._mintUniToken(amount, address, overrides).then(sendTransaction);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#SendableKumo.approveUniTokens} */
-  approveUniTokens(
-    allowance?: Decimalish,
-    overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersKumoTransaction<void>> {
-    return this._populate.approveUniTokens(allowance, overrides).then(sendTransaction);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#SendableKumo.stakeUniTokens} */
-  stakeUniTokens(
-    amount: Decimalish,
-    overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersKumoTransaction<void>> {
-    return this._populate.stakeUniTokens(amount, overrides).then(sendTransaction);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#SendableKumo.unstakeUniTokens} */
-  unstakeUniTokens(
-    amount: Decimalish,
-    overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersKumoTransaction<void>> {
-    return this._populate.unstakeUniTokens(amount, overrides).then(sendTransaction);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#SendableKumo.withdrawKUMORewardFromLiquidityMining} */
-  withdrawKUMORewardFromLiquidityMining(
-    overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersKumoTransaction<void>> {
-    return this._populate.withdrawKUMORewardFromLiquidityMining(overrides).then(sendTransaction);
-  }
-
-  /** {@inheritDoc @kumodao/lib-base#SendableKumo.exitLiquidityMining} */
-  exitLiquidityMining(
-    overrides?: EthersTransactionOverrides
-  ): Promise<SentEthersKumoTransaction<void>> {
-    return this._populate.exitLiquidityMining(overrides).then(sendTransaction);
   }
 }

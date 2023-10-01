@@ -241,13 +241,6 @@ export interface SendableKumo<R = unknown, S = unknown>
     toAddress: string,
     amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
 
-
-  /** {@inheritDoc TransactableKumo.sendKUMO} */
-  sendKUMO(
-    toAddress: string,
-    amount: Decimalish
-  ): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-
   /** {@inheritDoc TransactableKumo.redeemKUSD} */
   redeemKUSD(
     asset: string,
@@ -257,28 +250,4 @@ export interface SendableKumo<R = unknown, S = unknown>
 
   /** {@inheritDoc TransactableKumo.claimCollateralSurplus} */
   claimCollateralSurplus(asset: string): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-
-  /** {@inheritDoc TransactableKumo.stakeKUMO} */
-  stakeKUMO(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-
-  /** {@inheritDoc TransactableKumo.unstakeKUMO} */
-  unstakeKUMO(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-
-  /** {@inheritDoc TransactableKumo.withdrawGainsFromStaking} */
-  withdrawGainsFromStaking(): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-
-  /** {@inheritDoc TransactableKumo.approveUniTokens} */
-  approveUniTokens(allowance?: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-
-  /** {@inheritDoc TransactableKumo.stakeUniTokens} */
-  stakeUniTokens(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-
-  /** {@inheritDoc TransactableKumo.unstakeUniTokens} */
-  unstakeUniTokens(amount: Decimalish): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-
-  /** {@inheritDoc TransactableKumo.withdrawKUMORewardFromLiquidityMining} */
-  withdrawKUMORewardFromLiquidityMining(): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
-
-  /** {@inheritDoc TransactableKumo.exitLiquidityMining} */
-  exitLiquidityMining(): Promise<SentKumoTransaction<S, KumoReceipt<R, void>>>;
 }
