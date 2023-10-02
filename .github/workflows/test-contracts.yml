@@ -6,16 +6,18 @@ env:
 
 on:
   push:
+    branches: ['main', 'dev']
     paths:
       - ".github/workflows/test-contracts.yml"
       - "packages/contracts/**"
   pull_request:
+    branches: ['main', 'dev']
     paths:
       - ".github/workflows/test-contracts.yml"
       - "packages/contracts/**"
 
 jobs:
-  test:
+  test-contracts:
     runs-on: ubuntu-latest
 
     # This condition checks if the pull request is not a draft
@@ -38,7 +40,7 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=4096
 
-  coverage:
+  test-coverage:
     runs-on: ubuntu-latest
     if: ${{ contains(github.event.pull_request.labels.*.name, 'coverage') }}
     continue-on-error: true

@@ -1,4 +1,4 @@
-name: Test contracts (Generic Skip)
+name: Generic Skip for [test-contracts]
 # Handles skipped but required checks
 
 on:
@@ -7,7 +7,7 @@ on:
       - "packages/contracts/**"
 
 jobs:
-  test:
+  test-contracts:
     runs-on: ubuntu-latest
     steps:
       - run: 'echo "No tests required" '
