@@ -37,7 +37,7 @@
     "@openzeppelin/contracts-upgradeable": "^4.9.3",
     "@openzeppelin/test-helpers": "^0.5.16",
     "eth-gas-reporter": "^0.2.25",
-    "hardhat": "^2.17.3",
+    "hardhat": "^2.17.4",
     "hardhat-contract-sizer": "^2.10.0",
     "hardhat-diamond-abi": "^3.0.1",
     "hardhat-gas-reporter": "^1.0.9",
