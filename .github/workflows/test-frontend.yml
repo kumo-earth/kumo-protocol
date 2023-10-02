@@ -1,0 +1,70 @@
+name: Test Frontend (e2e)
+
+env:
+  CI: true
+  FORCE_COLOR: true
+
+on:
+  push:
+    paths:
+      - ".github/workflows/test-frontend.yml"
+      - 'packages/dev-frontend/**'
+      - 'packages/lib-react/**'
+      - 'packages/lib-ethers/**'
+      - 'packages/providers/**'
+  pull_request:
+    paths:
+      - ".github/workflows/test-frontend.yml"
+      - 'packages/dev-frontend/**'
+      - 'packages/lib-react/**'
+      - 'packages/lib-ethers/**'
+      - 'packages/providers/**'
+jobs:
+
+  test-frontend:
+    # This condition checks if the pull request is not a draft
+    if: github.event.pull_request.draft == false
+
+    name: Run Frontend Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v3
+        env:
+          FORCE_COLOR: 0
+        with:
+          node-version: 18.17.1
+          cache: 'yarn'
+
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+      - name: Install linux deps
+        run: |
+          sudo apt-get install --no-install-recommends -y \
+          fluxbox \
+          xvfb
+
+      - name: Run e2e tests (synpress-action)
+        run: |
+          Xvfb :0 -screen 0 1024x768x24 -listen tcp -ac &
+          fluxbox &
+          yarn test:dev-frontend
+        env:
+          SECRET_WORDS: 'test test test test test test test test test test test junk'
+          NETWORK_NAME: 'Localhost'
+          RPC_URL: 'http://127.0.0.1:8545'
+          CHAIN_ID: 17
+          SYMBOL: 'ETH'
+          DISPLAY: :0.0
+
+      - name: Archive e2e artifacts
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # pin@v2
+        if: always()
+        with:
+          name: e2e-artifacts
+          path: |
+            ./packages/dev-frontend/tests/e2e/videos
+        continue-on-error: true
+
+
