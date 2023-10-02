@@ -6,16 +6,20 @@ env:
 
 on:
   push:
+    branches: ['main', 'dev']
     paths-ignore:
       - 'docs/**'
+      - 'packages/dev-frontend/**'
       - 'packages/contracts/**'
       - 'README.md'
       - 'LICENSE'
       - 'papers/**'
       - 'images/**'
   pull_request:
+    branches: ['main', 'dev']
     paths-ignore:
       - 'docs/**'
+      - 'packages/dev-frontend/**'
       - 'packages/contracts/**'
       - 'README.md'
       - 'LICENSE'

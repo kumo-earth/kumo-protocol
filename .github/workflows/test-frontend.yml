@@ -5,14 +5,8 @@ env:
   FORCE_COLOR: true
 
 on:
-  push:
-    paths:
-      - ".github/workflows/test-frontend.yml"
-      - 'packages/dev-frontend/**'
-      - 'packages/lib-react/**'
-      - 'packages/lib-ethers/**'
-      - 'packages/providers/**'
   pull_request:
+    branches: ['main', 'dev']
     paths:
       - ".github/workflows/test-frontend.yml"
       - 'packages/dev-frontend/**'
