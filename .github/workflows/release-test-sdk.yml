@@ -1,4 +1,4 @@
-name: Release SDK & UI
+name: Release and test SDK & UI
 
 env:
   CI: true
@@ -42,7 +42,7 @@ jobs:
             echo "{publish}={false}" >> $GITHUB_OUTPUT
           fi
 
-  test:
+  test-sdk:
     name: Run SDK
     runs-on: ubuntu-latest
     needs: workflow-setup
@@ -67,7 +67,7 @@ jobs:
       #   if: ${{ github.ref == 'refs/heads/main' }}
       #   run: yarn test-live
 
-  release:
+  release-sdk:
     name: Publish SDK to NPM and build Frontend image
     if: needs.workflow-setup.outputs.publish == 'true'
     runs-on: ubuntu-latest
