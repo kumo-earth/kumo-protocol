@@ -76,7 +76,7 @@
     "start": "env-cmd -f .env vite --force",
     "start:local": "env-cmd -f .env.local vite --force",
     "start-demo": "env-cmd VITE_APP_DEMO_MODE=true vite --force",
-    "build": "run-s build:*",
+    "build": "run-s 'build:*'",
     "build:set-version": "node scripts/set-version.js",
     "build:tsc": "tsc",
     "build:vite": "env-cmd -f .env vite build",

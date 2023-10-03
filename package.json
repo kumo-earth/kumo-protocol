@@ -11,7 +11,7 @@
       "packages/lib-react",
       "packages/providers"
     ],
-    "nohoist": [
+    "nmHoistingLimits": [
       "**/web3-eth-abi/@ethersproject/abi",
       "**/@graphprotocol/*",
       "**/jest*",
@@ -46,14 +46,14 @@
     ]
   },
   "scripts": {
-    "build": "run-s build:*",
+    "build": "run-s 'build:*'",
     "build:dev-frontend": "yarn workspace @kumodao/dev-frontend build",
     "deploy": "yarn workspace @kumodao/lib-ethers hardhat deploy",
-    "docs": "run-s docs:*",
+    "docs": "run-s 'docs:*'",
     "docs:collect-sdk-apis": "node scripts/collect-sdk-apis.js",
     "docs:api-documenter": "api-documenter generate -i temp/sdk-apis -o docs/sdk",
-    "postinstall": "husky install",
-    "prepare": "run-s prepare:*",
+    "postinstall": "husky install & run-s prepare",
+    "prepare": "run-s 'prepare:*'",
     "prepare:contracts": "yarn workspace @kumodao/contracts prepare",
     "prepare:lib-base": "yarn workspace @kumodao/lib-base prepare",
     "prepare:lib-ethers": "yarn workspace @kumodao/lib-ethers prepare",
@@ -64,35 +64,35 @@
     "prettier:write": "prettier --write .",
     "prettier:list-different": "prettier --list-different .",
     "rebuild": "run-s prepare build",
-    "release": "run-s release:*",
+    "release": "run-s 'release:*'",
     "release:delete-dev-deployments": "yarn workspace @kumodao/lib-ethers delete-dev-deployments",
     "release:lib-base": "yarn workspace @kumodao/lib-base semantic-release",
     "release:lib-ethers": "yarn workspace @kumodao/lib-ethers semantic-release",
     "release:lib-react": "yarn workspace @kumodao/lib-react semantic-release",
     "release:providers": "yarn workspace @kumodao/providers semantic-release",
     "save-live-version": "yarn workspace @kumodao/lib-ethers save-live-version",
-    "start-dev-chain": "run-s start-dev-chain:*",
+    "start-dev-chain": "run-s 'start-dev-chain:*'",
     "start-dev-chain:openethereum": "node dev-chain/start.js",
     "start-dev-chain:prepare-providers": "yarn prepare:providers",
     "start-dev-chain:deploy-contracts": "yarn deploy --network dev",
     "start-dev-chain:prepare-lib-ethers": "yarn prepare:lib-ethers",
     "stop-dev-chain": "docker kill openethereum",
     "start-dev-frontend": "yarn workspace @kumodao/dev-frontend start",
-    "start-demo": "run-s start-demo:*",
+    "start-demo": "run-s 'start-demo:*'",
     "start-demo:dev-chain": "yarn start-dev-chain",
     "start-demo:dev-frontend": "yarn workspace @kumodao/dev-frontend start-demo",
     "stop-demo": "yarn stop-dev-chain",
-    "test": "run-s test:*",
+    "test": "run-s 'test:*'",
     "test:lib-base": "yarn workspace @kumodao/lib-base test",
     "test:lib-ethers": "yarn workspace @kumodao/lib-ethers test",
-    "test:dev-frontend": "run-s --continue-on-error test:dev-frontend:*",
+    "test:dev-frontend": "run-s --continue-on-error 'test:dev-frontend:*'",
     "test:dev-frontend:start-dev-chain": "yarn start-dev-chain",
     "test:dev-frontend:run": "yarn workspace @kumodao/dev-frontend ci",
     "test:dev-frontend:stop-dev-chain": "yarn stop-dev-chain",
     "test-contracts": "yarn workspace @kumodao/contracts test",
-    "test-live": "run-s test-live:*",
+    "test-live": "run-s 'test-live:*'",
     "test-live:lib-ethers": "yarn workspace @kumodao/lib-ethers test-live",
-    "coverage": "run-s coverage:*",
+    "coverage": "run-s 'coverage:*'",
     "coverage:contracts": "yarn workspace @kumodao/contracts coverage"
   },
   "lint-staged": {
@@ -115,5 +115,6 @@
   "engineStrict": true,
   "engines": {
     "node": "^18.17.1"
-  }
+  },
+  "packageManager": "yarn@3.6.3"
 }
