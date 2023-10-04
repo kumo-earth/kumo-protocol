@@ -3804,7 +3804,7 @@ __metadata:
     eth-gas-reporter: ^0.2.27
     eth-mutants: ^0.1.1
     ethereumjs-util: ^7.1.5
-    ethers: ~5.7.2
+    ethers: ~6.7.1
     hardhat: ^2.17.3
     hardhat-contract-sizer: ^2.10.0
     hardhat-diamond-abi: ^3.0.1
@@ -3931,7 +3931,7 @@ __metadata:
     dotenv: ^16.3.1
     eslint: ^8.49.0
     eslint-plugin-tsdoc: ^0.2.17
-    ethers: ^5.7.2
+    ethers: ^6.7.1
     fs-extra: ^11.1.1
     hardhat: ^2.17.3
     npm-run-all: ^4.1.5
@@ -3941,7 +3941,7 @@ __metadata:
   peerDependencies:
     "@kumodao/lib-base": ^3.0.0
     "@openzeppelin/contracts-upgradeable": ^4.4.1
-    ethers: ^5.7.2
+    ethers: ^6.7.1
   languageName: unknown
   linkType: soft
 
@@ -3968,11 +3968,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@kumodao/providers@workspace:packages/providers"
   dependencies:
-    ethers: ^5.7.2
+    ethers: ^6.7.1
     ts-node: ^10.9.1
     typescript: 5.2.2
   peerDependencies:
-    ethers: ^5.7.2
+    ethers: ^6.7.1
   languageName: unknown
   linkType: soft
 
@@ -14619,7 +14619,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethers@npm:^5.0.13, ethers@npm:^5.5.2, ethers@npm:^5.7.0, ethers@npm:^5.7.1, ethers@npm:^5.7.2, ethers@npm:~5.7.2":
+"ethers@npm:^5.0.13, ethers@npm:^5.5.2, ethers@npm:^5.7.0, ethers@npm:^5.7.1, ethers@npm:^5.7.2":
   version: 5.7.2
   resolution: "ethers@npm:5.7.2"
   dependencies:
@@ -14657,7 +14657,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethers@npm:^6.7.1":
+"ethers@npm:^6.7.1, ethers@npm:~6.7.1":
   version: 6.7.1
   resolution: "ethers@npm:6.7.1"
   dependencies:
