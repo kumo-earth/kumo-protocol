@@ -6,8 +6,6 @@ import {Trove, RewardSnapshot} from "../../Libraries/LibAppStorage.sol";
 import "../ICollSurplusPool.sol";
 import "../IKUSDToken.sol";
 import "../ISortedTroves.sol";
-import "../IKUMOToken.sol";
-import "../IKUMOStaking.sol";
 import "../IKumoParameters.sol";
 import "../IStabilityPoolFactory.sol";
 
@@ -119,10 +117,6 @@ interface ITroveManagerFacet {
     function stabilityPoolFactory() external view returns (IStabilityPoolFactory);
 
     function kusdToken() external view returns (IKUSDToken);
-
-    function kumoToken() external view returns (IKUMOToken);
-
-    function kumoStaking() external view returns (IKUMOStaking);
 
     function sortedTroves() external view returns (ISortedTroves);
 

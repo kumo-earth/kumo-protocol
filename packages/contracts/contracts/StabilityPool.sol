@@ -10,7 +10,6 @@ import "./Interfaces/IBorrowerOperations.sol";
 import "./Interfaces/ITroveManagerDiamond.sol";
 import "./Interfaces/IKUSDToken.sol";
 import "./Interfaces/ISortedTroves.sol";
-import "./Interfaces/ICommunityIssuance.sol";
 import "./Dependencies/KumoBase.sol";
 import "./Dependencies/SafeMath.sol";
 import "./Dependencies/KumoSafeMath128.sol";
@@ -150,8 +149,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     // Needed to check if there are pending liquidations
     ISortedTroves public sortedTroves;
 
-    ICommunityIssuance public communityIssuance;
-
     address internal assetAddress;
 
     uint256 internal assetBalance; // deposited asset tracker
@@ -244,7 +241,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         address _troveManagerAddress,
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
-        address _communityIssuanceAddress,
         address _kumoParamsAddress
     ) external override onlyOwner {
         // require(!isInitialized, "Already initialized");
@@ -252,7 +248,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         checkContract(_troveManagerAddress);
         checkContract(_kusdTokenAddress);
         checkContract(_sortedTrovesAddress);
-        checkContract(_communityIssuanceAddress);
         checkContract(_kumoParamsAddress);
 
         // isInitialized = true;
@@ -266,7 +261,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         troveManager = ITroveManagerDiamond(_troveManagerAddress);
         kusdToken = IKUSDToken(_kusdTokenAddress);
         sortedTroves = ISortedTroves(_sortedTrovesAddress);
-        communityIssuance = ICommunityIssuance(_communityIssuanceAddress);
 
         setKumoParameters(_kumoParamsAddress);
 
@@ -274,7 +268,6 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         emit TroveManagerAddressChanged(_troveManagerAddress);
         emit KUSDTokenAddressChanged(_kusdTokenAddress);
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
-        emit CommunityIssuanceAddressChanged(_communityIssuanceAddress);
 
         // _renounceOwnership(); --> Needs to be paused because of current test deployment with adding an asset to the system
     }

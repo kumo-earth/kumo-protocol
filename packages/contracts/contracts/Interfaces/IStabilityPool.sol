@@ -38,24 +38,11 @@ interface IStabilityPool is IDeposit {
     event KUSDTokenAddressChanged(address _newKUSDTokenAddress);
     event SortedTrovesAddressChanged(address _newSortedTrovesAddress);
     event PriceFeedAddressChanged(address _newPriceFeedAddress);
-    event CommunityIssuanceAddressChanged(address _newCommunityIssuanceAddress);
 
     event P_Updated(uint256 _P);
     event S_Updated(uint256 _S, uint128 _epoch, uint128 _scale);
     event EpochUpdated(uint128 _currentEpoch);
     event ScaleUpdated(uint128 _currentScale);
-
-    //  FrontEnd
-
-    event FrontEndRegistered(address indexed _frontEnd, uint256 _kickbackRate);
-    event FrontEndTagSet(address indexed _depositor, address indexed _frontEnd);
-    event FrontEndSnapshotUpdated(address indexed _frontEnd, uint256 _P, uint256 _G);
-    event FrontEndStakeChanged(
-        address indexed _frontEnd,
-        uint256 _newFrontEndStake,
-        address _depositor
-    );
-    event KUMOPaidToFrontEnd(address indexed _frontEnd, uint256 _KUMO);
 
     event DepositSnapshotUpdated(address indexed _depositor, uint256 _P, uint256 _S);
     event UserDepositChanged(address indexed _depositor, uint256 _newDeposit);
@@ -77,7 +64,6 @@ interface IStabilityPool is IDeposit {
         address _troveManagerAddress,
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
-        address _communityIssuanceAddress,
         address _kumoParamsAddress
     ) external;
 
