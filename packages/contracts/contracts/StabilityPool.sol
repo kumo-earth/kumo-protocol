@@ -153,8 +153,11 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     ICommunityIssuance public communityIssuance;
 
     address internal assetAddress;
+    address internal treasuryAddress;
 
     uint256 internal assetBalance; // deposited asset tracker
+    // Percent that goes to the KUMO Treasury. 1e17 = 10%, 1e18 = 100%. Must be in range [0, 1]
+    uint256 internal protocolFee;
 
     // Tracker for KUSD held in the pool. Changes when users deposit/withdraw, and when Trove debt is offset.
     uint256 internal totalKUSDDeposits;
@@ -245,7 +248,8 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         address _kusdTokenAddress,
         address _sortedTrovesAddress,
         address _communityIssuanceAddress,
-        address _kumoParamsAddress
+        address _kumoParamsAddress,
+        address _kumoTreasuryAddress
     ) external override onlyOwner {
         // require(!isInitialized, "Already initialized");
         checkContract(_borrowerOperationsAddress);
@@ -254,6 +258,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         checkContract(_sortedTrovesAddress);
         checkContract(_communityIssuanceAddress);
         checkContract(_kumoParamsAddress);
+        checkContract(_kumoTreasuryAddress);
 
         // isInitialized = true;
         // __Ownable_init();
@@ -261,6 +266,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         checkContract(_assetAddress);
 
         assetAddress = _assetAddress;
+        treasuryAddress = _kumoTreasuryAddress;
 
         borrowerOperations = IBorrowerOperations(_borrowerOperationsAddress);
         troveManager = ITroveManagerDiamond(_troveManagerAddress);
@@ -275,6 +281,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         emit KUSDTokenAddressChanged(_kusdTokenAddress);
         emit SortedTrovesAddressChanged(_sortedTrovesAddress);
         emit CommunityIssuanceAddressChanged(_communityIssuanceAddress);
+        emit KUMOTreasuryAddressChanged(_kumoTreasuryAddress);
 
         // _renounceOwnership(); --> Needs to be paused because of current test deployment with adding an asset to the system
     }
@@ -318,6 +325,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
         _sendAssetGainToDepositor(depositorAssetGain);
         _sendKUSDGainToDepositor(msg.sender, depositorKUSDGain);
+        _sendGainsToKUMOTreasury(depositorAssetGain, depositorKUSDGain);
     }
 
     /*  withdrawFromSP():
@@ -353,6 +361,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
 
         _sendAssetGainToDepositor(depositorAssetGain);
         _sendKUSDGainToDepositor(msg.sender, depositorKUSDGain);
+        _sendGainsToKUMOTreasury(depositorAssetGain, depositorKUSDGain);
     }
 
     /* withdrawAssetGainToTrove:
@@ -393,6 +402,7 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         );
 
         _sendKUSDGainToDepositor(msg.sender, depositorKUSDGain);
+        _sendGainsToKUMOTreasury(depositorAssetGain, depositorKUSDGain);
     }
 
     // --- Liquidation functions ---
@@ -613,7 +623,12 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
             DECIMAL_PRECISION
         );
 
-        return vars.SPAssetGain + vars.StakingAssetGain;
+        uint256 depositorShare = uint256(DECIMAL_PRECISION).sub(protocolFee);
+        uint256 assetGain = depositorShare.mul(vars.SPAssetGain + vars.StakingAssetGain).div(
+            DECIMAL_PRECISION
+        );
+
+        return assetGain;
     }
 
     function getDepositorKUSDGain(address _depositor) public view override returns (uint256) {
@@ -628,7 +643,29 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         uint256 F_KUSD_Snapshot = stakingSnapshots[_user].F_KUSD_Snapshot;
         uint256 KUSDGain = deposits[_user].mul(F_KUSD.sub(F_KUSD_Snapshot)).div(DECIMAL_PRECISION);
 
-        return KUSDGain;
+        uint256 depositorShare = uint256(DECIMAL_PRECISION).sub(protocolFee);
+        uint256 KUSDGainAfterFee = depositorShare.mul(KUSDGain).div(DECIMAL_PRECISION);
+
+        return KUSDGainAfterFee;
+    }
+
+    function _sendGainsToKUMOTreasury(uint256 _assetGain, uint256 _KUSDGain) internal {
+        if (_assetGain != 0) {
+            uint256 treasuryGain = protocolFee.mul(_assetGain).div(DECIMAL_PRECISION);
+
+            kusdToken.returnFromPool(address(this), treasuryAddress, treasuryGain);
+            IERC20Upgradeable(assetAddress).safeTransfer(treasuryAddress, treasuryGain);
+
+            assetBalance = assetBalance.sub(treasuryGain);
+            emit StabilityPoolAssetBalanceUpdated(assetBalance);
+        }
+
+        if (_KUSDGain != 0) {
+            uint256 treasuryGain = protocolFee.mul(_KUSDGain).div(DECIMAL_PRECISION);
+
+            kusdToken.returnFromPool(address(this), treasuryAddress, treasuryGain);
+            _decreaseKUSDGains(_KUSDGain);
+        }
     }
 
     // Internal function, used to calculcate compounded deposits and compounded stakes.
@@ -767,6 +804,15 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
         _decreaseKUSDGains(KUSDWithdrawal);
     }
 
+    function setProtocolFee(uint256 _newProtocolFee) external {
+        _requireValidProtocolFee(_newProtocolFee);
+
+        uint256 _oldProtocolFee = protocolFee;
+        protocolFee = _newProtocolFee;
+
+        emit ProtocolFeeChanged(_oldProtocolFee, _newProtocolFee);
+    }
+
     // --- 'require' functions ---
 
     function _requireCallerIsActivePool() internal view {
@@ -820,6 +866,13 @@ contract StabilityPool is KumoBase, CheckContract, IStabilityPool {
     function _requireUserHasAssetGain(address _depositor) internal view {
         uint256 AssetGain = getDepositorAssetGain(_depositor);
         require(AssetGain > 0, "StabilityPool: caller must have non-zero Asset Gain");
+    }
+
+    function _requireValidProtocolFee(uint256 _protocolFee) internal pure {
+        require(
+            _protocolFee <= DECIMAL_PRECISION,
+            "StabilityPool: Protocol fee must be in range [0,1]"
+        );
     }
 
     function receivedERC20(address _asset, uint256 _amount) external override {

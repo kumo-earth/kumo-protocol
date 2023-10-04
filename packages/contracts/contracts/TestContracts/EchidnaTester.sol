@@ -101,7 +101,8 @@ contract EchidnaTester {
             address(kusdToken),
             address(sortedTroves),
             address(0),
-            address(kumoParams)
+            address(kumoParams),
+            address(0)
         );
 
         collSurplusPool.setAddresses(
