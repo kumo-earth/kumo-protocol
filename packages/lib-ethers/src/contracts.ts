@@ -27,7 +27,6 @@ import sortedTrovesAbi from "../abi/SortedTroves.json";
 import stabilityPoolAbi from "../abi/StabilityPool.json";
 import stabilityPoolFactoryAbi from "../abi/StabilityPoolFactory.json";
 import gasPoolAbi from "../abi/GasPool.json";
-import iERC20Abi from "../abi/IERC20.json";
 import erc20TestAbi from "../abi/ERC20Test.json";
 import kumoFaucetAbi from "../abi/KumoFaucet.json";
 
@@ -46,7 +45,6 @@ import {
   StabilityPool,
   StabilityPoolFactory,
   GasPool,
-  IERC20,
   KumoParameters,
   ERC20Test, 
   KumoFaucet

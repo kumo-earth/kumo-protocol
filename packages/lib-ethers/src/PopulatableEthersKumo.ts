@@ -86,9 +86,8 @@ const addGasForBaseRateUpdate =
 // 80K should be enough for 3 steps, plus some extra to be safe.
 const addGasForPotentialListTraversal = (gas: BigNumber) => gas.add(80000);
 
+// TODO: after KIP-3, think if we should change the value since we don't issue any KUMO tokens
 const addGasForKUMOIssuance = (gas: BigNumber) => gas.add(50000);
-
-const addGasForUnipoolRewardUpdate = (gas: BigNumber) => gas.add(20000);
 
 // To get the best entropy available, we'd do something like:
 //

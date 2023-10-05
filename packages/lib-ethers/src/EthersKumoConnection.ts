@@ -1,8 +1,6 @@
 import { Block, BlockTag } from "@ethersproject/abstract-provider";
 import { Signer } from "@ethersproject/abstract-signer";
 
-import { Decimal } from "@kumodao/lib-base";
-
 import devOrNull from "../deployments/dev.json";
 import mainnet from "../deployments/mainnet.json";
 import mumbai from "../deployments/mumbai.json";

@@ -91,7 +91,7 @@ export class BlockPolledKumoStore extends KumoStore<BlockPolledKumoStoreExtraSta
   private async _get(
     blockTag?: number
   ): Promise<[baseState: KumoStoreBaseState, extraState: BlockPolledKumoStoreExtraState]> {
-    const { userAddress, provider, addresses : { kusdToken, kumoToken } } = this.connection;
+    const { userAddress, provider, addresses : { kusdToken } } = this.connection;
     let asset = AddressZero;
 
     const vaultState: Vault[] = [];
