@@ -6,7 +6,7 @@
 
 Register a state change listener.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 subscribe(listener: (params: KumoStoreListenerParams<T>) => void): () => void;
@@ -18,7 +18,7 @@ subscribe(listener: (params: KumoStoreListenerParams<T>) => void): () => void;
 |  --- | --- | --- |
 |  listener | (params: [KumoStoreListenerParams](./lib-base.kumostorelistenerparams.md)<!-- -->&lt;T&gt;) =&gt; void | Function that will be called whenever state changes. |
 
-<b>Returns:</b>
+**Returns:**
 
 () =&gt; void
 

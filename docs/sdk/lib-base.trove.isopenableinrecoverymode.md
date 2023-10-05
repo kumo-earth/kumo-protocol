@@ -6,7 +6,7 @@
 
 Whether the Trove is sufficiently collateralized to be opened during recovery mode.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 isOpenableInRecoveryMode(price: Decimalish): boolean;
@@ -18,7 +18,7 @@ isOpenableInRecoveryMode(price: Decimalish): boolean;
 |  --- | --- | --- |
 |  price | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 boolean
 

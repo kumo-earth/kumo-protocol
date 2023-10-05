@@ -6,7 +6,7 @@
 
 Withdraw KUSD from Stability Deposit.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 withdrawKUSDFromStabilityPool(amount: Decimalish, asset: string): Promise<StabilityDepositChangeDetails>;
@@ -19,7 +19,7 @@ withdrawKUSDFromStabilityPool(amount: Decimalish, asset: string): Promise<Stabil
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUSD to withdraw. |
 |  asset | string |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[StabilityDepositChangeDetails](./lib-base.stabilitydepositchangedetails.md)<!-- -->&gt;
 
@@ -29,5 +29,5 @@ Throws [TransactionFailedError](./lib-base.transactionfailederror.md) in case of
 
 ## Remarks
 
-As a side-effect, the transaction will also pay out the Stability Deposit's [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and [KUMO reward](./lib-base.stabilitydeposit.kumoreward.md)<!-- -->.
+As a side-effect, the transaction will also pay out the Stability Deposit's [collateral gain](./lib-base.stabilitydeposit.collateralgain.md) and .
 

@@ -4,7 +4,7 @@
 
 ## CORE\_TEAM\_ACCOUNTS variable
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 CORE_TEAM_ACCOUNTS: string[]

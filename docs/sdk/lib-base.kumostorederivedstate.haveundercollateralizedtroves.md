@@ -6,7 +6,7 @@
 
 Whether there are any Troves with collateral ratio below the [minimum](./lib-base.minimum_collateral_ratio.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 haveUndercollateralizedTroves: boolean;

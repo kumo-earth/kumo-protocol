@@ -6,12 +6,12 @@
 
 A Trove that is associated with a single owner.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class UserTrove extends Trove 
 ```
-<b>Extends:</b> [Trove](./lib-base.trove.md)
+**Extends:** [Trove](./lib-base.trove.md)
 
 ## Remarks
 
@@ -25,8 +25,8 @@ The constructor for this class is marked as internal. Third-party code should no
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [ownerAddress](./lib-base.usertrove.owneraddress.md) |  | string | Address that owns this Trove. |
-|  [status](./lib-base.usertrove.status.md) |  | [UserTroveStatus](./lib-base.usertrovestatus.md) | Provides more information when the UserTrove is empty. |
+|  [ownerAddress](./lib-base.usertrove.owneraddress.md) | <code>readonly</code> | string | Address that owns this Trove. |
+|  [status](./lib-base.usertrove.status.md) | <code>readonly</code> | [UserTroveStatus](./lib-base.usertrovestatus.md) | Provides more information when the UserTrove is empty. |
 
 ## Methods
 

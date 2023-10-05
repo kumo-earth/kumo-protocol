@@ -6,7 +6,7 @@
 
 Details of an [adjustTrove()](./lib-base.transactablekumo.adjusttrove.md) transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface TroveAdjustmentDetails 

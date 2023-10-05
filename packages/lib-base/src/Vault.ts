@@ -1,6 +1,5 @@
 import { Decimal } from "./Decimal";
 import { Fees } from "./Fees";
-import { KUMOStake } from "./KUMOStake";
 import { StabilityDeposit } from "./StabilityDeposit";
 import { Trove, TroveWithPendingRedistribution, UserTrove } from "./Trove";
 
@@ -23,7 +22,6 @@ export class Vault {
   readonly collateralSurplusBalance: Decimal;
   readonly troveBeforeRedistribution: TroveWithPendingRedistribution;
   readonly stabilityDeposit: StabilityDeposit;
-  readonly kumoStake: KUMOStake;
   readonly kusdMintedCap: Decimal;
   readonly minNetDebt: Decimal;
   readonly _feesInNormalMode: Fees;
@@ -51,9 +49,7 @@ export class Vault {
       Decimal.ZERO,
       Decimal.ZERO,
       Decimal.ZERO,
-      Decimal.ZERO,
     );
-    this.kumoStake = new KUMOStake();
     this.kusdMintedCap = Decimal.ZERO;
     this.minNetDebt = Decimal.ZERO;
     this._feesInNormalMode = new Fees(0, 0, 0, new Date(), new Date(), false);

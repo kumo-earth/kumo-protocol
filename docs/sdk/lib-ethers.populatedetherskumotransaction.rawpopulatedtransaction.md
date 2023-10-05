@@ -6,7 +6,7 @@
 
 Unsigned transaction object populated by Ethers.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly rawPopulatedTransaction: EthersPopulatedTransaction;

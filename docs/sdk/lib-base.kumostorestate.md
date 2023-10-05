@@ -6,12 +6,12 @@
 
 Type of [KumoStore](./lib-base.kumostore.md)<!-- -->'s [state](./lib-base.kumostore.state.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type KumoStoreState<T = unknown> = KumoStoreBaseState & T;
+export type KumoStoreState<T = unknown> = KumoStoreBaseState & T;
 ```
-<b>References:</b> [KumoStoreBaseState](./lib-base.kumostorebasestate.md)
+**References:** [KumoStoreBaseState](./lib-base.kumostorebasestate.md)
 
 ## Remarks
 

@@ -6,7 +6,7 @@
 
 A Trove must always have at least this much debt.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 KUSD_MINIMUM_DEBT: Decimal

@@ -6,7 +6,7 @@
 
 Check whether this `EthersKumo` is an [EthersKumoWithStore](./lib-ethers.etherskumowithstore.md)<!-- -->&lt;[BlockPolledKumoStore](./lib-ethers.blockpolledkumostore.md)<!-- -->&gt;<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 hasStore(store: "blockPolled"): this is EthersKumoWithStore<BlockPolledKumoStore>;
@@ -18,7 +18,7 @@ hasStore(store: "blockPolled"): this is EthersKumoWithStore<BlockPolledKumoStore
 |  --- | --- | --- |
 |  store | "blockPolled" |  |
 
-<b>Returns:</b>
+**Returns:**
 
 this is [EthersKumoWithStore](./lib-ethers.etherskumowithstore.md)<!-- -->&lt;[BlockPolledKumoStore](./lib-ethers.blockpolledkumostore.md)<!-- -->&gt;
 

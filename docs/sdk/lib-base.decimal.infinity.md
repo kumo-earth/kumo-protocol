@@ -4,7 +4,7 @@
 
 ## Decimal.INFINITY property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static readonly INFINITY: Decimal;

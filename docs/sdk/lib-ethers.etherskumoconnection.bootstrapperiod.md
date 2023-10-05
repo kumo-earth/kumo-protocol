@@ -6,7 +6,7 @@
 
 Time period (in seconds) after `deploymentDate` during which redemptions are disabled.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly bootstrapPeriod: number;

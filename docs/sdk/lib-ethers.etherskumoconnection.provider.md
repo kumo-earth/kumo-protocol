@@ -6,7 +6,7 @@
 
 Ethers `Provider` used for connecting to the network.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly provider: EthersProvider;

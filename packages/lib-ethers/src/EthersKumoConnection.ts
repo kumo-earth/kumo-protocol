@@ -1,8 +1,6 @@
 import { Block, BlockTag } from "@ethersproject/abstract-provider";
 import { Signer } from "@ethersproject/abstract-signer";
 
-import { Decimal } from "@kumodao/lib-base";
-
 import devOrNull from "../deployments/dev.json";
 import mainnet from "../deployments/mainnet.json";
 import mumbai from "../deployments/mumbai.json";
@@ -67,12 +65,6 @@ export interface EthersKumoConnection extends EthersKumoConnectionOptionalParams
   /** Time period (in seconds) after `deploymentDate` during which redemptions are disabled. */
   readonly bootstrapPeriod: number;
 
-  /** Total amount of KUMO allocated for rewarding stability depositors. */
-  readonly totalStabilityPoolKUMOReward: Decimal;
-
-  /** Amount of KUMO collectively rewarded to stakers of the liquidity mining pool per second. */
-  readonly liquidityMiningKUMORewardRate: Decimal;
-
   /** A mapping of Kumo contracts' names to their addresses. */
   readonly addresses: Record<string, string>;
 
@@ -100,8 +92,6 @@ const connectionFrom = (
   _multicall: _Multicall | undefined,
   {
     deploymentDate,
-    totalStabilityPoolKUMOReward,
-    liquidityMiningKUMORewardRate,
     ...deployment
   }: _KumoDeploymentJSON,
   optionalParams?: EthersKumoConnectionOptionalParams
@@ -120,8 +110,6 @@ const connectionFrom = (
     _contracts,
     _multicall,
     deploymentDate: new Date(deploymentDate),
-    totalStabilityPoolKUMOReward: Decimal.from(totalStabilityPoolKUMOReward),
-    liquidityMiningKUMORewardRate: Decimal.from(liquidityMiningKUMORewardRate),
     ...deployment,
     ...optionalParams
   });

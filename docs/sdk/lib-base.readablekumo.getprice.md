@@ -6,7 +6,7 @@
 
 Get the current price of the native currency (e.g. Ether) in USD.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getPrice(asset: string): Promise<Decimal>;
@@ -18,7 +18,7 @@ getPrice(asset: string): Promise<Decimal>;
 |  --- | --- | --- |
 |  asset | string |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt;
 

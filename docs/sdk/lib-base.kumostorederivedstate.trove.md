@@ -6,7 +6,7 @@
 
 Current state of user's Trove
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 trove: UserTrove;

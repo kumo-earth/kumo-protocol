@@ -17,12 +17,8 @@ import borrowerOperationsAbi from "../abi/BorrowerOperations.json";
 import troveManagerAbi from "../abi/TroveManager.json";
 import kusdTokenAbi from "../abi/KUSDToken.json";
 import collSurplusPoolAbi from "../abi/CollSurplusPool.json";
-import communityIssuanceAbi from "../abi/CommunityIssuance.json";
 import defaultPoolAbi from "../abi/DefaultPool.json";
-import kumoTokenAbi from "../abi/KUMOToken.json";
 import hintHelpersAbi from "../abi/HintHelpers.json";
-import lockupContractFactoryAbi from "../abi/LockupContractFactory.json";
-import kumoStakingAbi from "../abi/KUMOStaking.json";
 import kumoParametersAbi from "../abi/KumoParameters.json";
 import multiTroveGetterAbi from "../abi/MultiTroveGetter.json";
 import priceFeedAbi from "../abi/PriceFeed.json";
@@ -31,9 +27,6 @@ import sortedTrovesAbi from "../abi/SortedTroves.json";
 import stabilityPoolAbi from "../abi/StabilityPool.json";
 import stabilityPoolFactoryAbi from "../abi/StabilityPoolFactory.json";
 import gasPoolAbi from "../abi/GasPool.json";
-import unipoolAbi from "../abi/Unipool.json";
-import iERC20Abi from "../abi/IERC20.json";
-import erc20MockAbi from "../abi/ERC20Mock.json";
 import erc20TestAbi from "../abi/ERC20Test.json";
 import kumoFaucetAbi from "../abi/KumoFaucet.json";
 
@@ -43,12 +36,8 @@ import {
   TroveManager,
   KUSDToken,
   CollSurplusPool,
-  CommunityIssuance,
   DefaultPool,
-  KUMOToken,
   HintHelpers,
-  LockupContractFactory,
-  KUMOStaking,
   MultiTroveGetter,
   PriceFeed,
   PriceFeedTestnet,
@@ -56,9 +45,6 @@ import {
   StabilityPool,
   StabilityPoolFactory,
   GasPool,
-  Unipool,
-  ERC20Mock,
-  IERC20,
   KumoParameters,
   ERC20Test, 
   KumoFaucet
@@ -182,12 +168,8 @@ export interface _KumoContracts extends ArbitraryProps {
   troveManager: TroveManager;
   kusdToken: KUSDToken;
   collSurplusPool: CollSurplusPool;
-  communityIssuance: CommunityIssuance;
   defaultPool: DefaultPool;
-  kumoToken: KUMOToken;
   hintHelpers: HintHelpers;
-  lockupContractFactory: LockupContractFactory;
-  kumoStaking: KUMOStaking;
   kumoParameters: KumoParameters;
   multiTroveGetter: MultiTroveGetter;
   priceFeed: PriceFeed | PriceFeedTestnet;
@@ -196,8 +178,6 @@ export interface _KumoContracts extends ArbitraryProps {
   stabilityPoolAsset2: StabilityPool;
   stabilityPoolFactory: StabilityPoolFactory;
   gasPool: GasPool;
-  unipool: Unipool;
-  uniToken: IERC20 | ERC20Mock;
   mockAsset1: ERC20Test;
   mockAsset2: ERC20Test;
   kumoFaucet: KumoFaucet;
@@ -208,10 +188,6 @@ export const _priceFeedIsTestnet = (
   priceFeed: PriceFeed | PriceFeedTestnet
 ): priceFeed is PriceFeedTestnet => "setPrice" in priceFeed;
 
-/** @internal */
-export const _uniTokenIsMock = (uniToken: IERC20 | ERC20Mock): uniToken is ERC20Mock =>
-  "mint" in uniToken;
-
 type KumoContractsKey = keyof _KumoContracts;
 
 /** @internal */
@@ -219,17 +195,13 @@ export type _KumoContractAddresses = Record<KumoContractsKey, string>;
 
 type KumoContractAbis = Record<KumoContractsKey, JsonFragment[]>;
 
-const getAbi = (priceFeedIsTestnet: boolean, uniTokenIsMock: boolean): KumoContractAbis => ({
+const getAbi = (priceFeedIsTestnet: boolean): KumoContractAbis => ({
   activePool: activePoolAbi,
   borrowerOperations: borrowerOperationsAbi,
   troveManager: troveManagerAbi,
   kusdToken: kusdTokenAbi,
-  communityIssuance: communityIssuanceAbi,
   defaultPool: defaultPoolAbi,
-  kumoToken: kumoTokenAbi,
   hintHelpers: hintHelpersAbi,
-  lockupContractFactory: lockupContractFactoryAbi,
-  kumoStaking: kumoStakingAbi,
   kumoParameters: kumoParametersAbi,
   multiTroveGetter: multiTroveGetterAbi,
   priceFeed: priceFeedIsTestnet ? priceFeedTestnetAbi : priceFeedAbi,
@@ -239,8 +211,6 @@ const getAbi = (priceFeedIsTestnet: boolean, uniTokenIsMock: boolean): KumoContr
   stabilityPoolFactory: stabilityPoolFactoryAbi,
   gasPool: gasPoolAbi,
   collSurplusPool: collSurplusPoolAbi,
-  unipool: unipoolAbi,
-  uniToken: uniTokenIsMock ? erc20MockAbi : iERC20Abi,
   mockAsset1: erc20TestAbi,
   mockAsset2: erc20TestAbi,
   kumoFaucet: kumoFaucetAbi,
@@ -262,19 +232,16 @@ export interface _KumoDeploymentJSON {
   readonly deploymentDate: number;
   readonly startBlock: number;
   readonly bootstrapPeriod: number;
-  readonly totalStabilityPoolKUMOReward: string;
-  readonly liquidityMiningKUMORewardRate: string;
   readonly _priceFeedIsTestnet: boolean;
-  readonly _uniTokenIsMock: boolean;
   readonly _isDev: boolean;
 }
 
 /** @internal */
 export const _connectToContracts = (
   signerOrProvider: EthersSigner | EthersProvider,
-  { addresses, _priceFeedIsTestnet, _uniTokenIsMock }: _KumoDeploymentJSON
+  { addresses, _priceFeedIsTestnet }: _KumoDeploymentJSON
 ): _KumoContracts => {
-  const abi = getAbi(_priceFeedIsTestnet, _uniTokenIsMock);
+  const abi = getAbi(_priceFeedIsTestnet);
 
   return mapKumoContracts(
     addresses,

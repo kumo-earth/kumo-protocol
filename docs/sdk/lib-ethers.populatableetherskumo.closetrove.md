@@ -6,7 +6,7 @@
 
 Close existing Trove by repaying all debt and withdrawing all collateral.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 closeTrove(asset: string, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveClosureDetails>>;
@@ -17,9 +17,9 @@ closeTrove(asset: string, overrides?: EthersTransactionOverrides): Promise<Popul
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  asset | string |  |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[PopulatedEthersKumoTransaction](./lib-ethers.populatedetherskumotransaction.md)<!-- -->&lt;[TroveClosureDetails](./lib-base.troveclosuredetails.md)<!-- -->&gt;&gt;
 

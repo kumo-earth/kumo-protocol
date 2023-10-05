@@ -6,7 +6,7 @@
 
 Calculate the parameters of an [adjustTrove()](./lib-base.transactablekumo.adjusttrove.md) transaction that will change this Trove into the given Trove.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 adjustTo(that: Trove, borrowingRate?: Decimalish): TroveAdjustmentParams<Decimal>;
@@ -17,9 +17,9 @@ adjustTo(that: Trove, borrowingRate?: Decimalish): TroveAdjustmentParams<Decimal
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  that | [Trove](./lib-base.trove.md) | The desired result of the transaction. |
-|  borrowingRate | [Decimalish](./lib-base.decimalish.md) | Current borrowing rate. |
+|  borrowingRate | [Decimalish](./lib-base.decimalish.md) | _(Optional)_ Current borrowing rate. |
 
-<b>Returns:</b>
+**Returns:**
 
 [TroveAdjustmentParams](./lib-base.troveadjustmentparams.md)<!-- -->&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt;
 

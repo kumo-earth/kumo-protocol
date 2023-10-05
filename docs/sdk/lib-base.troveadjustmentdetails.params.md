@@ -6,7 +6,7 @@
 
 Parameters of the adjustment.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 params: TroveAdjustmentParams<Decimal>;

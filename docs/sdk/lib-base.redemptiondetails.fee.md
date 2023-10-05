@@ -6,7 +6,7 @@
 
 Amount of native currency (e.g. Ether) deducted as fee from collateral taken.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 fee: Decimal;

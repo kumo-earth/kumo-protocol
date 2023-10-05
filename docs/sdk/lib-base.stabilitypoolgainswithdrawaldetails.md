@@ -6,7 +6,7 @@
 
 Details of a [withdrawGainsFromStabilityPool()](./lib-base.transactablekumo.withdrawgainsfromstabilitypool.md) transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface StabilityPoolGainsWithdrawalDetails 
@@ -17,7 +17,6 @@ export interface StabilityPoolGainsWithdrawalDetails
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
 |  [collateralGain](./lib-base.stabilitypoolgainswithdrawaldetails.collateralgain.md) |  | [Decimal](./lib-base.decimal.md) | Amount of native currency (e.g. Ether) paid out to the depositor in this transaction. |
-|  [kumoReward](./lib-base.stabilitypoolgainswithdrawaldetails.kumoreward.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUMO rewarded to the depositor in this transaction. |
 |  [kusdLoss](./lib-base.stabilitypoolgainswithdrawaldetails.kusdloss.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUSD burned from the deposit by liquidations since the last modification. |
 |  [newKUSDDeposit](./lib-base.stabilitypoolgainswithdrawaldetails.newkusddeposit.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUSD in the deposit directly after this transaction. |
 

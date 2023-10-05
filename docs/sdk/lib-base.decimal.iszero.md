@@ -4,7 +4,7 @@
 
 ## Decimal.isZero property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 get isZero(): boolean;

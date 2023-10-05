@@ -6,12 +6,12 @@
 
 Start monitoring the blockchain for Kumo state changes.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 start(): () => void;
 ```
-<b>Returns:</b>
+**Returns:**
 
 () =&gt; void
 

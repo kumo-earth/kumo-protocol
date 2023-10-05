@@ -6,7 +6,7 @@
 
 Timestamp of latest block (number of seconds since epoch).
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 blockTimestamp: number;

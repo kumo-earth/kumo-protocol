@@ -4,7 +4,7 @@
 
 ## Vault.stabilityDeposit property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly stabilityDeposit: StabilityDeposit;

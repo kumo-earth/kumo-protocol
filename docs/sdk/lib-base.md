@@ -10,14 +10,18 @@
 |  --- | --- |
 |  [Decimal](./lib-base.decimal.md) | Fixed-point decimal bignumber with 18 digits of precision. |
 |  [Fees](./lib-base.fees.md) | Calculator for fees. |
-|  [KUMOStake](./lib-base.kumostake.md) | Represents a user's KUMO stake and accrued gains. |
-|  [KumoStore](./lib-base.kumostore.md) | Abstract base class of Kumo data store implementations. |
 |  [StabilityDeposit](./lib-base.stabilitydeposit.md) | A Stability Deposit and its accrued gains. |
 |  [TransactionFailedError](./lib-base.transactionfailederror.md) | Thrown by [TransactableKumo](./lib-base.transactablekumo.md) functions in case of transaction failure. |
 |  [Trove](./lib-base.trove.md) | A combination of collateral and debt. |
 |  [TroveWithPendingRedistribution](./lib-base.trovewithpendingredistribution.md) | A Trove in its state after the last direct modification. |
 |  [UserTrove](./lib-base.usertrove.md) | A Trove that is associated with a single owner. |
 |  [Vault](./lib-base.vault.md) | A Vault that is associated with each asset. |
+
+## Abstract Classes
+
+|  Abstract Class | Description |
+|  --- | --- |
+|  [KumoStore](./lib-base.kumostore.md) | Abstract base class of Kumo data store implementations. |
 
 ## Interfaces
 
@@ -65,7 +69,6 @@
 |  [Decimalish](./lib-base.decimalish.md) | Types that can be converted into a Decimal. |
 |  [FailedReceipt](./lib-base.failedreceipt.md) | Indicates that the transaction has been mined, but it failed. |
 |  [KumoReceipt](./lib-base.kumoreceipt.md) | One of either a [PendingReceipt](./lib-base.pendingreceipt.md)<!-- -->, a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](./lib-base.successfulreceipt.md)<!-- -->. |
-|  [KUMOStakeChange](./lib-base.kumostakechange.md) | Represents the change between two states of an KUMO Stake. |
 |  [KumoStoreState](./lib-base.kumostorestate.md) | Type of [KumoStore](./lib-base.kumostore.md)<!-- -->'s [state](./lib-base.kumostore.state.md)<!-- -->. |
 |  [MinedReceipt](./lib-base.minedreceipt.md) | Either a [FailedReceipt](./lib-base.failedreceipt.md) or a [SuccessfulReceipt](./lib-base.successfulreceipt.md)<!-- -->. |
 |  [PendingReceipt](./lib-base.pendingreceipt.md) | Indicates that the transaction hasn't been mined yet. |

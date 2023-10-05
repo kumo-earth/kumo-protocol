@@ -6,7 +6,7 @@
 
 Create a [KumoStore](./lib-base.kumostore.md) and expose it as the `store` property.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly useStore?: EthersKumoStoreOption;

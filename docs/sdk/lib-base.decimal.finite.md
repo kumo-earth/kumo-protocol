@@ -4,7 +4,7 @@
 
 ## Decimal.finite property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 get finite(): this | undefined;

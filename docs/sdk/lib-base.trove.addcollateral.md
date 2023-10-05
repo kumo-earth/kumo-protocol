@@ -4,7 +4,7 @@
 
 ## Trove.addCollateral() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 addCollateral(collateral: Decimalish): Trove;
@@ -16,7 +16,7 @@ addCollateral(collateral: Decimalish): Trove;
 |  --- | --- | --- |
 |  collateral | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Trove](./lib-base.trove.md)
 

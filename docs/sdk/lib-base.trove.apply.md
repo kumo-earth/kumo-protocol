@@ -6,7 +6,7 @@
 
 Make a new Trove by applying a [TroveChange](./lib-base.trovechange.md) to this Trove.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 apply(change: TroveChange<Decimal> | undefined, borrowingRate?: Decimalish): Trove;
@@ -17,9 +17,9 @@ apply(change: TroveChange<Decimal> | undefined, borrowingRate?: Decimalish): Tro
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  change | [TroveChange](./lib-base.trovechange.md)<!-- -->&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt; \| undefined | The change to apply. |
-|  borrowingRate | [Decimalish](./lib-base.decimalish.md) | Borrowing rate to use when adding a borrowed amount to the Trove's debt. |
+|  borrowingRate | [Decimalish](./lib-base.decimalish.md) | _(Optional)_ Borrowing rate to use when adding a borrowed amount to the Trove's debt. |
 
-<b>Returns:</b>
+**Returns:**
 
 [Trove](./lib-base.trove.md)
 

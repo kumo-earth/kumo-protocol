@@ -6,12 +6,12 @@
 
 Check whether the transaction has been mined, and whether it was successful.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getReceipt(): Promise<KumoReceipt<EthersTransactionReceipt, T>>;
 ```
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[KumoReceipt](./lib-base.kumoreceipt.md)<!-- -->&lt;[EthersTransactionReceipt](./lib-ethers.etherstransactionreceipt.md)<!-- -->, T&gt;&gt;
 

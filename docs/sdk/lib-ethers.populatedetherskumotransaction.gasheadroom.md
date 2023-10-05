@@ -6,7 +6,7 @@
 
 Extra gas added to the transaction's `gasLimit` on top of the estimated minimum requirement.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly gasHeadroom?: number;

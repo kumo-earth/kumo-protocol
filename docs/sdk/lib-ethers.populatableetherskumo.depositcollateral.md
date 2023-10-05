@@ -6,7 +6,7 @@
 
 Adjust existing Trove by depositing more collateral.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 depositCollateral(asset: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersKumoTransaction<TroveAdjustmentDetails>>;
@@ -18,9 +18,9 @@ depositCollateral(asset: string, amount: Decimalish, overrides?: EthersTransacti
 |  --- | --- | --- |
 |  asset | string |  |
 |  amount | [Decimalish](./lib-base.decimalish.md) | The amount of collateral to add to the Trove's existing collateral. |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[PopulatedEthersKumoTransaction](./lib-ethers.populatedetherskumotransaction.md)<!-- -->&lt;[TroveAdjustmentDetails](./lib-base.troveadjustmentdetails.md)<!-- -->&gt;&gt;
 

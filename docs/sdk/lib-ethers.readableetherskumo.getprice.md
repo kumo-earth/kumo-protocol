@@ -6,7 +6,7 @@
 
 Get the current price of the native currency (e.g. Ether) in USD.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getPrice(asset: string, overrides?: EthersCallOverrides): Promise<Decimal>;
@@ -17,9 +17,9 @@ getPrice(asset: string, overrides?: EthersCallOverrides): Promise<Decimal>;
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  asset | string |  |
-|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) |  |
+|  overrides | [EthersCallOverrides](./lib-ethers.etherscalloverrides.md) | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt;
 

@@ -6,7 +6,7 @@
 
 Get the amount of leftover collateral available for withdrawal by an address.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getCollateralSurplusBalance(asset: string, address: string): Promise<Decimal>;
@@ -19,7 +19,7 @@ getCollateralSurplusBalance(asset: string, address: string): Promise<Decimal>;
 |  asset | string |  |
 |  address | string |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt;
 

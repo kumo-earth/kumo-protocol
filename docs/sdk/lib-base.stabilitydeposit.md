@@ -6,7 +6,7 @@
 
 A Stability Deposit and its accrued gains.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class StabilityDeposit 
@@ -20,11 +20,10 @@ The constructor for this class is marked as internal. Third-party code should no
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [collateralGain](./lib-base.stabilitydeposit.collateralgain.md) |  | [Decimal](./lib-base.decimal.md) | Amount of native currency (e.g. Ether) received in exchange for the used-up KUSD. |
-|  [currentKUSD](./lib-base.stabilitydeposit.currentkusd.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUSD left in the Stability Deposit. |
-|  [initialKUSD](./lib-base.stabilitydeposit.initialkusd.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUSD in the Stability Deposit at the time of the last direct modification. |
-|  [isEmpty](./lib-base.stabilitydeposit.isempty.md) |  | boolean |  |
-|  [kumoReward](./lib-base.stabilitydeposit.kumoreward.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUMO rewarded since the last modification of the Stability Deposit. |
+|  [collateralGain](./lib-base.stabilitydeposit.collateralgain.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) | Amount of native currency (e.g. Ether) received in exchange for the used-up KUSD. |
+|  [currentKUSD](./lib-base.stabilitydeposit.currentkusd.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) | Amount of KUSD left in the Stability Deposit. |
+|  [initialKUSD](./lib-base.stabilitydeposit.initialkusd.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) | Amount of KUSD in the Stability Deposit at the time of the last direct modification. |
+|  [isEmpty](./lib-base.stabilitydeposit.isempty.md) | <code>readonly</code> | boolean |  |
 
 ## Methods
 

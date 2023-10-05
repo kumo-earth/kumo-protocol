@@ -4,7 +4,7 @@
 
 ## Decimal.mulDiv() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 mulDiv(multiplier: Decimalish, divider: Decimalish): Decimal;
@@ -17,7 +17,7 @@ mulDiv(multiplier: Decimalish, divider: Decimalish): Decimal;
 |  multiplier | [Decimalish](./lib-base.decimalish.md) |  |
 |  divider | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Decimal](./lib-base.decimal.md)
 

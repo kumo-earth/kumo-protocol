@@ -6,7 +6,7 @@
 
 Number of block that the store state was fetched from.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 blockTag?: number;

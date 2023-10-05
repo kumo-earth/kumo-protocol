@@ -6,7 +6,7 @@
 
 Address that owns this Trove.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly ownerAddress: string;

@@ -4,12 +4,12 @@
 
 ## Decimal.shorten() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 shorten(): string;
 ```
-<b>Returns:</b>
+**Returns:**
 
 string
 

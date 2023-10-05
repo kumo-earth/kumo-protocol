@@ -6,7 +6,7 @@
 
 How the Troves should be sorted.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly sortedBy: "ascendingCollateralRatio" | "descendingCollateralRatio";

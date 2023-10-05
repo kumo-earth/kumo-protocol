@@ -6,7 +6,7 @@
 
 Turn console logging on/off.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 logging: boolean;

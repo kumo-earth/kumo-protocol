@@ -4,7 +4,7 @@
 
 ## Decimal.sub() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 sub(subtrahend: Decimalish): Decimal;
@@ -16,7 +16,7 @@ sub(subtrahend: Decimalish): Decimal;
 |  --- | --- | --- |
 |  subtrahend | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Decimal](./lib-base.decimal.md)
 

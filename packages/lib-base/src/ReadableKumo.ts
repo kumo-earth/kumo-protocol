@@ -3,7 +3,6 @@ import { Decimal } from "./Decimal";
 import { Trove, TroveWithPendingRedistribution, UserTrove } from "./Trove";
 import { StabilityDeposit } from "./StabilityDeposit";
 import { Fees } from "./Fees";
-import { KUMOStake } from "./KUMOStake";
 
 /**
  * Parameters of the {@link ReadableKumo.(getTroves:2) | getTroves()} function.
@@ -93,11 +92,6 @@ export interface ReadableKumo {
   getStabilityDeposit(asset: string, address: string): Promise<StabilityDeposit>;
 
   /**
-   * Get the remaining KUMO that will be collectively rewarded to stability depositors.
-   */
-  getRemainingStabilityPoolKUMOReward(): Promise<Decimal>;
-
-  /**
    * Get the total amount of KUSD currently deposited in the Stability Pool.
    */
   getKUSDInStabilityPool(asset: string): Promise<Decimal>;
@@ -115,51 +109,6 @@ export interface ReadableKumo {
    * @param address - Address whose balance should be retrieved.
    */
   getAssetBalance(address: string, assetType: string, provider: Provider): Promise<Decimal>;
-
-  /**
-   * Get the amount of KUMO held by an address.
-   *
-   * @param address - Address whose balance should be retrieved.
-   */
-  getKUMOBalance(address: string): Promise<Decimal>;
-
-  /**
-   * Get the amount of Uniswap ETH/KUSD LP tokens held by an address.
-   *
-   * @param address - Address whose balance should be retrieved.
-   */
-  getUniTokenBalance(address: string): Promise<Decimal>;
-
-  /**
-   * Get the liquidity mining contract's allowance of a holder's Uniswap ETH/KUSD LP tokens.
-   *
-   * @param address - Address holding the Uniswap ETH/KUSD LP tokens.
-   */
-  getUniTokenAllowance(address: string): Promise<Decimal>;
-
-  /**
-   * Get the remaining KUMO that will be collectively rewarded to liquidity miners.
-   */
-  getRemainingLiquidityMiningKUMOReward(): Promise<Decimal>;
-
-  /**
-   * Get the amount of Uniswap ETH/KUSD LP tokens currently staked by an address in liquidity mining.
-   *
-   * @param address - Address whose LP stake should be retrieved.
-   */
-  getLiquidityMiningStake(address: string): Promise<Decimal>;
-
-  /**
-   * Get the total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining.
-   */
-  getTotalStakedUniTokens(): Promise<Decimal>;
-
-  /**
-   * Get the amount of KUMO earned by an address through mining liquidity.
-   *
-   * @param address - Address whose KUMO reward should be retrieved.
-   */
-  getLiquidityMiningKUMOReward(address: string): Promise<Decimal>;
 
   /**
    * Get the amount of leftover collateral available for withdrawal by an address.
@@ -190,18 +139,6 @@ export interface ReadableKumo {
    * Get a calculator for current fees.
    */
   getFees(asset: string): Promise<Fees>;
-
-  /**
-   * Get the current state of an KUMO Stake.
-   *
-   * @param address - Address that owns the KUMO Stake.
-   */
-  getKUMOStake(asset: string, address: string): Promise<KUMOStake>;
-
-  /**
-   * Get the total amount of KUMO currently staked.
-   */
-  getTotalStakedKUMO(): Promise<Decimal>;
 
   /**
    * Check whether an Test Tokens already transfered or not.

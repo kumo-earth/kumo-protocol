@@ -146,18 +146,8 @@ const deployContracts = async (
     collSurplusPool: await deployContract(deployer, getContractFactory, "CollSurplusPool", {
       ...overrides
     }),
-    communityIssuance: await deployContract(deployer, getContractFactory, "CommunityIssuance", {
-      ...overrides
-    }),
     defaultPool: await deployContract(deployer, getContractFactory, "DefaultPool", { ...overrides }),
     hintHelpers: await deployContract(deployer, getContractFactory, "HintHelpers", { ...overrides }),
-    lockupContractFactory: await deployContract(
-      deployer,
-      getContractFactory,
-      "LockupContractFactory",
-      { ...overrides }
-    ),
-    kumoStaking: await deployContract(deployer, getContractFactory, "KUMOStaking", { ...overrides }),
     kumoParameters: await deployContract(deployer, getContractFactory, "KumoParameters", {
       ...overrides
     }),
@@ -183,7 +173,6 @@ const deployContracts = async (
     gasPool: await deployContract(deployer, getContractFactory, "GasPool", {
       ...overrides
     }),
-    unipool: await deployContract(deployer, getContractFactory, "Unipool", { ...overrides }),
 
 
     mockAsset1: await deployContract(deployer, getContractFactory, "ERC20Test", "Nature-based Carbon", "NBC",  { ...overrides }),
@@ -211,20 +200,6 @@ const deployContracts = async (
         addresses.borrowerOperations,
         { ...overrides }
       ),
-
-      kumoToken: await deployContract(
-        deployer,
-        getContractFactory,
-        "KUMOToken",
-        addresses.communityIssuance,
-        addresses.kumoStaking,
-        addresses.lockupContractFactory,
-        Wallet.createRandom().address, // _bountyAddress (TODO: parameterize this)
-        addresses.unipool, // _lpRewardsAddress
-        Wallet.createRandom().address, // _multisigAddress (TODO: parameterize this)
-        { ...overrides }
-      ),
-
       multiTroveGetter: await deployContract(
         deployer,
         getContractFactory,
@@ -254,18 +229,12 @@ const connectContracts = async (
     troveManager,
     kusdToken,
     collSurplusPool,
-    communityIssuance,
     defaultPool,
-    kumoToken,
     hintHelpers,
-    lockupContractFactory,
-    kumoStaking,
     priceFeed,
     sortedTroves,
     stabilityPoolFactory,
     gasPool,
-    unipool,
-    uniToken,
     kumoParameters
   }: _KumoContracts,
   deployer: Signer,
@@ -291,9 +260,7 @@ const connectContracts = async (
       collSurplusPool.address,
       kusdToken.address,
       stabilityPoolFactory.address,
-      sortedTroves.address,
-      kumoToken.address,
-      kumoStaking.address, {
+      sortedTroves.address, {
         ...overrides,
         nonce
       }),
@@ -315,22 +282,9 @@ const connectContracts = async (
         // priceFeed.address,
         sortedTroves.address,
         kusdToken.address,
-        kumoStaking.address,
         kumoParameters.address,
         { ...overrides, nonce }
       ),
-
-    // nonce =>
-    //   stabilityPool.setAddresses(
-    //     borrowerOperations.address,
-    //     troveManager.address,
-    //     activePool.address,
-    //     kusdToken.address,
-    //     sortedTroves.address,
-    //     priceFeed.address,
-    //     communityIssuance.address,
-    //     { ...overrides, nonce }
-    //   ),
 
     nonce =>
       activePool.setAddresses(
@@ -339,7 +293,6 @@ const connectContracts = async (
         stabilityPoolFactory.address,
         defaultPool.address,
         collSurplusPool.address,
-        kumoStaking.address,
         { ...overrides, nonce }
       ),
 
@@ -361,34 +314,6 @@ const connectContracts = async (
       hintHelpers.setAddresses(sortedTroves.address, troveManager.address, kumoParameters.address, {
         ...overrides,
         nonce
-      }),
-
-    nonce =>
-      kumoStaking.setAddresses(
-        kumoToken.address,
-        kusdToken.address,
-        troveManager.address,
-        borrowerOperations.address,
-        activePool.address,
-        { ...overrides, nonce }
-      ),
-
-    nonce =>
-      lockupContractFactory.setKUMOTokenAddress(kumoToken.address, {
-        ...overrides,
-        nonce
-      }),
-
-    nonce =>
-      communityIssuance.setAddresses(kumoToken.address, stabilityPoolFactory.address, {
-        ...overrides,
-        nonce
-      }),
-
-    nonce =>
-      unipool.setParams(kumoToken.address, uniToken.address, 2 * 30 * 24 * 60 * 60, {
-        ...overrides,
-        nonce
       })
   ];
 
@@ -408,24 +333,6 @@ const connectContracts = async (
   await Promise.all(results.map(tx => tx.wait().then(() => log(`Connected ${++i}`))));
 };
 
-const deployMockUniToken = (
-  deployer: Signer,
-  getContractFactory: (name: string, signer: Signer) => Promise<ContractFactory>,
-  overrides?: Overrides
-) =>
-  deployContract(
-    deployer,
-    getContractFactory,
-    "ERC20Mock",
-    "Mock Uniswap V2",
-    "UNI-V2",
-    Wallet.createRandom().address, // initialAccount
-    0, // initialBalance
-    { ...overrides }
-  );
-
-
-
 const addMockAssetsToSystem = async (
   {
     troveManager,
@@ -433,7 +340,6 @@ const addMockAssetsToSystem = async (
     stabilityPoolFactory,
     kumoParameters,
     borrowerOperations,
-    communityIssuance,
     kusdToken,
     stabilityPoolAsset1,
     stabilityPoolAsset2,
@@ -455,8 +361,8 @@ const addMockAssetsToSystem = async (
     troveManager.address,
     kusdToken.address,
     sortedTroves.address,
-    communityIssuance.address,
-    kumoParameters.address
+    kumoParameters.address,
+    mockAsset1.address
   ),
 
     await stabilityPoolFactory.createNewStabilityPool(mockAsset1.address, stabilityPoolAsset1.address)
@@ -472,8 +378,8 @@ const addMockAssetsToSystem = async (
     troveManager.address,
     kusdToken.address,
     sortedTroves.address,
-    communityIssuance.address,
-    kumoParameters.address
+    kumoParameters.address,
+    mockAsset2.address
   ),
 
     await stabilityPoolFactory.createNewStabilityPool(mockAsset2.address, stabilityPoolAsset2.address)
@@ -530,10 +436,7 @@ export const deployAndSetupContracts = async (
     version: "unknown",
     deploymentDate: new Date().getTime(),
     bootstrapPeriod: 0,
-    totalStabilityPoolKUMOReward: "0",
-    liquidityMiningKUMORewardRate: "0",
     _priceFeedIsTestnet,
-    _uniTokenIsMock: !wethAddress,
     _isDev,
 
     ...(await deployContracts(deployer, ethers, _priceFeedIsTestnet, overrides).then(
@@ -541,13 +444,7 @@ export const deployAndSetupContracts = async (
         startBlock,
 
         addresses: {
-          ...addresses,
-
-          uniToken: await (wethAddress
-            ? createUniswapV2Pair(deployer, wethAddress, addresses.kusdToken, overrides)
-            : deployMockUniToken(deployer, ethers.getContractFactory, overrides))
-
-
+          ...addresses
         }
       })
     ))
@@ -568,8 +465,6 @@ export const deployAndSetupContracts = async (
   const kumoTokenDeploymentTime = await contracts.kusdToken.getDeploymentStartTime();
   // const bootstrapPeriod = await contracts.troveManager.BOOTSTRAP_PERIOD();
   const bootstrapPeriod = await contracts.kumoParameters.REDEMPTION_BLOCK_DAY();
-  const totalStabilityPoolKUMOReward = await contracts.communityIssuance.KUMOSupplyCap();
-  const liquidityMiningKUMORewardRate = await contracts.unipool.rewardRate();
 
   // log("Fast forward 15 days...")
   // await networkHelpers.time.increase(60 * 60 * 24 * 15);
@@ -577,12 +472,6 @@ export const deployAndSetupContracts = async (
   return {
     ...deployment,
     deploymentDate: kumoTokenDeploymentTime.toNumber() * 1000,
-    bootstrapPeriod: bootstrapPeriod.toNumber(),
-    totalStabilityPoolKUMOReward: `${Decimal.fromBigNumberString(
-      totalStabilityPoolKUMOReward.toHexString()
-    )}`,
-    liquidityMiningKUMORewardRate: `${Decimal.fromBigNumberString(
-      liquidityMiningKUMORewardRate.toHexString()
-    )}`
+    bootstrapPeriod: bootstrapPeriod.toNumber()
   };
 };

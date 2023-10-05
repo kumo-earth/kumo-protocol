@@ -4,7 +4,7 @@
 
 ## Decimal.from() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static from(decimalish: Decimalish): Decimal;
@@ -16,7 +16,7 @@ static from(decimalish: Decimalish): Decimal;
 |  --- | --- | --- |
 |  decimalish | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 [Decimal](./lib-base.decimal.md)
 

@@ -6,7 +6,7 @@
 
 Amount of KUSD that's reserved for compensating the liquidator of a Trove.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 KUSD_LIQUIDATION_RESERVE: Decimal

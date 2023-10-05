@@ -6,7 +6,7 @@
 
 Redeem KUSD to native currency (e.g. Ether) at face value.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish, overrides?: EthersTransactionOverrides): Promise<PopulatedEthersRedemption>;
@@ -18,10 +18,10 @@ redeemKUSD(asset: string, amount: Decimalish, maxRedemptionRate?: Decimalish, ov
 |  --- | --- | --- |
 |  asset | string |  |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUSD to be redeemed. |
-|  maxRedemptionRate | [Decimalish](./lib-base.decimalish.md) | Maximum acceptable [redemption rate](./lib-base.fees.redemptionrate.md)<!-- -->. |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  maxRedemptionRate | [Decimalish](./lib-base.decimalish.md) | _(Optional)_ Maximum acceptable [redemption rate](./lib-base.fees.redemptionrate.md)<!-- -->. |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[PopulatedEthersRedemption](./lib-ethers.populatedethersredemption.md)<!-- -->&gt;
 

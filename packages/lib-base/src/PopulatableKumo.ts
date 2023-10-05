@@ -244,12 +244,6 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
     amount: Decimalish
   ): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
 
-  /** {@inheritDoc TransactableKumo.sendKUMO} */
-  sendKUMO(
-    toAddress: string,
-    amount: Decimalish
-  ): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
-
   /** {@inheritDoc TransactableKumo.redeemKUSD} */
   redeemKUSD(
     asset: string,
@@ -261,44 +255,4 @@ export interface PopulatableKumo<R = unknown, S = unknown, P = unknown>
   claimCollateralSurplus(
     asset: string
   ): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
-
-  /** {@inheritDoc TransactableKumo.stakeKUMO} */
-  stakeKUMO(
-    amount: Decimalish
-  ): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
-
-  /** {@inheritDoc TransactableKumo.unstakeKUMO} */
-  unstakeKUMO(
-    amount: Decimalish
-  ): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
-
-  /** {@inheritDoc TransactableKumo.withdrawGainsFromStaking} */
-  withdrawGainsFromStaking(): Promise<
-    PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>
-  >;
-
-  /** {@inheritDoc TransactableKumo.approveUniTokens} */
-  approveUniTokens(
-    allowance?: Decimalish
-  ): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
-
-  /** {@inheritDoc TransactableKumo.stakeUniTokens} */
-  stakeUniTokens(
-    amount: Decimalish
-  ): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
-
-  /** {@inheritDoc TransactableKumo.unstakeUniTokens} */
-  unstakeUniTokens(
-    amount: Decimalish
-  ): Promise<PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>>;
-
-  /** {@inheritDoc TransactableKumo.withdrawKUMORewardFromLiquidityMining} */
-  withdrawKUMORewardFromLiquidityMining(): Promise<
-    PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>
-  >;
-
-  /** {@inheritDoc TransactableKumo.exitLiquidityMining} */
-  exitLiquidityMining(): Promise<
-    PopulatedKumoTransaction<P, SentKumoTransaction<S, KumoReceipt<R, void>>>
-  >;
 }

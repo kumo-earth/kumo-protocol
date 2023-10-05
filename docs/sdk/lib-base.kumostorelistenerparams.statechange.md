@@ -6,7 +6,7 @@
 
 Only the state variables that have changed.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 stateChange: Partial<KumoStoreState<T>>;

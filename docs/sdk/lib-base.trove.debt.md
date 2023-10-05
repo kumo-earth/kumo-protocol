@@ -6,7 +6,7 @@
 
 Amount of KUSD owed.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly debt: Decimal;

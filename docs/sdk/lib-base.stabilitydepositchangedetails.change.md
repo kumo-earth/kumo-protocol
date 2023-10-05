@@ -6,7 +6,7 @@
 
 Change that was made to the deposit by this transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 change: StabilityDepositChange<Decimal>;

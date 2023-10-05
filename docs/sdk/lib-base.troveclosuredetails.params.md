@@ -6,7 +6,7 @@
 
 How much was withdrawn and repaid.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 params: TroveClosureParams<Decimal>;

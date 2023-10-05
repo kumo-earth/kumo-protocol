@@ -6,7 +6,6 @@ import { Provider } from "@ethersproject/abstract-provider";
 import {
   Decimal,
   Fees,
-  KUMOStake,
   ObservableKumo,
   ReadableKumo,
   StabilityDeposit,
@@ -334,42 +333,6 @@ export class SubgraphKumo implements ReadableKumo, ObservableKumo {
   }
 
   getFees(): Promise<Fees> {
-    throw new Error("Method not implemented.");
-  }
-
-  getKUMOStake(address?: string): Promise<KUMOStake> {
-    throw new Error("Method not implemented.");
-  }
-
-  getTotalStakedKUMO(): Promise<Decimal> {
-    throw new Error("Method not implemented.");
-  }
-
-  getUniTokenBalance(address?: string): Promise<Decimal> {
-    throw new Error("Method not implemented.");
-  }
-
-  getUniTokenAllowance(address?: string): Promise<Decimal> {
-    throw new Error("Method not implemented.");
-  }
-
-  getRemainingLiquidityMiningKUMOReward(): Promise<Decimal> {
-    throw new Error("Method not implemented.");
-  }
-
-  getLiquidityMiningStake(address?: string): Promise<Decimal> {
-    throw new Error("Method not implemented.");
-  }
-
-  getLiquidityMiningKUMOReward(address?: string): Promise<Decimal> {
-    throw new Error("Method not implemented.");
-  }
-
-  getTotalStakedUniTokens(): Promise<Decimal> {
-    throw new Error("Method not implemented.");
-  }
-
-  getRemainingStabilityPoolKUMOReward(): Promise<Decimal> {
     throw new Error("Method not implemented.");
   }
 }

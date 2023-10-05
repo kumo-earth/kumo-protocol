@@ -75,19 +75,6 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_newCommunityIssuanceAddress",
-        "type": "address"
-      }
-    ],
-    "name": "CommunityIssuanceAddressChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
         "name": "_newDefaultPoolAddress",
         "type": "address"
       }
@@ -115,12 +102,6 @@
         "internalType": "uint256",
         "name": "_S",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_G",
-        "type": "uint256"
       }
     ],
     "name": "DepositSnapshotUpdated",
@@ -145,86 +126,17 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "_frontEnd",
+        "name": "_asset",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_kickbackRate",
+        "name": "_F_ASSET",
         "type": "uint256"
       }
     ],
-    "name": "FrontEndRegistered",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_frontEnd",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_P",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_G",
-        "type": "uint256"
-      }
-    ],
-    "name": "FrontEndSnapshotUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_frontEnd",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_newFrontEndStake",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_depositor",
-        "type": "address"
-      }
-    ],
-    "name": "FrontEndStakeChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_depositor",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_frontEnd",
-        "type": "address"
-      }
-    ],
-    "name": "FrontEndTagSet",
+    "name": "F_AssetUpdated",
     "type": "event"
   },
   {
@@ -233,23 +145,24 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_G",
+        "name": "_F_KUSD",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint128",
-        "name": "_epoch",
-        "type": "uint128"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint128",
-        "name": "_scale",
-        "type": "uint128"
       }
     ],
-    "name": "G_Updated",
+    "name": "F_KUSDUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_kumoTreasuryAddress",
+        "type": "address"
+      }
+    ],
+    "name": "KUMOTreasuryAddressChanged",
     "type": "event"
   },
   {
@@ -264,30 +177,11 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_KUMO",
+        "name": "_value",
         "type": "uint256"
       }
     ],
-    "name": "KUMOPaidToDepositor",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "_frontEnd",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_KUMO",
-        "type": "uint256"
-      }
-    ],
-    "name": "KUMOPaidToFrontEnd",
+    "name": "KUSDGainWithdrawn",
     "type": "event"
   },
   {
@@ -327,6 +221,25 @@
       }
     ],
     "name": "PriceFeedAddressChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_oldProtocolFee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_newProtocolFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "ProtocolFeeChanged",
     "type": "event"
   },
   {
@@ -412,17 +325,36 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_P",
+        "name": "_newtotalKUSDGains",
+        "type": "uint256"
+      }
+    ],
+    "name": "StabilityPoolKUSDGainsBalanceUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_staker",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_F_Asset",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_G",
+        "name": "_F_KUSD",
         "type": "uint256"
       }
     ],
-    "name": "SystemSnapshotUpdated",
+    "name": "StakerSnapshotsUpdated",
     "type": "event"
   },
   {
@@ -529,7 +461,7 @@
         "type": "address"
       }
     ],
-    "name": "getDepositorKUMOGain",
+    "name": "getDepositorKUSDGain",
     "outputs": [
       {
         "internalType": "uint256",
@@ -564,6 +496,32 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_AssetFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "increaseF_Asset",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_KUMOFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "increaseF_KUSD",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -644,16 +602,29 @@
       },
       {
         "internalType": "address",
-        "name": "_communityIssuanceAddress",
+        "name": "_kumoParamsAddress",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_kumoParamsAddress",
+        "name": "_kumoTreasuryAddress",
         "type": "address"
       }
     ],
     "name": "setAddresses",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_newProtocolFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "setProtocolFee",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

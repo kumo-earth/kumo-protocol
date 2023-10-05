@@ -4,7 +4,7 @@
 
 ## ReadableEthersKumo.connect() method
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static connect(signerOrProvider: EthersSigner | EthersProvider, optionalParams?: EthersKumoConnectionOptionalParams): Promise<ReadableEthersKumo>;
@@ -15,9 +15,9 @@ static connect(signerOrProvider: EthersSigner | EthersProvider, optionalParams?:
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  signerOrProvider | [EthersSigner](./lib-ethers.etherssigner.md) \| [EthersProvider](./lib-ethers.ethersprovider.md) |  |
-|  optionalParams | [EthersKumoConnectionOptionalParams](./lib-ethers.etherskumoconnectionoptionalparams.md) |  |
+|  optionalParams | [EthersKumoConnectionOptionalParams](./lib-ethers.etherskumoconnectionoptionalparams.md) | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[ReadableEthersKumo](./lib-ethers.readableetherskumo.md)<!-- -->&gt;
 

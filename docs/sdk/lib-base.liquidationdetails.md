@@ -6,7 +6,7 @@
 
 Details of a [liquidate()](./lib-base.transactablekumo.liquidate.md) or [liquidateUpTo()](./lib-base.transactablekumo.liquidateupto.md) transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface LiquidationDetails 

@@ -4,7 +4,7 @@
 
 ## Vault.\_feesInNormalMode property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly _feesInNormalMode: Fees;

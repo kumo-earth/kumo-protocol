@@ -6,7 +6,7 @@
 
 Details of a [closeTrove()](./lib-base.transactablekumo.closetrove.md) transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface TroveClosureDetails 

@@ -6,7 +6,7 @@
 
 Request Test tokens to an address.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 transferTestTokens(tokenAddress: string, toAddress: string, amount: Decimalish): Promise<void>;
@@ -20,7 +20,7 @@ transferTestTokens(tokenAddress: string, toAddress: string, amount: Decimalish):
 |  toAddress | string |  |
 |  amount | [Decimalish](./lib-base.decimalish.md) |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;void&gt;
 

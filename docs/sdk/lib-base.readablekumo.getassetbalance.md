@@ -6,7 +6,7 @@
 
 Get the amount of BCT held by an address.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getAssetBalance(address: string, assetType: string, provider: Provider): Promise<Decimal>;
@@ -20,7 +20,7 @@ getAssetBalance(address: string, assetType: string, provider: Provider): Promise
 |  assetType | string |  |
 |  provider | Provider |  |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[Decimal](./lib-base.decimal.md)<!-- -->&gt;
 

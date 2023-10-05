@@ -4,7 +4,7 @@
 
 ## Decimal.HALF property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 static readonly HALF: Decimal;

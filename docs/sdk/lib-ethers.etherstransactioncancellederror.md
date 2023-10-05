@@ -6,12 +6,12 @@
 
 Thrown when a transaction is cancelled or replaced by a different transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class EthersTransactionCancelledError extends Error 
 ```
-<b>Extends:</b> Error
+**Extends:** Error
 
 ## Remarks
 
@@ -21,6 +21,6 @@ The constructor for this class is marked as internal. Third-party code should no
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [rawError](./lib-ethers.etherstransactioncancellederror.rawerror.md) |  | Error |  |
-|  [rawReplacementReceipt](./lib-ethers.etherstransactioncancellederror.rawreplacementreceipt.md) |  | [EthersTransactionReceipt](./lib-ethers.etherstransactionreceipt.md) |  |
+|  [rawError](./lib-ethers.etherstransactioncancellederror.rawerror.md) | <code>readonly</code> | Error |  |
+|  [rawReplacementReceipt](./lib-ethers.etherstransactioncancellederror.rawreplacementreceipt.md) | <code>readonly</code> | [EthersTransactionReceipt](./lib-ethers.etherstransactionreceipt.md) |  |
 

@@ -4,7 +4,7 @@
 
 ## ReadableEthersKumo.connection property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly connection: EthersKumoConnection;

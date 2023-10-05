@@ -4,7 +4,7 @@
 
 ## EthersTransactionOverrides.gasLimit property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 gasLimit?: BigNumberish;

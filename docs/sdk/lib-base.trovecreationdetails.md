@@ -6,7 +6,7 @@
 
 Details of an [openTrove()](./lib-base.transactablekumo.opentrove.md) transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface TroveCreationDetails 

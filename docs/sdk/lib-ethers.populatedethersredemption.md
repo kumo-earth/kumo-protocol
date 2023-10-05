@@ -6,14 +6,14 @@
 
 A redemption transaction that has been prepared for sending.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class PopulatedEthersRedemption extends PopulatedEthersKumoTransaction<RedemptionDetails> implements PopulatedRedemption<EthersPopulatedTransaction, EthersTransactionResponse, EthersTransactionReceipt> 
 ```
-<b>Extends:</b> [PopulatedEthersKumoTransaction](./lib-ethers.populatedetherskumotransaction.md)<!-- -->&lt;[RedemptionDetails](./lib-base.redemptiondetails.md)<!-- -->&gt;
+**Extends:** [PopulatedEthersKumoTransaction](./lib-ethers.populatedetherskumotransaction.md)<!-- -->&lt;[RedemptionDetails](./lib-base.redemptiondetails.md)<!-- -->&gt;
 
-<b>Implements:</b> [PopulatedRedemption](./lib-base.populatedredemption.md)<!-- -->&lt;[EthersPopulatedTransaction](./lib-ethers.etherspopulatedtransaction.md)<!-- -->, [EthersTransactionResponse](./lib-ethers.etherstransactionresponse.md)<!-- -->, [EthersTransactionReceipt](./lib-ethers.etherstransactionreceipt.md)<!-- -->&gt;
+**Implements:** [PopulatedRedemption](./lib-base.populatedredemption.md)<!-- -->&lt;[EthersPopulatedTransaction](./lib-ethers.etherspopulatedtransaction.md)<!-- -->, [EthersTransactionResponse](./lib-ethers.etherstransactionresponse.md)<!-- -->, [EthersTransactionReceipt](./lib-ethers.etherstransactionreceipt.md)<!-- -->&gt;
 
 ## Remarks
 
@@ -25,9 +25,9 @@ When [redeemKUSD()](./lib-base.populatablekumo.redeemkusd.md) is called with an 
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [attemptedKUSDAmount](./lib-ethers.populatedethersredemption.attemptedkusdamount.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUSD the redeemer is trying to redeem. |
-|  [isTruncated](./lib-ethers.populatedethersredemption.istruncated.md) |  | boolean | Whether <code>redeemableKUSDAmount</code> is less than <code>attemptedKUSDAmount</code>. |
-|  [redeemableKUSDAmount](./lib-ethers.populatedethersredemption.redeemablekusdamount.md) |  | [Decimal](./lib-base.decimal.md) | Maximum amount of KUSD that is currently redeemable from <code>attemptedKUSDAmount</code>. |
+|  [attemptedKUSDAmount](./lib-ethers.populatedethersredemption.attemptedkusdamount.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) | Amount of KUSD the redeemer is trying to redeem. |
+|  [isTruncated](./lib-ethers.populatedethersredemption.istruncated.md) | <code>readonly</code> | boolean | Whether <code>redeemableKUSDAmount</code> is less than <code>attemptedKUSDAmount</code>. |
+|  [redeemableKUSDAmount](./lib-ethers.populatedethersredemption.redeemablekusdamount.md) | <code>readonly</code> | [Decimal](./lib-base.decimal.md) | Maximum amount of KUSD that is currently redeemable from <code>attemptedKUSDAmount</code>. |
 
 ## Methods
 

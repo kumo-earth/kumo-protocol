@@ -1,7 +1,6 @@
 import { Provider } from "@ethersproject/abstract-provider";
 import { Decimal } from "./Decimal";
 import { Fees } from "./Fees";
-import { KUMOStake } from "./KUMOStake";
 import { StabilityDeposit } from "./StabilityDeposit";
 import { Trove, TroveWithPendingRedistribution, UserTrove } from "./Trove";
 import { ReadableKumo, TroveListingParams } from "./ReadableKumo";
@@ -110,13 +109,6 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     );
   }
 
-  async getRemainingStabilityPoolKUMOReward(...extraParams: T): Promise<Decimal> {
-    return (
-      this._cache.getRemainingStabilityPoolKUMOReward(...extraParams) ??
-      this._readable.getRemainingStabilityPoolKUMOReward(...extraParams)
-    );
-  }
-
   async getKUSDInStabilityPool(asset: string, ...extraParams: T): Promise<Decimal> {
     return (
       this._cache.getKUSDInStabilityPool(asset, ...extraParams) ??
@@ -140,55 +132,6 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
     return (
       this._cache.getAssetBalance(address, assetType, provider, ...extraParams) ??
       this._readable.getAssetBalance(address, assetType, provider, ...extraParams)
-    );
-  }
-
-  async getKUMOBalance(address: string, ...extraParams: T): Promise<Decimal> {
-    return (
-      this._cache.getKUMOBalance(address, ...extraParams) ??
-      this._readable.getKUMOBalance(address, ...extraParams)
-    );
-  }
-
-  async getUniTokenBalance(address: string, ...extraParams: T): Promise<Decimal> {
-    return (
-      this._cache.getUniTokenBalance(address, ...extraParams) ??
-      this._readable.getUniTokenBalance(address, ...extraParams)
-    );
-  }
-
-  async getUniTokenAllowance(address: string, ...extraParams: T): Promise<Decimal> {
-    return (
-      this._cache.getUniTokenAllowance(address, ...extraParams) ??
-      this._readable.getUniTokenAllowance(address, ...extraParams)
-    );
-  }
-
-  async getRemainingLiquidityMiningKUMOReward(...extraParams: T): Promise<Decimal> {
-    return (
-      this._cache.getRemainingLiquidityMiningKUMOReward(...extraParams) ??
-      this._readable.getRemainingLiquidityMiningKUMOReward(...extraParams)
-    );
-  }
-
-  async getLiquidityMiningStake(address: string, ...extraParams: T): Promise<Decimal> {
-    return (
-      this._cache.getLiquidityMiningStake(address, ...extraParams) ??
-      this._readable.getLiquidityMiningStake(address, ...extraParams)
-    );
-  }
-
-  async getTotalStakedUniTokens(...extraParams: T): Promise<Decimal> {
-    return (
-      this._cache.getTotalStakedUniTokens(...extraParams) ??
-      this._readable.getTotalStakedUniTokens(...extraParams)
-    );
-  }
-
-  async getLiquidityMiningKUMOReward(address: string, ...extraParams: T): Promise<Decimal> {
-    return (
-      this._cache.getLiquidityMiningKUMOReward(address, ...extraParams) ??
-      this._readable.getLiquidityMiningKUMOReward(address, ...extraParams)
     );
   }
 
@@ -238,22 +181,6 @@ export class _CachedReadableKumo<T extends unknown[]> implements _ReadableKumoWi
   async getFees(asset: string, ...extraParams: T): Promise<Fees> {
     return (
       this._cache.getFees(asset, ...extraParams) ?? this._readable.getFees(asset, ...extraParams)
-    );
-  }
-
-  async getKUMOStake(asset: string, address: string, ...extraParams: T): Promise<KUMOStake> {
-    return (
-      this._cache.getKUMOStake(asset, address, ...extraParams) ??
-      this._readable.getKUMOStake(asset, address, ...extraParams)
-    );
-  }
-
-  
-
-  async getTotalStakedKUMO(...extraParams: T): Promise<Decimal> {
-    return (
-      this._cache.getTotalStakedKUMO(...extraParams) ??
-      this._readable.getTotalStakedKUMO(...extraParams)
     );
   }
   

@@ -6,10 +6,10 @@
 
 Possible values for the optional [useStore](./lib-ethers.etherskumoconnectionoptionalparams.usestore.md) connection parameter.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type EthersKumoStoreOption = "blockPolled";
+export type EthersKumoStoreOption = "blockPolled";
 ```
 
 ## Remarks

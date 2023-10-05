@@ -6,12 +6,12 @@
 
 Send the transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 send(): Promise<SentEthersKumoTransaction<T>>;
 ```
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;[SentEthersKumoTransaction](./lib-ethers.sentetherskumotransaction.md)<!-- -->&lt;T&gt;&gt;
 

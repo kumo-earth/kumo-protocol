@@ -4,7 +4,7 @@
 
 ## Vault.totalRedistributed property
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly totalRedistributed: Trove;

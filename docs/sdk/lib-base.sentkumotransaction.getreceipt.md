@@ -6,12 +6,12 @@
 
 Check whether the transaction has been mined, and whether it was successful.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getReceipt(): Promise<T>;
 ```
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;T&gt;
 

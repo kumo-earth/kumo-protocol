@@ -6,7 +6,7 @@
 
 Can be used to create populated (unsigned) transactions.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 readonly populate: PopulatableEthersKumo;

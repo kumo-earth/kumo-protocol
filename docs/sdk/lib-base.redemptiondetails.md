@@ -6,7 +6,7 @@
 
 Details of a [redeemKUSD()](./lib-base.transactablekumo.redeemkusd.md) transaction.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface RedemptionDetails 

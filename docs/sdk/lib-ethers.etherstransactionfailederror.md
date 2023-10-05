@@ -6,12 +6,12 @@
 
 Thrown by [EthersKumo](./lib-ethers.etherskumo.md) in case of transaction failure.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class EthersTransactionFailedError extends TransactionFailedError<FailedReceipt<EthersTransactionReceipt>> 
 ```
-<b>Extends:</b> [TransactionFailedError](./lib-base.transactionfailederror.md)<!-- -->&lt;[FailedReceipt](./lib-base.failedreceipt.md)<!-- -->&lt;[EthersTransactionReceipt](./lib-ethers.etherstransactionreceipt.md)<!-- -->&gt;&gt;
+**Extends:** [TransactionFailedError](./lib-base.transactionfailederror.md)<!-- -->&lt;[FailedReceipt](./lib-base.failedreceipt.md)<!-- -->&lt;[EthersTransactionReceipt](./lib-ethers.etherstransactionreceipt.md)<!-- -->&gt;&gt;
 
 ## Constructors
 

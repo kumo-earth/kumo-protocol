@@ -6,7 +6,7 @@
 
 State variables read from the blockchain.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface KumoStoreBaseState 
@@ -16,18 +16,7 @@ export interface KumoStoreBaseState
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [kumoBalance](./lib-base.kumostorebasestate.kumobalance.md) |  | [Decimal](./lib-base.decimal.md) | User's KUMO token balance. |
-|  [kumoStake](./lib-base.kumostorebasestate.kumostake.md) |  | [KUMOStake](./lib-base.kumostake.md) | User's KUMO stake. |
-|  [kumoToken](./lib-base.kumostorebasestate.kumotoken.md) |  | string | KUSD token address |
 |  [kusdBalance](./lib-base.kumostorebasestate.kusdbalance.md) |  | [Decimal](./lib-base.decimal.md) | User's KUSD token balance. |
 |  [kusdToken](./lib-base.kumostorebasestate.kusdtoken.md) |  | string | KUSD token address |
-|  [liquidityMiningKUMOReward](./lib-base.kumostorebasestate.liquidityminingkumoreward.md) |  | [Decimal](./lib-base.decimal.md) | Amount of KUMO the user has earned through mining liquidity. |
-|  [liquidityMiningStake](./lib-base.kumostorebasestate.liquidityminingstake.md) |  | [Decimal](./lib-base.decimal.md) | Amount of Uniswap ETH/KUSD LP tokens the user has staked in liquidity mining. |
-|  [remainingLiquidityMiningKUMOReward](./lib-base.kumostorebasestate.remainingliquidityminingkumoreward.md) |  | [Decimal](./lib-base.decimal.md) | Remaining KUMO that will be collectively rewarded to liquidity miners. |
-|  [remainingStabilityPoolKUMOReward](./lib-base.kumostorebasestate.remainingstabilitypoolkumoreward.md) |  | [Decimal](./lib-base.decimal.md) | Remaining KUMO that will be collectively rewarded to stability depositors. |
-|  [totalStakedKUMO](./lib-base.kumostorebasestate.totalstakedkumo.md) |  | [Decimal](./lib-base.decimal.md) | Total amount of KUMO currently staked. |
-|  [totalStakedUniTokens](./lib-base.kumostorebasestate.totalstakedunitokens.md) |  | [Decimal](./lib-base.decimal.md) | Total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining. |
-|  [uniTokenAllowance](./lib-base.kumostorebasestate.unitokenallowance.md) |  | [Decimal](./lib-base.decimal.md) | The liquidity mining contract's allowance of user's Uniswap ETH/KUSD LP tokens. |
-|  [uniTokenBalance](./lib-base.kumostorebasestate.unitokenbalance.md) |  | [Decimal](./lib-base.decimal.md) | User's Uniswap ETH/KUSD LP token balance. |
 |  [vaults](./lib-base.kumostorebasestate.vaults.md) |  | [Vault](./lib-base.vault.md)<!-- -->\[\] | Custom Vault Array for each Asset type |
 

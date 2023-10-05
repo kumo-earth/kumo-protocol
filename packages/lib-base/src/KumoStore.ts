@@ -4,7 +4,6 @@ import { Decimal } from "./Decimal";
 import { UserTrove } from "./Trove";
 // import { TroveWithPendingRedistribution } from "./Trove";
 import { Fees } from "./Fees";
-import { KUMOStake } from "./KUMOStake";
 import { Vault } from "./Vault";
 
 /**
@@ -21,27 +20,6 @@ export interface KumoStoreBaseState {
 
   /** User's KUSD token balance. */
   kusdBalance: Decimal;
-
-  /** User's KUMO token balance. */
-  kumoBalance: Decimal;
-
-  /** User's Uniswap ETH/KUSD LP token balance. */
-  uniTokenBalance: Decimal;
-
-  /** The liquidity mining contract's allowance of user's Uniswap ETH/KUSD LP tokens. */
-  uniTokenAllowance: Decimal;
-
-  /** Remaining KUMO that will be collectively rewarded to liquidity miners. */
-  remainingLiquidityMiningKUMOReward: Decimal;
-
-  /** Amount of Uniswap ETH/KUSD LP tokens the user has staked in liquidity mining. */
-  liquidityMiningStake: Decimal;
-
-  /** Total amount of Uniswap ETH/KUSD LP tokens currently staked in liquidity mining. */
-  totalStakedUniTokens: Decimal;
-
-  /** Amount of KUMO the user has earned through mining liquidity. */
-  liquidityMiningKUMOReward: Decimal;
 
   /**
    * Amount of leftover collateral available for withdrawal to the user.
@@ -81,26 +59,14 @@ export interface KumoStoreBaseState {
   /** User's stability deposit. */
   // stabilityDeposit: StabilityDeposit;
 
-  /** Remaining KUMO that will be collectively rewarded to stability depositors. */
-  remainingStabilityPoolKUMOReward: Decimal;
-
   /** @internal */
   // _feesInNormalMode: Fees;
-
-  /** User's KUMO stake. */
-  kumoStake: KUMOStake;
-
-  /** Total amount of KUMO currently staked. */
-  totalStakedKUMO: Decimal;
 
   /** Custom Vault Array for each Asset type */
   vaults: Vault[];
 
    /** KUSD token address */
    kusdToken: string;
-
-   /** KUSD token address */
-   kumoToken: string;
 
   /** @internal */
   // _riskiestTroveBeforeRedistribution: TroveWithPendingRedistribution;
@@ -343,53 +309,6 @@ export abstract class KumoStore<T = unknown> {
         baseStateUpdate.kusdBalance
       ),
 
-      kumoBalance: this._updateIfChanged(
-        eq,
-        "kumoBalance",
-        baseState.kumoBalance,
-        baseStateUpdate.kumoBalance
-      ),
-
-      uniTokenBalance: this._updateIfChanged(
-        eq,
-        "uniTokenBalance",
-        baseState.uniTokenBalance,
-        baseStateUpdate.uniTokenBalance
-      ),
-
-      uniTokenAllowance: this._updateIfChanged(
-        eq,
-        "uniTokenAllowance",
-        baseState.uniTokenAllowance,
-        baseStateUpdate.uniTokenAllowance
-      ),
-
-      remainingLiquidityMiningKUMOReward: this._silentlyUpdateIfChanged(
-        eq,
-        baseState.remainingLiquidityMiningKUMOReward,
-        baseStateUpdate.remainingLiquidityMiningKUMOReward
-      ),
-
-      liquidityMiningStake: this._updateIfChanged(
-        eq,
-        "liquidityMiningStake",
-        baseState.liquidityMiningStake,
-        baseStateUpdate.liquidityMiningStake
-      ),
-
-      totalStakedUniTokens: this._updateIfChanged(
-        eq,
-        "totalStakedUniTokens",
-        baseState.totalStakedUniTokens,
-        baseStateUpdate.totalStakedUniTokens
-      ),
-
-      liquidityMiningKUMOReward: this._silentlyUpdateIfChanged(
-        eq,
-        baseState.liquidityMiningKUMOReward,
-        baseStateUpdate.liquidityMiningKUMOReward
-      ),
-
       // collateralSurplusBalance: this._updateIfChanged(
       //   eq,
       //   "collateralSurplusBalance",
@@ -429,31 +348,11 @@ export abstract class KumoStore<T = unknown> {
       //   baseStateUpdate.stabilityDeposit
       // ),
 
-      remainingStabilityPoolKUMOReward: this._silentlyUpdateIfChanged(
-        eq,
-        baseState.remainingStabilityPoolKUMOReward,
-        baseStateUpdate.remainingStabilityPoolKUMOReward
-      ),
-
       // _feesInNormalMode: this._silentlyUpdateIfChanged(
       //   equals,
       //   baseState._feesInNormalMode,
       //   baseStateUpdate._feesInNormalMode
       // ),
-
-      kumoStake: this._updateIfChanged(
-        equals,
-        "kumoStake",
-        baseState.kumoStake,
-        baseStateUpdate.kumoStake
-      ),
-
-      totalStakedKUMO: this._updateIfChanged(
-        eq,
-        "totalStakedKUMO",
-        baseState.totalStakedKUMO,
-        baseStateUpdate.totalStakedKUMO
-      ),
 
       kusdToken: this._updateIfChanged(
         strictEquals,
@@ -461,13 +360,6 @@ export abstract class KumoStore<T = unknown> {
         baseState.kusdToken,
         baseStateUpdate.kusdToken
       ),
-      kumoToken: this._updateIfChanged(
-        strictEquals,
-        "kumoToken",
-        baseState.kumoToken,
-        baseStateUpdate.kumoToken
-      ),
-
       vaults: this._updateIfChanged(strictEquals, "vaults", baseState.vaults, baseStateUpdate.vaults)
 
       // _riskiestTroveBeforeRedistribution: this._silentlyUpdateIfChanged(

@@ -6,7 +6,7 @@
 
 Amount of native currency (e.g. Ether) paid to the liquidator as gas compensation.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 collateralGasCompensation: Decimal;

@@ -6,7 +6,7 @@
 
 Send KUSD tokens to an address.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 sendKUSD(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOverrides): Promise<void>;
@@ -18,9 +18,9 @@ sendKUSD(toAddress: string, amount: Decimalish, overrides?: EthersTransactionOve
 |  --- | --- | --- |
 |  toAddress | string | Address of receipient. |
 |  amount | [Decimalish](./lib-base.decimalish.md) | Amount of KUSD to send. |
-|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) |  |
+|  overrides | [EthersTransactionOverrides](./lib-ethers.etherstransactionoverrides.md) | _(Optional)_ |
 
-<b>Returns:</b>
+**Returns:**
 
 Promise&lt;void&gt;
 
