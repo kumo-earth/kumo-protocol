@@ -3838,7 +3838,7 @@ __metadata:
     "@testing-library/user-event": ^14.5.1
     "@tippyjs/react": ^4.2.6
     "@types/lodash": ^4.14.199
-    "@types/react": ^18.2.22
+    "@types/react": ^18.2.25
     "@types/react-copy-to-clipboard": ^5.0.4
     "@types/react-dom": ^18.2.7
     "@types/react-router-dom": ^5.3.3
@@ -3950,7 +3950,7 @@ __metadata:
   resolution: "@kumodao/lib-react@workspace:packages/lib-react"
   dependencies:
     "@ethersproject/bignumber": ^5.7.0
-    "@types/react": ^18.2.21
+    "@types/react": ^18.2.25
     "@typescript-eslint/eslint-plugin": ^6.7.0
     "@typescript-eslint/parser": ^6.7.0
     eslint: ^8.49.0
@@ -7399,7 +7399,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:^18.2.21, @types/react@npm:^18.2.22":
+"@types/react@npm:*":
   version: 18.2.23
   resolution: "@types/react@npm:18.2.23"
   dependencies:
@@ -7407,6 +7407,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: efb9d1ed1940c0e7ba08a21ffba5e266d8dbbb8fe618cfb97bc902dfc96385fdd8189e3f7f64b4aa13134f8e61947d60560deb23be151253c3a97b0d070897ca
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^18.2.25":
+  version: 18.2.25
+  resolution: "@types/react@npm:18.2.25"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: 177515cd44135d56191ec6c5c10edd490c96c175d37624d9c37bc2007c3abcf6cc2d2137d2a073d692cdc5129d5d5785bd60a6ddd315f695da5d8b989fa2afc5
   languageName: node
   linkType: hard
 
