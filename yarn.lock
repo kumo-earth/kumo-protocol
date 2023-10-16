@@ -3914,7 +3914,7 @@ __metadata:
     "@microsoft/api-extractor": ^7.38.0
     "@nomicfoundation/hardhat-network-helpers": ^1.0.9
     "@nomiclabs/hardhat-ethers": ^2.2.3
-    "@types/chai": ^4.3.6
+    "@types/chai": ^4.3.8
     "@types/chai-as-promised": ^7.1.6
     "@types/chai-spies": ^1.0.4
     "@types/fs-extra": ^11.0.2
@@ -6866,10 +6866,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai@npm:*, @types/chai@npm:^4.2.0, @types/chai@npm:^4.3.5, @types/chai@npm:^4.3.6":
+"@types/chai@npm:*, @types/chai@npm:^4.2.0, @types/chai@npm:^4.3.5":
   version: 4.3.6
   resolution: "@types/chai@npm:4.3.6"
   checksum: 32a6c18bf53fb3dbd89d1bfcadb1c6fd45cc0007c34e436393cc37a0a5a556f9e6a21d1e8dd71674c40cc36589d2f30bf4d9369d7787021e54d6e997b0d7300a
+  languageName: node
+  linkType: hard
+
+"@types/chai@npm:^4.3.8":
+  version: 4.3.8
+  resolution: "@types/chai@npm:4.3.8"
+  checksum: 21431e46fa4a5602641726a24c7631bbf7ba8a41b1a290d0c73dcef6b3521c1d973ee605236b83a978cc918e55470fd04a3109d51aa30dcdf93a8b122e6c3e2c
   languageName: node
   linkType: hard
 
