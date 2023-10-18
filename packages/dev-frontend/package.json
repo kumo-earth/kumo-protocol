@@ -21,7 +21,7 @@
     "@web3-react/types": "6.0.7",
     "@web3-react/walletconnect-connector": "^6.2.13",
     "env-cmd": "^10.1.0",
-    "ethers": "^6.7.1",
+    "ethers": "^6.8.0",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-circular-progressbar": "^2.1.0",
